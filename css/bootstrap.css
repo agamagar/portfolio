@@ -1459,7 +1459,8 @@ hr {
   margin-top: 20px;
   margin-bottom: 20px;
   border: 0;
-  border-top: 2px solid #eeeeee;
+  border-top: 2px solid #455a64;
+  opacity: 4%;
 }
 
 .sr-only {
@@ -1953,6 +1954,11 @@ pre code {
 @media (min-width: 1200px) {
   .container {
     width: 1170px;
+  }
+}
+@media (min-width: 1400px) {
+  .container {
+    width: 1270px;
   }
 }
 

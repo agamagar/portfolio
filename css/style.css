@@ -122,6 +122,11 @@ h6 {
   margin: 0 0 5 0;
 }
 
+i {
+  font-size: 24px;
+  padding-right: 20px;
+}
+
 strong {
  color: #212121;
   font-weight: 600;
@@ -131,21 +136,28 @@ figure {
   margin-bottom: 2em;
 }
 
-.svgrocks {
+svg {
   margin-top: 10%;
 }
+
+.svgrocks{
+
+}
+
 
 .svgrocks1 {
   position: relative;
   top: 7px;
-  padding: 4px;
+  left: 1px;
+  padding: 2px
+
 }
 
 .svgrocks1:hover {
   position: relative;
   top: 7px;
-  left: 2px;
-  transition: 2s;
+  left: 5px;
+  transition: 0.2s;
   transition-timing-function: ease-in-out;
 }
 
@@ -392,7 +404,7 @@ figure {
   bottom: 0;
   width: 100px;
   height: 2px;
-  background: #212831;
+  background: #F5F6F8;
   text-align: center;
 }
 
@@ -841,7 +853,7 @@ header {
 }
 
 .fh5co-grid {
-  height: 320px;
+  height: 420px;
   background-size: cover;
   background-position: center center;
   margin-bottom: 35px;
@@ -849,7 +861,15 @@ header {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
-  border-radius: 7px;
+  border-radius: 8px;
+}
+
+.brightness{
+  filter: brightness(50%);
+}
+
+.brightness1{
+  filter: brightness(100%);
 }
 
 .fh5co-grid:hover {
@@ -858,13 +878,45 @@ header {
   transition-timing-function: ease-in-out;
 }
 
+.fh5co-grid5 {
+  height: 420px;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 35px;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 8px;
+}
+
+.fh5co-grid5:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0), 0 6px 20px 0 rgba(0, 0, 0, 0);
+  transition: .3s;
+  transition-timing-function: ease-in-out;
+}
+
 .fh5co-grid1 {
+  margin-top: 35px;
+  height: 660px;
+  background-size: cover;
+  background-position: center center;
+  overflow: visible
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fh5co-grid7 {
   margin-top: 35px;
   height: 700px;
   background-size: cover;
   background-position: center center;
-  position: relative;
-  overflow: visible;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .fh5co-grid3 {
