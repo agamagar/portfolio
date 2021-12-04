@@ -322,7 +322,7 @@ svg {
 
 .fh5co-cover, .fh5co-hero {
   height: 450px;
-  top: -150px;
+  top: 100px;
 }
 
 .fh5co-project-title {
@@ -853,7 +853,7 @@ header {
 }
 
 .fh5co-grid {
-  height: 420px;
+  height: 430px;
   background-size: cover;
   background-position: center center;
   margin-bottom: 35px;
@@ -861,7 +861,183 @@ header {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
+  border-radius: 12px;
+}
+
+.fh5co-grid10 {
+  height: 410px;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 12px;
+}
+
+.fh5co-grid11 {
+  height: 50rem;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 35px;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 12px;
+}
+
+.fh5co-grid12 {
+  height: 60rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 12px;
+}
+
+.fh5co-grid9 {
+  height: 310px;
+  background-size: cover;
+  background-position: center center;
+  margin-top: 15px;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
   border-radius: 8px;
+}
+
+.fh5co-grid20 {
+  height: 470px;
+  background-size: cover;
+  background-position: center center;
+  margin-top: 0px;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 12px;
+  background-color: #ffffff;
+    border: .1rem solid rgba(0, 0, 0, 0.05);
+}
+
+.sizesvg{
+  width: auto;
+  height: 20px;
+  padding-right: 8px;
+}
+
+.sizesvg:hover{
+  color: #ffffff;
+}
+
+.tags {
+   border-radius: 6px;
+   margin-top: 2rem;
+   padding: 0px 1.3rem 0px 1.3rem;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 14px;
+   font-weight: 400;
+}
+
+.tags1 {
+  border-radius: 8px;
+  padding: 1.7rem 4.7rem 1.6rem 4.7rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  color: #282828;
+  background-color: #ffffff;;
+  border: .1rem solid rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  margin-top: 0;"
+}
+
+.tags1:hover {
+  padding: 1.7rem 4.7rem 1.6rem 4.7rem;
+  box-shadow: 0 0px 0px 6px rgba(0, 0, 0, 0.07);
+  transition: .3s;
+}
+
+.tags3 {
+  border-radius: 50px;
+  padding: 1.5rem 4rem 1.5rem 4rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  color: #282828;
+  background-color: #fff;
+  font-size: 14px;
+  margin-top: 0;
+  border: .1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.tags3:hover {
+  padding: 1.5rem 4rem 1.5rem 4rem;
+  box-shadow: 0 0px 0px 6px rgba(0, 0, 0, 0.07);
+  transition: .3s;
+}
+
+.tags5 {
+  border-radius: 50px;
+  padding: 1.5rem 4rem 1.5rem 4rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #282828;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+.tags5:hover {
+  padding: 1.5rem 4rem 1.5rem 4rem;
+  box-shadow: 0 0px 0px 6px rgba(0, 0, 0, 0.07);
+  transition: .3s;
+}
+
+.icon1 {
+
+}
+
+.icon1:hover {
+  border-radius: 30px;
+  box-shadow: 0 0px 0px 6px rgba(0, 0, 0, 0.07);
+  transition: .3s;
+}
+
+.tags2 {
+  border-radius: 12px;
+  padding: 5rem 2rem 0rem 0rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.tags4 {
+  border-radius: 12px;
+  padding: 3rem 2rem 0rem 0rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.intro1:hover{
+  color: #FF8C64;
+}
+
+.intro2:hover{
+  color: #FF665A;
+}
+
+.intro3:hover{
+  color: #7D6B7D;
 }
 
 .brightness{
@@ -879,7 +1055,7 @@ header {
 }
 
 .fh5co-grid5 {
-  height: 420px;
+  height: 430px;
   background-size: cover;
   background-position: center center;
   margin-bottom: 35px;
@@ -918,6 +1094,28 @@ header {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+.fh5co-grid13 {
+  margin-top: 0px;
+  height: 1500px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fh5co-grid14 {
+  height: 630px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 
 .fh5co-grid3 {
   margin-top: 35px;

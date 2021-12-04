@@ -1458,9 +1458,9 @@ img {
 hr {
   margin-top: 20px;
   margin-bottom: 20px;
-  border: 0;
-  border-top: 2px solid #455a64;
-  opacity: 4%;
+  border: 10px;
+  border-top: 1px solid #282828;
+  opacity: 7%;
 }
 
 .sr-only {
@@ -1959,6 +1959,40 @@ pre code {
 @media (min-width: 1400px) {
   .container {
     width: 1270px;
+  }
+}
+
+.container1 {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.container1:before, .container1:after {
+  content: " ";
+  display: table;
+}
+.container1:after {
+  clear: both;
+}
+@media (min-width: 768px) {
+  .container1 {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .container1 {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .container1 {
+    width: 1170px;
+  }
+}
+@media (min-width: 1400px) {
+  .container1 {
+    width: 1400px;
   }
 }
 
