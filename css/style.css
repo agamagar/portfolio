@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap');
+@import url(//db.onlinewebfonts.com/c/da950f2527dc01bebcbedd536e38c145?family=Futura);
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&display=swap');
+
 
 
 body {
@@ -12,6 +16,17 @@ body {
 }
 body.fh5co-offcanvas {
   overflow: hidden;
+}
+
+
+#serif
+ { font-family: 'Syne', serif;
+ font-weight: 800;
+
+}
+
+#futura
+ { font-family: 'futura', sans-serif;
 }
 
 .material-icons{
@@ -174,6 +189,12 @@ svg {
   color: #ffffff
 }
 
+.svgrocks4 {
+  position: relative;
+  top: 1rem;
+  color: #f9f9f9;
+}
+
 .image {
   margin-top: 35px;
   max-width: 100%;
@@ -221,7 +242,7 @@ svg {
 }
 
 .project-card {
-  transition: 0.4s ease-out
+  transition: 0.4s ease-out;
 }
 
 .text-link {
@@ -602,7 +623,7 @@ svg {
   left: 0;
   width: 100%;
   z-index: 2;
-  background-color: #ffffff;
+  background-color: transparent;
 }
 
 #fh5co-header-section1 {
@@ -675,7 +696,7 @@ header {
   z-index: 2;
   display: block;
   float: right;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 #fh5co-menu-wrap .sf-menu a {
   padding: 1em .75em;
@@ -853,7 +874,7 @@ header {
 }
 
 .fh5co-grid {
-  height: 430px;
+  height: 1200px;
   background-size: cover;
   background-position: center center;
   margin-bottom: 35px;
@@ -862,6 +883,36 @@ header {
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
   border-radius: 12px;
+}
+
+.fh5co-grid111 {
+  height: 400px;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 35px;
+  position: relative;
+  border-radius: 0px;
+}
+
+.fh5co-grid222 {
+  height: 834px;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 35px;
+  position: relative;
+  border-radius: 0px;
+}
+
+.fh5co-grid1234 {
+  height: 400px;
+  background-size: cover;
+  background-position: center center;
+  margin-bottom: 35px;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  border-radius: 0px;
 }
 
 .fh5co-grid10 {
@@ -910,6 +961,70 @@ header {
   border-radius: 8px;
 }
 
+.fh5co-grid21 {
+  height: 65rem;
+  grid-gap: 30rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+.fh5co-grid22 {
+  height: 9.16rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+}
+
+.fh5co-grid23 {
+  height: 37rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+.inline {
+  display: flex;
+  flex-direction: row;
+}
+
+
+
+.fh5co-grid24 {
+  height: 60rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  border-radius: 12px;
+}
+
+.fh5co-grid24a {
+
+  height: 30rem;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  border-radius: 12px;
+}
+
+.fh5co-grid24b {
+  height: 8rem;
+  background-color: #000;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  border-radius: 12px;
+}
+
+.align {
+  padding-top: 25rem;
+  text-align: center;
+}
+
+
 .fh5co-grid20 {
   height: 470px;
   background-size: cover;
@@ -925,13 +1040,7 @@ header {
 }
 
 .sizesvg{
-  width: auto;
-  height: 20px;
-  padding-right: 8px;
-}
-
-.sizesvg:hover{
-  color: #ffffff;
+  background: url(img/icon_1.svg)
 }
 
 .tags {
@@ -946,24 +1055,60 @@ header {
 }
 
 .tags1 {
+  padding: 2rem 9rem 2rem 9rem;
+  text-align: left;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: rgba(19, 15, 38, 1);
+  font-size: 14px;
+  margin-top: -7rem;"
+}
+
+.tags1:hover {
+  padding: 2rem 9rem 2rem 9rem;
+  box-shadow: 0 0px 0px 7px rgba(0, 0, 0, 0.13);
+  transition: .3s;
+}
+
+.tags1a {
+  padding: 1.9rem 7rem 1.9rem 7rem;
+  text-align: left;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: rgba(19, 15, 38, 1);
+  font-size: 14px;
+  margin-top: -7rem;
+  border-radius: 12px;
+}
+
+.tags1a:hover {
+  padding: 1.9rem 7rem 1.9rem 7rem;
+  box-shadow: 0 0px 0px 7px rgba(0, 0, 0, 0.13);
+  transition: .3s;
+}
+
+.tags10 {
   border-radius: 8px;
-  padding: 1.7rem 4.7rem 1.6rem 4.7rem;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-weight: 600;
-  color: #282828;
-  background-color: #ffffff;;
-  border: .1rem solid rgba(0, 0, 0, 0.1);
-  font-size: 16px;
-  margin-top: 0;"
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 14px;"
 }
 
-.tags1:hover {
-  padding: 1.7rem 4.7rem 1.6rem 4.7rem;
-  box-shadow: 0 0px 0px 6px rgba(0, 0, 0, 0.07);
+.tags10:hover {
+  padding: 1rem 9rem 1rem 9rem;
+  box-shadow: 0 0px 0px 7px rgba(0, 0, 0, 0.13);
   transition: .3s;
 }
+
+
 
 .tags3 {
   border-radius: 50px;
@@ -1016,7 +1161,20 @@ header {
 
 .tags2 {
   border-radius: 12px;
-  padding: 5rem 2rem 0rem 0rem;
+  padding: 56.1rem 27rem 0rem 0rem;
+  text-decoration: none;
+}
+
+.tags2a {
+  border-radius: 12px;
+  padding: 43rem 0rem 0rem 6rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.tags2b {
+  border-radius: 12px;
+  padding: 0rem 0rem 0rem 1rem;
   text-decoration: none;
   display: inline-block;
 }
@@ -1049,7 +1207,7 @@ header {
 }
 
 .fh5co-grid:hover {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0), 0 6px 20px 0 rgba(0, 0, 0, 0.);
   transition: .3s;
   transition-timing-function: ease-in-out;
 }
@@ -1097,7 +1255,29 @@ header {
 
 .fh5co-grid13 {
   margin-top: 0px;
-  height: 1500px;
+  height: 1200px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fh5co-grid29 {
+  margin-top: 0px;
+  height: 00px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fh5co-grid29a {
+  margin-top: 0px;
+  height: 600px;
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
@@ -1107,7 +1287,28 @@ header {
 }
 
 .fh5co-grid14 {
-  height: 630px;
+  height: 610px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fh5co-grid16 {
+  height: 790px;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+.fh5co-grid15 {
+  height: 360px;
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;

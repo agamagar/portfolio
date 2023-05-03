@@ -1,17 +1,17 @@
 ;(function () {
-	
+
 	'use strict';
 
 
 
-	// iPad and iPod detection	
+	// iPad and iPod detection
 	var isiPad = function(){
 		return (navigator.platform.indexOf("iPad") != -1);
 	};
 
 	var isiPhone = function(){
 	    return (
-			(navigator.platform.indexOf("iPhone") != -1) || 
+			(navigator.platform.indexOf("iPhone") != -1) ||
 			(navigator.platform.indexOf("iPod") != -1)
 	    );
 	};
@@ -77,11 +77,11 @@
 				}
 			}
 
-		});	
+		});
 
 	}
 
-	
+
 
 	// Click outside of the Mobile Menu
 	var mobileMenuOutsideClick = function() {
@@ -103,7 +103,7 @@
 		$('.animate-box').waypoint( function( direction ) {
 
 			if( direction === 'down' && !$(this.element).hasClass('animated') ) {
-				
+
 				i++;
 
 				$(this.element).addClass('item-animate');
@@ -116,14 +116,14 @@
 							el.removeClass('item-animate');
 						},  k * 200, 'easeInOutExpo' );
 					});
-					
+
 				}, 100);
-				
+
 			}
 
 		} , { offset: '85%' } );
 	};
-	
+
 
 	// Document on load.
 	$(function(){
@@ -132,27 +132,27 @@
 		offcanvas();
 		mobileMenuOutsideClick();
 		contentWayPoint();
-		
+
 
 	});
 
-    
+
     // scroll progress
-    
+
     $(document).on('scroll resize', function() {
-     
+
           var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
           var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
           var scrolled = (winScroll / height) * 100;
-        
+
           var scrollColor = document.getElementById("projectColor").style.backgroundColor;
-		  
-         
+
+
          $('div#scroll-bar').width(scrolled + "%");
 		$('div#scroll-bar').css("background-color", scrollColor);
-		
+
     });
-    
+
 
 // $(window).on("scroll", function() {
 // 	if($(window).scrollTop() > 50) {
@@ -183,14 +183,14 @@ setInterval(function() {
 
 function hasScrolled() {
     var st = $(window).scrollTop();
-	
+
 	if ($('header'))
 
     // console.log(st, lastScrollTop, navbarHeight);
-    
+
     // If they scrolled down and are past the navbar, add class .nav-up.
 	// This is necessary so you never see what is "behind" the navbar.
-    
+
     if (st > lastScrollTop && st > navbarHeight){
         // Scroll Down
 //         console.log("add class");
@@ -202,15 +202,15 @@ function hasScrolled() {
 			$('header').removeClass('nav-up').addClass('nav-down');
         }
     }
-    
+
     // Make sure they scroll more than delta
     if(Math.abs(lastScrollTop - st) <= delta) {
 //        console.log("return");
         return;
     }
-    
-    lastScrollTop = st;   
-    
+
+    lastScrollTop = st;
+
 }
 
     //smooth page scroll.
@@ -250,4 +250,3 @@ function hasScrolled() {
 
 
 }());
-
