@@ -1456,11 +1456,19 @@ img {
 }
 
 hr {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: -8px;
+  margin-bottom: 16px;
   border: 10px;
   border-top: 1px solid #282828;
   opacity: 7%;
+}
+
+.dotted{
+  margin-top: 0px;
+  margin-bottom: 20px;
+  border: 10px;
+  border-top: 1px dashed #000000;
+  opacity: 10%;
 }
 
 .sr-only {
@@ -1953,20 +1961,20 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container {
-    width: 1170px;
+    width: 1000px;
   }
 }
 @media (min-width: 1400px) {
   .container {
-    width: 1270px;
+    width: 1200px;
   }
 }
 
 .container1 {
   margin-right: auto;
   margin-left: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 .container1:before, .container1:after {
   content: " ";
@@ -1987,12 +1995,12 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container1 {
-    width: 1170px;
+    width: 1100px;
   }
 }
 @media (min-width: 1400px) {
   .container1 {
-    width: 1400px;
+    width: 1230px;
   }
 }
 
@@ -3193,15 +3201,7 @@ output {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
-.form-control::-moz-placeholder {
-  color: #999;
-  opacity: 1;
-}
-.form-control:-ms-input-placeholder {
-  color: #999;
-}
-.form-control::-webkit-input-placeholder {
-  color: #999;
+
 }
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
   background-color: #eeeeee;
@@ -3211,9 +3211,6 @@ output {
   cursor: not-allowed;
 }
 
-textarea.form-control {
-  height: auto;
-}
 
 input[type="search"] {
   -webkit-appearance: none;
