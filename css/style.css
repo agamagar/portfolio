@@ -916,7 +916,8 @@ header {
   height: 230px;
   background-size: cover;
   background-position: center center;
-  margin-bottom: 35px;
+  margin-top: -12px;
+  margin-bottom: 36px;
   position: relative;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
@@ -982,7 +983,8 @@ header {
   height: 390px;
   background-size: cover;
   background-position: center center;
-  margin-bottom: 35px;
+  margin-top: 16px;
+  margin-bottom: 36px;
   position: relative;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
@@ -995,11 +997,22 @@ header {
   height: 390px;
   background-size: cover;
   background-position: center center;
-  margin-bottom: 35px;
+  margin-bottom: 16px;
+  margin-bottom: 36px;
   position: relative;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
+  border-radius: 12px;
+}
+
+.hover-style {
+
+}
+
+.hover-style:hover{
+  box-shadow: 0 0px 0px 9px rgba(33,33,33,.2);
+  transition: .5s;
   border-radius: 12px;
 }
 
