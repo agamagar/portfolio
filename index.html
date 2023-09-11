@@ -8,7 +8,7 @@
   <title>Project Media</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="UX Design Portfolio-Agam Agarwal" />
-  <meta name="keywords" content="portfolio, Ting-Wei Wu, Tiffany Wu, UMSI, UX Design, UX" />
+  <meta name="keywords" content="portfolio, Agam Agarwal, Agam, UPES, UX Design, UX" />
   <meta name="author" content="Agam Agarwal" />
 
 
@@ -171,10 +171,10 @@
 
                   </a></li>
                 <li>
-                  <a href="./index.html" class="active fh5co-sub-ddown" style="color: #333333; font-size: 14px; font-weight: 500;">Work</a>
+                  <a href="./index.html" class="active fh5co-sub-ddown" style="color: #333333; font-size: 14px; font-weight: 500;"></a>
                 </li>
                 <li><a href="index.html#fh5co-contact-section" style="color: #333333; font-size: 14px; font-weight: 500;">Contact</a></li>
-                <li><a href="img/AgamAgarwal-Resume.pdf" target="_blank" style="color: #333333; font-size: 14px; font-weight: 500;">Resume <i class="fa-solid fa-arrow-up-right-from-square fa-sm"></i></a></li>
+                <li><a href="img/Resume-Agam+Agarwal.pdf" target="_blank" style="color: #333333; font-size: 14px; font-weight: 500;">Resume <i class="fa-solid fa-arrow-up-right-from-square fa-sm"></i></a></li>
 
 
               </ul>
@@ -202,7 +202,6 @@
             <div class="col-md-12 col-sm-12 col-xs-12 animate-box project-card text-left" style="padding-bottom: 0rem; padding-top: 0rem;">
               <div style="padding: 9rem 0rem 0rem 0rem; border-radius: 12px;">
                 <!--<div class="col-md-12" style="background-image: url(img/a-1.svg); background-repeat: no-repeat;">-->
-                  <h2 class="col-md-12 text-center" style="color: #333333; font-size: 28px; line-height: 44px; font-weight: 300; letter-spacing: 0px; padding-top: 5rem;">🍕👁️🖖🏽
 
 <!--
                     <picture>
@@ -215,10 +214,7 @@
                         <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f415/512.gif" alt="🐕" width="32" height="32">
                     </picture>
   -->
-                    <!-- <picture>
-                      <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f441_fe0f/512.webp" type="image/webp">
-                        <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f441_fe0f/512.gif" alt="👁" width="32" height="32">
-                    </picture>  -->
+
 
                 <!--    <picture>
                       <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f379/512.webp" type="image/webp">
@@ -232,12 +228,82 @@
 -->
 
                   </h2>
-                  <!--<h2 class="col-md-12 text-center" style="color: #333333; font-size: 40px; letter-spacing: -3%; line-height: 44px; font-weight: 300;"><span id=syne>Hello! I am Agam</span>
-                  </h2>-->
-                  <h2 class="col-md-12 text-center" style="color: #333333; font-size: 20px; line-height: 28px; font-weight: 300; margin-top: -2rem; opacity: 70%;">Hello! I'm Agam<!--, A designer driven by the unconventional ways humans interact with the world.
+                  <h2 class="col-md-12 text-center" style="color: #333333; font-size: 24px; letter-spacing: 0%; line-height: 0px; font-weight: 300;"><span id=syne>Hello! I am Agam</span>
                   </h2>
-
+                  <h2 class="col-md-12 text-center" style="color: #333333; font-size: 18px; line-height: 32px; font-weight: 300; opacity: 100%;">A Designer <picture>
+  <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f984/512.webp" type="image/webp">
+  <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f984/512.gif" alt="🦄" width="24" height="24">
+</picture>Passionate about UX <br>and
+<picture>
+  <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f423/512.webp" type="image/webp">
+  <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f423/512.gif" alt="🐣" width="24" height="24">
+</picture>Intrigued by Data<!--, A designer driven by the unconventional ways humans interact with the world.
+                  </h2>
                 <!--</div>-->
+
+<div class="">
+
+                  <script src="three.min.js"></script>
+                  <script src="GLTFLoader.js"></script>
+                  <script src="OrbitControls.js"></script>
+                  <script>
+                    let scene, camera, renderer;
+
+                    function init() {
+
+                      scene = new THREE.Scene();
+                      scene.background = new THREE.Color(0xdddddd);
+
+                      camera = new THREE.PerspectiveCamera(40,window.innerWidth/window.innerHeight,1,5000);
+                      camera.rotation.y = 45/180*Math.PI;
+                      camera.position.x = 800;
+                      camera.position.y = 100;
+                      camera.position.z = 1000;
+
+                      controls = new THREE.OrbitControls(camera);
+                      controls.addEventListener('change', renderer);
+
+                      hlight = new THREE.AmbientLight (0x404040,100);
+                      scene.add(hlight);
+
+                      directionalLight = new THREE.DirectionalLight(0xffffff,100);
+                      directionalLight.position.set(0,1,0);
+                      directionalLight.castShadow = true;
+                      scene.add(directionalLight);
+                      light = new THREE.PointLight(0xc4c4c4,10);
+                      light.position.set(0,300,500);
+                      scene.add(light);
+                      light2 = new THREE.PointLight(0xc4c4c4,10);
+                      light2.position.set(500,100,0);
+                      scene.add(light2);
+                      light3 = new THREE.PointLight(0xc4c4c4,10);
+                      light3.position.set(0,100,-500);
+                      scene.add(light3);
+                      light4 = new THREE.PointLight(0xc4c4c4,10);
+                      light4.position.set(-500,300,500);
+                      scene.add(light4);
+
+                      renderer = new THREE.WebGLRenderer({antialias:true});
+                      renderer.setSize(window.innerWidth,window.innerHeight);
+                      document.body.appendChild(renderer.domElement);
+
+                      let loader = new THREE.GLTFLoader();
+                      loader.load('scene.gltf', function(gltf){
+                        car = gltf.scene.children[0];
+                        car.scale.set(0.5,0.5,0.5);
+                        scene.add(gltf.scene);
+                        animate();
+                      });
+                    }
+                    function animate() {
+                      renderer.render(scene,camera);
+                      requestAnimationFrame(animate);
+                    }
+                    init();
+                  </script>
+
+                </div>
+
               </div>
 
 
@@ -263,61 +329,68 @@
       <div class="fh5co-grid13" id="projects">
         <div class="container1" style="padding-top: 10rem;">
               <div class="col-md-7 col-sm-12 col-xs-12">
-                <!-- <a class="" href="./hospital.html"> -->
-                  <div class="fh5co-grid777" style="background-image: url(img/banner-7.svg);">
+                 <a class="" href="img/cyware.pdf">
+                  <div class="fh5co-grid777 hover-style" style="background-image: url(img/tile-23.svg);">
                   </div>
                   <div class="text-left" style="margin-left: -1rem;">
-                    <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Hospital VR</span></h2>
-                    <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">VR Research for Indian Medical Personnel</p>
+                    <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Cyware /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> CTIX 3.0 - Advanced Threat Intelligence Platform (B2B)</span></h2>
                   </div>
-                <!-- </a> -->
+                </a>
               </div>
 
               <div class="col-md-5 col-sm-12 col-xs-12" style="padding-top: 0rem;">
-                <!-- <a class="" href="./caratlane.html"> -->
-                  <div class="fh5co-grid777" style="background-image: url(img/banner-8.svg);">
+               <a class="" href="img/caratlane.pdf">
+                  <div class="fh5co-grid777 hover-style" style="background-image: url(img/tile-22.svg);">
                   </div>
                   <div class="text-left" style="margin-left: -1rem;">
-                    <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>CaratLane</span></h2>
-                    <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">Improving Discovery Across the Omni Channel</p>
+                    <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>CaratLane /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> Improving Discovery Across the Omni Channel</span></h2>
                   </div>
-                <!-- </a> -->
+                </a>
               </div>
 
                 <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
-                  <a class="" href="./siemens.html">
-                    <div class="fh5co-grid111" style="background-image: url(img/siemens.png);">
+                <!--  <a class="" href=""> -->
+                    <div class="fh5co-grid111" style="background-image: url(img/tile-21.svg);">
                     </div>
                     <div class="text-left" style="margin-left: -1rem;">
-                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Siemens</span></h2>
-                      <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">Future Grid Design System</p>
+                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Embridge /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> Building Empathy in Indian Nurses</span></h2>
                     </div>
-                  </a>
+                  <!-- </a> -->
+                </div>
+
+                <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
+                  <!-- <a class="" href="./siemens.html"> -->
+                    <div class="fh5co-grid111 hover-style" style="background-image: url(img/siemens.png);">
+                    </div>
+                    <div class="text-left" style="margin-left: -1rem;">
+                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Siemens /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> Future Grid Design System</span></h2>
+                      <!--<p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">Future Grid Design System</p>-->
+                    </div>
+                  <!-- </a> -->
                 </div>
 
                 <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
                   <a class="" href="./toppr.html">
-                    <div class="fh5co-grid111" style="background-image: url(img/toppr.png);">
+                    <div class="fh5co-grid111 hover-style" style="background-image: url(img/toppr.png);">
                     </div>
                     <div class="text-left" style="margin-left: -1rem;">
-                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Toppr</span></h2>
-                      <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">Creating Joyful Experiences for Students</p>
+                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Toppr /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> Creating Joyful Experiences for Students</span></h2>
+
                     </div>
                   </a>
                 </div>
 
-                <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
+                <!-- <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
                   <a class="" href="./firesafety.html">
-                    <div class="fh5co-grid111" style="background-image: url(img/tile-2.svg);">
+                    <div class="fh5co-grid111 hover-style" style="background-image: url(img/tile-2.svg);">
                     </div>
                     <div class="text-left" style="margin-left: -1rem;">
-                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Fire Safety VR</span></h2>
-                      <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">VR Training for Fire Safety Personnel</p>
+                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>FireSafety /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> VR Training for Fire Safety Offiers</span></h2>
                     </div>
                   </a>
                 </div>
 
-                <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
+                 <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
                   <a class="" href="./opentabs.html">
                     <div class="fh5co-grid111" style="background-image: url(img/tile-6.svg);">
                     </div>
@@ -341,21 +414,20 @@
 
                 <div class="col-md-4 col-sm-12 col-xs-12" style="padding-top: 3rem;">
                   <a class="" href="./creatappa.html">
-                    <div class="fh5co-grid111" style="background-image: url(img/tile-5.svg);">
+                    <div class="fh5co-grid111 hover-style" style="background-image: url(img/tile-5.svg);">
                     </div>
                     <div class="text-left" style="margin-left: -1rem;">
-                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Creatappa</span></h2>
-                      <p class="col-md-12" style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;">Building a Printing Startup</p>
+                      <h2 class="col-md-12" style="font-size: 16px; margin-top: -3.9rem;"><span id=syne>Creatappa /</span><span style="font-size: 14px; margin-top: -4.9rem; font-weight: 400;"> On-Demand Printing Startup</span></h2>
                     </div>
                   </a>
-                </div>
+                </div> -->
 
           </div>
         </div>
 
 
         <div class="fh5co-grid13" id="projects">
-          <div class="container1" style="margin-top: 63rem;">
+          <div class="container1" style="margin-top: 30rem;">
 
                 <div class="row row-padded-top-md row-bottom-padded-md">
                   <div class="col-md-12">
@@ -370,6 +442,14 @@
                      <p class="col-md-6" style="font-size: 16px; color: #313131;">Title</p>
                      <p class="col-md-2 col-md-offset-1 text-left" style="font-size: 16px; color: #313131;">Date Published</p>
                      <p class="col-md-3 text-right" style="font-size: 16px; padding-right: 3rem; color: #313131;">Tags</p>
+                    <hr class="col-md-12">
+
+
+                    <div class="col-md-6"><i class="fa-solid fa-lock fa-sm"></i><ul style="margin-top: -2.5rem; font-size: 16px; line-height: 20px; color: #313131;">[Paper Accepted] "A Framework for development of a Virtual Reality environment for building empathy in Indian Nursing Professionals" to International EdTech Conference 2023.</ul></div>
+                    <p class="col-md-2 col-md-offset-1 text-left" style="font-size: 16px; color: #313131;">Sep 8, 2023</p>
+                    <div class="col-md-3 text-right">
+                      <p class="text-right tags3" style="font-size: 12px;">Ed-tech</p>
+                    </div>
                     <hr class="col-md-12">
 
 
