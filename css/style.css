@@ -922,7 +922,7 @@ header {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
-  border-radius: 12px;
+  border-radius: 20px;
 }
 
 .fh5co-grid444 {
@@ -980,7 +980,7 @@ header {
 
 .fh5co-grid777 {
   background: url(../img/hospital.svg);
-  height: 390px;
+  height: 430px;
   background-size: cover;
   background-position: center center;
   margin-top: 16px;
@@ -989,12 +989,12 @@ header {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
-  border-radius: 12px;
+  border-radius: 20px;
 }
 
 .fh5co-grid777:hover {
   background: url(../img/hospital_hover.png);
-  height: 390px;
+  height: 430px;
   background-size: cover;
   background-position: center center;
   margin-bottom: 16px;
@@ -1003,7 +1003,7 @@ header {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
-  border-radius: 12px;
+  border-radius: 20px;
 }
 
 .hover-style {
@@ -1014,6 +1014,8 @@ header {
   box-shadow: 0 0px 0px 9px rgba(33,33,33,.2);
   transition: .5s;
   border-radius: 12px;
+  transition-timing-function: ease;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .fh5co-grid-small {
