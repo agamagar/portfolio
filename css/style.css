@@ -916,13 +916,12 @@ header {
   height: 230px;
   background-size: cover;
   background-position: center center;
-  margin-top: -12px;
   margin-bottom: 36px;
   position: relative;
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   -ms-border-radius: 7px;
-  border-radius: 20px;
+  border-radius: 12px;
 }
 
 .fh5co-grid444 {
@@ -1313,15 +1312,71 @@ header {
 }
 
 .fh5co-grid1 {
-  margin-top: 35px;
-  height: 660px;
+  height: 646px;
   background-size: cover;
   background-position: center center;
-  overflow: visible
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: relative;
+}
+
+.fh5co-grida {
+  height: 5200px;
   background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+@media screen and (max-width: 500px) {
+   .fh5co-grida {
+    height: 2000px;
+   }
+}
+
+.fh5co-gridb {
+  height: 7700px;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+@media screen and (max-width: 500px) {
+  .fh5co-gridb {
+   height: 2900px;
+  }
+}
+
+
+.fh5co-grid-cyware {
+  height: 9160px;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+@media screen and (max-width: 500px) {
+  .fh5co-grid-cyware {
+   height: 3500px;
+  }
+}
+
+.fh5co-grid-e {
+  height: 7900px;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+}
+
+@media screen and (max-width: 500px) {
+  .fh5co-grid-e {
+   height: 3200px;
+  }
+}
+
+
+.fh5co-grid1a {
+  height: 494px;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
 }
 
 .fh5co-grid7 {
