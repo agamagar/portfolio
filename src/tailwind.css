@@ -1,0 +1,9 @@
+/* Tailwind v4 — utilities + theme only, NO preflight, so the hand-written styles
+   in index.css are left completely untouched. `dark:` is scoped to a `.dark`
+   ancestor (the site has none) so third-party components render their light
+   variants on this light theme. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@custom-variant dark (&:where(.dark, .dark *));
+@source "./**/*.{js,jsx,ts,tsx}";

@@ -1,0 +1,18 @@
+node_modules
+dist
+.DS_Store
+*.log
+.env
+.env.local
+
+# editor / AI-tool configs (local tooling, not portfolio code)
+.codex/
+.cursor/
+.gemini/
+.zed/
+.vscode/
+.mcp.json
+opencode.json
+
+# temp asset backups
+*.prev.png

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Direction — Three Territories</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maxw: 1180px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#100f0d;
+    color:#e9e6df;
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit}
+
+  /* ---------- shell / nav ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px clamp(20px,5vw,56px);
+    backdrop-filter:blur(14px);
+    background:rgba(16,15,13,.6);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    transition:background .5s var(--ease), color .5s var(--ease), border-color .5s var(--ease);
+  }
+  .brand{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.7}
+  .tabs{display:flex;gap:4px}
+  .tab{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    padding:8px 14px;border-radius:999px;cursor:pointer;border:1px solid transparent;
+    background:transparent;color:inherit;opacity:.55;transition:.35s var(--ease);white-space:nowrap;
+  }
+  .tab:hover{opacity:1}
+  .tab.active{opacity:1;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+  .tab .n{opacity:.5;margin-right:8px}
+
+  /* ---------- intro ---------- */
+  .intro{
+    min-height:92vh;display:flex;flex-direction:column;justify-content:center;
+    max-width:var(--maxw);margin:0 auto;padding:120px clamp(20px,5vw,56px) 80px;
+  }
+  .kicker{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;opacity:.55;margin-bottom:28px}
+  .intro h1{
+    font-family:'Fraunces',serif;font-weight:340;font-size:clamp(38px,6.4vw,86px);
+    line-height:1.02;letter-spacing:-.02em;max-width:16ch;
+  }
+  .intro h1 em{font-style:italic;font-weight:340}
+  .intro .lede{
+    margin-top:34px;max-width:60ch;font-size:clamp(15px,1.5vw,19px);line-height:1.65;opacity:.78;
+  }
+  .arcrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:46px}
+  .chip{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:9px 16px;opacity:.8;
+  }
+  .chip b{color:#C8472E;font-weight:400}
+  .scrollcue{margin-top:64px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.4;display:flex;align-items:center;gap:10px}
+  .scrollcue::before{content:"";width:34px;height:1px;background:currentColor;display:inline-block}
+
+  /* ---------- board ---------- */
+  .board{display:none;animation:fade .7s var(--ease) both}
+  .board.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .board-hero{max-width:var(--maxw);margin:0 auto;padding:128px clamp(20px,5vw,56px) 40px}
+  .board-meta{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-bottom:22px;display:flex;gap:18px;flex-wrap:wrap}
+  .board-meta .dot{opacity:.4}
+  .board-title{font-size:clamp(40px,7vw,96px);line-height:.98;letter-spacing:-.02em}
+  .board-jp{display:block;font-size:.42em;letter-spacing:.04em;opacity:.5;margin-top:10px;font-weight:400}
+  .board-sub{margin-top:26px;max-width:62ch;font-size:clamp(15px,1.5vw,18px);line-height:1.65;opacity:.82}
+
+  /* arc strip */
+  .arc{max-width:var(--maxw);margin:46px auto 0;padding:0 clamp(20px,5vw,56px);display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .arc > div{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:22px 24px}
+  .arc h4{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.55;margin-bottom:10px}
+  .arc p{font-size:14.5px;line-height:1.6;opacity:.85}
+
+  .section-label{
+    max-width:var(--maxw);margin:72px auto 22px;padding:0 clamp(20px,5vw,56px);
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.5;
+    display:flex;align-items:center;gap:16px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
+
+  /* pin masonry */
+  .pins{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px);
+    columns:3;column-gap:18px;}
+  @media(max-width:900px){.pins{columns:2}}
+  @media(max-width:560px){.pins{columns:1}}
+  .pin{break-inside:avoid;margin-bottom:18px;border-radius:14px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);background:#161512;position:relative;
+    transition:transform .5s var(--ease), box-shadow .5s var(--ease);}
+  .pin:hover{transform:translateY(-4px);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  .pin .art{display:block;width:100%}
+  .pin .cap{padding:14px 16px}
+  .pin .cap .src{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.5}
+  .pin .cap .ttl{font-size:14px;line-height:1.4;margin-top:6px}
+  .pin .cap .ttl a{text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:1px}
+  .pin .cap .ttl a:hover{border-color:currentColor}
+
+  /* palette */
+  .palette{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px);display:flex;gap:0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+  .swatch{flex:1;min-height:130px;display:flex;align-items:flex-end;padding:14px;position:relative}
+  .swatch span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em}
+
+  /* type specimen */
+  .specimen{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px)}
+  .spec-card{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:34px clamp(22px,4vw,48px);background:#161512}
+  .spec-pair{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;margin-bottom:24px}
+  .spec-big{line-height:.98;letter-spacing:-.02em}
+  .spec-body{margin-top:24px;max-width:60ch;opacity:.8;line-height:1.6}
+  .spec-scale{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
+  .spec-scale span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;opacity:.5;border:1px solid rgba(255,255,255,.14);padding:6px 10px;border-radius:8px}
+
+  /* principles */
+  .princ{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px);display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media(max-width:700px){.princ{grid-template-columns:1fr}}
+  .princ > div{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px}
+  .princ h5{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;margin-bottom:12px}
+  .princ p{font-size:14.5px;line-height:1.62;opacity:.85}
+  .princ .num{font-family:'Fraunces',serif;font-size:30px;opacity:.3;display:block;margin-bottom:6px}
+
+  .spacer{height:120px}
+  footer{max-width:var(--maxw);margin:0 auto;padding:40px clamp(20px,5vw,56px) 90px;border-top:1px solid rgba(255,255,255,.1);opacity:.55;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;line-height:1.9}
+
+  /* ===== THEME: T1 Quiet Mastery ===== */
+  body.t1{background:#EFEBE1;color:#211f1a}
+  body.t1 .topbar{background:rgba(239,235,225,.7);border-color:rgba(0,0,0,.08)}
+  body.t1 .tab.active{border-color:rgba(0,0,0,.2);background:rgba(0,0,0,.04)}
+  body.t1 .pin{background:#F6F3EB;border-color:rgba(0,0,0,.08)}
+  body.t1 .pin:hover{box-shadow:0 18px 50px rgba(120,100,70,.18)}
+  body.t1 .spec-card{background:#F6F3EB;border-color:rgba(0,0,0,.1)}
+  body.t1 .chip{border-color:rgba(0,0,0,.18)}
+  body.t1 .arc>div,body.t1 .princ>div{border-color:rgba(0,0,0,.12)}
+  body.t1 .section-label::after,body.t1 .arc{ }
+  body.t1 .palette,body.t1 .pin,body.t1 .arc>div{}
+  body.t1 .chip b{color:#C8472E}
+
+  /* ===== THEME: T2 Set & Reset ===== */
+  body.t2{background:#F7F6F1;color:#111}
+  body.t2 .topbar{background:rgba(247,246,241,.8);border-color:rgba(0,0,0,.12)}
+  body.t2 .tab.active{border-color:#111;background:#111;color:#F7F6F1}
+  body.t2 .pin{background:#fff;border:1px solid #111;border-radius:0}
+  body.t2 .pin:hover{box-shadow:6px 6px 0 #111;transform:translate(-3px,-3px)}
+  body.t2 .spec-card{background:#fff;border:1px solid #111;border-radius:0}
+  body.t2 .chip{border-color:#111;border-radius:0}
+  body.t2 .arc>div,body.t2 .princ>div{border:1px solid #111;border-radius:0}
+  body.t2 .palette{border-radius:0;border:1px solid #111}
+  body.t2 .pin{border-radius:0}
+
+  /* ===== THEME: T3 Living Systems ===== */
+  body.t3{background:#07090b;color:#e7eee9}
+  body.t3 .topbar{background:rgba(7,9,11,.6);border-color:rgba(255,255,255,.08)}
+  body.t3 .pin{background:#0d1114;border-color:rgba(255,255,255,.07)}
+  body.t3 .spec-card{background:radial-gradient(120% 140% at 0% 0%,rgba(61,224,160,.08),transparent 50%),#0d1114;border-color:rgba(255,255,255,.1)}
+  body.t3 .chip b{color:#3DE0A0}
+</style>
+</head>
+<body class="t3">
+
+<div class="topbar">
+  <div class="brand">Art Direction · Portfolio Experience</div>
+  <div class="tabs">
+    <button class="tab" data-go="intro"><span class="n">00</span>Brief</button>
+    <button class="tab" data-go="b1"><span class="n">01</span>Quiet Mastery</button>
+    <button class="tab" data-go="b2"><span class="n">02</span>Set &amp; Reset</button>
+    <button class="tab active" data-go="b3"><span class="n">03</span>Living Systems</button>
+  </div>
+</div>
+
+<!-- ============ INTRO ============ -->
+<section class="board" id="intro">
+  <div class="intro">
+    <div class="kicker">For designers who feel craft the way musicians hear tuning</div>
+    <h1>Witness mastery, then get <em>handed the tools.</em></h1>
+    <p class="lede">An experience that guides fellow makers through the work — but the work is the punchline, not the premise. Three territories for one emotional arc, each grounded in real lineage. Designers are awe-resistant; spectacle won't land. What earns awe from this audience is the recognition of <em>expensive care</em> — and the residue we leave them with is curiosity, an open door, not a closed loop.</p>
+    <div class="arcrow">
+      <div class="chip">Audience · <b>fellow designers</b></div>
+      <div class="chip">Arc · <b>awe → curiosity</b></div>
+      <div class="chip">Felt sense · <b>belonging</b></div>
+      <div class="chip">Move · <b>subtraction over addition</b></div>
+    </div>
+    <div class="scrollcue">Pick a territory above — 01 / 02 / 03</div>
+  </div>
+</section>
+
+<!-- ============ BOARD 1 — QUIET MASTERY ============ -->
+<section class="board" id="b1">
+  <div class="board-hero">
+    <div class="board-meta"><span>Territory 01</span><span class="dot">/</span><span>Subtraction</span><span class="dot">/</span><span>Warm · Handmade · Still</span></div>
+    <h1 class="board-title" style="font-family:'Fraunces',serif;font-weight:340">Quiet Mastery<span class="board-jp">間 — ma, the space full of potential</span></h1>
+    <p class="board-sub">The flex is the empty space. Rooted in Japanese <em>ma</em> and <em>wabi-sabi</em> crossed with Swiss restraint — Hara's "emptiness is a possibility of being filled." Awe arrives through what's removed; every element you take away raises the perceived craft of what remains. Belonging is never stated, only spoken in dialect: type that's set, not chosen; one accent, used once.</p>
+  </div>
+
+  <div class="arc">
+    <div><h4>How it earns awe</h4><p>A single, impossibly tuned tableau. Vast negative space, one warm vermilion mark. The viewer feels intention at a resolution they recognize as rare — because they've tried to reach it themselves.</p></div>
+    <div><h4>How it opens curiosity</h4><p><em>Ma</em> is space pregnant with possibility. The emptiness invites the eye to wander and fill it. Nothing is fully resolved, so attention keeps returning — the second look is the reward.</p></div>
+  </div>
+
+  <div class="section-label">Palette · washi, sumi ink, a single shu red</div>
+  <div class="palette">
+    <div class="swatch" style="background:#EFEBE1;color:#3a362d"><span>#EFEBE1 washi</span></div>
+    <div class="swatch" style="background:#D8CFC0;color:#3a362d"><span>#D8CFC0 clay</span></div>
+    <div class="swatch" style="background:#8C857A;color:#fff"><span>#8C857A stone</span></div>
+    <div class="swatch" style="background:#211F1A;color:#EFEBE1"><span>#211F1A sumi</span></div>
+    <div class="swatch" style="background:#C8472E;color:#fff"><span>#C8472E shu</span></div>
+  </div>
+
+  <div class="section-label">Type · refined serif, set with patience + a quiet grotesque</div>
+  <div class="specimen">
+    <div class="spec-card">
+      <div class="spec-pair">Display: Fraunces (opsz) — Text: Inter</div>
+      <div class="spec-big" style="font-family:'Fraunces',serif;font-weight:300;font-size:clamp(40px,8vw,104px)">A thing well made.</div>
+      <p class="spec-body" style="font-family:'Inter',sans-serif">Optical sizing does the quiet work: the display cut breathes, the text cut recedes. The craft signal is the <em>care in the setting</em> — leading, measure, the single italic — not the font choice itself. Foundry kinship: Klim's "a thing well made."</p>
+      <div class="spec-scale">
+        <span>opsz var</span><span>tracking −2%</span><span>measure 60ch</span><span>leading 1.65</span><span>one accent, used once</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">The board · lineage &amp; reference</div>
+  <div class="pins">
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="520" fill="#EFEBE1"/><circle cx="285" cy="150" r="58" fill="#C8472E"/></svg>
+      <div class="cap"><div class="src">Kenya Hara · MUJI</div><div class="ttl">"Emptiness is itself a possibility of being filled." <a href="https://metropolismag.com/projects/kenya-hara-breaks-down-muji-unique-appeal/" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="320" fill="#211F1A"/><rect x="60" y="150" width="280" height="2" fill="#EFEBE1"/><rect x="60" y="166" width="160" height="2" fill="#8C857A"/></svg>
+      <div class="cap"><div class="src">Dieter Rams · Vitsœ</div><div class="ttl">Less, but better. Ten principles as a discipline of removal. <a href="https://www.vitsoe.com/us/about/good-design" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="460" fill="#D8CFC0"/><rect x="120" y="80" width="160" height="300" fill="#EFEBE1"/><rect x="120" y="80" width="160" height="300" fill="none" stroke="#8C857A" stroke-width="1"/></svg>
+      <div class="cap"><div class="src">Naoto Fukasawa</div><div class="ttl">"Without thought" — design that dissolves into use.</div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#EFEBE1"/><text x="32" y="120" font-family="Georgia,serif" font-size="64" fill="#211F1A">Aa</text><text x="200" y="120" font-family="Georgia,serif" font-style="italic" font-size="64" fill="#C8472E">Aa</text></svg>
+      <div class="cap"><div class="src">Klim Type Foundry</div><div class="ttl">Kris Sowersby — typefaces rooted in "a thing well made." <a href="https://klim.co.nz/fonts/founders-grotesk/" target="_blank" rel="noopener">Founders Grotesk →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill="#F6F3EB"/><circle cx="200" cy="200" r="120" fill="none" stroke="#211F1A" stroke-width="1.5"/><circle cx="200" cy="200" r="4" fill="#C8472E"/></svg>
+      <div class="cap"><div class="src">nendo · Oki Sato</div><div class="ttl">Industrial restraint — the small idea, perfectly held.</div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="360" fill="#8C857A"/><rect x="0" y="240" width="400" height="120" fill="#211F1A"/><rect x="40" y="200" width="2" height="120" fill="#EFEBE1"/></svg>
+      <div class="cap"><div class="src">Wabi-sabi · 間</div><div class="ttl">Beauty in imperfection, impermanence, the meaningful gap. <a href="https://www.interactiongreen.com/kenya-hara/" target="_blank" rel="noopener">On emptiness →</a></div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Direction · how it behaves</div>
+  <div class="princ">
+    <div><span class="num">01</span><h5>Motion</h5><p>Slow, weighted, deliberate — like ink settling into paper. Nothing eases faster than 600ms. Stillness is a state, not a gap to fill.</p></div>
+    <div><span class="num">02</span><h5>Texture</h5><p>The grain of washi, a faint deckled edge, soft paper shadow. Tactility without skeuomorphism. Warmth from substrate, not decoration.</p></div>
+    <div><span class="num">03</span><h5>Composition</h5><p>Asymmetric balance around enormous negative space. The work enters from the edge; the centre stays open. One accent per view.</p></div>
+    <div><span class="num">04</span><h5>Risk</h5><p>Can read as precious or empty to a casual visitor. Mitigated because the casual visitor isn't the audience — restraint self-selects for craft people.</p></div>
+  </div>
+  <div class="spacer"></div>
+</section>
+
+<!-- ============ BOARD 2 — SET & RESET ============ -->
+<section class="board" id="b2">
+  <div class="board-hero">
+    <div class="board-meta"><span>Territory 02</span><span class="dot">/</span><span>Structure shown</span><span class="dot">/</span><span>Editorial · Print-on-screen</span></div>
+    <h1 class="board-title" style="font-family:'Space Grotesk',sans-serif;font-weight:700">Set &amp; Reset<span class="board-jp" style="font-family:'Space Mono',monospace">the seam is the gift</span></h1>
+    <p class="board-sub">The Swiss grid, but the scaffolding stays visible — baseline guides, registration marks, monospace annotations, the discarded option shown next to the chosen one. To this audience, exposing your structure is the highest respect: it says <em>you're one of us, you'll appreciate how this was built.</em> Awe through total coherence; curiosity because the making-of <em>is</em> the content.</p>
+  </div>
+
+  <div class="arc">
+    <div><h4>How it earns awe</h4><p>Ruthless coherence. Every element snaps to one system; nothing is arbitrary. Designers feel the rigour the way you feel a perfectly kerned word — it's the awe of a baseline grid held without a single break.</p></div>
+    <div><h4>How it opens curiosity</h4><p>Showing the seams invites inspection. Annotations, versions, registration marks turn the page into something to decode. The visitor leans in to read the structure — and stays to test its edges.</p></div>
+  </div>
+
+  <div class="section-label">Palette · paper, ink, riso fluoros</div>
+  <div class="palette">
+    <div class="swatch" style="background:#F7F6F1;color:#111"><span>#F7F6F1 paper</span></div>
+    <div class="swatch" style="background:#111111;color:#fff"><span>#111111 ink</span></div>
+    <div class="swatch" style="background:#FF4477;color:#fff"><span>#FF4477 riso pink</span></div>
+    <div class="swatch" style="background:#2233DD;color:#fff"><span>#2233DD riso blue</span></div>
+    <div class="swatch" style="background:#FFD400;color:#111"><span>#FFD400 process yellow</span></div>
+  </div>
+
+  <div class="section-label">Type · grotesque + monospace as annotation layer</div>
+  <div class="specimen">
+    <div class="spec-card">
+      <div class="spec-pair">Display: Space Grotesk — System: Space Mono</div>
+      <div class="spec-big" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,8vw,100px)">Grid as freedom.</div>
+      <p class="spec-body" style="font-family:'Space Mono',monospace;font-size:13px">// Crouwel: the grid releases the creative mind — a tool outside the individual hand.<br>// Mono carries metadata, captions, the voice of the maker talking through the work.</p>
+      <div class="spec-scale">
+        <span>12-col baseline</span><span>mono captions</span><span>1px rules</span><span>registration ✛</span><span>fluoro on demand</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">The board · lineage &amp; reference</div>
+  <div class="pins">
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="480" fill="#F7F6F1"/><g stroke="#FF4477" stroke-width="1"><line x1="40" y1="0" x2="40" y2="480"/><line x1="130" y1="0" x2="130" y2="480"/><line x1="220" y1="0" x2="220" y2="480"/><line x1="310" y1="0" x2="310" y2="480"/></g><rect x="40" y="120" width="270" height="120" fill="#111"/></svg>
+      <div class="cap"><div class="src">Josef Müller-Brockmann</div><div class="ttl">Grid Systems in Graphic Design — the canonical manual. <a href="https://moelsandco.com/stories/josef-muller-brockmann-a-pioneer-of-swiss-graphic-design" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="360" fill="#111"/><g fill="#F7F6F1"><rect x="40" y="60" width="40" height="40"/><rect x="90" y="60" width="40" height="40"/><rect x="40" y="110" width="40" height="40"/><rect x="140" y="160" width="90" height="40"/></g></svg>
+      <div class="cap"><div class="src">Wim Crouwel · "Mr. Gridnik"</div><div class="ttl">The total grid — type built from the system itself. <a href="https://medium.com/inside-vbat/wim-crouwel-mr-gridnik-98d0d21f9b1b" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill="#FFD400"/><circle cx="160" cy="160" r="90" fill="#2233DD" opacity=".85"/><circle cx="230" cy="230" r="90" fill="#FF4477" opacity=".85" style="mix-blend-mode:multiply"/></svg>
+      <div class="cap"><div class="src">RISOMA · riso exhibition</div><div class="ttl">Overprint, misregistration, fluoro — DIY editorial joy. <a href="https://fontsinuse.com/uses/69739/risoma-riso-printing-exhibition" target="_blank" rel="noopener">Fonts In Use →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F7F6F1"/><g stroke="#111" stroke-width="1.5"><line x1="30" y1="30" x2="30" y2="60"/><line x1="15" y1="45" x2="45" y2="45"/><line x1="370" y1="270" x2="370" y2="240"/><line x1="385" y1="255" x2="355" y2="255"/></g><rect x="70" y="70" width="260" height="160" fill="none" stroke="#111" stroke-dasharray="4 4"/></svg>
+      <div class="cap"><div class="src">Blaze Type · Systm</div><div class="ttl">A typeface built from a square + quadrant on a strict grid.</div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="360" fill="#2233DD"/><text x="30" y="220" font-family="Arial" font-weight="bold" font-size="150" fill="#FFD400">Aa</text></svg>
+      <div class="cap"><div class="src">Pangram Pangram</div><div class="ttl">Editorial New — mid-90s echoes, lush serif legacy. <a href="https://pangrampangram.com/blogs/journal/best-headline-fonts" target="_blank" rel="noopener">Headline fonts →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="420" fill="#F7F6F1"/><g stroke="#111" stroke-width="1" opacity=".5"><line x1="0" y1="60" x2="400" y2="60"/><line x1="0" y1="120" x2="400" y2="120"/><line x1="0" y1="180" x2="400" y2="180"/><line x1="0" y1="240" x2="400" y2="240"/><line x1="0" y1="300" x2="400" y2="300"/><line x1="0" y1="360" x2="400" y2="360"/></g><rect x="0" y="120" width="400" height="60" fill="#FF4477"/></svg>
+      <div class="cap"><div class="src">Brutalist / editorial web</div><div class="ttl">Exposed grids, raw structure as a human signal. <a href="https://tympanus.net/codrops/" target="_blank" rel="noopener">Codrops →</a></div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Direction · how it behaves</div>
+  <div class="princ">
+    <div><span class="num">01</span><h5>Motion</h5><p>Snap, not slide. Elements click to the grid like type into a galley. Transitions reveal underlying structure before content settles.</p></div>
+    <div><span class="num">02</span><h5>Texture</h5><p>Riso overprint, paper tooth, halftone, the honest 1px hairline. Fluoros appear sparingly — as ink does, with intent.</p></div>
+    <div><span class="num">03</span><h5>Composition</h5><p>Visible 12-column baseline. Captions live in monospace margins. Show the discarded version beside the chosen one.</p></div>
+    <div><span class="num">04</span><h5>Risk</h5><p>"Brutalist" is well-trodden (Linear, a hundred award sites). Differentiator: warmth + print craft, not cold default-HTML edge.</p></div>
+  </div>
+  <div class="spacer"></div>
+</section>
+
+<!-- ============ BOARD 3 — LIVING SYSTEMS ============ -->
+<section class="board show" id="b3">
+  <div class="board-hero">
+    <div class="board-meta"><span>Territory 03</span><span class="dot">/</span><span>Emergence</span><span class="dot">/</span><span>Generative · Material · Alive</span></div>
+    <h1 class="board-title" style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400">Living Systems<span class="board-jp" style="font-family:'Space Mono',monospace;font-style:normal">awe you can perturb</span></h1>
+    <p class="board-sub">Something that feels alive and impossibly coherent at once — soft 3D, real physics, light that has depth. Awe arrives because it behaves like matter, not markup. And the curiosity is built in: a living system invites you to push it and watch it respond. The last beat hands the visitor a variable — the open door, not the closed loop.</p>
+  </div>
+
+  <div class="arc">
+    <div><h4>How it earns awe</h4><p>Emergent coherence. Thousands of elements moving as one organism, with weight and light that read as physical. The "...how is this running in a browser" feeling — mastery witnessed in motion.</p></div>
+    <div><h4>How it opens curiosity</h4><p>The system responds to the visitor. A gesture perturbs it; it settles differently each time. You leave wanting to test its edges — and, ideally, to go make your own.</p></div>
+  </div>
+
+  <div class="section-label">Palette · near-black warmth, luminous life</div>
+  <div class="palette">
+    <div class="swatch" style="background:#07090b;color:#e7eee9"><span>#07090B void</span></div>
+    <div class="swatch" style="background:#13332a;color:#3DE0A0"><span>#13332A deep</span></div>
+    <div class="swatch" style="background:#3DE0A0;color:#06231a"><span>#3DE0A0 bio</span></div>
+    <div class="swatch" style="background:#E85CB0;color:#2a0a1d"><span>#E85CB0 bloom</span></div>
+    <div class="swatch" style="background:#F2A33C;color:#2a1605"><span>#F2A33C amber</span></div>
+  </div>
+
+  <div class="section-label">Type · luminous display serif + technical mono</div>
+  <div class="specimen">
+    <div class="spec-card">
+      <div class="spec-pair">Display: Instrument Serif — System: Space Mono</div>
+      <div class="spec-big" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(46px,9vw,120px)">alive in the browser.</div>
+      <p class="spec-body" style="font-family:'Sora',sans-serif;font-weight:300">A high-contrast italic serif against a cool grotesque body sets the tension: organic warmth over technical precision. Mono labels the variables, so the system always reads as something built — and therefore something you could open up.</p>
+      <div class="spec-scale">
+        <span>GLSL noise</span><span>displacement passes</span><span>spring physics</span><span>glow / bloom</span><span>respond to cursor</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">The board · lineage &amp; reference</div>
+  <div class="pins">
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="g1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#3DE0A0"/><stop offset="100%" stop-color="#07090b"/></radialGradient></defs><rect width="400" height="460" fill="#07090b"/><circle cx="200" cy="190" r="150" fill="url(#g1)" opacity=".9"/></svg>
+      <div class="cap"><div class="src">Zach Lieberman</div><div class="ttl">Daily sketches, openFrameworks, School for Poetic Computation. <a href="https://www.lerandom.art/editorial/zach-lieberman" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="360" fill="#07090b"/><g stroke="#E85CB0" stroke-width="1.2" fill="none" opacity=".85"><path d="M0 180 Q100 80 200 180 T400 180"/><path d="M0 210 Q100 110 200 210 T400 210"/><path d="M0 150 Q100 50 200 150 T400 150"/></g></svg>
+      <div class="cap"><div class="src">Casey Reas</div><div class="ttl">Co-created Processing — the grammar of generative form. <a href="https://www.bitforms.art/exhibition/a-generative-movement" target="_blank" rel="noopener">A Generative Movement →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DE0A0"/><stop offset="50%" stop-color="#E85CB0"/><stop offset="100%" stop-color="#F2A33C"/></linearGradient></defs><rect width="400" height="400" fill="#07090b"/><rect x="40" y="40" width="320" height="320" fill="url(#g2)" opacity=".55" rx="8"/></svg>
+      <div class="cap"><div class="src">Refik Anadol</div><div class="ttl">Data as pigment — the aesthetics of latent space. <a href="https://www.niio.com/blog/refik-anadol-art-in-a-latent-space-2/" target="_blank" rel="noopener">Read →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="340" fill="#07090b"/><g fill="#3DE0A0"><circle cx="120" cy="120" r="3"/><circle cx="180" cy="140" r="3"/><circle cx="150" cy="190" r="3"/><circle cx="240" cy="160" r="3"/><circle cx="210" cy="220" r="3"/><circle cx="280" cy="220" r="3"/></g><g stroke="#3DE0A0" stroke-width=".6" opacity=".5"><line x1="120" y1="120" x2="180" y2="140"/><line x1="180" y1="140" x2="150" y2="190"/><line x1="180" y1="140" x2="240" y2="160"/><line x1="240" y1="160" x2="210" y2="220"/><line x1="210" y1="220" x2="280" y2="220"/></g></svg>
+      <div class="cap"><div class="src">LIA</div><div class="ttl">A continuous practice in generative art since the 90s. <a href="https://www.liaworks.com/exhibitions/" target="_blank" rel="noopener">Exhibitions →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="g3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F2A33C"/><stop offset="60%" stop-color="#E85CB0"/><stop offset="100%" stop-color="#07090b"/></radialGradient></defs><rect width="400" height="440" fill="#07090b"/><ellipse cx="200" cy="220" rx="150" ry="170" fill="url(#g3)" opacity=".8"/></svg>
+      <div class="cap"><div class="src">Codrops · WebGL/WebGPU</div><div class="ttl">Displacement, line-blur, video-scrub — the techniques, taught. <a href="https://tympanus.net/codrops/2025/11/20/behind-the-kai-design-dept-experience-webgl-line-blur-video-scrubbing-and-3d-animation/" target="_blank" rel="noopener">KAI build →</a></div></div>
+    </div>
+    <div class="pin">
+      <svg class="art" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#07090b"/><g stroke="#3DE0A0" stroke-width="1" fill="none" opacity=".7"><path d="M40 260 C 120 40, 280 40, 360 260"/></g><circle cx="200" cy="80" r="5" fill="#F2A33C"/></svg>
+      <div class="cap"><div class="src">Three.js · React Three Fiber</div><div class="ttl">Spring joints + simplex noise — production-viable physics for the web.</div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Direction · how it behaves</div>
+  <div class="princ">
+    <div><span class="num">01</span><h5>Motion</h5><p>Spring physics, not keyframes. Inertia, settle, overshoot. The system never repeats exactly — every load is a new growth.</p></div>
+    <div><span class="num">02</span><h5>Texture</h5><p>Layered vertex displacement, simplex noise, soft bloom and depth-of-field. Matter, not flat gradient. Light that falls.</p></div>
+    <div><span class="num">03</span><h5>Composition</h5><p>One living focal organism; work surfaces from within it. Cursor and scroll perturb the field. End on a variable the visitor controls.</p></div>
+    <div><span class="num">04</span><h5>Risk</h5><p>Performance + the "tech demo" trap. Mitigated by restraint (one system, not ten) and by tying every effect to meaning, never spectacle.</p></div>
+  </div>
+  <div class="spacer"></div>
+</section>
+
+<footer>
+  ART DIRECTION · THREE TERRITORIES — Quiet Mastery / Set &amp; Reset / Living Systems<br>
+  One arc: awe → curiosity · For an audience that feels craft · Witness mastery, then get handed the tools.<br>
+  References are real and clickable. Boards render the direction; they don't re-host source imagery.
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const boards = {intro:document.getElementById('intro'), b1:document.getElementById('b1'), b2:document.getElementById('b2'), b3:document.getElementById('b3')};
+  const themeFor = {intro:'t3', b1:'t1', b2:'t2', b3:'t3'};
+  function go(id){
+    Object.values(boards).forEach(b=>b.classList.remove('show'));
+    boards[id].classList.add('show');
+    tabs.forEach(t=>t.classList.toggle('active', t.dataset.go===id));
+    document.body.className = themeFor[id];
+    window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>go(t.dataset.go)));
+  // start on intro
+  go('intro');
+</script>
+</body>
+</html>

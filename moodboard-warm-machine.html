@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moodboard — The Warm Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ease:cubic-bezier(.22,.61,.36,1)}
+  html,body{height:100%;overflow:hidden;background:#1b1a17;color:#eceae3;font-family:'Space Grotesk',sans-serif}
+  /* viewport */
+  #stage{position:fixed;inset:0;cursor:grab;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0) 0 0/26px 26px,
+      radial-gradient(120% 120% at 20% 0%, #232119, #161512 60%, #100f0d);
+  }
+  #stage.drag{cursor:grabbing}
+  #canvas{position:absolute;top:0;left:0;width:2900px;height:2100px;transform-origin:0 0;will-change:transform}
+
+  /* group titles */
+  .group{position:absolute}
+  .group .gt{font-family:'Fraunces',serif;font-weight:340;font-size:46px;letter-spacing:-.01em;line-height:1}
+  .group .gt em{font-style:italic}
+  .group .gn{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:12px}
+  .group .gd{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;opacity:.55;margin-top:12px;max-width:34ch;line-height:1.6}
+
+  /* cards */
+  .card{position:absolute;border-radius:12px;overflow:hidden;background:#201e1a;
+    border:1px solid rgba(255,255,255,.09);box-shadow:0 14px 36px rgba(0,0,0,.45);
+    transition:transform .45s var(--ease),box-shadow .45s var(--ease),z-index 0s;}
+  .card:hover{transform:translateY(-6px) scale(1.025) rotate(0deg)!important;box-shadow:0 26px 60px rgba(0,0,0,.6);z-index:90}
+  .card .art{display:block;width:100%}
+  .card .cap{padding:12px 14px}
+  .card .src{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;display:flex;align-items:center;gap:6px}
+  .card .star{color:#F2A33C}
+  .card .ttl{font-size:13px;line-height:1.4;margin-top:6px;opacity:.92}
+  .card .ttl a{color:#9fd8c4;text-decoration:none;border-bottom:1px solid rgba(159,216,196,.35);white-space:nowrap}
+  .card .ttl a:hover{border-color:#9fd8c4}
+
+  /* thesis */
+  .thesis{position:absolute;width:430px;padding:30px 32px;border-radius:16px;
+    background:linear-gradient(150deg,#2a2720,#1a1815);border:1px solid rgba(242,163,60,.3);
+    box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .thesis .tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#F2A33C;opacity:.9}
+  .thesis h1{font-family:'Fraunces',serif;font-weight:330;font-size:42px;line-height:1.02;letter-spacing:-.02em;margin:14px 0 16px}
+  .thesis h1 em{font-style:italic}
+  .thesis p{font-size:14px;line-height:1.66;opacity:.82}
+  .thesis .legend{margin-top:18px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;opacity:.6;display:flex;gap:6px;align-items:center}
+
+  /* HUD */
+  #hud{position:fixed;left:0;right:0;bottom:0;z-index:200;display:flex;gap:8px;justify-content:center;
+    padding:16px;pointer-events:none;flex-wrap:wrap}
+  #hud button{pointer-events:auto;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:#eceae3;background:rgba(28,26,22,.82);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:9px 15px;cursor:pointer;transition:.3s var(--ease)}
+  #hud button:hover{background:rgba(242,163,60,.18);border-color:rgba(242,163,60,.5)}
+  #topbar{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 22px;pointer-events:none}
+  #topbar .t{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.6}
+  #zoom{display:flex;gap:6px;pointer-events:auto}
+  #zoom button{font-family:'Space Mono',monospace;font-size:14px;width:34px;height:34px;border-radius:8px;
+    background:rgba(28,26,22,.82);color:#eceae3;border:1px solid rgba(255,255,255,.14);cursor:pointer}
+  .hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;
+    font-size:12px;letter-spacing:.1em;opacity:.5;pointer-events:none;text-align:center;transition:opacity .6s;z-index:150}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="t">Moodboard · The Warm Machine</div>
+  <div id="zoom"><button data-z="-1">–</button><button data-z="1">+</button><button data-z="0">⤢</button></div>
+</div>
+
+<div id="stage">
+  <div id="canvas"></div>
+</div>
+<div class="hint" id="hint">drag to roam · scroll to zoom · jump to a cluster below ↓</div>
+
+<div id="hud"></div>
+
+<script>
+const PAL = {
+  reas:['#0a0c0e','#3DE0A0','#E85CB0','#F2A33C'],
+  swiss:['#F7F6F1','#111','#FF4477','#2233DD'],
+  ink:['#EFEBE1','#211F1A','#C8472E','#8C857A'],
+  warm:['#1a1815','#F2A33C','#E85CB0','#3DE0A0']
+};
+
+// ---- tiny art generators (return inline svg) ----
+function flow(w,h,c){let p='';for(let i=0;i<7;i++){let y=20+i*(h-40)/6;p+=`<path d="M0 ${y} C ${w*.25} ${y-50}, ${w*.5} ${y+50}, ${w} ${y-10}" fill="none" stroke="${c[1]}" stroke-width="1.4" opacity="${.5+i*.06}"/>`;}
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${p}<circle cx="${w*.7}" cy="${h*.4}" r="5" fill="${c[3]}"/></svg>`;}
+function blob(w,h,c){return `<svg class="art" viewBox="0 0 ${w} ${h}"><defs><radialGradient id="rg${w}${h}" cx="45%" cy="40%" r="65%"><stop offset="0%" stop-color="${c[1]}"/><stop offset="55%" stop-color="${c[2]}"/><stop offset="100%" stop-color="${c[0]}"/></radialGradient></defs><rect width="${w}" height="${h}" fill="${c[0]}"/><ellipse cx="${w/2}" cy="${h/2}" rx="${w*.4}" ry="${h*.42}" fill="url(#rg${w}${h})" opacity=".9"/></svg>`;}
+function net(w,h,c){const pts=[[.3,.3],[.55,.4],[.4,.62],[.7,.55],[.6,.78],[.82,.74],[.25,.7]].map(p=>[p[0]*w,p[1]*h]);
+  let l='',d='';for(let i=0;i<pts.length-1;i++){l+=`<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+1][0]}" y2="${pts[i+1][1]}" stroke="${c[1]}" stroke-width=".7" opacity=".5"/>`;}
+  pts.forEach(p=>d+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" fill="${c[1]}"/>`);
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${l}${d}</svg>`;}
+function grid(w,h,c){let g='';for(let x=30;x<w;x+=46)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="${c[2]}" stroke-width="1" opacity=".7"/>`;
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${g}<rect x="30" y="${h*.3}" width="${w*.55}" height="${h*.3}" fill="${c[1]}"/></svg>`;}
+function bars(w,h,c){let b='';const cols=[c[1],c[2],c[3]];for(let i=0;i<6;i++){b+=`<rect x="0" y="${i*h/6}" width="${(0.3+Math.abs(Math.sin(i*1.7))*0.7)*w}" height="${h/6-3}" fill="${cols[i%3]}" opacity=".92"/>`;}
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${b}</svg>`;}
+function overprint(w,h,c){return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/><circle cx="${w*.42}" cy="${h*.45}" r="${Math.min(w,h)*.32}" fill="${c[2]}" opacity=".85"/><circle cx="${w*.6}" cy="${h*.6}" r="${Math.min(w,h)*.32}" fill="${c[3]}" opacity=".85" style="mix-blend-mode:multiply"/></svg>`;}
+function reg(w,h,c){const m=(x,y)=>`<g stroke="${c[1]}" stroke-width="1.4"><line x1="${x-10}" y1="${y}" x2="${x+10}" y2="${y}"/><line x1="${x}" y1="${y-10}" x2="${x}" y2="${y+10}"/></g>`;
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${m(26,26)}${m(w-26,h-26)}<rect x="56" y="56" width="${w-112}" height="${h-112}" fill="none" stroke="${c[1]}" stroke-dasharray="4 5"/></svg>`;}
+function ring(w,h,c){return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/><circle cx="${w/2}" cy="${h/2}" r="${Math.min(w,h)*.34}" fill="none" stroke="${c[1]}" stroke-width="1.4"/><circle cx="${w/2}" cy="${h/2}" r="4" fill="${c[2]}"/></svg>`;}
+function empt(w,h,c){return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/><circle cx="${w*.72}" cy="${h*.32}" r="${Math.min(w,h)*.18}" fill="${c[2]}"/></svg>`;}
+function rams(w,h,c){return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[1]}"/><rect x="30" y="${h*.5}" width="${w-60}" height="2" fill="${c[0]}"/><rect x="30" y="${h*.5+12}" width="${(w-60)*.55}" height="2" fill="${c[3]}"/></svg>`;}
+function typ(w,h,c,t,it){return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/><text x="${w/2}" y="${h*.66}" text-anchor="middle" font-family="Georgia,serif" ${it?'font-style="italic"':''} font-size="${h*.6}" fill="${c[1]}">${t}</text></svg>`;}
+function disp(w,h,c){let p='';for(let i=0;i<5;i++){const yy=h*.5+Math.sin(i)*20;p+=`<path d="M0 ${yy} Q ${w*.5} ${yy-60+i*22} ${w} ${yy}" fill="none" stroke="${[c[1],c[2],c[3]][i%3]}" stroke-width="2" opacity=".8"/>`;}
+  return `<svg class="art" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${c[0]}"/>${p}</svg>`;}
+
+// ---- data: clusters + cards ----
+const groups = [
+  {id:'gen', n:'01', title:'Generative <em>Soul</em>', x:90, y:90,
+   d:'Computational form that feels grown, not drawn. Systems with weight, light and life — the awe of "how is this running in a browser."'},
+  {id:'str', n:'02', title:'Show the <em>Structure</em>', x:1640, y:90,
+   d:'The Swiss grid with its scaffolding left visible. Coherence as awe; the exposed seam as an act of respect to fellow makers.'},
+  {id:'mot', n:'03', title:'Identity in <em>Motion</em>', x:1010, y:1120,
+   d:'The bridge: editorial systems that move. Type, colour and grid treated as kinetic from the first sketch.'},
+  {id:'rest', n:'04', title:'Less, <em>Held Perfectly</em>', x:120, y:1180,
+   d:'Japanese & industrial restraint. Emptiness as possibility; the small idea, perfectly held. Subtraction raises the craft of what stays.'},
+  {id:'voice', n:'05', title:'The <em>Voice</em>', x:1980, y:1240,
+   d:'Editorial type as the human register over the machine — lush serif warmth carrying a computed system.'}
+];
+
+const cards = [
+  // GENERATIVE SOUL
+  {g:'gen',star:1,src:'Casey Reas',ttl:'Co-created Processing — the grammar of generative form. <a href="https://www.bitforms.art/exhibition/a-generative-movement" target="_blank" rel="noopener">A Generative Movement →</a>',art:flow(360,260,PAL.reas),x:90,y:170,w:360,rot:-2},
+  {g:'gen',star:1,src:'Codrops · WebGL/WebGPU',ttl:'Displacement, line-blur, video-scrub — the techniques, taught. <a href="https://tympanus.net/codrops/2025/11/20/behind-the-kai-design-dept-experience-webgl-line-blur-video-scrubbing-and-3d-animation/" target="_blank" rel="noopener">KAI build →</a>',art:disp(300,230,PAL.reas),x:480,y:120,w:300,rot:2.5},
+  {g:'gen',src:'Active Theory',ttl:'Andy Thelander — designing with code at scale. <a href="https://www.awwwards.com/active_theory/" target="_blank" rel="noopener">Awwwards →</a>',art:blob(280,300,PAL.reas),x:120,y:470,w:280,rot:1.5},
+  {g:'gen',src:'Bruno Simon',ttl:'Playable WebGL portfolio — Awwwards Site of the Month. <a href="https://bruno-simon.com/" target="_blank" rel="noopener">Visit →</a>',art:net(290,240,PAL.reas),x:430,y:450,w:290,rot:-3},
+  {g:'gen',src:'Norform',ttl:'A generative, grid-based design tool — system as collaborator. <a href="https://www.awwwards.com/inspiration/norform-the-generative-grid-based-design-tool" target="_blank" rel="noopener">See →</a>',art:bars(300,200,PAL.reas),x:250,y:730,w:300,rot:2},
+
+  // SHOW THE STRUCTURE
+  {g:'str',star:1,src:'Wim Crouwel · "Mr. Gridnik"',ttl:'The total grid — type built from the system itself. <a href="https://medium.com/inside-vbat/wim-crouwel-mr-gridnik-98d0d21f9b1b" target="_blank" rel="noopener">Read →</a>',art:grid(330,250,PAL.swiss),x:1660,y:170,w:330,rot:1.5},
+  {g:'str',star:1,src:'Brutalist / editorial web',ttl:'Exposed grids, raw structure as a human signal. <a href="https://tympanus.net/codrops/" target="_blank" rel="noopener">Codrops →</a>',art:reg(300,220,PAL.swiss),x:2030,y:130,w:300,rot:-2.5},
+  {g:'str',src:'Josef Müller-Brockmann',ttl:'Grid Systems in Graphic Design — the canonical manual. <a href="https://moelsandco.com/stories/josef-muller-brockmann-a-pioneer-of-swiss-graphic-design" target="_blank" rel="noopener">Read →</a>',art:grid(290,300,PAL.swiss),x:1700,y:470,w:290,rot:-1.5},
+  {g:'str',src:'RISOMA · riso print',ttl:'Overprint & misregistration — DIY editorial joy. <a href="https://fontsinuse.com/uses/69739/risoma-riso-printing-exhibition" target="_blank" rel="noopener">Fonts In Use →</a>',art:overprint(300,260,PAL.swiss),x:2040,y:460,w:300,rot:3},
+
+  // IDENTITY IN MOTION
+  {g:'mot',src:'Studio Dumbar / DEPT®',ttl:'Motion as a fundament of identity — visual + creative coding. <a href="https://studiodumbar.com/work" target="_blank" rel="noopener">Work →</a>',art:bars(330,230,PAL.warm),x:1010,y:1200,w:330,rot:-2},
+  {g:'mot',src:'Studio Dumbar · DEMO',ttl:'The world\'s largest design-in-motion festival. <a href="https://studiodumbar.com/work/demo-2025" target="_blank" rel="noopener">DEMO 2025 →</a>',art:disp(300,200,PAL.warm),x:1380,y:1230,w:300,rot:2.5},
+  {g:'mot',src:'Tendril',ttl:'Generative design & animation — organic systems, rendered. <a href="https://www.awwwards.com/inspiration/tendril-design-animation-2" target="_blank" rel="noopener">Reel →</a>',art:blob(300,250,PAL.warm),x:1180,y:1450,w:300,rot:1.5},
+
+  // LESS, HELD PERFECTLY
+  {g:'rest',star:1,src:'Kenya Hara · MUJI',ttl:'"Emptiness is itself a possibility of being filled." <a href="https://metropolismag.com/projects/kenya-hara-breaks-down-muji-unique-appeal/" target="_blank" rel="noopener">Read →</a>',art:empt(320,240,PAL.ink),x:120,y:1260,w:320,rot:2},
+  {g:'rest',star:1,src:'nendo · Oki Sato',ttl:'Industrial restraint — the small idea, perfectly held. <a href="https://www.nendo.jp/en/" target="_blank" rel="noopener">Studio →</a>',art:ring(280,280,PAL.ink),x:470,y:1300,w:280,rot:-2.5},
+  {g:'rest',src:'Dieter Rams · Vitsœ',ttl:'Less, but better — ten principles of removal. <a href="https://www.vitsoe.com/us/about/good-design" target="_blank" rel="noopener">Read →</a>',art:rams(300,220,PAL.ink),x:200,y:1560,w:300,rot:1},
+  {g:'rest',src:'Wabi-sabi · 間 (ma)',ttl:'Beauty in imperfection and the meaningful gap. <a href="https://www.interactiongreen.com/kenya-hara/" target="_blank" rel="noopener">On emptiness →</a>',art:empt(270,200,PAL.ink),x:540,y:1610,w:270,rot:-1.5},
+
+  // THE VOICE
+  {g:'voice',star:1,src:'Pangram Pangram',ttl:'Editorial New — mid-90s echoes, lush serif legacy. <a href="https://pangrampangram.com/blogs/journal/best-headline-fonts" target="_blank" rel="noopener">Headline fonts →</a>',art:typ(320,240,PAL.ink,'Aa',true),x:1990,y:1320,w:320,rot:-2},
+  {g:'voice',src:'Klim Type Foundry',ttl:'Kris Sowersby — "a thing well made." <a href="https://klim.co.nz/fonts/founders-grotesk/" target="_blank" rel="noopener">Founders Grotesk →</a>',art:typ(290,220,PAL.swiss,'Aa',false),x:2360,y:1300,w:290,rot:2.5},
+  {g:'voice',src:'Gambarino · display serif',ttl:'Dramatic ball terminals, Art Nouveau echo — for the awe headline.',art:typ(280,260,PAL.warm,'Gg',true),x:2090,y:1580,w:280,rot:1.5}
+];
+
+const canvas = document.getElementById('canvas');
+
+// thesis card (center)
+const thesis = document.createElement('div');
+thesis.className='thesis';
+thesis.style.left='1060px'; thesis.style.top='560px';
+thesis.innerHTML = `<div class="tag">The synthesis · your 7 picks, read</div>
+  <h1>The <em>Warm</em> Machine</h1>
+  <p>A generative system — disciplined like Swiss print, calm like Japanese industrial design, and voiced in a lush editorial serif. Awe from a thing that behaves like matter; curiosity from a structure you're invited to read and perturb.</p>
+  <div class="legend"><span class="star" style="color:#F2A33C">★</span> = your pick &nbsp;·&nbsp; others = explored adjacents</div>`;
+canvas.appendChild(thesis);
+
+// groups
+groups.forEach(g=>{
+  const el=document.createElement('div');el.className='group';el.dataset.gid=g.id;
+  el.style.left=g.x+'px';el.style.top=g.y+'px';
+  el.innerHTML=`<div class="gn">Cluster ${g.n}</div><div class="gt">${g.title}</div><div class="gd">${g.d}</div>`;
+  canvas.appendChild(el);
+});
+
+// cards
+cards.forEach(c=>{
+  const el=document.createElement('div');el.className='card';el.dataset.gid=c.g;
+  el.style.left=c.x+'px';el.style.top=c.y+'px';el.style.width=c.w+'px';
+  el.style.transform=`rotate(${c.rot}deg)`;
+  el.innerHTML=`${c.art}<div class="cap"><div class="src">${c.star?'<span class="star">★</span>':''}${c.src}</div><div class="ttl">${c.ttl}</div></div>`;
+  canvas.appendChild(el);
+});
+
+// ---- pan & zoom ----
+let tx=-40, ty=-20, scale=.62, isDown=false, sx, sy, moved=false;
+const stage=document.getElementById('stage');
+function apply(){canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
+apply();
+stage.addEventListener('pointerdown',e=>{isDown=true;moved=false;sx=e.clientX-tx;sy=e.clientY-ty;stage.classList.add('drag');});
+window.addEventListener('pointermove',e=>{if(!isDown)return;tx=e.clientX-sx;ty=e.clientY-sy;moved=true;apply();});
+window.addEventListener('pointerup',()=>{isDown=false;stage.classList.remove('drag');});
+stage.addEventListener('wheel',e=>{e.preventDefault();const f=e.deltaY<0?1.1:1/1.1;const ns=Math.min(1.6,Math.max(.32,scale*f));
+  const rx=(e.clientX-tx)/scale, ry=(e.clientY-ty)/scale; scale=ns; tx=e.clientX-rx*scale; ty=e.clientY-ry*scale; apply();
+  document.getElementById('hint').style.opacity=0;},{passive:false});
+
+// fly to a cluster
+function flyTo(gid){
+  const g=groups.find(x=>x.id===gid);
+  scale=.78;
+  tx = window.innerWidth/2 - (g.x+260)*scale;
+  ty = window.innerHeight/2 - (g.y+200)*scale;
+  canvas.style.transition='transform .8s cubic-bezier(.22,.61,.36,1)';
+  apply();
+  setTimeout(()=>canvas.style.transition='',850);
+  document.getElementById('hint').style.opacity=0;
+}
+function flyHome(){scale=.62;tx=-40;ty=-20;canvas.style.transition='transform .8s cubic-bezier(.22,.61,.36,1)';apply();setTimeout(()=>canvas.style.transition='',850);}
+
+// HUD
+const hud=document.getElementById('hud');
+hud.innerHTML=`<button data-fly="home">◎ Overview</button>`+groups.map(g=>`<button data-fly="${g.id}">${g.n} ${g.title.replace(/<[^>]+>/g,'')}</button>`).join('');
+hud.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const f=b.dataset.fly;f==='home'?flyHome():flyTo(f);});
+
+// zoom buttons
+document.getElementById('zoom').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  const z=+b.dataset.z; if(z===0){flyHome();return;}
+  const f=z>0?1.18:1/1.18; const ns=Math.min(1.6,Math.max(.32,scale*f));
+  const cx=window.innerWidth/2,cy=window.innerHeight/2; const rx=(cx-tx)/scale,ry=(cy-ty)/scale;
+  scale=ns;tx=cx-rx*scale;ty=cy-ry*scale;apply();});
+
+// prevent link clicks after a drag
+canvas.addEventListener('click',e=>{if(moved){e.preventDefault();}},true);
+setTimeout(()=>document.getElementById('hint').style.opacity=0,4500);
+</script>
+</body>
+</html>

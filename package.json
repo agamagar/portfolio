@@ -1,0 +1,30 @@
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:all": "agentation-mcp server & vite",
+    "serve": "agentation-mcp server & vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:figma": "node tools/figma-fidelity/check.mjs"
+  },
+  "dependencies": {
+    "@rive-app/react-canvas": "^4.29.1",
+    "@tailwindcss/vite": "^4.3.1",
+    "agentation-mcp": "^1.2.0",
+    "clsx": "^2.1.1",
+    "motion": "^12.40.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "agentation": "latest",
+    "vite": "^5.4.10"
+  }
+}

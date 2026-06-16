@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>Moodboard — The Warm Machine (Pinterest)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ease:cubic-bezier(.22,.61,.36,1)}
+  html,body{height:100%;overflow:hidden;background:#161512;color:#eceae3;font-family:'Space Mono',monospace}
+  #stage{position:fixed;inset:0;cursor:grab;
+    background:radial-gradient(circle at 1px 1px,rgba(255,255,255,.045) 1px,transparent 0) 0 0/26px 26px,
+      radial-gradient(130% 120% at 18% 0%,#23211a,#161512 60%,#0e0d0b);}
+  #stage.drag{cursor:grabbing}
+  #canvas{position:absolute;top:0;left:0;width:2700px;height:11200px;transform-origin:0 0;will-change:transform}
+
+  .block{position:absolute;width:560px}
+  .block .gn{font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.45}
+  .block .gt{font-family:'Fraunces',serif;font-weight:340;font-size:38px;letter-spacing:-.01em;line-height:1.02;margin:8px 0 10px}
+  .block .gt em{font-style:italic}
+  .block .gd{font-size:11.5px;letter-spacing:.02em;line-height:1.62;opacity:.55;max-width:48ch;margin-bottom:14px}
+  .block .seeds{font-size:10px;letter-spacing:.08em;margin-bottom:18px;color:#F2A33C;opacity:.85}
+  .block .seeds.exp{color:#9fd8c4}
+
+  .masonry{columns:2;column-gap:14px}
+  .pin{break-inside:avoid;margin-bottom:14px;border-radius:10px;overflow:hidden;display:block;position:relative;
+    border:1px solid rgba(255,255,255,.08);background:#1d1b17;text-decoration:none;color:inherit;
+    transition:transform .4s var(--ease),box-shadow .4s var(--ease);}
+  .pin:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.55);z-index:20}
+  .pin img{display:block;width:100%;height:auto;min-height:110px;background:#262420}
+  .pin.failed{min-height:140px;display:flex;align-items:center;justify-content:center;padding:18px;text-align:center}
+  .pin.failed img{display:none}
+  .pin.failed::after{content:"Open this pin \2197";font-size:11px;letter-spacing:.08em;opacity:.7;color:#9fd8c4}
+  .pin .tag{position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:4px 8px;border-radius:6px;opacity:0;transition:opacity .3s}
+  .pin:hover .tag{opacity:1}
+
+  .thesis{position:absolute;width:560px;padding:30px 32px;border-radius:16px;
+    background:linear-gradient(150deg,#2a2720,#1a1815);border:1px solid rgba(242,163,60,.3);
+    box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .thesis .tagl{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#F2A33C;opacity:.9}
+  .thesis h1{font-family:'Fraunces',serif;font-weight:330;font-size:46px;line-height:1.02;letter-spacing:-.02em;margin:14px 0 16px}
+  .thesis h1 em{font-style:italic}
+  .thesis p{font-size:12.5px;line-height:1.7;opacity:.84;letter-spacing:.01em}
+  .thesis .legend{margin-top:18px;font-size:10px;letter-spacing:.06em;opacity:.6;line-height:1.9}
+  .thesis .legend b{color:#F2A33C;font-weight:400}
+  .thesis .legend i{color:#9fd8c4;font-style:normal}
+
+  #topbar{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:16px 22px;pointer-events:none}
+  #topbar .t{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.6}
+  #zoom{display:flex;gap:6px;pointer-events:auto}
+  #zoom button{font-size:14px;width:34px;height:34px;border-radius:8px;background:rgba(28,26,22,.82);color:#eceae3;border:1px solid rgba(255,255,255,.14);cursor:pointer}
+  #hud{position:fixed;left:0;right:0;bottom:0;z-index:200;display:flex;gap:6px;justify-content:center;padding:12px;pointer-events:none;flex-wrap:wrap;max-height:128px;overflow:hidden}
+  #hud button{pointer-events:auto;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#eceae3;background:rgba(28,26,22,.82);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 11px;cursor:pointer;transition:.3s var(--ease)}
+  #hud button:hover{background:rgba(242,163,60,.18);border-color:rgba(242,163,60,.5)}
+  .hint{position:fixed;top:22px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.1em;opacity:.5;pointer-events:none;transition:opacity .6s;z-index:150}
+</style>
+</head>
+<body>
+<div id="topbar"><div class="t">Moodboard · The Warm Machine · 17 directions · ~175 pins</div>
+  <div id="zoom"><button data-z="-1">–</button><button data-z="1">+</button><button data-z="0">⤢</button></div></div>
+<div id="stage"><div id="canvas"></div></div>
+<div class="hint" id="hint">drag to roam · scroll to zoom · click any pin to open it on Pinterest · jump via buttons below</div>
+<div id="hud"></div>
+
+<script>
+const X=[60,720,1380,2040], Y=[150,2350,4550,6750,8950];
+const groups = [
+  {id:'gen',n:'01',title:'Generative <em>Soul</em>',x:X[1],y:Y[0],seeds:'★ Casey Reas · Codrops',
+   d:'Computational form that feels grown, not drawn — systems with weight, light and life.',
+   pins:[['0d/a7/98/0da798946eda2356b1cfa040c9148997','10062799164392862'],['d5/d3/3c/d5d33c3dc6085495e0d8bee2c62faeeb','17240411070550471'],['63/95/15/63951592d36c7c1ce3b8387bf04a622e','3307399720697642'],['e7/83/5b/e7835b49a1f9bf8442a7c3f946c15585','2392606049169401'],['58/dc/3f/58dc3f61e02b67125cc5fa8a6bab6d6e','914862421840920'],['78/fa/9f/78fa9f7914faf8de88feeb65bd306f2a','1900024840027389'],['71/a2/73/71a273dc1f69c55730103481058e5bbf','9288742973611058'],['6f/04/73/6f04737d9075cc83077d57be10c7d250','10344274147031575'],['11/7f/71/117f7169cd502698170fc037991f5c76','1337074890055622'],['d4/48/8f/d4488f8695f7bcd8665e280b538a1637','492649950608834'],['02/a9/b6/02a9b62830028b98f020827ba4bf1fdf','1196337404339151']]},
+  {id:'str',n:'02',title:'Show the <em>Structure</em>',x:X[2],y:Y[0],seeds:'★ Wim Crouwel · editorial-brutalist',
+   d:'The Swiss grid with its scaffolding visible. Coherence as awe; the exposed seam as respect.',
+   pins:[['c5/08/74/c5087476e806e9c53cf74fca0881a036','211174978606514'],['a6/f1/e1/a6f1e1e0aea38b332b9a0a033e9ca288','2674081024710800'],['5b/1b/68/5b1b6893d5616863f4f651814a6a3b13','45247171253038007'],['ad/35/68/ad35688c2a9ce7b2cfd68811999af818','7881368095613463'],['73/9d/21/739d21042c0b481252645d57f9e8edf1','19844054605553457'],['65/6b/6c/656b6c6d3a2f5efed4090b085d165f45','1688918606755990'],['18/e3/7c/18e37cf32d71d32a743ec3551dbf8815','351912466132844'],['ae/a1/0c/aea10c08a2dd6c89892fe709035a8a14','4855512094466949'],['9c/2e/b2/9c2eb20e262e6700dcde35dc4a3b28c1','17451517300850347'],['f5/4b/6a/f54b6a56dd468e064455c51c13e3909b','1759287348237386'],['6a/e4/9c/6ae49c491e50f6912da0b6e40eca0c6d','5840674511688675']]},
+  {id:'mot',n:'03',title:'Identity in <em>Motion</em>',x:X[3],y:Y[0],seeds:'the bridge between alive & still',
+   d:'Editorial systems that move — type, colour and grid treated as kinetic from the first sketch.',
+   pins:[['e3/cc/17/e3cc1773336fc39387890682c56c15ab','774124931450788'],['8d/6f/f5/8d6ff5440305b74b623dbb8cb3fa3d25','1688918606817299'],['37/8e/15/378e15194ffb34154458c56afc90a0bf','351912465186073'],['bb/ec/96/bbec96419e99f47fb28c4c69b9865f88','1618549864035593'],['cb/ed/74/cbed748794a095b298b21bc520f4d60d','2040762324386793'],['b7/21/18/b72118bedcaa401a7f5f1aeae5d23bc4','3025924746798603'],['30/86/81/3086816ae7c6d0c861da354605137dcf','139682025938841491'],['66/ff/4e/66ff4e173bc0c03c46c816ee0b297543','5277724559238675'],['88/e5/f4/88e5f481e8eda2221e22881dc04b203e','7177680652960894'],['a0/72/c8/a072c8fd749c09cce5800e3debe629eb','2181499817237366'],['bc/d7/9e/bcd79ebb8381dcc4e37a1f3b8682c8b9','16607092368512088'],['bd/67/86/bd6786132858c753dfe76d254b40fea2','2322237303256280']]},
+  {id:'rest',n:'04',title:'Less, <em>Held Perfectly</em>',x:X[0],y:Y[1],seeds:'★ Kenya Hara · nendo',
+   d:'Japanese & industrial restraint. Emptiness as possibility; the small idea, perfectly held.',
+   pins:[['c8/7a/b0/c87ab0f30cb52dfb6e0448a253d803bb','53621051809531918'],['29/46/77/2946772704e6250325851437dcb0b37d','435230751511574881'],['0e/f6/7b/0ef67b256e848d9a0dfabea6d8062364','68609594318686790'],['f5/5a/4e/f55a4e538ece803b60e65ca2c9f98f41','265219865550280636'],['a1/3d/d7/a13dd777adb96ab44d2bfea0895ed462','12384967713087163'],['59/36/07/5936074a3d3832abcac1b6394003c33f','422281207665102'],['6c/2e/e3/6c2ee375b177661e61e6cca3aa04939f','703756188681140'],['b4/63/88/b463884969faafbec5df93369b4cbee0','1829656086999588'],['c1/08/ca/c108cab1bcd31155cfe1414c3751e0b7','388224430362553364'],['a7/ea/b1/a7eab18f6485fcc8bb01ba8b37f63a91','3025924739561751'],['d3/5b/58/d35b581c5077d35812c757ea5f69638d','64528207157045830'],['39/67/9b/39679b7b9b1106c6a5ea8bcccf51c0f5','2603712264868391']]},
+  {id:'voice',n:'05',title:'The <em>Voice</em>',x:X[1],y:Y[1],seeds:'★ Pangram Pangram',
+   d:'Editorial type as the human register over the machine — lush serif warmth carrying a computed system.',
+   pins:[['64/6c/90/646c905f4e4b068837ba229036aca399','2674081026420299'],['fd/8b/e8/fd8be817400d93e31231f8f5ca0ce10d','8725793025912802'],['f2/45/91/f24591eb02ab0ba14b7f44df20bb9538','4292562140904051'],['c8/14/04/c81404501f9f83c3a8c498270d2ae296','2955556002551947'],['44/6d/95/446d95737638475aa977166fc83d15c1','30680841208990303'],['39/97/bb/3997bbc73b79b3d9207604988aaa6d93','422281212769458'],['76/ca/4c/76ca4cfc29be5c3baa8675bf67eda428','107875353571123592'],['35/28/e7/3528e7eccfad4740d7c0257db4d87dd0','956311302113350397'],['bd/5b/34/bd5b34f6b8a996e039a0c5ab5cba1c31','13299761396889785'],['f7/81/da/f781dad375ff224081eec0852eb203ab','774124930632365'],['ed/6d/67/ed6d67f7590e54325b7b303385e1d3d0','2744449770164814'],['64/ba/36/64ba36f43bd4e150867da4725a12ba17','422281211969430']]},
+  {id:'light',n:'06',title:'Light &amp; <em>Atmosphere</em>',x:X[2],y:Y[1],exp:1,seeds:'exploration · the awe spike',
+   d:'Cinematic depth. Glass, glow, volumetric light — the screen as a space with air in it, not a flat plane.',
+   pins:[['34/5b/11/345b117a6115875b3cc4b72e337934c1','238550111507174289'],['a3/ed/8b/a3ed8b7b0816569510af13870e06ec61','351912467045136'],['97/57/fe/9757fec536222f307ce92e361130a483','3799980929869770'],['5b/f4/a8/5bf4a869e7dcab3be42a940d051a460a','6685099441560492'],['16/1f/fa/161ffac7279465cda56f45b52584be63','333125703709470566'],['29/c7/41/29c741deb42edf6d976fceecdd07c07c','382946774589611373'],['ca/6d/cb/ca6dcbc10be94a1a5e58bcdb63ae8f9f','25473554138465435'],['93/aa/b4/93aab46250dab2db3dd9c3c4dce8e219','493566440435929282'],['84/bf/2e/84bf2e50772201a3cb5b0e2d5c213779','31032684928876138'],['60/e3/8a/60e38abfb4324899e7197ca5bd322eb5','844493676476232'],['01/b0/fd/01b0fd1634c44962e928ea1f28f2dae2','5488830792716315'],['b3/8a/29/b38a291b6bde0fda34e200ad083b5830','5699937024873174']]},
+  {id:'colour',n:'07',title:'Colour &amp; <em>Material</em>',x:X[3],y:Y[1],exp:1,seeds:'exploration · palette as argument',
+   d:'Restrained warmth with one electric note; material studies that make pixels feel like substance.',
+   pins:[['2a/37/21/2a37215883e14c7da83f008a8cc42162','914862421760323'],['1c/e8/59/1ce859c14b9d6e67efa5dac9b35b127d','3448137210855117'],['c5/a8/c8/c5a8c859bd5ebe7f68a5fbc30a2e7630','211174978755327'],['85/7a/32/857a32d7b00d9e527c9958afe7ae9029','211174979133229'],['f0/c9/14/f0c91472c3694055daa1e7a7b414c026','3307399721439153'],['ec/79/53/ec7953af54cdc25a873855e895755356','211174979208712'],['11/5c/32/115c324f02698538fc0295f2c2f91556','211174978133028'],['19/c3/37/19c337c2f6e86939e96b5ea07cbb2931','1266706141867502'],['a7/c0/d5/a7c0d5d99beb8d9bb9089fcaf69136fd','4574037117180353'],['e3/41/91/e34191a321e78b83911265512db0e89e','211174978745245'],['fd/a8/e2/fda8e2ea939ec93dd7eaadc452d229e0','3237030978745390'],['29/30/06/29300674b4e0db6df5cdf1df918433cb','211174978820803']]},
+  {id:'thresh',n:'08',title:'The <em>Threshold</em>',x:X[0],y:Y[2],exp:1,seeds:'exploration · the first three seconds',
+   d:'Loaders and intros that earn attention before content arrives — where the awe spike actually lives.',
+   pins:[['13/47/13/134713039afeba07f583bb23bc4c3bf6','733594226824672108'],['fc/26/71/fc2671faa2dc36067a5d7ba3ffb6fecd','136093219988097523'],['08/8c/b6/088cb6057b2a0fbd928a9d0244140ed6','3307399722142117'],['08/8d/9e/088d9ea4fce4a19ceb6b2ba2425f295e','8303580558077238'],['b8/71/76/b8717641f46cdfdced2c86e984f07c11','253397916529715016'],['8d/52/80/8d5280cb228994532d1183ff2ad91dc0','774124931580933'],['6b/b2/33/6bb2337f779cb70518ec997d636a1da5','492649954698046'],['50/82/89/508289aadf47366b88dbcea65c53866d','38491771812657039'],['24/46/ca/2446ca401165e97ad8cc8d1077ad28d6','297026537947207504'],['8e/eb/41/8eeb410fc3530832d84fe8adf1a5ce31','34691859628447693'],['23/39/10/23391049e08d2b4de3db0a6c386053fc','304837468551982195'],['6a/8e/8f/6a8e8f30684b748e74a2e6cb223a1964','1548181185961758']]},
+  {id:'cursor',n:'09',title:'Cursor &amp; <em>Craft</em>',x:X[1],y:Y[2],exp:1,seeds:'exploration · the detail the 10% screenshot',
+   d:'Micro-interactions, custom cursors, hover states correct in ways most won\'t notice — and your audience will.',
+   pins:[['6f/a9/11/6fa911cee90900ef054fbb51e18887db','11118330334008996'],['30/4d/28/304d28371c250d542d813e3754d79a51','25403185394756318'],['07/44/08/074408c60eb47b14169477d9465d6551','914862422150194'],['b3/6a/3e/b36a3e23ceed5e0048ce6b962d5cf1ec','6192518232909448'],['1b/c0/4d/1bc04db327a13277cf27b7f36337ebdd','8303580558777104'],['33/10/ac/3310ac0c837eb9a3b36d0efaec5a5441','2674081024930353'],['1f/24/96/1f2496cb2b81cf801ae7f1639b4d1a46','281263939222834119'],['45/72/9c/45729c0063185eba4cc4f950e05a2bcf','16395986137983226'],['b8/20/a3/b820a30bb7c3f99a32f76b102fde55b1','7951736832925624'],['cb/1f/11/cb1f111acac593713170f975128e9f41','24840235440772874'],['51/12/c3/5112c37b92a1730891ac2bc3c8d0dcaf','1040683426372713502'],['a3/21/1b/a3211badee2765178a877fcd5867f810','2674081025003804']]},
+  {id:'typeimg',n:'10',title:'Type as <em>Image</em>',x:X[2],y:Y[2],exp:1,seeds:'exploration · when the type IS the picture',
+   d:'Expressive display typography carrying the whole composition — the loud cousin of The Voice.',
+   pins:[['64/ed/af/64edafe3cd6383c4020c16f0176cabbf','48061921671915573'],['33/76/02/337602d655a6bc94608f8b8a1b6cfaef','5348093304573680'],['17/1c/b3/171cb31f0439557faa7d147b97f53727','1196337397024846'],['79/3e/00/793e00f6f71dbeade4309ddf0d301501','10696117860365068'],['7a/ea/cd/7aeacda13921f39293a78648ac759fa5','17662623534105305'],['53/be/2b/53be2b63420caf7a55827ad5c400e788','6966574421784420'],['92/37/f9/9237f9d656b49501ea4b332255edb90e','4011087181582383'],['9a/96/df/9a96dfb5e341a540a89590ee199ab549','16818198602829006'],['e0/d6/13/e0d6139c58108fc1031a0d4cdcef22a2','3307399722424911'],['ea/a5/70/eaa5707ed985ab8c4e571f4af2843df7','1900024839551281'],['5e/09/af/5e09afd7df477037306f51f62147bfe5','2322237302980665'],['86/24/ad/8624ad579ff9041a658d433f011bf673','8373949303230582']]},
+  {id:'texture',n:'11',title:'Texture &amp; <em>Grain</em>',x:X[3],y:Y[2],exp:1,seeds:'exploration · the human hand on the machine',
+   d:'Grain, noise, riso, paper tooth — analog warmth laid over a computed system so it never feels sterile.',
+   pins:[['5e/b5/5b/5eb55b275d95b3e52c27dfc5ac686571','9429480460415049'],['49/6c/ee/496cee237cbbd94aa5dcb166356a732d','226235581275163926'],['43/3b/f2/433bf26d9c6f08fff4ea14eb4134e3c9','1055599907552835'],['5d/b0/ee/5db0ee0f1ebf966ba60e27ded4a63974','68748892556'],['df/41/68/df41681060bd33176400d419600bfc8a','218283913183086350'],['66/24/84/662484f5899c2c448f3ac74ba54d8464','4594234664263640704'],['f6/5e/a2/f65ea21e5321e8a4e335ee3d2cee19f7','6192518233262851'],['f9/0f/96/f90f96c54b94fb5a399b8bcad9fc0c4d','12666442697273649'],['31/27/84/312784999bfbefd001203fbee4418b3e','68748892555'],['04/fa/e7/04fae73d6f61050c5e3265cee30aa89c','51369251996054657'],['2f/46/ba/2f46ba5f88f2af13461524b14e8246a3','4785143351476774'],['33/62/8b/33628bc48726a533a541816116c9fedb','9077636744630826']]},
+  {id:'archive',n:'12',title:'Archive &amp; <em>Index</em>',x:X[0],y:Y[3],exp:1,seeds:'exploration · how the body of work is shown',
+   d:'The catalogue as craft. Index views, dense grids, the pleasure of a well-ordered body of work — the portfolio\'s spine.',
+   pins:[['34/61/06/346106edac441cb80324b78e5c418dbb','27936460194578488'],['eb/d2/8f/ebd28f4f9f6fd3b3a598641910b87627','31454897394110225'],['a2/ae/03/a2ae030568a396c054ca730e26a37428','568016571767705313'],['e7/46/64/e74664efeb5b15c2a52b544b150fb4e8','27936460194214075'],['f4/5c/45/f45c456cb86c52d0b8213590467c0860','90916486223847731'],['85/43/97/854397c27063b9cfe599bd8906b8f7e9','633387444448751'],['da/54/04/da54043af9ae5d6f1bb4a3dc24ae2992','13299761396911085'],['dc/5c/f5/dc5cf50580b887ad51a9fe9935473152','3448137210773767']]},
+  {id:'collage',n:'13',title:'Collage &amp; <em>Mixed Media</em>',x:X[1],y:Y[3],exp:1,seeds:'exploration · the human cut-and-paste',
+   d:'Torn edges, layered scraps, analog assembly — friction and hand pushing against the clean system.',
+   pins:[['ed/b7/54/edb7543e7c43754c6837ef21bccd7ab1','1266706139443050'],['2d/8c/ca/2d8ccae1e65626ce4bae50e45163660d','1688918606690388'],['7a/00/81/7a0081d0d7f5543e9b22186fcee3f738','1477812375084548'],['1c/3c/05/1c3c05decc38043416b868dd5ea408b1','39195459253934659'],['cf/23/0c/cf230ca5ad1fa5c837f1953c24d21ab5','28217935162143956'],['e9/5e/a1/e95ea15cbbe5aef43b5d7113ece802f0','14214555070018065'],['1d/23/67/1d2367523c86bc1e76699072db0244fe','2674081026146687'],['ab/39/09/ab3909fbc7bdfe1edd352124948aaf1c','3448137209416145']]},
+  {id:'dimtype',n:'14',title:'Dimensional <em>Type</em>',x:X[2],y:Y[3],exp:1,seeds:'exploration · letters with mass',
+   d:'Type that occupies space — extruded, rendered, lit. Awe through letterforms you could walk around.',
+   pins:[['30/4f/25/304f25a5ad5e55ed1cee6a6de8a76401','13018286423517935'],['16/b4/41/16b4414954d7ab118bf835c8233b842b','2955556003725225'],['88/54/3f/88543f4ee56446e0d1e6009a7897a528','45458277484564538'],['1e/8d/7b/1e8d7b301cd47e7d1b98166cb456ba0e','12525705209316852'],['db/80/90/db80907a2729278aff88a1a4e50ffa36','4011087178374740'],['e1/ea/5f/e1ea5f6af3777ec04b6875dddd866262','26951297767152192'],['2b/d7/bb/2bd7bbe2b2bf6894f640a7b9e94094bd','12525705209314603'],['30/d7/1a/30d71a889425c9c1b45fa0413df929dd','25825397860490195']]},
+  {id:'imagemaking',n:'15',title:'Image-<em>Making</em>',x:X[3],y:Y[3],exp:1,seeds:'exploration · art direction of the image',
+   d:'Photography and styling as authored, not stock. The frame composed with the same care as the grid.',
+   pins:[['1b/f9/72/1bf9723dcfb1b5b7006e340cce828089','281543726901784'],['bd/bb/8a/bdbb8a349b85c5e39b8511a04388716a','4785143352152364'],['82/08/36/820836b8810effe7e72041244b2080ab','3377768468592107'],['0c/f2/97/0cf29739e5da683c27bf2de09750eaeb','4362930884501986'],['4c/6e/bb/4c6ebbcc521a432784146d64bf56e10e','1829656095714521'],['f1/6a/29/f16a29a65065f7db6161975855184b0c','85357355435162895'],['a9/2e/5a/a92e5a2c57c3b1625759f8ca391dd7ed','18366310976885959']]},
+  {id:'mono',n:'16',title:'Monochrome &amp; <em>Contrast</em>',x:X[0],y:Y[4],exp:1,seeds:'exploration · ink and paper, nothing else',
+   d:'Black, white, and the tension between. Maximum drama from minimum palette — restraint as power.',
+   pins:[['ca/49/24/ca49245e27dbfb74ee302426cc412126','10203536652346955'],['96/f0/00/96f000fb460434cf021aa6efca16bf6f','351912465803329'],['f9/02/26/f90226eb804c618c99ae84a5f938d62e','1266706141596202'],['ce/0a/07/ce0a07b7387cf53dc39cc5cd8e18563d','1900024839573885'],['d9/3f/a7/d93fa70b07b12620669955345afd7bdd','1125968699034984'],['a0/1e/fe/a01efe1cda96ece7176dff5c882f40c4','89790586316201741'],['38/9d/f7/389df77a5812cb840f3676247c4c67d2','8303580559399844'],['da/e6/c6/dae6c67745c4422f2239091fe19b051b','914862419072069']]},
+  {id:'scroll',n:'17',title:'Scroll &amp; <em>Narrative</em>',x:X[1],y:Y[4],exp:1,seeds:'exploration · the work as a journey',
+   d:'Scroll as storytelling device. Sequence, pacing, reveal — how a visitor is walked through the work.',
+   pins:[['5b/7a/59/5b7a59a613ecf167f89b28e9eb1e1650','33917803438544841'],['f3/2c/04/f32c0403e92a822268271dd8db844b26','118008452732535808'],['41/ff/cb/41ffcb0fa985420c1b6c829eb9f4c895','164803667599731643'],['ad/97/4c/ad974cd11da64994af89bf3b8266631f','24558760465506715'],['76/e4/7d/76e47db5af48b666d9f9d2efd531bb29','2322237303308767'],['38/5a/2e/385a2e268960ec3541cc8472dde1e163','153403931052696315'],['12/85/38/128538f28036d48018736a252b128592','350928995988064886']]}
+];
+
+const canvas=document.getElementById('canvas');
+const th=document.createElement('div');th.className='thesis';th.style.left=X[0]+'px';th.style.top=Y[0]+'px';
+th.innerHTML=`<div class="tagl">The synthesis · your picks, expanded</div>
+  <h1>The <em>Warm</em> Machine</h1>
+  <p>A generative system — disciplined like Swiss print, calm like Japanese industrial design, voiced in a lush editorial serif, warmed by analog grain. Awe from a thing that behaves like matter; curiosity from a structure you're invited to read and perturb.</p>
+  <div class="legend"><b>★</b> grown from your 7 picks &nbsp;·&nbsp; <i>exploration</i> = adjacent territory pulled to widen the world<br>17 directions · ~175 real pins from Pinterest · click any to open the source</div>`;
+canvas.appendChild(th);
+
+groups.forEach(g=>{
+  const b=document.createElement('div');b.className='block';b.dataset.gid=g.id;
+  b.style.left=g.x+'px';b.style.top=g.y+'px';
+  const pins=g.pins.map(p=>`<a class="pin" href="https://www.pinterest.com/pin/${p[1]}/" target="_blank" rel="noopener">
+      <img decoding="async" referrerpolicy="no-referrer" src="https://i.pinimg.com/736x/${p[0]}.jpg" alt="${g.id} pin"
+        onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://i.pinimg.com/474x/${p[0]}.jpg';}else{this.parentNode.classList.add('failed');}">
+      <span class="tag">Open pin ↗</span></a>`).join('');
+  b.innerHTML=`<div class="gn">Cluster ${g.n}</div><div class="gt">${g.title}</div>
+    <div class="gd">${g.d}</div><div class="seeds${g.exp?' exp':''}">${g.seeds}</div>
+    <div class="masonry">${pins}</div>`;
+  canvas.appendChild(b);
+});
+
+const stage=document.getElementById('stage');
+let tx=60, ty=70, scale=.5, isDown=false, sx, sy, moved=false;
+function apply(){canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
+function fitW(){scale=Math.max(.2,Math.min(.62,(innerWidth-80)/2700));tx=(innerWidth-2700*scale)/2;ty=70;apply();}
+fitW();
+stage.addEventListener('pointerdown',e=>{isDown=true;moved=false;sx=e.clientX-tx;sy=e.clientY-ty;stage.classList.add('drag');});
+window.addEventListener('pointermove',e=>{if(!isDown)return;tx=e.clientX-sx;ty=e.clientY-sy;moved=true;apply();});
+window.addEventListener('pointerup',()=>{isDown=false;stage.classList.remove('drag');});
+stage.addEventListener('wheel',e=>{e.preventDefault();const f=e.deltaY<0?1.1:1/1.1;const ns=Math.min(1.7,Math.max(.12,scale*f));
+  const rx=(e.clientX-tx)/scale,ry=(e.clientY-ty)/scale;scale=ns;tx=e.clientX-rx*scale;ty=e.clientY-ry*scale;apply();
+  document.getElementById('hint').style.opacity=0;},{passive:false});
+
+function flyTo(gid){const g=groups.find(x=>x.id===gid);scale=.8;
+  tx=innerWidth/2-(g.x+280)*scale;ty=140-g.y*scale;
+  canvas.style.transition='transform .8s cubic-bezier(.22,.61,.36,1)';apply();
+  setTimeout(()=>canvas.style.transition='',850);document.getElementById('hint').style.opacity=0;}
+
+const hud=document.getElementById('hud');
+hud.innerHTML=`<button data-fly="top">◎ Fit width</button>`+groups.map(g=>`<button data-fly="${g.id}">${g.n} ${g.title.replace(/<[^>]+>/g,'').replace('&amp;','&')}</button>`).join('');
+hud.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;b.dataset.fly==='top'?fitW():flyTo(b.dataset.fly);});
+document.getElementById('zoom').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const z=+b.dataset.z;
+  if(z===0){fitW();return;}const f=z>0?1.18:1/1.18;const ns=Math.min(1.7,Math.max(.12,scale*f));
+  const cx=innerWidth/2,cy=innerHeight/2,rx=(cx-tx)/scale,ry=(cy-ty)/scale;scale=ns;tx=cx-rx*scale;ty=cy-ry*scale;apply();});
+canvas.addEventListener('click',e=>{if(moved)e.preventDefault();},true);
+window.addEventListener('resize',fitW);
+setTimeout(()=>document.getElementById('hint').style.opacity=0,5500);
+</script>
+</body>
+</html>

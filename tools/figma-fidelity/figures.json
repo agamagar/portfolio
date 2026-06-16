@@ -1,0 +1,16 @@
+{
+  "comment": "Registry of rebuilt case-study figures and their Figma reference renders. One entry per screen. `svg` is relative to the portfolio root; `ref` is a PNG in ./refs exported from the Figma node. Run: node tools/figma-fidelity/check.mjs [name]",
+  "figures": [
+    {
+      "name": "awayLanding",
+      "svg": "src/figures/source/awayLanding/fullframe.svg",
+      "ref": "awayLanding.png",
+      "renderWidth": 360,
+      "figma": {
+        "fileKey": "6ZcIVLfPqaQU9RSPJ4QzPy",
+        "nodeId": "5933:76844",
+        "url": "https://www.figma.com/design/6ZcIVLfPqaQU9RSPJ4QzPy/Away?node-id=5933-76844"
+      }
+    }
+  ]
+}

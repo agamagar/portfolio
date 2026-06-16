@@ -1,0 +1,10 @@
+{
+  "name": "figma-fidelity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Compares hand-rebuilt case-study figure SVGs against their Figma reference renders.",
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}
