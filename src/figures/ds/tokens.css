@@ -1,0 +1,150 @@
+/* Dassh figure design-system tokens. Scoped to .ds-root (applied to each figure
+   frame) so these never collide with the site's own :root / M3 tokens.
+
+   Colors + component anatomy are taken verbatim from the Dassh Design System
+   (Figma uPhIrXFWQ1EXgQBSvPiuxQ, "CV Screening" flow). The figure is a faithful
+   miniature: colors/borders/surfaces/radius-feel match the source exactly; the
+   absolute type/spacing sizes are a compact scale that preserves the source's
+   proportions and hierarchy at figure size. Motion = Agentation register
+   (Claude/animation-base-layer.md). Source uses NO shadows — depth is carried by
+   0.5–1px borders and #FDFDFD-vs-#FFFFFF surface contrast. */
+
+.ds-root {
+  /* — surfaces — */
+  --ds-bg: #fbfaf7;            /* warm app canvas */
+  --ds-surface: #ffffff;       /* cards, side panel */
+  --ds-field: #fdfdfd;         /* Gray/25 — inputs, eye-button, slider container */
+  --ds-muted: #f5f5f5;         /* Gray/100 — muted chip bg */
+
+  /* — borders / lines — */
+  --ds-border: #d9d9d9;        /* default: inputs, buttons, tabs, dashed zones */
+  --ds-border-card: #d4d4d4;   /* card + panel outer (source: 0.5px) */
+  --ds-line: #d5d7da;          /* hairline dividers */
+  --ds-border-brand: #f4ebff;  /* prompt input border */
+  --ds-tab-active: #303030;    /* active tab underline (2px) */
+
+  /* — text — */
+  --ds-text: #181d27;          /* Gray/900 — titles, body, pill default */
+  --ds-text-alt: #1e1e1e;      /* labels, input values */
+  --ds-text-2: #717680;        /* Gray/500 — subtitles */
+  --ds-placeholder: #757575;   /* input placeholders */
+  --ds-text-3: #b3b3b3;        /* tertiary — empty-slot, phone placeholder */
+  --ds-text-neutral2: #5a5a5a; /* slider helper subtext */
+  --ds-pill-text: #252b37;     /* Gray/800 — inactive pill labels */
+
+  /* — primary (black) button — */
+  --ds-primary: #1e1e1e;
+  --ds-primary-2: #1a1a1a;     /* "Generate Checklist" */
+  --ds-primary-press: #000000;
+  --ds-on-primary: #ffffff;
+  --ds-on-primary-soft: #f3f3f3;
+
+  /* — success / green — */
+  --ds-green: #039855;             /* Success/600 — Essential text */
+  --ds-green-deep: #054f31;        /* import-bar text */
+  --ds-green-pill-bg: rgba(2, 122, 72, 0.1);
+  --ds-green-bar-bg: rgba(5, 79, 49, 0.1);
+
+  /* — brand / purple (AI prompt) — */
+  --ds-purple: #42307d;        /* Brand/900 — banner heading */
+  --ds-purple-bg: #f9f5ff;     /* Brand/50 — banner panel */
+
+  /* — accent (Dassh case-study orange). Source UI does NOT use orange here, so
+     it is confined to the demo cursor's click ripple only. — */
+  --ds-accent: #ea580c;
+  --ds-accent-soft: rgba(234, 88, 12, 0.5);
+
+  /* — information-sensitive scaffold preset (shimmer + annotation) — */
+  --ds-shim: #e7e9ed;          /* skeleton block fill */
+  --ds-shim-soft: #eef0f3;
+  --ds-anno: #3b82f6;          /* annotation pin / Add button blue */
+  --ds-popup: #1f1f22;         /* dark annotation popup */
+  --ds-popup-field: #2c2c30;
+  --ds-popup-text: #f3f3f3;
+  --ds-popup-muted: #9aa0a8;
+
+  /* — concept-animation framework (FFF): one lit focal element per beat — */
+  --ds-focal-blue: var(--ds-anno);             /* #3b82f6 — active/primary/working */
+  --ds-focal-green: #22c55e;                   /* a set / a completed item (system selection, NOT brand green) */
+  --ds-focal-green-fill: rgba(34, 197, 94, 0.09);
+  --ds-focal-amber: #f59e0b;                   /* needs attention / decision pending */
+  --ds-focal-amber-fill: rgba(245, 158, 11, 0.11);
+  --ds-focal-red: #ef4444;                     /* broken / overload */
+  --ds-focal-red-fill: rgba(239, 68, 68, 0.09);
+  --ds-focal-w: 2px;                           /* focal ring weight */
+  --ds-focal-r: 9px;                           /* focal ring radius (hugs skeleton block) */
+
+  /* — Stella product palette (onboarding): Mystic Blue + Forest Teal — */
+  --ds-blue: #4384c5;        /* Mystic Blue/500 */
+  --ds-blue-300: #8bc3fe;
+  --ds-blue-100: #cbecff;
+  --ds-blue-deep: #1b3a5c;   /* orb top */
+  --ds-teal: #00995c;        /* Forest Teal/500 — onboarding checks */
+  --ds-teal-100: #c1f7d6;
+  --ds-ink-strong: #0b0b0b;  /* Neutral BW/950 — onboarding button */
+
+  /* — control fills — */
+  --ds-toggle-off: #d5d7da;
+  --ds-toggle-knob: #181d27;
+  --ds-slider-rail: #d9d9d9;
+  --ds-slider-fill: #1e1e1e;
+
+  /* — typography (site Inter ≈ product Eina01; same geometric sans). Compact
+     scale preserving the source hierarchy (title 24 / subtitle 16 / label 14…). — */
+  --ds-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-fw-semi: 600;
+  --ds-fs-app: 13px;     /* top-bar title */
+  --ds-fs-title: 15px;   /* card title */
+  --ds-fs-sub: 11px;     /* card subtitle */
+  --ds-fs-section: 12px; /* section label (Restrictions) */
+  --ds-fs-body: 11.5px;  /* input / row text */
+  --ds-fs-label: 10px;   /* field label */
+  --ds-fs-pill: 9.5px;
+  --ds-fs-btn: 12px;
+  --ds-fs-tab: 11px;
+  --ds-fs-meta: 9px;     /* hints, counts */
+
+  /* — spacing (compact echo of the source's 4/8/12/16/24 rhythm) — */
+  --ds-1: 4px; --ds-2: 6px; --ds-3: 8px; --ds-4: 10px; --ds-5: 12px; --ds-6: 14px; --ds-7: 18px;
+
+  /* — shape: Material Design 3 corner scale (m3.material.io/styles/shape) — */
+  --m3-corner-xs: 4px; --m3-corner-sm: 8px; --m3-corner-md: 12px; --m3-corner-lg: 16px; --m3-corner-xl: 28px;
+  /* figure radii mapped onto the M3 scale */
+  --ds-r-frame: var(--m3-corner-lg);    /* 16 */
+  --ds-r-card: var(--m3-corner-md);     /* 12 */
+  --ds-r-btn: var(--m3-corner-sm);      /* 8  */
+  --ds-r-control: var(--m3-corner-sm);  /* 8  */
+  --ds-r-pill: var(--m3-corner-xs);     /* 4  */
+
+  /* — elevation: cards are FLAT (border-only) per the Dassh source. Only the
+     figure frame floats; M3 tonal/elevation is intentionally not applied here. — */
+  --ds-shadow-frame: 0 20px 50px -26px rgba(20, 16, 45, 0.28), 0 1px 3px rgba(20, 16, 45, 0.04);
+
+  /* — motion: Material Design 3 (m3.material.io/styles/motion) — */
+  /* easing set (spec values) */
+  --m3-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m3-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --m3-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --m3-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --m3-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --m3-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --m3-expressive: cubic-bezier(0.34, 1.46, 0.64, 1); /* M3-Expressive spatial spring (gentle overshoot) */
+  /* duration scale (spec) */
+  --m3-short2: 100ms; --m3-short4: 200ms;
+  --m3-medium1: 250ms; --m3-medium2: 300ms; --m3-medium4: 400ms;
+  --m3-long2: 500ms;
+  /* state-layer opacities (spec) */
+  --m3-state-hover: 0.08; --m3-state-focus: 0.10; --m3-state-pressed: 0.10;
+
+  /* figure aliases → M3, by role: entrances DECELERATE, exits ACCELERATE,
+     movement STANDARD, press/pop EXPRESSIVE. */
+  --ds-ease-out: var(--m3-emphasized-decelerate);  /* enter / expand / settle */
+  --ds-ease-exit: var(--m3-emphasized-accelerate); /* leave / collapse */
+  --ds-ease-move: var(--m3-standard);              /* cursor travel, no overshoot */
+  --ds-ease-pop: var(--m3-expressive);             /* press / pop */
+  --ds-ease-std: var(--m3-standard);               /* color / utility state */
+  --ds-dur-fast: var(--m3-short4);                 /* 200 */
+  --ds-dur-expand: var(--m3-medium4);              /* 400 */
+  --ds-dur-move: var(--m3-long2);                  /* 500 */
+  --ds-dur-state: var(--m3-medium1);               /* 250 */
+}

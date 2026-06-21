@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="783" viewBox="0 0 360 783">
+  <!-- Night: a cool violet/indigo scrim glow behind the greeting (~30% down). -->
+  <defs>
+    <filter id="blur" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="74" />
+    </filter>
+  </defs>
+  <ellipse cx="180" cy="232" rx="208" ry="148" fill="#8a7dff" opacity="0.32" filter="url(#blur)" />
+  <ellipse cx="180" cy="210" rx="124" ry="92" fill="#b9b0ff" opacity="0.26" filter="url(#blur)" />
+</svg>

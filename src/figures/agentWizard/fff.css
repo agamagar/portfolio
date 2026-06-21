@@ -1,0 +1,33 @@
+/* Agent-creation wizard as a Frozen-Frame Focal concept animation. The product
+   (CV-screening agent builder) is skeleton; the concept — "intent becomes a
+   working agent that screens many CVs down to a ranked few" — is the one lit
+   thing per beat. Leans BLUE + a count (vs the onboarding's green tick-column).
+   Framework: Claude/animation-base-layer.md §11. Built on ds/Scaffold. */
+
+.aw2-head { display: flex; align-items: flex-end; justify-content: space-between; margin: 4px 2px 18px; }
+.aw2-title { display: flex; flex-direction: column; gap: 6px; }
+.aw2-count { display: flex; align-items: baseline; gap: 6px; opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out); }
+.aw2-count[data-show="true"] { opacity: 1; }
+.aw2-count__n { font-size: 26px; font-weight: 700; line-height: 1; color: var(--ds-text-3); transition: color var(--ds-dur-state) var(--ds-ease-out); }
+.aw2-count[data-hero="true"] .aw2-count__n { color: var(--ds-focal-blue); }
+.aw2-count__l { font-size: 10px; font-weight: 500; color: var(--ds-text-3); }
+
+.aw2-criteria { display: flex; gap: 8px; margin-bottom: 16px; }
+.aw2-chip { height: 24px; padding: 0 10px; border-radius: 7px; background: var(--ds-shim); display: flex; align-items: center; gap: 7px; transition: background var(--ds-dur-state) var(--ds-ease-out), box-shadow var(--ds-dur-state) var(--ds-ease-out); }
+.aw2-chip[data-on="true"] { background: #fff; box-shadow: inset 0 0 0 1.5px var(--ds-focal-blue); }
+.aw2-chip__bar { width: 34px; height: 7px; border-radius: 4px; background: #cfd3da; }
+.aw2-chip__dot { width: 7px; height: 7px; border-radius: 50%; background: transparent; transition: background var(--ds-dur-state) var(--ds-ease-out); }
+.aw2-chip[data-on="true"] .aw2-chip__dot { background: var(--ds-focal-blue); }
+
+.aw2-list { display: flex; flex-direction: column; gap: 9px; position: relative; }
+.aw2-row { display: flex; align-items: center; gap: 11px; height: 30px; padding: 0 8px; opacity: 0; transform: translateY(7px); transition: opacity var(--ds-dur-expand) var(--ds-ease-out), transform var(--ds-dur-expand) var(--ds-ease-out); }
+.aw2-row[data-in="true"] { opacity: 1; transform: none; }
+.aw2-row[data-faint="true"] { opacity: 0.3; }
+.aw2-row__av { width: 22px; height: 22px; border-radius: 50%; background: var(--ds-shim); flex: 0 0 auto; }
+.aw2-row__bars { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.aw2-row__score { margin-left: auto; min-width: 30px; height: 18px; border-radius: 6px; background: var(--ds-shim); display: grid; place-items: center; font-size: 10px; font-weight: 700; color: transparent; transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out); }
+.aw2-row[data-top="true"] .aw2-row__score { background: var(--ds-focal-blue); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aw2-row, .aw2-chip, .aw2-count, .aw2-count__n, .aw2-row__score { transition: none !important; }
+}

@@ -31,9 +31,15 @@ type AccentColor = {
   text: string;
 };
 
-// The board is monochrome to match the site's muted, token-driven system — no
-// random colour flaps. (Accent plumbing kept dormant in case a single on-brand
-// accent is wanted later.)
+const ACCENT_COLORS: AccentColor[] = [
+  { top: "bg-red-600", bottom: "bg-red-700", text: "text-white" },
+  { top: "bg-orange-500", bottom: "bg-orange-600", text: "text-white" },
+  { top: "bg-yellow-400", bottom: "bg-yellow-500", text: "text-neutral-900" },
+  { top: "bg-green-600", bottom: "bg-green-700", text: "text-white" },
+  { top: "bg-blue-600", bottom: "bg-blue-700", text: "text-white" },
+  { top: "bg-violet-600", bottom: "bg-violet-700", text: "text-white" },
+  { top: "bg-white", bottom: "bg-neutral-100", text: "text-neutral-900" },
+];
 
 const CELL_TEXT_STYLE: React.CSSProperties = {
   fontSize: "clamp(6px, 2vw, 22px)",
@@ -89,7 +95,11 @@ const FlapCell = React.memo(function FlapCell({
         ? normalized
         : FLAP_CHARS[1 + Math.floor(Math.random() * (FLAP_CHARS.length - 1))];
 
-      const newAccent: AccentColor | null = null;
+      const newAccent = isLast
+        ? null
+        : Math.random() < 0.2
+          ? ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)]
+          : null;
 
       setPrev(curRef.current);
       setPrevAccent(accentRef.current);
@@ -120,23 +130,23 @@ const FlapCell = React.memo(function FlapCell({
 
   const textCx =
     "absolute inset-x-0 flex select-none items-center justify-center font-mono font-bold tracking-wide";
-  const topBg = accent?.top ?? "bg-[var(--hover)]";
-  const bottomBg = accent?.bottom ?? "bg-[var(--hover)]";
-  const textColor = accent?.text ?? "text-[var(--fg)]";
+  const topBg = accent?.top ?? "bg-neutral-200/80 dark:bg-neutral-900";
+  const bottomBg = accent?.bottom ?? "bg-neutral-200/80 dark:bg-neutral-900";
+  const textColor = accent?.text ?? "text-neutral-800 dark:text-white";
 
-  const flapTopBg = prevAccent?.top ?? "bg-[var(--hover)]";
-  const flapTextColor = prevAccent?.text ?? "text-[var(--fg)]";
+  const flapTopBg = prevAccent?.top ?? "bg-neutral-100 dark:bg-neutral-800";
+  const flapTextColor = prevAccent?.text ?? "text-neutral-800 dark:text-white";
 
   const bottomDelay = flipDuration * 0.5;
 
   return (
-    <div className="flex aspect-3/6 flex-col overflow-hidden rounded-[2px] border border-[var(--line)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] md:rounded-[3px] md:border-2 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+    <div className="flex aspect-3/6 flex-col overflow-hidden rounded-[2px] border border-neutral-300 md:rounded-[3px] md:border-2 dark:border-black">
       {/* Flap content area */}
       <div className="relative flex-1 perspective-dramatic transform-3d">
         <div className="absolute inset-0 z-40 hidden flex-row items-center justify-center md:flex">
-          <div className="h-1/2 w-px rounded-tr-sm rounded-br-sm bg-[var(--line)]" />
-          <div className="flex h-px flex-1 bg-[var(--line)]" />
-          <div className="h-1/2 w-px rounded-tl-sm rounded-bl-sm bg-[var(--line)]" />
+          <div className="h-1/2 w-px rounded-tr-sm rounded-br-sm bg-neutral-300 dark:bg-black" />
+          <div className="flex h-px flex-1 bg-neutral-300 dark:bg-black" />
+          <div className="h-1/2 w-px rounded-tl-sm rounded-bl-sm bg-neutral-300 dark:bg-black" />
         </div>
 
         {/* Static top – new character top half */}
@@ -242,14 +252,12 @@ const FlapCell = React.memo(function FlapCell({
           </motion.div>
         )}
 
-        {/* Hinge — soft ambient shadow at the fold (under the moving flaps) plus a
-            crisp seam line, so the two flaps read as physical cards meeting at a recess. */}
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[5] h-2 -translate-y-1/2 bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.1)_50%,transparent)] dark:bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.5)_50%,transparent)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-px -translate-y-[0.5px] bg-[var(--line)]" />
+        {/* Split line */}
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-px -translate-y-[0.5px] bg-neutral-400/50 dark:bg-black/50" />
       </div>
 
       {/* Bottom stripes – decorative, outside the flap area */}
-      <div className="h-2 w-full bg-[repeating-linear-gradient(to_bottom,currentColor_0,currentColor_1px,transparent_1px,transparent_0.15rem)] mask-t-from-50% text-[var(--line)] md:h-4 md:bg-[repeating-linear-gradient(to_bottom,currentColor_0,currentColor_1px,transparent_1px,transparent_0.2rem)]" />
+      <div className="h-2 w-full bg-[repeating-linear-gradient(to_bottom,currentColor_0,currentColor_1px,transparent_1px,transparent_0.15rem)] mask-t-from-50% text-neutral-400 opacity-20 md:h-4 md:bg-[repeating-linear-gradient(to_bottom,currentColor_0,currentColor_1px,transparent_1px,transparent_0.2rem)] dark:text-black dark:opacity-100" />
     </div>
   );
 },
@@ -275,7 +283,7 @@ const COLOR_MAP: Record<string, string> = {
 const ColorCell = React.memo(function ColorCell({ color }: { color: string }) {
   return (
     <div
-      className="aspect-3/5 rounded-[3px] border-2 border-[var(--line)]"
+      className="aspect-3/5 rounded-[3px] border-2 border-neutral-300 dark:border-black"
       style={{ backgroundColor: color }}
     />
   );
@@ -409,7 +417,7 @@ export function TextFlippingBoard({
   return (
     <div
       className={cn(
-        "relative mx-auto w-full max-w-3xl rounded-xl bg-[var(--bg)] p-2 shadow-[0_10px_36px_-14px_rgba(0,0,0,0.22)] md:rounded-2xl md:p-4 dark:shadow-[0_14px_50px_-18px_rgba(0,0,0,0.6)]",
+        "relative mx-auto w-full max-w-3xl rounded-xl bg-neutral-100 p-2 shadow-xl md:rounded-2xl md:p-4 dark:bg-neutral-900 dark:shadow-[0_20px_70px_-15px_rgba(0,0,0,0.6)]",
         className,
       )}
     >

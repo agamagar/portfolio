@@ -33,7 +33,8 @@ export default function TextFlippingBoardDemo({
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-8 py-20">
-      <TextFlippingBoard text={list[msgIdx % list.length]} />
+      {/* smaller than the default max-w-3xl so it isn't crowding the hero edges */}
+      <TextFlippingBoard className="max-w-xl" text={list[msgIdx % list.length]} />
     </div>
   );
 }

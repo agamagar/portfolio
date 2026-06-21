@@ -71,6 +71,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* tactile WebGL grain: fixed, behind all content, paints above the page bg */
+.tex-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -334,19 +344,19 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
 .scan-row__thumb {
   grid-area: thumb;
   align-self: start;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 18rem;
+  height: 18rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 16px;
   background: var(--hover);
   color: var(--muted);
   transition: color var(--m3-dur-effects-default) var(--m3-effects-default);
 }
 .scan-row__thumb svg {
-  width: 30px;
-  height: 30px;
+  width: 120px;
+  height: 120px;
 }
 .scan-row:hover .scan-row__thumb {
   color: var(--accent);
@@ -367,7 +377,7 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
 }
 .scan-row__meta {
   display: block;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem; /* match the row-gap so title/meta/desc are evenly spaced */
   font-size: 0.8125rem;
   color: var(--muted);
 }
@@ -405,10 +415,19 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
   .scan-row__title {
     font-size: 1.125rem;
   }
+  .scan-row__thumb {
+    width: 8rem;
+    height: 8rem;
+  }
+  .scan-row__thumb svg {
+    width: 54px;
+    height: 54px;
+  }
 }
 
 /* ---------- header ---------- */
 .header {
+  margin-top: 2rem;
   margin-bottom: 3.5rem;
 }
 
@@ -416,8 +435,25 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
   position: relative;
   display: block;
   width: 36px;
-  margin: 0 0 0.85rem;
+  left: 0%;
+  margin: 0 0 1.5rem;
+  transform: scale(1);
+  transform-origin: center top;
+  /* the avatar persists across read/scan (only <main> swaps), so these animate
+     smoothly when scan mode centers + doubles it (see .page--scan below) */
+  transition: left var(--m3-dur-spatial-default) var(--m3-spatial-standard-default),
+    margin var(--m3-dur-spatial-default) var(--m3-spatial-standard-default),
+    transform var(--m3-dur-spatial-default) var(--m3-spatial-standard-default);
 }
+/* scan mode: center the avatar and scale it 2x, with room below so it never
+   collides with the name (origin top -> it grows downward, not over the controls).
+   SHELVED for now (keep for later) — re-enable to bring back the growing face.
+.page--scan .header__avatar-wrap {
+  left: 50%;
+  margin: 0 0 3.5rem -18px;
+  transform: scale(2);
+}
+*/
 .header__avatar {
   display: block;
   width: 40px;
@@ -430,6 +466,9 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
 @media (prefers-reduced-motion: reduce) {
   .header__avatar {
     animation: none;
+  }
+  .header__avatar-wrap {
+    transition: none;
   }
 }
 
@@ -728,9 +767,41 @@ a.work__item {
   cursor: pointer;
 }
 
-/* hovering a row spotlights it: the others dim, hovered row has no background */
-main:has(.work__item:hover) .work__item:not(:hover) {
+/* hovering a row spotlights it: the others dim, hovered row has no background.
+   static parent lines (e.g. a book) neither trigger nor react to the spotlight */
+main:has(.work__item:not(.work__item--static):hover)
+  .work__item:not(.work__item--static):not(:hover) {
   opacity: 0.4;
+}
+
+/* static parent line (a book / proceedings): a label, not a link */
+.work__item--static {
+  cursor: default;
+}
+
+/* redirect links (Publication / PDF) beneath a publication title */
+.work__links {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0 0 0.7rem 5rem; /* indent under the title (past the year column) */
+}
+.work__link {
+  font-size: 0.8125rem;
+  font-weight: 460;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--m3-dur-effects-fast) var(--m3-effects-fast);
+}
+.work__link::after {
+  content: "\2197"; /* north-east arrow: opens externally */
+  margin-left: 0.25rem;
+  font-size: 0.85em;
+  color: var(--muted-2);
+  transition: color var(--m3-dur-effects-fast) var(--m3-effects-fast);
+}
+.work__link:hover,
+.work__link:hover::after {
+  color: var(--fg);
 }
 
 a.work__item:focus-visible {
@@ -873,32 +944,44 @@ a.work__item:focus-visible .work__arrow {
 
 /* ---------- case study / article ---------- */
 .page--article {
-  max-width: 1080px;
+  max-width: 1100px;
 }
 
-/* reading area centered on the page; index floats in the left margin */
+/* Default (≤1100px): index glued to the reading column, the pair centered as one
+   block — so the sidebar never clips in the gutter at mid widths. Wide screens
+   get the nicer layout below (reading column centered in the page). */
 .article__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, var(--max)) minmax(0, 1fr);
-  column-gap: 2.5rem;
+  grid-template-columns: minmax(0, var(--max));
+  justify-content: center;
   align-items: start;
 }
 
+/* The index is a fixed rail pinned to the far left of the viewport, decoupled
+   from the centered reading column so the whole page scales cleanly on resize.
+   It only appears when the viewport is wide enough to clear the centered column;
+   below that it hides (the reading column still centers on its own). */
 .article__index {
-  grid-column: 1;
-  justify-self: end;
-  width: 150px;
-  position: sticky;
-  top: 2.5rem;
-  align-self: start;
+  position: fixed;
+  left: 1.5rem;
+  top: 2.25rem;
+  width: 164px;
+  max-height: calc(100vh - 4.5rem);
+  overflow-y: auto;
+  display: none;
+}
+@media (min-width: 1100px) {
+  .article__index {
+    display: block;
+  }
 }
 .article__index-label {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
 }
 .article__index ul {
   list-style: none;
@@ -907,10 +990,10 @@ a.work__item:focus-visible .work__arrow {
 }
 .article__index li a {
   display: block;
-  padding: 0.45rem 0;
-  font-size: 0.8125rem;
+  padding: 0.34rem 0;
+  font-size: 0.78125rem;
   font-weight: 460;
-  line-height: 1.3;
+  line-height: 1.38;
   letter-spacing: -0.0025rem;
   color: var(--muted);
   transition: color var(--m3-dur-effects-fast) var(--m3-effects-fast);
@@ -921,6 +1004,34 @@ a.work__item:focus-visible .work__arrow {
 .article__index li a.is-active {
   color: var(--fg);
   font-weight: 560;
+}
+
+/* Grouped index entries: a header (same size as items, one weight up) with the
+   member sections nested beneath a hairline vertical rule. Selectors are scoped
+   under .article__index so they outrank the generic `.article__index ul` reset. */
+.article__index .article__index-group {
+  margin: 0.45rem 0;
+}
+.article__index .article__index-group-head {
+  display: block;
+  padding: 0.34rem 0;
+  font-size: 0.78125rem;
+  font-weight: 560;
+  line-height: 1.38;
+  letter-spacing: -0.0025rem;
+  color: var(--fg);
+}
+/* The rule sits indented from the heading's left edge (margin-left); the items
+   sit clear of the rule (padding-left) so the full vertical line reads. */
+.article__index .article__index-group-list {
+  list-style: none;
+  margin: 0.1rem 0 0 3px;
+  padding: 0 0 0 11px;
+  border-left: 1px solid var(--line);
+}
+/* nested items sit a touch tighter than top-level entries, but not cramped */
+.article__index .article__index-group-list li a {
+  padding: 0.26rem 0;
 }
 
 .back-link {
@@ -942,7 +1053,7 @@ a.work__item:focus-visible .work__arrow {
 /* back-link sits at the top of the case-study index column */
 .article__back {
   margin-bottom: 1.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem; /* 13px */
 }
 
 .article__head {
@@ -1091,8 +1202,65 @@ a.work__item:focus-visible .work__arrow {
   margin: 2.5rem 0;
 }
 
+/* labelled spec blocks: exhaustive states / edge cases / parameters shown as
+   titled mini-lists while a moment is being spec'd out before prose. */
+.article__spec {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+@media (min-width: 720px) {
+  .article__spec {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.article__spec-block {
+  padding: 0.9rem 1rem 0.6rem;
+  border: 1px solid var(--line);
+  border-left: 2px solid color-mix(in srgb, var(--fg) 28%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+}
+.article__spec-label {
+  margin: 0 0 0.45rem;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.article__spec-block ul {
+  margin: 0;
+  padding-left: 1.05rem;
+}
+.article__spec-block li {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.3rem 0;
+}
+
 .article__figure {
   margin: 2rem 0;
+}
+
+/* a space left for a screen still to be designed */
+.article__screen-box {
+  height: 300px;
+  border-radius: 14px;
+  border: 1.5px dashed color-mix(in srgb, var(--fg) 22%, transparent);
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+  display: grid;
+  place-items: center;
+}
+.article__screen-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
 }
 
 .article__figure-img {
@@ -1125,6 +1293,13 @@ a.work__item:focus-visible .work__arrow {
   /* clip the staggered/bleeding frames to the card (rounded) */
   overflow: hidden;
   background: radial-gradient(120% 75% at 50% 0%, #f7f7fb 0%, #eeeef4 62%, #e8e8ef 100%);
+}
+/* bare variant: figure sits directly on the page, no gray card, nothing clipped */
+.article__figure-live--bare,
+:root.dark .article__figure-live--bare {
+  padding: 0;
+  background: none;
+  overflow: visible;
 }
 .slide__media-live {
   display: flex;
@@ -1210,6 +1385,8 @@ a.work__item:focus-visible .work__arrow {
    (equal bottom padding, bleeds off the top). */
 .fig-split__pane--first {
   align-items: flex-start;
+  /* nudge the first screen down a little (it otherwise hugs the top edge) */
+  transform: translateY(32px);
 }
 .fig-split__pane--second {
   align-items: flex-end;
@@ -1222,30 +1399,41 @@ a.work__item:focus-visible .work__arrow {
    frames; .fig-collage--slide (Present mode) is a uniform 3-col cover grid. */
 .fig-collage {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   width: 100%;
-  /* vertically center the columns so the whole board is balanced, not top-hung */
-  align-items: center;
-}
-.fig-collage__col {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  /* top-align so a short half doesn't get stretched next to a taller one */
+  align-items: flex-start;
 }
 .fig-collage img {
   display: block;
   width: 100%;
+  height: auto;
   margin: 0;
   border-radius: 12px;
   border: 1px solid var(--line);
   box-shadow: 0 10px 26px -14px rgba(20, 16, 45, 0.5);
 }
+/* per-image widths: fulls stack, halves pair 2-up, thirds run 3-up */
+.fig-collage__img--full {
+  flex: 1 1 100%;
+}
+.fig-collage__img--half {
+  flex: 1 1 calc(50% - 5px);
+  max-width: calc(50% - 5px);
+}
+.fig-collage__img--third {
+  flex: 1 1 calc(33.333% - 6.667px);
+  max-width: calc(33.333% - 6.667px);
+}
 @media (max-width: 560px) {
-  .fig-collage,
-  .fig-collage__col {
+  .fig-collage {
     gap: 8px;
+  }
+  /* on narrow screens thirds become a 2-up row, never a cramped 3-up */
+  .fig-collage__img--third {
+    flex-basis: calc(50% - 4px);
+    max-width: calc(50% - 4px);
   }
 }
 /* Present mode: a uniform grid that always fits the slide */
@@ -1960,9 +2148,19 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
     flex-direction: column;
     align-items: flex-start;
     gap: 0.1rem;
+    width: 100%;
   }
   .work__year {
     width: auto;
+  }
+  /* on mobile the year reads as a group header: a full-width rule sits beneath it
+     (only the year-bearing rows, not the year-less rows in the same group) */
+  .work__item:not(.work__item--noyear) .work__year {
+    display: block;
+    width: 100%;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.55rem;
+    border-bottom: 1px solid var(--line);
   }
   .work__meta {
     padding-left: 0;
@@ -1999,12 +2197,26 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
    ============================================================================ */
 
 /* ---- the sun <-> moon toggle (no box, just the icon) ---- */
-.theme-toggle {
+/* fixed row holding the theme toggle + page control, anchored to the column edge
+   so the toggle keeps a constant gap to the control and follows it as it morphs */
+.top-controls {
   position: fixed;
   top: 1.75rem;
-  /* just left of the page control's toggle-width footprint; stable across modes */
-  right: calc(max(1.5rem, calc(50% - var(--max) / 2)) + 5.375rem);
+  right: max(1.5rem, calc(50% - var(--max) / 2));
   z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+/* the page control is a flex child here (override its standalone fixed position);
+   stays `relative` so its absolute thumb/toggle/play layers keep their context */
+.top-controls .page-control {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: auto;
+}
+.theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2070,13 +2282,14 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 }
 
 /* ---- dark overrides for the few hardcoded colours ---- */
-/* avatar: drawn with the fixed brown FACE_COLOR — flip to the fg token in dark
-   (CSS beats the presentation attribute) */
+/* avatar: drawn with the fixed brown FACE_COLOR — in dark mode render it as a
+   muted grey that stays visible: neutral-500 #737373 is 4.06:1 on the #0e0e11
+   bg (passes WCAG 1.4.11 non-text contrast 3:1); grey-700/800 were invisible */
 :root.dark .header__avatar [fill="#1F0F02"] {
-  fill: var(--fg);
+  fill: #737373;
 }
 :root.dark .header__avatar [stroke="#1F0F02"] {
-  stroke: var(--fg);
+  stroke: #737373;
 }
 /* the figure-card gradient */
 :root.dark .article__figure-live {
@@ -2100,5 +2313,142 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 /* the TL;DR callout text (hardcoded near-black) */
 :root.dark .article__tldr {
   color: rgba(255, 255, 255, 0.82);
+}
+/* case study body text + lists (hardcoded near-black -> invisible on dark) */
+:root.dark .article__body p,
+:root.dark .article__body ul {
+  color: rgba(255, 255, 255, 0.82);
+}
+/* present-mode (slide) text */
+:root.dark .slide__text p,
+:root.dark .slide__text ul {
+  color: rgba(255, 255, 255, 0.8);
+}
+/* motion-lab demo cards (white in light) */
+:root.dark .demo {
+  background: #16161a;
+}
+/* the wave hand is loaded via <img>, so its CSS-var fill can't be reached from
+   the page — recolour the dark silhouette to match the grey-500 face in dark:
+   brightness(0) -> black, invert(0.45) -> #737373 (neutral-500) */
+:root.dark .header__wave-img {
+  filter: brightness(0) invert(0.45);
+}
+
+/* ---- container behind the split-flap hero board ----
+   Set `background` to an airport image (background-image: url(...)) when ready;
+   neutral placeholder for now. The board sits on top, inset by the padding. */
+.article__hero-board {
+  position: relative;
+  margin: 0 0 1.5rem;
+  padding: 0 1.25rem;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #16121c;
+  /* atmospheric airport backdrop; faint overlay keeps the board readable.
+     swap this url for a real photo at /figures/away-airport.* to use one. */
+  background-image: linear-gradient(rgba(10, 7, 16, 0.08), rgba(10, 7, 16, 0.08)),
+    url("/figures/away-airport.svg");
+  background-size: cover;
+  background-position: center;
+}
+/* live cloud-shader backdrop fills the hero (behind the flip board); the CSS
+   background above stays as the fallback if WebGL is unavailable */
+.article__hero-shader {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.article__hero-board-inner {
+  position: relative;
+  z-index: 1;
+}
+:root.dark .article__hero-board {
+  background-image: linear-gradient(rgba(8, 6, 12, 0.42), rgba(8, 6, 12, 0.42)),
+    url("/figures/away-airport.svg");
+}
+/* Away hero shows the live cloud shader, so the airport image is hidden here; the
+   fallback (if WebGL can't allocate) is a sky gradient matching the shader, in
+   day and night variants so it never degrades to a flat box. */
+.article__hero-board--shader {
+  background-image: linear-gradient(180deg, #3375d1 0%, #6fa3df 52%, #a8cce8 100%);
+}
+:root.dark .article__hero-board--shader {
+  background-image: linear-gradient(180deg, #060a18 0%, #11203a 60%, #1b2c44 100%);
+}
+/* blank frame for non-Away projects: no airport backdrop, plain neutral
+   placeholder until a project-specific hero asset is added */
+.article__hero-board--blank {
+  min-height: 22rem;
+  background-image: none;
+  background-color: #e8e8ee;
+}
+:root.dark .article__hero-board--blank {
+  background-image: none;
+  background-color: #16161a;
+}
+/* project hero image: a real exported asset filling the header frame at its
+   native aspect (no airport backdrop, no fixed height to crop it) */
+.article__hero-board--image {
+  padding: 0;
+  min-height: 0;
+  background-image: none;
+  background-color: #e8e8ee;
+}
+:root.dark .article__hero-board--image {
+  background-image: none;
+  background-color: #16161a;
+}
+.article__hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- section shader boxes (Away case study) ----
+   A section can set `shader: "golden" | "iridescent"` to show a living shader in
+   a framed box, sized and styled like the cloud hero board. The shader fills the
+   box opaquely (golden = sky, iridescent = glow on black) and follows the theme
+   via u_dark. */
+.article__shader-box {
+  position: relative;
+  margin: 1.75rem 0;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #16121c; /* fallback if WebGL is unavailable */
+  box-shadow: 0 14px 34px -18px rgba(20, 16, 45, 0.55);
+}
+.article__shader-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- theme change: circular reveal (View Transitions) ----
+   Disable the default root cross-fade so only the JS-driven clip-path circle
+   plays, with the incoming theme on top so it sweeps over the old one. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 9999;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
 }
 

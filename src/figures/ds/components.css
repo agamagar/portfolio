@@ -1,0 +1,240 @@
+/* Dassh figure design-system components. Built to the Figma spec
+   (uPhIrXFWQ1EXgQBSvPiuxQ). Pairs with tokens.css. Used by Primitives.jsx and
+   composed by figure components (e.g. AgentWizard). */
+
+/* ── fit wrapper + frame ─────────────────────────────────────────────────── */
+/* The frame is authored at 660px and scaled to fit via --ds-scale. It is taken
+   OUT OF FLOW (absolute) so its natural height is stable — if it were an
+   in-flow flex item, the JS-set fit height would stretch it and feed back into
+   the next measurement, shrinking it every ResizeObserver tick. The wrapper's
+   JS-set height reserves the scaled space. */
+.ds-fit { position: relative; width: 100%; overflow: hidden; }
+.ds-root {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 660px;
+  transform: translateX(-50%) scale(var(--ds-scale, 1));
+  transform-origin: top center;
+  background: var(--ds-bg);
+  border: 1px solid var(--ds-border-card);
+  border-radius: var(--ds-r-frame);
+  box-shadow: var(--ds-shadow-frame);
+  overflow: hidden;
+  font-family: var(--ds-font);
+  color: var(--ds-text);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── top bar ─────────────────────────────────────────────────────────────── */
+.ds-top { display: flex; align-items: center; gap: var(--ds-3); height: 42px; padding: 0 var(--ds-6); border-bottom: 1px solid var(--ds-line); background: var(--ds-surface); }
+.ds-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ds-dot--r { background: #f0625a; } .ds-dot--y { background: #f5bf4f; } .ds-dot--g { background: #5bc46b; }
+.ds-top__title { margin-left: var(--ds-2); font-size: var(--ds-fs-app); font-weight: var(--ds-fw-semi); }
+.ds-top__sp { flex: 1; }
+.ds-top__icon { width: 20px; height: 20px; border-radius: 6px; color: var(--ds-text-2); display: grid; place-items: center; }
+.ds-top__icon svg { width: 14px; height: 14px; }
+
+/* ── body layout ─────────────────────────────────────────────────────────── */
+.ds-body { display: flex; gap: var(--ds-6); padding: var(--ds-6); align-items: flex-start; }
+/* fixed height so the frame never resizes as cards open/close; trailing space
+   below the cards on shorter steps reads as app whitespace */
+.ds-stack { flex: 1 1 auto; min-width: 0; height: 475px; display: flex; flex-direction: column; gap: var(--ds-4); }
+
+/* ── step card ───────────────────────────────────────────────────────────── */
+.ds-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border-card);
+  border-radius: var(--ds-r-card);
+  overflow: hidden;
+  transition: border-color var(--ds-dur-expand) var(--ds-ease-out);
+}
+.ds-card[data-active="true"] { border-color: #c4c7cd; }
+.ds-card__head { display: flex; align-items: center; gap: var(--ds-4); padding: var(--ds-5) var(--ds-5); height: 46px; box-sizing: border-box; }
+.ds-step {
+  flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 10.5px; font-weight: var(--ds-fw-semi);
+  background: var(--ds-muted); color: var(--ds-text-2);
+  transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out);
+}
+.ds-card[data-active="true"] .ds-step { background: var(--ds-primary); color: #fff; }
+.ds-card[data-done="true"] .ds-step { background: var(--ds-green-pill-bg); color: var(--ds-green); }
+.ds-head__txt { flex: 1; min-width: 0; }
+.ds-head__title { font-size: var(--ds-fs-title); font-weight: var(--ds-fw-semi); line-height: 1.25; color: var(--ds-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-head__sub { font-size: var(--ds-fs-sub); color: var(--ds-text-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-chev { flex: 0 0 auto; width: 16px; height: 16px; color: var(--ds-text-2); transition: transform var(--ds-dur-expand) var(--ds-ease-out); }
+.ds-card[data-active="true"] .ds-chev { transform: rotate(180deg); }
+
+/* animate to natural content height via the grid 0fr→1fr technique */
+.ds-card__body { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--ds-dur-expand) var(--ds-ease-out), opacity calc(var(--ds-dur-expand) * 0.7) ease; }
+.ds-card[data-active="true"] .ds-card__body { grid-template-rows: 1fr; opacity: 1; }
+.ds-card__inner { min-height: 0; overflow: hidden; padding: 0 var(--ds-5) var(--ds-5); display: flex; flex-direction: column; }
+.ds-card__content { min-height: 0; }
+.ds-divider { height: 1px; background: var(--ds-line); margin: 0 0 var(--ds-5); }
+
+/* staggered content reveal */
+.ds-card[data-active="true"] .ds-stagger > * { animation: dsStaggerIn 360ms var(--ds-ease-out) both; }
+.ds-card[data-active="true"] .ds-stagger > *:nth-child(2) { animation-delay: 45ms; }
+.ds-card[data-active="true"] .ds-stagger > *:nth-child(3) { animation-delay: 90ms; }
+.ds-card[data-active="true"] .ds-stagger > *:nth-child(4) { animation-delay: 135ms; }
+@keyframes dsStaggerIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+/* ── footer + primary button ─────────────────────────────────────────────── */
+.ds-foot { display: flex; justify-content: flex-end; align-items: center; gap: var(--ds-5); padding-top: var(--ds-4); }
+.ds-btn {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  height: 32px; padding: 0 var(--ds-6); border-radius: var(--ds-r-btn);
+  background: var(--ds-primary); color: var(--ds-on-primary);
+  font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi);
+  transition: transform var(--ds-dur-fast) var(--ds-ease-pop);
+}
+.ds-btn svg { width: 14px; height: 14px; }
+/* M3 state layer: on-primary overlay at the pressed-state opacity (replaces an
+   ad-hoc colour shift). The Expressive press adds a small squish. */
+.ds-btn::after {
+  content: ""; position: absolute; inset: 0; background: var(--ds-on-primary);
+  opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-std); pointer-events: none;
+}
+.ds-card[data-press="true"] .ds-btn { transform: scale(0.96); }
+.ds-card[data-press="true"] .ds-btn::after { opacity: var(--m3-state-pressed); }
+
+/* ── ghost chip button ───────────────────────────────────────────────────── */
+.ds-chip { display: inline-flex; align-items: center; gap: var(--ds-2); height: 26px; padding: 0 var(--ds-4); border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); background: var(--ds-surface); font-size: 11px; font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.ds-chip svg { width: 13px; height: 13px; color: var(--ds-text-2); }
+
+/* ── fields / inputs ─────────────────────────────────────────────────────── */
+.ds-row { display: flex; gap: var(--ds-3); }
+.ds-field { flex: 1; min-width: 0; }
+.ds-label { font-size: var(--ds-fs-label); font-weight: var(--ds-fw-semi); color: var(--ds-text-alt); margin-bottom: var(--ds-1); }
+.ds-input {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ds-2);
+  height: 30px; padding: 0 var(--ds-3);
+  background: var(--ds-field); border: 1px solid var(--ds-border); border-radius: var(--ds-r-control);
+  font-size: var(--ds-fs-body); color: var(--ds-text-alt);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ds-input--ph { color: var(--ds-placeholder); }
+.ds-input svg { width: 13px; height: 13px; color: var(--ds-text-2); flex: 0 0 auto; }
+.ds-textarea { height: 60px; align-items: flex-start; padding: var(--ds-3); }
+
+/* ── segmented control (Essential / Valuable / Not Preferred) ────────────── */
+.ds-seg { display: flex; flex: 0 0 auto; height: 28px; border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); overflow: hidden; background: var(--ds-surface); }
+.ds-seg__opt { position: relative; display: grid; place-items: center; padding: 0 7px; font-size: var(--ds-fs-pill); font-weight: var(--ds-fw-semi); color: var(--ds-pill-text); white-space: nowrap; }
+.ds-seg__opt + .ds-seg__opt { border-left: 1px solid var(--ds-border); }
+.ds-seg__opt[data-on="true"] { color: var(--ds-green); }
+.ds-seg__opt[data-on="true"]::before { content: ""; position: absolute; inset: 2px; border-radius: var(--ds-r-pill); background: var(--ds-green-pill-bg); z-index: 0; }
+.ds-seg__opt span { position: relative; z-index: 1; }
+
+/* ── checklist ───────────────────────────────────────────────────────────── */
+.ds-checklist { border: 1px solid var(--ds-line); border-radius: var(--ds-r-control); overflow: hidden; }
+.ds-tabs { display: flex; gap: var(--ds-6); padding: 0 var(--ds-4); border-bottom: 1px solid var(--ds-border); }
+.ds-tab { display: inline-flex; align-items: center; gap: var(--ds-2); height: 30px; font-size: var(--ds-fs-tab); font-weight: var(--ds-fw-semi); color: var(--ds-text); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.ds-tab svg { width: 13px; height: 13px; color: var(--ds-text-2); }
+.ds-tab[data-on="true"] { border-bottom-color: var(--ds-tab-active); }
+.ds-crow { display: flex; align-items: center; gap: var(--ds-3); padding: var(--ds-2) var(--ds-4); border-bottom: 1px solid var(--ds-line); }
+.ds-crow:last-child { border-bottom: 0; }
+.ds-eye { flex: 0 0 auto; width: 26px; height: 26px; border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); background: var(--ds-field); display: grid; place-items: center; }
+.ds-eye svg { width: 13px; height: 13px; color: var(--ds-text-2); }
+.ds-crow__input { flex: 1; min-width: 0; height: 26px; display: flex; align-items: center; padding: 0 var(--ds-3); background: var(--ds-field); border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); font-size: var(--ds-fs-meta); color: var(--ds-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── purple prompt banner ────────────────────────────────────────────────── */
+.ds-prompt { background: var(--ds-purple-bg); border-radius: var(--ds-r-control); padding: var(--ds-4); }
+.ds-prompt__head { display: flex; align-items: center; gap: var(--ds-2); font-size: var(--ds-fs-label); font-weight: var(--ds-fw-semi); letter-spacing: 0.03em; color: var(--ds-purple); }
+.ds-prompt__head svg { width: 14px; height: 14px; }
+.ds-prompt__box { display: flex; align-items: center; gap: var(--ds-3); margin-top: var(--ds-3); background: var(--ds-field); border: 1px solid var(--ds-border-brand); border-radius: var(--ds-r-control); padding: var(--ds-2) var(--ds-3); }
+.ds-prompt__ph { font-size: var(--ds-fs-meta); color: var(--ds-text-2); }
+.ds-prompt__sp { flex: 1; }
+.ds-generate { height: 24px; padding: 0 var(--ds-3); border-radius: var(--ds-r-btn); background: var(--ds-primary-2); color: var(--ds-on-primary-soft); font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); display: inline-flex; align-items: center; gap: var(--ds-2); }
+.ds-generate svg { width: 12px; height: 12px; }
+
+/* ── green import bar + drop zones ───────────────────────────────────────── */
+.ds-import { background: var(--ds-green-bar-bg); border-radius: var(--ds-r-control); padding: var(--ds-3); }
+.ds-import__head { display: flex; align-items: center; gap: var(--ds-2); font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-green-deep); }
+.ds-import__head svg { width: 14px; height: 14px; }
+.ds-import__sp { flex: 1; }
+.ds-import__strip { display: flex; align-items: center; margin-top: var(--ds-3); padding: 0 var(--ds-2) 0 var(--ds-4); height: 28px; background: var(--ds-field); border-radius: var(--ds-r-control); font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.ds-import__btn { height: 22px; padding: 0 var(--ds-3); border-radius: var(--ds-r-control); background: var(--ds-primary); color: var(--ds-on-primary-soft); font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); display: inline-flex; align-items: center; }
+.ds-drops { display: flex; gap: var(--ds-3); margin-top: var(--ds-3); }
+.ds-drop { flex: 1; height: 86px; border: 1px dashed var(--ds-border); border-radius: var(--ds-r-card); background: var(--ds-surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ds-2); text-align: center; }
+.ds-drop svg { width: 20px; height: 20px; color: var(--ds-text-2); }
+.ds-drop__title { font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: #303030; }
+.ds-drop__sub { font-size: 8px; color: var(--ds-placeholder); }
+.ds-minibtns { display: flex; gap: var(--ds-2); margin-top: var(--ds-3); }
+
+/* ── restriction cards (Follow Up) ───────────────────────────────────────── */
+.ds-restr { display: flex; gap: var(--ds-3); }
+.ds-restr__card { flex: 1; border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); overflow: hidden; }
+.ds-restr__head { display: flex; align-items: center; gap: var(--ds-2); padding: var(--ds-3); border-bottom: 1px dashed rgba(217, 217, 217, 0.6); }
+.ds-restr__head svg { width: 14px; height: 14px; color: var(--ds-text-2); flex: 0 0 auto; }
+.ds-restr__name { flex: 1; font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: var(--ds-text); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-restr__body { padding: var(--ds-3); }
+.ds-toggle { flex: 0 0 auto; width: 28px; height: 16px; border-radius: var(--ds-r-pill); background: var(--ds-toggle-off); padding: 3px; box-sizing: border-box; }
+.ds-toggle__knob { width: 10px; height: 10px; border-radius: 3px; background: var(--ds-toggle-knob); transition: transform var(--ds-dur-fast) var(--ds-ease-out); }
+.ds-toggle[data-on="true"] .ds-toggle__knob { transform: translateX(12px); }
+
+/* ── slider ──────────────────────────────────────────────────────────────── */
+.ds-slider__label { font-size: var(--ds-fs-label); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.ds-slider__hint { font-size: 8.5px; color: var(--ds-text-neutral2); margin-top: 1px; }
+.ds-slider__ctl { display: flex; align-items: center; gap: var(--ds-3); margin-top: var(--ds-3); padding: var(--ds-3); background: var(--ds-field); border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); }
+.ds-slider__rail { position: relative; flex: 1; height: 5px; border-radius: 12px; background: var(--ds-slider-rail); }
+.ds-slider__fill { position: absolute; left: 0; top: 0; bottom: 0; width: 22%; border-radius: 12px 0 0 12px; background: var(--ds-slider-fill); }
+.ds-slider__knob { position: absolute; top: 50%; left: 22%; width: 16px; height: 14px; border-radius: 5px; background: var(--ds-slider-fill); transform: translate(-50%, -50%); }
+.ds-slider__val { font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-text-alt); }
+
+/* ── side rail: Creation Overview ────────────────────────────────────────── */
+.ds-rail { flex: 0 0 200px; align-self: stretch; background: var(--ds-surface); border: 1px solid var(--ds-border-card); border-radius: var(--ds-r-card); padding: var(--ds-5); }
+.ds-rail__title { font-size: var(--ds-fs-label); color: var(--ds-text-2); margin-bottom: var(--ds-5); }
+.ds-rail__step { display: flex; gap: var(--ds-3); }
+.ds-rail__col { display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; }
+.ds-rail__dot { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; font-weight: var(--ds-fw-semi); background: var(--ds-muted); color: var(--ds-text-2); transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out); }
+.ds-rail__line { flex: 1; width: 1.5px; background: var(--ds-line); margin: 4px 0; min-height: 10px; }
+.ds-rail__step:last-child .ds-rail__line { display: none; }
+.ds-rail__detail { padding-bottom: var(--ds-5); min-width: 0; transition: opacity var(--ds-dur-state) ease; }
+.ds-rail__name { font-size: 11.5px; font-weight: var(--ds-fw-semi); color: var(--ds-text-2); line-height: 18px; transition: color var(--ds-dur-state) ease; }
+.ds-rail__meta { font-size: 9px; color: var(--ds-text-3); margin-top: 3px; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-rail__step[data-state="active"] .ds-rail__dot { background: var(--ds-primary); color: #fff; }
+.ds-rail__step[data-state="active"] .ds-rail__name { color: var(--ds-text); }
+.ds-rail__step[data-state="done"] .ds-rail__dot { background: var(--ds-green-pill-bg); color: var(--ds-green); }
+.ds-rail__step[data-state="done"] .ds-rail__name { color: var(--ds-text-alt); }
+.ds-rail__step[data-state="todo"] .ds-rail__detail { opacity: 0.35; }
+
+/* ── demo cursor + click ripple ──────────────────────────────────────────── */
+.ds-cursor { position: absolute; top: 0; left: 0; z-index: 20; pointer-events: none; margin: -2px 0 0 -3px; opacity: 0; transition: transform var(--ds-dur-move) var(--ds-ease-move), opacity 220ms ease; filter: drop-shadow(0 3px 5px rgba(20, 16, 45, 0.32)); }
+.ds-cursor[data-visible="true"] { opacity: 1; }
+.ds-cursor__ptr { display: block; transition: transform 130ms var(--ds-ease-out); transform-origin: 3px 2px; }
+.ds-cursor[data-press="true"] .ds-cursor__ptr { transform: scale(0.82); }
+.ds-ripple { position: absolute; top: 0; left: 0; z-index: 19; pointer-events: none; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid var(--ds-accent-soft); animation: dsRipple 460ms var(--ds-ease-out) forwards; }
+@keyframes dsRipple { from { opacity: 0.7; transform: scale(0.3); } to { opacity: 0; transform: scale(2.1); } }
+
+/* ── variant 1: simplified (no rail, narrower design scaled up) ──────────── */
+.ds-root--simple { width: 520px; }
+.ds-root--simple .ds-stack { height: 475px; }
+
+/* ── variant 3: focused (stepper + one big card) ─────────────────────────── */
+.ds-root--focus { width: 600px; }
+.ds-focus { padding: var(--ds-6); }
+.ds-stepper { display: flex; align-items: center; margin-bottom: var(--ds-5); }
+.ds-stepper__item { display: flex; align-items: center; gap: var(--ds-2); flex: 0 0 auto; }
+.ds-stepper__item:not(:last-child)::after { content: ""; width: 26px; height: 1.5px; background: var(--ds-line); margin: 0 var(--ds-3); }
+.ds-stepper__dot { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; font-weight: var(--ds-fw-semi); background: var(--ds-muted); color: var(--ds-text-2); transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out); }
+.ds-stepper__label { font-size: var(--ds-fs-sub); font-weight: var(--ds-fw-semi); color: var(--ds-text-2); transition: color var(--ds-dur-state) ease; }
+.ds-stepper__item[data-state="active"] .ds-stepper__dot { background: var(--ds-primary); color: #fff; }
+.ds-stepper__item[data-state="active"] .ds-stepper__label { color: var(--ds-text); }
+.ds-stepper__item[data-state="done"] .ds-stepper__dot { background: var(--ds-green-pill-bg); color: var(--ds-green); }
+.ds-focus__card { background: var(--ds-surface); }
+.ds-focus__body { height: 256px; overflow: hidden; padding: 0 var(--ds-5); display: flex; flex-direction: column; justify-content: center; }
+.ds-focus__card .ds-foot { padding: var(--ds-4) var(--ds-5) var(--ds-5); }
+
+/* ── side-by-side comparison scaffold (temporary) ────────────────────────── */
+.aw-compare { display: flex; flex-direction: column; gap: 28px; width: 100%; }
+.aw-compare__label { font-size: 12px; font-weight: 600; color: var(--muted, #888); margin-bottom: 10px; letter-spacing: 0.01em; }
+
+/* ── reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ds-card, .ds-card__body, .ds-step, .ds-chev, .ds-cursor, .ds-cursor__ptr,
+  .ds-rail__dot, .ds-rail__name, .ds-rail__detail, .ds-toggle__knob { transition: none !important; }
+  .ds-card[data-active="true"] .ds-stagger > * { animation: none !important; }
+  .ds-ripple { display: none !important; }
+}

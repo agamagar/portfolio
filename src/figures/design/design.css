@@ -1,0 +1,70 @@
+/* Design Mode figure: a row of device mocks, each a pixel-perfect Figma plate
+   over a live directed region (shader sky). The phone UI is always dark like a
+   real product screenshot, independent of the site theme. Rendered inside the
+   shared figure card (.article__figure-live). */
+.fig-design {
+  width: 100%;
+}
+.fig-design__row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: stretch;
+}
+.fig-design__phone {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 208px;
+  border-radius: 28px;
+  overflow: hidden;
+  /* subtle shadow that stays within the card's padding (the card is the frame) */
+  box-shadow: 0 10px 24px -14px rgba(10, 8, 30, 0.55);
+  /* aspect-ratio + background-color are set inline from w/h/bg */
+}
+/* directed animated region (the live sky), composited behind the plate */
+.fig-design__region {
+  position: absolute;
+  overflow: hidden;
+  /* left/top/width/height set inline as % of the mock */
+}
+.fig-design__shader {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* the pixel-perfect opaque plate, underneath the directed regions */
+.fig-design__base {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Present mode: bigger, centered */
+.fig-design--slide .fig-design__row {
+  gap: 20px;
+}
+.fig-design--slide .fig-design__phone {
+  max-width: min(20vw, 260px);
+}
+
+/* mobile: scroll the mocks horizontally WITHIN the card (no page breakout — the
+   card clips overflow, so the row scrolls inside the card's content area) */
+@media (max-width: 560px) {
+  .fig-design__row {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fig-design__phone {
+    flex: 0 0 52%;
+    max-width: none;
+    scroll-snap-align: center;
+  }
+}

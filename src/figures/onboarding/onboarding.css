@@ -1,0 +1,25 @@
+/* Stella onboarding — "Frozen-Frame Focal" concept animation. The product is
+   skeleton (gray rows in a clean app window); the CONCEPT — Stella completing
+   setup for you — is the one lit thing per beat: a row's focal ring + its check
+   stamping green, named by a small caption. No forms, no cursor-click, no popup.
+   Framework: Claude/animation-base-layer.md (§11). Built on ds/Scaffold + concept
+   primitives (FocalOutline, Caption). */
+
+.onb2-head { display: flex; align-items: center; gap: 11px; margin: 4px 2px 18px; }
+.onb2-orb { width: 22px; height: 22px; display: block; flex: 0 0 auto; transition: transform var(--ds-dur-state) var(--ds-ease-pop); }
+.onb2-orb[data-breathe="true"] { animation: onb2Breathe 2.4s var(--ds-ease-move) infinite; }
+.onb2-orb[data-live="true"] { transform: scale(1.12); }
+@keyframes onb2Breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.9); } }
+
+.onb2-list { display: flex; flex-direction: column; gap: 10px; }
+.onb2-row { display: flex; align-items: center; gap: 12px; height: 30px; padding: 0 6px; }
+.onb2-box { width: 21px; height: 21px; border-radius: 7px; background: var(--ds-shim); flex: 0 0 auto; display: grid; place-items: center; color: #fff; transition: background var(--ds-dur-state) var(--ds-ease-out); }
+.onb2-row[data-done="true"] .onb2-box { background: var(--ds-focal-green); }
+.onb2-box svg { width: 13px; height: 13px; }
+.onb2-row[data-done="true"] .onb2-box svg { animation: onb2Stamp 320ms var(--ds-ease-pop) both; }
+@keyframes onb2Stamp { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .onb2-orb[data-breathe="true"] { animation: none; }
+  .onb2-row[data-done="true"] .onb2-box svg { animation: none; }
+}
