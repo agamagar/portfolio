@@ -7,9 +7,15 @@ frontend:
   phases:
     preBuild:
       commands:
+        # the default image runs Node 16; Tailwind's compiler needs 20+, and on
+        # 16 npm silently skips its Linux binary (build #67/#68 failed on that)
+        - nvm install 20
+        - nvm use 20
+        - node -v
         - npm ci --ignore-scripts
     build:
       commands:
+        - nvm use 20
         - VITE_PUBLIC_SITE=1 npm run build
         - rm -rf dist/dj dist/ekam-content-system dist/shader-viewer dist/feedback-voice-harness.html dist/mobile-check.html dist/data/sd dist/data/sd_slot_availability_daily_2026.csv
   artifacts:
