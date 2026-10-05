@@ -3,6 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 5 Oct: the deployed site opens in dark. Set the class before first paint so
+         there is no light flash; Vite fills %VITE_PUBLIC_SITE% at build time
+         (dev leaves the literal text, so dev keeps its time-of-day theme). A
+         visitor's own light pick (lib/autoTheme.js, "theme-manual") still wins. -->
+    <script>
+      if ("%VITE_PUBLIC_SITE%" === "1") {
+        var pick = null;
+        try { pick = JSON.parse(localStorage.getItem("theme-manual") || "null"); } catch (e) {}
+        if (!pick || pick.theme !== "light") document.documentElement.classList.add("dark");
+      }
+    </script>
     <title>Agam Agarwal</title>
     <!-- The site had no icon of any kind, so every tab showed the browser's blank
          document glyph. This is the face redrawn at 32px (public/favicon.svg),

@@ -10873,6 +10873,9 @@ export default function App() {
     // so PDF exports always render the light tokens regardless of the machine.
     const forced = new URLSearchParams(window.location.search).get("theme");
     if (forced === "dark" || forced === "light") return forced;
+    // 5 Oct: the deployed site opens in DARK (a visitor's own toggle still wins);
+    // dev keeps the time-of-day theme
+    if (import.meta.env.VITE_PUBLIC_SITE === "1") return manualTheme() ?? "dark";
     // a theme the visitor picked recently, else the time of day (lib/autoTheme.js)
     return manualTheme() ?? themeForTime();
   });
@@ -10880,6 +10883,7 @@ export default function App() {
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).get("theme");
     if (forced === "dark" || forced === "light") return undefined;
+    if (import.meta.env.VITE_PUBLIC_SITE === "1") return undefined; // deployed: stays dark, no dusk/dawn flip
     const id = setInterval(() => {
       if (manualTheme()) return;
       const t = themeForTime();
