@@ -1,0 +1,219 @@
+{
+  "engine": "mms",
+  "model": "facebook/mms-tts-guj",
+  "sr": 16000,
+  "lines": {
+    "screen-answer-role-question": {
+      "dur": 11.559,
+      "gloss": "Yes, I will tell you. There is a packing operator opening at the Sanand plant. The shift is twelve hours, not two, twelve. our recruiter Rakeshbhai will talk with you about the pay. May I ask you one thing now?"
+    },
+    "open-greet": {
+      "dur": 3.971,
+      "gloss": "How are you? This is a call from Zydus. Am I speaking with Maheshbhai?"
+    },
+    "open-whois": {
+      "dur": 14.282,
+      "gloss": "I am Stella, from Zydus. Zydus is a medicine company, in Ahmedabad. I am not a person, I am a computer. This call is about the plant job. You can check the number on Zydus's own website."
+    },
+    "open-robot": {
+      "dur": 8.064,
+      "gloss": "Yes, that's right. I am not a person, I am Zydus's computer. If you want to speak to a person I will connect you right now."
+    },
+    "open-disclose": {
+      "dur": 8.909,
+      "gloss": "I am Stella. Let me say one thing first: I am not a person, I am a computer. If you want to talk to a person I will connect you."
+    },
+    "open-why": {
+      "dur": 6.368,
+      "gloss": "You applied for the operator position at Zydus's Ahmedabad plant, didn't you? There are a few things to ask about that application."
+    },
+    "open-verify": {
+      "dur": 15.775,
+      "gloss": "You can check on Zydus's website, or call the number listed there. There is no need to call a number I give you. If you want to put the phone down right now that is fine too, we can talk after you have checked."
+    },
+    "open-permission": {
+      "dur": 5.861,
+      "gloss": "It will take two or three minutes, no more. Does now suit you?"
+    },
+    "open-callback-ask": {
+      "dur": 8.512,
+      "gloss": "That is no problem at all. You tell me the time. Morning or evening, and at what hour? I will say the time back to you, and then I will call at exactly that time."
+    },
+    "open-callback-set": {
+      "dur": 10.198,
+      "gloss": "Noted it down, Maheshbhai. At seven in the evening, not quarter to seven, the call will come from this same number. It is written in your record that you gave a time. Thank you."
+    },
+    "open-badtime-hardno": {
+      "dur": 8.135,
+      "gloss": "Understood. I will not call again, and I am taking your number off the list. Sorry for the trouble."
+    },
+    "open-silence": {
+      "dur": 2.011,
+      "gloss": "Hello? Can you hear my voice?"
+    },
+    "open-gatekeeper": {
+      "dur": 9.16,
+      "gloss": "That is fine, no problem. I am calling from Zydus about a job, I will not say anything more on the phone. Should I call in the afternoon, or in the evening?"
+    },
+    "open-human-now": {
+      "dur": 8.014,
+      "gloss": "Yes, of course. I am connecting you right now to a person in the Zydus HR team. It will take a minute or two, and until then I am still on the line."
+    },
+    "screen-frame-low-stakes": {
+      "dur": 11.917,
+      "gloss": "I will ask four or five questions now, just to see whether this work will suit you or not. This is not an exam, there is no pass or fail. If you want to ask me something in between, you can."
+    },
+    "screen-q-experience": {
+      "dur": 4.009,
+      "gloss": "How many years have you been doing this work, and which company were you at last?"
+    },
+    "screen-readback-experience": {
+      "dur": 2.932,
+      "gloss": "Nine years of experience, nine years. Not nineteen, nine. Correct?"
+    },
+    "screen-mirror-english": {
+      "dur": 5.453,
+      "gloss": "Nine years, right? That is nine, not nineteen. And where was the last company, will you say it once more?"
+    },
+    "screen-q-work": {
+      "dur": 3.193,
+      "gloss": "What work did you do there every day, would you tell me?"
+    },
+    "screen-q-location": {
+      "dur": 1.875,
+      "gloss": "Which area do you live in at present?"
+    },
+    "screen-travel-honest": {
+      "dur": 11.449,
+      "gloss": "I do not have exact information on whether there is a company bus, so I will not say anything false. I am writing your question down. A person from HR will call you on this same number and answer it."
+    },
+    "screen-q-shift": {
+      "dur": 7.654,
+      "gloss": "The shift runs from eight in the morning to eight in the evening, twelve hours. Six days in the week. Would a day shift suit you, or would a night shift suit you?"
+    },
+    "screen-q-notice": {
+      "dur": 8.406,
+      "gloss": "If everything works out, from when could you start the new work? And where you work now, how many days in advance do you have to tell them?"
+    },
+    "screen-readback-notice": {
+      "dur": 4.14,
+      "gloss": "Twenty nine days, that is twenty nine, not thirty. Twenty nine days. Is that correct?"
+    },
+    "screen-notice-not-applicable": {
+      "dur": 5.773,
+      "gloss": "Alright. So I am writing this down: that you can join immediately, there is no notice period. Is that right?"
+    },
+    "screen-q-pay": {
+      "dur": 4.442,
+      "gloss": "How much salary comes into your hand per month at present? Could you say it in thousands?"
+    },
+    "screen-pay-unit": {
+      "dur": 3.669,
+      "gloss": "Fifteen thousand, per month, in hand. Fifteen thousand. Fifteen, not sixteen. Correct?"
+    },
+    "screen-readback-pay": {
+      "dur": 7.244,
+      "gloss": "Let me just make this firm. Nineteen thousand, that is nineteen, not twenty. Per month, what you get in hand. Right?"
+    },
+    "screen-correction-accepted": {
+      "dur": 11.12,
+      "gloss": "Sorry, my mistake. Twenty thousand a month. That is twenty, not nineteen. Is that right? Now I will read out each remaining detail to you one by one."
+    },
+    "repair-deadair-1": {
+      "dur": 5.135,
+      "gloss": "Sorry, my system is a little slow. I am right here, the line is live."
+    },
+    "repair-deadair-2": {
+      "dur": 7.639,
+      "gloss": "Sorry, the line stopped again. Everything you said has reached me, nothing is gone. Shall we carry on?"
+    },
+    "repair-deadair-3": {
+      "dur": 13.843,
+      "gloss": "That is three times now, and that is my mistake. There are two ways from here. I can get you talking to a person at Zydus right now, or a person will call you back at a time you name. Shall I put you through now, or will you tell me a time?"
+    },
+    "repair-misrec-1": {
+      "dur": 5.944,
+      "gloss": "I missed a bit, my fault. I only heard this much, 'years'. Will you say the whole thing again?"
+    },
+    "repair-misrec-2": {
+      "dur": 8.567,
+      "gloss": "Sorry, I did not hear that properly. Let me make the question easier. Will you tell me just this much: is the experience less than ten years, or more than ten years?"
+    },
+    "repair-misrec-3": {
+      "dur": 15.652,
+      "gloss": "The mistake is on my side, the line is not good. Shall we use the phone's buttons? If you have less than ten years of experience press one, if more than ten years press two. And if you want to talk to a person press nine, I will connect you right away."
+    },
+    "repair-noise-1": {
+      "dur": 7.92,
+      "gloss": "There is some noise, I cannot hear you properly. Will you hold the phone a little closer? I will also speak slowly and a little louder."
+    },
+    "repair-name-1": {
+      "dur": 10.272,
+      "gloss": "Sorry, your name came out wrong from me. Will you say your name slowly, twice? Then I will learn it from you and say it that way."
+    },
+    "repair-name-3": {
+      "dur": 9.699,
+      "gloss": "Then I will not say the name, so it does not come out wrong. I am writing down how to say your name for our person. Let us go ahead without the name, is that alright?"
+    },
+    "repair-human-now": {
+      "dur": 11.159,
+      "gloss": "Connecting you now. Please stay right on the line, it will take a moment. If nobody picks up, I will come back on. And I will tell the person everything you said myself, so you will not have to say it again."
+    },
+    "repair-exit-grace": {
+      "dur": 16.819,
+      "gloss": "So this much is settled. Tomorrow morning someone of ours from Zydus will call you on this same number. Your application is still active. The call staying unfinished today is my fault, not yours, and I have written exactly that in your file. Thank you for your time. Goodbye."
+    },
+    "listen-old-carryon": {
+      "dur": 1.533,
+      "gloss": "Alright. How long is your notice period?"
+    },
+    "listen-fix-acknowledge": {
+      "dur": 10.329,
+      "gloss": "One moment, Maheshbhai. You said you have had no work for three months and are looking for a job. I have written that down, and I will send it to the recruiter along with the rest of your details."
+    },
+    "listen-fix-readback": {
+      "dur": 2.629,
+      "gloss": "Three months, that is three, not thirteen. Correct?"
+    },
+    "listen-fix-adapt": {
+      "dur": 8.617,
+      "gloss": "So I am leaving the notice period question aside, you do not need it right now. From when could you start work, this week or from next month?"
+    },
+    "close-promise": {
+      "dur": 15.144,
+      "gloss": "Let me tell you what happens next. Within two working days a Zydus recruiter will call you on this same number. A real person, not me. Yes or no, either way you will get an answer. And if you want to ask anything in between, I am sending you the HR number by SMS right now."
+    },
+    "close-data": {
+      "dur": 10.619,
+      "gloss": "Yes, this call is recorded. It stays only with Zydus's hiring team, we do not give it to anyone outside. If you want it deleted, you can tell HR. I am sending you HR's number by SMS right now."
+    },
+    "close-human-check": {
+      "dur": 11.534,
+      "gloss": "Yes, a person will see it. I only write things down, a Zydus person decides. And if I do not follow you properly, that is not your fault, I will connect you to a person myself."
+    },
+    "close-advance": {
+      "dur": 10.453,
+      "gloss": "Your application has moved ahead. On Tuesday at eleven in the morning there is an interview at the plant, eleven, not twelve. I will send the address and the time by SMS. Does Tuesday at eleven suit you?"
+    },
+    "close-advance-reschedule": {
+      "dur": 10.464,
+      "gloss": "I am writing down exactly the time you said. Tuesday at three in the afternoon, three, not four. I am writing your shift down for the recruiter too, so that they do not ask you the same thing again."
+    },
+    "close-nofit": {
+      "dur": 18.562,
+      "gloss": "Maheshbhai, let me say it plainly. This position needs three years of packaging line experience, and you do not have that yet. It is not that anything is wrong with you, this is just this one position's requirement. Your name stays on Zydus's list, and when another position like this opens a recruiter will call you directly."
+    },
+    "close-nofit-why": {
+      "dur": 14.927,
+      "gloss": "No. This has nothing to do with your accent or your language. There is one reason only, the years of experience fell short. And this is not the final decision. If you want, I will send the whole thing to a person on our side, and they will look at it again."
+    },
+    "close-nofit-distress": {
+      "dur": 12.787,
+      "gloss": "I understand, Maheshbhai. I am connecting you to a person right now. If now does not suit you, they will call you today at six in the evening. What suits you, now or six in the evening?"
+    },
+    "close-final-promise": {
+      "dur": 9.047,
+      "gloss": "One last thing, Maheshbhai. Yes or no, you will definitely get an answer. A call or a message will come within a few days. You gave me your time, thank you. Goodbye."
+    }
+  }
+}

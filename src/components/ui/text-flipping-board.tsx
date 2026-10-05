@@ -120,25 +120,20 @@ const FlapCell = React.memo(function FlapCell({
 
   const textCx =
     "absolute inset-x-0 flex select-none items-center justify-center font-mono font-bold tracking-wide";
-  const topBg = accent?.top ?? "bg-[var(--hover)]";
-  const bottomBg = accent?.bottom ?? "bg-[var(--hover)]";
+  // Default (non-accent) faces carry no fill: just the border, blur, and seam.
+  const topBg = accent?.top ?? "";
+  const bottomBg = accent?.bottom ?? "";
   const textColor = accent?.text ?? "text-[var(--fg)]";
 
-  const flapTopBg = prevAccent?.top ?? "bg-[var(--hover)]";
+  const flapTopBg = prevAccent?.top ?? "";
   const flapTextColor = prevAccent?.text ?? "text-[var(--fg)]";
 
   const bottomDelay = flipDuration * 0.5;
 
   return (
-    <div className="flex aspect-3/6 flex-col overflow-hidden rounded-[2px] border border-[var(--line)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] md:rounded-[3px] md:border-2 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+    <div className="flex aspect-3/6 flex-col overflow-hidden rounded-[2px] border border-white/20 md:rounded-[3px] md:border-2 dark:border-white/10">
       {/* Flap content area */}
       <div className="relative flex-1 perspective-dramatic transform-3d">
-        <div className="absolute inset-0 z-40 hidden flex-row items-center justify-center md:flex">
-          <div className="h-1/2 w-px rounded-tr-sm rounded-br-sm bg-[var(--line)]" />
-          <div className="flex h-px flex-1 bg-[var(--line)]" />
-          <div className="h-1/2 w-px rounded-tl-sm rounded-bl-sm bg-[var(--line)]" />
-        </div>
-
         {/* Static top – new character top half */}
         <div
           className={cn(
@@ -242,9 +237,7 @@ const FlapCell = React.memo(function FlapCell({
           </motion.div>
         )}
 
-        {/* Hinge — soft ambient shadow at the fold (under the moving flaps) plus a
-            crisp seam line, so the two flaps read as physical cards meeting at a recess. */}
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[5] h-2 -translate-y-1/2 bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.1)_50%,transparent)] dark:bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.5)_50%,transparent)]" />
+        {/* Hinge — just a crisp seam line where the two flaps meet (fold shadow removed). */}
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-px -translate-y-[0.5px] bg-[var(--line)]" />
       </div>
 
@@ -409,7 +402,7 @@ export function TextFlippingBoard({
   return (
     <div
       className={cn(
-        "relative mx-auto w-full max-w-3xl rounded-xl bg-[var(--bg)] p-2 shadow-[0_10px_36px_-14px_rgba(0,0,0,0.22)] md:rounded-2xl md:p-4 dark:shadow-[0_14px_50px_-18px_rgba(0,0,0,0.6)]",
+        "relative mx-auto w-full max-w-3xl rounded-xl p-2 md:rounded-2xl md:p-4",
         className,
       )}
     >

@@ -1,0 +1,95 @@
+/* System-Explainer kit styles (base-layer §12). Tokens read off the surrounding
+   .ds-root theme; --se-accent carries "active". The default --se-* contract lives at
+   :root (see systemExplainer/skins.css) so a per-case skin on any ancestor can override
+   it; do NOT re-declare --se-* on .ds-root here, or the skin can't reach the figure. */
+
+/* panels — fully legible on every side; tone only tints the heading */
+.se-panel { background: #0b0b0f; border: 1px solid #20202a; border-radius: 16px; padding: 16px 18px; }
+.se-panel__head { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6f6f7e; margin: 0 0 12px; }
+.se-panel--raw .se-panel__head { color: #6f6f7e; }
+.se-panel--built .se-panel__head { color: #6f6f7e; }
+
+/* extract: the in-flow source highlight */
+.se-mark {
+  display: inline; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  border-radius: 5px; padding: 0.5px 3px; margin: 0 -1px; color: inherit;
+  background: transparent; box-shadow: inset 0 0 0 1.5px transparent;
+  transition: color .2s ease, background .2s ease, box-shadow .25s ease;
+}
+.se-mark.is-on {
+  color: #eaf1ff;
+  background: color-mix(in srgb, var(--se-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--se-accent);
+}
+
+/* extract: the lifted fact rows */
+.se-field {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 7px 11px; background: #17171f; border: 1px solid #20202a; border-radius: 9px;
+  opacity: 0.12; transform: translateY(4px);
+  transition: opacity .3s ease, transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.se-field.is-shown { opacity: 1; transform: none; }
+.se-field__k { font-size: 10.5px; color: #8a8a98; flex: 0 0 auto; }
+.se-field__v { font-size: 12.5px; font-weight: 500; color: #f4f4f6; text-align: right; }
+
+/* the streaming connector between panels */
+.se-connector { position: relative; flex: 0 0 auto; align-self: center; height: 2px; border-radius: 2px; background: #20202a; overflow: hidden; }
+.se-connector--v { height: auto; width: 2px; }
+.se-connector::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--se-accent) 50%, transparent 100%);
+  background-size: 55% 100%; background-repeat: no-repeat;
+  animation: seStream 1.5s linear infinite;
+}
+.se-connector--v::after {
+  background: linear-gradient(180deg, transparent 0%, var(--se-accent) 50%, transparent 100%);
+  background-size: 100% 55%; animation-name: seStreamV;
+}
+@keyframes seStream { 0% { background-position: -55% 0; } 100% { background-position: 155% 0; } }
+@keyframes seStreamV { 0% { background-position: 0 -55%; } 100% { background-position: 0 155%; } }
+
+/* sequence: the timeline/stepper */
+.se-track { list-style: none; margin: 0; padding: 0; position: relative; }
+.se-track::before { /* the rail */
+  content: ""; position: absolute; left: 5.5px; top: 6px; bottom: 6px; width: 2px; background: #20202a; border-radius: 2px;
+}
+.se-track::after { /* the fill, grows to the active node */
+  /* scaleY on a full-height bar, not an animated height: the same visual, without
+     forcing layout on every frame. transform-origin pins it to the top so it still
+     grows downward. */
+  content: ""; position: absolute; left: 5.5px; top: 6px; width: 2px; bottom: 6px;
+  background: var(--se-accent); border-radius: 2px;
+  transform-origin: top center;
+  transform: scaleY(var(--se-fill-n, 0));
+  transition: transform var(--ds-dur-expand) var(--ds-ease-out);
+}
+.se-step { position: relative; display: flex; gap: 14px; padding: 0 0 16px 0; }
+.se-step:last-child { padding-bottom: 0; }
+.se-step__node { position: relative; z-index: 1; flex: 0 0 auto; width: 13px; height: 13px; margin-top: 3px; border-radius: 50%;
+  background: #15151c; box-shadow: inset 0 0 0 2px #2a2a35; transition: box-shadow .3s ease, background .3s ease; }
+.se-step.is-active .se-step__node { background: var(--se-accent); box-shadow: inset 0 0 0 2px var(--se-accent), 0 0 0 4px color-mix(in srgb, var(--se-accent) 22%, transparent); animation: sePulse 1.6s ease-in-out infinite; }
+.se-step.is-done .se-step__node { background: var(--se-accent); box-shadow: inset 0 0 0 2px var(--se-accent); }
+.se-step__body { display: flex; flex-direction: column; gap: 2px; }
+.se-step__label { font-size: 13px; font-weight: 500; color: #f4f4f6; transition: color .3s ease; }
+.se-step__sub { font-size: 11px; color: #8a8a98; }
+.se-step.is-todo .se-step__label { color: #6f6f7e; }
+.se-step.is-todo .se-step__sub { opacity: 0; }
+@keyframes sePulse { 0%, 100% { box-shadow: inset 0 0 0 2px var(--se-accent), 0 0 0 4px color-mix(in srgb, var(--se-accent) 22%, transparent); } 50% { box-shadow: inset 0 0 0 2px var(--se-accent), 0 0 0 7px color-mix(in srgb, var(--se-accent) 0%, transparent); } }
+
+/* score / accumulate: weighted bars */
+.se-bar { position: relative; flex: 1 1 auto; height: 7px; border-radius: 4px; background: #17171f; overflow: hidden; }
+.se-bar__fill { position: absolute; inset: 0; transform-origin: left center; border-radius: 4px; background: var(--se-accent);
+  transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.se-bar--good .se-bar__fill { background: var(--ds-focal-green, #34d399); }
+.se-bar--warn .se-bar__fill { background: var(--ds-focal-amber, #fbbf24); }
+.se-bar--bad  .se-bar__fill { background: var(--ds-focal-red, #f87171); }
+.se-meter { display: flex; align-items: center; gap: 12px; opacity: 0.18; transition: opacity .3s ease; }
+.se-meter.is-shown { opacity: 1; }
+.se-meter__label { flex: 0 0 auto; width: 116px; font-size: 12px; color: #cbcbd4; }
+.se-meter__val { flex: 0 0 auto; width: 28px; text-align: right; font-size: 12.5px; font-weight: 600; color: #f4f4f6; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .se-connector::after { animation: none; background: var(--se-accent); opacity: 0.4; }
+  .se-step.is-active .se-step__node { animation: none; }
+}

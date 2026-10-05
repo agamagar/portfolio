@@ -1,0 +1,77 @@
+/* The lab, grouped by mode. Theme-aware via the site tokens. Full-bleed like the
+   Specimen Sheet so the two-column mode rows have room. */
+.mg { --accent: var(--fg); margin: 8px 0 0; margin-inline: calc(50% - 50vw); width: 100vw; }
+.mg > * { max-width: 1180px; margin-inline: auto; padding-inline: clamp(1.25rem, 5vw, 3rem); }
+
+.mg__head { margin-bottom: 26px; }
+.mg__title { font-size: clamp(22px, 3vw, 30px); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 12px; color: var(--fg); }
+.mg__lede { font-size: 15px; line-height: 1.6; color: var(--muted); margin: 0; max-width: 64ch; }
+
+/* contents rail */
+.mg__rail { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-bottom: 30px; }
+.mg__rail a { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 12.5px; color: var(--muted); background: var(--hover); transition: color var(--m3-dur-effects-default), background var(--m3-dur-effects-default); }
+.mg__rail a:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 9%, transparent); }
+.mg__rail-no { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; opacity: 0.6; }
+
+/* per-mode section */
+.mg__mode { padding: 30px 0; border-top: 1px solid var(--line); }
+.mg__mode-head { display: flex; align-items: baseline; gap: 12px; }
+.mg__no { font-family: "Newsreader", Georgia, serif; font-size: 20px; color: color-mix(in srgb, var(--fg) 32%, transparent); }
+.mg__mode-title { font-size: clamp(18px, 2.2vw, 22px); letter-spacing: -0.016em; margin: 0; color: var(--fg); }
+.mg__count { margin-left: auto; font-size: 11px; color: var(--muted-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.mg__oneline { font-size: 14.5px; line-height: 1.55; color: var(--muted); margin: 10px 0 18px; max-width: 70ch; }
+
+.mg__cols { display: grid; gap: 22px; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 900px) { .mg__cols { grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 32px; } }
+.mg__sub { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 10px; }
+.mg__sub span { text-transform: none; letter-spacing: 0; opacity: 0.7; }
+
+/* the token / property panel */
+.mg-panel { display: flex; flex-direction: column; gap: 12px; }
+.mg-rows { display: flex; flex-direction: column; }
+.mg-rows--props { border-top: 1px dashed var(--line); padding-top: 10px; margin-top: 2px; }
+.mg-row {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer;
+  background: transparent; border: none; border-bottom: 1px solid var(--line); padding: 7px 4px;
+  transition: background var(--m3-dur-effects-default);
+}
+.mg-row:last-child { border-bottom: none; }
+.mg-row:hover { background: var(--hover); }
+.mg-row__sw { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 0 0 1px var(--line); }
+.mg-row__name { flex: 0 0 auto; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--fg); }
+.mg-row__val { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: var(--muted-2); }
+.mg-row.is-done .mg-row__val, .mg-row.is-done .mg-row__name { color: var(--accent); }
+
+/* live column */
+.mg__col--live { min-width: 0; position: relative; }
+.mg__col--live > * + * { margin-top: 14px; }
+/* ChooserFigure's .ds-root is absolutely positioned (scale-to-fit pattern that
+   expects a .ds-fit ancestor); here it has none, so pin it to this column
+   instead of letting it escape to the nearest positioned ancestor up the page. */
+.mg__col--live .ds-root.ss-chooser { position: relative; inset: auto; left: auto; top: auto; transform: none; width: 100%; max-width: 660px; }
+
+/* minis */
+.mg-mini { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: color-mix(in srgb, var(--fg) 2.5%, transparent); }
+.mg-mini--ease { display: flex; gap: 16px; }
+.mg-ease { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mg-ease svg { width: 70px; height: 70px; }
+.mg-ease path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+.mg-ease line, .mg-ease__grid { stroke: var(--line); }
+.mg-ease code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; color: var(--muted-2); }
+.mg-mini--fff { display: flex; flex-direction: column; gap: 10px; background: #fbfaf7; }
+.mg-fff-bar { height: 13px; border-radius: 6px; background: #e7e9ed; }
+.mg-fff-bar.is-lit { box-shadow: 0 0 0 2px var(--fc); background: color-mix(in srgb, var(--fc) 12%, #e7e9ed); }
+.mg-fff-bar--blue { --fc: #3b82f6; } .mg-fff-bar--amber { --fc: #f59e0b; } .mg-fff-bar--green { --fc: #22c55e; }
+.mg-mini--deck { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.mg-slide { display: flex; flex-direction: column; gap: 5px; }
+.mg-slide__art { display: block; aspect-ratio: 16/10; border: 1px solid var(--line); border-radius: 7px; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.mg-slide code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9px; color: var(--muted-2); }
+
+/* the skin compare under the System-Explainer mode */
+.mg-skins { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 620px) { .mg-skins { grid-template-columns: 1fr; } }
+.mg-skins__cap { font-size: 11px; font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--muted-2); margin: 0 0 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mg__rail a, .mg-row { transition: none; }
+}

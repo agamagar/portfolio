@@ -1,0 +1,130 @@
+{
+ "version": 1,
+ "image": "ref_5484.png",
+ "images": [
+  "ref_5484.png"
+ ],
+ "size": [
+  1200,
+  1600
+ ],
+ "coords": "normalized",
+ "source": "fix-core round 1: rectangles read on ref_5484.png (1200 x 1600 upright), inset from edges and room bars; score renders of ?shot=ref5484 at 1200 x 1600. The photo had the room's ceiling light on.",
+ "regions": {
+  "dome": {
+   "desc": "inside the lamp dome's silhouette: semi-matte black enamel",
+   "polygons": [
+    [
+     [
+      0.275,
+      0.15625
+     ],
+     [
+      0.54167,
+      0.15625
+     ],
+     [
+      0.54167,
+      0.35
+     ],
+     [
+      0.275,
+      0.35
+     ]
+    ]
+   ]
+  },
+  "pane_R2": {
+   "desc": "R2 row C glass left of the room bar",
+   "polygons": [
+    [
+     [
+      0.63333,
+      0.18125
+     ],
+     [
+      0.8125,
+      0.18125
+     ],
+     [
+      0.8125,
+      0.6
+     ],
+     [
+      0.63333,
+      0.6
+     ]
+    ]
+   ]
+  },
+  "screen": {
+   "desc": "the main monitor's top-right: dark desktop",
+   "polygons": [
+    [
+     [
+      0.01667,
+      0.5
+     ],
+     [
+      0.4,
+      0.5
+     ],
+     [
+      0.4,
+      0.9875
+     ],
+     [
+      0.01667,
+      0.9875
+     ]
+    ]
+   ]
+  },
+  "lit_stile": {
+   "desc": "R1's lamp-lit free stile beside the handle",
+   "polygons": [
+    [
+     [
+      0.00417,
+      0.2375
+     ],
+     [
+      0.0625,
+      0.2375
+     ],
+     [
+      0.0625,
+      0.375
+     ],
+     [
+      0.00417,
+      0.375
+     ]
+    ]
+   ]
+  },
+  "casing_right": {
+   "desc": "the right section's outer stile and casing",
+   "polygons": [
+    [
+     [
+      0.925,
+      0.1875
+     ],
+     [
+      0.99167,
+      0.1875
+     ],
+     [
+      0.99167,
+      0.5625
+     ],
+     [
+      0.925,
+      0.5625
+     ]
+    ]
+   ]
+  }
+ }
+}

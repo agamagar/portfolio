@@ -1,0 +1,91 @@
+/* Trade-Off / Pareto figure. Dark System-Explainer vitrine (.ds-root--away supplies
+   figure tokens); a 2D scatter of flights - x = price (left cheaper), y = total time
+   (down faster) - where lower-left is best. Three non-dominated dots form a lower-left
+   staircase frontier; the rest grey out. Higher specificity than .ds-root.ds-root--away
+   (which forces transparent / border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-trade { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-trade__head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+.ss-trade__title { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-trade__sub { font-size: 11px; color: #6f6f7e; }
+
+/* stage / plot */
+.ss-trade__stage { position: relative; }
+.ss-trade__plot { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* axes + grid: draw in on the axes step */
+.ss-trade__axis {
+  stroke: #2a2a36; stroke-width: 1.25; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 480ms var(--m3-effects-default);
+}
+.ss-trade__axis.is-on { stroke-dashoffset: 0; }
+.ss-trade__grid {
+  stroke: #17171f; stroke-width: 1; fill: none;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 420ms var(--m3-effects-default);
+}
+.ss-trade__grid.is-on { stroke-dashoffset: 0; }
+
+/* frontier line: lower-left staircase, draws on the frontier step */
+.ss-trade__front {
+  fill: none; stroke: #3b82f6; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default), opacity 300ms var(--m3-effects-default);
+}
+.ss-trade__front.is-on { stroke-dashoffset: 0; opacity: 1; }
+
+/* dots: circles carry their own cx/cy; the group only pops in (fade + scale
+   about its own centre) on the dot's step. */
+.ss-trade__pt {
+  transform: scale(0.4);
+  transform-box: fill-box; transform-origin: center;
+  opacity: 0;
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-trade__pt.is-in { opacity: 1; transform: scale(1); }
+
+.ss-trade__dot { fill: #cbcbd4; transition: fill 360ms var(--m3-effects-default); }
+.ss-trade__halo { fill: #3b82f6; opacity: 0; transition: opacity 360ms var(--m3-effects-default); }
+
+/* the three non-dominated flights read as the live, accent-blue choices */
+.ss-trade__pt.is-pareto .ss-trade__dot { fill: #3b82f6; }
+.ss-trade__pt.is-pareto .ss-trade__halo { opacity: 0.16; }
+
+/* the four dominated flights grey out once the frontier resolves */
+.ss-trade__pt.is-dim .ss-trade__dot { fill: #43434f; }
+.ss-trade__pt.is-dim .ss-trade__halo { opacity: 0; }
+
+/* axis labels (SVG text, share the dot coordinate space) */
+.ss-trade__xlab, .ss-trade__ylab {
+  fill: #6f6f7e; font-size: 11px; letter-spacing: 0.04em;
+  opacity: 0; transition: opacity 360ms var(--m3-effects-default);
+}
+.ss-trade__xlab.is-on, .ss-trade__ylab.is-on { opacity: 1; }
+
+/* frontier dot tags (SVG text) - pop on the final step with a small rise */
+.ss-trade__tag {
+  fill: #9ec1ff; font-size: 11px; font-weight: 600; letter-spacing: 0.01em;
+  opacity: 0;
+  transform-box: fill-box; transform-origin: center; transform: translateY(3px);
+  transition: opacity 320ms var(--m3-effects-default), transform 320ms var(--m3-spatial-standard-default);
+}
+.ss-trade__tag.is-on { opacity: 1; transform: translateY(0); }
+
+/* result strip */
+.ss-trade__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; font-variant-numeric: tabular-nums;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-trade__result.is-on { opacity: 1; transform: none; }
+.ss-trade__result b { color: #f4f4f6; }
+.ss-trade__beat { color: #f59e0b; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-trade__axis, .ss-trade__grid, .ss-trade__front,
+  .ss-trade__pt, .ss-trade__dot, .ss-trade__halo,
+  .ss-trade__xlab, .ss-trade__ylab, .ss-trade__tag, .ss-trade__result { transition: none; }
+}

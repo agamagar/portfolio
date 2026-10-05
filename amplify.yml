@@ -1,0 +1,21 @@
+# AWS Amplify Hosting build (5 Oct 2026, going live).
+# The public build serves the home page and case studies only (VITE_PUBLIC_SITE),
+# then drops lab-only folders from the output. Single-page-app routing needs one
+# rewrite rule in the Amplify console (see Claude/2026-10-05_go-live.md).
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --ignore-scripts
+    build:
+      commands:
+        - VITE_PUBLIC_SITE=1 npm run build
+        - rm -rf dist/dj dist/ekam-content-system dist/shader-viewer dist/feedback-voice-harness.html dist/mobile-check.html
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*

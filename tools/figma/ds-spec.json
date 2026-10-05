@@ -1,0 +1,2290 @@
+{
+  "generatedAt": "2026-09-16T03:01:33.558Z",
+  "source": {
+    "tokens": "src/figures/ds/tokens.css",
+    "components": "src/figures/ds/Primitives.jsx",
+    "css": "src/figures/ds/components.css"
+  },
+  "counts": {
+    "tokens": 143,
+    "tokensWithDarkMode": 0,
+    "collections": 9,
+    "components": 30,
+    "icons": 23,
+    "cssClasses": 57
+  },
+  "collections": {
+    "Colour": 66,
+    "Other": 16,
+    "Spacing": 9,
+    "Duration": 11,
+    "Font": 2,
+    "Number": 4,
+    "Type size": 14,
+    "Radius": 8,
+    "Easing": 13
+  },
+  "tokens": [
+    {
+      "name": "--ds-bg",
+      "value": "#fbfaf7",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-surface",
+      "value": "#ffffff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-field",
+      "value": "#fdfdfd",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-muted",
+      "value": "#f5f5f5",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-border",
+      "value": "#d9d9d9",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-border-control",
+      "value": "#929292",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-border-card",
+      "value": "#d4d4d4",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-line",
+      "value": "#d5d7da",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-line-strong",
+      "value": "#c4c7cd",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-border-brand",
+      "value": "#f4ebff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tab-active",
+      "value": "#303030",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-text",
+      "value": "#181d27",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-text-alt",
+      "value": "#1e1e1e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-text-2",
+      "value": "#50535a",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-placeholder",
+      "value": "#6e6e6e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-text-3",
+      "value": "#707070",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-pill-text",
+      "value": "#252b37",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-primary",
+      "value": "#1e1e1e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-primary-2",
+      "value": "#1a1a1a",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-primary-press",
+      "value": "#000000",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-on-primary",
+      "value": "#ffffff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-on-primary-soft",
+      "value": "#f3f3f3",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-green",
+      "value": "#039855",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-green-deep",
+      "value": "#054f31",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-green-pill-bg",
+      "value": "rgba(2, 122, 72, 0.1)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-green-bar-bg",
+      "value": "rgba(5, 79, 49, 0.1)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-purple",
+      "value": "#42307d",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-purple-bg",
+      "value": "#f9f5ff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-accent",
+      "value": "#ea580c",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-accent-soft",
+      "value": "rgba(234, 88, 12, 0.5)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-shim",
+      "value": "#e7e9ed",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-shim-soft",
+      "value": "#eef0f3",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-anno",
+      "value": "#3b82f6",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-on-anno",
+      "value": "#ffffff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-popup-field",
+      "value": "#2c2c30",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-popup-text",
+      "value": "#f3f3f3",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-popup-muted",
+      "value": "#9aa0a8",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-blue",
+      "value": "var(--ds-anno)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-focal-green",
+      "value": "#22c55e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-green-fill",
+      "value": "rgba(34, 197, 94, 0.09)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-amber",
+      "value": "#f59e0b",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-amber-fill",
+      "value": "rgba(245, 158, 11, 0.11)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-red",
+      "value": "#ef4444",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-red-fill",
+      "value": "rgba(239, 68, 68, 0.09)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-focal-w",
+      "value": "2px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-focal-r",
+      "value": "9px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-blue",
+      "value": "#4384c5",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-blue-300",
+      "value": "#8bc3fe",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-blue-100",
+      "value": "#cbecff",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-blue-deep",
+      "value": "#1b3a5c",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-teal",
+      "value": "#00995c",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-teal-100",
+      "value": "#c1f7d6",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-ink-strong",
+      "value": "#0b0b0b",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-register",
+      "value": "var(--ds-purple)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-register-bg",
+      "value": "rgba(66, 48, 125, 0.10)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-numbers",
+      "value": "var(--ds-teal)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-numbers-bg",
+      "value": "rgba(0, 153, 92, 0.10)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-repair",
+      "value": "var(--ds-accent)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-repair-bg",
+      "value": "rgba(234, 88, 12, 0.10)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-trust",
+      "value": "var(--ds-blue)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-trust-bg",
+      "value": "rgba(67, 132, 197, 0.10)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-neutral",
+      "value": "var(--ds-text-2)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-neutral-bg",
+      "value": "rgba(113, 118, 128, 0.10)",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-provisional",
+      "value": "var(--ds-focal-amber)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-provisional-bg",
+      "value": "var(--ds-focal-amber-fill)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-register-ink",
+      "value": "var(--ds-tone-register)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-tone-numbers-ink",
+      "value": "#00673e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-repair-ink",
+      "value": "#9a3a08",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-trust-ink",
+      "value": "#2e5b88",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-provisional-ink",
+      "value": "#7a4a05",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-tone-neutral-ink",
+      "value": "#555961",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-dur-cue",
+      "value": "160ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--ds-focus-ring",
+      "value": "2px solid var(--ds-tone-trust)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-toggle-off-light",
+      "value": "#d5d7da",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-toggle-off",
+      "value": "#d5d7da",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-toggle-knob",
+      "value": "#181d27",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-slider-rail",
+      "value": "#d9d9d9",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-slider-fill",
+      "value": "#1e1e1e",
+      "kind": "COLOR",
+      "collection": "Colour"
+    },
+    {
+      "name": "--ds-font",
+      "value": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "kind": "STRING",
+      "collection": "Font"
+    },
+    {
+      "name": "--ds-font-gu",
+      "value": "\"Anek Gujarati Variable\", \"Anek Gujarati\", \"Gujarati Sangam MN\", \"Nirmala UI\", sans-serif",
+      "kind": "STRING",
+      "collection": "Font"
+    },
+    {
+      "name": "--ds-fw-semi",
+      "value": "600",
+      "kind": "FLOAT",
+      "collection": "Number"
+    },
+    {
+      "name": "--ds-fs-app",
+      "value": "13px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-title",
+      "value": "15px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-sub",
+      "value": "11px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-section",
+      "value": "12px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-body",
+      "value": "12px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-label",
+      "value": "10px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-pill",
+      "value": "10px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-btn",
+      "value": "12px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-tab",
+      "value": "11px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-meta",
+      "value": "9px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-guj",
+      "value": "17px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-guj-sm",
+      "value": "15px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-display",
+      "value": "20px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-fs-display-sm",
+      "value": "18px",
+      "kind": "FLOAT",
+      "collection": "Type size"
+    },
+    {
+      "name": "--ds-1",
+      "value": "4px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-2",
+      "value": "6px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-3",
+      "value": "8px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-4",
+      "value": "10px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-5",
+      "value": "12px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-6",
+      "value": "14px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--ds-7",
+      "value": "18px",
+      "kind": "FLOAT",
+      "collection": "Spacing"
+    },
+    {
+      "name": "--m3-corner-xs",
+      "value": "4px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--m3-corner-sm",
+      "value": "8px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--m3-corner-md",
+      "value": "12px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--m3-corner-lg",
+      "value": "16px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--m3-corner-xl",
+      "value": "28px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--ds-r-frame",
+      "value": "var(--m3-corner-lg)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-r-card",
+      "value": "var(--m3-corner-md)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-r-btn",
+      "value": "var(--m3-corner-sm)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-r-control",
+      "value": "var(--m3-corner-sm)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-r-pill",
+      "value": "var(--m3-corner-xs)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--ds-r-mark",
+      "value": "2px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--ds-r-bezel",
+      "value": "30px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--ds-r-round",
+      "value": "999px",
+      "kind": "FLOAT",
+      "collection": "Radius"
+    },
+    {
+      "name": "--ds-shadow-frame",
+      "value": "0 20px 50px -26px rgba(20, 16, 45, 0.28), 0 1px 3px rgba(20, 16, 45, 0.04)",
+      "kind": "STRING",
+      "collection": "Other"
+    },
+    {
+      "name": "--m3-standard",
+      "value": "cubic-bezier(0.2, 0, 0, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-standard-decelerate",
+      "value": "cubic-bezier(0, 0, 0, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-standard-accelerate",
+      "value": "cubic-bezier(0.3, 0, 1, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-emphasized",
+      "value": "cubic-bezier(0.2, 0, 0, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-emphasized-decelerate",
+      "value": "cubic-bezier(0.05, 0.7, 0.1, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-emphasized-accelerate",
+      "value": "cubic-bezier(0.3, 0, 0.8, 0.15)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-expressive",
+      "value": "cubic-bezier(0.34, 1.46, 0.64, 1)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--m3-short2",
+      "value": "100ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-short4",
+      "value": "200ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-medium1",
+      "value": "250ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-medium2",
+      "value": "300ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-medium4",
+      "value": "400ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-long2",
+      "value": "500ms",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--m3-state-hover",
+      "value": "0.08",
+      "kind": "FLOAT",
+      "collection": "Number"
+    },
+    {
+      "name": "--m3-state-focus",
+      "value": "0.10",
+      "kind": "FLOAT",
+      "collection": "Number"
+    },
+    {
+      "name": "--m3-state-pressed",
+      "value": "0.10",
+      "kind": "FLOAT",
+      "collection": "Number"
+    },
+    {
+      "name": "--ds-ease-out",
+      "value": "var(--m3-emphasized-decelerate)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-ease-exit",
+      "value": "var(--m3-emphasized-accelerate)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-ease-move",
+      "value": "var(--m3-standard)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-ease-press",
+      "value": "var(--m3-expressive)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-ease-pop",
+      "value": "var(--m3-emphasized-decelerate)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-ease-std",
+      "value": "var(--m3-standard)",
+      "kind": "STRING",
+      "collection": "Easing"
+    },
+    {
+      "name": "--ds-dur-fast",
+      "value": "var(--m3-short4)",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--ds-dur-expand",
+      "value": "var(--m3-medium4)",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--ds-dur-move",
+      "value": "var(--m3-long2)",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--ds-dur-state",
+      "value": "var(--m3-medium1)",
+      "kind": "FLOAT",
+      "collection": "Duration"
+    },
+    {
+      "name": "--ds-text-neutral2",
+      "value": "#a8a8b2",
+      "kind": "COLOR",
+      "collection": "Colour"
+    }
+  ],
+  "components": [
+    {
+      "name": "TopBar",
+      "props": [
+        "title"
+      ],
+      "classes": [
+        {
+          "name": ".ds-head",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "StepCard",
+      "props": [
+        "n",
+        "title",
+        "sub",
+        "active",
+        "done",
+        "press",
+        "cta",
+        "ctaRef",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-card",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "active=true",
+            "done=true",
+            "press=true"
+          ]
+        },
+        {
+          "name": ".ds-step",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {
+        ".ds-card data": [
+          "active=true",
+          "done=true",
+          "press=true"
+        ]
+      }
+    },
+    {
+      "name": "Field",
+      "props": [
+        "label",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-field",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Input",
+      "props": [
+        "value",
+        "placeholder",
+        "caret"
+      ],
+      "classes": [
+        {
+          "name": ".ds-input",
+          "modifiers": [
+            "ph"
+          ],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {
+        ".ds-input modifier": [
+          "ph"
+        ]
+      }
+    },
+    {
+      "name": "Textarea",
+      "props": [
+        "placeholder"
+      ],
+      "classes": [
+        {
+          "name": ".ds-input",
+          "modifiers": [
+            "ph"
+          ],
+          "states": [],
+          "data": []
+        },
+        {
+          "name": ".ds-textarea",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {
+        ".ds-input modifier": [
+          "ph"
+        ]
+      }
+    },
+    {
+      "name": "Chip",
+      "props": [
+        "icon",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-chip",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Segmented",
+      "props": [
+        "options",
+        "selected"
+      ],
+      "classes": [
+        {
+          "name": ".ds-seg",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Toggle",
+      "props": [
+        "on"
+      ],
+      "classes": [
+        {
+          "name": ".ds-toggle",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "on=true"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-toggle data": [
+          "on=true"
+        ]
+      }
+    },
+    {
+      "name": "Slider",
+      "props": [
+        "label",
+        "hint",
+        "value",
+        "percent"
+      ],
+      "classes": [
+        {
+          "name": ".ds-slider",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Tabs",
+      "props": [
+        "tabs",
+        "active"
+      ],
+      "classes": [
+        {
+          "name": ".ds-tabs",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Button",
+      "props": [
+        "variant",
+        "left aligned",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-btn",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        },
+        {
+          "name": ".ds-button",
+          "modifiers": [],
+          "states": [
+            "active",
+            "disabled",
+            "hover"
+          ],
+          "data": [
+            "block=true",
+            "on=true",
+            "size=auto",
+            "size=lg",
+            "size=md",
+            "size=sm",
+            "tone=numbers",
+            "tone=register",
+            "tone=repair",
+            "tone=trust",
+            "variant=filled",
+            "variant=icon",
+            "variant=outline",
+            "variant=quiet",
+            "variant=tone"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-button state": [
+          "rest",
+          "active",
+          "disabled",
+          "hover"
+        ],
+        ".ds-button data": [
+          "block=true",
+          "on=true",
+          "size=auto",
+          "size=lg",
+          "size=md",
+          "size=sm",
+          "tone=numbers",
+          "tone=register",
+          "tone=repair",
+          "tone=trust",
+          "variant=filled",
+          "variant=icon",
+          "variant=outline",
+          "variant=quiet",
+          "variant=tone"
+        ]
+      }
+    },
+    {
+      "name": "ChecklistRow",
+      "props": [
+        "text",
+        "selected"
+      ],
+      "classes": [
+        {
+          "name": ".ds-checklist",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        },
+        {
+          "name": ".ds-crow",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "PromptBanner",
+      "props": [],
+      "classes": [
+        {
+          "name": ".ds-prompt",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "ImportBar",
+      "props": [],
+      "classes": [
+        {
+          "name": ".ds-import",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "DropZone",
+      "props": [
+        "variant"
+      ],
+      "classes": [
+        {
+          "name": ".ds-drops",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        },
+        {
+          "name": ".ds-drop",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "RestrictionCard",
+      "props": [
+        "icon",
+        "name",
+        "on",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-restr",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "Pill",
+      "props": [
+        "tone",
+        "soft",
+        "children"
+      ],
+      "classes": [],
+      "variants": {}
+    },
+    {
+      "name": "StatusDot",
+      "props": [
+        "tone",
+        "off"
+      ],
+      "classes": [
+        {
+          "name": ".ds-statusdot",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "off=true",
+            "tone=repair",
+            "tone=trust"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-statusdot data": [
+          "off=true",
+          "tone=repair",
+          "tone=trust"
+        ]
+      }
+    },
+    {
+      "name": "Waveform",
+      "props": [
+        "tone",
+        "state",
+        "label"
+      ],
+      "classes": [],
+      "variants": {}
+    },
+    {
+      "name": "SoundToggle",
+      "props": [
+        "muted",
+        "onToggle",
+        "state",
+        "blockedLabel"
+      ],
+      "classes": [
+        {
+          "name": ".ds-soundtoggle",
+          "modifiers": [],
+          "states": [
+            "active",
+            "hover"
+          ],
+          "data": [
+            "state=blocked",
+            "state=off"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-soundtoggle state": [
+          "rest",
+          "active",
+          "hover"
+        ],
+        ".ds-soundtoggle data": [
+          "state=blocked",
+          "state=off"
+        ]
+      }
+    },
+    {
+      "name": "FieldRow",
+      "props": [
+        "label",
+        "value",
+        "state",
+        "note",
+        "justChanged"
+      ],
+      "classes": [
+        {
+          "name": ".ds-fieldrow",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "just=true",
+            "state=asked",
+            "state=confirmed",
+            "state=empty",
+            "state=heard",
+            "state=na",
+            "state=offscript"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-fieldrow data": [
+          "just=true",
+          "state=asked",
+          "state=confirmed",
+          "state=empty",
+          "state=heard",
+          "state=na",
+          "state=offscript"
+        ]
+      }
+    },
+    {
+      "name": "Verdict",
+      "props": [
+        "tone",
+        "label",
+        "headline",
+        "because",
+        "unsure",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-verdict",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "tone=neutral",
+            "tone=repair",
+            "tone=trust"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-verdict data": [
+          "tone=neutral",
+          "tone=repair",
+          "tone=trust"
+        ]
+      }
+    },
+    {
+      "name": "Bubble",
+      "props": [
+        "speaker",
+        "side",
+        "tone",
+        "active",
+        "speaking",
+        "as",
+        "className",
+        "actions",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-bubble",
+          "modifiers": [],
+          "states": [
+            "active"
+          ],
+          "data": [
+            "active=true",
+            "side=end",
+            "side=full",
+            "side=start",
+            "speaking=true",
+            "tone=numbers",
+            "tone=register",
+            "tone=repair",
+            "tone=trust"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-bubble state": [
+          "rest",
+          "active"
+        ],
+        ".ds-bubble data": [
+          "active=true",
+          "side=end",
+          "side=full",
+          "side=start",
+          "speaking=true",
+          "tone=numbers",
+          "tone=register",
+          "tone=repair",
+          "tone=trust"
+        ]
+      }
+    },
+    {
+      "name": "RailStep",
+      "props": [
+        "n",
+        "name",
+        "meta",
+        "state",
+        "last"
+      ],
+      "classes": [],
+      "variants": {}
+    },
+    {
+      "name": "PlanQueue",
+      "props": [
+        "plan"
+      ],
+      "classes": [],
+      "variants": {}
+    },
+    {
+      "name": "Caught",
+      "props": [
+        "which",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-caught",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "which=comprehension",
+            "which=distress",
+            "which=escalation"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-caught data": [
+          "which=comprehension",
+          "which=distress",
+          "which=escalation"
+        ]
+      }
+    },
+    {
+      "name": "Disposition",
+      "props": [
+        "tone",
+        "label",
+        "truthful",
+        "detail",
+        "contradiction",
+        "children"
+      ],
+      "classes": [
+        {
+          "name": ".ds-disposition",
+          "modifiers": [],
+          "states": [],
+          "data": [
+            "tone=neutral",
+            "tone=repair",
+            "tone=trust"
+          ]
+        }
+      ],
+      "variants": {
+        ".ds-disposition data": [
+          "tone=neutral",
+          "tone=repair",
+          "tone=trust"
+        ]
+      }
+    },
+    {
+      "name": "Disclosure",
+      "props": [
+        "label",
+        "meta",
+        "children",
+        "open",
+        "onToggle"
+      ],
+      "classes": [
+        {
+          "name": ".ds-disclosure",
+          "modifiers": [],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {}
+    },
+    {
+      "name": "ScopeNote",
+      "props": [
+        "children",
+        "collapsible",
+        "label"
+      ],
+      "classes": [
+        {
+          "name": ".ds-scopenote",
+          "modifiers": [
+            "fold"
+          ],
+          "states": [],
+          "data": []
+        }
+      ],
+      "variants": {
+        ".ds-scopenote modifier": [
+          "fold"
+        ]
+      }
+    },
+    {
+      "name": "GhostInput",
+      "props": [
+        "value",
+        "onChange",
+        "onSubmit",
+        "suggestions",
+        "placeholder",
+        "ariaLabel",
+        "hint"
+      ],
+      "classes": [],
+      "variants": {}
+    }
+  ],
+  "icons": [
+    {
+      "name": "IconChevron",
+      "viewBox": "0 0 24 24",
+      "props": [
+        "className"
+      ],
+      "paths": [
+        "M6 9l6 6 6-6"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconCaret",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M6 9l6 6 6-6"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconEye",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"
+      ],
+      "shapes": [
+        "path",
+        "circle"
+      ]
+    },
+    {
+      "name": "IconPlus",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M12 5v14M5 12h14"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconMagic",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M15 4V2M15 10V8M12.5 6.5h-2M19.5 6.5h-2M5 19l9-9 1.5 1.5-9 9z"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconArrowR",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M5 12h14M13 6l6 6-6 6"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconDatabase",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"
+      ],
+      "shapes": [
+        "ellipse",
+        "path"
+      ]
+    },
+    {
+      "name": "IconExpand",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconUpload",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M12 16V4M8 8l4-4 4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconLink",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M10 13a5 5 0 007 0l2-2a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-2 2a5 5 0 007 7l1-1"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconPhone",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.6a2 2 0 01-.5 2.1L8 9.6a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.8.3 1.7.5 2.6.6a2 2 0 011.7 2z"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconCheck",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M20 6L9 17l-5-5"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconCal",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M3 9h18M8 3v4M16 3v4"
+      ],
+      "shapes": [
+        "rect",
+        "path"
+      ]
+    },
+    {
+      "name": "IconClock",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M12 7v5l3 2"
+      ],
+      "shapes": [
+        "circle",
+        "path"
+      ]
+    },
+    {
+      "name": "IconAlert",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M10.3 3.5L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.5a2 2 0 00-3.4 0z",
+        "M12 9v4M12 17h.01"
+      ],
+      "shapes": [
+        "path",
+        "path"
+      ]
+    },
+    {
+      "name": "IconPin",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M12 22s7-6.3 7-12a7 7 0 10-14 0c0 5.7 7 12 7 12z"
+      ],
+      "shapes": [
+        "path",
+        "circle"
+      ]
+    },
+    {
+      "name": "IconUser",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M4 21a8 8 0 0116 0"
+      ],
+      "shapes": [
+        "circle",
+        "path"
+      ]
+    },
+    {
+      "name": "IconCheckUser",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M4 20a5 5 0 0110 0M15 12l2 2 4-4"
+      ],
+      "shapes": [
+        "circle",
+        "path"
+      ]
+    },
+    {
+      "name": "IconChat",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M21 11.5a8 8 0 01-11.6 7.1L3 21l2.4-6.4A8 8 0 1121 11.5z"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconGlobe",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"
+      ],
+      "shapes": [
+        "circle",
+        "path"
+      ]
+    },
+    {
+      "name": "IconShield",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3z"
+      ],
+      "shapes": [
+        "path"
+      ]
+    },
+    {
+      "name": "IconHelp",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M9.5 9.5a2.5 2.5 0 014.5 1.5c0 1.7-2 2-2 3.5M12 17.5h.01"
+      ],
+      "shapes": [
+        "circle",
+        "path"
+      ]
+    },
+    {
+      "name": "IconBell",
+      "viewBox": "0 0 24 24",
+      "props": [],
+      "paths": [
+        "M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"
+      ],
+      "shapes": [
+        "path"
+      ]
+    }
+  ],
+  "classes": [
+    {
+      "name": ".ds-fit",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-root",
+      "modifiers": [
+        "focus",
+        "live",
+        "simple"
+      ],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-top",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-dot",
+      "modifiers": [
+        "g",
+        "r",
+        "y"
+      ],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-body",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-stack",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-card",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "active=true",
+        "done=true",
+        "press=true"
+      ]
+    },
+    {
+      "name": ".ds-step",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-head",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-chev",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-divider",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-stagger",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-foot",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-btn",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-chip",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-row",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-field",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-label",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-input",
+      "modifiers": [
+        "ph"
+      ],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-textarea",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-seg",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-checklist",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-tabs",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-tab",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "on=true"
+      ]
+    },
+    {
+      "name": ".ds-crow",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-eye",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-prompt",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-generate",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-import",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-drops",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-drop",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-minibtns",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-restr",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-toggle",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "on=true"
+      ]
+    },
+    {
+      "name": ".ds-slider",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-rail",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-cursor",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "hover=true",
+        "press=true",
+        "visible=true"
+      ]
+    },
+    {
+      "name": ".ds-focus",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-stepper",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-pill2",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "soft=true",
+        "tone=neutral",
+        "tone=numbers",
+        "tone=register",
+        "tone=repair",
+        "tone=trust"
+      ]
+    },
+    {
+      "name": ".ds-statusdot",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "off=true",
+        "tone=repair",
+        "tone=trust"
+      ]
+    },
+    {
+      "name": ".ds-wave",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "tone=numbers",
+        "tone=repair"
+      ]
+    },
+    {
+      "name": ".ds-soundtoggle",
+      "modifiers": [],
+      "states": [
+        "active",
+        "hover"
+      ],
+      "data": [
+        "state=blocked",
+        "state=off"
+      ]
+    },
+    {
+      "name": ".ds-verdict",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "tone=neutral",
+        "tone=repair",
+        "tone=trust"
+      ]
+    },
+    {
+      "name": ".ds-fieldrow",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "just=true",
+        "state=asked",
+        "state=confirmed",
+        "state=empty",
+        "state=heard",
+        "state=na",
+        "state=offscript"
+      ]
+    },
+    {
+      "name": ".ds-bubblerow",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "side=end"
+      ]
+    },
+    {
+      "name": ".ds-bubble",
+      "modifiers": [],
+      "states": [
+        "active"
+      ],
+      "data": [
+        "active=true",
+        "side=end",
+        "side=full",
+        "side=start",
+        "speaking=true",
+        "tone=numbers",
+        "tone=register",
+        "tone=repair",
+        "tone=trust"
+      ]
+    },
+    {
+      "name": ".ds-plan",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-caught",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "which=comprehension",
+        "which=distress",
+        "which=escalation"
+      ]
+    },
+    {
+      "name": ".ds-disposition",
+      "modifiers": [],
+      "states": [],
+      "data": [
+        "tone=neutral",
+        "tone=repair",
+        "tone=trust"
+      ]
+    },
+    {
+      "name": ".ds-scopenote",
+      "modifiers": [
+        "fold"
+      ],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-panetitle",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-disclosure",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-ghost",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-sr",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    },
+    {
+      "name": ".ds-button",
+      "modifiers": [],
+      "states": [
+        "active",
+        "disabled",
+        "hover"
+      ],
+      "data": [
+        "block=true",
+        "on=true",
+        "size=auto",
+        "size=lg",
+        "size=md",
+        "size=sm",
+        "tone=numbers",
+        "tone=register",
+        "tone=repair",
+        "tone=trust",
+        "variant=filled",
+        "variant=icon",
+        "variant=outline",
+        "variant=quiet",
+        "variant=tone"
+      ]
+    },
+    {
+      "name": ".ds-buffer",
+      "modifiers": [],
+      "states": [],
+      "data": []
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "w": 1600,
+    "h": 1200,
+    "dpr": 1,
+    "frames": 32,
+    "timeout": 120000,
+    "scene": "require"
+  },
+  "shots": [
+    {
+      "name": "ref1741-photo",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=partly&look=photo"
+    },
+    {
+      "name": "ref1741-heightened",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=partly&look=heightened"
+    },
+    {
+      "name": "ref1741-dreamlike",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=partly&look=dreamlike"
+    }
+  ]
+}

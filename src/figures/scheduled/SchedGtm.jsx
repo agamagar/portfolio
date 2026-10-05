@@ -1,15 +1,14 @@
 import { useFitScale } from "../ds/hooks";
 import { PhoneWindow, Shimmer } from "../ds/Scaffold";
 import { IBolt, ICal } from "./icons";
+import GtmMotion from "./GtmMotion";
 import "./scheduled.css";
 
 // The go-to-market promo that animates at the top of the schedule page. The real
 // banner (Schedule Order Handoff, node 8450:72119 "Schedule Delivery Animation 2")
 // is an empty container hosting a Lottie/video, so this is a coded stand-in
-// motion: a sweeping clock and time-slot chips popping in, with the marketing
-// copy abstracted as shimmer (no invented words). Swap for the real asset later.
-
-const TICKS = [0, 90, 180, 270];
+// motion (the shared GtmMotion). The same motion is composited onto the real
+// screen plate in SchedGtmReal (Design Mode).
 
 export default function SchedGtm() {
   const { fitRef, frameRef } = useFitScale(660, 1.06);
@@ -18,23 +17,7 @@ export default function SchedGtm() {
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--gtm">
           <PhoneWindow title="Schedule your order">
-            <div className="gtm-banner">
-              <div className="gtm-copy">
-                <Shimmer w="76%" h={11} r={5} />
-                <Shimmer w="54%" h={8} r={4} />
-                <span className="gtm-chip" />
-              </div>
-              <div className="gtm-art">
-                <span className="gtm-pill gtm-pill--1" />
-                <span className="gtm-pill gtm-pill--2" />
-                <span className="gtm-pill gtm-pill--3" />
-                <span className="gtm-clock">
-                  {TICKS.map((d) => (<span className="gtm-clock__tick" key={d} style={{ transform: `rotate(${d}deg)` }} />))}
-                  <span className="gtm-clock__hand" />
-                  <span className="gtm-clock__dot" />
-                </span>
-              </div>
-            </div>
+            <div className="gtm-banner"><GtmMotion /></div>
 
             <div className="gtm-below">
               <div className="gtm-toggle">

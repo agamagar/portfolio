@@ -1,0 +1,781 @@
+/* PixelMascotLab (/mascot) · chrome on site tokens (--fg/--bg/--muted/--line);
+   the sprite ink is currentColor so it reads in both themes. Global
+   corner-shape: squircle is inherited, no per-element corner shapes. */
+
+.pm-lab {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 72px 24px 120px;
+  color: var(--fg);
+  --mascot-accent: #d96b3f;
+}
+
+.pm-lab__head {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+.pm-lab__back {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.pm-lab__back:hover {
+  color: var(--fg);
+  border-color: var(--muted-2);
+}
+.pm-lab__eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin: 0 0 12px;
+}
+.pm-lab__title {
+  font-family: "Newsreader", Georgia, serif;
+  font-size: clamp(34px, 6vw, 54px);
+  font-weight: 500;
+  line-height: 1.02;
+  margin: 0 0 16px;
+}
+.pm-lab__sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* stage */
+.pm-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  margin: 0 auto 56px;
+}
+.pm-hero__stage {
+  display: grid;
+  place-items: center;
+  width: min(360px, 84vw);
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  transition: background 0.25s, color 0.25s;
+}
+/* the transparency demo backdrops */
+.pm-bg--paper {
+  background: var(--bg);
+  color: var(--fg);
+}
+.pm-bg--photo {
+  background:
+    radial-gradient(120% 90% at 20% 15%, #f6c86e 0%, transparent 55%),
+    radial-gradient(130% 100% at 85% 85%, #3c6e8f 0%, transparent 60%),
+    linear-gradient(160deg, #e88a5d 0%, #9c5f8f 55%, #2f4b6e 100%);
+  color: #16121e;
+}
+.pm-bg--dark {
+  background: #16130f;
+  color: #e8e2d6;
+}
+.pm-bg--grid {
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 18px 18px;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.pm-hero__bench {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.pm-hero__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.pm-hero__sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+}
+.pm-chip {
+  font: inherit;
+  font-size: 13px;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.pm-chip--dim {
+  color: var(--muted);
+  font-size: 12px;
+  padding: 5px 12px;
+}
+.pm-chip:hover {
+  border-color: var(--muted-2);
+}
+.pm-chip.is-on {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+.pm-chip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* corner peek demo */
+.pm-peek {
+  max-width: 640px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+.pm-peek__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin: 0 0 12px;
+}
+.pm-peek__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  color: var(--fg);
+}
+/* stand-in "content" so the frame reads as a video/slide */
+.pm-peek__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 12%;
+}
+.pm-peek__line {
+  height: 10px;
+  border-radius: 6px;
+  background: var(--line);
+}
+.pm-peek__line--w1 { width: 62%; height: 16px; }
+.pm-peek__line--w2 { width: 44%; }
+.pm-peek__line--w3 { width: 52%; }
+
+/* the actor slides in from the left edge with stepped timing (steps() keeps the
+   travel as choppy as the sprite itself), waves, and leaves; ends off-screen. */
+.pm-peek__actor {
+  position: absolute;
+  left: 0;
+  bottom: 6%;
+  transform: translateX(-110%);
+  animation: pm-peek-run 3.6s steps(14) 0.4s forwards;
+}
+@keyframes pm-peek-run {
+  0% { transform: translateX(-110%); }
+  22% { transform: translateX(-16%); }
+  74% { transform: translateX(-16%); }
+  100% { transform: translateX(-110%); }
+}
+.pm-peek__actor.is-parked {
+  animation: none;
+  transform: translateX(-16%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm-peek__actor {
+    animation: none;
+    transform: translateX(-16%);
+  }
+}
+.pm-peek__cap {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+
+/* ---------- the actual illustration, animated (.pm-ill*) ---------- */
+
+.pm-ill {
+  position: relative;
+  display: inline-block;
+  color: var(--fg);
+}
+.pm-ill svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.pm-ill__main {
+  position: relative;
+}
+.pm-ill__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* idle: soft bob + an occasional blink */
+.pm-ill--idle .pm-ill__main {
+  animation: pm-ill-bob 4.2s ease-in-out infinite;
+}
+.pm-ill--idle .pm-ill__eye {
+  animation: pm-ill-blink 4.2s infinite;
+}
+@keyframes pm-ill-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2.5%); }
+}
+@keyframes pm-ill-blink {
+  0%, 88%, 96%, 100% { transform: scaleY(1); }
+  91%, 93% { transform: scaleY(0.08); }
+}
+
+/* wave: the head rocks and the doodle hand pops beside it */
+.pm-ill--wave .pm-ill__main {
+  transform-origin: 50% 82%;
+  animation: pm-ill-rock 1.15s ease-in-out infinite;
+}
+@keyframes pm-ill-rock {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+.pm-ill svg.pm-ill__hand {
+  inset: auto;
+  position: absolute;
+  right: -10%;
+  bottom: 2%;
+  width: 42%;
+  height: 42%;
+  transform-origin: 78% 92%;
+  animation: pm-ill-wave 0.9s ease-in-out infinite;
+}
+@keyframes pm-ill-wave {
+  0%, 100% { transform: rotate(-14deg); }
+  50% { transform: rotate(18deg); }
+}
+
+/* sleep: eyes shut, z's drift off the hair swoosh */
+.pm-ill--sleep .pm-ill__eye {
+  transform: scaleY(0.1);
+}
+.pm-ill__zs i {
+  position: absolute;
+  right: 6%;
+  top: 16%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--mascot-accent, #d96b3f);
+  opacity: 0;
+  animation: pm-ill-z 2.7s infinite;
+}
+.pm-ill__zs i:nth-child(1) { font-size: 0.7em; animation-delay: 0s; }
+.pm-ill__zs i:nth-child(2) { font-size: 0.95em; animation-delay: 0.9s; }
+.pm-ill__zs i:nth-child(3) { font-size: 1.2em; animation-delay: 1.8s; }
+@keyframes pm-ill-z {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 1; }
+  80% { opacity: 0; transform: translate(70%, -110%); }
+  100% { opacity: 0; transform: translate(70%, -110%); }
+}
+
+/* think: eyes drift up-left while thought dots build toward a bubble */
+.pm-ill--think .pm-ill__eye {
+  transform: translate(-2px, -3.5px);
+}
+.pm-ill--think .pm-ill__main {
+  animation: pm-ill-bob 5s ease-in-out infinite;
+}
+.pm-ill__dots i {
+  position: absolute;
+  background: var(--mascot-accent, #d96b3f);
+  border-radius: 50%;
+  opacity: 0;
+  animation: pm-ill-dot 3.4s infinite;
+}
+.pm-ill__dots i:nth-child(1) { width: 6%; height: 5%; right: 14%; top: 26%; animation-delay: 0.15s; }
+.pm-ill__dots i:nth-child(2) { width: 9%; height: 7.5%; right: 6%; top: 14%; animation-delay: 0.5s; }
+.pm-ill__dots i:nth-child(3) { width: 14%; height: 11.5%; right: -4%; top: -2%; animation-delay: 0.85s; }
+@keyframes pm-ill-dot {
+  0% { opacity: 0; transform: scale(0.3); }
+  14%, 78% { opacity: 1; transform: scale(1); }
+  92%, 100% { opacity: 0; transform: scale(0.6); }
+}
+
+/* eureka: the idea spark pops above the swoosh, eyes flare, a little hop */
+.pm-ill--eureka .pm-ill__main {
+  animation: pm-ill-hop 2.6s ease-in-out infinite;
+}
+.pm-ill--eureka .pm-ill__eye {
+  animation: pm-ill-flare 2.6s infinite;
+}
+.pm-ill svg.pm-ill__spark {
+  inset: auto;
+  position: absolute;
+  right: -2%;
+  top: -8%;
+  width: 26%;
+  height: 26%;
+  transform-origin: center;
+  animation: pm-ill-spark 2.6s infinite;
+  opacity: 0;
+}
+@keyframes pm-ill-hop {
+  0%, 24%, 60%, 100% { transform: translateY(0); }
+  32% { transform: translateY(-4%); }
+  40% { transform: translateY(-2.5%); }
+}
+@keyframes pm-ill-flare {
+  0%, 26%, 88%, 100% { transform: scale(1); }
+  34%, 72% { transform: scale(1.45); }
+}
+@keyframes pm-ill-spark {
+  0%, 26% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  36% { opacity: 1; transform: scale(1.25) rotate(18deg); }
+  46%, 72% { opacity: 1; transform: scale(1) rotate(28deg); }
+  86%, 100% { opacity: 0; transform: scale(0.5) rotate(40deg); }
+}
+
+/* vibe: eyes shut happy, the head keeps a beat, notes float off the swoosh */
+.pm-ill--vibe .pm-ill__main {
+  transform-origin: 50% 85%;
+  animation: pm-ill-nod 0.62s ease-in-out infinite;
+}
+.pm-ill--vibe .pm-ill__eye {
+  transform: scaleY(0.22);
+}
+@keyframes pm-ill-nod {
+  0%, 100% { transform: translateY(0) rotate(-1.6deg); }
+  50% { transform: translateY(2.8%) rotate(1.6deg); }
+}
+.pm-ill__notes i {
+  position: absolute;
+  right: 4%;
+  top: 22%;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--mascot-accent, #d96b3f);
+  opacity: 0;
+  animation: pm-ill-note 2.1s infinite;
+}
+.pm-ill__notes i:nth-child(1) { font-size: 0.95em; animation-delay: 0s; }
+.pm-ill__notes i:nth-child(2) { font-size: 1.25em; right: -2%; top: 12%; animation-delay: 1.05s; }
+@keyframes pm-ill-note {
+  0% { opacity: 0; transform: translate(0, 0) rotate(-8deg); }
+  18% { opacity: 1; }
+  78% { opacity: 0; transform: translate(55%, -120%) rotate(10deg); }
+  100% { opacity: 0; transform: translate(55%, -120%) rotate(10deg); }
+}
+
+/* wink: the left eye drops for a beat while the head tips into it */
+.pm-ill--wink .pm-ill__main {
+  transform-origin: 50% 80%;
+  animation: pm-ill-winktilt 2.6s ease-in-out infinite;
+}
+.pm-ill--wink .pm-ill__eye:first-of-type {
+  animation: pm-ill-winkeye 2.6s infinite;
+}
+@keyframes pm-ill-winktilt {
+  0%, 40%, 78%, 100% { transform: rotate(0deg); }
+  52%, 66% { transform: rotate(-2.4deg); }
+}
+@keyframes pm-ill-winkeye {
+  0%, 46%, 74%, 100% { transform: scaleY(1); }
+  52%, 68% { transform: scaleY(0.1); }
+}
+
+/* sketch: eyes down at the work while an accent line draws itself */
+.pm-ill--sketch .pm-ill__eye {
+  transform: translate(0, 3px);
+}
+.pm-ill--sketch .pm-ill__main {
+  animation: pm-ill-bob 5.4s ease-in-out infinite;
+}
+.pm-ill svg.pm-ill__squiggle {
+  inset: auto;
+  position: absolute;
+  left: 4%;
+  bottom: -6%;
+  width: 62%;
+  height: 20%;
+}
+.pm-ill__squiggle-path {
+  stroke-dasharray: 78;
+  stroke-dashoffset: 78;
+  animation: pm-ill-draw 3.6s ease-in-out infinite;
+}
+@keyframes pm-ill-draw {
+  0%, 8% { stroke-dashoffset: 78; opacity: 1; }
+  62% { stroke-dashoffset: 0; opacity: 1; }
+  86% { stroke-dashoffset: 0; opacity: 1; }
+  96%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+/* love: hearts take over the eyes, one drifts away */
+.pm-ill--love .pm-ill__eye {
+  opacity: 0;
+}
+.pm-ill--love .pm-ill__main {
+  animation: pm-ill-bob 3.4s ease-in-out infinite;
+}
+.pm-ill__hearts i {
+  position: absolute;
+  font-style: normal;
+  color: var(--mascot-accent, #d96b3f);
+  transform-origin: center;
+}
+.pm-ill__hearts i:nth-child(1) {
+  left: 31.5%;
+  top: 51%;
+  font-size: 1.15em;
+  animation: pm-ill-heart 1.4s ease-in-out infinite;
+}
+.pm-ill__hearts i:nth-child(2) {
+  left: 60.5%;
+  top: 47%;
+  font-size: 1.15em;
+  animation: pm-ill-heart 1.4s ease-in-out infinite;
+  animation-delay: -0.2s;
+}
+.pm-ill__hearts i:nth-child(3) {
+  right: 2%;
+  top: 14%;
+  font-size: 0.8em;
+  opacity: 0;
+  animation: pm-ill-heartfloat 2.8s infinite;
+}
+@keyframes pm-ill-heart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+@keyframes pm-ill-heartfloat {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  22% { opacity: 1; }
+  80% { opacity: 0; transform: translate(45%, -130%) scale(1.1); }
+  100% { opacity: 0; transform: translate(45%, -130%) scale(1.1); }
+}
+
+/* gasp: the head pops, eyes and mouth blow open, surprise ticks fly */
+.pm-ill--gasp .pm-ill__main {
+  animation: pm-ill-gaspjump 3.2s ease-in-out infinite;
+}
+.pm-ill--gasp .pm-ill__eye {
+  animation: pm-ill-gaspeye 3.2s infinite;
+}
+.pm-ill__mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.pm-ill--gasp .pm-ill__mouth {
+  animation: pm-ill-gaspmouth 3.2s infinite;
+}
+.pm-ill svg.pm-ill__ticks {
+  inset: auto;
+  position: absolute;
+  left: 2%;
+  top: -6%;
+  width: 44%;
+  height: 26%;
+  opacity: 0;
+  animation: pm-ill-gasptick 3.2s infinite;
+}
+@keyframes pm-ill-gaspjump {
+  0%, 24%, 78%, 100% { transform: translateY(1.5%); }
+  32%, 64% { transform: translateY(-3%); }
+}
+@keyframes pm-ill-gaspeye {
+  0%, 24%, 82%, 100% { transform: scale(1); }
+  32%, 68% { transform: scale(1.55); }
+}
+@keyframes pm-ill-gaspmouth {
+  0%, 24%, 82%, 100% { transform: scale(1); }
+  32%, 68% { transform: scale(1.5, 2.1); }
+}
+@keyframes pm-ill-gasptick {
+  0%, 26% { opacity: 0; transform: scale(0.5); }
+  34%, 62% { opacity: 1; transform: scale(1); }
+  74%, 100% { opacity: 0; transform: scale(0.8); }
+}
+
+/* nope: a quick side-to-side shake, then rest */
+.pm-ill--nope .pm-ill__main {
+  animation: pm-ill-nope 2.8s ease-in-out infinite;
+}
+@keyframes pm-ill-nope {
+  0%, 30%, 62%, 100% { transform: translateX(0); }
+  36% { transform: translateX(-5%); }
+  42% { transform: translateX(5%); }
+  48% { transform: translateX(-5%); }
+  54% { transform: translateX(4%); }
+  58% { transform: translateX(-2%); }
+}
+
+/* dizzy: slow wobble while the eyes orbit out of phase */
+.pm-ill--dizzy .pm-ill__main {
+  transform-origin: 50% 78%;
+  animation: pm-ill-wobble 2.8s ease-in-out infinite;
+}
+.pm-ill--dizzy .pm-ill__eye {
+  animation: pm-ill-orbit 1.1s linear infinite;
+}
+.pm-ill--dizzy .pm-ill__eye:last-of-type {
+  animation-delay: -0.55s;
+}
+@keyframes pm-ill-wobble {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@keyframes pm-ill-orbit {
+  0% { transform: translate(0, -2.2px); }
+  25% { transform: translate(2.2px, 0); }
+  50% { transform: translate(0, 2.2px); }
+  75% { transform: translate(-2.2px, 0); }
+  100% { transform: translate(0, -2.2px); }
+}
+
+/* spin: a full coin flip of the head (rotateY with a little squash) */
+.pm-ill--spin {
+  perspective: 400px;
+}
+.pm-ill--spin .pm-ill__main {
+  animation: pm-ill-spin 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes pm-ill-spin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* melt: squash into a puddle, hold, snap back with a wobble */
+.pm-ill--melt .pm-ill__main {
+  transform-origin: 50% 96%;
+  animation: pm-ill-melt 4.6s ease-in-out infinite;
+}
+@keyframes pm-ill-melt {
+  0%, 12% { transform: scale(1, 1); }
+  38% { transform: scale(1.25, 0.5); }
+  48%, 68% { transform: scale(1.55, 0.16); }
+  80% { transform: scale(0.92, 1.08); }
+  88% { transform: scale(1.06, 0.96); }
+  100% { transform: scale(1, 1); }
+}
+
+/* launch: flame on, up and out of frame, a beat of sky, drop back and squash */
+.pm-ill--launch {
+  overflow: visible;
+}
+.pm-ill--launch .pm-ill__main {
+  transform-origin: 50% 96%;
+  animation: pm-ill-launch 4.4s infinite;
+}
+.pm-ill svg.pm-ill__flame {
+  inset: auto;
+  position: absolute;
+  left: 39%;
+  bottom: -14%;
+  width: 22%;
+  height: 16%;
+  opacity: 0;
+  transform-origin: 50% 0%;
+  animation: pm-ill-flame 4.4s infinite;
+}
+@keyframes pm-ill-launch {
+  0%, 18% { transform: translateY(0) scale(1, 1); animation-timing-function: ease-in-out; }
+  24% { transform: translateY(1.5%) scale(1.06, 0.92); animation-timing-function: ease-in; }
+  40% { transform: translateY(-160%) scale(0.96, 1.1); animation-timing-function: linear; }
+  56% { transform: translateY(-160%) scale(1, 1); animation-timing-function: ease-in; }
+  72% { transform: translateY(0) scale(0.98, 1.04); animation-timing-function: ease-out; }
+  78% { transform: translateY(1%) scale(1.18, 0.78); }
+  86% { transform: translateY(0) scale(0.95, 1.06); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes pm-ill-flame {
+  0%, 20% { opacity: 0; transform: scaleY(0.4); }
+  26% { opacity: 1; transform: scaleY(1.15); }
+  30% { opacity: 1; transform: scaleY(0.85); }
+  34% { opacity: 1; transform: scaleY(1.1); }
+  40%, 100% { opacity: 0; transform: scaleY(0.3); }
+}
+
+/* echo: full accent ghosts trail the head, swapping sides */
+.pm-ill__copy--e1,
+.pm-ill__copy--e2 {
+  color: var(--mascot-accent, #d96b3f);
+  opacity: 0.55;
+}
+.pm-ill__copy--e1 {
+  animation: pm-ill-echo1 1.5s ease-in-out infinite;
+}
+.pm-ill__copy--e2 {
+  animation: pm-ill-echo2 1.5s ease-in-out infinite;
+}
+.pm-ill--echo .pm-ill__main {
+  animation: pm-ill-echom 1.5s ease-in-out infinite;
+}
+@keyframes pm-ill-echo1 {
+  0%, 100% { transform: translate(5%, 2.5%); opacity: 0.5; }
+  50% { transform: translate(-2%, -1%); opacity: 0.25; }
+}
+@keyframes pm-ill-echo2 {
+  0%, 100% { transform: translate(-5%, -2.5%); opacity: 0.25; }
+  50% { transform: translate(2%, 1%); opacity: 0.5; }
+}
+@keyframes pm-ill-echom {
+  0%, 100% { transform: translate(-1%, 0); }
+  50% { transform: translate(1%, 0); }
+}
+
+/* glitch: two clipped band copies jitter over the main drawing, stepped */
+.pm-ill__copy {
+  pointer-events: none;
+}
+.pm-ill__copy--a {
+  clip-path: inset(26% 0 50% 0);
+  color: var(--mascot-accent, #d96b3f);
+  animation: pm-ill-glitch-a 0.62s steps(2, jump-none) infinite;
+}
+.pm-ill__copy--b {
+  clip-path: inset(60% 0 14% 0);
+  animation: pm-ill-glitch-b 0.86s steps(3, jump-none) infinite;
+}
+.pm-ill--glitch .pm-ill__main {
+  animation: pm-ill-glitch-m 1.1s steps(4, jump-none) infinite;
+}
+@keyframes pm-ill-glitch-a {
+  0% { transform: translateX(-4%); opacity: 0.9; }
+  100% { transform: translateX(4%); opacity: 0.6; }
+}
+@keyframes pm-ill-glitch-b {
+  0% { transform: translateX(3%); }
+  100% { transform: translateX(-3%); }
+}
+@keyframes pm-ill-glitch-m {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(1%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-ill__main,
+  .pm-ill__eye,
+  .pm-ill__mouth,
+  .pm-ill__hand,
+  .pm-ill__zs i,
+  .pm-ill__dots i,
+  .pm-ill__notes i,
+  .pm-ill__hearts i,
+  .pm-ill__spark,
+  .pm-ill__squiggle-path,
+  .pm-ill__ticks,
+  .pm-ill__flame,
+  .pm-ill__copy {
+    animation: none !important;
+  }
+  .pm-ill__copy {
+    display: none;
+  }
+  .pm-ill__zs i,
+  .pm-ill__dots i,
+  .pm-ill__notes i,
+  .pm-ill__hearts i,
+  .pm-ill__spark,
+  .pm-ill__ticks {
+    opacity: 1;
+  }
+  .pm-ill__squiggle-path {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* action tiles */
+.pm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+  margin: 0 auto 40px;
+}
+.pm-tile {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px;
+  transition: border-color 0.2s;
+}
+.pm-tile.is-active {
+  border-color: var(--muted-2);
+}
+.pm-tile__stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--fg);
+  padding: 0;
+}
+.pm-tile__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+.pm-tile__name {
+  font-size: 13px;
+  color: var(--fg);
+}
+.pm-tile__copy {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--muted-2);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.pm-tile__copy:hover {
+  color: var(--fg);
+  border-color: var(--muted-2);
+}
+
+.pm-lab__foot {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted-2);
+}

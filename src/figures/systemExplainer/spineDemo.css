@@ -1,0 +1,103 @@
+/* Spine / Root-Cause (Ishikawa fishbone) figure. Dark System-Explainer vitrine
+   (.ds-root--away supplies figure tokens); a horizontal spine arrow points right
+   to the effect head, angled category bones grow off it with sub-cause ticks, and
+   the dominant cause lights amber as the likely root. Higher specificity than
+   .ds-root.ds-root--away (which forces transparent / border:0) so the frame is a
+   solid dark plate. */
+.ds-root.ds-root--away.ss-spine { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+.ss-spine__head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.ss-spine__title { font-size: 14px; font-weight: 600; color: #f4f4f6; }
+.ss-spine__sub { font-size: 11px; letter-spacing: 0.04em; color: #6f6f7e; }
+
+.ss-spine__stage { position: relative; }
+.ss-spine__bone { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* ── spine arrow ───────────────────────────────────────────────────────────── */
+.ss-spine__spine {
+  stroke: #3a3a48; stroke-width: 2.5; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default);
+}
+.ss-spine__spine.is-on { stroke-dashoffset: 0; }
+.ss-spine__arrow {
+  stroke: #3a3a48; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0; transition: opacity 300ms var(--m3-effects-default) 360ms;
+}
+.ss-spine__arrow.is-on { opacity: 1; }
+
+/* ── bones (categories) ────────────────────────────────────────────────────── */
+/* whole group fades + the rib/ticks draw when its step lands */
+.ss-spine__group { opacity: 0; transition: opacity 360ms var(--m3-effects-default); }
+.ss-spine__group.is-on { opacity: 1; }
+.ss-spine__group.is-dim { opacity: 0.4; transition: opacity 360ms var(--m3-effects-default); }
+
+.ss-spine__rib {
+  stroke: #2f3a52; stroke-width: 2; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 460ms var(--m3-spatial-standard-default), stroke 300ms var(--m3-effects-default);
+}
+.ss-spine__group.is-on .ss-spine__rib { stroke-dashoffset: 0; }
+.ss-spine__group.is-root .ss-spine__rib { stroke: #f59e0b; stroke-width: 2.5; }
+
+/* sub-cause ticks + labels */
+.ss-spine__sub { opacity: 0; transition: opacity 320ms var(--m3-effects-default); }
+.ss-spine__group.is-on .ss-spine__sub { opacity: 1; }
+.ss-spine__tick {
+  stroke: #2a2a36; stroke-width: 1.5; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 360ms var(--m3-effects-default) 140ms, stroke 300ms var(--m3-effects-default);
+}
+.ss-spine__group.is-on .ss-spine__tick { stroke-dashoffset: 0; }
+.ss-spine__sub-text {
+  fill: #8a8a98; font-size: 11px; font-weight: 400; font-family: inherit;
+  transition: fill 300ms var(--m3-effects-default);
+}
+.ss-spine__sub.is-root .ss-spine__tick { stroke: #f59e0b; stroke-width: 2; }
+.ss-spine__sub.is-root .ss-spine__sub-text { fill: #fbbf24; font-weight: 600; }
+
+/* category chip at the bone tip */
+.ss-spine__cat { opacity: 0; transition: opacity 320ms var(--m3-effects-default) 100ms; }
+.ss-spine__group.is-on .ss-spine__cat { opacity: 1; }
+.ss-spine__cat-box {
+  fill: #17171f; stroke: #2a2a36; stroke-width: 1;
+  transition: stroke 300ms var(--m3-effects-default), fill 300ms var(--m3-effects-default);
+}
+.ss-spine__cat-box.accent-blue { stroke: #2f3a52; }
+.ss-spine__cat-box.accent-amber { stroke: #5a4216; }
+.ss-spine__group.is-root .ss-spine__cat-box { fill: #221a0b; stroke: #f59e0b; }
+.ss-spine__cat-text {
+  fill: #cbcbd4; font-size: 12px; font-weight: 600; font-family: inherit; letter-spacing: 0.01em;
+  transition: fill 300ms var(--m3-effects-default);
+}
+.ss-spine__group.is-root .ss-spine__cat-text { fill: #fbbf24; }
+
+/* ── effect head (right) ───────────────────────────────────────────────────── */
+.ss-spine__effect { opacity: 0; transform: translateX(8px); transform-box: fill-box; transform-origin: center;
+  transition: opacity 380ms var(--m3-effects-default), transform 380ms var(--m3-spatial-standard-default); }
+.ss-spine__effect.is-on { opacity: 1; transform: none; }
+.ss-spine__effect-box { fill: #1c1410; stroke: #7a3b1a; stroke-width: 1.5; }
+.ss-spine__effect-label { fill: #b06a3a; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; font-family: inherit; }
+.ss-spine__effect-text { fill: #f4f4f6; font-size: 15px; font-weight: 700; font-family: inherit; }
+
+/* ── root-cause callout ────────────────────────────────────────────────────── */
+.ss-spine__root-flag { opacity: 0; transition: opacity 360ms var(--m3-effects-default) 120ms; }
+.ss-spine__root-flag.is-on { opacity: 1; }
+.ss-spine__root-text { fill: #f59e0b; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-family: inherit; }
+
+/* ── result strip ──────────────────────────────────────────────────────────── */
+.ss-spine__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  font-variant-numeric: tabular-nums;
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-spine__result.is-on { opacity: 1; transform: none; }
+.ss-spine__result b { color: #f4f4f6; }
+.ss-spine__root { color: #fbbf24; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-spine__spine, .ss-spine__arrow, .ss-spine__rib, .ss-spine__tick,
+  .ss-spine__sub, .ss-spine__cat, .ss-spine__group, .ss-spine__effect,
+  .ss-spine__root-flag, .ss-spine__result { transition: none; }
+}

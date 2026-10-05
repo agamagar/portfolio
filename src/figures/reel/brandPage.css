@@ -1,0 +1,189 @@
+/* ── Brand-page reel ─────────────────────────────────────────────────────────
+   A split shot: the real brand page scrolling inside a phone on the left, the
+   pitch for the live section on the right. Sits inside .reel-root, so it inherits
+   the 960x600 design frame. Radii are border-radius only; the global
+   corner-shape squircle rounds them, never set per element.
+
+   There are deliberately NO transitions or keyframes below. Every animated value
+   is written per frame by BrandPageReel's clock, which is what lets
+   tools/export-reel.mjs seek the animation and capture it as video. Adding a
+   transition here would desync the page from the exported MP4. */
+
+.bpr-root {
+  --bpr-accent: #b79cff;
+  --bpr-ink: #f6f5fb;
+  --bpr-sub: rgba(246, 245, 251, 0.6);
+  --bpr-dim: rgba(8, 8, 12, 0.74);
+}
+
+.bpr-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 90% at 24% 50%, rgba(107, 33, 217, 0.22), transparent 62%),
+    radial-gradient(140% 120% at 50% -12%, #17161f 0%, #050507 64%);
+}
+/* The camera runs close enough that the phone bleeds past the top and bottom of
+   the stage. This makes that deliberate: the frame edge becomes a fade rather than
+   a cut. Sits under the copy column (z-index 6), so type is never touched. */
+.bpr-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    #06060a 0,
+    rgba(6, 6, 10, 0) 96px,
+    rgba(6, 6, 10, 0) calc(100% - 96px),
+    #06060a 100%
+  );
+}
+
+/* ── the camera: holds the phone left of the copy and pushes in per beat ── */
+.bpr-cam {
+  position: absolute;
+  left: 104px;                       /* phone centre lands at x 224 of 960 */
+  top: 24px;                         /* and at y 300, the stage centre */
+  width: 240px;
+  height: 552px;
+  transform-origin: center center;
+  will-change: transform;
+}
+.bpr-ph {
+  box-shadow:
+    0 30px 70px -30px rgba(6, 4, 20, 0.7),
+    0 1px 3px rgba(20, 16, 45, 0.06);
+}
+
+/* ── the page: one continuous 3x Figma export, scrolled ── */
+.bpr-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240px;                      /* 360-wide frame at the phone's scale */
+  height: auto;
+  display: block;
+}
+
+/* ── spotlight: the page either side of the live section falls back. Both are a
+   full viewport tall and slide on transform, so nothing relayouts per beat. ── */
+.bpr-dim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 552px;
+  pointer-events: none;
+  /* A short ramp on purpose: the camera only ever leaves around 60px of the
+     neighbouring sections in frame, so a long fade would never reach full dim and
+     the spotlight would read as a vignette instead of a choice. */
+  background: linear-gradient(to top, rgba(8, 8, 12, 0) 0, var(--bpr-dim) 22px);
+}
+.bpr-dim--after {
+  background: linear-gradient(to bottom, rgba(8, 8, 12, 0) 0, var(--bpr-dim) 22px);
+}
+
+/* ── the copy column ── */
+.bpr-copy {
+  position: absolute;
+  z-index: 6;                        /* above .reel-spot, so type stays crisp */
+  left: 472px;
+  right: 52px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--bpr-ink);
+}
+.bpr-copy > * {
+  margin: 0;
+  opacity: 0;                        /* the clock takes it from here */
+}
+
+.bpr-copy__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.bpr-copy__idx {
+  order: 0;
+  color: rgba(246, 245, 251, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+.bpr-copy__idx b { color: var(--bpr-accent); font-weight: 600; }
+.bpr-copy__meta::before {
+  content: "";
+  order: 1;                          /* the rule sits between counter and eyebrow */
+  align-self: center;
+  width: 18px;
+  height: 1px;
+  background: rgba(246, 245, 251, 0.22);
+}
+.bpr-copy__eyebrow { order: 2; color: rgba(246, 245, 251, 0.72); }
+
+.bpr-copy__head {
+  margin-bottom: 14px;
+  font-size: 31px;
+  line-height: 1.14;
+  font-weight: 600;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+}
+.bpr-copy__line {
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--bpr-sub);
+  max-width: 32em;
+  text-wrap: pretty;
+}
+
+/* ── pacing rail: each tick is as wide as its beat is long ── */
+.bpr-rail {
+  position: absolute;
+  z-index: 6;
+  left: 472px;
+  right: 52px;
+  bottom: 58px;                      /* clears the card's hover controls (right/bottom 12px) */
+  display: flex;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bpr-rail__tick {
+  flex-basis: 0;
+  height: 3px;
+  border-radius: 2px;
+  /* No transition: a tick flips on the beat boundary. A 420ms fade here would be
+     the one value not owned by the clock, and would render differently in the
+     exported frames than on the page. */
+  background: rgba(246, 245, 251, 0.12);
+}
+.bpr-rail__tick[data-state="done"] { background: rgba(246, 245, 251, 0.26); }
+.bpr-rail__tick[data-state="on"] { background: var(--bpr-accent); }
+
+/* ── export surface: the design frame at 1:1, top-left, no card chrome. Driven
+   frame by frame by tools/export-reel.mjs. ── */
+.reel-fit[data-surface="export"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: 600px;
+  border-radius: 0;
+  background: #06060a;
+  overflow: hidden;
+}
+.reel-fit[data-surface="export"] .reel-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: none;
+  border-radius: 0;
+}

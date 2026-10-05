@@ -1,0 +1,118 @@
+/* §14 Physicality & interruptibility exemplar (Devouring Details layer).
+   A self-contained light phone vitrine (like the SE figures own their palette);
+   the sheet is a real draggable object driven by the spring() presets. */
+
+.ph-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Fixed width so pointer drag maps 1:1 (no --ds-scale transform in the way). */
+.ph-sheet__frame { width: 300px; max-width: 100%; }
+
+.ph-sheet__phone .ds-phone__screen {
+  position: relative;
+  height: 384px;
+  overflow: hidden;
+  background: #faf9f7;
+}
+
+/* Faux page behind the sheet (skeleton, calm). */
+.ph-sheet__bg {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ph-sheet__bgline { height: 12px; border-radius: 6px; background: #ecebe6; }
+.ph-sheet__bgcta { margin-top: auto; height: 46px; border-radius: 12px; background: #e6e3dd; }
+
+/* Dimming scrim; its opacity is driven from the sheet's y in JS. */
+.ph-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: #0a0a0f;
+  cursor: pointer;
+}
+
+/* The sheet: a floating object. A soft top shadow is the one place elevation
+   beats a hairline (it is genuinely above the page). transform-origin bottom = it
+   belongs to the edge it enters from. */
+.ph-sheet__sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-origin: 50% 100%;
+  background: #ffffff;
+  border-top: 1px solid #efece7;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 32px rgba(20, 18, 14, 0.16);
+  padding: 10px 16px 18px;
+  touch-action: none;
+  cursor: grab;
+}
+.ph-sheet__sheet.is-held { cursor: grabbing; }
+
+.ph-sheet__grab {
+  display: block;
+  width: 38px;
+  height: 5px;
+  border-radius: 3px;
+  background: #d9d6d0;
+  margin: 2px auto 12px;
+}
+
+.ph-sheet__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.ph-sheet__title { font-size: 16px; font-weight: 650; color: #1b1b1d; letter-spacing: -0.01em; }
+.ph-sheet__hint { font-size: 11px; color: #a09c94; }
+
+.ph-sheet__slots { display: flex; flex-direction: column; gap: 8px; }
+.ph-sheet__slot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid #ece9e3;
+  border-radius: 12px;
+  background: #fbfaf8;
+  text-align: left;
+}
+.ph-sheet__slot.is-hot { border-color: #8e24aa; box-shadow: inset 0 0 0 1px #8e24aa; }
+.ph-sheet__slott { font-size: 13.5px; font-weight: 600; color: #1b1b1d; }
+.ph-sheet__slotn { font-size: 11px; color: #8b877f; }
+.ph-sheet__slot.is-hot .ph-sheet__slotn { color: #8e24aa; }
+
+/* Self-documenting legend: the four §14 tells this specimen shows. */
+.ph-sheet__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 360px;
+  justify-content: center;
+}
+.ph-sheet__tell {
+  font-size: 11.5px;
+  color: #6b6862;
+  background: #f4f2ee;
+  border: 1px solid #eceae5;
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+.ph-sheet__tell b { color: #1b1b1d; font-weight: 650; }
+
+/* Reduced motion: the sheet is parked open, drag is disabled in JS, no hint. */
+@media (prefers-reduced-motion: reduce) {
+  .ph-sheet__hint { display: none; }
+  .ph-sheet__sheet { cursor: default; }
+}

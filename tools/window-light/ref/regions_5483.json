@@ -1,0 +1,130 @@
+{
+ "version": 1,
+ "image": "ref_5483.png",
+ "images": [
+  "ref_5483.png"
+ ],
+ "size": [
+  1200,
+  1600
+ ],
+ "coords": "normalized",
+ "source": "fix-core round 1: rectangles read on ref_5483.png (1200 x 1600 upright), inset from edges and room bars; score renders of ?shot=ref5483 at 1200 x 1600. The photo had the room's ceiling light on.",
+ "regions": {
+  "lit_stile": {
+   "desc": "L2's lamp-lit hinge stile",
+   "polygons": [
+    [
+     [
+      0.75,
+      0.375
+     ],
+     [
+      0.88333,
+      0.375
+     ],
+     [
+      0.88333,
+      0.59375
+     ],
+     [
+      0.75,
+      0.59375
+     ]
+    ]
+   ]
+  },
+  "pane_L1C": {
+   "desc": "L1 row C glass",
+   "polygons": [
+    [
+     [
+      0.18333,
+      0.33125
+     ],
+     [
+      0.36667,
+      0.33125
+     ],
+     [
+      0.36667,
+      0.6125
+     ],
+     [
+      0.18333,
+      0.6125
+     ]
+    ]
+   ]
+  },
+  "pane_L2B": {
+   "desc": "L2 row B glass",
+   "polygons": [
+    [
+     [
+      0.475,
+      0.0125
+     ],
+     [
+      0.65,
+      0.0125
+     ],
+     [
+      0.65,
+      0.24375
+     ],
+     [
+      0.475,
+      0.24375
+     ]
+    ]
+   ]
+  },
+  "car": {
+   "desc": "the Hot Wheels car",
+   "polygons": [
+    [
+     [
+      0.525,
+      0.55
+     ],
+     [
+      0.74167,
+      0.55
+     ],
+     [
+      0.74167,
+      0.62187
+     ],
+     [
+      0.525,
+      0.62187
+     ]
+    ]
+   ]
+  },
+  "screen": {
+   "desc": "the monitor: dark app, white text and the lamp's streak",
+   "polygons": [
+    [
+     [
+      0.0,
+      0.6875
+     ],
+     [
+      1.0,
+      0.6875
+     ],
+     [
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0
+     ]
+    ]
+   ]
+  }
+ }
+}

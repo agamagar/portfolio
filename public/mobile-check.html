@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mobile check</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  WHY THIS EXISTS (20 Sep 2026)
+
+  Agam, on a phone: "I'm able to zoom out on the page, which causes these
+  errors." That is what a browser does when the document is WIDER than the
+  viewport - it lets you pinch out to the full width, and the extra shows as a
+  dead gutter. The cause was a 711px decorative glow on a 375px screen, and the
+  reason it went unnoticed is that nothing measures it: it looks perfect on a
+  desktop, and the emulated phone in a dev tool lies about `innerWidth`.
+
+  So this page loads every route in a REAL 375px viewport (an iframe is a real
+  viewport for its content, unlike a resized window) and reports the four things
+  that break a site on a phone. Open it at /mobile-check.html and press Run.
+
+  It is deliberately dependency-free: no Puppeteer, no Playwright, nothing to
+  install or keep up to date. It runs in whatever browser you already have open,
+  including the phone itself.
+-->
+<style>
+  :root { color-scheme: light dark; --ok: #116b3a; --bad: #a3182b; --line: rgba(128,128,128,.28); }
+  body { margin: 0; padding: 24px; font: 15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.lede { margin: 0 0 20px; max-width: 62ch; opacity: .75; }
+  button { font: inherit; font-weight: 600; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
+  table { border-collapse: collapse; margin-top: 20px; width: 100%; max-width: 900px; }
+  th, td { text-align: left; padding: 7px 12px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; font-weight: 600; }
+  td.n { font-variant-numeric: tabular-nums; }
+  .ok { color: var(--ok); } .bad { color: var(--bad); font-weight: 600; }
+  .detail { font-size: 13px; opacity: .8; }
+  iframe { position: fixed; left: -9999px; top: 0; width: 375px; height: 812px; border: 0; }
+  .summary { margin-top: 18px; font-weight: 600; }
+</style>
+
+<h1>Mobile check</h1>
+<p class="lede">
+  Every route in a real 375&times;812 viewport. A route passes when the document is
+  no wider than the screen, nothing overflows unclipped, no body text is under
+  12px and every tap target clears 44px.
+</p>
+<button id="run">Run</button>
+<div class="summary" id="summary"></div>
+<table id="out" hidden>
+  <thead><tr><th>Route</th><th>Doc width</th><th>Scrolls sideways</th><th>Overflowing</th><th>Text &lt; 12px</th><th>Targets &lt; 44px</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<script type="module">
+const VW = 375, VH = 812;
+const ROUTES = ["/", "/portfolio", "/work/scheduled-delivery", "/work/away-agent",
+  "/work/cross-sell", "/work/toppr", "/work/caratlane", "/list", "/hello"];
+
+// Anything the annotation overlay injects is not the site, so it is not judged.
+const FOREIGN = /styles-module__|agentation/i;
+
+const probe = (d, w) => {
+  const R = e => e.getBoundingClientRect();
+
+  // DID THE PAGE EVEN RENDER. This guard exists because its absence cost real
+  // time: with the app failing to compile, every route reported a perfect pass -
+  // a 375px document, nothing overflowing, no small text - because there was
+  // nothing on the page at all. A check that cannot tell "clean" from "empty"
+  // is worse than no check, so an unmounted route is a failure, loudly.
+  const root = d.querySelector("#root");
+  if (d.querySelector("vite-error-overlay")) return { error: "the dev server is reporting a build error" };
+  if (!root || root.innerHTML.length < 500) return { error: "nothing rendered (app did not mount)" };
+
+  const foreign = e => FOREIGN.test((e.className || "").toString()) || !!e.closest?.("[data-agentation], #agentation-root");
+
+  // 1 + 2. does the page exceed the screen, and can you scroll to the excess
+  const docW = d.documentElement.scrollWidth;
+  w.scrollTo(600, w.scrollY);
+  const scrollX = Math.round(w.scrollX);
+  w.scrollTo(0, w.scrollY);
+
+  // 3. elements past the edge that no ancestor clips (a clipped bleed is fine)
+  const over = [];
+  for (const e of d.querySelectorAll("body *")) {
+    if (foreign(e)) continue;
+    const r = R(e);
+    if (!r.width || (r.right <= VW + 1 && r.left >= -1)) continue;
+    // the walk INCLUDES body and html: they are where the page-level clip
+    // lives, and stopping short of them reported every clipped bleed as an
+    // overflow (the heart's glow came back as "924px" long after it was
+    // contained).
+    let p = e.parentElement, clipped = false;
+    while (p) {
+      const o = w.getComputedStyle(p).overflowX;
+      if (o === "hidden" || o === "clip" || o === "auto" || o === "scroll") { clipped = true; break; }
+      p = p.parentElement;
+    }
+    if (!clipped) over.push(`${e.tagName.toLowerCase()}.${(e.className || "").toString().split(/\s+/)[0]} → ${Math.round(r.right)}px`);
+  }
+
+  // 4. type that is too small to read. Leaf nodes only, so a wrapper is not
+  //    blamed for its child's size, and SVG labels are counted separately since
+  //    they are usually chart furniture rather than prose.
+  const tiny = [];
+  for (const e of d.querySelectorAll("body *")) {
+    if (e.children.length || !e.textContent.trim() || foreign(e)) continue;
+    if (e.ownerSVGElement) continue;
+    const fs = parseFloat(w.getComputedStyle(e).fontSize);
+    if (fs && fs < 12) tiny.push(`${fs}px "${e.textContent.trim().slice(0, 24)}"`);
+  }
+
+  // 5. tap targets. 44 is the number both Apple and WCAG 2.2 land on.
+  const small = [];
+  for (const e of d.querySelectorAll("a[href], button, [role=button], input, select")) {
+    if (foreign(e)) continue;
+    const r = R(e);
+    if (!r.width || w.getComputedStyle(e).display === "none") continue;
+    if (r.width < 44 || r.height < 44) small.push(`${e.tagName.toLowerCase()} ${Math.round(r.width)}×${Math.round(r.height)} "${(e.getAttribute("aria-label") || e.textContent.trim()).slice(0, 20)}"`);
+  }
+  return { docW, scrollX, over, tiny, small };
+};
+
+document.getElementById("run").addEventListener("click", async () => {
+  const btn = document.getElementById("run");
+  btn.disabled = true; btn.textContent = "Running…";
+  const table = document.getElementById("out"), body = table.querySelector("tbody");
+  body.innerHTML = ""; table.hidden = false;
+  const frame = document.createElement("iframe");
+  document.body.appendChild(frame);
+  let failed = 0;
+
+  for (const route of ROUTES) {
+    btn.textContent = `Running… ${route}`;
+    let res;
+    try {
+      await new Promise((done, fail) => {
+        const t = setTimeout(() => fail(new Error("timed out")), 20000);
+        frame.onload = () => { clearTimeout(t); setTimeout(done, 3000); };
+        frame.src = route + (route.includes("?") ? "&" : "?") + "mc=" + Date.now();
+      });
+      res = probe(frame.contentDocument, frame.contentWindow);
+    } catch (e) {
+      res = { error: e.message };
+    }
+    const bad = res.error || res.docW > VW || res.scrollX > 0 || res.over.length || res.tiny.length || res.small.length;
+    if (bad) failed++;
+    const cell = (n, list) => n
+      ? `<span class="bad">${n}</span><div class="detail">${(list || []).slice(0, 3).join("<br>")}</div>`
+      : `<span class="ok">0</span>`;
+    body.insertAdjacentHTML("beforeend", res.error
+      ? `<tr><td>${route}</td><td colspan="5" class="bad">${res.error}</td></tr>`
+      : `<tr>
+           <td>${route}</td>
+           <td class="n ${res.docW > VW ? "bad" : "ok"}">${res.docW}</td>
+           <td class="n ${res.scrollX ? "bad" : "ok"}">${res.scrollX}</td>
+           <td class="n">${cell(res.over.length, res.over)}</td>
+           <td class="n">${cell(res.tiny.length, res.tiny)}</td>
+           <td class="n">${cell(res.small.length, res.small)}</td>
+         </tr>`);
+  }
+  frame.remove();
+  document.getElementById("summary").innerHTML = failed
+    ? `<span class="bad">${failed} of ${ROUTES.length} routes need work.</span>`
+    : `<span class="ok">All ${ROUTES.length} routes pass.</span>`;
+  btn.disabled = false; btn.textContent = "Run again";
+});
+</script>

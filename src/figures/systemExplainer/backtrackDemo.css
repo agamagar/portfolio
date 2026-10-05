@@ -1,0 +1,104 @@
+/* Backtrack figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens). A small decision tree: root + two hypotheses, each with a leaf. A
+   glowing walker token traces edges down the left branch, dead-ends, retraces to
+   the root, then takes the right branch to the answer. Explored-and-failed nodes
+   stay visible as dim ghosts so the search is legible. Higher specificity than
+   .ds-root.ds-root--away (which forces transparent / border:0) so the frame is a
+   solid dark plate. */
+.ds-root.ds-root--away.ss-bt { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-bt__head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+.ss-bt__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-bt__head-bug { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+
+.ss-bt__stage { position: relative; }
+.ss-bt__edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* edges: idle grey; light up blue as the walker traverses; the dead-end edge
+   goes red, the winning edge green. Stroke draws in along its length. */
+.ss-bt__edge {
+  stroke: #2a2a36; stroke-width: 1.5; fill: none;
+  stroke-dasharray: 1; stroke-dashoffset: 0;
+  transition: stroke 320ms var(--m3-effects-default), stroke-width 320ms var(--m3-effects-default), opacity 360ms var(--m3-effects-default);
+}
+.ss-bt__edge.is-on { stroke: #3b82f6; stroke-width: 2.5; }
+.ss-bt__edge.is-retrace { stroke: #6f6f7e; stroke-width: 2; }   /* re-lit dimmer on the way back up */
+.ss-bt__edge.is-fail { stroke: #ef4444; }
+.ss-bt__edge.is-win { stroke: #22c55e; stroke-width: 2.5; }
+.ss-bt__edge.is-ghost { stroke: #1c1c24; stroke-width: 1.5; }   /* explored branch fades to a ghost */
+
+/* tree nodes — small rounded rects centered on precomputed coords */
+.ss-bt__node {
+  position: absolute; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 8px; border-radius: 9px;
+  background: #15151c; border: 1px solid #2a2a36;
+  transition: opacity 360ms var(--m3-effects-default), border-color 320ms var(--m3-effects-default),
+              background 320ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-bt__node-text { font-size: 12px; font-weight: 500; color: #cbcbd4; white-space: nowrap; }
+.ss-bt__node.is-root { background: #17171f; border-color: #2f3a52; }
+.ss-bt__node.is-root .ss-bt__node-text { color: #f4f4f6; font-weight: 600; }
+
+/* a node the walker is currently visiting */
+.ss-bt__node.is-active { border-color: #3b82f6; background: #11192b; }
+.ss-bt__node.is-active .ss-bt__node-text { color: #f4f4f6; }
+
+/* not yet reached — dimmed until the search arrives */
+.ss-bt__node.is-dim { opacity: 0.42; }
+
+/* explored-and-failed left subtree: stays visible as a dim ghost */
+.ss-bt__node.is-ghost { opacity: 0.4; border-color: #20202a; background: #121218; }
+.ss-bt__node.is-ghost .ss-bt__node-text { color: #6f6f7e; }
+.ss-bt__node.is-ghost-leaf { opacity: 0.5; }
+
+/* leaf that dead-ends → red */
+.ss-bt__node.is-leaf.is-fail { border-color: #ef4444; background: #1e1113; }
+.ss-bt__node.is-leaf.is-fail .ss-bt__node-text { color: #f87171; }
+
+/* leaf that resolves → green */
+.ss-bt__node.is-leaf.is-win { border-color: #22c55e; background: #112016; transform: scale(1.04); }
+.ss-bt__node.is-leaf.is-win .ss-bt__node-text { color: #4ade80; font-weight: 600; }
+
+/* node marks (✕ dead end, ✓ found) */
+.ss-bt__mark {
+  position: absolute; right: -8px; top: -8px; width: 17px; height: 17px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; font-size: 10px; font-weight: 700; line-height: 1;
+  opacity: 0; transform: scale(0.4);
+  transition: opacity 300ms var(--m3-effects-default), transform 300ms var(--m3-spatial-standard-default);
+}
+.ss-bt__mark.is-on { opacity: 1; transform: none; }
+.ss-bt__mark.is-x { color: #2a0d0d; background: #ef4444; }
+.ss-bt__mark.is-check { color: #06210f; background: #22c55e; }
+
+/* the walker: a glowing dot that slides between node coords. -50% centers it on
+   the (left,top) = node center. */
+.ss-bt__walker {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%;
+  margin: -6px 0 0 -6px;  /* center on coord */
+  background: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.18), 0 0 12px 2px rgba(59,130,246,0.55);
+  transition: left 480ms var(--m3-spatial-standard-default), top 480ms var(--m3-spatial-standard-default),
+              background 300ms var(--m3-effects-default), box-shadow 300ms var(--m3-effects-default);
+  animation: ssBtWalkerPulse 1.5s ease-in-out infinite;
+}
+.ss-bt__walker.is-retrace { background: #8a8a98; box-shadow: 0 0 0 4px rgba(138,138,152,0.16), 0 0 10px 2px rgba(138,138,152,0.45); }
+.ss-bt__walker.is-fail { background: #ef4444; box-shadow: 0 0 0 4px rgba(239,68,68,0.18), 0 0 12px 2px rgba(239,68,68,0.55); }
+.ss-bt__walker.is-win { background: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,0.2), 0 0 14px 3px rgba(34,197,94,0.6); }
+@keyframes ssBtWalkerPulse { 0%, 100% { opacity: 0.92; } 50% { opacity: 1; } }
+
+/* result strip */
+.ss-bt__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-bt__result.is-on { opacity: 1; transform: none; }
+.ss-bt__result b { color: #f4f4f6; }
+.ss-bt__found { color: #4ade80; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-bt__walker { animation: none; }
+  .ss-bt__walker, .ss-bt__edge, .ss-bt__node, .ss-bt__mark, .ss-bt__result { transition: none; }
+}

@@ -1,0 +1,130 @@
+{
+ "version": 1,
+ "image": "ref_5482.png",
+ "images": [
+  "ref_5482.png"
+ ],
+ "size": [
+  1200,
+  1600
+ ],
+ "coords": "normalized",
+ "source": "fix-core round 1: rectangles read on ref_5482.png (1200 x 1600 upright), inset from edges and room bars; score renders of ?shot=ref5482 at 1200 x 1600. The photo had the room's ceiling light on.",
+ "regions": {
+  "lit_stile_hot": {
+   "desc": "the 18:40 hotspot on L2's hinge stile, low in row C (clips toward #fef3aa)",
+   "polygons": [
+    [
+     [
+      0.76667,
+      0.4375
+     ],
+     [
+      0.875,
+      0.4375
+     ],
+     [
+      0.875,
+      0.59375
+     ],
+     [
+      0.76667,
+      0.59375
+     ]
+    ]
+   ]
+  },
+  "lit_stile_mid": {
+   "desc": "the same stile's glow above, up by the keyhole",
+   "polygons": [
+    [
+     [
+      0.75833,
+      0.075
+     ],
+     [
+      0.88333,
+      0.075
+     ],
+     [
+      0.88333,
+      0.2
+     ],
+     [
+      0.75833,
+      0.2
+     ]
+    ]
+   ]
+  },
+  "pane_L1B": {
+   "desc": "L1 row B glass (dusk sky)",
+   "polygons": [
+    [
+     [
+      0.18333,
+      0.01875
+     ],
+     [
+      0.36667,
+      0.01875
+     ],
+     [
+      0.36667,
+      0.225
+     ],
+     [
+      0.18333,
+      0.225
+     ]
+    ]
+   ]
+  },
+  "pane_L2C": {
+   "desc": "L2 row C glass (dark foliage)",
+   "polygons": [
+    [
+     [
+      0.475,
+      0.325
+     ],
+     [
+      0.65,
+      0.325
+     ],
+     [
+      0.65,
+      0.53125
+     ],
+     [
+      0.475,
+      0.53125
+     ]
+    ]
+   ]
+  },
+  "screen": {
+   "desc": "the monitor: dark app, white text",
+   "polygons": [
+    [
+     [
+      0.0,
+      0.675
+     ],
+     [
+      1.0,
+      0.675
+     ],
+     [
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0
+     ]
+    ]
+   ]
+  }
+ }
+}

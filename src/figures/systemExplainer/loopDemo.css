@@ -1,0 +1,110 @@
+/* Sense-Plan-Act figure. Dark System-Explainer vitrine (.ds-root--away supplies
+   figure tokens); three nodes sit on a closed ring of bowed, arrowed arcs and a
+   single glowing token orbits SENSE -> PLAN -> ACT -> SENSE while a world-state
+   chip shifts between laps. Higher specificity than .ds-root.ds-root--away
+   (which forces transparent / border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-loop { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-loop__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.ss-loop__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-loop__head-trip { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-loop__cycle {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; color: #8a8a98; font-variant-numeric: tabular-nums;
+  opacity: 0; transition: opacity 360ms var(--m3-effects-default);
+}
+.ss-loop__cycle.is-on { opacity: 1; }
+.ss-loop__cycle b { color: #cbcbd4; font-weight: 700; }
+.ss-loop__world {
+  padding: 2px 8px; border-radius: 999px; background: #15151c; border: 1px solid #2a2a36;
+  color: #cbcbd4; font-weight: 500;
+  transition: color 300ms var(--m3-effects-default), border-color 300ms var(--m3-effects-default), background 300ms var(--m3-effects-default);
+}
+
+/* stage spans the full frame width (cancel the 16px side padding) so the SVG
+   viewBox 0 0 W H and the absolutely-positioned nodes share one coordinate
+   space and nothing clips at the edges */
+.ss-loop__stage { position: relative; margin: 0 -16px; }
+.ss-loop__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* ring arcs: draw in once the loop starts; the arc the token is riding lights blue */
+.ss-loop__edge {
+  stroke: #2a2a36; stroke-width: 1.75; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 560ms var(--m3-effects-default), stroke 320ms var(--m3-effects-default), stroke-width 320ms var(--m3-effects-default);
+}
+.ss-loop__edge.is-drawn { stroke-dashoffset: 0; }
+.ss-loop__edge.is-live { stroke: #3b82f6; stroke-width: 2.5; }
+.ss-loop__arrowhead { fill: #2a2a36; transition: fill 320ms var(--m3-effects-default); }
+.ss-loop__arrowhead.is-live { fill: #3b82f6; }
+
+/* nodes — positioned by centre coord, so translate back by half */
+.ss-loop__node {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 152px; padding: 10px 13px; border-radius: 13px;
+  background: #15151c; border: 1px solid #20202a;
+  display: flex; flex-direction: column; gap: 3px; text-align: center;
+  transition: border-color 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default), opacity 320ms var(--m3-effects-default);
+}
+.ss-loop__node.is-idle { opacity: 0.9; }
+.ss-loop__node.is-done { border-color: #2a2a36; }
+.ss-loop__node.is-active { border-color: #3b82f6; background: #11141f; }
+.ss-loop__node-kicker {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: #8a8a98;
+  transition: color 320ms var(--m3-effects-default);
+}
+.ss-loop__node.is-active .ss-loop__node-kicker { color: #3b82f6; }
+.ss-loop__node-sub {
+  font-size: 12px; font-weight: 500; color: #cbcbd4; font-variant-numeric: tabular-nums;
+  transition: color 320ms var(--m3-effects-default);
+}
+.ss-loop__node.is-active .ss-loop__node-sub { color: #f4f4f6; }
+
+/* a soft halo that fades up under the live node */
+.ss-loop__node-glow {
+  position: absolute; inset: -2px; border-radius: 15px; pointer-events: none;
+  box-shadow: 0 0 0 0 rgba(59,130,246,0); opacity: 0;
+  transition: opacity 320ms var(--m3-effects-default);
+}
+.ss-loop__node.is-active .ss-loop__node-glow { opacity: 1; animation: ssLoopHalo 1.6s ease-in-out infinite; }
+
+/* the orbiting token: a glowing dot that slides between node centres */
+.ss-loop__token {
+  position: absolute; width: 13px; height: 13px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.18), 0 0 14px 3px rgba(59,130,246,0.55);
+  opacity: 0; z-index: 3;
+  transition: left 520ms var(--m3-spatial-standard-default), top 520ms var(--m3-spatial-standard-default), opacity 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default), box-shadow 320ms var(--m3-effects-default);
+}
+.ss-loop__token.is-on { opacity: 1; }
+.ss-loop__token.is-on:not(.is-calm) { animation: ssLoopTokenPulse 1.4s ease-in-out infinite; }
+.ss-loop__token.is-calm {
+  background: #4ade80;
+  box-shadow: 0 0 0 4px rgba(74,222,128,0.16), 0 0 14px 3px rgba(74,222,128,0.45);
+}
+
+/* result strip */
+.ss-loop__result {
+  margin-top: 12px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; text-align: center;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-loop__result.is-on { opacity: 1; transform: none; border-color: #1c3326; background: #0e160f; }
+.ss-loop__mantra { color: #4ade80; font-weight: 600; }
+
+@keyframes ssLoopHalo {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.0); }
+  50% { box-shadow: 0 0 0 5px rgba(59,130,246,0.16); }
+}
+@keyframes ssLoopTokenPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.18), 0 0 12px 2px rgba(59,130,246,0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(59,130,246,0.10), 0 0 18px 5px rgba(59,130,246,0.65); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-loop__node.is-active .ss-loop__node-glow,
+  .ss-loop__token.is-on:not(.is-calm) { animation: none; }
+  .ss-loop__edge,
+  .ss-loop__token { transition: none; }
+}

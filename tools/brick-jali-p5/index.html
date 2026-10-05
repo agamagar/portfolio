@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brick Jali — five bonds from one cuboid</title>
+<script src="p5.min.js"></script>
+<style>
+  :root{
+    --bg: #14100c;
+    --panel-bg: #0c0906;
+    --ink: #e9dbc8;
+    --muted: #a8977f;
+    --rule: #2a221a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+    padding: 48px 24px 80px;
+  }
+  header{
+    max-width: 920px;
+    margin: 0 auto 32px;
+  }
+  h1{
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+  header p{
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 4px;
+    max-width: 640px;
+  }
+  .tabs{
+    max-width: 920px;
+    margin: 0 auto 28px;
+    display: flex;
+    gap: 8px;
+  }
+  .tabs button{
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .tabs button.active{
+    color: var(--bg);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .group-label{
+    max-width: 920px;
+    margin: 30px auto 14px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .group-label:first-child{ margin-top: 0; }
+  .composition{
+    max-width: 920px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .panel{
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .panel.mono{ background: #000; }
+  .panel.full{ grid-column: 1 / 3; }
+  .panel canvas{ display:block; }
+  .label{
+    position:absolute;
+    left:0; bottom:0; right:0;
+    padding: 8px 12px;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+    pointer-events:none;
+    display:flex;
+    justify-content:space-between;
+  }
+  .label span.n{ color: var(--muted); }
+  footer{
+    max-width: 920px;
+    margin: 28px auto 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer b{ color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Brick Jali — one cuboid, five bonds</h1>
+    <p id="header-copy">A single brick primitive (4 : 2 : 1 — length : width : height) is rotated and repeated to build five traditional jali/bond patterns, matching the reference plate: diamond trellis, herringbone, basket weave, diagonal coursing, and a tilted perforated screen. Drag any panel to orbit it.</p>
+  </header>
+
+  <nav class="tabs">
+    <button id="tab-bonds" class="active">Five bonds</button>
+    <button id="tab-hover">Hover tessellation</button>
+    <button id="tab-relief">Perfect overlap</button>
+    <button id="tab-lines">Overlap lines</button>
+  </nav>
+
+  <div id="view-bonds" class="view active">
+    <div class="composition">
+      <div class="panel full" id="p1"><div class="label"><span>Diamond trellis</span><span class="n">01</span></div></div>
+      <div class="panel" id="p2"><div class="label"><span>Herringbone</span><span class="n">02</span></div></div>
+      <div class="panel" id="p3"><div class="label"><span>Basket weave</span><span class="n">03</span></div></div>
+      <div class="panel" id="p4"><div class="label"><span>Diagonal coursing</span><span class="n">04</span></div></div>
+      <div class="panel" id="p5"><div class="label"><span>Perforated jali (tilted)</span><span class="n">05</span></div></div>
+    </div>
+    <footer>
+      Every unit is the same <b>p5.js box()</b> cuboid — only its rotation (Z for in-plane bond angle, X/Y for out-of-plane tilt), spacing, and which face it presents to the camera change between patterns. Lit with a warm raking key light and a cool fill to read the fired-clay relief.
+    </footer>
+  </div>
+
+  <div id="view-hover" class="view">
+    <div class="composition">
+      <div class="panel mono full" id="h1"><div class="label"><span>Diamond trellis</span><span class="n">01</span></div></div>
+      <div class="panel mono" id="h2"><div class="label"><span>Herringbone</span><span class="n">02</span></div></div>
+      <div class="panel mono" id="h3"><div class="label"><span>Basket weave</span><span class="n">03</span></div></div>
+      <div class="panel mono" id="h4"><div class="label"><span>Diagonal coursing</span><span class="n">04</span></div></div>
+      <div class="panel mono" id="h5"><div class="label"><span>Perforated jali (tilted)</span><span class="n">05</span></div></div>
+    </div>
+    <footer>
+      Line versions of the five bonds — stroke only, no fill, no lights, no color. Each brick is rotated into place. Every grid holds still; only the brick under the cursor lifts about 3% of its own length. No drag, no orbit — hover is the only control.
+    </footer>
+  </div>
+
+  <div id="view-lines" class="view">
+    <div class="composition">
+      <div class="panel mono full" id="hr1"><div class="label"><span>Diamond trellis</span><span class="n">01</span></div></div>
+      <div class="panel mono" id="hr2"><div class="label"><span>Herringbone</span><span class="n">02</span></div></div>
+      <div class="panel mono" id="hr3"><div class="label"><span>Basket weave</span><span class="n">03</span></div></div>
+      <div class="panel mono" id="hr4"><div class="label"><span>Diagonal weave</span><span class="n">04</span></div></div>
+      <div class="panel mono" id="hr5"><div class="label"><span>Cube studs</span><span class="n">05</span></div></div>
+    </div>
+    <footer>
+      The five reliefs as line drawings, following the <b>perfect-overlap</b> rules — one uniform running-bond grid, zero gap, every brick the same size and orientation, the pattern carried only by how far each brick sits along the wall's depth. Stroke only, no fill or color. The grid holds still; only the brick under the cursor lifts about 3% of its own length. Hover is the only control.
+    </footer>
+  </div>
+
+  <div id="view-relief" class="view">
+    <div class="composition">
+      <div class="panel full" id="r1"><div class="label"><span>Diamond trellis</span><span class="n">01</span></div></div>
+      <div class="panel" id="r2"><div class="label"><span>Herringbone</span><span class="n">02</span></div></div>
+      <div class="panel" id="r3"><div class="label"><span>Basket weave</span><span class="n">03</span></div></div>
+      <div class="panel" id="r4"><div class="label"><span>Diagonal weave</span><span class="n">04</span></div></div>
+      <div class="panel" id="r5"><div class="label"><span>Cube studs</span><span class="n">05</span></div></div>
+    </div>
+    <footer>
+      All five, one rule set: every brick is the <b>same size and the same orientation</b>, laid in one uniform running bond with zero gap — each brick's edge shared exactly with its neighbour's. No rotation, no spacing, no missing brick anywhere. The pattern is <b>only depth</b> — individual bricks pushed forward or pulled back along the wall's thickness — and the raking key light is what turns that depth map into a diamond, a chevron, a weave. Drag a panel toward front-on (camera flat) and the pattern flattens with it, because underneath the light it was always just a perfectly gapless wall.
+    </footer>
+  </div>
+
+  <script src="brick-jali.js"></script>
+  <script src="brick-hover.js"></script>
+  <script src="brick-relief.js"></script>
+  <script>
+    const VIEWS = {
+      bonds:  { tab: 'tab-bonds',  view: 'view-bonds',  build: window.buildBonds },
+      hover:  { tab: 'tab-hover',  view: 'view-hover',  build: window.buildHover },
+      relief: { tab: 'tab-relief', view: 'view-relief', build: window.buildRelief },
+      lines:  { tab: 'tab-lines',  view: 'view-lines',  build: window.buildLines },
+    };
+    let current = null;
+    let liveSketches = [];
+
+    function setView(name) {
+      if (name === current) return;
+      // tear down the previous view's sketches so their WebGL contexts free up
+      liveSketches.forEach((s) => { try { s.remove(); } catch (e) {} });
+      liveSketches = [];
+
+      for (const key of Object.keys(VIEWS)) {
+        const isActive = key === name;
+        document.getElementById(VIEWS[key].view).classList.toggle('active', isActive);
+        document.getElementById(VIEWS[key].tab).classList.toggle('active', isActive);
+      }
+      current = name;
+      // build the newly-active view now that its panels are visible
+      liveSketches = VIEWS[name].build();
+    }
+
+    for (const key of Object.keys(VIEWS)) {
+      document.getElementById(VIEWS[key].tab).addEventListener('click', () => setView(key));
+    }
+    setView('bonds');
+  </script>
+</body>
+</html>

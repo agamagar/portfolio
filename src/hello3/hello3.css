@@ -1,0 +1,1793 @@
+/* /hello3 — divergence layer.
+ *
+ * hello3 is a FORK OF THE MARKUP, not of the stylesheet. Every component under
+ * src/hello3/ is its own copy, so structural changes here cannot reach /hello.
+ * The styles are still src/hello/hello.css, shared on purpose: it is ~3800 lines
+ * defining global class names (.hm, .ap, .booth ...), and a second copy
+ * of that would redefine all of them, with whichever file loaded last silently
+ * winning for both pages. That is a worse failure than sharing.
+ *
+ * SO: to change how /hello3 looks without touching /hello, add a rule HERE,
+ * scoped under [data-page="3"]. The root carries that attribute, and this file
+ * loads after hello.css so it wins on equal specificity.
+ *
+ *   .hello[data-page="3"] .ap__title { ... }
+ *
+ * The rules that /hello owns are written `[data-page="2"], [data-page="3"]` in
+ * hello.css, which is what makes this page start out identical to it. Peeling one
+ * off is a matter of dropping the "3" from that selector and writing the new
+ * version in this file.
+ */
+
+/* ---- 07 Sep 2026, pin mtqremeh: Figma 643:88426 ---------------------------
+   The hero becomes two columns on the 1512 frame: 653 (greeting + links, padded
+   80 left / 120 top) and 859 (the timeline rows, padded 60 left / 140 top). */
+.hello[data-page="3"] .hello-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* mtqs6mli: two equal halves (zero min so content cannot widen a track) */
+  align-items: center; /* mtqru7kp: both columns vertically centred in the 600 header */
+  justify-items: stretch; /* hello.css centres with place-items */
+  justify-content: stretch;
+  min-height: min(600px, 39.7vw); /* the frame's 600-tall header: the cards start at 660 */
+  width: 100%;
+  max-width: 1512px;
+  margin: 0 auto;
+  padding: 0 0 60px; /* mtqte8ep: the frame's 60 between the header and the cards */
+  box-sizing: content-box; /* so the min-height is the content and the 60 sits below it */
+}
+.hello[data-page="3"] .hello-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  /* mtr6k85n ("the hello I'm agam text had disappeared"): NOT fit-content.
+     mtr675on had shrunk this column to hug its content so the chip row could
+     right-align to the greeting, but the lockup is `width: min(214.615px,
+     100%)` and a percentage inside a fit-content parent is cyclic, so once the
+     chips left the hero (mtr6evtb) nothing else gave the column a width and
+     the greeting resolved to 0 x 0. Stretched again; the chips are in the
+     top-right now, so the right-align has nothing left to align. */
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 0 80px; /* mtqru7kp: centred, no top offset */
+  text-align: left;
+}
+.hello[data-page="3"] .hello-hero__greet { justify-content: flex-start; margin: 0; }
+.hello[data-page="3"] .hello-hero__links {
+  justify-content: flex-start;
+  gap: 20px; /* mtqsfw1s: 4 less between the two links */
+  margin-top: 44px; /* mtqrwcvs: more air between the lockup and the links */
+}
+.hello[data-page="3"] .hello-hero__table {
+  display: block; /* the .work list rows carry their own layout */
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 60px; /* mtqru7kp: centred with the greeting */
+  translate: 0 48px; /* mtqs4yp6: sits 48 lower than dead centre */
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+/* the card grid: frame "109", 2 columns of 666 x 432, 60 around and between */
+.hello[data-page="3"] .wg { width: 100%; max-width: 1512px; margin: 0 auto; padding: 0 60px 60px; box-sizing: border-box; }
+.hello[data-page="3"] .wg__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 60px; }
+.hello[data-page="3"] .wg__card { display: block; overflow: hidden; border-radius: 0; }
+.hello[data-page="3"] .wg__card img { display: block; width: 100%; height: auto; }
+/* Agam (07 Sep): below 1100px the timeline no longer fits beside the greeting
+   and bled off the right edge; it drops UNDER the "Hello! I'm Agam" block as a
+   single column, on the same 80px gutter. */
+@media (max-width: 1100px) {
+  .hello[data-page="3"] .hello-hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .hello[data-page="3"] .hello-hero__inner { padding: 96px 0 0 80px; }
+  .hello[data-page="3"] .hello-hero__table { padding: 0 80px; translate: 0 0; margin-top: 56px; }
+  .hello[data-page="3"] .hello-hero__table .work__meta { white-space: normal; overflow: visible; text-overflow: clip; }
+}
+@media (max-width: 900px) {
+  .hello[data-page="3"] .hello-hero { grid-template-columns: minmax(0, 1fr); }
+  /* mu9oalq5 "in this width the internal padding should [be] more to match the
+     list below". It was 20 here while the list under it sits at 60, so the
+     greeting and the Resume/LinkedIn links started 40px left of every row.
+
+     The 60 is not a number I picked: the list gets it from the unconditional
+     `.hello-hero__table { padding: 16px 60px }` further down this file, which
+     was written for the desktop two-column layout and, carrying no media
+     query, quietly overrides the 20 on the line below AND the 80 in the 1100
+     band. So the list has been at 60 at every width, including phones, and the
+     hero is what drifted. Matching the hero to it is the smaller move.
+
+     Checked at 375 before committing to it: the rows are already inset 60, so
+     nothing reflows (the description still wraps to the same 2 lines at the
+     same 199px) and nothing overflows. The greeting keeps its 24px optical
+     hang, landing at 36, exactly as it does against the 80 gutter on desktop. */
+  /* mu9ohbny "internal bottom padding required". There was none, and the same
+     unconditional `.hello-hero__table` rule that took the gutter to 60 also
+     carries `margin-top: -8px`, which overrides this band's `margin-top: 40px`
+     on the line below. Measured: 8px between the bottom of the Resume/LinkedIn
+     row and the first row of the list.
+
+     48 is the band's own intent restored rather than a number picked by eye:
+     40px of margin plus the table's 16px of top padding is the 56px gap this
+     band was written for, and 8 + 48 = 56. It also happens to match the 48 at
+     the top of this same box. */
+  .hello[data-page="3"] .hello-hero__inner { padding: 48px 60px 48px; }
+  .hello[data-page="3"] .hello-hero__table { padding: 0 20px; margin-top: 40px; }
+  /* Agam, 08 Sep 2026: "the table at the top of the page gets cut off". The
+     three-column row (40 / 100 / rest) left the description 99px at 375 with
+     nowrap, so it clipped mid-word. On phones a row is two lines: year and
+     title on the first, the description under the title, wrapping. */
+  .hello[data-page="3"] .hello-hero__table .work__item { grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; }
+  .hello[data-page="3"] .hello-hero__table .work__meta { grid-column: 2; white-space: normal; overflow: visible; text-overflow: clip; }
+  .hello[data-page="3"] .hello-hero__table { padding: 32px 20px 0; }
+    .hello[data-page="3"] .wg { padding: 0 20px 40px; }
+  .hello[data-page="3"] .wg__grid { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* 07 Sep pins on /portfolio: the footer illustration (mtqrrv0z, mtqrrxka) and
+   the DJ booth canvas (mtqrrr5t) are hidden on the phone-frames landing */
+.hello[data-page="3"] .hello-foot .booth__floor,
+.hello[data-page="3"] .hello-foot [class^="booth"] { display: none; }
+
+/* mtqrtgd3: the list's spotlight hover, which index.css keys on `main`, works
+   inside the hero table too: hovering one row dims the others */
+.hello[data-page="3"] .hello-hero__table:has(.work__item:hover) .work__item:not(:hover) { opacity: 0.4; }
+.hello[data-page="3"] .hello-hero__table .work__item { text-decoration: none; color: inherit; }
+
+/* mtqrulax: links as on the frame: 24px arrow + label, Google Sans Flex 16/500, 6 apart, 24 between links */
+.hello[data-page="3"] .hello-hero__link { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 500; line-height: 20px; }
+/* mu9pilis "remove the left padding here" (the Resume / LinkedIn links).
+
+   It is a TOUCH TARGET, not spacing: hello.css grows these by 0.75rem/0.5rem
+   under (pointer: coarse) and cancels it with an equal negative margin, so
+   nothing moves and nothing paints. Checked before changing it: background
+   transparent, no border, no ::before or ::after, underline only on hover. The
+   text was already flush with the list at 60; what starts 8px to its left is
+   the tappable box, which is what the annotation overlay outlines.
+
+   So the padding comes off the LEFT only and goes to the right, rather than
+   being deleted: the box now begins exactly on the text, and the target keeps
+   its height and 83px of width, comfortably past 44. hello.css already sets
+   this precedent one rule below, where .role__trigger grows vertically only
+   because its sideways margin was eating a word space. */
+@media (pointer: coarse) {
+  .hello[data-page="3"] .hello-hero__link { padding: 0.75rem 0.5rem 0.75rem 0; margin: -0.75rem -0.5rem -0.75rem 0; }
+}
+.hello[data-page="3"] .hello-hero__link-icon { flex: 0 0 auto; width: 20px; height: 20px; } /* mtqrxzrx: 4px smaller than the frame */
+
+/* mtqrwrx3: no divider lines between the timeline rows on the landing */
+.hello[data-page="3"] .hello-hero__table .work__item::after { display: none; }
+
+/* mtqrxfqh: card hover on the landing grid. The card lifts a touch and its
+   composition eases in by 2%, on the site's spatial curve; the others do not
+   dim (the grid is a set of equals, unlike the list). Focus mirrors hover. */
+.hello[data-page="3"] .wg__card {
+  border-radius: 0; /* mtqs1kzd: square corners, as on the frame */
+  transition: transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-default),
+    box-shadow var(--m3-dur-effects-default) var(--m3-effects-default);
+  will-change: transform;
+}
+.hello[data-page="3"] .wg__card img {
+  transition: transform var(--m3-dur-spatial-default) var(--m3-spatial-standard-default);
+  transform-origin: 50% 50%;
+}
+.hello[data-page="3"] .wg__card:hover,
+.hello[data-page="3"] .wg__card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px -20px rgba(20, 8, 40, 0.45);
+  outline: none;
+}
+.hello[data-page="3"] .wg__card:hover img,
+.hello[data-page="3"] .wg__card:focus-visible img { transform: scale(1.02); }
+.hello[data-page="3"] .wg__card:focus-visible { box-shadow: 0 0 0 2px var(--link), 0 18px 40px -20px rgba(20, 8, 40, 0.45); }
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .wg__card, .hello[data-page="3"] .wg__card img { transition: none; }
+  .hello[data-page="3"] .wg__card:hover { transform: none; }
+  .hello[data-page="3"] .wg__card:hover img { transform: none; }
+}
+
+/* mtqs06jj: the timeline rows in the frame's type: Google Sans Flex 16/20,
+   organisation at 500, year and line at 400 in the muted ink (Figma 643:88445) */
+.hello[data-page="3"] .hello-hero__table .work__item,
+.hello[data-page="3"] .hello-hero__table .work__year,
+.hello[data-page="3"] .hello-hero__table .work__title,
+.hello[data-page="3"] .hello-hero__table .work__meta {
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+/* mtqseu40 heavier, then mtr47yxs one weight lighter, now mu9rfy0b "mkae this
+   one font weight heavier" again: 500 -> 600. The face is Google Sans Flex, a
+   variable font, so 600 is a real instance rather than a synthesised bold. */
+.hello[data-page="3"] .hello-hero__table .work__title { font-weight: 600; color: var(--fg); }
+.hello[data-page="3"] .hello-hero__table .work__year,
+.hello[data-page="3"] .hello-hero__table .work__meta { font-weight: 400; color: var(--muted); }
+
+/* mtqs1yw9: the years in Google Sans Code (loaded from Google Fonts in index.html) */
+.hello[data-page="3"] .hello-hero__table .work__year { font-family: "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; color: var(--muted-2, #6b6a63); font-size: 15px; /* mtqt2ccw: 1px under the row's 16 */ } /* mtqsz9j6 QA: the frame's year ink is #6b6a63, not the 56% black of the line */
+
+/* mtqs7lcx: a row's line stays on one line and truncates rather than wrapping */
+.hello[data-page="3"] .hello-hero__table .work__meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
+/* mtqs7r8z: no arrow on hover in the hero timeline; the dim of the other rows stays */
+.hello[data-page="3"] .hello-hero__table .work__arrow { display: none; }
+
+/* 07 Sep 2026 (Agam): nothing below the greeting exists until the face has
+   finished its flight. Stages run center -> rise -> settle -> reveal; the links,
+   the timeline, the cards, the path, the timeline section and the footer stay
+   invisible through the first three and fade up at reveal, links and table
+   first, then the rest. Reduced motion starts at reveal, so it sees no gate. */
+.hello[data-page="3"]:not([data-stage="reveal"]):not([data-stage="settle"]) .hello-hero__links,
+.hello[data-page="3"]:not([data-stage="reveal"]):not([data-stage="settle"]) .hello-hero__table,
+.hello[data-page="3"]:not([data-stage="reveal"]) .wg,
+.hello[data-page="3"]:not([data-stage="reveal"]) .ap,
+.hello[data-page="3"]:not([data-stage="reveal"]) .tlx,
+.hello[data-page="3"]:not([data-stage="reveal"]) .hello-foot {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hello[data-page="3"] .hello-hero__links,
+.hello[data-page="3"] .hello-hero__table,
+.hello[data-page="3"] .wg,
+.hello[data-page="3"] .ap,
+.hello[data-page="3"] .tlx,
+.hello[data-page="3"] .hello-foot {
+  transition: opacity 600ms var(--m3-effects-default, ease), visibility 0s linear 0s;
+}
+.hello[data-page="3"]:not([data-stage="reveal"]) .wg,
+.hello[data-page="3"]:not([data-stage="reveal"]) .ap,
+.hello[data-page="3"]:not([data-stage="reveal"]) .tlx,
+.hello[data-page="3"]:not([data-stage="reveal"]) .hello-foot { transition-delay: 0s; }
+.hello[data-page="3"][data-stage="reveal"] .wg { transition-delay: 150ms; }
+.hello[data-page="3"][data-stage="reveal"] .ap,
+.hello[data-page="3"][data-stage="reveal"] .tlx,
+.hello[data-page="3"][data-stage="reveal"] .hello-foot { transition-delay: 300ms; }
+/* the document is only as tall as the hero while the intro runs, so it cannot be scrolled past the face */
+.hello[data-page="3"]:not([data-stage="reveal"]) { max-height: 100svh; overflow: hidden; }
+
+/* THE GAP ABOVE THE FOOTER, in three moves.
+   mtqsbkg4 asked for MORE space between the last section and the footer: 160px.
+   Then "reduce the orange box height" (20 Sep), with the footer selected, and
+   the orange box in the box model IS the margin: halved to 80 on phones, where
+   it was the single biggest empty band on the page (160 of the 290 empty pixels
+   around the footer).
+   Then "remove this orange area", on the same band at desktop width. So it goes
+   entirely, at every width, and the phone override goes with it: the footer's
+   own 72px of padding is now the whole of the gap. mtqsbkg4 is superseded, by
+   the same person who asked for it. */
+.hello[data-page="3"] .hello-foot { margin-top: 0; }
+
+/* mtqse9zn: the timeline rows read as three left-aligned columns (year 40,
+   organisation 100, line), 48 apart as on the frame, instead of the list's
+   space-between with the meta pushed to the right edge */
+.hello[data-page="3"] .hello-hero__table .work__item { display: grid; grid-template-columns: 40px 100px minmax(0, 1fr); column-gap: 48px; justify-content: start; align-items: baseline; }
+.hello[data-page="3"] .hello-hero__table .work__main { display: contents; }
+.hello[data-page="3"] .hello-hero__table .work__year,
+.hello[data-page="3"] .hello-hero__table .work__title,
+.hello[data-page="3"] .hello-hero__table .work__meta { text-align: left; justify-self: start; margin: 0; padding: 0; width: auto; min-width: 0; }
+
+
+/* mtqsrngi: the footer is the /hello sign-off again (FootIllus outline, hello.css rules); no page-3 overrides */
+
+/* mtqsm92w: the neighbour shift eases on the plate (the card's own transition
+   list is the hover scale's, untouched) */
+.hello[data-page="3"] .ap__card { transition: translate var(--m3-dur-spatial-default, 0.35s) var(--m3-spatial-standard-default, ease); } /* mttx7x50: will-change: translate REMOVED. It pinned the card to a compositor layer rastered at 1x, so at the 1.5x hover scale the dwell ring icons were a blurry upscale; without it Chrome re-rasters at the settled scale */ /* the shift is on the card now, not the plate (09 Sep 2026) */
+/* mtqsnan8: mode 2 keeps the stage's room without a run in it */
+.hello[data-page="3"] .ap__stage--empty { min-height: 320px; }
+
+/* mtqswfyp: inside the path section the timeline's own header is off; the
+   section heading carries its title and copy while Timeline mode is on */
+.hello[data-page="3"] .ap .tlx__head { display: none; }
+
+/* mtqt0s3r: the cards arrive one after another. Each card starts a touch low
+   and clear, and at reveal rises and fades up on its own delay: 150ms after the
+   gate opens, then 90ms per card (--i from WorkGrid). The grid block itself
+   stays visible from reveal so the delays are the cards' own. */
+.hello[data-page="3"] .wg__card {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 600ms var(--m3-effects-default, ease), translate 700ms var(--m3-spatial-standard-default, ease), transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-default), box-shadow var(--m3-dur-effects-default) var(--m3-effects-default);
+  transition-delay: calc(150ms + var(--i, 0) * 90ms), calc(150ms + var(--i, 0) * 90ms), 0s, 0s;
+}
+.hello[data-page="3"]:not([data-stage="reveal"]) .wg__card {
+  opacity: 0;
+  translate: 0 24px;
+  transition-delay: 0s;
+}
+.hello[data-page="3"][data-stage="reveal"] .wg { transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .wg__card, .hello[data-page="3"]:not([data-stage="reveal"]) .wg__card { translate: 0 0; transition: none; }
+}
+
+/* mtqt34op: the hero's own elements arrive staggered at reveal, after the face
+   has landed: the two links 100ms apart from 100ms, then the timeline rows
+   70ms apart from 250ms. --i comes from the markup on each. */
+.hello[data-page="3"] .hello-hero__link,
+.hello[data-page="3"] .hello-chip,
+.hello[data-page="3"] .hello-hero__table .work__item {
+  transition: opacity 500ms var(--m3-effects-default, ease), translate 600ms var(--m3-spatial-standard-default, ease);
+}
+.hello[data-page="3"] .hello-hero__link,
+.hello[data-page="3"] .hello-chip { transition-delay: calc(100ms + var(--i, 0) * 100ms); }
+.hello[data-page="3"] .hello-hero__table .work__item { transition-delay: calc(250ms + var(--i, 0) * 70ms); }
+/* mtqt5qnn: the hero's stagger is timed to the face's slide left. That slide is
+   the `settle` stage (--hello-settle, 900ms), so the links and rows start
+   arriving as it begins, not after it: hidden through center and rise only. */
+.hello[data-page="3"]:not([data-stage="reveal"]):not([data-stage="settle"]) .hello-hero__link,
+.hello[data-page="3"]:not([data-stage="reveal"]):not([data-stage="settle"]) .hello-chip,
+.hello[data-page="3"]:not([data-stage="reveal"]):not([data-stage="settle"]) .hello-hero__table .work__item {
+  opacity: 0;
+  translate: 0 12px;
+  transition-delay: 0s;
+}
+/* the hover dim on the rows must not wait for the entrance delay */
+.hello[data-page="3"][data-stage="reveal"] .hello-hero__table:has(.work__item:hover) .work__item { transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .hello-hero__link, .hello[data-page="3"] .hello-chip, .hello[data-page="3"] .hello-hero__table .work__item,
+  .hello[data-page="3"]:not([data-stage="reveal"]) .hello-hero__link, .hello[data-page="3"]:not([data-stage="reveal"]) .hello-chip, .hello[data-page="3"]:not([data-stage="reveal"]) .hello-hero__table .work__item { translate: 0 0; transition: none; }
+  .hello[data-page="3"] .hello-chip__body { transition: none; }
+}
+
+/* mtqt7wsl + mtqtcc6f: the weather status bar, in the top-right controls row
+   (portalled into App's .top-controls, first in the row). A compact glass pill
+   the height of the toggles (38px): two 11px lines, content-sized. The row is
+   pointer-events none by design; the pill takes them back for its text. */
+.top-controls .hello-status {
+  order: -1;
+  display: grid;
+  /* icon · subject and temperature · the rest, closed. Hover opens the third
+     column so the pill grows leftwards out of the right-anchored row while the
+     visible text never reflows (07 Sep 2026: "keep this a simple view, subject
+     and temp, rest visible on hover"). The chips' 0fr -> 1fr move does NOT work
+     here: inside the flex row an fr or auto track resolves to 0 under the
+     pill's max-content width, so the third track is max-content and the
+     opening is a max-width transition on __more instead. */
+  grid-template-columns: 14px max-content max-content;
+  align-items: center;
+  gap: 0 6px;
+  width: max-content;
+  max-width: min(560px, 70vw);
+  height: 2.375rem;
+  box-sizing: border-box;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  font-family: "Google Sans Flex", Inter, -apple-system, sans-serif;
+  font-size: 12px;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+  /* no glass (07 Sep 2026, "remove the glass effect from the weather"): the
+     pill is bare text over the sky, like the two toggles beside it. The
+     backdrop blur, gradient fill, inset highlight, ring and drop shadow are
+     all gone; the radius stays so the hover-open shape still reads as one
+     line. */
+  background: none;
+  pointer-events: auto;
+}
+.top-controls .hello-status:not([data-more]) { grid-template-columns: max-content; padding: 0 12px; } /* loading and fallback lines */
+.top-controls .hello-status__icon { display: grid; place-items: center; width: 14px; height: 14px; }
+.top-controls .hello-status__icon svg { display: block; width: 14px; height: 14px; }
+.top-controls .hello-status__main { white-space: nowrap; }
+.top-controls .hello-status__more { max-width: 0; overflow: hidden; transition: max-width 360ms var(--m3-spatial-standard-default, ease); }
+.top-controls .hello-status__more-in { display: block; white-space: nowrap; opacity: 0; transition: opacity 200ms var(--m3-effects-default, ease); }
+.top-controls .hello-status:hover .hello-status__more { max-width: 420px; }
+.top-controls .hello-status:hover .hello-status__more-in { opacity: 1; transition-delay: 100ms; }
+.top-controls .hello-status__dim { color: color-mix(in srgb, var(--fg) 62%, transparent); }
+@media (prefers-reduced-motion: reduce) { .top-controls .hello-status__more, .top-controls .hello-status__more-in { transition: none; } }
+@media (max-width: 700px) { .top-controls .hello-status { display: none; } }
+
+/* mtr4oc96 (07 Sep 2026): the two text links became four round chips, Figma
+   664:107083. 40px pill, icon only at rest; hover or focus slides the label
+   open (the frame shows the first tile in that state: 100px wide, right
+   padding 16, gap 8, label 12px/500 in the chip's ink). The chips carry their
+   entrance stagger on the outer element and the expansion on .hello-chip__body,
+   so the two transitions never share a property.
+   Colour gate: light inks are the frame's, except amber and grey which were
+   ink-darkened to clear 4.5:1 for 12px text on their tints:
+     green  #027a45 on #edffee  5.20    blue  #1a6fd0 on #edf9ff  4.63
+     amber  #a8560d on #fff9ed  5.00 (frame's #d0721a was 3.28)
+     grey   #5f5f5f on #f7f7f7  5.96 (frame's #cccccc was 1.50)
+   dark pairs, measured on their own tints:
+     #5fd39a on #10241a 8.74 · #6fb6ff on #11202f 7.72 · #f0a55a on #2a1d10 7.99
+     · #b5b5b5 on #1c1c20 8.28 */
+.hello-chips .hello-chips:not(.hello-chips--top) {
+  gap: 12px;
+  margin-top: 44px;
+  /* mtr675on: the row sits on the RIGHT edge of the greeting, flush with the
+     end of "I'm Agam", not on the left with the badge */
+  align-self: flex-end;
+  justify-content: flex-end;
+}
+.hello-chips .hello-chip {
+  --chip-bg: #f7f7f7; --chip-ink: #5f5f5f;
+  display: inline-block;
+  padding: 0; margin: 0; border: 0; background: none;
+  font: inherit; color: var(--chip-ink);
+  text-decoration: none; cursor: pointer;
+  border-radius: 100px; corner-shape: round;
+  -webkit-tap-highlight-color: transparent;
+}
+.hello-chips .hello-chip--resume   { --chip-bg: #edffee; --chip-ink: #027a45; }
+.hello-chips .hello-chip--linkedin { --chip-bg: #edf9ff; --chip-ink: #1a6fd0; }
+.hello-chips .hello-chip--theme    { --chip-bg: #fff9ed; --chip-ink: #a8560d; }
+.hello-chips .hello-chip--sound    { --chip-bg: #f7f7f7; --chip-ink: #5f5f5f; }
+html.dark .hello-chips .hello-chip--resume   { --chip-bg: #10241a; --chip-ink: #5fd39a; }
+html.dark .hello-chips .hello-chip--linkedin { --chip-bg: #11202f; --chip-ink: #6fb6ff; }
+html.dark .hello-chips .hello-chip--theme    { --chip-bg: #2a1d10; --chip-ink: #f0a55a; }
+html.dark .hello-chips .hello-chip--sound    { --chip-bg: #1c1c20; --chip-ink: #b5b5b5; }
+.hello-chips .hello-chip__body {
+  display: grid;
+  grid-template-columns: 16px 0fr;
+  align-items: center;
+  gap: 0;
+  height: 40px;
+  padding: 12px;
+  box-sizing: border-box;
+  background: var(--chip-bg);
+  border-radius: 100px; corner-shape: round;
+  transition: grid-template-columns 320ms var(--m3-spatial-standard-default, ease), gap 320ms var(--m3-spatial-standard-default, ease), padding 320ms var(--m3-spatial-standard-default, ease);
+}
+.hello-chips .hello-chip__icon { display: grid; place-items: center; width: 16px; height: 16px; }
+.hello-chips .hello-chip__icon svg { display: block; width: 16px; height: 16px; }
+.hello-chips .hello-chip__label {
+  min-width: 0; overflow: hidden; white-space: nowrap;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 12px; font-weight: 500; line-height: 15px;
+  opacity: 0;
+  transition: opacity 200ms var(--m3-effects-default, ease);
+}
+/* mtr65dxo + mtr65jja: Resume and LinkedIn stay open at rest (.hello-chip--open);
+   the theme and sound chips still open on hover */
+.hello-chips .hello-chip--open .hello-chip__body,
+.hello-chips .hello-chip:hover .hello-chip__body,
+.hello-chips .hello-chip:focus-visible .hello-chip__body {
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  padding: 12px 16px 12px 12px;
+}
+.hello-chips .hello-chip--open .hello-chip__label,
+.hello-chips .hello-chip:hover .hello-chip__label,
+.hello-chips .hello-chip:focus-visible .hello-chip__label { opacity: 1; transition-delay: 80ms; }
+.hello-chips .hello-chip:focus-visible { outline: 2px solid var(--chip-ink); outline-offset: 2px; }
+/* the base .hello-hero__link hover dims the whole link; chips read their state from the label instead */
+.hello-chips .hello-chip:hover { opacity: 1; }
+@media (pointer: coarse) {
+  /* no hover on glass: the label stays open so the chip is legible at a glance */
+  /* NOT in the top row (08 Sep 2026): four open chips at 375 overran the
+     viewport and truncated to "Resu" / "Linke"; there they stay round and the
+     aria-labels carry the names. */
+  .hello-chips:not(.hello-chips--top) .hello-chip__body { grid-template-columns: 16px 1fr; gap: 8px; padding: 12px 16px 12px 12px; }
+  .hello-chips:not(.hello-chips--top) .hello-chip__label { opacity: 1; }
+  .hello-chips:not(.hello-chips--top) { flex-wrap: wrap; }
+}
+
+/* mtr6f8xm: the top-right placement. The controls row is fixed, 12px gap,
+   pointer-events none on the container (only its controls take the pointer),
+   so each chip opts back in the way the toggles do. Growing chips push their
+   neighbours left, out of the right-anchored row. */
+.top-controls .hello-chips--top { display: flex; align-items: center; gap: 12px; margin: 0; }
+.top-controls .hello-chips--top .hello-chip { pointer-events: auto; }
+/* mtr5tnhu (07 Sep 2026): no disc behind the face on this page. The badge keeps
+   its box (the face and the raised hand still hang off it), only the scaling
+   circle pseudo is gone. */
+.hello[data-page="3"] .hello-hero__badge::before { display: none; }
+
+/* mtr6eiyb ("same extra spacing on the top", Timeline mode): the stage keeps
+   its cards-mode height in mode 2 but was still carrying the 130px top and
+   bottom padding, so the zoomed timeline started 130px down and lost its
+   bottom to overflow: hidden. No padding when the mode-2 child is in. */
+.hello[data-page="3"] .ap__stage:has(> .ap__mode2) { padding: 0; }
+/* mtr7912e: no side padding on the timeline inside the stage, and the box is
+   centred at its scaled width (it is laid out at 1200px and zoomed, so at a
+   narrow stage it is narrower than the stage and sits in the middle) */
+.hello[data-page="3"] .ap__mode2 { margin: 0 auto; }
+.hello[data-page="3"] .ap__mode2 .tlx { padding-inline: 0; max-width: none; }
+
+/* mtr6hqln + mtr7bbw2: the contact bubbles on the footer figure, iMessage
+   SHAPED. The figure is a fit-content box with the drawing in the middle; the
+   bubbles hang off its left and right edges, absolutely positioned so the
+   drawing stays centred exactly where it was. Each is a filled 18px-radius
+   bubble with the iMessage tail (two stacked pseudo circles at the bottom
+   corner nearest the head), holding an icon at rest; the value slides open
+   (0fr -> 1fr, as the chips do) once the cursor reaches the sign-off block.
+   Colour gate, text on its own bubble: white on #1a6fd0 4.97, #111 on #e9e9eb
+   17.8, #ededed on #3a3a3c 10.6 (dark received). The blue is the site's chip
+   blue, not iMessage's #0b84fe, which is 3.16 with white. */
+.hello[data-page="3"] .hello-foot__figure {
+  position: relative;
+  width: fit-content;
+  margin-inline: auto;
+}
+.hello[data-page="3"] .hello-foot__bubble {
+  --bub: #e9e9eb; --bub-ink: #111111;
+  position: absolute;
+  top: 0;
+  display: grid;
+  /* max-content + a max-width transition on the text, NOT 0fr -> 1fr: the
+     bubble is absolutely positioned, so it is shrink-to-fit and an fr track
+     resolves to 0 inside it (the status pill hit the same wall) */
+  grid-template-columns: 18px max-content;
+  align-items: center;
+  gap: 0;
+  height: 34px;
+  /* mu9o74cc asked for 6px more on the right "in the default state", and I put
+     it HERE, on the collapsed pill. mu9q8e8v corrected that: the 6 belongs to
+     the expanded state that is not driven by hover (the coarse-pointer and
+     sub-720 rules below, where the bubbles rest OPEN), not to the icon-only
+     pill. Back to symmetric here. */
+  padding: 0 9px;
+  box-sizing: border-box;
+  border-radius: 18px;
+  corner-shape: round;
+  background: var(--bub);
+  color: var(--bub-ink);
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+  /* mtr82d91 "reveal the bubbles slowly using our motion tokens": the slow
+     spatial pair for the box (750ms, standard-slow) and the slow effects pair
+     for the text (300ms, effects-slow) */
+  transition: gap var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-spatial-standard-slow, ease), padding var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-spatial-standard-slow, ease);
+}
+/* mtr82w52: both bubbles the same grey (the blue "sent" one is gone) */
+html.dark .hello[data-page="3"] .hello-foot__bubble { --bub: #3a3a3c; --bub-ink: #ededed; }
+/* the glyph cell is 18 and the svg may paint past its own box: Iconoir strokes
+   run to the edge of the 24-unit viewBox, and at 16px a 1.7 stroke lost its
+   outer half-pixel to the svg's default overflow clip (Agam, 07 Sep 2026:
+   "icons are getting cut off") */
+/* ABOVE THE TAIL (pin mtr7wtbh, "this icon looks incomplete in the default
+   bubble state and so does the call icon"): the tail's bubble-coloured circle
+   is absolutely positioned, so it painted over the in-flow icon and hid its
+   lower corner nearest the head. Icon and text are positioned too, one layer
+   up, and the tail's two circles sit at 0. */
+.hello[data-page="3"] .hello-foot__bubble-icon,
+.hello[data-page="3"] .hello-foot__bubble-text { position: relative; z-index: 1; }
+.hello[data-page="3"] .hello-foot__bubble-icon { display: grid; place-items: center; width: 18px; height: 18px; }
+.hello[data-page="3"] .hello-foot__bubble-icon svg { display: block; width: 16px; height: 16px; overflow: visible; }
+.hello[data-page="3"] .hello-foot__bubble-text { max-width: 0; overflow: hidden; opacity: 0; transition: max-width var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-spatial-standard-slow, ease), opacity var(--m3-dur-effects-slow, 300ms) var(--m3-effects-slow, ease); }
+/* the tail: a bubble-coloured circle at the corner, with a page-coloured
+   circle cut over it, which leaves the curl */
+.hello[data-page="3"] .hello-foot__bubble::before,
+.hello[data-page="3"] .hello-foot__bubble::after { content: ""; position: absolute; bottom: 0; height: 20px; corner-shape: round; z-index: 0; }
+.hello[data-page="3"] .hello-foot__bubble::before { width: 20px; background: var(--bub); }
+.hello[data-page="3"] .hello-foot__bubble::after { width: 10px; background: var(--bg); }
+/* both bubbles sit higher, level with the head rather than the shoulders
+   (Agam, 07 Sep 2026: "move the email and phone bubble up") */
+.hello[data-page="3"] .hello-foot__msg { position: absolute; display: flex; align-items: flex-start; gap: 10px; }
+.hello[data-page="3"] .hello-foot__msg--left  { right: calc(100% + 12px); top: -16px; flex-direction: row-reverse; }
+/* mu9o7kc2 "move this up a little". 6 -> 0, so the right bubble rises 6px and
+   the pair still reads as a conversation: the left one stays at -16, so the
+   stagger goes from 22px to 16 rather than levelling out. 6px because its
+   sibling pin, same element and same minute, named that as the step. */
+.hello[data-page="3"] .hello-foot__msg--right { left: calc(100% + 12px); top: 0; }
+.hello[data-page="3"] .hello-foot__msg .hello-foot__bubble { position: relative; top: auto; left: auto; right: auto; }
+.hello[data-page="3"] .hello-foot__bubble--left::before  { right: -7px; border-bottom-left-radius: 16px; }
+.hello[data-page="3"] .hello-foot__bubble--left::after   { right: -10px; border-bottom-left-radius: 10px; }
+.hello[data-page="3"] .hello-foot__bubble--right::before { left: -7px; border-bottom-right-radius: 16px; }
+.hello[data-page="3"] .hello-foot__bubble--right::after  { left: -10px; border-bottom-right-radius: 10px; }
+/* the reveal: the cursor anywhere in the footer section (mtr8whkh, was the
+   sign-off block only), or a bubble taking focus */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble {
+  gap: 0; /* mtry7gco: the grid gap counted twice across the empty dots column (14px between icon and text); the text and the dots carry their own 7px instead */
+  padding: 0 12px 0 10px;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-text { margin-left: 7px; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-text { max-width: 260px; opacity: 1; transition-delay: 0s, 150ms; }
+.hello[data-page="3"] .hello-foot__bubble:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+@media (pointer: coarse) {
+  /* mu9q8e8v: +6 on the right, HERE - this is the expanded state that no
+     hover produced, so it is the one the request was about */
+  .hello[data-page="3"] .hello-foot__bubble { gap: 0; padding: 0 18px 0 10px; }
+  .hello[data-page="3"] .hello-foot__bubble-text { max-width: 260px; opacity: 1; margin-left: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .hello-foot__bubble, .hello[data-page="3"] .hello-foot__bubble-text { transition: none; }
+}
+@media (max-width: 720px) {
+  /* mu9okqj4 "the chat bubles are also broke on mobile".
+
+     They were a centred COLUMN with the tails switched off and the face under
+     them, which is three separate things all removing the one idea: two grey
+     pills stacked over a small drawing, saying nothing about who is speaking.
+     The desktop layout carries the metaphor in its geometry, the bubbles flank
+     the head and their tails point at it, and stacking them threw that away.
+
+     A phone already has a canonical shape for this, and it is the one every
+     messaging app uses: the sender's avatar at the left, their messages stacked
+     to the right of it, each with a tail on its left edge. So the figure
+     becomes a 2-column grid with the drawing spanning both rows as the avatar,
+     and the tails come back, both using the geometry the RIGHT bubble already
+     had (tail on the left) since both now sit to the right of the face. */
+  .hello[data-page="3"] .hello-foot__figure {
+    /* `auto auto` rather than a 1fr second column: 1fr makes the group the full
+       width of the block and leaves the thread hanging on the left under a
+       centred heading. Sized to content, the avatar and its messages centre as
+       one unit. The widest message is the email at 191px, so the group is 246
+       inside 335 and still has room. */
+    display: grid; grid-template-columns: auto auto;
+    align-items: start; justify-content: center; gap: 10px 12px;
+    width: 100%; margin-inline: auto;
+  }
+  .hello[data-page="3"] .hello-foot__msg { position: static; flex-direction: row; justify-self: start; }
+  .hello[data-page="3"] .hello-foot__bubble { position: static; }
+  .hello[data-page="3"] .hello-foot__figure .hello-foot__illus { grid-column: 1; grid-row: 1 / span 2; margin-top: 0; align-self: end; }
+  /* the phone number stays the first message, as it was */
+  .hello[data-page="3"] .hello-foot__msg--right { grid-column: 2; grid-row: 1; order: 0; }
+  .hello[data-page="3"] .hello-foot__msg--left { grid-column: 2; grid-row: 2; }
+  /* Agam, 08 Sep 2026: "the iMessage bubbles on the phone don't work". The
+     open state was keyed on (pointer: coarse); a narrow window with a fine
+     pointer, or a device reporting otherwise, got closed pills that nothing
+     could open. Below 720px they are simply open. */
+  /* mu9q8e8v: +6 on the right, HERE - this is the expanded state that no
+     hover produced, so it is the one the request was about */
+  .hello[data-page="3"] .hello-foot__bubble { gap: 0; padding: 0 18px 0 10px; }
+  .hello[data-page="3"] .hello-foot__bubble-text { max-width: 260px; opacity: 1; margin-left: 7px; }
+  /* tails back on, both pointing left at the avatar */
+  .hello[data-page="3"] .hello-foot__bubble--left::before,
+  .hello[data-page="3"] .hello-foot__bubble--right::before { left: -7px; right: auto; border-bottom-right-radius: 16px; border-bottom-left-radius: 0; }
+  .hello[data-page="3"] .hello-foot__bubble--left::after,
+  .hello[data-page="3"] .hello-foot__bubble--right::after { left: -10px; right: auto; border-bottom-right-radius: 10px; border-bottom-left-radius: 0; }
+}
+/* mtr7c6mg "reduce the height by 120px" (the footer).
+
+   THE GAP OVERRIDE THAT USED TO SIT HERE IS GONE (mu8n9s54, "add more spacing
+   it between"). It halved the sign-off's 48px gap to 24 in answer to mtr7bs6s
+   "move this up", back when the heading sat UNDER the figure and pulling it
+   24px closer was the only upward move available. mu8n2vzn repeated that
+   sentence verbatim, the heading moved above the figure instead, and this rule
+   was left holding the two apart at half distance for a layout it was never
+   written for. Deleting it restores the stack's own 48, which is the number
+   msq0uypm chose for exactly this block, rather than inventing a new one. */
+/* The footer's height is its min-height (hello.css: min(62svh, 100svh - 200px),
+   space-between inside), not its padding, so the 120 comes off that. */
+.hello[data-page="3"] .hello-foot { min-height: min(calc(62svh - 120px), calc(100svh - 320px)); }
+/* mtr7e0z9 "not able to select the nav with agentation": the controls row is
+   pointer-events none so it never blocks the page, which also hides it from
+   the annotation picker. The chip nav takes the pointer back so it can be
+   pinned; the row around it stays transparent. */
+.top-controls .hello-chips--top { pointer-events: auto; }
+
+/* mtr7ek2q "when the animation plays move the word hello to the right": while
+   the face is still travelling (center, rise, settle) the word sits 14 units
+   to the right, out of the lane the face slides along, and glides back to its
+   drawn place on reveal with the same settle easing as the face. Reduced
+   motion starts at reveal and never sees the offset. SVG units: the mark is
+   208 wide, so 14 is about 7% of the lockup. */
+.hello[data-page="3"] .gm__hello {
+  transform: translateX(-6px); /* mtr8akrh: a little left of its drawn place at rest */
+  transition: transform var(--hello-settle, 900ms) var(--hello-settle-ease, ease);
+}
+.hello[data-page="3"]:not([data-stage="reveal"]) .gm__hello,
+.hello[data-page="3"][data-waving] .gm__hello { transform: translateX(24px); } /* mtr81k5b: and while a replayed wave runs. mtrxvllj: 8 more; mttj3e5n: 8 more again (the hand was clipping), a 30-unit step from rest */
+/* mtr81k5b, the real cause: the greeting outlines are an svg laid over the
+   whole lockup, badge included, so a pointer on the face hit the svg and the
+   avatar's mouseenter (the wave replay) never fired. The mark has no
+   interaction of its own, so it stops taking the pointer. */
+.hello[data-page="3"] .hello-hero__mark-art { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .gm__hello { transition: none; transform: translateX(-6px); } }
+
+/* mtr7vwf7 (07 Sep 2026): in the top row every circle is the sound chip's
+   grey (the inks stay per chip; on #f7f7f7 they measure 5.06 / 4.64 / 4.90 /
+   5.96, on #1c1c20 9.1 / 7.9 / 8.3 / 8.3), and once the page has scrolled the
+   chips move up out of the row one after another, 70ms apart, and return in
+   the same order at the top. */
+.top-controls .hello-chips--top .hello-chip { --chip-bg: #f7f7f7; --chip-ink: #5f5f5f; } /* mtrwct2w: every icon in the sound chip grey too (5.96 on #f7f7f7) */
+html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --chip-ink: #b5b5b5; } /* 8.28 on #1c1c20 */
+.top-controls .hello-chips--top .hello-chip {
+  transition: translate 420ms var(--m3-spatial-standard-default, ease), opacity 300ms var(--m3-effects-default, ease);
+  /* mttif2rx: the return runs in REVERSE order. Leaving, the first chip goes
+     first (i * 70ms); coming back, the last to leave is the first to return
+     ((3 - i) * 70ms, four chips), so the row folds out and back like a deck. */
+  transition-delay: calc((3 - var(--i, 0)) * 130ms);
+}
+.top-controls .hello-chips--top[data-scrolled] .hello-chip { transition-delay: calc(var(--i, 0) * 130ms); }
+.top-controls .hello-chips--top[data-scrolled] .hello-chip {
+  translate: 0 -72px;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .top-controls .hello-chips--top .hello-chip { transition: opacity 200ms ease; transition-delay: 0s; }
+  .top-controls .hello-chips--top[data-scrolled] .hello-chip { translate: 0 0; }
+}
+
+/* mtr83e4b "make the face illustration overall bigger by 30%": the avatar
+   frame inside the flyer scales 1.3 on this page. `scale`, not `transform`,
+   so it composes with the flyer's own flight transform and useFlight's
+   measurements are untouched. Origin centre-left, so the extra size goes
+   left, up and down and not into the H of "Hello!". */
+.hello[data-page="3"] .hello-hero__badge .header__avatar-wrap { scale: 1.11; transform-origin: 30% 50%; translate: -6px -6px; } /* mtr8uogc: 10% smaller, 1.3 -> 1.17; mtrxlksv: 5% bigger, 1.17 -> 1.23; mttki4sw: 5% smaller, 1.23 -> 1.17; mttnazkd: 5% smaller again, 1.17 -> 1.11; mtr8y02n: 4px down and right, so -6 -6 */
+/* mtr8jwz3 "disable hover animation, only icon change on click, same for the
+   dark mode icon": the theme and sound chips no longer open a label on hover
+   (the icon already swaps on click: sun/moon, speaker on/off). Resume and
+   LinkedIn keep the hover label, since their icon is the only thing that
+   says what they are. */
+.hello-chips .hello-chip--theme:hover .hello-chip__body,
+.hello-chips .hello-chip--sound:hover .hello-chip__body,
+.hello-chips .hello-chip--theme:focus-visible .hello-chip__body,
+.hello-chips .hello-chip--sound:focus-visible .hello-chip__body { grid-template-columns: 16px 0fr; gap: 0; padding: 12px; }
+.hello-chips .hello-chip--theme:hover .hello-chip__label,
+.hello-chips .hello-chip--sound:hover .hello-chip__label,
+.hello-chips .hello-chip--theme:focus-visible .hello-chip__label,
+.hello-chips .hello-chip--sound:focus-visible .hello-chip__label { opacity: 0; } /* mtr84x78: and 10px left and up. Stays 1.3 after the lockup grew (mtr8e3k1): useFlight's --fly-rest did not follow the larger badge, so the face measured 54px at 1.16 against the 61 it had; 1.3 keeps it at 61 */
+/* mtr8e3k1 "increase the size of hello I'm agam a little more to be balanced
+   with the face": the whole lockup is one number, --greet-w (everything inside
+   is a percentage of it), so the words grow 12% by growing that: 214.615 ->
+   240.37. The face is sized by --fly-rest, which did not follow, so it keeps
+   its 1.3 above and stays 61px; the words are 12% larger. */
+.hello[data-page="3"] .hello-hero__greet { --greet-w: 240.37px; }
+
+/* mu9or0qy "apart from the links make it smaleler on moblile". At 375 the
+   lockup was 240px inside a 255px content box, edge to edge, which is what
+   made the hero feel oversized next to everything under it. 180 leaves 75px
+   of air and still reads as the headline.
+
+   IT TAKES TWO NUMBERS, NOT ONE. --greet-w sizes the words, but the face is
+   scaled separately (--fly-rest, measured at runtime, times the 1.11 below),
+   and measurement confirms it does NOT follow: at --greet-w 200, 180 and 160
+   the face stayed 62px every time, so shrinking the words alone left it
+   crowding "Hello!" - the exact balance mtr8e3k1 was pinned to fix. The face
+   scale therefore moves by the same ratio, 180 / 240.37 = 0.749, so
+   1.11 -> 0.83 and the proportion the lockup was tuned to is preserved.
+
+   The links are untouched, as asked: they are their own row at 16px. */
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-hero__greet { --greet-w: 180px; }
+  .hello[data-page="3"] .hello-hero__badge .header__avatar-wrap { scale: 0.83; }
+}
+
+/* mtr84637 "they are not right aligned with the rest of the page": the
+   controls row sits at max(12px, 50% - --max/2), the article measure, while
+   this page's content runs to a 60px gutter (.wg, the timeline table) and 20px
+   under 900. The row takes the page's gutter on /portfolio. */
+body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
+@media (max-width: 900px) { body:has(.hello[data-page="3"]) .top-controls { right: 20px; } }
+
+/* mtr8hc5e "on scroll the sky will be visible across": the sky band is fixed
+   to the viewport on this page instead of absolute to the top of the document,
+   so it stays behind the content the whole way down rather than scrolling off
+   with the hero. Same size, mask and stage rules; nothing on the page paints
+   an opaque background, so every section sits on the sky. */
+.hello[data-page="3"] .hello-sky { position: fixed; }
+/* the canvas's own box. At every width it is the band, so nothing changes;
+   on a phone it runs wider than the screen so the shader is handed a
+   landscape aspect, and .hello-sky's overflow: hidden crops it back. 220%
+   takes the aspect from 0.75 to about 1.6, against 2.18 on a desktop. */
+.hello[data-page="3"] .hello-sky__lens { position: absolute; inset: 0; }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-sky__lens { left: -60%; right: -60%; }
+}
+
+/* mtr8vi9l: the CaratLane tile, live. The card keeps the grid's 666 x 432 box
+   (aspect-ratio, since there is no image to size it now); the background is
+   the frame's own linear gradient, read off node 643:98262: handles run from
+   y 1.09 to y -0.29 (bottom to top), stops #260d35 at 0.453 and #4c1b6b at 1,
+   which in "to top" terms is #260d35 to 53.5% and #4c1b6b at 129%. The phone
+   is the instance's box as percentages of the card: 237 / 666 wide, 214 / 666
+   from the left, -179 / 432 from the top, so its upper half is cropped by the
+   card exactly as in the frame. */
+.hello[data-page="3"] .wg__card--caratlane {
+  position: relative;
+  aspect-ratio: 666 / 432;
+  /* mtr96lvv: the gradient from node 664:104290 instead. A radial: centre
+     (0.48, 0.5), the vertical radius is half the card (handle at y 0) and the
+     horizontal one runs 13.77 card-widths out, so it is in effect a vertical
+     band: #9900ff on the middle row, #4c1b6b at 35.1% of the radius, #260d35
+     at 72.6% and beyond. */
+  background: radial-gradient(ellipse 1377% 50% at 48% 50%, #9900ff 0%, #4c1b6b 35.1%, #260d35 72.6%);
+}
+.hello[data-page="3"] .wg__live { position: absolute; inset: 0; display: block; overflow: hidden; }
+.hello[data-page="3"] .wg__phone {
+  position: absolute;
+  /* mtr96lvv "increase the size of phone": the reference node's phone is 270
+     wide at x 198, y -125 on the 666 x 432 card (was 237 at 214, -179) */
+  left: 29.73%;
+  top: -55%; /* mtrcu90s, mtrw14hc, mtrwnr32 "move the phone up": 43, 43, then 26px on the 432 card (was -28.94%) */
+  width: 40.54%;
+}
+.hello[data-page="3"] .wg__card--live:hover .wg__phone { transform: none; }
+
+/* mtr90eb1: the Toppr tile keeps its export and the live phone sits over the
+   image's phone (node 643:99581: 234 / 666 wide, 216 / 666 from the left,
+   70 / 432 from the top). The device plate is taller than that image crop, so
+   the card's overflow clips its lower part the way the frame does. */
+.hello[data-page="3"] .wg__card--toppr {
+  position: relative;
+  aspect-ratio: 666 / 432;
+  /* node 643:99559: handles (0, .5) -> (1, .5), #42a9f1 -> #0096ff */
+  background: linear-gradient(to right, #42a9f1 0%, #0096ff 100%);
+}
+/* the badges at their frame offsets on the 666 x 432 card */
+.hello[data-page="3"] .wg__badge { position: absolute; display: block; }
+.hello[data-page="3"] .wg__badge img { display: block; width: 100%; height: auto; }
+.hello[data-page="3"] .wg__badge--a { left: 70.27%; top: 34.03%; width: 20.42%; } /* 136 x 49 @ 468, 147 */
+.hello[data-page="3"] .wg__badge--b { left: 71.62%; top: 52.08%; width: 14.71%; } /* 98 x 49 @ 477, 225 */
+.hello[data-page="3"] .wg__badge--c { left: 12.31%; top: 39.12%; width: 15.17%; } /* 101 x 49 @ 82, 169 */
+.hello[data-page="3"] .wg__live--over { pointer-events: none; z-index: 1; }
+.hello[data-page="3"] .wg__phone--toppr { left: 32.43%; top: 16.2%; width: 35.14%; }
+.hello[data-page="3"] .wg__still { display: block; width: 100%; height: auto; }
+/* the clip fills the phone's screen; the hover scale on card images must not
+   move the live phone's own plate or still */
+.hello[data-page="3"] .wg__card--live:hover img { transform: none; }
+.hello[data-page="3"] .wg__card--caratlane .hm__clip,
+.hello[data-page="3"] .wg__card--away .hm__clip { top: 0; height: 100%; border-radius: 0; } /* full-screen clips only; the schedule banner keeps its own box */
+.hello[data-page="3"] .wg__card .fp__screen > .hm__clip { top: var(--clip-top, 0); height: var(--clip-h, 100%); }
+
+/* mtr95ljt: the Away tile, live. Gradient = frame '117' (643:95092): handles
+   (0, 0) -> (1, 0.56), #4b17ba -> #10031b. On a 666 x 432 box that direction
+   is 110deg and Figma's 0..1 spans 709px of the 774px CSS gradient line, so
+   the dark stop lands at 91.6%. Phones: the frame's boxes are 159 x 345, so
+   the live plate (268.7 : 549.3) at 159 wide is 325 tall; both sit on their
+   frame offsets. */
+.hello[data-page="3"] .wg__card--away {
+  position: relative;
+  aspect-ratio: 666 / 432;
+  background: linear-gradient(110deg, #4b17ba 0%, #10031b 91.6%);
+}
+.hello[data-page="3"] .wg__badge--away-logo { left: 64.71%; top: 19.68%; width: 21.32%; } /* 142 x 33 @ 431, 85 */
+/* mtrcx13o "make both the phones larger": 30% of the card (200px) instead of
+   the frame's 159; left edges kept apart so they never overlap */
+/* mtrw0r84 "increase the space between the phones": 5% and 47% instead of
+   7% and 41%, so the gap between them is 12% of the card (80px) rather than
+   4%; the right one still clears the AWAY mark above it */
+.hello[data-page="3"] .wg__phone--away-l { left: 9%; top: 24%; width: 30%; } /* mtrw5qxr: a little right, 5% -> 9% (gap to the right phone 8%, 53px) */
+.hello[data-page="3"] .wg__phone--away-r { left: 47%; top: 41%; width: 30%; }
+
+/* the "pro17" plate (FigmaPhone plate="pro17", pins mtrcw5sf + mtrcwiqd): the
+   box is the screen (aspect 1317.6 : 2865.9, hello.css hard-codes the other
+   plate's ratio on .fp) and the bezel image is drawn larger than the box at
+   the rectangle's offset, so its outer edge is whole. */
+.fp--pro17 { aspect-ratio: 1317.6 / 2865.9; }
+/* `.hello[data-page="3"] .wg__card img` (width 100%, height auto) outranks a
+   two-class selector, so this one carries the page scope too */
+.fp--pro17 .fp__frame,
+.hello[data-page="3"] .wg__card .fp--pro17 img.fp__frame {
+  inset: auto;
+  left: var(--fp-frame-x, 0);
+  top: var(--fp-frame-y, 0);
+  width: var(--fp-frame-w, 100%);
+  height: var(--fp-frame-h, 100%);
+  max-width: none;
+}
+
+/* mtrcyd2p: the Toppr cursor tags. Each sits at its frame offset (--x, --y)
+   and wanders a short path in bursts with holds, on the standard spatial
+   curve; three different loops so they never move in step. */
+.hello[data-page="3"] .wg__cur {
+  --cur: #ff7859; --pill: #c94a2d; --pill-line: #bd4e35; --ink: #ffffff;
+  position: absolute;
+  z-index: 3; /* mtrwncr6: the cursors ride above the phone, as cursors do */
+  left: var(--x); top: var(--y);
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  pointer-events: none;
+  will-change: transform;
+  /* mtrwwb8c: motion is now useHumanCursor in WorkGrid.jsx (arcs, ease-out,
+     overshoot, idle drift, random beats); the keyframes below are retired */
+}
+.hello[data-page="3"] .wg__cur--green  { --cur: #2e833c; --pill: #2e833c; --pill-line: #277133; }
+.hello[data-page="3"] .wg__cur--yellow { --cur: #ebc252; --pill: #ebc252; --pill-line: #b89025; --ink: #3b2b00; }
+.hello[data-page="3"] .wg__cur--right { flex-direction: row-reverse; }
+.hello[data-page="3"] .wg__cur-arrow {
+  flex: none;
+  width: 15px; height: 15px;
+  fill: var(--cur);
+  stroke: #ffffff; stroke-width: 0.6; stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));
+  transform: rotate(-6deg);
+}
+.hello[data-page="3"] .wg__cur--right .wg__cur-arrow { transform: scaleX(-1) rotate(-6deg); }
+.hello[data-page="3"] .wg__cur-pill {
+  margin-top: 13px;
+  padding: 7px 12px;
+  border-radius: 999px; corner-shape: round;
+  background: var(--pill);
+  border: 1.28px solid var(--pill-line);
+  color: var(--ink);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px; line-height: 14px;
+  white-space: nowrap;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+}
+/* three short trips with holds: move, rest, move, rest, home */
+@keyframes wg-cur-a { 0%, 18% { transform: translate(0, 0); } 30%, 52% { transform: translate(-22px, 14px); } 64%, 84% { transform: translate(10px, -9px); } 100% { transform: translate(0, 0); } }
+@keyframes wg-cur-b { 0%, 22% { transform: translate(0, 0); } 34%, 50% { transform: translate(14px, -18px); } 62%, 80% { transform: translate(-16px, 6px); } 100% { transform: translate(0, 0); } }
+@keyframes wg-cur-c { 0%, 15% { transform: translate(0, 0); } 28%, 46% { transform: translate(18px, 12px); } 60%, 82% { transform: translate(-9px, -14px); } 100% { transform: translate(0, 0); } }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .wg__cur { transform: none !important; } }
+
+/* the pro17 plate's Dynamic Island (see FigmaPhone): 125 / 402 of the screen
+   width, 125 : 37, its top 11 / 874 down, centred */
+/* three classes deep: hello.css's `.fp__screen > :not(.fp__glass)` stretches
+   every screen child to 100% x 100%, which turned the pill into a full-height
+   bar on the first pass; explicit height, not aspect-ratio, for the same
+   reason */
+.fp--pro17 .fp__screen > .fp__island {
+  position: absolute;
+  left: 50%;
+  top: 1.26%;
+  width: 31.1%;
+  height: 4.23%; /* 37 / 874 */
+  right: auto; bottom: auto;
+  translate: -50% 0;
+  border-radius: 999px;
+  corner-shape: round;
+  background: #000;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* the scroll band inside a FigmaPhone screen (the Toppr tile): hello.css's
+   `.fp__screen > :not(.fp__glass)` stretch rule was also taking the band's top
+   and height, so the tour filled the screen and scrolled its content under
+   the status bar. The band's own window (--sc-top / --sc-h, set inline by
+   ScrollBand) wins here. */
+.hello[data-page="3"] .wg__card .fp__screen > .hm__scroll {
+  top: var(--sc-top);
+  height: var(--sc-h);
+  bottom: auto;
+}
+
+/* mtrw76p7: the Scheduled Delivery tile, live. Gradient = frame 131
+   (643:94665): handles (0.09, 0.13) -> (0.97, 0.72), #9674db -> #f2e8ff, about
+   113deg; the card's photo (643:94668, 846 x 556 at -40, -55) covers it.
+   Phones on the frame's two Bezel boxes. */
+.hello[data-page="3"] .wg__card--sched {
+  position: relative;
+  aspect-ratio: 666 / 432;
+  background: linear-gradient(113deg, #9674db 10%, #f2e8ff 92%);
+}
+.hello[data-page="3"] .wg__badge--sd-bg { left: -5.95%; top: -12.78%; width: 127.1%; }
+.hello[data-page="3"] .wg__phone--sd-l { left: 7.79%; top: 37.13%; width: 32.15%; }
+.hello[data-page="3"] .wg__phone--sd-r { left: 46.91%; top: -32.25%; width: 32.03%; }
+
+/* mtrw7zcv: the Away negotiate screen's reveal. Both copies fill the screen;
+   each is clipped to its region, so together they are the one screenshot.
+   Top region: fade up over 500ms from 0.3s; modal: rise 7% and fade over
+   700ms from 0.8s; hold; fade out at the end of the 5s loop and go again. */
+.hello[data-page="3"] .wg__reveal { position: absolute; inset: 0; display: block; overflow: hidden; }
+.hello[data-page="3"] .wg__reveal img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: fill; }
+/* mtrwm6fu: the duration is the left clip's loop, set by AwayReveal; 5s is
+   only the fallback before the video's metadata lands */
+.hello[data-page="3"] .wg__reveal-top { clip-path: inset(0 0 69.5% 0); animation: wg-reveal-top var(--reveal-dur, 5s) var(--m3-effects-default, ease) infinite; }
+.hello[data-page="3"] .wg__reveal-modal { clip-path: inset(30.5% 0 0 0); animation: wg-reveal-modal var(--reveal-dur, 5s) var(--m3-spatial-standard-default, ease) infinite; }
+@keyframes wg-reveal-top { 0%, 6% { opacity: 0; transform: translateY(2%); } 16%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes wg-reveal-modal { 0%, 16% { opacity: 0; transform: translateY(7%); } 30%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .wg__reveal img { animation: none; } }
+
+/* mtrwmle3: the slot tour inside the Scheduled Delivery right phone. The
+   stage is 232 x 504 (the figure's units) and zooms to the screen width via
+   --z; the screen is 0.4597 : 1 against the stage's 0.4603, so the fit is
+   exact to a pixel. */
+.hello[data-page="3"] .wg__slots { position: absolute; inset: 0; display: block; overflow: hidden; background: #fff; }
+.hello[data-page="3"] .wg__slots-stage { position: absolute; top: 0; left: 0; width: 232px; height: 504px; display: block; zoom: var(--z, 1); }
+.hello[data-page="3"] .wg__slots-img { position: absolute; top: 0; left: 0; width: 100%; height: auto; display: block; opacity: 0; transition: opacity 520ms var(--m3-effects-default, ease); }
+.hello[data-page="3"] .wg__slots-img[data-on="true"] { opacity: 1; }
+
+/* mtrwr8ac "hide this" (the AlongPath controls row: Mode, Path, Speed, Depth,
+   Density, Size, Spacing, On hover, Options). Hidden on this page, not
+   removed; the section stays in cards mode, since the Mode toggle lived in
+   this row. */
+.hello[data-page="3"] .ap__controls { display: none; }
+
+/* mtrwwro0: the live Figma prototype in the Scheduled Delivery right phone.
+   Same crop the case's plate uses (index.css .article__plate-screen iframe):
+   the embed paints a 43px bar top and bottom around the prototype, so the
+   iframe is 86px taller than the screen and sits 43px up. The prototype
+   scales to the iframe's width. The tile is a link, so the iframe takes no
+   pointer: you watch it here and use it on the case page. */
+.hello[data-page="3"] .wg__proto { position: absolute; inset: 0; display: block; overflow: hidden; background: #f3f5f7; }
+.hello[data-page="3"] .wg__proto iframe {
+  position: absolute;
+  left: 0;
+  top: -43px;
+  width: 100%;
+  height: calc(100% + 86px);
+  border: 0;
+  display: block;
+  pointer-events: none;
+  z-index: 2; /* over the slot-tour floor */
+}
+.hello[data-page="3"] .wg__proto .wg__slots { z-index: 1; }
+
+/* mtrx14ur: a YouTube embed as a plate in the side-quests run. The plate is a
+   box the size of the card and the player fills it; the run is dragged and
+   hovered as a whole, so the player takes no pointer (it autoplays muted on
+   loop, like the video plates). */
+.hello[data-page="3"] .ap__plate--embed { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+/* mtry1col then mtry4kha. The overlays (channel avatar, title, controls) are
+   the player's own and no flag removes them; what keeps them away is that
+   the player takes NO POINTER, so a hover never wakes them (they still show
+   for a moment when playback starts, which YouTube does not allow hiding).
+   The oversized-iframe crop tried for mtry1col is gone: its letterbox
+   arithmetic left the video a few pixels off the box at other tile sizes
+   ("assets are not constrained to the box"). The video is a true 16:9 (1280
+   x 720, no bars in its frames), the card is 16:9, so the iframe is simply
+   the box, edge to edge. */
+.hello[data-page="3"] .ap__plate--embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
+
+/* the phone row rules again, AFTER the desktop nowrap rule above (which came
+   later in the file and won): on phones the description wraps under the
+   title. Same rules as in the 900 block; this copy is the one that applies. */
+@media (max-width: 900px) {
+  .hello[data-page="3"] .hello-hero__table .work__item { grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; }
+  .hello[data-page="3"] .hello-hero__table .work__meta { grid-column: 2; white-space: normal; overflow: visible; text-overflow: clip; }
+}
+
+/* mtrxa2m6 (08 Sep 2026): "add a new control panel with slider for all
+   parameters". A Tune button at the top-right of the section opens a card of
+   sliders, one per parameter of the run: path, speed, depth, density, size,
+   spacing and hover as ranges (the discrete ones step through their option
+   lists and print the option's name), and the three booleans as switches.
+   It replaces the chip rows that mtrwr8ac hid. */
+.hello[data-page="3"] .ap { position: relative; }
+/* mu9trf5q: the run's play/pause, under the middle of the stage where the
+   focused card rests. Same filled circle as the site's other controls, so it
+   reads as a control rather than a piece of the figure. */
+.hello[data-page="3"] .ap__play {
+  position: absolute;
+  left: 50%;
+  bottom: -64px; /* was 0: below the focused card's caption (muksv25q), which reached it on the big walkthrough card */
+  translate: -50% 0;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  corner-shape: round;
+  background: #f7f7f7;
+  color: #5f5f5f; /* 5.96 on #f7f7f7 */
+  cursor: pointer;
+  transition: background var(--m3-dur-effects-default, 250ms) var(--m3-effects-default, ease),
+    color var(--m3-dur-effects-default, 250ms) var(--m3-effects-default, ease);
+}
+html.dark .hello[data-page="3"] .ap__play { background: #1c1c20; color: #b5b5b5; } /* 8.28 on #1c1c20 */
+.hello[data-page="3"] .ap__play:hover { color: var(--fg); }
+.hello[data-page="3"] .ap__panel { position: absolute; top: clamp(40px, 8vh, 96px); right: var(--hello-gutter, 24px); z-index: 6; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.hello[data-page="3"] .ap__panel-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 14px 0 12px; margin: 0; border: 0;
+  border-radius: 999px; corner-shape: round;
+  background: color-mix(in srgb, var(--fg) 8%, var(--bg));
+  color: var(--fg); font: 500 13px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  cursor: pointer;
+}
+.hello[data-page="3"] .ap__panel-toggle svg { width: 16px; height: 16px; }
+.hello[data-page="3"] .ap__panel-toggle:hover { background: color-mix(in srgb, var(--fg) 14%, var(--bg)); }
+.hello[data-page="3"] .ap__panel-body {
+  width: min(280px, calc(100vw - 2 * var(--hello-gutter, 24px)));
+  padding: 14px 16px 16px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  display: grid; gap: 12px;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+}
+.hello[data-page="3"] .ap__slider { display: grid; gap: 6px; }
+.hello[data-page="3"] .ap__slider-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.hello[data-page="3"] .ap__slider-head output { color: var(--fg); font-variant-numeric: tabular-nums; }
+.hello[data-page="3"] .ap__slider input[type="range"] { width: 100%; margin: 0; accent-color: var(--fg); height: 20px; }
+.hello[data-page="3"] .ap__switches { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 2px; }
+.hello[data-page="3"] .ap__switch { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg); }
+.hello[data-page="3"] .ap__switch input { accent-color: var(--fg); margin: 0; }
+@media (max-width: 700px) { .hello[data-page="3"] .ap__panel { top: 16px; right: 16px; } }
+
+/* mtry27ut "the bubble reveal animation is too simple". It was a width slide
+   and a fade. Now it is a message ARRIVING, the way the phone does it:
+     1. the bubble pops out of its tail corner on a spring (scale .6 -> 1
+        with a small overshoot, origin at the tail),
+     2. three typing dots bounce in the bubble for about half a second,
+     3. the dots fade as the text slides open,
+     4. the second bubble (the phone) does all of that 650ms after the first,
+        so they read as two messages, not one event.
+   Grid is now icon / dots / text; the dots column is 0 at rest and while the
+   text is in. Reduced motion: no pop, no dots, the text just appears. */
+.hello[data-page="3"] .hello-foot__bubble { grid-template-columns: 18px max-content max-content; --d: 0ms; transform-origin: 100% 100%; }
+.hello[data-page="3"] .hello-foot__bubble--right { --d: 650ms; transform-origin: 0 100%; }
+/* THE TYPING INDICATOR (rebuilt 09 Sep 2026, Agam: "loading dots are getting
+   cut off, build them natively"). The old one animated `max-width` on an
+   `overflow: hidden` box, and the dots' own bounce was a translateY(-3px):
+   the box was exactly as tall as a dot, so every lift was clipped against its
+   own top edge, which is the flat-topped dots in the screenshot.
+
+   Rebuilt so clipping is impossible rather than merely avoided:
+   - nothing is hidden. The reveal animates real `width` (0 -> the measured
+     26px = 3 dots + 2 gaps), so the grid track still collapses at rest;
+   - the box is TALLER than a dot by the lift on each side, so the bounce has
+     room inside its own bounds;
+   - the dot itself pulses in scale as well as position, which is what an iOS
+     indicator actually does, so it reads even at the top of its arc.
+   Every number below is derived from --dot and --dot-gap, so changing a dot
+   size cannot desynchronise the width again. */
+.hello[data-page="3"] .hello-foot__bubble-dots {
+  --dot: 6px;
+  --dot-gap: 4px;
+  --dot-lift: 2px;
+  --dots-w: calc(var(--dot) * 3 + var(--dot-gap) * 2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dot-gap);
+  width: 0;
+  height: calc(var(--dot) + var(--dot-lift) * 2);
+  overflow: visible;
+  opacity: 0;
+}
+.hello[data-page="3"] .hello-foot__bubble-dots i {
+  display: block; flex: none;
+  width: var(--dot); height: var(--dot);
+  border-radius: 50%; corner-shape: round; /* the global squircle makes 50% a rounded SQUARE */
+  background: currentColor; opacity: 0.45;
+  will-change: transform;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble {
+  animation: bub-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--d) both;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-dots,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-dots {
+  animation: bub-dots 1s var(--m3-effects-default, ease) var(--d) both;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-dots i,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-dots i { animation: bub-dot 440ms ease-in-out var(--d) 2; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-dots i:nth-child(2),
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-dots i:nth-child(2) { animation-delay: calc(var(--d) + 140ms); }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-dots i:nth-child(3),
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-dots i:nth-child(3) { animation-delay: calc(var(--d) + 280ms); }
+/* the text waits for the dots: its slide and fade start 700ms after the
+   bubble's own start */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-text { transition-delay: calc(var(--d) + 700ms), calc(var(--d) + 800ms); }
+@keyframes bub-pop { 0% { transform: scale(0.6); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes bub-dots { 0% { width: 0; opacity: 0; margin-left: 0; } 12%, 74% { width: var(--dots-w); opacity: 1; margin-left: 8px; } 100% { width: 0; opacity: 0; margin-left: 0; } }
+@keyframes bub-dot { 0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.45; } 50% { transform: translateY(calc(var(--dot-lift) * -1)) scale(1); opacity: 1; } }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-foot__bubble { animation: none !important; }
+  .hello[data-page="3"] .hello-foot__bubble-dots { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .hello-foot__bubble, .hello[data-page="3"] .hello-foot__bubble-dots, .hello[data-page="3"] .hello-foot__bubble-dots i { animation: none !important; }
+  .hello[data-page="3"] .hello-foot__bubble-dots { display: none; }
+  .hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text { transition-delay: 0s; }
+}
+
+/* mtry6mjo: in the top row no chip opens a label on hover any more; the name
+   is the tooltip under the button. The labels stay in the DOM, closed. */
+.top-controls .hello-chips--top .hello-chip:hover .hello-chip__body,
+.top-controls .hello-chips--top .hello-chip:focus-visible .hello-chip__body { grid-template-columns: 16px 0fr; gap: 0; padding: 12px; }
+.top-controls .hello-chips--top .hello-chip:hover .hello-chip__label,
+.top-controls .hello-chips--top .hello-chip:focus-visible .hello-chip__label { opacity: 0; }
+
+/* mtsludru "in base state move the face and hello text to the left a little":
+   the lockup (face badge + the words) sits 12px further left; the timeline
+   column and the chips are untouched. */
+.hello[data-page="3"] .hello-hero__greet { margin-left: -24px; } /* mtsludru -12, then mttina8x another 12 */
+/* mu9pklou "in the defaul state move the helloe to the left by 4px" - phones
+   only, where the lockup is now 180 wide (mu9or0qy) and the hang reads short
+   against the smaller words. -24 -> -28. */
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-hero__greet { margin-left: -28px; }
+}
+
+/* mttiebl3 (09 Sep 2026): the weather tooltip over the sky is a BLACK
+   tooltip like the site's [data-tip] bubble, not a glass pill: no blur, no
+   gradient, no inset highlight or ring; #111 (one step lighter on the dark
+   ground, as .tip does) with white text and the secondary line at 62% white
+   (8.9:1 on #111). */
+.hello[data-page="3"] .hello-sky__tip {
+  background: #111111;
+  color: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.dark .hello[data-page="3"] .hello-sky__tip { background: #232327; }
+.hello[data-page="3"] .hello-sky__tip-dim { color: rgba(255, 255, 255, 0.62); }
+
+/* mttigolc "once revealed keep them extended": the footer latches
+   data-revealed on the first pointer entry (Hello.jsx), and every hover rule
+   above also matches that attribute, so the bubbles stay open after the
+   pointer leaves; the arrival animations have run once and hold their end
+   state (fill-mode both). */
+
+/* mttig313: the side-quests hover slides the NEIGHBOURS' plates sideways to
+   make room for the pointed card (AlongPath writes an inline translate on
+   .ap__plate). On the video card that reads as the video shifting inside its
+   box, so the embed plate never takes that translate. */
+/* (the embed plate no longer needs an override: the shift moved to the card) */
+
+/* mttihrw2: the hero goes to nothing as you scroll. --hero-fade runs 1 -> 0
+   over the first half viewport (Hello.jsx); the greeting column and the
+   timeline take it as opacity plus a small rise, only once the intro is at
+   rest, so the gate's own reveal is untouched. */
+.hello[data-page="3"][data-stage="reveal"] .hello-hero__inner,
+.hello[data-page="3"][data-stage="reveal"] .hello-hero__table {
+  opacity: var(--hero-fade, 1);
+  translate: 0 calc((1 - var(--hero-fade, 1)) * -24px);
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"][data-stage="reveal"] .hello-hero__inner,
+  .hello[data-page="3"][data-stage="reveal"] .hello-hero__table { translate: 0 0; }
+}
+
+/* mttiw5u0: "I'm Agam" aligned with the page's left edge. The lockup as a
+   whole sits 24px left of the gutter (mtsludru + mttina8x, for the face and
+   "Hello!"), so the name line alone steps 24px back to the right. In the
+   mark's units (208 across 240px) that is 20.8. */
+.hello[data-page="3"] .gm__name { transform: translateX(13.9px); } /* 16px on screen: the name lands on the 80px gutter the hero column uses */
+
+/* mttix8zw: the chip glyphs sit between Phosphor's regular and bold. The
+   glyphs are filled shapes in a 256-unit box drawn at a 16-unit stem; a
+   4-unit stroke in the same ink on every path adds 2 to each side, so the
+   stem reads at about 20, halfway to bold's 24, with round joins and caps
+   for the rounding asked for in mttivibg. */
+.top-controls .hello-chips--top .hello-chip svg path,
+.top-controls .hello-chips--top .hello-chip svg circle,
+.top-controls .hello-chips--top .hello-chip svg line,
+.top-controls .hello-chips--top .hello-chip svg polyline {
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke fill;
+}
+
+/* mttiztgt "the m is getting cut off": the name line now steps 13.9 units
+   right inside a 208-unit viewBox, so the final m crossed the svg's edge and
+   an svg clips by default. The mark paints past its box. */
+.hello[data-page="3"] .hello-hero__mark-art { overflow: visible; }
+
+/* mttiyvmv read as 10%, then mttja92x "on hover it should expand a lot more":
+   the cards grow to 1.5x under the pointer (the original was 1.3) */
+.hello[data-page="3"] .ap__stage { --ap-hover: 1.5; }
+
+/* mttisr5t: the dwell rings on the video card and the cinema they open. */
+.hello[data-page="3"] .ap__dwell {
+  position: absolute; right: 10px; bottom: 10px; z-index: 3; /* mttj7v2q: bottom-right, and bigger */
+  display: flex; gap: 8px;
+  opacity: 0;
+  transition: opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease);
+  pointer-events: none;
+}
+.hello[data-page="3"] .ap__card--dwell:hover .ap__dwell,
+.hello[data-page="3"] .ap__card--dwell[data-armed] .ap__dwell { opacity: 1; }
+.hello[data-page="3"] .ap__dwell-ring {
+  position: relative; width: 34px; height: 34px;
+  display: grid; place-items: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.42);
+  border-radius: 50%; corner-shape: round;
+  --fg: #fff; /* the ring reads --fg for its track and fill; white over the video */
+}
+.hello[data-page="3"] .ap__dwell-ring .hm__ring { position: absolute; inset: 0; width: 34px; height: 34px; }
+.hello[data-page="3"] .ap__dwell-ring .hm__ring circle { stroke-width: 2; }
+/* "icons still look off": the track was 20% ink over a 42% black disc, a grey
+   ring on a grey disc that muddied the edge; the disc is a touch darker, the
+   track is white at 28%, and the glyph is the house 16px stroke-2 Iconoir. */
+.hello[data-page="3"] .ap__dwell-ring { background: rgba(0, 0, 0, 0.5); }
+.hello[data-page="3"] .ap__dwell-ring .hm__ring-track { stroke: rgba(255, 255, 255, 0.28); }
+.hello[data-page="3"] .ap__dwell-ring > svg:last-child { width: 16px; height: 16px; }
+.hello[data-page="3"] .ap__dwell-ring svg:last-child { position: relative; }
+.hello[data-page="3"] .ap__cinema {
+  position: fixed; inset: 0; z-index: 90;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  animation: ap-cinema-in var(--m3-dur-effects-slow, 300ms) var(--m3-effects-default, ease) both;
+}
+.hello[data-page="3"] .ap__cinema-video {
+  width: min(92vw, 1280px); aspect-ratio: 16 / 9; height: auto; max-height: 90vh;
+  display: block; background: #000;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: ap-cinema-grow var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-spatial-standard-default, ease) both;
+}
+.hello[data-page="3"] .ap__cinema-close {
+  position: absolute; top: 20px; right: 20px;
+  width: 40px; height: 40px; border: 0; margin: 0; padding: 0;
+  border-radius: 50%; corner-shape: round;
+  background: rgba(255, 255, 255, 0.14); color: #fff;
+  display: grid; place-items: center; cursor: pointer;
+}
+.hello[data-page="3"] .ap__cinema-close:hover { background: rgba(255, 255, 255, 0.24); }
+@keyframes ap-cinema-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ap-cinema-grow { from { transform: scale(0.72); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .ap__cinema, .hello[data-page="3"] .ap__cinema-video { animation: none; } }
+
+/* mttj2ohd then mttji8hf (09 Sep 2026): the top-right group as one control,
+   BUILT ON THE DESIGN SYSTEM'S TOKENS (src/figures/ds/tokens.css). Surface:
+   --ds-popup, the system's dark popup, at 88% so the sky still reads through
+   the blur; glyphs and text: --ds-popup-text; the hover and pressed fills are
+   the text colour at 14% and 26%; the keyboard ring is --ds-focus-ring;
+   state changes run on --ds-dur-state / --ds-ease-std. Targets 44px, 4px
+   apart. Every token has the literal it resolves to as a fallback, so the
+   group is right even where tokens.css is not loaded. The pill fades with
+   the chips on scroll. */
+.top-controls .hello-chips--top {
+  --pill-surface: var(--ds-popup, #1f1f22);
+  --pill-ink: var(--ds-popup-text, #f3f3f3);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px; corner-shape: round;
+  background: color-mix(in srgb, var(--pill-surface) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--pill-ink) 8%, transparent) inset, 0 8px 24px rgba(0, 0, 0, 0.18);
+  transition: opacity var(--ds-dur-state, 250ms) var(--ds-ease-std, ease), translate 420ms var(--m3-spatial-standard-default, ease);
+}
+.top-controls .hello-chips--top[data-scrolled] { opacity: 0; translate: 0 -12px; transition-delay: 240ms; }
+.top-controls .hello-chips--top .hello-chip { --chip-bg: transparent; --chip-ink: var(--pill-ink); }
+html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: transparent; --chip-ink: var(--pill-ink); }
+/* mu9rhmqn "this nav should seemlessly transtiton to the next page": 44 -> 38,
+   the size every other page's control bar uses, so crossing into a case study
+   no longer resizes the buttons under the cursor. Padding follows (16px icon +
+   11 a side = 38). Two differences remain and both are Agam's to settle, see
+   the note on .hello-chip width below. */
+.top-controls .hello-chips--top .hello-chip .hello-chip__body { height: 38px; padding: 11px; grid-template-columns: 16px 0fr; transition: background var(--ds-dur-state, 250ms) var(--ds-ease-std, ease); }
+.top-controls .hello-chips--top .hello-chip:hover .hello-chip__body,
+.top-controls .hello-chips--top .hello-chip:focus-visible .hello-chip__body { background: color-mix(in srgb, var(--pill-ink) 14%, transparent); padding: 14px; }
+.top-controls .hello-chips--top .hello-chip:active .hello-chip__body { background: color-mix(in srgb, var(--pill-ink) 26%, transparent); transition-timing-function: var(--ds-ease-press, ease); }
+.top-controls .hello-chips--top .hello-chip:focus-visible { outline: var(--ds-focus-ring, 2px solid #fff); outline-offset: 2px; }
+.top-controls .hello-chips--top .hello-chip[aria-pressed="true"] .hello-chip__body { background: color-mix(in srgb, var(--pill-ink) 10%, transparent); }
+
+/* mttj4a6x (09 Sep 2026): "the screen is not nested inside the phone frame".
+   The prototype iframe sits at z-index 2 inside .fp__screen, and that box
+   was not a stacking context, so the iframe's z competed at the phone's own
+   level and painted OVER the bezel: its 43px overrun below the screen showed
+   as white edges under the Confirm button. The screen isolates its children
+   now, and the bezel is explicitly the top layer. */
+.fp--pro17 .fp__screen { isolation: isolate; }
+.fp--pro17 .fp__frame { z-index: 3; }
+
+/* mttj8p7s (09 Sep 2026): no icon once a bubble is open. The icon is the
+   closed state's whole content; with the text in, it is redundant. Its column
+   collapses and it fades as the text arrives; the text takes the leading
+   padding instead of a margin off the icon. */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble { grid-template-columns: 0px max-content max-content; padding: 0 12px; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-icon,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-icon { width: 0; opacity: 0; overflow: hidden; transition: opacity 200ms var(--m3-effects-default, ease), width 300ms var(--m3-spatial-standard-default, ease); }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-text { margin-left: 0; }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-foot__bubble { grid-template-columns: 0px max-content max-content; padding: 0 12px; }
+  .hello[data-page="3"] .hello-foot__bubble-icon { width: 0; opacity: 0; overflow: hidden; }
+  .hello[data-page="3"] .hello-foot__bubble-text { margin-left: 0; }
+}
+
+/* mttjb4wr: the Toppr cursor tags scale WITH the card. They were fixed
+   pixels (12px type, 15px arrow), which is right at the 666px card and too
+   big once the tile narrows on a small window; the card is a size container
+   now and the tags are drawn in its width units, with a floor so they stay
+   legible on a phone. 1cqw = 6.66px at the design width. */
+.hello[data-page="3"] .wg__card--toppr { container-type: inline-size; }
+.hello[data-page="3"] .wg__cur-arrow { width: max(10px, 2.25cqw); height: max(10px, 2.25cqw); }
+.hello[data-page="3"] .wg__cur-pill {
+  margin-top: max(8px, 1.95cqw);
+  padding: max(4px, 1.05cqw) max(8px, 1.8cqw);
+  font-size: max(8px, 1.8cqw);
+  line-height: 1.17;
+  border-width: max(1px, 0.19cqw);
+}
+
+/* mttjcznz (09 Sep 2026): the Hello landing, made seamless. Two things were
+   moving at once during settle: the face sliding left into the lockup and
+   "Hello!" gliding back from its step at the same moment, so the word seemed
+   to land behind the face. Now "Hello!" waits until the face has landed
+   (the settle duration) and then glides home on the cinematic glide curve,
+   one motion after the other. The wave replay keeps the quick return. */
+.hello[data-page="3"][data-stage="reveal"] .gm__hello {
+  transition: transform var(--hello-settle, 900ms) var(--m3-ease-cine-glide, cubic-bezier(0.16, 1, 0.3, 1));
+  /* mtu4vwoj "there is a lot of delay": a FULL settle of waiting meant the
+     word sat still for 900ms and only then took 900ms to travel, so the
+     landing read as a stall. It now starts at 38% of the settle, while the
+     face is still arriving but past the moment it would be crossed, which
+     keeps the one-after-the-other reading and halves the wait. */
+  transition-delay: calc(var(--hello-settle, 900ms) * 0.38);
+}
+.hello[data-page="3"][data-stage="reveal"][data-waving] .gm__hello { transition-delay: 0s; }
+
+/* mttiuint follow-up (Agam, 09 Sep 2026, 15:10): "the oval back to the same
+   size it was". The mask change that shrank the ellipse's clearing (hole 55%
+   -> 30%, band 62vh -> 68vh) is withdrawn; the band uses hello.css's own
+   mask and height again. The live weather and real sun stay wired, so the
+   sky still follows the hour and the reading, inside the original fringe. */
+
+/* mttjkak0: the cinema's close is a labelled pill centred above the video */
+.hello[data-page="3"] .ap__cinema-stack { display: grid; justify-items: center; gap: 14px; }
+.hello[data-page="3"] .ap__cinema-close {
+  /* mttkje55 "make the internal padding more": 16/12 -> 26/20, 40 -> 44 tall */
+  position: static; width: auto; height: 44px; padding: 0 26px 0 20px;
+  display: inline-flex; align-items: center; gap: 10px;
+  font: 500 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif; color: #fff;
+}
+
+/* mttjl6kj: the copy buttons by the footer bubbles. Black circle, white glyph,
+   hidden until the bubbles are open; each sits just past its bubble's outer
+   end. Pressed: a brief scale, then the tooltip reads Copied. */
+.hello[data-page="3"] .hello-foot__copy {
+  flex: none; margin-top: 3px;
+  width: 28px; height: 28px; border: 0; padding: 0;
+  border-radius: 50%; corner-shape: round;
+  background: #111; color: #fff;
+  display: grid; place-items: center; cursor: pointer;
+  opacity: 0; scale: 0.8;
+  transition: opacity 200ms var(--m3-effects-default, ease), scale 300ms var(--m3-spatial-standard-default, ease), background 160ms;
+  pointer-events: none;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__copy,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__copy { opacity: 1; scale: 1; pointer-events: auto; transition-delay: 900ms; }
+.hello[data-page="3"] .hello-foot__copy--right { transition-delay: 1550ms; }
+.hello[data-page="3"] .hello-foot__copy:hover { background: #333; }
+.hello[data-page="3"] .hello-foot__copy:active { scale: 0.92; }
+.hello[data-page="3"] .hello-foot__copy[data-done] { background: #1f7a3a; }
+.hello[data-page="3"] .hello-foot__copy:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+@media (max-width: 720px) { .hello[data-page="3"] .hello-foot__copy { display: none; } }
+
+/* mttk7sgp (09 Sep 2026): the pill clips its chips and shrinks as they leave.
+   The lift used to be a translate, which moves a chip without changing the
+   space it takes, so the pill kept its full width around empty slots. Now a
+   leaving chip also collapses its width (44 -> 0) and the space before it,
+   still on its stagger, and the pill's overflow is hidden, so the row folds
+   shut from the left as the chips rise out of the top, and the pill fades
+   only once the last one is gone. Coming back runs the same in reverse. */
+/* mu9pp16c "overflow should be visible". The hidden overflow was part of the
+   fold: the pill clipped its chips so the row read as closing from the left.
+   mu9oojcb removed the fold, so the clip has nothing left to do and was only
+   cutting whatever a chip paints outside its box. */
+.top-controls .hello-chips--top { gap: 0; overflow: visible; }
+.top-controls .hello-chips--top .hello-chip {
+  /* mu9rhmqn: matches the 38 the control bar uses everywhere else. STILL NOT
+     seamless, and the rest is not a number I can pick: this row sits at
+     right: 60px on the landing (mtr84637, "they are not right aligned with the
+     rest of the page") while every other page anchors to the article column,
+     which is right: 192 at 1200 - so the bar still jumps 132px sideways on
+     navigation. And the landing renders HeroChips where other pages render the
+     two toggles, so React unmounts one set and mounts the other however well
+     they match. */
+  width: 38px; overflow: hidden; flex: none;
+  /* mttkgx2f "going away too fast": 420ms -> 760ms per chip, on the slow
+     spatial curve, with a wider stagger below.
+
+     mu9oojcb "remove all the horizontal motion" (20 Sep) REVERSES THE FOLD
+     described above. The chips kept their vertical rise and fade, but they
+     also animated their own width 44 -> 0, and since this row is right
+     aligned inside .top-controls, a row that narrows is a row that MOVES:
+     measured 94px of horizontal travel on the nav, 259 -> 349 and back, every
+     time the page was scrolled past the hero. `width` and `margin` are
+     therefore off the transition and the collapse below is gone; the chips
+     keep their footprint and simply leave upwards. */
+  transition: translate 760ms var(--m3-spatial-standard-slow, ease), opacity 520ms var(--m3-effects-slow, ease);
+}
+.top-controls .hello-chips--top .hello-chip + .hello-chip { margin-left: 4px; }
+.top-controls .hello-chips--top[data-scrolled] { padding: 4px 0; transition-delay: 900ms; }
+
+/* mttkfbfm: the copy button is the bubble's fourth cell. The link is
+   display: contents so icon, dots and text stay cells of the bubble grid;
+   the copy cell is 0 wide closed and 24 wide open, 8px after the text. The
+   row wrapper no longer needs its gap. */
+.hello[data-page="3"] .hello-foot__bubble-link { display: contents; color: inherit; text-decoration: none; }
+.hello[data-page="3"] .hello-foot__bubble-link:focus-visible { outline: none; }
+.hello[data-page="3"] .hello-foot__bubble-link:focus-visible ~ .hello-foot__copy { outline: 2px solid var(--fg); outline-offset: 2px; }
+.hello[data-page="3"] .hello-foot__msg { gap: 0; }
+.hello[data-page="3"] .hello-foot__bubble { grid-template-columns: 18px max-content max-content max-content; }
+/* mu9q8e8v puts the 6px HERE, on the open bubble, and this is the rule that
+   actually paints it: `[data-revealed]` outlives the hover (the footer sets it
+   on first pointer enter and keeps it), so this IS the expanded state you meet
+   without hovering, and it outranks the media-query rules above. Right padding
+   6 -> 12. The left stays 12: the extra air is asked for on the right, where
+   the copy button sits. */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble { grid-template-columns: 0px max-content max-content max-content; padding: 0 12px 0 12px; }
+/* mu9rz63x "during hover reeduce the padding by 4px". This finally SPLITS the
+   two open states that the rule above had been serving together, which is the
+   distinction mu9q8e8v drew: `[data-revealed]` outlives the hover, so a bubble
+   is open-and-resting most of the time and open-and-under-the-cursor only while
+   you are on it. Resting keeps the 12 from mu9q8e8v; hover takes 4 off the
+   right, the same edge that 6 was added to, so the pill tightens slightly as
+   the cursor arrives. */
+.hello[data-page="3"] .hello-foot:hover .hello-foot__bubble { padding-right: 8px; }
+/* the copy cell is 0 wide closed (no margin, so it takes no room at all) and
+   24 wide with an 8px lead when open; both transition */
+.hello[data-page="3"] .hello-foot__copy { width: 0; height: 24px; margin: 0; overflow: hidden; transition: opacity 200ms var(--m3-effects-default, ease), scale 300ms var(--m3-spatial-standard-default, ease), width 300ms var(--m3-spatial-standard-default, ease), margin 300ms var(--m3-spatial-standard-default, ease), background 160ms; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__copy,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__copy { width: 24px; margin-left: 8px; }
+.hello[data-page="3"] .hello-foot__copy svg { width: 13px; height: 13px; }
+/* mtu0nhkx "green is only visible on hover": this rule is (0,5,0) and the
+   done rule is (0,4,0), so leaving the bubble repainted the copied button
+   black. It only ever existed to hold the resting black, so it now stands
+   aside for the done state. */
+.hello[data-page="3"] .hello-foot__bubble:not(:hover) .hello-foot__copy:not([data-done]) { background: #111; }
+
+/* mttkm95v (09 Sep 2026): "remove the border and add back the text for
+   resume and linkedin". The pill's inset hairline read as a border, so it
+   goes; the drop shadow stays. Resume and LinkedIn go back to icon + label
+   (theme and sound stay icon-only, their state lives in the tooltip). The
+   fold on scroll animates max-width for these two, since width: auto cannot
+   transition; the cap sits just above their natural width so the fold reads
+   from the first frame. No tooltip on a chip that already says its name. */
+.top-controls .hello-chips--top { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
+.top-controls .hello-chips--top .hello-chip--resume,
+.top-controls .hello-chips--top .hello-chip--linkedin {
+  width: auto; max-width: 132px;
+  /* mu9oojcb: same as above, max-width was the wide chips' version of the
+     same fold, so it goes with it */
+  transition: translate 760ms var(--m3-spatial-standard-slow, ease), opacity 520ms var(--m3-effects-slow, ease);
+}
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin) .hello-chip__body,
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin):hover .hello-chip__body,
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin):focus-visible .hello-chip__body {
+  grid-template-columns: 16px max-content; gap: 8px; padding: 14px 18px 14px 14px; width: max-content;
+}
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin) .hello-chip__label,
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin):hover .hello-chip__label,
+.top-controls .hello-chips--top :is(.hello-chip--resume, .hello-chip--linkedin):focus-visible .hello-chip__label { opacity: 1; color: var(--pill-ink); white-space: nowrap; }
+
+/* mttnac2j (09 Sep 2026): "remove the background". The pill loses its
+   surface, blur and shadow and the four chips sit straight on the page, so
+   the ink is the page's --fg (#111 on #fff 18.9:1, #ededed on #0e0e11
+   16.6:1) instead of the popup's light text. Hover and pressed fills stay,
+   now mixed from that ink, so a chip still answers the pointer. */
+.top-controls .hello-chips--top {
+  --pill-ink: var(--fg, #111);
+  background: transparent; box-shadow: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+
+/* mttx7hfl (09 Sep 2026): "put a stroke around these buttons". A 1px inset
+   ring on each chip body at 45% of the page ink: #949494 on white 3.05:1,
+   #737376 on the dark ground 3.96:1, both past the 3:1 non-text floor.
+   Inset so nothing shifts; the hover fill paints inside it. */
+.top-controls .hello-chips--top .hello-chip .hello-chip__body {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pill-ink) 45%, transparent);
+}
+
+/* mttx8kuj (09 Sep 2026): "animate the copy icon into a check when copy is
+   successful". The two glyphs share one 14px cell. At rest the copy glyph is
+   up and the check is scaled to nothing; on [data-done] the copy glyph
+   shrinks and turns out (press curve) while the check springs in behind it
+   (the settle curve, one overshoot). The reverse runs two seconds later. */
+.hello[data-page="3"] .hello-foot__copy-glyphs { position: relative; display: grid; place-items: center; width: 14px; height: 14px; }
+.hello[data-page="3"] .hello-foot__copy-glyphs > svg { grid-area: 1 / 1; display: block; transition: scale 260ms var(--m3-spatial-standard-default, ease), opacity 160ms ease, rotate 260ms var(--m3-spatial-standard-default, ease); }
+.hello[data-page="3"] .hello-foot__copy-ok { scale: 0; opacity: 0; rotate: -30deg; }
+.hello[data-page="3"] .hello-foot__copy[data-done] .hello-foot__copy-ic { scale: 0.4; opacity: 0; rotate: 30deg; transition-timing-function: var(--ds-ease-press, ease); }
+.hello[data-page="3"] .hello-foot__copy[data-done] .hello-foot__copy-ok { scale: 1; opacity: 1; rotate: 0deg; transition: scale 420ms cubic-bezier(0.34, 1.56, 0.64, 1) 60ms, opacity 120ms ease 60ms, rotate 420ms cubic-bezier(0.34, 1.56, 0.64, 1) 60ms; }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .hello-foot__copy-glyphs > svg { transition: opacity 120ms ease; scale: 1; rotate: 0deg; } }
+
+/* mtu0num0 "icons are blowing out and pixelated": the dwell rings live inside
+   the card, so the hover scale enlarged them with it, 34px becoming 51 and
+   the glyph 16 becoming 24, upscaled from one raster. They now carry the
+   inverse of the card's own scale expression, so they hold their real size
+   at every depth and are drawn at it; the 10px corner offset is divided by
+   the same factor so the visual gap does not grow either. */
+.hello[data-page="3"] .ap__card--dwell {
+  --ap-k: calc(var(--ap-hover, 1.5) * var(--pm-smax, 1) / var(--pm-live, var(--pm-s, 1)));
+}
+.hello[data-page="3"] .ap__card--dwell:hover .ap__dwell,
+.hello[data-page="3"] .ap__card--dwell[data-armed] .ap__dwell {
+  scale: calc(1 / var(--ap-k));
+  transform-origin: 100% 100%;
+  right: calc(10px / var(--ap-k));
+  bottom: calc(10px / var(--ap-k));
+}
+
+/* mtu0nhkx, second cause: the reveal's stagger delay was set as a single
+   transition-delay, so it applied to EVERY transitioned property on the
+   button, background among them. The green therefore landed 900ms after the
+   click, long after the check glyph (its own element, no delay) had flipped,
+   which is what read as the done state not being there. The delays are per
+   property now, in the order the shorthand above declares them: the reveal
+   keeps its stagger, background never waits. It also restores the right
+   button's later entrance, which the single-value rule had been outranking. */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__copy,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__copy {
+  transition-property: opacity, scale, width, margin, background;
+  transition-duration: 200ms, 300ms, 300ms, 300ms, 160ms;
+  transition-delay: 900ms, 900ms, 900ms, 900ms, 0s;
+}
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__copy--right,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__copy--right {
+  transition-delay: 1550ms, 1550ms, 1550ms, 1550ms, 0s;
+}
+
+/* mtu4xpe3 (09 Sep 2026): "the copy icon should only appear on hover". It used
+   to arrive with the bubbles, on the footer's own hover/revealed latch, so
+   both buttons sat there permanently once the footer had been visited. It
+   belongs to the bubble the pointer is actually on now, and it no longer waits
+   out the bubbles' arrival stagger. */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__copy,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__copy {
+  width: 0; margin-left: 0; opacity: 0; scale: 0.8; pointer-events: none;
+  transition-delay: 0s;
+}
+.hello[data-page="3"] .hello-foot__bubble:hover .hello-foot__copy,
+.hello[data-page="3"] .hello-foot__bubble:focus-within .hello-foot__copy {
+  width: 24px; margin-left: 8px; opacity: 1; scale: 1; pointer-events: auto;
+  transition-delay: 0s;
+}
+/* a copied button stays legible while its 2s runs, even if the pointer has
+   moved off the bubble, since the green is the receipt for that click */
+.hello[data-page="3"] .hello-foot__copy[data-done] {
+  width: 24px; margin-left: 8px; opacity: 1; scale: 1;
+}
+
+/* mtu4wp94: "move these down so the top is aligned with the top of the hello
+   I'm Agam elements". Both columns were centred in the 600 header, so the
+   taller table overhung the lockup at both ends. The single grid ROW is
+   centred instead (align-content) and the two columns start at its top
+   (align-items), which puts the table's first row on the lockup's top line
+   without pinning the pair to the top of the header. */
+.hello[data-page="3"] .hello-hero { align-items: start; align-content: center; }
+
+/* mtu4u7v9 "the loaders still look pixelated": counter-scaling fixed the SIZE
+   but made the raster worse, because the run's own transform animation keeps
+   the card on a composited layer: the rings were being drawn at 0.67 and then
+   blown back up to 1 by the card's 1.5. Promoting each ring to its own layer
+   gives it a raster of its own at the size it actually paints. */
+/* (the dwell rings were removed in mtu58yp5; their rules below are dead) */
+
+/* mtu528ai: "a little more internal top and bottom padding" on the timeline,
+   and the alignment from mtu4wp94 is kept against the FIRST ROW rather than
+   the box: with 16 of internal air the box now starts 16 above the greeting's
+   top line so the first row still lands on it, and the same 16 gives the last
+   row room at the bottom. The 48 nudge that used to sit the block low is
+   retuned to 40 for the 8px the box was already running high. */
+.hello[data-page="3"] .hello-hero__table { padding: 16px 60px; margin-top: -8px; }
+/* mu9pj9jx "reduce the left padding to the match the section on top" (the
+   timeline, on a phone).
+
+   Measured rather than guessed, because "the section on top" has two left
+   edges. At 1349 and at 1000 the lockup's INK lands on 79.9 against a links
+   gutter of 80: the -24px hang is tuned so the glyphs sit exactly on the
+   gutter, and the drawn face is the only thing that hangs. On a phone that
+   stopped being true, because the lockup is now 180 wide (mu9or0qy) while the
+   hang stayed a fixed pixel number, so the ink sits 10px out at 50 - and
+   mu9pklou asked for 4px MORE of it, which makes the overhang deliberate
+   rather than a rounding error.
+
+   So the edge to match here is 50, not the 60 the box carries: 60 minus the
+   10px the words now hang. The links row still sits on 60. */
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-hero__table { padding-left: 50px; }
+  /* mu9ppw0r "not aligned to the left with the the component on the top and
+     below" - the Resume / LinkedIn row, the one thing still sitting on 60
+     after the words and the list moved to 50. It cannot take a smaller padding
+     because its own padding is the touch target (mu9pilis), so the ROW hangs
+     by the same 10px the words do and the links keep their target intact. */
+  .hello[data-page="3"] .hello-hero__links { margin-left: -10px; }
+}
+/* the translate is NOT the lever here: at the reveal stage the hero-fade rule
+   above owns `translate` on this element, so the old 48px nudge has been dead
+   since that landed. The 8 comes off as a margin instead. */
+
+/* mtu561mm: the two hero links, back as text. Blue (--link #1a6fd0 on white
+   is 5.13:1; the dark theme lifts it to #7ab5f5, 7.4:1 on #0e0e11) with a
+   north-east arrow that leans out a hair on hover, the standard "opens
+   elsewhere" cue. No underline at rest so the pair stays quiet under the
+   lockup; underlined on hover and always under focus. */
+.hello[data-page="3"] .hello-hero__links { display: flex; }
+.hello[data-page="3"] .hello-hero__link--out {
+  color: var(--link, #1a6fd0); text-decoration: none; gap: 4px;
+}
+html.dark .hello[data-page="3"] .hello-hero__link--out { color: #7ab5f5; }
+.hello[data-page="3"] .hello-hero__link--out:hover { text-decoration: underline; text-underline-offset: 3px; }
+.hello[data-page="3"] .hello-hero__link-ne { transition: translate var(--ds-dur-state, 250ms) var(--ds-ease-std, ease); }
+.hello[data-page="3"] .hello-hero__link--out:hover .hello-hero__link-ne { translate: 2px -2px; }
+
+/* mtu59at0: "remove the corner radius from each tile as well" */
+.hello[data-page="3"] .ap__card { border-radius: 0; }
+
+/* mtu59y7t: "when I hover the size should grow slowly". The card took the
+   default spatial duration to reach 1.5; it now uses the slow one on the
+   emphasised curve, so the growth is something you watch rather than a snap. */
+.hello[data-page="3"] .ap__card {
+  transition: scale var(--m3-dur-spatial-slow, 0.75s) var(--m3-spatial-standard-slow, cubic-bezier(0.27, 1.06, 0.18, 1)), translate var(--m3-dur-spatial-default, 0.35s) var(--m3-spatial-standard-default, ease);
+}
+
+/* mtu56p5s: "revert the mode and volume icons to default" - the 4-unit CSS
+   stroke that thickened the Phosphor glyphs is withdrawn, so they draw at the
+   weight the family ships. */
+.top-controls .hello-chips--top .hello-chip svg path,
+.top-controls .hello-chips--top .hello-chip svg circle,
+.top-controls .hello-chips--top .hello-chip svg line,
+.top-controls .hello-chips--top .hello-chip svg polyline {
+  stroke-width: initial; paint-order: normal;
+}
+
+/* mu16rq1n (14 Sep 2026): "revert back to the first design" on the top row.
+   Read as the CHIP TREATMENT, not the roster: the row's first design was two
+   /four solid grey circles, each its own quiet button, before the dark pill
+   (mttj2ohd) wrapped them, before the pill's ground was taken away again
+   (mttnac2j) and before the outline replaced it (mttx7hfl). So the pill-era
+   overrides are withdrawn and the original fills come back: #5f5f5f on
+   #f7f7f7 is 5.96:1, #b5b5b5 on #1c1c20 is 8.28:1, both well past 4.5.
+   The chips Agam removed from the row on 09 Sep stay removed, and the 44px
+   body stays 44px: that one is a touch-target floor, not a look. */
+.top-controls .hello-chips--top { background: none; box-shadow: none; padding: 0; gap: 4px; }
+.top-controls .hello-chips--top .hello-chip { --chip-bg: #f7f7f7; --chip-ink: #5f5f5f; }
+html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --chip-ink: #b5b5b5; }
+.top-controls .hello-chips--top .hello-chip .hello-chip__body {
+  background: var(--chip-bg); color: var(--chip-ink);
+  box-shadow: none; /* the mttx7hfl outline is gone with the pill it belonged to */
+}
+/* hover and press read on the chip's own grey rather than through the pill ink */
+.top-controls .hello-chips--top .hello-chip:hover .hello-chip__body,
+.top-controls .hello-chips--top .hello-chip:focus-visible .hello-chip__body { background: color-mix(in srgb, var(--chip-ink) 12%, var(--chip-bg)); }
+.top-controls .hello-chips--top .hello-chip:active .hello-chip__body { background: color-mix(in srgb, var(--chip-ink) 22%, var(--chip-bg)); }
+.top-controls .hello-chips--top .hello-chip[aria-pressed="true"] .hello-chip__body { background: color-mix(in srgb, var(--chip-ink) 8%, var(--chip-bg)); }
+.top-controls .hello-chips--top .hello-chip:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+/* mu16s948: "move both the section down by 80px" */
+.hello[data-page="3"] .hello-hero { padding-top: 80px; }
+
+/* LIGHT MODE (Agam, 16 Sep 2026: "light mode broken"). The sky band is fixed
+   to the viewport on this page on purpose (mtr8hc5e, "on scroll the sky will
+   be visible across"), and dark mode already holds it back to --sky-op 0.42
+   because the shader is clock-driven and ignores the theme. Light mode had no
+   such damping, so once the real sun and weather were wired in, a midday sky
+   at nearly full opacity followed the viewport all the way down and washed
+   blue over the cards, the run and the footer.
+
+   The band still crosses the whole page; it just stops shouting below the
+   hero. Opacity now rides --hero-fade (the same 1 -> 0 over half a viewport
+   the greeting uses) down to a floor, so it is the hero's sky at the top and
+   a tint everywhere after. Dark keeps a high floor since 0.42 was already
+   quiet enough. */
+.hello[data-page="3"][data-stage="settle"] .hello-sky,
+.hello[data-page="3"][data-stage="reveal"] .hello-sky {
+  --sky-floor: 0.18;
+  opacity: calc(var(--sky-op) * (var(--sky-floor) + (1 - var(--sky-floor)) * var(--hero-fade, 1)));
+}
+:root.dark .hello[data-page="3"] .hello-sky { --sky-floor: 0.75; }
+
+/* muksv25q (2026-09-28): "when each video reaches the center, it grows 20% and a
+   YouTube-style caption with one or two metrics shows below". PathMarquee marks the
+   card resting on the centre with data-focus; the card grows from its bottom origin
+   (hello.css), so the caption under it is never covered. Title is --fg (18.9:1 light,
+   16.5:1 dark), the meta line --muted (4.95:1 on white, the token's own measure),
+   the metrics as outlined chips in --fg. */
+.hello[data-page="3"] .ap__slot { position: relative; }
+.hello[data-page="3"] .pm__item[data-focus] { z-index: 998; }
+.hello[data-page="3"] .pm__item[data-focus] .ap__card { scale: 1.2; }
+.hello[data-page="3"] .ap__cap {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  width: max-content;
+  max-width: min(280px, 70vw);
+  translate: -50% 6px;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+  transition: opacity 240ms ease, translate 360ms var(--m3-spatial-standard-default, ease);
+}
+.hello[data-page="3"] .pm__item[data-focus] .ap__cap { opacity: 1; translate: -50% 0; transition-delay: 180ms; }
+.hello[data-page="3"] .ap__cap p { margin: 0; }
+.hello[data-page="3"] .ap__cap-title { font-size: 13px; line-height: 1.3; font-weight: 600; color: var(--fg); }
+.hello[data-page="3"] .ap__cap-meta { font-size: 12px; line-height: 1.35; margin-top: 2px !important; color: var(--muted); }
+.hello[data-page="3"] .ap__cap-metrics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px !important; }
+.hello[data-page="3"] .ap__cap-metric {
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hello[data-page="3"] .ap__cap { transition: none; }
+}

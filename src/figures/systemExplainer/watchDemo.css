@@ -1,0 +1,127 @@
+/* Watch figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens); a long calm sparkline spans the frame, mostly doing nothing, then ONE
+   spike rises and the agent speaks — once. Higher specificity than
+   .ds-root.ds-root--away (which forces transparent / border:0) so the frame is a
+   solid dark plate. The stage SVG viewBox is the content box (W-32) so the DOM
+   overlays share the line's coordinate space with no negative margins. */
+.ds-root.ds-root--away.ss-watch { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-watch__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.ss-watch__title { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-watch__status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e;
+  transition: color 300ms var(--m3-effects-default);
+}
+.ss-watch__status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #4b4b58;
+  transition: background 300ms var(--m3-effects-default);
+}
+.ss-watch__status.is-alert { color: #f59e0b; }
+.ss-watch__status.is-alert .ss-watch__status-dot {
+  background: #f59e0b; animation: ssWatchBeacon 1.4s ease-in-out infinite;
+}
+@keyframes ssWatchBeacon { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); } 50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); } }
+
+/* stage — relative box; the SVG fills it 1:1 in the content-box coordinate space */
+.ss-watch__stage { position: relative; }
+.ss-watch__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* baseline rail + week ticks */
+.ss-watch__rail { stroke: #1c1c26; stroke-width: 1; }
+.ss-watch__tick { stroke: #18181f; stroke-width: 1; stroke-dasharray: 2 5; }
+.ss-watch__wk { fill: #6f6f7e; font-size: 10px; letter-spacing: 0.04em; }
+
+/* the sparkline — calm blue while drawing, the stroke goes amber once it spikes */
+.ss-watch__line {
+  fill: none; stroke: #3b82f6; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 1;
+  filter: drop-shadow(0 0 0 transparent);
+  transition: stroke-dashoffset 540ms var(--m3-effects-default), stroke 360ms var(--m3-effects-default);
+}
+.ss-watch__line.is-spiked { stroke: #f59e0b; }
+
+/* the spike apex glow */
+.ss-watch__apex {
+  fill: #f59e0b; opacity: 0;
+  transition: opacity 320ms var(--m3-effects-default);
+}
+.ss-watch__apex.is-on { opacity: 1; animation: ssWatchApex 1.6s ease-in-out infinite; }
+@keyframes ssWatchApex {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(245,158,11,0.6)); }
+  50% { filter: drop-shadow(0 0 8px rgba(245,158,11,0.9)); }
+}
+
+/* routine check-dots — anchored at their point, label sits just below, dim */
+.ss-watch__check {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  opacity: 0;
+  transition: opacity 360ms var(--m3-effects-default);
+}
+.ss-watch__check.is-lit { opacity: 1; }
+.ss-watch__check-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #2f3a52; border: 1px solid #3b82f6;
+}
+.ss-watch__check-label {
+  position: absolute; top: 12px; white-space: nowrap;
+  font-size: 9px; letter-spacing: 0.03em; color: #54545f;
+}
+
+/* the alert chip — pops above the spike apex with an amber flag */
+.ss-watch__alert {
+  position: absolute; transform: translate(-50%, -100%) translateY(-12px);
+  width: 232px; padding: 9px 11px; border-radius: 11px;
+  background: #1c1608; border: 1px solid #5a4410;
+  display: flex; align-items: flex-start; gap: 9px;
+  opacity: 0; transform: translate(-50%, -100%) translateY(-2px); pointer-events: none;
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-watch__alert.is-on { opacity: 1; transform: translate(-50%, -100%) translateY(-12px); }
+/* connector stem from chip down to the apex */
+.ss-watch__alert::after {
+  content: ""; position: absolute; left: 50%; bottom: -8px; width: 1px; height: 8px;
+  background: #5a4410; transform: translateX(-0.5px);
+}
+.ss-watch__flag { font-size: 14px; line-height: 1.2; color: #f59e0b; }
+.ss-watch__alert-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ss-watch__alert-title { font-size: 12px; font-weight: 600; color: #f4f4f6; line-height: 1.25; }
+.ss-watch__alert-sub { font-size: 10.5px; color: #cbb487; font-variant-numeric: tabular-nums; }
+
+/* the agent callback — it speaks, once */
+.ss-watch__act {
+  margin-top: 12px; padding: 10px 12px; border-radius: 11px;
+  background: #15151c; border: 1px solid #2a2a36;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-watch__act.is-on { opacity: 1; transform: none; }
+.ss-watch__avatar {
+  flex: 0 0 auto; width: 22px; height: 22px; border-radius: 7px;
+  display: grid; place-items: center; font-size: 11px;
+  color: #4ade80; background: #112016; border: 1px solid #1d3a26;
+}
+.ss-watch__act-text { font-size: 12.5px; color: #cbcbd4; line-height: 1.3; }
+.ss-watch__act-text b { color: #4ade80; }
+
+/* resolve strip */
+.ss-watch__result {
+  margin-top: 10px; padding: 11px 14px; border-radius: 11px;
+  background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; font-variant-numeric: tabular-nums;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-watch__result.is-on { opacity: 1; transform: none; }
+.ss-watch__result b { color: #f4f4f6; }
+.ss-watch__once { color: #4ade80; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-watch__status.is-alert .ss-watch__status-dot,
+  .ss-watch__apex.is-on { animation: none; }
+  .ss-watch__line, .ss-watch__alert, .ss-watch__act, .ss-watch__result,
+  .ss-watch__check, .ss-watch__apex { transition: none; }
+}

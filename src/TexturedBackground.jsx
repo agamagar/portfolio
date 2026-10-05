@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // A fixed, full-screen WebGL layer that sits behind all content (z-index:-1) and
 // gives the page background a tangible, tactile surface:
@@ -61,11 +61,17 @@ void main() {
 
 const BASE_GRAIN = 0.05; // rest-state grain strength — bump for more texture, 0 to disable
 const RIPPLE_MS = 1000;
+const MAX_RETRIES = 3;
 
 export default function TexturedBackground({ theme }) {
   const canvasRef = useRef(null);
   const themeRef = useRef(theme);
   const drawStaticRef = useRef(null);
+  // a fresh <canvas> per attempt: the cleanup below loses the context, and StrictMode's
+  // dev remount then got that same lost context back from the same element. Safari 26.2
+  // throws on the null shader a lost context returns, which unmounted the whole app
+  // (the blank Safari page, 2026-09-27); ShaderCanvas and HeroShader do the same
+  const [attempt, setAttempt] = useState(0);
 
   // keep the latest theme available to the imperative render loop
   useEffect(() => {
@@ -81,16 +87,29 @@ export default function TexturedBackground({ theme }) {
       antialias: false,
     });
     if (!gl) return; // no WebGL → silently skip, page is unaffected
+    // born lost → hide and retry on a fresh canvas shortly
+    if (gl.isContextLost()) {
+      canvas.style.visibility = "hidden";
+      if (attempt < MAX_RETRIES) {
+        const t = setTimeout(() => setAttempt((a) => a + 1), 300 + attempt * 250);
+        return () => clearTimeout(t);
+      }
+      return;
+    }
 
     const compile = (type, src) => {
       const sh = gl.createShader(type);
+      if (!sh) return null;
       gl.shaderSource(sh, src);
       gl.compileShader(sh);
       return sh;
     };
     const program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAG));
+    const vs = compile(gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+    if (!program || !vs || !fs) return; // lost mid-setup: the grain is decoration, skip it
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
     gl.linkProgram(program);
     gl.useProgram(program);
 
@@ -170,7 +189,7 @@ export default function TexturedBackground({ theme }) {
       const lose = gl.getExtension("WEBGL_lose_context");
       if (lose) lose.loseContext();
     };
-  }, []);
+  }, [attempt]);
 
-  return <canvas ref={canvasRef} className="tex-bg" aria-hidden="true" />;
+  return <canvas key={attempt} ref={canvasRef} className="tex-bg" aria-hidden="true" />;
 }

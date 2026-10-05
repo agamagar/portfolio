@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Away — Deep search & negotiation analytics</title>
+<style>
+  :root{
+    --d-canvas:#f6f6f8; --d-card:#ffffff; --d-cardbd:#e9e9ee;
+    --d-text:#15151a; --d-text2:#4a4a52; --d-muted:#6b6b75; --d-muted2:#9a9aa2;
+    --d-trackline:rgba(0,0,0,.05); --d-grid:rgba(0,0,0,.06); --d-ring:rgba(0,0,0,.07);
+    --d-accent:#6d5cf0; --d-accentfill:rgba(109,92,240,.10);
+    --d-pos:#0a7d4d; --d-posbg:rgba(18,184,134,.12); --d-neg:#c0392b; --d-negbg:rgba(250,82,82,.12);
+    --d-retail:#cfcfd6; --d-chipbg:#f2f2f5; --d-chipbd:#e3e3e8; --d-listbd:#eee;
+    --d-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  html[data-theme="dark"]{
+    --d-canvas:#0b0b14; --d-card:#13131f; --d-cardbd:#263040;
+    --d-text:#e2e8f0; --d-text2:#cbd5e1; --d-muted:#94a3b8; --d-muted2:#64748b;
+    --d-trackline:rgba(255,255,255,.08); --d-grid:rgba(255,255,255,.08); --d-ring:rgba(255,255,255,.10);
+    --d-accent:#8b7bff; --d-accentfill:rgba(139,123,255,.16);
+    --d-pos:#74b338; --d-posbg:rgba(116,179,56,.16); --d-neg:#f46e6d; --d-negbg:rgba(244,110,109,.16);
+    --d-retail:#334155; --d-chipbg:#1c222f; --d-chipbd:#263040; --d-listbd:#263040;
+    --d-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--d-canvas);color:var(--d-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;transition:background .2s ease,color .2s ease}
+  .page{max-width:1080px;margin:0 auto;padding:28px 20px 64px}
+  .page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 18px}
+  .page-eyebrow{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--d-accent)}
+  .page-title{font-size:1.35rem;font-weight:750;letter-spacing:-.01em;margin:.25rem 0 0}
+  .page-sub{font-size:.78rem;color:var(--d-muted);margin:.2rem 0 0;max-width:60ch}
+  .tt{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.72rem;font-weight:600;color:var(--d-text2);background:var(--d-card);border:1px solid var(--d-cardbd);border-radius:999px;padding:.4rem .7rem;cursor:pointer;white-space:nowrap}
+  .tt:hover{border-color:var(--d-accent)}
+  .tt svg{width:14px;height:14px}
+  /* ===== dashboard ===== */
+  .dsb{background:var(--d-canvas);border:1px solid var(--d-cardbd);border-radius:16px;padding:16px}
+  .dsb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+  .dsb-bt{font-size:1rem;font-weight:750;color:var(--d-text);letter-spacing:-.01em}
+  .dsb-bsub{font-size:.72rem;color:var(--d-muted);margin-top:.1rem}
+  .dsb-chip{font-size:.7rem;font-weight:600;color:var(--d-text2);background:var(--d-card);border:1px solid var(--d-cardbd);border-radius:999px;padding:.32rem .7rem}
+  .dsb-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:.7rem}
+  .dsb-card{background:var(--d-card);border:1px solid var(--d-cardbd);border-radius:12px;padding:.85rem .95rem;box-shadow:var(--d-shadow);grid-column:span 12;min-width:0}
+  .dsb-card.k{grid-column:span 4}
+  .dsb-card.w8{grid-column:span 8}.dsb-card.w6{grid-column:span 6}.dsb-card.w4{grid-column:span 4}
+  .dsb-klab{font-size:.7rem;font-weight:600;color:var(--d-muted)}
+  .dsb-krow{display:flex;align-items:baseline;gap:.5rem;margin:.18rem 0 0}
+  .dsb-kv{font-size:1.7rem;font-weight:750;letter-spacing:-.02em;color:var(--d-text);font-variant-numeric:tabular-nums;line-height:1}
+  .dsb-delta{font-size:.66rem;font-weight:700;padding:.1rem .34rem;border-radius:5px;white-space:nowrap}
+  .dsb-delta.up{color:var(--d-pos);background:var(--d-posbg)}
+  .dsb-delta.down{color:var(--d-neg);background:var(--d-negbg)}
+  .dsb-ksub{font-size:.64rem;color:var(--d-muted2);margin-top:.25rem}
+  .dsb-kspark{margin-top:.45rem;height:30px}
+  .dsb-kspark svg{width:100%;height:30px;display:block}
+  .dsb-ch{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 .7rem}
+  .dsb-ct{font-size:.78rem;font-weight:700;color:var(--d-text)}
+  .dsb-ctag{font-size:.58rem;font-weight:600;color:var(--d-muted);background:var(--d-chipbg);border-radius:999px;padding:.16rem .5rem;white-space:nowrap}
+  .dsb-svg{display:block;width:100%;height:auto}
+  .dsb-svg.donut{max-width:140px;margin:.2rem auto 0}
+  .dsb-dleg{display:flex;justify-content:center;gap:1rem;margin-top:.5rem;font-size:.66rem;color:var(--d-muted)}
+  .dsb-dleg i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:.3rem;vertical-align:middle}
+  .dsb-fnl{display:flex;flex-direction:column;gap:.5rem}
+  .dsb-frow{display:grid;grid-template-columns:104px 1fr auto;align-items:center;gap:10px;font-size:.76rem}
+  .dsb-flab{color:var(--d-text2)}
+  .dsb-ftrack{background:var(--d-trackline);border-radius:5px;height:24px;overflow:hidden}
+  .dsb-ffill{height:100%;background:var(--d-accent);opacity:.9;border-radius:5px}
+  .dsb-fmeta{display:flex;align-items:baseline;gap:.4rem;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--d-text2)}
+  .dsb-fmeta b{color:var(--d-text);font-weight:700}
+  .dsb-fdrop{font-size:.64rem;color:var(--d-muted2)}
+  .dsb-vbars{display:flex;align-items:flex-end;gap:.5rem;height:150px}
+  .dsb-vcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+  .dsb-vval{font-size:.7rem;font-weight:700;color:var(--d-text);margin-bottom:3px;font-variant-numeric:tabular-nums}
+  .dsb-vbarw{width:100%;display:flex;justify-content:center;align-items:flex-end;flex:1}
+  .dsb-vbar{width:100%;max-width:44px;background:var(--d-accent);opacity:.88;border-radius:5px 5px 0 0;min-height:4px}
+  .dsb-vlab{font-size:.62rem;color:var(--d-muted);margin-top:5px;text-align:center}
+  .dsb-hb{display:flex;flex-direction:column;gap:.42rem}
+  .dsb-hrow{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;font-size:.74rem}
+  .dsb-hlab{color:var(--d-text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dsb-htrack{background:var(--d-trackline);height:14px;border-radius:3px;overflow:hidden}
+  .dsb-hfill{height:100%;background:var(--d-accent);opacity:.85;border-radius:3px}
+  .dsb-hval{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:var(--d-text2)}
+  .dsb-list{display:flex;flex-direction:column}
+  .dsb-li{display:flex;justify-content:space-between;align-items:baseline;padding:.42rem 0;border-top:1px solid var(--d-listbd);font-size:.78rem;color:var(--d-text2)}
+  .dsb-li:first-child{border-top:none;padding-top:0}
+  .dsb-li b{color:var(--d-text);font-weight:700;font-variant-numeric:tabular-nums}
+  .dsb-foot{font-size:.66rem;color:var(--d-muted2);margin:1rem 0 0;line-height:1.55}
+  @media(max-width:860px){.dsb-card.k{grid-column:span 6}.dsb-card.w8,.dsb-card.w6,.dsb-card.w4{grid-column:span 12}}
+  @media(max-width:520px){.dsb-card.k{grid-column:span 12}.dsb-frow{grid-template-columns:84px 1fr auto}.dsb-hrow{grid-template-columns:88px 1fr 30px}}
+  /* embed mode: hide page chrome, show only the board (driven by a parent toggle) */
+  body.embed .page-head{display:none}
+  body.embed .page{padding:0}
+  body.embed .dsb{border:none;border-radius:0;padding:0;background:transparent}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-head">
+    <div>
+      <div class="page-eyebrow">Away · Deep search analytics</div>
+      <div class="page-title">The AI negotiation engine, measured</div>
+      <div class="page-sub">A live read of how Away's deep-search negotiation performs — volume, the retail-vs-negotiated split, credit economics, the results funnel, and the carriers it negotiates on.</div>
+    </div>
+    <button class="tt" id="tt" type="button" aria-label="Toggle light or dark mode"></button>
+  </div>
+  <div id="board"></div>
+</div>
+<script>
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+/* ---- theme ---- */
+(function(){
+  var root=document.documentElement;
+  function set(t){t=(t==='dark')?'dark':'light';root.setAttribute('data-theme',t);try{localStorage.setItem('dsTheme',t);}catch(e){}paintBtn(t);}
+  function cur(){return root.getAttribute('data-theme')||'light';}
+  var sun='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>';
+  var moon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>';
+  window.paintBtn=function(t){var b=document.getElementById('tt');if(!b)return;b.innerHTML=(t==='dark'?sun:moon)+'<span>'+(t==='dark'?'Light':'Dark')+'</span>';};
+  var params=new URLSearchParams(location.search);
+  var stored=null;try{stored=localStorage.getItem('dsTheme');}catch(e){}
+  var initial=params.get('theme')||stored||((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+  set(initial);
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='theme'&&(e.data.value==='dark'||e.data.value==='light'))set(e.data.value);});
+  document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('tt');if(b){paintBtn(cur());b.addEventListener('click',function(){set(cur()==='dark'?'light':'dark');});}});
+  if(params.get('embed')==='1'){var ap=function(){document.body&&document.body.classList.add('embed');};if(document.body)ap();else document.addEventListener('DOMContentLoaded',ap);}
+})();
+/* ---- dashboard ---- */
+(function(){
+  var ACC='var(--d-accent)';
+  var weekly=[94,119,172,136,84,248,330,902,670];
+  var wlabels=['26 Apr','','','17 May','','','7 Jun','','21 Jun'];
+  var kpis=[
+    {lab:'Deep searches',v:'2,780',delta:{dir:'up',t:'278%'},sub:'all-time · vs prior 30d',spark:weekly},
+    {lab:'Unique searchers',v:'877',sub:'about 3.2 searches each'},
+    {lab:'Fares negotiated',v:'13%',sub:'about 1.7 of 13.5 found'},
+    {lab:'Credits / search',v:'1.71',sub:'about 4,750 all-time'},
+    {lab:'Search completion',v:'99.7%',sub:'2,773 of 2,780'},
+    {lab:'Re-run rate',v:'9.7%',sub:'about 1 in 10 searches'}
+  ];
+  var funnel=[{l:'Viewed results',c:77,p:100},{l:'Added to cart',c:32,p:42},{l:'Booking initiated',c:24,p:31}];
+  var engage=[{l:'Opened',v:74},{l:'Viewed',v:187},{l:'Cart',v:278},{l:'Booking',v:73}];
+  var airlines=[{l:'6E IndiGo',v:118},{l:'QP Akasa',v:51},{l:'IX AI Express',v:30},{l:'AI Air India',v:13},{l:'LH Lufthansa',v:12},{l:'SG SpiceJet',v:11},{l:'SQ Singapore',v:10},{l:'18 more',v:33}];
+  var econ=[['Avg cart value','Rs 25,349'],['Flex searches (all-time)','2,930'],['Negotiations minimised (14d)','45'],['Carts emptied (14d)','38'],['Notify-me enabled (14d)','3']];
+  function spark(vals){var w=120,h=30,p=3,n=vals.length;var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);if(hi===lo){hi+=1;lo-=1;}var X=function(i){return p+i*((w-2*p)/(n-1));},Y=function(v){return p+(1-(v-lo)/(hi-lo))*(h-2*p);};var d='M'+X(0).toFixed(1)+','+Y(vals[0]).toFixed(1);for(var i=1;i<n;i++)d+=' L'+X(i).toFixed(1)+','+Y(vals[i]).toFixed(1);return '<svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+ACC+'" stroke-width="1.8"/></svg>';}
+  function areaChart(vals,labels){var w=560,h=180,L=30,R=10,T=12,B=24,pw=w-L-R,ph=h-T-B,n=vals.length;var hi=Math.max.apply(null,vals)||1;var X=function(i){return L+(n>1?i*(pw/(n-1)):pw/2);},Y=function(v){return T+(1-v/hi)*ph;};var pts=vals.map(function(v,i){return [X(i),Y(v)];});var d='M'+pts[0][0].toFixed(1)+','+pts[0][1].toFixed(1);for(var i=1;i<n;i++)d+=' L'+pts[i][0].toFixed(1)+','+pts[i][1].toFixed(1);var area=d+' L'+X(n-1).toFixed(1)+','+(T+ph)+' L'+X(0).toFixed(1)+','+(T+ph)+' Z';var g='';[0,0.5,1].forEach(function(f){var yy=(T+ph*f);var val=Math.round(hi*(1-f));g+='<line x1="'+L+'" y1="'+yy.toFixed(1)+'" x2="'+(L+pw)+'" y2="'+yy.toFixed(1)+'" stroke="var(--d-grid)"/><text x="'+(L-5)+'" y="'+(yy+3).toFixed(1)+'" font-size="9" fill="var(--d-muted2)" text-anchor="end">'+val+'</text>';});var dots=pts.map(function(pp){return '<circle cx="'+pp[0].toFixed(1)+'" cy="'+pp[1].toFixed(1)+'" r="2.3" fill="'+ACC+'"/>';}).join('');var xl='';labels.forEach(function(lb,i){if(lb)xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-7)+'" font-size="8.5" fill="var(--d-muted2)" text-anchor="middle">'+esc(lb)+'</text>';});return '<svg class="dsb-svg" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet">'+g+'<path d="'+area+'" fill="var(--d-accentfill)"/><path d="'+d+'" fill="none" stroke="'+ACC+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xl+'</svg>';}
+  function donut(pct,top,bot){var C=2*Math.PI*44,off=(C*(1-pct/100)).toFixed(1);return '<svg class="dsb-svg donut" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="var(--d-ring)" stroke-width="15"/><circle cx="60" cy="60" r="44" fill="none" stroke="'+ACC+'" stroke-width="15" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off+'" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="21" font-weight="750" fill="var(--d-text)">'+esc(top)+'</text><text x="60" y="75" text-anchor="middle" font-size="9" fill="var(--d-muted2)">'+esc(bot)+'</text></svg>';}
+  function funnelBars(steps){return '<div class="dsb-fnl">'+steps.map(function(s){var w=Math.max(4,s.p);return '<div class="dsb-frow"><div class="dsb-flab">'+esc(s.l)+'</div><div class="dsb-ftrack"><div class="dsb-ffill" style="width:'+w+'%"></div></div><div class="dsb-fmeta"><b>'+s.c+'</b><span class="dsb-fdrop">'+s.p+'%</span></div></div>';}).join('')+'</div>';}
+  function vbars(items){var max=Math.max.apply(null,items.map(function(x){return x.v;}))||1;return '<div class="dsb-vbars">'+items.map(function(it){var hh=Math.max(4,Math.round(it.v/max*100));return '<div class="dsb-vcol"><div class="dsb-vval">'+it.v+'</div><div class="dsb-vbarw"><div class="dsb-vbar" style="height:'+hh+'%"></div></div><div class="dsb-vlab">'+esc(it.l)+'</div></div>';}).join('')+'</div>';}
+  function hbars(items,max){return '<div class="dsb-hb">'+items.map(function(it){var w=Math.max(3,Math.round(it.v/max*100));return '<div class="dsb-hrow"><div class="dsb-hlab">'+esc(it.l)+'</div><div class="dsb-htrack"><div class="dsb-hfill" style="width:'+w+'%"></div></div><div class="dsb-hval">'+it.v+'</div></div>';}).join('')+'</div>';}
+  function kpiCard(k){var delta=k.delta?'<span class="dsb-delta '+k.delta.dir+'">'+(k.delta.dir==='up'?'▲':'▼')+' '+esc(k.delta.t)+'</span>':'';var sp=k.spark?'<div class="dsb-kspark">'+spark(k.spark)+'</div>':'';return '<div class="dsb-card k"><div class="dsb-klab">'+esc(k.lab)+'</div><div class="dsb-krow"><span class="dsb-kv">'+esc(k.v)+'</span>'+delta+'</div><div class="dsb-ksub">'+esc(k.sub)+'</div>'+sp+'</div>';}
+  function chartCard(cls,title,tag,body){return '<div class="dsb-card '+cls+'"><div class="dsb-ch"><span class="dsb-ct">'+title+'</span>'+(tag?'<span class="dsb-ctag">'+esc(tag)+'</span>':'')+'</div>'+body+'</div>';}
+  var html='<div class="dsb"><div class="dsb-bar"><div><div class="dsb-bt">Deep search &amp; negotiation</div><div class="dsb-bsub">AI negotiation engine, live from PostHog</div></div><div class="dsb-chip">Apr 29 – Jun 28, 2026</div></div>'
+    +'<div class="dsb-grid">'
+    +kpis.map(kpiCard).join('')
+    +chartCard('w8','Deep searches per week','all-time',areaChart(weekly,wlabels))
+    +chartCard('w4','Retail vs negotiated','per search',donut(13,'13%','negotiated')+'<div class="dsb-dleg"><span><i style="background:var(--d-accent)"></i>Negotiated 13%</span><span><i style="background:var(--d-retail)"></i>Retail 87%</span></div>')
+    +chartCard('w6','Results &#8594; cart &#8594; booking','14d · unique users',funnelBars(funnel))
+    +chartCard('w6','Negotiation activity','14d · events',vbars(engage))
+    +chartCard('w6','Top carriers negotiated','14d · cart-adds',hbars(airlines,118))
+    +chartCard('w6','Economics &amp; friction','',('<div class="dsb-list">'+econ.map(function(r){return '<div class="dsb-li"><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>';}).join('')+'</div>'))
+    +'</div>'
+    +'<div class="dsb-foot">Deep-search server metrics are all-time since launch (about 29 Apr 2026). Negotiation funnel, activity, carriers, and friction are client-side, wired about 21 Jun 2026, so they cover roughly two weeks; the flight-selected event is under-instrumented. Cart values in INR. Source: PostHog project 265698 (board 1770694).</div></div>';
+  function mount(){var b=document.getElementById('board');if(b)b.innerHTML=html;}
+  if(document.readyState!=='loading')mount();else document.addEventListener('DOMContentLoaded',mount);
+})();
+</script>
+</body>
+</html>

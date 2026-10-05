@@ -12,21 +12,89 @@ import {
   Suspense,
 } from "react";
 import { flushSync } from "react-dom";
-import { Agentation } from "agentation";
-import { FACE_VIEWBOX, FACE_COLOR, FACE_PATHS, FACE_EXTRA, FACE_EYES } from "./faceMorph";
+import MorphFace from "./MorphFace";
 import TexturedBackground from "./TexturedBackground";
 import AgentWizardFigure from "./figures/AgentWizard";
 import AgentWizardCompare from "./figures/agentWizard/Compare";
 import AgentWizardFFF from "./figures/agentWizard/AgentWizardFFF";
 import StellaOnboarding from "./figures/onboarding/StellaOnboarding";
 import AnnotationDemo from "./figures/scaffold/AnnotationDemo";
+import SeqDemo from "./figures/systemExplainer/SeqDemo";
+import FanOutDemo from "./figures/systemExplainer/FanOutDemo";
+import TriageDemo from "./figures/systemExplainer/TriageDemo";
+import TradeOffDemo from "./figures/systemExplainer/TradeOffDemo";
+import BacktrackDemo from "./figures/systemExplainer/BacktrackDemo";
+import UpdateDemo from "./figures/systemExplainer/UpdateDemo";
+import RecoverDemo from "./figures/systemExplainer/RecoverDemo";
+import DecomposeDemo from "./figures/systemExplainer/DecomposeDemo";
+import SpineDemo from "./figures/systemExplainer/SpineDemo";
+import LoopDemo from "./figures/systemExplainer/LoopDemo";
+import WeighDemo from "./figures/systemExplainer/WeighDemo";
+import HedgeDemo from "./figures/systemExplainer/HedgeDemo";
+import WatchDemo from "./figures/systemExplainer/WatchDemo";
+import SystemSheet, { Ref } from "./figures/lab/SystemSheet";
+import ModesGuide from "./figures/lab/ModesGuide";
+import DeckPresets from "./figures/lab/DeckPresets";
+import FeedbackBench from "./figures/lab/FeedbackBench";
+import AlongPathV1 from "./figures/lab/alongpath-v1/AlongPathV1";
+import TimelineVerticalV1 from "./figures/lab/timeline-v1/TimelineVerticalV1";
+import DetailV1 from "./figures/lab/DetailV1";
+import HandsSheet from "./figures/hands/HandsSheet";
+import MockupLab from "./figures/mockup/MockupLab";
+import IconShowcase from "./figures/zeptoPremium/IconShowcase";
+import BrickLab from "./figures/brickLab/BrickLab";
+import ShaderGallery from "./figures/shaders/ShaderGallery";
+import SkyLab from "./figures/sky/SkyLab";
+import ThreeLinesLab from "./figures/threeLines/ThreeLinesLab";
+import PixelMascotLab from "./figures/pixelMascot/PixelMascotLab";
+import StellaLab from "./figures/stella/StellaLab";
+import Hello from "./hello/Hello";
+import Hello3 from "./hello3/Hello";
+import StellaSim from "./figures/stella/StellaSim";
+import AwayReveal from "./figures/consumer/AwayReveal";
+import PhysicalSheet from "./figures/physicality/PhysicalSheet";
+import "./figures/systemExplainer/skins.css";
 import ExecutionFlood from "./figures/concepts/ExecutionFlood";
+import CallJourney from "./figures/concepts/CallJourney";
 import DailyReport from "./figures/concepts/DailyReport";
 import FigmaToCode from "./figures/concepts/FigmaToCode";
 import EvolutionTimeline from "./figures/concepts/EvolutionTimeline";
 import DecisionEngine from "./figures/concepts/DecisionEngine";
+import OccasionWidget from "./figures/concepts/OccasionWidget";
+import BannerLab from "./figures/concepts/BannerLab";
+import CrossSellTable from "./figures/concepts/CrossSellTable";
+import { feedback, feedbackCoalesced } from "./ui/feedback";
+import { playCue } from "./ui/sound"; // mukuatqi: motion cues for the scroll-scene layers
+import HeroChips from "./hello3/HeroChips";
 import DesignFigure from "./figures/design/DesignFigure";
+import Whiteboard from "./figures/Whiteboard";
+import ReelFigure, { ReelPresets, reels } from "./figures/reel/Reel";
+import CrossSellTree from "./figures/crosssell/CrossSellTree";
+import XsFramework from "./figures/crosssell/XsFramework";
+import XsTrips from "./figures/crosssell/XsTrips";
+import XsObjective from "./figures/crosssell/XsObjective";
+import XsDirections from "./figures/crosssell/XsDirections";
+import XsRail from "./figures/crosssell/XsRail";
+import XsWait from "./figures/crosssell/XsWait";
+import XsLedger from "./figures/crosssell/XsLedger";
+import XsWalk from "./figures/crosssell/XsWalk";
+import XsIntents from "./figures/crosssell/XsIntents";
+import XsNotebook from "./figures/crosssell/XsNotebook";
+import XsSecondPull from "./figures/crosssell/XsSecondPull";
+import XsReview from "./figures/crosssell/XsReview";
+import XsPairs from "./figures/crosssell/XsPairs";
+import XsCloud from "./figures/crosssell/XsCloud";
+import XsProjector from "./figures/crosssell/XsProjector";
+import XsMotion from "./figures/crosssell/XsMotion";
 import SchedUsers from "./figures/scheduled/SchedUsers";
+import NarrationPlayer from "./prd/NarrationPlayer";
+import { scheduledCaseNarration } from "./prd/scheduledNarration";
+import { dasshCaseNarration } from "./prd/dasshCaseNarration";
+import "./prd/prd.css";
+import EdgeFloater from "./figures/jarvis/EdgeFloater";
+import EdgeCard from "./figures/jarvis/EdgeCard";
+import EdgeAltitudes from "./figures/jarvis/EdgeAltitudes";
+import EdgeOos from "./figures/jarvis/EdgeOos";
 import AwClarify from "./figures/awayAgent/AwClarify";
 import AwHome from "./figures/awayAgent/AwHome";
 import AwDeepSearch from "./figures/awayAgent/AwDeepSearch";
@@ -43,15 +111,29 @@ import AwIntakeBrief from "./figures/awayAgent/AwIntakeBrief";
 import AwSearchFlow from "./figures/awayAgent/AwSearchFlow";
 import AwSmartPin from "./figures/awayAgent/AwSmartPin";
 import AwResultCard from "./figures/awayAgent/AwResultCard";
+import AwFareCards from "./figures/awayAgent/AwFareCards";
 import SchedDirections from "./figures/scheduled/SchedDirections";
 import SchedSinglePage from "./figures/scheduled/SchedSinglePage";
 import SchedStuckCart from "./figures/scheduled/SchedStuckCart";
 import SchedImpact from "./figures/scheduled/SchedImpact";
 import SchedSplit from "./figures/scheduled/SchedSplit";
+import SchedMoments from "./figures/scheduled/SchedMoments";
 import SchedCartStates from "./figures/scheduled/SchedCartStates";
 import SchedPageStates from "./figures/scheduled/SchedPageStates";
 import SchedDateSwitch from "./figures/scheduled/SchedDateSwitch";
 import SchedGtm from "./figures/scheduled/SchedGtm";
+import SchedExplorations from "./figures/scheduled/SchedExplorations";
+import SchedPostBooking from "./figures/scheduled/SchedPostBooking";
+import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne } from "./figures/scheduled/SchedGtmReal";
+import SchedRnR from "./figures/scheduled/SchedRnR";
+import SchedPageReal from "./figures/scheduled/SchedPageReal";
+import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
+import { scheduledDeck } from "./decks/scheduledDelivery.deck";
+import { awayAgentDeck } from "./decks/awayAgent.deck";
+import { zepirisDeck } from "./decks/zepiris.deck";
+import { dasshDeck } from "./decks/dassh.deck";
+import { topprDeck } from "./decks/toppr.deck";
+import Tooltips from "./ui/Tooltips";
 
 // Project list. "Toppr" is a real, decided project; the rest are sample slots
 // to fill in one at a time. Each title splits into segments; `accent: true`
@@ -67,38 +149,18 @@ const projects = [
     month: "18/06",
     titleSegments: [{ text: "An agent that never " }, { text: "takes the wheel", accent: true }],
   },
-  {
-    brand: "Away",
-    href: "/work/away-agent-human",
-    accent: "#2563EB",
-    year: "2026",
-    month: "19/06",
-    titleSegments: [{ text: "Designed for the " }, { text: "moments, not the screens", accent: true }],
-  },
+  // Cross-sell promoted from the WIP shelf per annotation mtllf048 (2026-09-03).
   {
     brand: "Zepto",
-    href: "/work/occasion-buying",
-    accent: "#9826C9",
+    href: "/work/cross-sell",
+    accent: "#0F6E56",
     year: "2026",
     month: "15/06",
-    titleSegments: [{ text: "Rebuilding the aisle " }, { text: "a search box deleted", accent: true }],
+    titleSegments: [{ text: "The half of cross-sell " }, { text: "nobody solved", accent: true }],
   },
-  {
-    brand: "Away",
-    href: "/work/away",
-    accent: "#0891B2",
-    year: "2026",
-    month: "12/04",
-    titleSegments: [{ text: "Negotiate", accent: true }, { text: " your flights" }],
-  },
-  {
-    brand: "Zepto",
-    href: "/work/jarvis",
-    accent: "#DB2777",
-    year: "2026",
-    month: "03/02",
-    titleSegments: [{ text: "Zepto's Ad Platform Revamp" }],
-  },
+  // Moved to the WIP shelf (src/wip.local.jsx, git-ignored) per annotations
+  // mqxryvos/mqxryvot/mqxryvou/mqxs0y6o/mqxrzyc0: away-agent-human, away-prd,
+  // away, jarvis.
   {
     brand: "Zepto",
     href: "/work/zepiris",
@@ -127,6 +189,14 @@ const projects = [
 
 // Archived / older projects, shown in their own section.
 const archived = [
+  {
+    brand: "AIIMS",
+    href: "/work/aiims",
+    accent: "#059669",
+    year: "2023",
+    month: "01/01",
+    titleSegments: [{ text: "Teaching empathy to nurses in " }, { text: "virtual reality", accent: true }],
+  },
   {
     brand: "Toppr",
     href: "/work/toppr",
@@ -217,10 +287,152 @@ const RiveLayout = lazy(() => import("./RiveFigure"));
 // Split-flap "departure board" hero (third-party component, Tailwind + Motion).
 // Lazy so Motion only loads on the case study that uses it. Customise later.
 const TextFlippingBoardDemo = lazy(() => import("./components/text-flipping-board-demo"));
+const HoverBorderGradient = lazy(() =>
+  import("./components/ui/hover-border-gradient").then((m) => ({ default: m.HoverBorderGradient }))
+);
 const HeroShader = lazy(() => import("./HeroShader"));
 // Generic WebGL canvas for the case-study section shader boxes (golden-hour /
 // iridescent). Lazy so the shaders only load on a page that uses them.
 const ShaderCanvas = lazy(() => import("./ShaderCanvas"));
+// The home header's live weather sky (Living Sky + src/lib/weather.js). Lazy for
+// the same reason: the first paint must not wait on WebGL or on two fetches.
+const WeatherSky = lazy(() => import("./WeatherSky"));
+// Interactive Three.js DJ console (/dj). Lazy so three.js (~600KB) is code-split
+// into its own chunk and never weighs down the home page or case studies.
+const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
+// the window scene's header controls (sky and look), only while the scene is on
+const SceneControls = lazy(() => import("./scene/window/SceneControls"));
+// The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
+// so its chunk never reaches any other page. See src/scene/window/.
+const WindowScenePage = lazy(() => import("./scene/window/WindowScenePage"));
+// Scheduled Delivery slot availability replayed through liveline (unlisted).
+const SdAvailability = lazy(() => import("./figures/sdAvailability/SdAvailability"));
+// mujk4cl5 (27 Sep): the hero is now the Figma 231:8842 loop; the old entrance-only
+// hero (SchedHeartHero.jsx) is kept on disk
+const SchedHeartHero = lazy(() => import("./figures/scheduled/SchedHeartLoop"));
+const PronCards = lazy(() => import("./figures/scheduled/PronCards"));
+const SdImpactCharts = lazy(() => import("./figures/sdAvailability/SdImpactCharts"));
+const SchedMetricStory = lazy(() => import("./figures/scheduled/SchedMetricStory"));
+const SchedCartStrip = lazy(() => import("./figures/scheduled/SchedCartStrip")); // mukxwvur
+const SchedReachExplorer = lazy(() => import("./figures/scheduled/SchedReachExplorer")); // 5 Oct, the Morphocode-style explorer
+const SchedResearchStory = lazy(() => import("./figures/scheduled/SchedResearchStory")); // mukx7ffq
+const SchedEtaScroll = lazy(() => import("./figures/scheduled/SchedEtaScroll"));
+const SchedCartGrid = lazy(() => import("./figures/scheduled/SchedCartGrid"));
+const AutoTabs = lazy(() => import("./figures/scheduled/AutoTabs"));
+const PlateCursor = lazy(() => import("./figures/scheduled/PlateCursor")); // mto4v1ka
+// mto4ygd5: Figma Embed Kit 2.0 URL. The client-id (a Figma OAuth app, with the
+// site's origin in its allowed embed origins) unlocks the Embed API; set it in
+// Portfolio/.env.local as VITE_FIGMA_EMBED_CLIENT_ID.
+const FIGMA_EMBED_CLIENT_ID = import.meta.env.VITE_FIGMA_EMBED_CLIENT_ID || "";
+// mtpdtjwt: a "\n" in a case title is a forced line break
+function withBreaks(str) {
+  const parts = String(str || "").split("\n");
+  return parts.length === 1 ? str : parts.map((t, i) => (i ? [<br key={"b" + i} />, t] : t));
+}
+// LIVE FIGMA EMBEDS ARE OFF (20 Sep 2026: "iu see the figma login here, why?
+// please fix").
+//
+// Because the file is PRIVATE. Checked rather than guessed: the embed URL
+// answers an anonymous request with a 302 (Figma redirecting to sign-in), and
+// the file - "Schedule Order Handoff", 71cZSn... - lives in Agam's personal
+// account, not the Zepto one. So every visitor who is not him, including him on
+// his phone, met a Figma login where a prototype should be.
+//
+// The plate falls back to a still of the prototype's own start frame, exported
+// from that same file (node 40000084:180821, "Today: all slots"), so what shows
+// is still the real design rather than a placeholder.
+//
+// To bring the live prototype back: set that file's share link to "Anyone with
+// the link can view" in Figma, then flip this to true. It cannot be done from
+// here - the REST API has no endpoint for share permissions - and it is worth a
+// deliberate decision rather than a reflex, since it publishes Zepto work from
+// a personal file.
+// mukq9kl9 (28 Sep): ON for presenting on localhost (Agam: "we don't have to
+// worry about public viewability just yet"). The file is still private, so the
+// embed renders only in a browser signed in to a Figma account with access;
+// anyone else sees Figma's sign-in wall. Flip back to false before publishing.
+// 5 Oct (going live): on in dev for presenting, off in any production build
+const PROTO_EMBED = !import.meta.env.PROD;
+const PROTO_STILL = "/figures/scheduled/proto-start.png";
+
+const figmaEmbedUrl = (fileKey, nodeId) =>
+  `https://embed.figma.com/proto/${fileKey}?node-id=${nodeId}&embed-host=portfolio&scaling=scale-down-width&footer=false&hotspot-hints=false&viewport-controls=false` +
+  (FIGMA_EMBED_CLIENT_ID ? `&client-id=${FIGMA_EMBED_CLIENT_ID}` : "");
+// post an Embed API command into a prototype iframe (target origin per the docs)
+const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
+import { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // base iPhone frame, Scheduled Delivery only for now
+import { animate as motionAnimate } from "motion";
+import { Refresh as IconRefresh, CursorPointer as IconCursor } from "iconoir-react";
+import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
+import { GlassLens } from "./ui/GlassLens";
+import SchedInsight from "./figures/scheduled/SchedInsight";
+import { Compass, Buildings, Handshake } from "@phosphor-icons/react";
+import SchedUseCases from "./figures/scheduled/SchedUseCases";
+import SchedRoleWireframes from "./figures/scheduled/SchedRoleWireframes";
+import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
+import { windowSceneOn } from "./lib/sceneFlag";
+// Art mode (src/art/ArtMode.jsx) is no longer mounted: removed with read mode (mtqpu3f2 + the 07 Sep ask); the file stays.
+const MotionCheck = lazy(() => import("./hello/MotionCheck"));
+// The Away PRD, rendered as native portfolio DOM (was an iframe → unscannable by
+// Agentation). Lazy so its ~300KB data module loads only on the PRD page.
+const PrdDoc = lazy(() => import("./prd/PrdDoc"));
+const DasshPrdDoc = lazy(() => import("./prd/DasshPrdDoc"));
+const ScheduledPrdDoc = lazy(() => import("./prd/ScheduledPrdDoc"));
+const JarvisPrdDoc = lazy(() => import("./prd/JarvisPrdDoc"));
+const ZepirisPrdDoc = lazy(() => import("./prd/ZepirisPrdDoc"));
+const AwayAnalyticsDoc = lazy(() => import("./prd/AwayAnalyticsDoc"));
+const PromptLibraryDoc = lazy(() => import("./prd/PromptLibraryDoc"));
+const TeamPromptsDoc = lazy(() => import("./prd/TeamPromptsDoc"));
+const ColorSystemDoc = lazy(() => import("./prd/ColorSystemDoc"));
+const Resume = lazy(() => import("./Resume"));
+
+// The framed section shader. Expand-on-intent: the box stays 100% with normal
+// spacing until the pointer lingers ~2s (dwell) or it's clicked — then it scales
+// to 150% and grows its margin so neighbouring text moves to make room (see
+// .article__shader-box--zoom), collapsing back on mouse-leave. superSample keeps
+// the canvas crisp at the enlarged size.
+function ShaderBox({ shader }) {
+  const [expanded, setExpanded] = useState(false);
+  const dwellRef = useRef(null);
+  useEffect(() => () => clearTimeout(dwellRef.current), []);
+  const armDwell = () => {
+    clearTimeout(dwellRef.current);
+    dwellRef.current = setTimeout(() => setExpanded(true), 2000); // linger >2s
+  };
+  const collapse = () => {
+    clearTimeout(dwellRef.current);
+    setExpanded(false);
+  };
+  const expandNow = () => {
+    clearTimeout(dwellRef.current); // click is the fast path, skip the wait
+    setExpanded(true);
+  };
+  return (
+    <div
+      className={`article__shader-box article__shader-box--${shader} article__shader-box--zoom${expanded ? " is-expanded" : ""}`}
+      aria-hidden="true"
+      onMouseEnter={armDwell}
+      onMouseLeave={collapse}
+      onClick={expandNow}
+    >
+      <Suspense fallback={null}>
+        <ShaderCanvas preset={shader} className="article__shader-canvas" superSample={1.5} />
+      </Suspense>
+      {/* hover affordance: a fullscreen icon in a 2s timer ring — "keep hovering
+          (or click) to expand". Fills over the same 2s as the dwell, hidden once
+          expanded (CSS, see .shader-zoom-hint). */}
+      <span className="shader-zoom-hint" aria-hidden="true">
+        <svg className="shader-zoom-hint__timer" viewBox="0 0 36 36">
+          <circle className="shader-zoom-hint__track" cx="18" cy="18" r="15" />
+          <circle className="shader-zoom-hint__ring" cx="18" cy="18" r="15" />
+        </svg>
+        <svg className="shader-zoom-hint__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M16 21h3a2 2 0 0 0 2-2v-3M8 21H5a2 2 0 0 1-2-2v-3" />
+        </svg>
+      </span>
+    </div>
+  );
+}
 
 // Collage layout — the fourth figure asset type: a board of real exported
 // images. Call it on a section with `collage: [...]`. Each entry is either a
@@ -275,23 +487,114 @@ function AwayLandingFigure() {
 }
 
 const figures = {
+  // Scheduled Delivery hero: the 2026 slot-availability tape (liveline), lazy.
+  sdAvailabilityHero: () => (
+    <Suspense fallback={null}>
+      <SdAvailability hero />
+    </Suspense>
+  ),
+  // Impact: the chart grid (mtmkh1h3).
+  sdImpactCharts: () => (
+    <Suspense fallback={null}>
+      <SdImpactCharts />
+    </Suspense>
+  ),
+  // 27 Sep ("stitch a story with all of the metrics"): the same data as a plot
+  // mukw52nu (28 Sep): six cart moments, each a phone crop, 2 x 3
+  schedCartGrid: () => (
+    <Suspense fallback={null}>
+      <SchedCartGrid />
+    </Suspense>
+  ),
+  // mukvt7cp (28 Sep): the ETA callout variants, a horizontal scroll-in row
+  schedEtaScroll: () => (
+    <Suspense fallback={null}>
+      <SchedEtaScroll />
+    </Suspense>
+  ),
+  // mukxfh9s (28 Sep): three image boxes, waiting on Agam's assets. To fill one,
+  // drop the file in public/figures/scheduled/three-boxes/ and set its src below
+  schedThreeBoxes: () => (
+    <div className="tbox" role="group" aria-label="Three images">
+      {[null, null, null].map((src, i) => (
+        <div className="tbox__cell" key={i}>
+          {src ? <img src={src} alt="" /> : <span className="tbox__ph">Image {i + 1}</span>}
+        </div>
+      ))}
+    </div>
+  ),
+  schedCartStrip: () => (
+    <Suspense fallback={null}>
+      <SchedCartStrip />
+    </Suspense>
+  ),
+  schedReachExplorer: () => (
+    <Suspense fallback={null}>
+      <SchedReachExplorer />
+    </Suspense>
+  ),
+  schedResearchStory: () => (
+    <Suspense fallback={null}>
+      <SchedResearchStory />
+    </Suspense>
+  ),
+  schedMetricStory: () => (
+    <Suspense fallback={null}>
+      <SchedMetricStory />
+    </Suspense>
+  ),
+  // 28 Sep, the presenting cut, for a product DESIGN lead: Act 1 (it shipped)
+  // and Act 4 (the trouble), the two that say what the numbers made us change
+  schedMetricStoryCore: () => (
+    <Suspense fallback={null}>
+      {/* 28 Sep: the interviewer is a PRODUCT HEAD hiring a design lead, so value (Act 3) is back beside shipped and trouble */}
+      <SchedMetricStory acts={[0, 2, 3]} />
+    </Suspense>
+  ),
+  // The pronunciation pair with animated faces (mtmk4qua).
+  pronCards: () => (
+    <Suspense fallback={null}>
+      <PronCards />
+    </Suspense>
+  ),
+  // Scheduled Delivery hero: the heart lockup from Figma, animated (mtmgr6eg).
+  schedHeartHero: () => (
+    <Suspense fallback={null}>
+      <SchedHeartHero />
+    </Suspense>
+  ),
+  aiimsHero: AiimsHero,
+  aiimsGap: AiimsGap,
+  aiimsScale: AiimsScale,
+  aiimsInteraction: AiimsInteraction,
+  aiimsMatrix: AiimsMatrix,
   awayLanding: AwayLandingFigure,
   agentWizard: AgentWizardFigure,
   agentWizardCompare: AgentWizardCompare,
   agentWizardFff: AgentWizardFFF,
   stellaOnboarding: StellaOnboarding,
   executionFlood: ExecutionFlood,
+  callJourney: CallJourney,
+  stellaSim: StellaSim,
   dailyReport: DailyReport,
   figmaToCode: FigmaToCode,
   evolutionTimeline: EvolutionTimeline,
   decisionEngine: DecisionEngine,
+  occasionWidget: OccasionWidget,
+  bannerLab: BannerLab,
+  crossSellTable: CrossSellTable,
   schedUsers: SchedUsers,
+  edgeFloater: EdgeFloater,
+  edgeCard: EdgeCard,
+  edgeAltitudes: EdgeAltitudes,
+  edgeOos: EdgeOos,
   awClarify: AwClarify,
   awHome: AwHome,
   awIntakeBrief: AwIntakeBrief,
   awSearchFlow: AwSearchFlow,
   awSmartPin: AwSmartPin,
   awResultCard: AwResultCard,
+  awFareCards: AwFareCards,
   awDeepSearch: AwDeepSearch,
   awVet: AwVet,
   awBook: AwBook,
@@ -307,15 +610,785 @@ const figures = {
   schedStuckCart: SchedStuckCart,
   schedImpact: SchedImpact,
   schedSplit: SchedSplit,
+  schedMoments: SchedMoments,
   schedCartStates: SchedCartStates,
   schedPageStates: SchedPageStates,
   schedDateSwitch: SchedDateSwitch,
   schedGtm: SchedGtm,
+  schedExplorations: SchedExplorations,
+  schedPostBooking: SchedPostBooking,
+  schedGtmReal: SchedGtmReal,
+  schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
+  schedGtmCartOne: SchedGtmCartOne, // muky9xug: the cart screen alone
+  schedRnR: SchedRnR,
+  schedPageReal: SchedPageReal,
+  xsTree: CrossSellTree,
+  xsFramework: XsFramework,
+  xsTrips: XsTrips,
+  xsObjective: XsObjective,
+  xsDirections: XsDirections,
+  xsRail: XsRail,
+  xsWait: XsWait,
+  xsLedger: XsLedger,
+  xsWalk: XsWalk,
+  xsIntents: XsIntents,
+  xsNotebook: XsNotebook,
+  xsSecondPull: XsSecondPull, // the second pull, five panels (2026-09-04)
+  xsReview: XsReview,
+  xsPairs: XsPairs,
+  xsCloud: XsCloud, // the theme space point cloud, third pull (2026-09-04)
+  xsProjector: XsProjector, // the embedding projector on the same sample (2026-09-04)
+  xsMotion: XsMotion, // the Figma Motion composition, coded from its keyframes (2026-09-17)
+  reelPresets: ReelPresets,
 };
+
+// A showreel video that reliably autoplays. React's `muted` JSX prop does not
+// always set the DOM property, so browsers block muted-autoplay and the clip
+// looks frozen; we force el.muted = true and call play() via a ref.
+function VideoFigure({ src, poster, caption }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    const p = v.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  }, [src]);
+  return (
+    <figure className="article__figure article__video-fig">
+      <video
+        ref={ref}
+        className="article__video"
+        src={src}
+        poster={poster}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      />
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  );
+}
+
+// A smart comparison table: scannable grid that replaces a stack of parallel
+// prose sections. `table = { cols:[...], rows:[[...]], caption? }`. First cell of
+// each row is the row header. Scrolls horizontally on narrow screens.
+function SmartTable({ table }) {
+  const { cols = [], rows = [], caption } = table;
+  return (
+    <figure className="article__figure article__table-fig">
+      <div className="article__table-wrap">
+        <table className="article__table">
+          <thead>
+            <tr>
+              {cols.map((c, i) => (
+                <th key={i} scope="col">
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={i}>
+                {r.map((cell, j) =>
+                  j === 0 ? (
+                    <th key={j} scope="row">
+                      {cell}
+                    </th>
+                  ) : (
+                    <td key={j}>{cell}</td>
+                  )
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  );
+}
+
+// Lightweight data-viz for the quantitative beats. `chart = { type, title?,
+// data:[{label,value,suffix?,note?,display?}], max?, caption? }`.
+//   type "stats" -> big-number stat band (headline figures)
+//   type "bars"  -> horizontal labelled bars (comparisons / percentages)
+function DataViz({ chart }) {
+  const { type = "bars", title, data = [], caption } = chart;
+  const num = (v) => (typeof v === "number" ? v : parseFloat(v) || 0);
+  const max = chart.max || Math.max(...data.map((d) => num(d.value)), 1);
+  return (
+    <figure className="article__figure article__viz">
+      {title && <p className="article__viz-title">{title}</p>}
+      {type === "stats" ? (
+        <div className="article__stats">
+          {data.map((d, i) => (
+            <div className="article__stat" key={i}>
+              <span className="article__stat-value">
+                {d.value}
+                {d.suffix && <span className="article__stat-suffix">{d.suffix}</span>}
+              </span>
+              <span className="article__stat-label">{d.label}</span>
+              {d.note && <span className="article__stat-note">{d.note}</span>}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="article__bars">
+          {data.map((d, i) => (
+            <div className="article__bar-row" key={i}>
+              <span className="article__bar-label">{d.label}</span>
+              <span className="article__bar-track">
+                <span
+                  className="article__bar-fill"
+                  style={{ width: `${Math.max(3, Math.round((num(d.value) / max) * 100))}%` }}
+                />
+              </span>
+              <span className="article__bar-value">{d.display || `${d.value}${d.suffix || ""}`}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  );
+}
 
 // Renders a section's figure body: a live rebuilt screen (`fig`), a real
 // exported image (`image`), or the gradient placeholder. Shared by the article
 // and Present-mode slide views via `variant`.
+// Scroll progress of an element through the viewport: 0 when its top meets the
+// bottom edge, 1 when its bottom leaves the top edge. Capture-phase scroll so a
+// scrolling container counts too; reduced motion pins it mid-way.
+function useScrollProgress(ref, onProgress) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onProgress(0.5, el);
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      // a hidden or suspended pane can report a zero viewport; skip rather
+      // than compute a progress that parks every one-shot layer
+      const vh = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
+      if (!(vh > 0) || !(r.height > 0)) return;
+      onProgress(Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height))), el);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll, { capture: true });
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// A Figma plate taken apart into layers that move with the scroll. A section
+// sets `scene: { aspect, bg, base, layers: [{ src, x, y, w, fx }] }`, x/y/w as
+// percentages of the plate. Two effects so far:
+//   flip   (mtmh68zb): the layer lies edge-on, stands up as the plate climbs
+//          into view, holds, then falls away as it leaves. rotateX, scroll-linked.
+//   reveal (mtmh6om7): layers arrive one after another, each a short slide up
+//          and fade, staggered by index, held once shown.
+// One-shot layers (flip, pop, notify) park out of view and fire once on the
+// way in; the scene's replay button (mtmlir34) parks and re-fires them all.
+const ONE_SHOT = new Set(["flip", "pop", "notify"]);
+function parkLayer(node) {
+  const fx = node.dataset.fx;
+  const img = node.firstElementChild;
+  node.dataset.armed = "1";
+  if (node._anim) { node._anim.stop(); node._anim = null; }
+  if (fx === "flip") { img.style.transform = "rotateX(-90deg)"; img.style.opacity = "0"; }
+  else if (fx === "pop") { img.style.transform = "scale(0.2)"; img.style.opacity = "0"; }
+  else if (fx === "notify") { img.style.transform = "translateY(-70%)"; img.style.opacity = "0"; }
+  else if (fx === "magic") {
+    // mto5bsxs: the text waits blurred; a click reveals it
+    img.style.filter = `blur(${MAGIC_BLUR}px)`; img.style.opacity = String(MAGIC_DIM); img.style.transform = "none"; // mtpawmqu: same scale blurred and sharp
+    node.dataset.on = "0";
+    // a reveal stopped mid-flight can still commit its final opacity a tick
+    // later (WAAPI), so re-assert the parked values after it
+    img.getAnimations?.().forEach((a) => a.cancel());
+    setTimeout(() => {
+      if (node.dataset.on === "0") { img.style.filter = `blur(${MAGIC_BLUR}px)`; img.style.opacity = String(MAGIC_DIM); img.style.transform = "none"; }
+    }, 80);
+  }
+}
+// mtp6aj71: the parked blur is soft enough that the blurred glyphs still read
+// as words (4px on a ~170px-wide label, was 12), and the dim is lighter.
+const MAGIC_BLUR = 4;
+const MAGIC_DIM = 0.7;
+// mto5bsxs: the Apple-keynote text reveal. The glyphs sharpen and settle
+// (blur -> 0, scale 1.06 -> 1, dim -> full) on the expressive spring. Click
+// again to blur. (The masked light sweep was removed, mtp78lno.)
+function magicLayer(node) {
+  const img = node.firstElementChild;
+  if (node._anim) { node._anim.stop(); node._anim = null; }
+  if (node._blur) { node._blur.stop(); node._blur = null; }
+  if (node.dataset.on === "1") { parkLayer(node); return; }
+  node.dataset.on = "1";
+  node._anim = motionAnimate(
+    img,
+    { opacity: [MAGIC_DIM, 1] },
+    { ...dsSpring("throw", { stiffness: 120, damping: 20, mass: 1 }), opacity: { duration: 0.6 } },
+  );
+  // the blur is driven as a value from motion's own frame loop (a `filter`
+  // keyframe goes through WAAPI, which left the layer parked in this pane)
+  if (node._blur) node._blur.stop();
+  node._blur = motionAnimate(MAGIC_BLUR, 0, {
+    duration: 0.9, ease: [0.2, 0.8, 0.2, 1],
+    onUpdate: (v) => { img.style.filter = v < 0.05 ? "blur(0px)" : `blur(${v.toFixed(2)}px)`; },
+  });
+}
+function fireLayer(node, i) {
+  const fx = node.dataset.fx;
+  const img = node.firstElementChild;
+  node.dataset.armed = "0";
+  // Per-property transforms (rotateX / scale / y): motion drives these from its
+  // own frame loop, which re-runs cleanly on every replay. (Animating the
+  // `transform` string went through the Web Animations API and a second run on
+  // the same element ended parked.)
+  // mukuatqi (28 Sep): each one-shot layer is scored as it fires (silent
+  // unless the sound toggle is on): flip = a card flick, pops = one reveal for
+  // the staggered set, notify = a reveal
+  if (fx === "flip") playCue("flip");
+  else if (fx === "pop") feedbackCoalesced("reveal", 400);
+  else if (fx === "notify") feedback("reveal");
+  if (fx === "flip") {
+    node._anim = motionAnimate(
+      img,
+      { rotateX: [-90, 0], opacity: [0, 1] },
+      { ...dsSpring("throw", { stiffness: 170, damping: 19, mass: 1.1 }), opacity: { duration: 0.25 } },
+    );
+  } else if (fx === "pop") {
+    const order = parseInt(node.dataset.order || i, 10);
+    node._anim = motionAnimate(
+      img,
+      { scale: [0.2, 1], opacity: [0, 1] },
+      { ...dsSpring("bloom"), delay: 0.12 + order * 0.22, opacity: { duration: 0.2, delay: 0.12 + order * 0.22 } },
+    );
+  } else if (fx === "notify") {
+    // mtmlts43: on the spring too (the CSS transition needed a painted parked
+    // frame, so a replay snapped instead of dropping)
+    node._anim = motionAnimate(
+      img,
+      { y: ["-70%", "0%"], opacity: [0, 1] },
+      { ...dsSpring("throw", { stiffness: 150, damping: 18, mass: 1.1 }), opacity: { duration: 0.22 } },
+    );
+  }
+}
+
+// muidhm8w (26 Sep): a prose section laid out like Context and Objective,
+// heading + TL;DR on the left (the TL;DR as a post-it), text on the right, every
+// block rising in with the same reveal the scenes use (fade + 28px, staggered)
+// the first time the section is on screen.
+// muim39ah (27 Sep): "My role" as Figma 944-65104. Case study frame default
+// size and padding; label left in the Context and Objective face, the
+// statement at the section-heading size (24px), the role paragraph set in
+// three columns below. Rises in like the other frames.
+function RoleFrame({ s, i }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const items = [...el.querySelectorAll("[data-rise]")];
+    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
+        { duration: 0.7, delay: 0.1 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div className="role-frame" ref={ref}>
+      <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{s.h}</h2>
+      <div className="role-frame__main">
+        <p className="role-frame__statement role-frame__statement--solo" data-rise>{s.roleFrame.statement}</p>
+        {/* mujvays4 (27 Sep): the three-column body removed ("remove these");
+            the copy stays in the data as roleFrame.body */}
+        {/* mujvc9e0: Role at a glance, merged in */}
+        {/* mujvkmg7 (27 Sep): the "Lead designer" line removed; icons replace the rules above the three points (placeholders, to be replaced later) */}
+        {s.roleFrame.leadership && (
+          <ul className="role-frame__leadership" data-rise>{s.roleFrame.leadership.map((l, k) => { const I = [Compass, Buildings, Handshake][k]; return <li key={l}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}{l}</li>; })}</ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SplitSection({ s, i }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const items = [...el.querySelectorAll("[data-rise]")];
+    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
+        { duration: 0.7, delay: 0.1 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  // muidykpc: the note can be peeled off and stuck anywhere on the page.
+  // Press: the corner peels up (.is-peeling), then it lifts off the paper
+  // (.is-held, a bigger shadow and a small scale-up). Drag: it follows the
+  // pointer and swings with the horizontal speed, like paper in air. Release:
+  // it slaps down (a quick squash), settles at a fresh small tilt, and stays.
+  // Moves use the individual translate / rotate / scale properties so they
+  // never fight the reveal, which animates `transform`.
+  const peelNote = (e) => {
+    if (e.button !== 0) return;
+    const n = e.currentTarget;
+    e.preventDefault();
+    try { n.setPointerCapture(e.pointerId); } catch { /* a synthetic pointer has nothing to capture */ }
+    // start from wherever it actually sits, including the CSS default spot
+    // (muifeh3v), not an assumed 0,0, so the first pick-up never jumps
+    const [tx, ty] = n.dataset.at
+      ? n.dataset.at.split(",").map(Number)
+      : (getComputedStyle(n).translate.split(" ").map(parseFloat).concat(0, 0)).slice(0, 2).map((v) => v || 0);
+    const x0 = e.clientX - tx, y0 = e.clientY - ty;
+    let lastX = e.clientX, lastT = performance.now(), swing = 0, raf = 0, nx = tx, ny = ty;
+    n.classList.add("is-peeling");
+    const lift = setTimeout(() => n.classList.add("is-held"), 140);
+    const paint = () => {
+      raf = 0;
+      n.style.translate = `${nx}px ${ny}px`;
+      n.style.rotate = `${(-2 + swing).toFixed(2)}deg`;
+    };
+    const move = (m) => {
+      const now = performance.now();
+      const vx = (m.clientX - lastX) / Math.max(1, now - lastT); // px per ms
+      lastX = m.clientX; lastT = now;
+      swing = Math.max(-14, Math.min(14, swing * 0.8 + vx * 6));
+      nx = m.clientX - x0; ny = m.clientY - y0;
+      if (!n.classList.contains("is-held")) n.classList.add("is-held");
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    const up = () => {
+      clearTimeout(lift);
+      n.removeEventListener("pointermove", move);
+      n.removeEventListener("pointerup", up);
+      n.removeEventListener("pointercancel", up);
+      if (raf) cancelAnimationFrame(raf);
+      n.dataset.at = `${nx},${ny}`;
+      n.style.translate = `${nx}px ${ny}px`;
+      const rest = -4 + Math.random() * 5; // every placement gets its own tilt
+      n.classList.remove("is-held", "is-peeling");
+      n.classList.add("is-stuck");
+      motionAnimate(n, { rotate: [`${-2 + swing}deg`, `${rest}deg`], scale: [1.06, 0.97, 1] },
+        { duration: 0.32, ease: [0.2, 0.9, 0.3, 1] });
+      setTimeout(() => n.classList.remove("is-stuck"), 340);
+    };
+    n.addEventListener("pointermove", move);
+    n.addEventListener("pointerup", up);
+    n.addEventListener("pointercancel", up);
+  };
+  return (
+    <div className="article__split" ref={ref}>
+      <div className="article__split-side">
+        <h2 id={`sec-${i}`} data-rise>{s.h}</h2>
+        {s.tldr && !s.hideTldr && (
+          // muie8ipv: the WRAP carries the drag, the tilt and the shadow (a
+          // drop-shadow, so it traces the paper's real outline); the paper
+          // inside has its peeled corner actually cut away (clip-path), and
+          // the flap is the folded-over underside, a separate piece
+          <div className="article__postit-wrap" data-rise onPointerDown={peelNote}>
+            <p className="article__postit">
+              <span className="article__tldr-label">TL;DR</span>
+              {s.tldr}
+            </p>
+            <span className="article__postit-curl" aria-hidden />
+          </div>
+        )}
+      </div>
+      <div className="article__split-main">
+        {(s.p || []).map((para, j) => <p key={j} data-rise>{para}</p>)}
+        {s.ul && (
+          <ul data-rise>
+            {s.ul.map((li, k) => <li key={k}>{li?.t ? `${li.t}: ${li.d}` : li}</li>)}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// muif5084 (26 Sep): the opening question as LIVE TEXT in Figma 107's own
+// 50/50 layout (two flex-1 columns), replacing the bridged PNG layers, which
+// could not rewrap into half the width without shrinking the type ~30%.
+// Sizes are the 1512 frame's x 0.54: label 36 light -> ~19px, question 48 ->
+// ~26px. Keeps what the scene had: the staggered rise on first view
+// (muic4w44) and pick-up-and-spring-home dragging (muic1wju).
+function IntroQuestion({ label, question }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const items = [...el.querySelectorAll("[data-rise]")];
+    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
+        { duration: 0.7, delay: 0.15 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const drag = (e) => {
+    const node = e.currentTarget;
+    if (e.button !== 0) return;
+    try { node.setPointerCapture(e.pointerId); } catch { /* synthetic pointer */ }
+    node._back?.stop();
+    const x0 = e.clientX - (node._dx || 0), y0 = e.clientY - (node._dy || 0);
+    const move = (m) => {
+      node._dx = m.clientX - x0; node._dy = m.clientY - y0;
+      node.style.translate = `${node._dx}px ${node._dy}px`;
+    };
+    const up = () => {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", up);
+      node.removeEventListener("pointercancel", up);
+      node.classList.remove("is-dragging");
+      const from = { x: node._dx || 0, y: node._dy || 0 };
+      node._back = motionAnimate(1, 0, { ...dsSpring("throw", { stiffness: 260, damping: 20 }),
+        onUpdate: (k) => { node._dx = from.x * k; node._dy = from.y * k; node.style.translate = `${node._dx}px ${node._dy}px`; } });
+    };
+    node.classList.add("is-dragging");
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", up);
+    node.addEventListener("pointercancel", up);
+  };
+  return (
+    <div className="iq" ref={ref}>
+      <div className="iq__col iq__col--label"><p className="iq__label" data-rise onPointerDown={drag}>{label}</p></div>
+      <div className="iq__col"><p className="iq__question" data-rise onPointerDown={drag}>{question}</p></div>
+    </div>
+  );
+}
+
+function ScrollScene({ scene: sceneIn }) {
+  // Mobile (2026-09-06): a scene may carry a `mobile` variant (aspect, layers,
+  // bg) that replaces the desktop composition on phones. The desktop scenes are
+  // 1512-wide Figma frames, so their text exports shrink to 6px at 375; the
+  // variant re-lays the same exports one under another at readable widths.
+  const phone = useMediaQuery("(max-width: 700px)");
+  const scene = phone && sceneIn.mobile ? { ...sceneIn, ...sceneIn.mobile } : sceneIn;
+  const ref = useRef(null);
+  const hasOneShot = scene.layers.some((l) => ONE_SHOT.has(l.fx) || l.fx === "magic"); // magic: replay re-blurs
+  const replay = () => {
+    const el = ref.current;
+    if (!el) return;
+    const layers = [...el.querySelectorAll(".sscene__layer")];
+    // every one-shot is motion-driven from explicit keyframes now, so no
+    // painted frame is needed in between: park, then fire, synchronously
+    // (rAF does not run in a hidden document, which is where this failed)
+    layers.forEach(parkLayer);
+    // a beat between stop and start: motion drops an animation started in the
+    // same tick as the one it just stopped on that element (a timeout, not
+    // rAF, since rAF does not run in a hidden document)
+    setTimeout(() => layers.forEach((n, i) => ONE_SHOT.has(n.dataset.fx) && fireLayer(n, i)), 30);
+  };
+  useScrollProgress(ref, (p, el) => {
+    // muif6v96: a scene title rises in with the layers, just ahead of them
+    const title = el.querySelector(".sscene__title");
+    if (title) {
+      const t = clamp01((p - 0.04) / 0.16);
+      title.style.opacity = t.toFixed(3);
+      title.style.transform = `translateY(${((1 - t) * 28).toFixed(1)}px)`;
+    }
+    const layers = el.querySelectorAll(".sscene__layer");
+    layers.forEach((node, i) => {
+      const fx = node.dataset.fx;
+      const img = node.firstElementChild;
+      if (ONE_SHOT.has(fx)) {
+        const out = p <= 0.0 || p >= 1.0;
+        if (out) parkLayer(node);
+        else if (p >= 0.3 && p <= 0.85 && node.dataset.armed !== "0") fireLayer(node, i);
+      } else if (fx === "drift") {
+        // a layer taller than the plate slides through it with the scroll:
+        // data-to is the end translateY as a % of the layer's own height
+        const to = parseFloat(node.dataset.to || "0");
+        img.style.transform = `translateY(${(p * to).toFixed(2)}%)`;
+      } else if (fx === "reveal" && !scene.revealIntro) {
+        const t = clamp01((p - (0.1 + i * 0.08)) / 0.16);
+        // mu3ku986 ("reveal on scroll"): a TINTED layer is painted by its
+        // ::after, which no inline style on the <img> can reach - so adding the
+        // dark-mode tint had silently frozen these layers fully visible. The
+        // whole layer carries the reveal in that case, which moves the ::after
+        // with it; untinted layers keep animating the img exactly as before.
+        // a split layer (muikq572) also paints its text in ::after, so the whole
+        // layer carries the reveal, as a tinted one does
+        const target = node.classList.contains("sscene__layer--tint") || node.classList.contains("sscene__layer--split") ? node : img;
+        target.style.opacity = t.toFixed(3);
+        target.style.transform = `translateY(${((1 - t) * 28).toFixed(1)}px)`;
+      }
+    });
+  });
+  // muic4w44: a scene that opens the page is already a fifth of the way through
+  // its scroll range on load, so the scroll-linked reveal froze it half-faded.
+  // `revealIntro` plays the SAME reveal (fade + 28px rise, staggered) on a
+  // clock once the scene is on screen.
+  useEffect(() => {
+    const el = ref.current;
+    if (!scene.revealIntro || !el) return;
+    const targets = [...el.querySelectorAll(".sscene__layer--reveal")].map((n) =>
+      n.classList.contains("sscene__layer--tint") ? n : n.firstElementChild);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    targets.forEach((t) => { t.style.opacity = "0"; t.style.transform = "translateY(28px)"; });
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      targets.forEach((t, i) => motionAnimate(t, { opacity: [0, 1], y: [28, 0] },
+        { duration: 0.7, delay: 0.15 + i * 0.12, ease: [0.22, 1, 0.36, 1] }));
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [scene.revealIntro, phone]);
+  // muic1wju: `draggable` scenes let you pick a layer up; it springs home on release
+  const onDragStart = (e) => {
+    const node = e.currentTarget;
+    if (e.button !== 0) return;
+    node.setPointerCapture(e.pointerId);
+    node._back?.stop();
+    const x0 = e.clientX - (node._dx || 0), y0 = e.clientY - (node._dy || 0);
+    const move = (m) => {
+      node._dx = m.clientX - x0; node._dy = m.clientY - y0;
+      node.style.translate = `${node._dx}px ${node._dy}px`;
+    };
+    const up = () => {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", up);
+      node.removeEventListener("pointercancel", up);
+      node.classList.remove("is-dragging");
+      const from = { x: node._dx || 0, y: node._dy || 0 };
+      node._back = motionAnimate(1, 0, { ...dsSpring("throw", { stiffness: 260, damping: 20 }),
+        onUpdate: (k) => { node._dx = from.x * k; node._dy = from.y * k; node.style.translate = `${node._dx}px ${node._dy}px`; } });
+    };
+    node.classList.add("is-dragging");
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", up);
+    node.addEventListener("pointercancel", up);
+  };
+  // muifb2es: `aspect: "default"` = the global case study frame default
+  const isDefault = scene.aspect === "default";
+  const [W, H] = isDefault ? [1512, 982] : scene.aspect || [1392, 862];
+  return (
+    <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.bg }}>
+      {scene.base && <img className="sscene__base" src={scene.base} alt="" draggable="false" />}
+      {scene.title && <p className="sscene__title">{scene.title}</p>}
+      {hasOneShot && (
+        <button type="button" className="sscene__replay" aria-label="Replay the animation" onClick={replay}>
+          <IconRefresh width={15} height={15} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+      )}
+      {scene.layers.map((l, i) => {
+        const layer = (
+          <div
+            key={i}
+            className={`sscene__layer sscene__layer--${l.fx}${l.card ? " sscene__layer--card" : ""}${l.tint ? " sscene__layer--tint" : ""}${l.split ? " sscene__layer--split" : ""}${l.lift ? " sscene__layer--lift" : ""}`}
+            data-fx={l.fx}
+            data-to={l.to}
+            data-order={l.order}
+            data-armed="1"
+            onPointerDown={scene.draggable ? onDragStart : undefined}
+            // mu3jl3kt: a `tint` layer is a FLAT-COLOUR export (the Figma slide's
+            // own type), so it is painted as a mask in the theme's ink rather
+            // than shown as a picture - see .sscene__layer--tint
+            style={{ left: l.x + "%", top: l.y + "%", width: l.w + "%", ...(l.tint ? { "--tint-src": `url(${l.src})` } : null), ...(l.split ? { "--split-src": `url(${l.src})`, "--split": l.split + "%" } : null) }}
+            {...(l.fx === "magic" ? {
+              role: "button", tabIndex: 0, "aria-label": l.alt ? `Reveal: ${l.alt}` : "Reveal the text",
+              onClick: (e) => magicLayer(e.currentTarget),
+              onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); magicLayer(e.currentTarget); } },
+            } : {})}
+          >
+            {/* mtmkl036: a layer may pivot from a named point (a bubble's tail) */}
+            <img src={l.src} alt="" draggable="false" style={l.origin ? { transformOrigin: l.origin } : undefined} />
+            {/* mto5bsxs had a light sweep through the glyphs here; mtp78lno: removed, the sharpening alone is the reveal */}
+            {/* mtp67ai5: only the text blurs; the box under it stays crisp (a second export, behind) */}
+            {l.under && <img className="sscene__under" src={l.under} alt="" draggable="false" />}
+          </div>
+        );
+        // mtmk2odv: a layer can be clipped to a box on the plate (a phone's
+        // screen, say); its x/y/w are then relative to that box.
+        return l.clip ? (
+          <div
+            key={i}
+            className="sscene__clip"
+            style={{ left: l.clip.x + "%", top: l.clip.y + "%", width: l.clip.w + "%", height: l.clip.h + "%", borderRadius: l.clip.r }}
+          >
+            {layer}
+          </div>
+        ) : layer;
+      })}
+    </div>
+  );
+}
+
+// mtmrvqyu: the parallax with the plates beside it, and a toggle between the
+// stacked view (plates under the figure, the current one) and the side-by-side
+// view (figure left, plates right).
+function DuoFigure({ figure, plates }) {
+  const [view, setView] = useState("stack"); // mtmvwa1g: stacked is the default
+  return (
+    <div className="article__duo-wrap">
+      <div className="fig-toggle" role="group" aria-label="Layout">
+        {[["stack", "Stacked"], ["side", "Side by side"]].map(([k, label]) => (
+          <button key={k} type="button" className={"fig-toggle__btn" + (view === k ? " is-active" : "")} aria-pressed={view === k} onClick={() => setView(k)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className={"article__duo article__duo--" + view}>
+        <div className="article__duo-main">{figure}</div>
+        <div className="article__duo-side">{plates}</div>
+      </div>
+    </div>
+  );
+}
+
+// mtmrira8: a stack of plates that read as windows onto ONE gradient. The
+// wrapper measures where each plate sits in the stack and hands every plate
+// ground the same gradient sized to the whole stack, offset to its position.
+function PlatesStack({ stack, gradient, children }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !gradient) return;
+    const apply = () => {
+      const top = el.getBoundingClientRect().top;
+      const total = el.getBoundingClientRect().height;
+      el.querySelectorAll(".article__plate-ground").forEach((g) => {
+        const r = g.getBoundingClientRect();
+        g.style.backgroundImage = gradient;
+        g.style.backgroundSize = `100% ${total}px`;
+        g.style.backgroundPosition = `0 ${-(r.top - top)}px`;
+        g.style.backgroundRepeat = "no-repeat";
+      });
+    };
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    el.querySelectorAll(".article__plate").forEach((n) => ro.observe(n));
+    return () => ro.disconnect();
+  }, [gradient]);
+  return (
+    <div ref={ref} className={"article__plates" + (stack ? " article__plates--stack" : "")}>
+      {children}
+    </div>
+  );
+}
+
+// Annotation mtmguhc9: the still as a scroll parallax. The card is the Figma
+// card (1392x862, lavender gradient); the phone is the full unclipped export
+// (672x1373) and is taller than the card, so it slides up as the section
+// travels the viewport: top of the phone showing as the section enters at the
+// bottom, the bottom showing as it leaves at the top. Scroll-linked, so it is
+// interruptible by nature; no easing, the scroll is the easing.
+function ScrollPhone({ src, long }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.style.setProperty("--p", "0.5");
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.visualViewport?.height || window.innerHeight;
+      const raw = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+      // mtmhgirk: start a little later, end a little sooner. The travel runs
+      // over the middle of the section's trip, still for the first 15% and
+      // done by 80%.
+      // mtmjsv3q: later still. Still for the first 30%, done by 85%.
+      const p = Math.min(1, Math.max(0, (raw - 0.3) / 0.55));
+      el.style.setProperty("--p", p.toFixed(4));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    // capture: the page may scroll inside a container rather than the window
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll, { capture: true });
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  // mtmph4a6: the base iPhone frame (Figma 492-48278) around the bare screen
+  // export; the whole phone travels through the card with the scroll
+  return (
+    // `long` (mukxenvq): a full-length page export; it also scrolls INSIDE the screen
+    <div className={"sp" + (long ? " sp--long" : "")} ref={ref}>
+      <div className="sp__phone">
+        <div className="sp__screen">
+          <img src={src} alt="" draggable="false" />
+        </div>
+        <img className="sp__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
+      </div>
+    </div>
+  );
+}
+
+// Annotation mtmglh43: a reel section that also carries a `still` image gets
+// a Video / Image toggle above the figure. Video is the default; the still is
+// the same frame as a flat plate for readers who want to look, not watch.
+function ReelOrStill({ reel, still, parallax, variant }) {
+  const [view, setView] = useState("image"); // mtmh9k6x: image is the default
+  const slide = variant === "slide";
+  return (
+    <div className="fig-switch">
+      <div className="fig-toggle" role="group" aria-label="Figure media">
+        {[["video", "Video"], ["image", "Image"]].map(([k, label]) => (
+          <button
+            key={k}
+            type="button"
+            className={"fig-toggle__btn" + (view === k ? " is-active" : "")}
+            aria-pressed={view === k}
+            onClick={() => setView(k)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {view === "video" ? (
+        <ReelFigure name={reel} variant={variant} />
+      ) : parallax ? (
+        <ScrollPhone src={still} />
+      ) : (
+        <img
+          className={slide ? "slide__media-img slide__media-img--real" : "article__figure-img article__figure-img--real"}
+          src={still}
+          alt=""
+          loading="lazy"
+        />
+      )}
+    </div>
+  );
+}
+
 function SectionFigure({
   image,
   fig,
@@ -326,12 +1399,42 @@ function SectionFigure({
   riveArtboard,
   collage,
   design,
+  whiteboard,
+  reel,
+  still,
+  stillParallax,
+  scene,
   cover,
   variant,
   bare,
 }) {
   const Fig = fig ? figures[fig] : null;
   const slide = variant === "slide";
+  // Whiteboard asset type: a section sets `whiteboard: "<src>"` or
+  // `{ src, alt, caption }` — any image on a hand-drawn whiteboard easel that
+  // expands to a lightbox on click. Manages its own (centered) wrapper.
+  if (whiteboard) {
+    const wb = typeof whiteboard === "string" ? { src: whiteboard } : whiteboard;
+    return <Whiteboard {...wb} />;
+  }
+  // Presentation Mode asset type: a section sets `reel: "<reelName>"` — a
+  // cinematic motion figure (cursor close-up + micro-animation + phone flow).
+  // ReelFigure renders its own card wrapper and owns the expand-to-full-bleed
+  // surface, so it is returned directly (like DesignFigure).
+  // Scroll scene: a layered Figma plate whose parts move with the scroll.
+  if (scene) {
+    return <ScrollScene scene={scene} />;
+  }
+  if (reel && still) {
+    return <ReelOrStill reel={reel} still={still} parallax={stillParallax} variant={variant} />;
+  }
+  // mtmlfoo3: a still without a reel (the video moved to the lab)
+  if (still && stillParallax) {
+    return <ScrollPhone src={still} long={stillParallax === "long"} />;
+  }
+  if (reel) {
+    return <ReelFigure name={reel} variant={variant} />;
+  }
   // Design Mode asset type: a section sets `design: { mocks: [...] }` — a
   // pixel-perfect Figma plate over directed animated regions. Sits in the same
   // figure card (`*-live`) as the coded figures, for consistency.
@@ -349,6 +1452,9 @@ function SectionFigure({
   if (Fig) {
     return (
       <div className={slide ? "slide__media-live" : `article__figure-live${bare ? " article__figure-live--bare" : ""}`}>
+        {/* Live figures resolve their own theme from the `dark` class on
+            documentElement (ds/hooks useDsTheme), so an embedded product window
+            follows the page it is embedded in instead of asserting dark. */}
         <Fig />
       </div>
     );
@@ -402,12 +1508,22 @@ function SectionFigure({
   );
 }
 
-const caseStudies = {
+export const caseStudies = {
   toppr: {
     accent: "#2BB3A3",
+    deck: topprDeck,
     eyebrow: "Toppr · Case study",
     title: "Designing joyful learning experiences for students and teachers",
     meta: "Design Intern · Toppr · [dates]",
+    // Compact PDF cut (?cut=compact): ownership + form resolution lead.
+    pdfSections: [
+      "Context & problem",
+      "My role",
+      "Leading a product from zero: Toppr Ambassador",
+      "One scalable logo family",
+      "Making practice feel rewarding",
+      "Impact & reflection",
+    ],
     cover: "Toppr",
     heroImage: "/figures/toppr/context-hero.png",
     lead:
@@ -543,65 +1659,523 @@ const caseStudies = {
       "Annotate the screens with the decision each one represents",
     ],
   },
-  "scheduled-delivery": {
-    accent: "#6B21D9",
-    eyebrow: "Zepto · Case study",
-    title: "Bringing scheduled delivery to a 10-minute platform",
-    meta: "Product Designer · Zepto · [dates]",
-    cover: "Zepto",
+  aiims: {
+    accent: "#059669",
+    eyebrow: "AIIMS · Research · Case study",
+    title: "Teaching empathy in virtual reality, for the nurses no curriculum trains for it",
+    meta: "Design Researcher · AIIMS · Published in Springer (IHIC 2023)",
+    cover: "AIIMS",
+    heroFig: "aiimsHero",
+    // Compact PDF cut (?cut=compact): the research spine only.
+    pdfSections: [
+      "The skill no one is taught",
+      "A gap in the research, not just the ward",
+      "My role",
+      "An empathy scale India could actually use",
+      "Designing the moment, not just the model",
+      "The comparison the framework is built to run",
+      "Outcome",
+      "What I would revisit",
+    ],
     lead:
-      "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested with 100+ people. The payoff: average order value doubled for scheduled orders (roughly ₹600 vs. ₹300 on a regular order), as high-intent users shifted from impulse buys to planning ahead.",
+      "Empathy is the one thing a nurse uses in every patient interaction, and the one thing Indian nursing training has no room to teach. Working with AIIMS, I built a way to change that: a reliability-tested empathy scale made for the Indian context, and a virtual-reality environment where a nurse practises a hard conversation and feels its weight before a real patient ever does. I did everything but the research plan, from the instrument and the VR interaction model to the on-ground fieldwork and the pilots. The result is a published framework (Springer, 2023 IHIC proceedings) with a control-group comparison built into its evaluation design, and an empathy measure made for the Indian context rather than borrowed from the West.",
     sections: [
       {
-        h: "The central question",
-        tldr:
-          "Adding \"later\" to a platform whose entire promise is \"now\" is a trust problem before it is a UX problem.",
+        h: "The skill no one is taught",
+        tldr: "Nurses carry more patient contact than anyone in the ward, yet empathy is the one competency their training has no room for.",
         p: [
-          "Zepto means instant. The moment you offer a future slot, you are asking people to trust that \"later\" will arrive exactly when promised, on the one app they use precisely because they never have to wait. So every decision traced back to a single question: how do you make \"later\" trustworthy without spending the trust that makes \"now\" work?",
+          "A nurse spends more time at the bedside than any doctor. They are the ones who explain the diagnosis again after the consultant has left, who sit with the family, who read the fear in a patient before the patient can name it. More than any clinical skill, empathy is what turns that contact into care, and the research is blunt about it: patient wellbeing tracks closely with how empathetic their nurse is.",
+          "Indian nursing training has almost no room for it. The curriculum, understandably, spends its hours on practical skills and medical knowledge; empathy is assumed, not taught. And the conditions make it harder, not easier. India runs at roughly 1.7 nurses per 1,000 people, a fraction of what a safe system needs, so nurses work under a level of stress and time-scarcity that erodes the very patience empathy asks for. The skill that matters most is the one the system has the least space to build.",
+        ],
+        ul: [
+          "Users: practising nurses across Indian hospital settings, from diverse sociodemographic backgrounds",
+          "Constraint: no dedicated empathy training exists in the nursing curriculum to build on",
+          "Constraint: chronic understaffing (about 1.7 nurses per 1,000) makes bedside stress the norm, not the exception",
         ],
       },
       {
-        h: "Context & problem",
-        tldr: "A scheduled, later-delivery option served high-intent demand that pure 10-minute delivery left on the table.",
+        h: "A gap in the research, not just the ward",
+        tldr: "You cannot train what you cannot measure, and the standard empathy scale was built for a different world.",
         p: [
-          "Zepto's moat is instant: groceries in ten minutes. But not every need is instant, and forcing every order to be immediate left real demand on the table. Scheduled Delivery gave users a way to order anything on Zepto for a future one-hour slot, without spending the trust that makes the platform work.",
-          "Talking to users, a few high-intent personas emerged, and each reframed the feature from a nice-to-have into the reason they ordered at all.",
+          "Before you can teach empathy, you have to measure it, and here the ground fell away. Empathy in nurses is one of the most-studied topics in the field almost everywhere except India: run the numbers through Scopus and the country that needs it most sits at the very bottom of the chart. The work simply had not been done here.",
+          "Worse, the instrument everyone reaches for, the Jefferson Scale of Empathy, was never adapted to the Indian context. Its items assume a clinical culture, a family structure, and a way of talking about feelings that do not translate cleanly. Measuring Indian nurses with it is measuring with someone else's ruler, and reading the result as truth. So the first design problem was not the training at all. It was building a measure the training could even be judged against.",
         ],
-        ul: [
-          "Commuters scheduling on the ride home so groceries arrive when they do, no second errand after reaching the door",
-          "Users in geographies with patchy store coverage near home, for whom instant often wasn't serviceable",
-          "Superstore shoppers buying new-category items that only stock in larger superstores, which close overnight, making a late-night order impossible without scheduling",
-        ],
-        fig: "schedUsers",
-        figure: "Three high-intent moments where instant isn't the answer. The contextual prompt surfaces only when the cart can't be served now; each user has the same answer: later, not now.",
+        fig: "aiimsGap",
+        figure:
+          "Studies on nurses and empathy by country (Scopus, 1952-2024). India, where the nurse-to-patient ratio is among the most stretched, has among the least research to draw on.",
+        split: "media",
         divider: true,
       },
       {
         h: "My role",
-        tldr: "I owned the end-to-end interaction design, working across product and operations.",
+        tldr: "I did everything but the research plan: the scale, the VR environment and its interaction model, the fieldwork, and the pilots.",
         p: [
-          "I led the interaction design end-to-end. There was an existing pitch when I picked up the problem, but it didn't feel right; it didn't account for the real spread of cases. The bulk of my work was mapping every flow and edge case, running the design exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. [Add the team you worked with and the timeline.]",
+          "This was an academic project with AIIMS, and I want to draw the line cleanly, because it matters. The research plan, the overarching methodology and framing, was the team's. Everything downstream of it was mine to execute. I built the empathy scale and ran its reliability testing; I designed the VR environment, its conversation scenario, and the interaction model a nurse uses inside it; I ran the on-ground research, the observation and focus groups with nurses that grounded the whole thing; and I ran the pilots that tested both the scale and the prototype. The project is published (Springer, in the 2023 IHIC proceedings), which is the honest ceiling on how strongly I lean on any single result: these are peer-reviewed, pilot-scale findings, framed as a framework others can build on, not a deployed product.",
         ],
       },
       {
-        h: "The constraints we designed around",
-        tldr: "One-hour slots, peak-time fulfilment, and an ironclad delivery-window promise shaped every decision.",
+        h: "An empathy scale India could actually use",
+        tldr: "A new instrument in four categories, grounded in what actually shapes a nurse's empathy here, and checked for reliability at pilot scale.",
         p: [
-          "Scheduled delivery sits on top of a live logistics system, so the design had to respect hard limits rather than wish them away:",
+          "The scale had to come from the context, not be imported into it. Talking to nurses and reading the field, empathy here is not a single trait a person either has or lacks; it is shaped by four forces that pull in different directions. So the instrument I built groups its questions into four categories. Upbringing: the empathy a nurse received growing up, which shapes the empathy they can give. Workplace: the stress and resource-scarcity that quietly burns it down (\"when I am stressed, I may lose patience with a patient and not listen completely\"). Education: whether their training built the skill at all. And Empathy itself: their beliefs and practice at the bedside.",
+          "I tested the draft with 18 nurses from a deliberate mix of backgrounds and upbringings, then checked it for reliability rather than trusting my own wording. It is a pilot-scale check, not a full psychometric validation, and I hold it as exactly that. Building the ruler first, even a rough one, is what let everything after it mean something.",
+        ],
+        fig: "aiimsScale",
+        figure:
+          "The empathy scale in four categories: upbringing, workplace, education, and empathy at the bedside, each with items written for the Indian nursing context rather than translated from a Western instrument.",
+        divider: true,
+      },
+      {
+        h: "Why put a nurse in a headset",
+        tldr: "VR is already proven for clinical skills; the bet was that the harder skill, sitting with someone's fear, is exactly what immersion can teach.",
+        p: [
+          "Virtual reality earning its place in healthcare training is old news for the technical side: surgeons rehearse procedures in it, emergency teams drill mass-casualty triage in it. But clinical competence was never the gap. Nursing students, as the literature keeps pointing out, also have to learn the psychological and emotional side of care, and that is the part a textbook cannot rehearse.",
+          "The bet the project runs on is that empathy is learned, at least in part, by standing in someone else's place, which is almost literally what a headset can offer: if immersion can teach a surgeon to feel a procedure, maybe it can teach a nurse to feel a conversation, the moment you tell a frightened patient hard news, and have to choose, in real time, how to hold them through it. That \"maybe\" is exactly what the comparative study is designed to test, rather than assume. A few pioneers pointed the way (Embodied Labs putting caregivers inside an end-of-life experience, for one), but none we could find were built for Indian nurses, in an Indian ward, in the languages and manners they actually work in.",
+        ],
+      },
+      {
+        h: "Designing the moment, not just the model",
+        tldr: "The scenario is a branching conversation with a distressed patient; the interaction is one calm gesture that keeps the nurse present instead of fiddling with controls.",
+        p: [
+          "The scenario I designed is a conversation, not a procedure. A patient has just been diagnosed with cancer and is distressed; the nurse has to respond, and every response opens a different path. I wrote it as a decision tree, so the same scene can go gently or badly depending on what the nurse chooses, and the learning lives in feeling that difference, not in being told the right answer.",
+          "The interaction model was the subtle part. In an empathy exercise, the interface itself must never break the spell; the moment a learner is hunting for a button, they have left the room emotionally. So I reduced the whole interaction to one continuous gesture. You hover over a possible response to hear it, click to select it, and release to commit and move the conversation forward. Hover, click, release: no menus, no reading instructions mid-scene, the hand stays where the attention should be, on the patient. It is the same instinct I bring to any product, that the best interface is the one that disappears, applied to the highest-stakes possible moment.",
+        ],
+        fig: "aiimsInteraction",
+        figure:
+          "The interaction model: hover a response to hear it, click to select, release to commit. One gesture keeps the nurse present in the conversation instead of operating a menu.",
+        divider: true,
+      },
+      {
+        h: "Does it feel like it works?",
+        tldr: "A separate learner-feedback instrument, checked for reliability, showed nurses read the prototype as real, usable, and worth learning from. That is perception, not proof of learning; the empathy test is what measures learning.",
+        p: [
+          "A VR scene can be immersive and still teach nothing, so I built a second instrument to check how it lands, a learner-feedback form measuring four things a training tool has to earn: whether it feels close to the real clinical context, whether it is usable, whether it is engaging, and whether people believe they will remember and use what they learned. I ran it as a pilot with 60 nurses on a seven-point scale, and checked the form itself for reliability before trusting its output (Cronbach's alpha above 0.70, the standard bar).",
+          "Every dimension landed close to six out of seven: nurses read the prototype as contextually aligned and worth their time, not just politely rated it. I want to be exact about what that is, though. This measures perception, whether the experience feels real and usable, not learning itself. Whether it actually moves empathy is the job of the before-and-after empathy test in the next section. It is pilot-scale evidence of a good reception, gathered with an instrument I could defend rather than a show of hands.",
+        ],
+      },
+      {
+        h: "The comparison the framework is built to run",
+        tldr: "Not \"does VR work\" but \"does VR work better than cheaper formats or nothing\": a pre/post empathy test across four cohorts with a control arm, specified as the framework's evaluation for a future study to execute.",
+        p: [
+          "The strongest decision in the whole project was refusing the easy question. \"Does our VR thing work\" is a demo. The question worth answering is whether full VR actually beats the cheaper things a real hospital might reach for first, a 360-degree video, a flat 2D version on a phone, or no intervention at all.",
+          "So the framework specifies a comparative study, and designing that evaluation was as much of the design work as designing the headset. Every nurse takes the empathy scale before and after, the common spine across all four cohorts. Three cohorts then experience the same scenario at descending levels of immersion (VR, 360 video, 2D photographic), and a fourth is a control group that gets no intervention between the two tests, though it still takes the same before-and-after measure. The control arm is what would turn a nice prototype into a claim you could stand behind: it isolates the immersion, so any empathy shift reads against doing nothing, and the formats can be ranked by cost against effect. To be clear about status: what I piloted is the VR arm and the instruments; the full four-cohort comparison is the study this framework was built to make runnable, not one I am reporting results from.",
+        ],
+        fig: "aiimsMatrix",
+        figure:
+          "The comparative-study design: four cohorts (VR, 360 video, 2D, control) share a common pre- and post-test empathy measure; only the intervention format changes, so a future run can isolate immersion and rank formats by cost against effect.",
+        split: "media",
+        divider: true,
+      },
+      {
+        h: "Outcome",
+        tldr: "A published framework: an empathy scale made for Indian nurses, a working VR training environment, and a replicable, control-armed way to test whether it teaches the skill their curriculum skips.",
+        p: [
+          "The work is published in the Springer proceedings of IHIC 2023, which matters most as a stamp on its method: peer review looked at the instrument, the VR framework, and the comparative design, and let them stand. What that leaves is not a one-off demo but a reusable framework, an empathy measure other researchers can adopt, a VR scenario pattern others can extend, and an evaluation design others can run.",
         ],
         ul: [
-          "Slots could only be one hour wide, and early on, slot availability itself was unreliable",
-          "Demand had to balance: pre-booked orders still had to be fulfilled through peak windows while live 10-minute demand kept flowing",
-          "Trust was non-negotiable, a 6–7pm promise had to be a 6–7pm delivery every time, so promised windows were tied back to what operations could actually guarantee",
+          "A new empathy scale in four categories, built for the Indian nursing context rather than translated from a Western one, and checked for reliability at pilot scale",
+          "A working VR empathy-training environment: a branching patient conversation with a present-keeping hover-click-release interaction model",
+          "A comparative-study design with a control arm, so a future study can isolate the immersion effect and rank formats by cost against impact",
+          "Learner-feedback pilot with 60 nurses: context, usability, engagement, and perceived learnability all close to 6 of 7, on a form reliable enough to trust (Cronbach's alpha above 0.70)",
+          "Published: Springer, IHIC 2023 proceedings (Responsible and Resilient Design for Society)",
         ],
       },
       {
-        h: "The cart conundrum: one order, many hubs",
-        tldr:
-          "Zepto fulfils from tiered hubs, so a single cart routinely splits into separate shipments, and scheduling lives at the shipment level. The worst case was a four-way split where every shipment had a different answer.",
+        h: "What I would revisit",
+        tldr: "The honest edges: pilot-scale samples, self-reported and perception-based effect, and a framework that still has to prove itself longitudinally at real deployment scale.",
         p: [
-          "Behind every Zepto order is a tiered supply chain. A Mother Hub is the largest warehouse and stocks effectively everything; it feeds two kinds of fulfilment sites: superstores, larger warehouses carrying a broad catalogue, and dark stores, the small local sites that make 10-minute delivery possible. Categories are stored deliberately, fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
-          "That topology is invisible until you build a mixed cart. Add ten things and some may be served from the dark store nearby while others can only come from the superstore, so the order does not arrive as one delivery. Zepto splits it into separate shipments, one per fulfilling site, and a single order can fan out to as many as four.",
+          "I want to be precise about what this does and does not prove. What I measured runs on a reliability-checked empathy scale and a learner-feedback instrument, which is to say on self-report and perception, not yet on observed change in real patient interactions over time. The samples are pilot-scale (18 for the scale, 60 for the feedback pilot), enough to pressure-test the instruments and the direction, not enough to claim a population effect. And any empathy shift we might measure right after a headset session is not the same as a nurse who is kinder at the bedside six months later.",
+          "So the contribution I stand behind is the framework, not a finished cure: a way to measure empathy in a context that had no measure, a way to train it that nurses find real and usable, and an evaluation rigorous enough to tell whether the expensive format is worth it. What I would build next is the longitudinal, larger-cohort study the framework was deliberately designed to make possible, and the thing this project taught me carries into every brief since: when the tools were built for a different world, the first design job is often the ruler, not the product.",
+        ],
+      },
+    ],
+    todo: [
+      "Confirm exact role title and dates, and the AIIMS collaborators / co-authors to credit",
+      "Drop in real VR-environment stills and the scenario decision-tree screenshot (deck pp.13-17, not yet extracted)",
+      "Confirm the published effectiveness figures cleared for public use (empathy pre/post deltas per cohort) before quoting any beyond the pilot-feedback scores",
+      "Add the exact scale item counts per factor if they differ from the figure's placeholders",
+      "Optional: a coded pilot-results bars figure (4 dimensions, about 6 of 7) to sit in 'Does it feel like it works?'",
+    ],
+  },
+  "scheduled-delivery": {
+    slideLayout: true, // mujvribt (27 Sep): every section in the My role slide layout
+    accent: "#6B21D9",
+    // Annotation mtmhgqek: the Figma-authored header animation (assets/schedule/
+    // header.gif, converted to alpha video). mtmsdz2t: the coded SchedHeartHero
+    // animation is the default view again, with an Animation / Video toggle.
+    heroFig: "schedHeartHero",
+    hideCaptions: true, // mtmvvzbk: no figure captions on this case until asked for
+    // mtmx0aw8: the pronunciation recordings credit lives in the footer, not under the cards
+    // mukx4arl (28 Sep): footer credit removed (key parked). NB the American clip is CC BY-SA, which needs attribution while it plays
+    _credits: "Pronunciation recordings from Wikimedia Commons: British by Soundguys (CC0), American by Dvortygirl (CC BY-SA 3.0).",
+    // mtmhmszl: the gif has real alpha, so the video keeps it (no white matte):
+    // HEVC-with-alpha .mov for Safari, VP9-with-alpha .webm elsewhere.
+    heroVideo: { mov: "/figures/scheduled/header.mov", webm: "/figures/scheduled/header.webm" },
+    heroPoster: "/figures/scheduled/header-poster.png",
+    heroSpeed: 0.7, // mtmhq999
+    heroLoop: false, // mtmhrtlb looped it; mtmkjwp3: play once, replay button
+    heroToggleHidden: true, // mtpauadr: the Animation / Video toggle is hidden; the coded heart hero is the header
+    heroFirst: true, // mtpavlcs: the heart hero sits above the facts header
+    heroAlt: "Schedule Delivery: the lockup settling inside a lavender heart",
+    eyebrow: "Zepto · Case study",
+    // mtparlyq: title wording and the facts header from Figma Portfolio 2026
+    // node 559-7888 ("convert this to this"). Was: "Bringing scheduled delivery
+    // to a 10-minute platform".
+    title: "Bringing Schedule\nDelivery to a 10-min delivery platform", // mtpdtjwt: forced break before Delivery
+    headFacts: [
+      { label: "Organisation", value: "Zepto" },
+      { label: "Timeline", value: "5 Months" },
+    ],
+    meta: "Product Designer · Zepto · 2025",
+    // Compact PDF cut (?cut=compact): the spine only, for hard page caps.
+    pdfSections: [
+      "The central question",
+      "Context & problem",
+      "My role",
+      "The cart is a complex construct",
+      "The explorations",
+      "One scroll across midnight",
+      "Impact",
+    ],
+    cover: "Zepto",
+    // Render the section index as a flat list (no "Problem / Directions / …" group
+    // headers) — the grouped rail read as cluttered on this page.
+    flatIndex: true,
+    lead:
+      "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested internally through design and then validated, after launch, with a 45-user mixed-method study. The payoff lands in the order itself: a scheduled order was worth about ₹1,450 against ₹543 for an instant one in August 2026, and a year of data later the feature is quietly becoming the channel large appliances are delivered through.",
+    deck: scheduledDeck,
+    sections: [
+      {
+        // mtmh4tl2 / mtp8qt8d: the Figma question frame (Portfolio 2026 node
+        // 315-29335) as a scroll-reveal scene; layers are the node's own exports,
+        // positions the node's absoluteRenderBounds as % of the 1512 x 982 frame.
+        // Bridge 2026-09-06 04:55: Agam reordered the Figma column (hero, header,
+        // question, phone, context, plates, cards), so the intro is five sections.
+        h: "Before we start",
+        // muif5084: rendered as live text, 50/50 (IntroQuestion); the bridged
+        // `scene` below is kept for bridge-107 but no longer drawn
+        introQuestion: { label: "Before we start...", question: "When did you last order something, you didn't need delivered in 10 min?" },
+        noHeading: true,
+        figBare: true,
+        // muiceb40 / muiceb3s: the three dots above and below (mtpdu1jv) removed
+        scene: {
+          aspect: [1512, 982],
+          bg: "transparent",
+          noframe: true,
+          revealIntro: true, // muic4w44
+          draggable: true, // muic1wju
+          // BRIDGED, DO NOT HAND-EDIT the two layer arrays below. Agam drafts
+          // this question straight in Figma (node 315:29335) and it is rendered
+          // here as PNG exports of its text layers, because the slide is set in
+          // Stack Sans Headline and the site does not load that face. Every
+          // rewrite changes the line count, which changes both the export and
+          // where it sits, so `python3 tools/figma/bridge-107.py` re-exports,
+          // re-places from the frame's render bounds, and rewrites everything
+          // between the markers. Layer count is whatever Figma has: on 14 Sep
+          // a third line was added under the question.
+          // <bridge-107 desktop>
+          layers: [
+            { src: "/figures/scheduled/dup/3-2708.png", x: 36.91, y: 44.91, w: 53.19, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup/3-2706.png", x: 8.86, y: 48.52, w: 17.53, fx: "reveal", tint: true },
+          ],
+          // </bridge-107 desktop>
+          // phones: the same layers stacked at reading size, the label at 42%
+          // and the rest at 84%, with the box sized so the margins and the gap
+          // hold whatever the line count is
+          // <bridge-107 mobile>
+          mobile: {
+            aspect: [375, 96],
+            layers: [
+              { src: "/figures/scheduled/dup/3-2706.png", x: 8, y: 12.8, w: 42, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup/3-2708.png", x: 8, y: 42.9, w: 84, fx: "reveal", tint: true },
+            ],
+          },
+          // </bridge-107 mobile>
+        },
+      },
+      {
+        // mtpbdzjv: this section leads the body so the parallax is the second asset on the page, after the hero
+        h: "Scheduled delivery, in motion",
+        noHeading: true, // mtpc44e2: heading hidden, the parallax opens the body
+        hideTldr: true, // mtpc410h: TL;DR hidden
+        tldr:
+          "A short walk through the flow before the detail, one component at a time, from the toggle to a confirmed slot.",
+        // Annotation mtmlfoo3: the reel and the Video / Image toggle are gone
+        // from here (the reel lives in the lab, /lab); only the parallax still
+        // stays. Earlier: mtmglh43 (toggle), mtmguhc9 (parallax, group 460-53124).
+        still: "/figures/scheduled/in-motion-screen.png", // bare screen (460-53125); the frame is the base iPhone
+        stillParallax: true,
+        figBare: true,
+        // mtmqmw9z: caption removed; the parallax needs no line under it.
+        figure: "",
+        // mtmlg1wh: two horizontal plates under the parallax; pin Figma nodes to fill them.
+        // mtmlmth1: the go-to-market banner animation first, on the purple card ground.
+      },
+      {
+        // mtp8th5p / mtp8tht6: Context and Objective, node 315-29373, six text
+        // layers revealing top to bottom. Bridge: sits after the phone, as in Figma.
+        h: "Context and objective",
+        noHeading: true,
+        figBare: true,
+        scene: {
+          aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
+          bg: "transparent", // mtpeowii: no box fill, no stroke
+          noframe: true,
+          layers: [
+            { src: "/figures/scheduled/dup2/context-chip.png", x: 7.94, y: 12.22, w: 10.38, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/context-1.png", x: 54.04, y: 13.44, w: 37.46, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/context-2.png", x: 54.15, y: 28.44, w: 34.95, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-chip.png", x: 7.94, y: 56.11, w: 12.24, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-1.png", x: 54.06, y: 57.33, w: 28.8, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-2.png", x: 54.04, y: 78.64, w: 24.63, fx: "reveal", tint: true },
+          ],
+          // phones: one column, chip then lines, at reading size (2026-09-06)
+          mobile: {
+            aspect: [375, 450],
+            layers: [
+              { src: "/figures/scheduled/dup2/context-chip.png", x: 8, y: 5.8, w: 22, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/context-1.png", x: 8, y: 17.3, w: 84, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/context-2.png", x: 8, y: 32.4, w: 78, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-chip.png", x: 8, y: 48.4, w: 26, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-1.png", x: 8, y: 60, w: 66, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-2.png", x: 8, y: 84.4, w: 60, fx: "reveal", tint: true },
+            ],
+          },
+        },
+      },
+      // mukx078o + mukx11r8 (28 Sep): the two-plate row that sat here was split up:
+      // the banner phone went to The go-to-market, the live prototype to Slot-page states
+      // Bridge (2026-09-06 05:10): Agam deleted the two plate frames (560:11533,
+      // 560:11536) and moved 134 'Context & problem' up to sit after frame 146 and
+      // before the three cards. The plates section is gone from here; the hero
+      // banner mp4 and the prototype embed still exist as assets and helpers.
+      {
+        h: "Context & problem",
+        split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
+        group: "Problem",
+        // mujp57h2 (27 Sep): re-voiced in the Fadell register (writing harness,
+        // gate 0/0); was "Some demand wants groceries later, not now, and a
+        // ten-minute-only app had nowhere to put it."
+        tldr: "Not every order is urgent. Some people wanted their groceries later. And an app built only for ten minutes had nowhere to put them. So that demand walked out the door.",
+        p: [
+          // mujk799p (27 Sep): re-voiced with the writing harness (Sauer register,
+          // gate 0/0), same facts; was one dense paragraph, now claim then turn
+          "Zepto's whole promise is speed: groceries at your door in ten minutes. But not every need is urgent. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had nowhere to put them.",
+          "Scheduled Delivery let people order anything on Zepto for a one-hour slot of their choosing, without spending the trust that ten minutes had earned.",
+        ],
+        _pBefore27Sep: [
+          "Zepto's moat is instant: groceries in ten minutes. But not every need is instant, and forcing every order to be immediate left real demand on the table. Scheduled Delivery gave users a way to order anything on Zepto for a future one-hour slot, without spending the trust that makes the platform work.",
+        ],
+        // 26 Sep: PARKED, it repeated the use-cases lead line word for word
+        // (SchedUseCases); move it back into `p` to restore
+        _p2: [
+          "Talking to users, a few high-intent personas emerged. Each one reframed the feature from a nice-to-have into the reason they ordered at all.",
+        ],
+        // 26 Sep: bullets PARKED (the three personas now have their own frames,
+        // SchedUseCases); drop the underscore to bring them back
+        _ul: [
+          "Commuters scheduling on the ride home so groceries arrive when they do, no second errand after reaching the door",
+          "Users in geographies with patchy store coverage near home, for whom instant often wasn't serviceable",
+          "Superstore shoppers buying new-category items that only stock in larger superstores, which close overnight, making a late-night order impossible without scheduling",
+        ],
+        // Annotation mtmgqeqk: the three-persona figure moved to "What users told us".
+        // Annotation mtmgxe0z: image frame from Figma Portfolio 2026 node 480-23182.
+        // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
+        scene: {
+          aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
+          bg: "var(--sd-reasons-bg, #f7f7f7)", // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
+          // muiejocv: the heading moved inside the box (was figureTop, above it)
+          title: "When instant delivery fails",
+          // muikq572: dark mode. `split` = where the icon ends and the text starts
+          // (% of the export, measured from its alpha); in dark the text part is
+          // repainted light and the icon keeps its colour. `lift` brightens the
+          // two icons that fall under 3:1 on the dark box (moon 1.99, hexagon 2.22).
+          // muifd33t: was "Five reasons instant can't answer"
+          // muif6v96: rows re-spaced under the heading (were 12.88..79.7, set for
+          // a box with no heading). muif89sl: box 20% taller, same content size,
+          // centred. muifckmg: more air under the heading (~40 -> ~75px): heading
+          // at 14.5%, rows 31.5 / 43.2 / 54.9 / 66.6 / 78.3
+          layers: [
+            { src: "/figures/scheduled/reasons/row-1.png", x: 36.78, y: 31.5, w: 26.44, fx: "reveal", split: 20.31, lift: true },
+            { src: "/figures/scheduled/reasons/row-2.png", x: 37.64, y: 43.2, w: 24.78, fx: "reveal", split: 22.61, lift: true },
+            { src: "/figures/scheduled/reasons/row-3.png", x: 32.61, y: 54.9, w: 34.84, fx: "reveal", split: 15.77 },
+            { src: "/figures/scheduled/reasons/row-4.png", x: 36.85, y: 66.6, w: 26.29, fx: "reveal", split: 21.11 },
+            { src: "/figures/scheduled/reasons/row-5.png", x: 37.64, y: 78.3, w: 24.71, fx: "reveal", split: 21.22 },
+          ],
+        },
+        figure:
+          "Out of hours, a disruption, an address beyond coverage, an item out of stock, a store at capacity. Each one is demand with nowhere to go.",
+        // muieho5p: the dots under the five reasons removed
+      },
+      // muic2lhk (26 Sep): moved to sit just below Context & problem (was after the question); the phone moves up with it (muic1wk2)
+      {
+        // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
+        // 16 Sep 2026, read back from Figma 120 (3:3321): the slide is SIX
+        // photographs now, with six different labels, and it carries a Dev Mode
+        // annotation reading "Pictionary game" - so the labels are word cards
+        // you guess. The old `scene` of duplicated card PNGs is gone; the
+        // component owns the grid, the pills and the reveal.
+        h: "Six moments",
+        noHeading: true,
+        fig: "schedMoments",
+        figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
+        // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
+      },
+      {
+        h: "The central question",
+        insightBefore: true, // muienfze: Figma 942:64899 above the mango scene
+        insightAfterFigure: true, // mujukg3s (27 Sep): "move this section one place up", the mango scene now sits above the key finding
+        noHeading: true, // mtnwdrvi: "remove this" on the h2; the serif question carries the section
+        // Annotation mtmjlgwj: the question itself, big, in the system serif.
+        // mtmvwqwy: rewritten in the Sauer register (claim first, then the question), gate green
+        // muif9f05 (26 Sep): the serif question, TL;DR and prose are PARKED,
+        // not deleted: to bring them back for the final push, drop the leading
+        // underscore from the three keys below. The key finding frame
+        // (insightBefore) and the mango scene stay.
+        _serif: "Zepto means now. How do you promise later without breaking the trust of 10-min delivery?",
+        _tldr:
+          "Offering later on an app built for now is a trust problem before it is a design one.",
+        _p: [
+          "Zepto means instant. People open it precisely because they never have to wait, and that reflex is the whole reason they open it at all. So the moment you offer a future slot, you are asking for something the app has never asked before: trust that \"later\" will arrive exactly when promised, from the one product built on not making you wait.",
+          "And \"later\" is the easy part to draw and the hard part to keep. Every hour it sits unfulfilled, it leans on the same instinct that makes \"now\" feel safe. So one question sat under every decision, and I kept coming back to it: how do you make \"later\" trustworthy without spending the trust that makes \"now\" work?",
+        ],
+        // Annotation mtmgd7ug: image frame from Figma Portfolio 2026 node 460-53090.
+        // Annotation mtmh68zb: the card flips up as you scroll (photo + card as layers).
+        scene: {
+          aspect: [1392, 862],
+          base: "/figures/scheduled/mango-photo.png",
+          layers: [{ src: "/figures/scheduled/mango-card.png", x: 16.9, y: 40.7, w: 66.21, fx: "flip" }],
+        },
+        figure:
+          "The promise, written down. A scheduled shipment is a card that says a time and keeps it, with one word left for changing your mind.",
+      },
+      {
+        h: "My role",
+        group: "Problem",
+        // muim39ah + mujogrh9 (27 Sep): Figma 944-65104 layout (from Agam's
+        // screenshot): label left, the statement large, the role paragraph
+        // flowing through three columns, at case study frame default size.
+        roleWireframes: true, // draft run after the role frame (SchedRoleWireframes)
+        roleFrame: {
+          // mujvc9e0: merged from the Role at a glance slide (Agam, 27 Sep)
+          lead: "Lead designer on the project.",
+          leadership: [
+            "Working directly with design leadership and the CPO",
+            "Managing expectations with the C-suite",
+            "Partnering with the Senior Director of New Category", // mukpnlvb: ", in product" removed
+          ],
+          statement: "I led the interaction design end-to-end across product, content, and operations, over two 2025 releases.",
+          // the body is the ORIGINAL role paragraph, as the Figma frame sets it
+          body: "I led the interaction design end-to-end, working closely with my design manager, Shreya Garg. There was an existing pitch when I picked up the problem, but it didn't feel right, it didn't account for the real spread of cases. So the bulk of my work was mapping every flow and edge case, running the exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November, with PMs Nishit Raj and Kavya Jain, content design by Ciara Greenwood, and an engineering group that pushed hard on the edge cases. The post-launch validation study I ran with the PMs.",
+        },
+        tldr: "I led the interaction design end to end with my manager Shreya Garg, across product, content and operations, over two 2025 releases.",
+        p: [
+          "I led the interaction design end to end, working closely with my design manager, Shreya Garg. There was an existing pitch when I picked up the problem, but it didn't feel right. It didn't account for the real spread of cases, so I set it aside and started again from the map.",
+        ],
+        // mu3johvc: expanded on what leading it meant; every item sourced from Claude/Case Studies/2026-06-24_schedule-order-handoff-timeline.md
+        // PARKED 27 Sep (not in the Figma frame): the "Leading it meant owning the
+        // parts nobody hands you:" lead-in and these bullets; rename _ul to ul to restore
+        _ul: [
+          "The problem before the screens. In the first ten days I laid the whole problem space onto the canvas myself, before anyone reviewed it: the order lifecycle from placed to failed delivery, and edge cases from address changes and daily order limits to pharmacy and EMI orders. Most of those came back in engineering questions months later, already answered.",
+          "The decisions, framed as bets. Where the pay button went on an unserviceable cart ran as two experiments, not an opinion. And I ran a full parallel direction to ground rather than defending the first one.",
+          "The thread through every handover. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November. The PM changed from Nishit Raj to Kavya Jain between them, content design came in with Ciara Greenwood's copy pass in October, and the design stayed one coherent system across all of it.",
+          "Operations as a design partner. Slots, store hours and store capacity are supply-chain facts, so product and operations were in the room to keep every promise on screen one the warehouse could keep.",
+          "The work after launch. Engineering pushed hard on the edge cases, and the answers were design answers: open the first day with a free slot instead of greying out an empty tab, and say plainly when a chosen slot has gone. I ran the post-launch validation study with the PMs, and the slot picker went on to carry the returns pickup flow.",
+        ],
+        // Annotation mtmhosfg: image frame from Figma Portfolio 2026 node 460-53298.
+        // Annotation mtmhr8i0: the Figma frame is a 3285px column of Now / Later
+        // clipped by an 862px card, so the motion is the column scrolling
+        // through, between the purple ground and the egg cartons. Desktop MCP
+        // was off, so the timing is scroll-linked rather than Figma's keyframes.
+        scene: {
+          aspect: [1392, 862],
+          base: "/figures/scheduled/role/photo.png",
+          layers: [
+            // mtmhw76e: half the travel, so the words drift rather than rush
+            { src: "/figures/scheduled/role/column.png", x: 10.8, y: -12.5, w: 77.6, fx: "drift", to: -35 },
+            { src: "/figures/scheduled/role/overlay.png", x: -5.0, y: 0, w: 110.1, fx: "static" },
+          ],
+        },
+        figure: "Now, later, now, later. The two words the whole job turned on, and the eggs that don't care which one you picked.",
+      },
+      {
+        h: "The constraints",
+        // mukvlu72 / mukvy9ql / mukw85nf: tried inside the section. mukwgm7k (28 Sep): the
+        // text sits right of the heading again (the standard layout) and the animated
+        // board runs FULL WIDTH, right after the section
+        figNext: "schedExplorations",
+        group: "Problem",
+        // mukxbblb (28 Sep): the TL;DR takes the intro line, verbatim; was "One-hour
+        // slots, peak-time fulfilment, and an ironclad delivery-window promise shaped
+        // every decision." mukxaiwm: the paragraph that carried it is removed
+        tldr: "Scheduled delivery sits on top of a live logistics system, so the design had to respect hard limits rather than wish them away:",
+        // mukwqanr (28 Sep): "bigger font ... under that, a small explanation. The
+        // bullet points don't work." Each constraint is now a title in the heading
+        // size with a short line under it ({ t, d } items, see .article__terms)
+        ul: [
+          { t: "One-hour slots, on shaky ground", d: "Every slot was an hour wide, and early on, slot availability itself was unreliable." },
+          { t: "Booked and live, side by side", d: "Pre-booked orders still had to go out through the peak windows, while live 10-minute demand kept flowing." },
+          { t: "A promise kept, every time", d: "A 6–7pm slot had to mean 6–7pm. Behind the hour a user picked sat a fulfilment window of about ninety minutes, margin for the dark store, and we kept tuning it against real conditions." },
+        ],
+        // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a
+        // circle over a modelled city and watch instant, schedule-only and
+        // unserviceable recount, with the 11 PM store closures one tap away
+        figsAfter: [{ fig: "schedReachExplorer", bare: true }],
+        // Annotation mtmh8tov: the availability tape moved to Impact.
+        // Annotation mtmhxqlv: Figma Portfolio 2026 node 460-53299, taken apart
+        // (mtmj7y2h): the phone is the ground, the notification card drops in
+        // like a real banner when the section is reached.
+        scene: {
+          aspect: [1392, 862],
+          bg: "radial-gradient(circle at 100% 0%, #c4a5f5 0%, #8b5cf6 100%)",
+          layers: [
+            { src: "/figures/scheduled/notify/phone.png?v=3", x: 15.22, y: 18.19, w: 69.41, fx: "static" },
+            // clipped to the phone screen (wallpaper box 284,204 825x1793 of the
+            // 1392x862 card; corner radius about 113px), so the drop-in is never
+            // seen outside the phone (mtmk2odv). Card offsets are relative to it.
+            {
+              src: "/figures/scheduled/notify/card.png", fx: "notify",
+              clip: { x: 20.4, y: 23.67, w: 59.27, h: 76.33, r: "13.7% / 17.2%" },
+              x: -8.74, y: -4.99, w: 117.1,
+            },
+          ],
+        },
+        figure: "The promise on the lock screen: a date, a one-hour window, and a scooter that has to make it true.",
+      },
+      {
+        // Annotation mtmi98gy: the breaker. mtmqq4xn: moved up one, now before One cart, many hubs.
+        // Figma Portfolio 2026 node 315-29388.
+        // mujqp1k6 (27 Sep): no longer a breaker; its own section, copy via the
+        // writing harness (Sauer, gate 0/0), the cards below it.
+        h: "Schedule means different things to different people. Even how they say it.", // mukw91sk (28 Sep); was "Two ways to say it"
+        center: true, // mukwatlg (28 Sep): heading and text centred
+        nav: "Two ways to say it", // the side index keeps the short name
+        stack: true, // mukvym27 + mukvyska (28 Sep): the text sits below the heading
+        group: "Problem",
+        p: [
+          "India is a diverse place, and it shows even in one word. One group says shed-yool. Another says sked-jool.",
+          // "Either way, the word asks the same thing of someone: to wait. So the work was making that wait feel safe, however you say it.", // mukwb44m (28 Sep): removed
+        ],
+        // mtmk4qua: coded, so the faces move (PronCards); the flat export stays
+        // at /figures/scheduled/pronunciation.png.
+        // mukvom35 (28 Sep): the cards live INSIDE the section frame now, under the explanation
+        figIn: "pronCards",
+      },
+      // 27 Sep, Figma 273:5430: stock stacked crate on crate, the tiered hubs the section explains
+      // mukupuxq + mukvosrs (28 Sep): the crates breaker removed at Agam's request
+      // { breaker: true, image: "/figures/scheduled/photos/crates-greens.webp" },
+      {
+        h: "The cart is a complex construct", // mujuxhxi (27 Sep): the heading says the claim (was "One cart, many hubs")
+        group: "Problem",
+        tldr:
+          "Zepto ships from tiered hubs, so one cart splits into several shipments, each needing its own slot. The worst case split four ways.",
+        // mujuytgf (27 Sep): Agam's four points, in the Figma 46:15909 layout.
+        // "OSS" spelled out for readers: out-of-stock and unserviceable items.
+        // points: ["Multiple shipments", "Pharmacy orders", "Out-of-stock and unserviceable items", "And more"], // mukuzieb (28 Sep): hidden for now, uncomment to restore
+        pointsLabel: "What makes the cart complex",
+        p: [
+          "Behind every Zepto order is a tiered supply chain. A Mother Hub is the largest warehouse and stocks effectively everything; it feeds two kinds of fulfilment sites: superstores, larger warehouses carrying a broad catalogue, and dark stores, the small local sites that make 10-minute delivery possible. Categories are stored deliberately: fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
+          "That topology stays invisible until you build a mixed cart. Add ten things and some may be served from the dark store nearby while others can only come from the superstore, so the order does not arrive as one delivery. Zepto splits it into separate shipments, one per fulfilling site, and a single order can fan out to as many as four.",
           "Scheduling is what made the split bite. A slot is not a property of the order; it is a property of each shipment, because each shipment is fulfilled by a different site with its own capacity. So the moment someone schedules, every shipment has to answer the slot question independently, and the answers rarely agree. That produces a small matrix of cases the design had to hold all at once:",
         ],
         ul: [
@@ -610,106 +2184,207 @@ const caseStudies = {
           "No shipment is schedulable for that slot, so the user has to move their timing",
           "A shipment is unserviceable outright, because its store is closed or out of stock for that window",
         ],
-        fig: "schedSplit",
+        // fig: "schedSplit", // mukw52nu (28 Sep): replaced by the cart grid; uncomment to restore
+        fig: "schedCartGrid",
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure:
           "One cart, many hubs. A mixed cart fans out by fulfilling site (Mother Hub feeds the superstore and the dark store), so it ships in pieces, up to four. Scheduling is per shipment, so each answers the slot question on its own: the worst case is four shipments at once, one scheduled, one unavailable, one closed.",
+        // divider: true, // mukxl134 (28 Sep): removed
+      },
+      {
+        // mukxenvq (28 Sep): the sixth cart-grid tile became a section of its own:
+        // the whole cart page (Figma Cart Master File 5C34trG8bBJZi3P48736Lb 1:25562,
+        // 2x) inside the phone from the top of the page, scrolling as you pass
+        h: "The whole cart, top to bottom",
+        group: "Problem",
+        tldr: "Every one of those constructs lives on one page. Scroll it end to end and you see how much the cart already carries before scheduling asks for room.",
+        still: "/figures/scheduled/cart-page-full.webp",
+        stillParallax: "long",
+        figBare: true,
+        figure: "The full cart page, top to bottom.",
         divider: true,
       },
       {
-        h: "Two directions, and the sentence that decided them",
-        tldr: "I ran a tabbed flow against a single-page listing; one sentence in testing killed the tidier one.",
+        h: "The explorations",
+        figIn: "schedEtaScroll", // mukvt7cp (28 Sep): the callout variants, scrolling in right to left inside the section
+        group: "Directions",
+        tldr:
+          "Before settling the flow I went wide on three questions: where scheduling lives, how the cart holds it, and how slots get picked.",
+        // mukwz62i (28 Sep): "comment the explanation out for now", the body
+        // paragraphs and list are parked; uncomment to restore
+        // p: [
+        // "Picking the eventual flow was the end of a longer search, not the start. The interesting decisions sat upstream: where in the app scheduling should even appear, how a multi-shipment cart should carry it, and what shape the slot picker should take. I explored each as its own question and kept only the answers that earned their place.",
+        // "The most instructive failure was placement. I tried putting scheduling on the product page, so an out-of-stock item could be instant-scheduled right at the point of discovery. It went straight against the booking model. Scheduling is a management tactic you reach for once you have decided what to buy, not a discovery feature, and on a product page it read as a negative listing that made the option feel intimidating, exactly the fear we had that people would ask why they needed to schedule this at all. So it came back out, and scheduling stayed on the cart, where the decision is already made.",
+        // "The cart and the slot picker had their own dead ends. A bottom sheet for the cart was lightweight but did not scale past a couple of shipments. A tab-per-shipment hid the other choices and lost trust (the sentence that decided it comes next). A merged-cart version blurred the per-shipment reality the whole feature depends on. For slots, a calendar was overkill for a Today-and-Tomorrow window. What was left standing was the shipped answer: scheduling on the cart opens a dedicated page that keeps every shipment distinct, each with its own slot picker.",
+        // ],
+        // ul: [
+        // "Placement: PDP (killed, it fought the booking model and read as a negative listing) vs a restrained home prompt vs the cart, per shipment",
+        // "Cart structure: a bottom sheet (didn't scale) vs a tab per shipment (killed, hid the other choices) vs one combined cart (blurred the per-shipment reality) vs the single-page listing",
+        // "Slot picker: a calendar (overkill for a Today-and-Tomorrow window) vs the per-shipment picker on the dedicated schedule page that shipped (the inline-on-the-page treatment came later, for returns and refunds)",
+        // ],
+        // mukuyuyb (28 Sep): the explorations board moved to just below The constraints (figNext there)
+        // figsAfter: [{ fig: "schedThreeBoxes", bare: true }], // muky4dn5 moved here; muky9i8p (28 Sep): hidden for now
+        divider: true,
+      },
+      {
+        // mukxfh9s (28 Sep): a new section below The explorations with three image
+        // boxes; the title, TL;DR and the three assets are still to come
+        // mukxmirl (28 Sep): this and Two directions below are ONE section now
+        h: "Different ways we explored how schedule could exist on the app",
+        group: "Directions",
+        tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
         p: [
           "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\"",
-          "A participant said it out loud, mid-task, and it ended a debate I had been running for weeks.",
-          "The task we set was the real worst case, not the happy path: a cart with some items unavailable or unserviceable for instant delivery, and the job was to find scheduling and book the unavailable item for a later slot. Almost all real scheduling happens on exactly these mixed carts, so the test had to start there. The hard part was never the happy path; it was that Zepto splits a cart into multiple shipments, and scheduling lives at the shipment level, so one order can need a separate schedule per shipment.",
-          "The two directions were nearly identical in construct and opposite in feel. One was tabbed: a tab per shipment, each holding its own instant-versus-schedule choice and slot grid, the simpler build and tidier on paper. The other kept every shipment on a single page, switchable in place. Because people almost always had more than one thing to schedule, the tabbed flow broke: the moment you moved to shipment two, what you had chosen for shipment one was on another tab and out of view. No running summary, no confirmation to hold onto, so people lost the picture and stopped trusting the earlier choice had even saved.",
-          "The single page won, and not because it was prettier. It kept the summary of your own actions in front of you the whole time: every shipment and its chosen slot stayed visible, so scheduling across shipments stayed legible. A persistent summary is itself a trust mechanism: you commit to \"later\" because you can see exactly what you committed to. I killed the simpler flow and spent the craft on making that dense, stateful page feel effortless.",
+          "A participant said it out loud, mid-task, halfway through a cart she was trying to schedule. She was not complaining, just narrating her own worry. And in one sentence she ended a debate I had been running with myself for weeks.",
+          "We had pointed her at the real worst case, not the happy path: a cart with some items unavailable or unserviceable for instant delivery, and the job was to find scheduling and book the unavailable item for a later slot. That was deliberate. Almost all real scheduling happens on exactly these mixed carts, so the test had to start there. The hard part was never the happy path. It was that Zepto splits a cart into multiple shipments, and scheduling lives at the shipment level, so one order can need a separate schedule per shipment.",
+          "I had carried two directions into the room, nearly identical in construct and opposite in feel. One was tabbed: a tab per shipment, each holding its own instant-versus-schedule choice and slot grid, the simpler build and tidier on paper. The other kept every shipment on a single page, switchable in place. Then I watched what happened with more than one thing to schedule, which is to say almost always. The tabbed flow broke at exactly the moment her sentence named: move to shipment two, and what you chose for shipment one is on another tab, out of view. No running summary, nothing to hold onto, so people lost the picture and stopped trusting the earlier choice had even saved.",
+          "The single page won, and not because it was prettier. It kept the record of your own choices in front of you the whole time: every shipment and its slot stayed visible, so scheduling across a fanned-out cart stayed legible. That is the lesson I took away, and it outlived this project: a summary you can see is itself a trust mechanism, because you commit to \"later\" only when you can see exactly what you committed to. So the evidence killed the tabbed flow, and I spent the craft on the harder one, making that dense, stateful page feel effortless.",
         ],
+        // muky4dn5 (28 Sep): the three image boxes moved up into The explorations
         fig: "schedDirections",
-        figure: "Before and after. Left, the killed tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
+        figBare: true,
+        figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
         divider: true,
       },
+      // mukxmirl (28 Sep): Two directions merged INTO the section above (its tldr, prose and figure moved there)
+      // {
+      //   h: "Two directions",
+      //   noHeading: true, // mukxmirl (28 Sep): continues the section above, no heading of its own
+      //   group: "Directions",
+      //   tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
+      //   p: [
+      //     "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\"",
+      //     "A participant said it out loud, mid-task, halfway through a cart she was trying to schedule. She was not complaining, just narrating her own worry. And in one sentence she ended a debate I had been running with myself for weeks.",
+      //     "We had pointed her at the real worst case, not the happy path: a cart with some items unavailable or unserviceable for instant delivery, and the job was to find scheduling and book the unavailable item for a later slot. That was deliberate. Almost all real scheduling happens on exactly these mixed carts, so the test had to start there. The hard part was never the happy path. It was that Zepto splits a cart into multiple shipments, and scheduling lives at the shipment level, so one order can need a separate schedule per shipment.",
+      //     "I had carried two directions into the room, nearly identical in construct and opposite in feel. One was tabbed: a tab per shipment, each holding its own instant-versus-schedule choice and slot grid, the simpler build and tidier on paper. The other kept every shipment on a single page, switchable in place. Then I watched what happened with more than one thing to schedule, which is to say almost always. The tabbed flow broke at exactly the moment her sentence named: move to shipment two, and what you chose for shipment one is on another tab, out of view. No running summary, nothing to hold onto, so people lost the picture and stopped trusting the earlier choice had even saved.",
+      //     "The single page won, and not because it was prettier. It kept the record of your own choices in front of you the whole time: every shipment and its slot stayed visible, so scheduling across a fanned-out cart stayed legible. That is the lesson I took away, and it outlived this project: a summary you can see is itself a trust mechanism, because you commit to \"later\" only when you can see exactly what you committed to. So the evidence killed the tabbed flow, and I spent the craft on the harder one, making that dense, stateful page feel effortless.",
+      //   ],
+      //   fig: "schedDirections",
+      //   figBare: true, // mtmrnolv: no figure card around coded figures
+      //   figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
+      //   divider: true,
+      // },
       {
-        h: "Then the real work: grinding one page to ground",
-        tldr: "Choosing one page settled the concept, not the interaction; where each control lived took numbered iterations.",
+        hidden: true, // muky55mj (28 Sep): "hide this section"
+        h: "The real work",
+        group: "Directions",
+        tldr: "Choosing one page settled the concept, not the interaction. Where each control lived took numbered iterations.",
         p: [
           "Picking the single page was the start, not the end. A flexible, stateful page is easy to make overwhelming, so most of the craft went into the opposite: making density feel obvious. The open questions were where every control should live, whether the slot picker should be a bottom sheet or sit inline, which shipment should be open on arrival, and how to keep five shipments legible at once. It ran for several numbered iterations before it landed.",
           "Where it landed:",
         ],
         ul: [
-          "The slot picker sits inline inside the expanded shipment, not in a bottom sheet, so picking a slot never pulls you away from the other shipments you still have to handle [add the one-line reason inline beat the bottom sheet]",
+          "Scheduling opens as its own full page, not a bottom sheet over the cart, listing every shipment at once so the whole order stays in view while you pick a slot per shipment (the slots-inline-on-the-same-page treatment came a step later, built for the returns and refunds flow)",
           "The shipment you arrived from expands by default; the rest stay collapsed but visible, status readable at a glance, so context is never lost",
-          "Per shipment, a clear instant-versus-scheduled toggle, then the inline slot picker, with a Today and Tomorrow day row at launch (a later iteration dissolved that day boundary, the next section)",
+          "Per shipment, a clear instant-versus-scheduled toggle, then its slot picker, with a Today and Tomorrow day row at launch (a later iteration dissolved that day boundary, the next section)",
           "Non-intrusive go-to-market, surfaced only where it helps (a homepage prompt when demand is high and the cart is not serviceable; the primary entry on the cart) rather than pushed everywhere",
           "Considered empty and exit states: what to save when someone leaves mid-flow, how each shipment's status reads at a glance, and an OTP screen tuned for a scheduled order",
         ],
         fig: "schedDateSwitch",
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure: "The shipped slot picker, rebuilt from the real component: switching Today and Tomorrow re-animates the slot list. The detail that earns trust is honesty about supply, today is partial because earlier slots have already passed, while tomorrow opens a full day, so the day row is doing real work, not decoration.",
         divider: true,
       },
       {
         h: "One scroll across midnight",
-        tldr: "The Today and Tomorrow day row shipped first; a later iteration dissolved the midnight boundary into one continuous scroll, because someone scheduling at 11pm is planning tonight-a-bit-later, not tomorrow.",
+        group: "Solution",
+        tldr: "Today and Tomorrow shipped first. Later we dissolved the midnight line into one scroll, because at 11pm you are planning tonight, not tomorrow.",
+        // mukxp4ks (28 Sep): three paragraphs condensed into one; the originals are
+        // parked in _pLong below
         p: [
-          "The day row worked, but it carried a quiet assumption, that midnight is a wall. For the late-night shopper it is not. Someone picking a slot at 11pm is not planning tomorrow, they are planning tonight, a little later, and a hard jump from today's slots to a separate Tomorrow tab broke that thought in half.",
-          "So a later iteration removed the seam. The slots became one continuous scroll across the day's edge: tonight's 11 to 12 window sits directly above tomorrow's earliest, no tab to switch and no page jump to re-orient around. It reads as a single timeline because that is how the moment is lived, late tonight and early tomorrow as one shopping decision rather than two calendar days. [Confirm against the shipped scroll: exact slot labels and where the day divider sits.]",
+          "At 11pm you are not planning tomorrow, you are planning tonight, a little later, and a hard jump to a separate Tomorrow tab broke that one thought in half. The slots were always one-hour windows bucketed by time of day, with Earliest holding whatever is next bookable. The six post-midnight windows belong to both days: Late Night for today, Early Morning for tomorrow. So crossing the day relabels them in place instead of resetting, and a later iteration removed the seam entirely, one scroll straight past midnight.",
         ],
-        fig: "schedSinglePage",
+        _pLong: [
+          "Picture it at eleven at night. The day row worked, but it carried a quiet assumption the clock does not share: that midnight is a wall. For the late-night shopper it is not. Someone picking a slot at 11pm is not planning tomorrow, they are planning tonight, a little later, and a hard jump from today's slots to a separate Tomorrow tab broke that single thought in half. The interface was filing the moment under two days; the person living it felt one.",
+          "Underneath, the slots were always the same atom: one-hour windows, six shown at a time, bucketed by time of day. Earliest, Afternoon, Evening, Night, and then the edge cases, Late Night and Early Morning. Earliest is the dynamic one, it holds whatever is next bookable from now, so at 3pm Earliest might be the 3-to-6 block while Evening starts at six. That small move made the timeline read like the day actually feels rather than a fixed grid you have to translate.",
+          "The detail I am proudest of lives exactly at the day's edge, in those six post-midnight windows. They belong to both days at once: the tail of today as Late Night, the head of tomorrow as Early Morning, the same hours wearing two names. So when you cross from Today to Tomorrow, those slots do not vanish and reappear. They relabel in place, Late Night becoming Early Morning, and you feel the switch as continuity rather than a reset. A later iteration went further and removed the seam entirely, letting the whole thing scroll as one timeline, because that is how the moment is actually lived: late tonight and early tomorrow as one shopping decision, not two calendar days.",
+        ],
+        fig: "schedPageReal",
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure:
-          "The continuous cross-day scroll: the slot list runs straight past midnight, tonight's last window meeting tomorrow's first in one timeline, no jarring page jump, because late tonight and early tomorrow are the same shopping moment.",
+          "The continuous cross-day scroll: the slot list runs straight past midnight, Late Night giving way to Early Morning across the day's edge. The same six windows belong to both days, so crossing into tomorrow relabels them in place rather than jumping, because late tonight and early tomorrow are one shopping moment.",
         divider: true,
       },
       {
-        h: "The go-to-market: showing up only when it helps",
+        h: "The go-to-market",
+        group: "Solution",
         tldr:
-          "A new behaviour on a 10-minute platform lives or dies on how it is introduced, so the go-to-market was deliberately restrained, framed by a small animated banner at the top of the schedule page and a prompt that appears only when instant cannot serve the cart.",
+          "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
-          "Push a new option everywhere and it reads as clutter that quietly dilutes the instant promise; hide it and no one finds it. So the go-to-market was a design problem in its own right: surface scheduling only where it earns its place, and let motion do the introducing rather than a hard sell.",
+          "Push a new option everywhere and it reads as clutter that quietly dilutes the instant promise. Hide it and no one finds it. So the go-to-market was a design problem in its own right: surface scheduling only where it earns its place, and let motion do the introducing rather than a hard sell.",
           "On the schedule page, an animated banner sits at the very top, a small, friendly motion that frames the feature the moment you arrive in the flow. Away from it, the prompt to schedule appears only when it genuinely helps, when demand is high and the cart is not serviceable for instant, so it meets a real need instead of interrupting a working one. [Confirm the exact go-to-market surfaces and any banner copy.]",
         ],
-        fig: "schedGtm",
-        figure:
-          "The go-to-market motion at the top of the schedule page: a calm animated promo that frames scheduling as you arrive, restrained so it never competes with the instant promise. [Coded stand-in for the real banner animation; swap with the production Lottie.]",
+        // fig: "schedGtmReal", // muky18to: moved into the plates box below
+        figBare: true, // mtmrnolv: no figure card around coded figures
+        _figure: // muky18to: parked with the figure (a caption alone draws an empty frame)
+          "The exact schedule page, plated pixel-for-pixel from Figma, with only the top banner brought to life: a calm scheduled-time motion that frames the feature as you arrive, restrained so it never competes with the instant promise. [The banner motion is a coded stand-in; swap in the production Lottie to match exactly.]",
+        // mukx11r8 (28 Sep): the banner playing on the phone, moved down from the top plates row
+        platesStack: false,
+        platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+        plates: [
+            {
+              fig: "schedGtmRealOne",
+              figBare: true,
+              bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+              alt: "The go-to-market banner animation, on the phone: a sweeping clock and slot chips popping in.",
+              // heading/sub retained but off while the frame is side by side
+              _heading: "The go-to-market banner",
+              _sub: "A small animated banner at the top of the schedule page introduces the feature the moment you arrive, restrained so it never competes with the instant promise.",
+            },
+          // mukxxiz5 (28 Sep): a second box to the right of the banner phone, content to come
+          // muky18to (28 Sep): the schedule-page figure moved INTO this box from the section figure
+          // muky60th removed the schedule page; muky9xug (28 Sep): only the RIGHT screen
+          // was meant, so the box keeps the cart (the screen muky18to picked)
+          { fig: "schedGtmCartOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with the Introducing scheduled delivery banner" },
+        ],
         divider: true,
       },
       {
-        h: "Designing for the cart that stays stuck",
-        tldr: "The hardest state was a cart that stays unserviceable even with a schedule; I designed it in plain sight, not hidden.",
+        h: "The stuck cart",
+        group: "Solution",
+        tldr: "The hardest state was a cart that stays unserviceable even with a slot. I put it in plain sight.",
         p: [
           "The test scenario was deliberately the worst case, and it was also the hardest state to ship: a cart where an item stays unserviceable even with scheduling, because of a live supply gap. The instinct is to hide the broken thing. I did the opposite. The unserviceable shipment is flagged in place, with the honest consequence stated up front (the items are unavailable and will be removed on save) and, where a store is simply closed, an option to schedule for when it reopens.",
           "Showing the failure honestly is the same trust argument as the rest of the feature: people forgive a clear \"we cannot do this part\" far more than a cart that silently drops items. This state took months of UX-and-ops work to tame, and getting it right mattered more to trust than any happy-path screen. [Confirm this matches the shipped solution.]",
         ],
         fig: "schedStuckCart",
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure: "The hardest state, shown in plain sight: the unserviceable shipment is flagged in place, the consequence stated up front (these items are removed on save), and where a store is simply closed, an option to schedule for when it reopens.",
         divider: true,
       },
+      // mukycihg (28 Sep): the packed-crate photo moved up to open Cart-page states
+      { breaker: true, image: "/figures/scheduled/photos/crate-packed.webp" },
       {
-        h: "Every cart-page state we handled",
+        h: "Cart-page states",
+        group: "Solution",
         tldr:
-          "The cart page is where each shipment's fate resolves before you ever schedule, so the real design surface was a serviceability matrix, not a single screen. I drew and shipped every combination.",
+          "The cart decides each shipment's fate before you ever pick a slot, so the real surface was a matrix. I drew and shipped every combination.",
         p: [
-          "On a platform built on instant, the cart is the moment of truth: it has to read honestly whatever the supply situation is. Because one cart can split up to four ways and each shipment can be in a different state, the cart page is not a screen, it is a matrix. The job was to make every cell of that matrix legible, from the clean all-instant cart to the worst-case four-way mix, without the page ever feeling like an error log.",
-          "So I mapped and designed each case rather than the happy path plus a catch-all. Every one of these is a real state the cart can land in:",
+          "On a platform built on instant, the cart is the moment of truth: it has to read honestly whatever the supply situation is. Because one cart can split up to four ways and the Instant-versus-Schedule control resolves shipment by shipment, the cart page is not a screen, it is a matrix. The hard part is the Schedule button itself, which can be open, disabled, hidden, the only thing you can do, or gone entirely depending on what that shipment's store can actually honour.",
+          "So I mapped and designed each cell rather than the happy path plus a catch-all. Every one of these is a real state a shipment can land in:",
         ],
         ul: [
-          "A single shipment, instant: the default 10-minute path, no scheduling surfaced at all",
-          "Several shipments, all instant: nothing to schedule, the option stays out of the way",
-          "One shipment scheduled, the rest instant: the common mixed cart",
-          "Every shipment scheduled: a fully planned, later order",
-          "Some shipments served, others unavailable for the slot: flagged in place, removed on save",
-          "A shipment from a closed store: offered a slot for when it reopens",
-          "The four-way split, scheduled, unavailable and closed shipments in one cart: the worst case we set as the test task",
-          "An entirely unserviceable cart, nothing now and nothing later, said plainly, plus the contextual prompt that surfaces only when the cart cannot be served now",
+          "Instant and Schedule both open: take it in 10 minutes, or book a later slot",
+          "Instant works but no slot is open: Schedule is disabled, deliberately greyed rather than hidden, so the option still reads as real",
+          "The PIN code cannot schedule at all: the Schedule button never appears, so it does not tease an option that is not there",
+          "Instant cannot serve the shipment: Schedule becomes the only action, enabled and highlighted so the path forward is obvious",
+          "Neither instant nor schedule works: the shipment is honestly blocked as store unserviceable",
+          "A guardrail hit: scheduling caps at two ongoing orders at a time and five a day, so at the ceiling the Schedule option goes unavailable",
+          "A first-run coach-mark teaching the new Schedule button the first time it shows up",
+          "Items that go unavailable while you linger get moved to another shipment, and on save you can keep them in a wishlist",
+          "Your chosen slot lapses while you step away: we ask you to review the schedule again before paying, rather than failing silently at checkout",
         ],
-        fig: "schedCartStates",
+        fig: "schedCartStrip", // mukxwvur (28 Sep): was "schedCartStates", the fitted matrix
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure:
-          "The cart-page matrix, one tile per case: every combination of instant, scheduled, unavailable and closed shipments across a one-to-four-way split, each designed so the cart reads honestly. [Reconcile against the shipped set, exact labels and counts.]",
+          "The cart-page matrix, one tile per case: the Instant and Schedule control resolving per shipment (open, disabled, hidden, schedule-only, unserviceable), plus the guardrails and live-cart flow errors. [Reconcile against the shipped set, exact labels.]",
         divider: true,
       },
       {
-        h: "Every scheduled-page state we handled",
+        h: "Slot-page states",
+        group: "Solution",
         tldr:
-          "The slot picker is the dense, stateful page, so I mapped its full state set, from the default arrival through the empty and confirmation states, and designed each so density never tipped into confusion.",
+          "The slot picker is the dense page, so I mapped every state and designed each one so density never tipped into confusion.",
         p: [
           "If the cart page is the matrix, the scheduled page is the one screen where all that complexity has to feel effortless. A flexible, stateful page is easy to make overwhelming, so the work was the opposite: give every situation a deliberate state rather than letting the page degrade. That meant designing the empty and failure states with the same care as the happy path, because on a trust feature those are exactly the moments that decide whether someone schedules again.",
           "The full set I designed for the page:",
@@ -717,7 +2392,7 @@ const caseStudies = {
         ul: [
           "Default arrival: the shipment you came from expanded, the rest collapsed but visible",
           "Instant versus scheduled, per shipment: the toggle that starts every choice",
-          "The inline slot picker, revealed in place, never a bottom sheet that hides the other shipments",
+          "The per-shipment slot picker on the dedicated schedule page, with every shipment still listed behind it so the full order stays in view",
           "A slot picked: the chosen one-hour window held in the running summary",
           "Today booked out: tomorrow's slots lead, so the page is never a dead end",
           "No slots at all for a shipment: an honest empty state, not a silent failure",
@@ -727,77 +2402,250 @@ const caseStudies = {
           "An OTP and confirmation screen tuned for an order that arrives later",
         ],
         fig: "schedPageStates",
+        figBare: true, // mtmrnolv: no figure card around coded figures
         figure:
           "The scheduled-page state set, one tile per case: default, instant, scheduled, slot picked, today-full, no-slots, cross-day, partial and the scheduled OTP, each designed so a dense page stays effortless. [Reconcile against the shipped set.]",
+        // muky1muk (28 Sep): the prototype plate removed from here (kept below, commented)
+        // // mukx078o (28 Sep): the live schedule-page prototype, moved down from the top plates row
+        // platesStack: false,
+        // platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+        // plates: [
+        //     {
+        //       auto: false,
+        //       embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
+        //       embedClickNode: "40000084:180821",
+        //       bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+        //       cueBox: [48.5, 30.6, 45, 7.8],
+        //       cueLabel: "Click here",
+        //       cueNoPointer: true,
+        //       cueNoBox: true,
+        //       cueClick: true,
+        //       alt: "The scheduled order prototype, live from Figma",
+        //       _heading: "The schedule page, live",
+        //       _sub: "The shipped flow as a Figma prototype: switch to Tomorrow and the slot list re-animates. The cursor shows where to tap.",
+        //     },
+        // ],
         divider: true,
       },
+      // 27 Sep, Figma 273:5431: the order packed, what booking sets in motion
+      {
+        hidden: true, // muky6p44 + muky6uaw (28 Sep): hidden for now, with its post-booking figure
+        h: "After you book",
+        // mukukpft (28 Sep): moved here from the central question; the tracking
+        // card IS the after-booking promise. mukub9lc: the mango scene, duplicated with a different
+        // element on a different background. Figma HBBgHT1u7e5jsz7BEEZ3fT
+        // 284:6334: the purple crates, and the "Scheduled / Arriving today,
+        // 7-8 AM" tracking card flipping up in the centre (586 x 642 on the
+        // 1392 x 862 frame: x 28.95%, y 12.77%, w 42.1%).
+        sceneAfter: {
+          aspect: [1392, 862],
+          base: "/figures/scheduled/tracking-crates.webp",
+          layers: [{ src: "/figures/scheduled/tracking-card.webp", x: 28.95, y: 12.77, w: 42.1, fx: "flip" }],
+        },
+        group: "After booking",
+        tldr:
+          "Later is only trustworthy if it arrives, so most of the trust work sits after checkout: tracking built for a slot, reminders, and a hand-off back to instant.",
+        p: [
+          "A scheduled order spends almost all of its life after you have paid, and that is exactly where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\"; for a scheduled order that line is wrong. So I designed a new card that leads with the commitment, \"Scheduled for Today, 6 to 7 PM\", and carries the same status onto the home page and into My Orders. The promise stays in front of you the whole time, not buried in a confirmation email.",
+          "Because the order is hours away, it has to come find you. Reminders fan out across the channels people actually watch: a push notification, an in-app banner pinned to the foot of the home page, and a WhatsApp message. [WhatsApp was designed for; we did not have a WhatsApp engine live, so treat it as the intended reach, not a shipped channel.]",
+          "The moment that matters most is the hand-off. Roughly half an hour before your slot the order \"wakes up\" and rejoins the normal flow: a rider is assigned, heads to the store, and the experience becomes the familiar 10-minute one, just landing inside your window instead of right now. The 10-minute promise is not abandoned for scheduling. It is deferred, then honoured. And you keep control of it: the slot is editable before you confirm, and the order is cancellable up to 30 minutes before the window, through the support chat. Fuller post-order editing came later. Riders get their own scheduled-order screen, so the operational side keeps up. And on the rare miss the feature stays honest rather than hopeful: if the slot slips you can cancel once it passes, and a longer breach auto-cancels with an apology and a ₹50 credit, so a broken promise ends cleanly instead of leaving you watching a countdown that never resolves. [Confirm the exact wake-up window and the rider-screen details.]",
+        ],
+        ul: [
+          "A \"Scheduled for\" tracking card that replaces the default 10-minute line, mirrored on home and in My Orders",
+          "Reminders across push, in-app (pinned at the home foot) and WhatsApp (designed-for)",
+          "The roughly 30-minute wake-up: rider assigned, reaching the store, then the 10-minute experience inside your slot",
+          "Slot edits before you confirm, and cancel up to 30 minutes before via the support chat (fuller post-order reschedule came later), plus a dedicated rider screen for scheduled orders",
+          "A delight layer explored: an iOS Dynamic-Island live activity carrying the slot and rider status on the lock screen",
+        ],
+        fig: "schedPostBooking",
+        figBare: true, // mtmrnolv: no figure card around coded figures
+        figure:
+          "The order's second life: a \"Scheduled for 6 to 7 PM\" tracking card, reminders across push, in-app and WhatsApp, and the roughly 30-minute wake-up where a rider is assigned and the 10-minute experience resumes inside your slot, carried on a Dynamic-Island live activity. [Plate the real tracking card and rider screen.]",
+        divider: true,
+      },
+      // 27 Sep, Figma 273:5432: the order landed at the door, before the results
+      // muky37n5 (28 Sep): the doorstep photo moved INTO Impact, right of the text
+      // { breaker: true, image: "/figures/scheduled/photos/bag-doorstep.webp" },
       {
         h: "Impact",
-        tldr: "Average order value doubled for scheduled orders, and predictable timing unlocked batching that cut last-mile cost.",
-        p: [
-          "We usability-tested with 100+ users before and after launch. The behavioural shift was the real story: because the order is for later, people plan, they build a bigger, more deliberate cart.",
+        group: "After booking",
+        sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
+        // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
+        // one-sentence version (adoption, 3x value, cancellation, appliances)
+        tldr: "Adoption peaked at 1.72% of all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money.",
+        // mukx8uu0 (28 Sep): "hide all this explanation info for now", the prose and
+        // bullets are parked (underscored); drop the underscores to restore
+        _p: [
+          "The number I would put on a slide is not the one I would defend in a room. A year on, a month-by-month pull settles it: scheduled delivery grew from a two-store pilot in October 2025 to 1.81 million orders in May 2026, its best month, which was 1.72% of everything Zepto delivered. It has eased to about 1.4% since. That is a small, real slice of a very large business, and it is the number I would defend.",
+          "It is not a planning-adoption number, though, and the honest version of this section is about why. When we decomposed it earlier, only about 1.3% of orders chose a slot in the windows when instant was fully available; the climb above that came from the windows when instant could not serve the cart. That matches what users told us: most people schedule as a fallback, not a plan. The warehouse still cannot prove it, because nothing records a customer who opened the slot picker and found nothing bookable. That gap is instrumentation we never built, and it is the first thing I would add.",
+          "The value story is cleaner, and it got bigger when we measured it properly. In August 2026 a scheduled order was worth about 1,450 rupees against 543 for an instant one, and carried 5.85 items against 4.65. The 550-against-300 pair I had been quoting for a year turned out to be the median, not the mean; the medians are 561 and 332, so both numbers were right and I had been telling the quieter half of the story.",
+          "Then the September pull explained the gap, and the answer was not the one I had been giving. I had been saying a scheduled cart is the weekly shop. The median cart is nothing of the sort, it is an instant order with a chosen hour, and the mean is carried by a tail that turns out to be large appliances. Items per order never moved: 5.4 to 6.3 all year, no break anywhere. Price per item went from about 160 rupees to 291, because Electronics and Appliances went from 21% of scheduled GMV in June to 54% by September, at 10,810 rupees an item. Only about 5% of scheduled orders contain one. Scheduled delivery is quietly becoming the appliance-delivery channel, which makes complete sense the moment you say it out loud: a fridge needs a time slot, a packet of biscuits does not.",
+          "That reframes the feature rather than flattering it. An appliance delivery is a different product with different needs, installation, two-person handling, a real returns path, and we have been measuring it as though it were groceries. The failure numbers say so too: an appliance order is cancelled 34.4% of the time against 26.6% for every other scheduled order, that gap has widened three months running, and one in three never arrives at all. What it is NOT is the reason scheduled delivery looks bad overall, because support tickets are identical between the two groups at 166 per thousand. The 2.6 times ticket rate is ours, not the fridge's.",
+          "And then the part that is harder to put on a slide. The most valuable order in the business is the one we serve worst. Scheduled orders raise 147 support tickets per thousand against 57 for instant, rate 3.98 against 4.32, and are cancelled 27.4% of the time against about 11%. Every one of those cancellations is somebody who booked an hour and did not get it. That is the bill for the promise, and it is the argument for spending on the feature rather than the argument against it.",
+          "The last finding is the one I did not expect, and it changed which number I would report. Delivery inside the booked hour fell from 92.6% in February to 76.8% in September, which reads like a collapse. It is not. The fall is almost entirely early arrivals, up from 2.6% to 17%, while lateness peaked in May and recovered. Split August's ratings by arrival and early orders score 4.14 against 4.07 for orders that land inside the window, which is not a significant difference; late ones score 3.81, which very much is. So the claim the data supports is that arriving early is no worse, not that it is better. That is enough. If early arrivals are no worse, a metric that counts them as failures is measuring the wrong thing, and \"not late\" is the honest headline: by that measure the promise has held at 93 to 96% all year.",
+          "I want to be careful here, because this is the slice the whole argument rests on and it has two problems. Late orders are 1.5 times more likely to be rated than early ones, so the sample self-selects on the thing being measured. And the week does not reconcile with its own month: it reports 13.3% late where the August table says 5.8%. The conclusion survives both, but it survives as a direction, not a decimal, and I would say so in the room.",
+          "The other thing that did not survive is the explanation. The report reads early arrivals as a side effect of the move to 6 AM slots, riders setting off before a morning window opens. Decompose the 14.4 point rise against the slot mix and only 0.3 points come from the mix; 13.2 come from the rate rising inside every band at once, and by September the daytime band is the earliest of the three. The cause that fits that shape is batching: three quarters of scheduled orders ride along with an instant one, and a batched order inherits the instant order's dispatch clock, which is almost always earlier than the window. That is a better beat anyway, because it is a design problem rather than a rider one.",
+          "And then the number nobody put on a slide, including me. Across eleven months, 3.66 million scheduled orders were cancelled. August alone is 421,145, and valuing each group's cancellations at its own order value puts that month at roughly 76 crore rupees of booked basket, of which 44 crore is appliances. Seven and a half percent of the orders, fifty-eight percent of the cancelled money. Rebase the reasons, and because the team confirmed a blank reason is a customer cancelling through the bot, 95.9% of those are people changing their minds and 3.6% are operations failing to serve the order. For instant orders the mix runs the other way. Lateness is an operations problem I can escalate. This one is a design problem, it is an order of magnitude larger, and I had been arguing about on-time rates instead.",
+          "May is worth one more line, because it is the only month that looks like a demand story and is not one. Volume jumped by half, and the slot snapshot says why: on a flat store count, capacity at the 6 AM slot rose 64% and the number of open early-morning slots rose 37%. Sell-outs fell even as orders doubled. The demand had been sitting behind a supply wall the whole time, and 6 AM has been the busiest hour of the day ever since. Which raises the uncomfortable question the data cannot close: with sell-outs down to 7.8% and orders per store down a third from the May peak, supply stopped being the constraint and nothing replaced it. The one measurement that would tell us whether demand is being lost at the slot picker is the one nobody built.",
         ],
-        ul: [
-          "Average order value doubled for scheduled orders, roughly ₹600+ versus ₹300 on a regular order",
-          "Adoption launched at roughly 2.8% of orders and has settled around 2.1% across dark-store and superstore models",
+        _ul: [
+          "Peak adoption 1.72% of all orders (May 2026, 1.81M scheduled orders), settling near 1.4%; about 1.3% in the windows when instant was fully available, so the rest is the unserviceable-window fallback",
+          "Average order value about ₹1,450 against ₹543 for an instant order, and 5.85 items against 4.65 (August 2026); the medians are ₹561 and ₹332",
+          "The mean is carried by large appliances, not big grocery shops: items per order never moved, price per item went ₹160 to ₹291, and Electronics & Appliances went from 21% of scheduled GMV in June to 54% by September",
+          "An appliance order is cancelled 34.4% of the time against 26.6%, and one in three never arrives; but support tickets are identical between the two groups, so the gap against instant is not appliance-driven",
+          "The cost of the promise: 2.6 times the support tickets, 2.5 times the cancellations and 0.34 stars lower than an instant order",
+          "\"Not late\" has held at 93 to 96% all year; the within-slot metric fell 16 points only because it counts an early arrival as a failure, and the ratings say an early arrival is no worse than an on-time one",
+          "The early arrivals are not the 6 AM move: 0.3 of the 14.4 point rise is slot mix, 13.2 is the rate rising in every band, which points at batching (75% of scheduled orders are batched)",
+          "3.66M scheduled orders cancelled in eleven months, about ₹76 crore of booked basket in August alone and 58% of that value is appliances; rebased, 95.9% are customers changing their minds and 3.6% are operations failing",
+          "The basket gap is a tail, not a typical cart: the MEDIAN gap is only ₹229, and 47.6% of September's orders were booked under two hours ahead",
+          "GMV grew while orders fell: ₹94 Cr in May to ₹118 Cr in August, about ₹823 Cr since December, all of it order value rather than order count",
+          "May 2026 was a supply release, not a demand shift: 6 AM capacity up 64% on a flat store count, and sell-outs fell while orders doubled",
           "More predictable order times let operations batch scheduled orders with live ones, cutting last-mile cost",
         ],
+        // Annotation mtmh8tov: the 2026 slot-availability tape, under the first paragraph.
+        inlineFig: "sdAvailabilityHero",
+        inlineFigBare: true,
+        inlineFigCaption:
+          "Slot availability across 2026, replayed live: the share of carts offered at least one scheduled slot, per day. The two cliffs, in March and April, are the supply side the number above sits on.",
+        // Annotation mtmkh1h3: the chart grid, built where the data exists and
+        // specced where it does not. Sits before the phone figure.
+        figsAfter: [
+          // mukx9cdw (28 Sep): the availability tape, once hung off the (now parked)
+          // first paragraph, stands on its own as the section's first figure
+          { fig: "sdAvailabilityHero", figBare: true, bare: true, caption: "Slot availability across 2026, replayed live: the share of carts offered at least one scheduled slot, per day." },
+          {
+            // 27 Sep: the dashboard grid became a story (SchedMetricStory);
+            // swap the fig back to "sdImpactCharts" to restore the grid
+            fig: "schedMetricStory",
+            figBare: true, // mtmrnolv: no figure card around coded figures
+            bare: true,
+            caption: "The graphs, from the verified month-by-month pull: volume and adoption, when people book and how far ahead, whether the promise was kept, the basket and what it costs, the slot supply underneath it, and the September threshold experiment. Four questions the warehouse still cannot answer are left as spec cards rather than estimated.",
+          },
+        ],
         fig: "schedImpact",
-        figure: "The behavioural shift: because the order is for later, people plan and build a bigger cart. Average order value roughly doubled for scheduled orders; adoption settled around 2.1%; predictable timing let operations batch scheduled with live orders.",
+        figBare: true, // mtmrnolv: no figure card around coded figures
+        figure: "The honest read: adoption peaked at 1.72% of all orders and sits near 1.4%, and only about 1.3% chose a slot when instant was fully available, so much of the lift is the unserviceable-window fallback rather than planned demand. The carts that did schedule were worth almost three times an instant one: ₹1,452 against ₹543 in August 2026.",
         divider: true,
       },
       {
-        h: "The same slots, in reverse: returns and refunds",
+        h: "What users told us",
+        group: "After booking",
+        // mukx7ffq (28 Sep): this section and Returns & refunds became ONE story
+        // (SchedResearchStory), like the Impact metrics; the prose, stats, quotes
+        // and personas figure are parked (underscored) and Returns is commented out below
         tldr:
-          "Once scheduling existed for delivery, the same one-hour slots became the backbone of a self-service returns and refunds flow, the reverse trip, with the refund made instant where it mattered most. [Confirm the R&R scope, the bot's nature, and the outcome.]",
-        p: [
-          "Returns are where consumer trust is quietly won or lost, and they are usually where you end up talking to support. With scheduling already built, the reverse trip became something you could self-serve: choose the items to send back, decide how the money comes back, and book the pickup on the very same one-hour slots that power delivery. [Confirm the exact framing of the R&R (returns and refunds) bot, and whether it is a guided self-service flow or a conversational assistant.]",
-          "Two decisions carried it. The refund method is a speed-versus-source choice made legible: instant store credit (Zepto Cash, credited the moment you confirm) sits against a refund to the original account (3 to 5 working days), so the trade between speed and where the money lands is the user's to make, both stated plainly. And the pickup reuses the exact scheduled-delivery slot picker, including the same honest instant-is-unavailable-schedule-it-for-later fallback when reverse-logistics capacity is tight, so the dense, stateful page I had already ground to ground did double duty.",
-          "[Confirm the problem this replaced (support-driven returns, slow or opaque refunds, or both) and any outcome: support deflection, refund time, return-completion rate, and your role and dates on it.]",
+          "We interviewed 45 users after launch. Most had scheduled because instant was unavailable, not because they planned to, and several asked why schedule on an app built for now.",
+        _p: [
+          "After the rollout we ran a mixed-method study: behavioural frames of several thousand users, 45 moderated phone interviews across twelve cities sampling the whole funnel, from people who scheduled and loved it to people who ended up confused about where their order was, and a read of the support tickets the feature threw off. The point was not to confirm we were right. It was to find where the feature was thinnest.",
+          "The most useful finding cut against the original pitch. Of the people who placed a scheduled order, roughly eight in ten did it as a fallback, because instant was not available at that moment, not because they had planned ahead. The planning segment we designed for is real, the commuter ordering in the morning for the evening turned up almost word for word, but it is smaller than the fallback flow that an unserviceable cart creates. That reframes scheduling as much as a graceful answer to \"we cannot serve you now\" as it is a planning tool.",
+          "And the trust thesis stopped being our hypothesis and became a direct quote. We had argued for two years that adding \"later\" to a \"now\" platform was a trust problem. Users said it back to us, unprompted: \"Why would I schedule an order if Zepto has already made a habit to get it at the earliest?\" One person, just seeing the slots, wondered whether instant had gone away entirely, and was relieved to learn it had not. That is the dilution fear, live, and it is exactly what the restraint was for.",
+          "The sharpest feature ask was precision. The one-hour window, the thing we had ground so hard to get right, was still the top complaint: people wanted fifteen or thirty-minute slots, because a one-hour window leaves you guessing whether it lands at the start of seven or the end of eight.",
+          "The hardest number was quieter and worse. Four hundred and fifty-four \"where is my order\" tickets came in from about 366 users, each on an order that was going to arrive exactly on time, and every single one was raised before the slot had even started. They were fallback users who never registered they had booked the future, so they panicked when \"now\" did not come. The worst of it clustered at midnight, where a same-day twelve-to-one slot reads as either AM or PM, and people cancelled thinking it had slipped to tomorrow. That one is on us, and it turned straight into design: an explicit \"Arriving today\" on the cart, morning and evening slot sections instead of a raw clock, and a notification that repeats the exact window after you book. The fix for a trust feature is almost always to say the true thing one more time.",
         ],
-        ul: [
-          "Item selection for return, with the refund total shown live",
-          "Refund method as a speed-and-trust choice: instant Zepto Cash against a 3 to 5 day refund to source",
-          "Pickup booked on the same one-hour slots, with the instant-unavailable-schedule-later fallback",
-          "Return guidelines stated up front (unused, original condition, tags and labels intact) so a pickup does not bounce at the door",
-          "A confirmation that names the slot and the address, with a short self-attestation before Confirm",
+        _chart: {
+          type: "stats",
+          title: "Mixed-method, just after launch",
+          data: [
+            { value: "8", suffix: " in 10", label: "scheduled as a fallback, not a plan", note: "instant was unavailable" },
+            { value: "454", label: "pre-slot \"where is my order\" tickets", note: "all raised before the slot began" },
+            { value: "#1", label: "ask was finer slots, 15 to 30 min", note: "unprompted, most-named friction" },
+          ],
+          caption: "Most adoption was instant-unavailability fallback, not planned demand; the loudest objection was the trust one, the loudest request was precision, and the hardest number was hundreds of tickets raised before the slot had even begun.",
+        },
+        _ul: [
+          "\"Why would I schedule an order if Zepto has already made a habit to get it at the earliest?\" the dilution objection, said out loud",
+          "\"I was in back-to-back meetings and didn't want to forget to order later, so I was glad I could just schedule it\" the planning win, when it landed",
+          "\"The ambiguity in a one-hour slot is there, I don't know if I will get it at the beginning of 7 or end of 8\" the top feature ask",
+          "\"I ordered at night but it didn't come, I saw later it was delivering in the morning\" the confusion that drove cancellations",
         ],
-        figure:
-          "The self-service returns screen, real from the Schedule Order Handoff file: the items to return and the refund total, the instant-versus-source refund choice, and pickup booked on the same slot picker as delivery. [Plate the real Review Items screen, or rebuild the refund-method choice as a focused figure.]",
+        // Annotation mtmgqeqk: moved here from Context & problem; the personas
+        // sit beside the study that found them.
+        fig: "schedResearchStory",
+        _figPrev: "schedUsers",
+        figBare: true, // mtmrnolv: no figure card around coded figures
+        figure: "After launch we asked, and the answers reshaped the feature: a fallback more than a plan, the trust fear said out loud, a window still too wide, and the same slots run backwards for returns.", // the figure only renders with a caption (hidden on this case)
+        _figure: "Three high-intent moments where instant isn't the answer. The contextual prompt surfaces only when the cart can't be served now; each user has the same answer: later, not now.",
         divider: true,
       },
+      // mukx7ffq (28 Sep): Returns & refunds folded into the What users told us story
+      // {
+      //   h: "Returns & refunds",
+      //   group: "After booking",
+      //   tldr:
+      //     "The same one-hour slots became the backbone of a self-service returns and refunds flow, the reverse trip.",
+      //   p: [
+      //     "Returns are where consumer trust is quietly won or lost, and they are usually where you end up talking to support. With scheduling already built, the reverse trip became something you could self-serve: choose the items to send back, decide how the money comes back, and book the pickup on the very same one-hour slots that power delivery. [Confirm the exact framing of the R&R (returns and refunds) bot, and whether it is a guided self-service flow or a conversational assistant.]",
+      //     "Two decisions carried it. The refund method is a speed-versus-source choice made legible: instant store credit (Zepto Cash, credited the moment you confirm) sits against a refund to the original account (3 to 5 working days), so the trade between speed and where the money lands stays the user's to make, both stated plainly. The pickup then reuses the exact scheduled-delivery slot picker, down to the same honest instant-is-unavailable-schedule-it-for-later fallback when reverse-logistics capacity is tight. The dense, stateful page I had already ground to ground did double duty.",
+      //     "[Confirm the problem this replaced (support-driven returns, slow or opaque refunds, or both) and any outcome: support deflection, refund time, return-completion rate, and your role and dates on it.]",
+      //   ],
+      //   ul: [
+      //     "Item selection for return, with the refund total shown live",
+      //     "Refund method as a speed-and-trust choice: instant Zepto Cash against a 3 to 5 day refund to source",
+      //     "Pickup booked on the same one-hour slots, with the instant-unavailable-schedule-later fallback",
+      //     "Return guidelines stated up front (unused, original condition, tags and labels intact) so a pickup does not bounce at the door",
+      //     "A confirmation that names the slot and the address, with a short self-attestation before Confirm",
+      //   ],
+      //   fig: "schedRnR",
+      //   figBare: true, // mtmrnolv: no figure card around coded figures
+      //   figure:
+      //     "The self-service returns screen, real from the Schedule Order Handoff file: the items to return and the refund total, the instant-versus-source refund choice, and pickup booked on the same slot picker as delivery.",
+      //   divider: true,
+      // },
       {
         h: "Reflection",
         tldr: "The real challenge was perception: keeping a scheduled option from diluting the instant promise.",
         p: [
-          "The subtlest problem wasn't UX at all; it was perception. Zepto means instant; a scheduled option can feel counter to the whole brand. The answer was restraint: surface it only when it genuinely serves the user, and never let it dilute the 10-minute promise.",
-          "What I'd revisit: we shipped with one-hour slots and no order editing, deliberate trade-offs to launch, not ideals. Editing came later; finer-grained slots never did.",
-          "Should the platform drop 10-minute delivery? I don't think so; instant is the moat, and without it Zepto becomes just another scheduled marketplace. But this work proved there's a real, high-value segment whose need is the opposite of instant, and meeting it quietly made the core product stronger.",
+          "The subtlest problem was not UX at all. It was perception. Zepto means instant, so a scheduled option can feel counter to the whole brand. The answer was restraint: surface it only when it genuinely serves the user, and never let it dilute the 10-minute promise.",
+          "What I would revisit: we shipped with one-hour slots and only in-flow slot edits, no full post-order editing, deliberate trade-offs to launch, not ideals. Fuller editing came later. Finer-grained slots never did.",
+          "Should the platform drop 10-minute delivery? I do not think so. Instant is the moat, and without it Zepto becomes just another scheduled marketplace. But this work proved there is a real, high-value segment whose need is the opposite of instant, and meeting it quietly made the core product stronger.",
         ],
       },
+      // mukq5ujj (28 Sep): "What I'd do differently" moved to the very bottom of the case study
+      { h: "What I'd do differently", noHeading: true, roleWireframes: true, roleWireframesOnly: ["What I'd do differently"] },
     ],
-    todo: [
+    _todo: [ // mukx4g4z (28 Sep): hidden, drop the underscore to restore
       "Team and timeline: PM, eng, ops, and research partners, plus the dates",
-      "One line: why the inline slot picker beat the bottom sheet",
+      "One line: why a dedicated schedule page beat a bottom sheet over the cart",
       "Confirm the shipped unserviceable-cart solution (frames show items removed on save, plus schedule-for-when-we-open)",
       "Reconcile the coded story figures against the real Schedule Order frames (slot labels, the exact AOV and adoption numbers, the shipped stuck-cart copy)",
     ],
   },
   zepiris: {
     accent: "#4F46E5",
+    deck: zepirisDeck,
     eyebrow: "Zepto · ZepIris · Case study",
     title: "Reimagining scalable face authentication at Zepto",
-    meta: "Product Designer · Zepto · 2 months",
+    meta: "Product Designer · Zepto · 2026",
+    // Compact PDF cut (?cut=compact).
+    pdfSections: [
+      "Ten seconds at shift start",
+      "The system everyone could game",
+      "Two problems wearing one face",
+      "Designing the capture, not just the model",
+      "Protecting the people behind the portal",
+      "The trade-off: how strict is strict enough",
+      "Built for Zepto. Open for builders.",
+      "Outcomes",
+      "Reflection",
+    ],
     cover: "ZepIris",
     lead:
-      "ZepIris (internally OdinEye, after Odin's all-seeing eye) is Zepto's in-house face-authentication system, now open-sourced. It clocks in riders, pickers, and packers and onboards new hires across every kind of Zepto site: personal phones in dark stores, shared tablets at the largest warehouses, and a web review portal. I led the design end-to-end across all three. It reached 100% coverage of Zepto's hubs and unlocked up to ₹50L/month in savings by replacing an expensive third-party vendor.",
+      "ZepIris (internally OdinEye, after Odin's all-seeing eye) is Zepto's in-house face-authentication system, and its first open-source project. It clocks in riders, pickers, and packers and onboards new hires across every kind of Zepto site: personal phones in dark stores, shared tablets at the largest warehouses, and a web review portal. I led the design end-to-end across all three, and then the launch: the name, the brand, the carousel, the story. It reached 100% coverage of Zepto's hubs, unlocked up to ₹50L/month in savings by replacing an expensive third-party vendor, and shipped to GitHub as ZepIris.",
     sections: [
       {
-        h: "Context & problem",
-        tldr: "Attendance ran on gameable check-ins and a costly vendor; the brief was an in-house, scalable, cheaper face-auth system.",
+        h: "Ten seconds at shift start",
+        tldr: "Tens of thousands of shift-starts a day, each one a ten-second identity check in the worst possible conditions.",
         p: [
-          "Attendance at Zepto used to run on paper registers and app check-ins, easy to game with proxy punches. Face authentication fixes that, but the vendor Zepto relied on (Hyperverge) was neither cheap nor scalable; at Zepto's volume, every order quietly carried a slice of that cost.",
-          "The brief was deceptively hard: build an in-house face-auth experience that's accurate, compliant, and cheaper at scale, and that holds up in the worst conditions, on the worst hardware, for users who have ten seconds to spare.",
+          "Every morning across Zepto, the same small moment repeats tens of thousands of times: a rider straddling a bike outside a dark store, a packer stepping out of a low-lit aisle, a queue forming at a Mother Hub gate at shift change. Each of them has to prove one thing before the shift can start: I am me, and I am here. They have about ten seconds, a budget Android phone or a shared tablet, and whatever light the warehouse or the street happens to offer.",
+          "Attendance is the quietest system in a company like this, right up until it breaks. And at Zepto's scale, it was breaking.",
+        ],
+      },
+      {
+        h: "The system everyone could game",
+        tldr: "OTPs slowed every check-in, buddy punching grew with scale, and a third-party vendor quietly taxed every order.",
+        p: [
+          "Attendance ran on paper registers and app check-ins, easy to game with proxy punches: a teammate runs your shift, you split the pay. OTPs slowed every check-in as headcount grew, and incentive programs turned small mistakes into real fraud. Face authentication fixes that, but the vendor Zepto relied on (Hyperverge) was neither cheap nor scalable; at Zepto's volume, every single order quietly carried a slice of that cost.",
+          "The stakes ran higher than cost. India had already tried face-authenticated attendance at national scale for its lowest-income workforce, and the field record was grim: MGNREGA worksites where only one worker's attendance was captured in 45 minutes of retries, and wages lost to patchy networks. Whatever we built, a failure had to cost a retry, never a wage.",
         ],
         ul: [
           "Users: delivery riders, warehouse pickers and packers, and new-hire onboarding",
@@ -806,11 +2654,11 @@ const caseStudies = {
         ],
       },
       {
-        h: "My role",
-        tldr: "I led the design end-to-end across phone, shared tablet, and web in a two-month build.",
+        h: "The brief, and the clock",
+        tldr: "Design end-to-end across phone, tablet, and web, in a two-month build, with the first end-to-end design shipped inside week one.",
         p: [
           "I led the design end-to-end, partnering with data science (the face-matching and liveness models), front-end and back-end engineering, and product. The surface was unusually wide, a phone design, a shared-tablet design, and a web portal, so much of the work was holding one coherent identity system across three form factors and three very different user contexts.",
-          "It was a two-month build. The first month was mostly collaboration, planning, and design; I shipped a first end-to-end design within a week so engineering wasn't blocked, then kept refining and scaling it for new use cases as it rolled out.",
+          "It was a two-month build. The first month was mostly collaboration, planning, and design; I shipped a first end-to-end design within a week so engineering was never blocked, then kept refining and scaling it for new use cases as it rolled out.",
         ],
       },
       {
@@ -841,11 +2689,11 @@ const caseStudies = {
         h: "Designing the capture, not just the model",
         tldr: "Real-time on-device framing guidance turned a failing capture step into a reliable one.",
         p: [
-          "Capture was a design problem, not only a model one. Early on, people held the phone too close or shot off-angle and capture quietly failed. I added real-time, on-device framing guidance (face centred, both eyes open, not too close) so the screen coaches a good capture and rejects a bad one before it's ever sent. That single change significantly lifted capture success rates.",
-          "Retry stays instant and judgment-free: a blurry frame just asks for another. No OTPs, no typing, just a selfie, making the right capture the path of least resistance.",
+          "Capture was a design problem, not only a model one. Early on, people held the phone too close or shot off-angle and capture quietly failed. I added real-time, on-device framing guidance, built on Google's ML Kit face detection (face centred, both eyes open, not too close), so the screen coaches a good capture and rejects a bad one before a single byte is ever sent. That single change significantly lifted capture success rates, and it is also the cost model: the backend only ever pays for one validated frame per attempt.",
+          "Retry stays instant and judgment-free: a blurry frame just asks for another. No OTPs, no typing, just a selfie, making the right capture the path of least resistance. Every rejected frame doubles as instruction, so the camera coaches instead of judging.",
         ],
         image: "/zepiris-stack.png",
-        figure: "Every validated capture becomes a 512-d ArcFace vector, matched by ANN search and wrapped in an auditable portal.",
+        figure: "Every validated capture becomes a 512-d ArcFace-family vector (AuraFace or InsightFace buffalo_l), matched by Milvus ANN search and wrapped in an auditable portal.",
       },
       {
         h: "Protecting the people behind the portal",
@@ -860,7 +2708,17 @@ const caseStudies = {
         h: "The trade-off: how strict is strict enough",
         tldr: "Match thresholds trade friction against security, so verification became configurable per workflow.",
         p: [
-          "Every face-match rides on a threshold, and it's a real design tension: too strict and honest people get rejected and re-try in the cold; too loose and security slips. Attendance, onboarding, and audits don't want the same answer. So instead of one global setting, verification became configurable per workflow, each context tuned to its own balance of friction and risk. [My take on where I landed, and why (to detail).]",
+          "Every face-match rides on a threshold, and it's a real design tension: too strict and honest people get rejected and re-try in the cold; too loose and security slips. Attendance, onboarding, and audits don't want the same answer. So instead of one global setting, verification became configurable per workflow, each context tuned to its own balance of friction and risk. The launch blog later confirmed it verbatim as a shipped capability: configurable thresholds per workflow type. Where I landed was a single bias: fail toward a retry, never toward a wrong accept or a lost wage. A false accept is a security breach, while a false reject just costs another try, so strictness scales with how permanent and how rare the decision is. Onboarding and audits, where a face is bound to an identity once and for keeps, sit strict. Daily attendance, run thousands of times a shift in the worst light, sits deliberately forgiving, because there an over-strict threshold does not just add friction, it leaves a worker re-trying in the cold to get paid. The call that settled every close one was the principle the project started from: failure should cost a retry, never a wage.",
+          "The same principle showed up at enrolment: every new registration runs a one-to-many search against the whole workforce first, so a face that already exists gets flagged before it can become a duplicate identity, one of those quiet backend rules that saves the 1:N search from slowly filling with ghosts.",
+        ],
+      },
+      {
+        h: "Built for Zepto. Open for builders.",
+        tldr: "I designed the release itself: the name, the zep.IRIS lockup, the launch carousel, and the story of why Zepto opened it up.",
+        p: [
+          "Then came the part I did not expect to own: the release. Open-sourcing ZepIris was Zepto's first, and a first needs a face. I named the launch story, built the zep.IRIS brand lockup, and designed the launch carousel and post with the data-science team: the problem statement, the two-contexts framing, the pipeline in three beats, and the closing invitation, /clone ZepIris. Built for Zepto. Open for builders.",
+          "The open-source boundary is telling: what shipped to GitHub is the backend (the API, the ML inference service, the vector-search stack). The entire capture experience, the ring, the coaching, the kiosk choreography, the review portal, stayed internal. The repo is the engine; the experience layer is the product.",
+          "It landed. v1.0.0 went up in late May 2026 and picked up hundreds of stars within weeks, with public recognition from Zepto's co-founder, CTO, and the data-science team.",
         ],
       },
       {
@@ -875,6 +2733,15 @@ const caseStudies = {
           "Realised monthly savings: 0 → ₹10–20L",
           "Cost-per-order: down, by reducing third-party (Hyperverge) dependency",
           "Adoption: 100%, treated by teams as a fundamental need finally solved",
+          "Open source: v1.0.0 in May 2026, hundreds of GitHub stars in the first weeks",
+        ],
+      },
+      {
+        h: "Next: capture that adapts to you",
+        tldr: "The v2 thesis, researched and specified: the system reads the person and the conditions, and adapts to them, never the other way round.",
+        p: [
+          "The v1 flow asks every face to satisfy one canonical capture. But faces genuinely differ (adult eye-to-eye distance alone spans a 1.5x range), light differs, phones differ. So I researched and specified the next layer: a capture ring that fits itself to your face's geometry and asks only for the shortest correction; a ladder of low-light interventions that starts with invisible camera moves and ends with the screen itself becoming the light source, because on a budget phone, simply brightening a dim screen physically cannot deliver the roughly 100 lux a clean exposure needs; and the same adaptive thinking for the shared kiosk, which digitally pans to meet each worker at their own height.",
+          "The research behind it reframed the whole idea: NIST traces demographic accuracy gaps in face recognition to capture quality, not faces, which means capture that adapts to the person is not a nicety, it is a fairness intervention. The full spec, sixteen patterns, a motion system, and the evidence, lives in the ZepIris PRD.",
         ],
       },
       {
@@ -882,6 +2749,7 @@ const caseStudies = {
         tldr: "The hard part was making one identity layer feel native across three very different contexts, cheaply, at scale.",
         p: [
           "The hard part of a system like this was never the camera screen. It was making one identity layer feel native to a rider on their own phone, a hub worker on a shared tablet, and a reviewer at a desk, in low light, on weak networks, cheaply enough to beat a vendor at Zepto's scale.",
+          "And the deepest lesson sits in what the system must never do: in a product where the failure currency is someone's wage, every dead end has to land on a human who can say yes. A camera can coach, a model can match, but the last word belongs to a person.",
           "[What I'd do differently next time (to add).]",
         ],
       },
@@ -889,63 +2757,80 @@ const caseStudies = {
     todo: [
       "Confirm your exact title for the project",
       "Your take on the threshold trade-off, where you landed and why",
+      "Link the co-founder/CTO launch posts (the public-recognition evidence) before using the word viral anywhere",
       "Anything you'd do differently, for the reflection",
     ],
   },
   jarvis: {
     accent: "#DB2777",
-    eyebrow: "Zepto · Jarvis · Case study",
-    title: "Revamping the ads platform",
+    eyebrow: "Zepto · JARVIS, shipping as Edge · Case study",
+    title: "The layer someone else was building",
     meta: "Product Designer · Zepto · 2026",
+    // Compact PDF cut (?cut=compact).
+    pdfSections: [
+      "The question after the dashboard",
+      "Someone else was building our layer",
+      "My role",
+      "The wedge, run as experiments",
+      "Two rules the product cannot break",
+      "Five widgets, one workhorse",
+      "Decisions",
+      "The scoreboard",
+    ],
     cover: "Jarvis",
     lead:
-      "Jarvis is Zepto's ads platform, where brands build and manage campaigns. I led and contributed to a multi-part revamp focused on advertiser clarity, control, and monetisation depth, while laying scalable foundations for new formats. The redesigned creation and recommendation experience launched to roughly ₹60L a month in incremental ad revenue in its first month, recommendation adoption reached about 30%, and new campaign frameworks added more on top. Brand teams at HUL and P&G called out the clarity gains.",
+      "JARVIS is the AI product I lead inside Zepto Ads, shipping to brands as Edge. It began with a question every advertiser asked and no dashboard could answer: I can see my numbers, now what do I do? We tested the first answer as live experiments, AI campaign recommendations and a predicted-performance review; about 30% of advertisers adopted them and they added roughly ₹60L a month. Then we discovered someone else was building the rest of the answer: an outside bot, founded by ex-Blinkit operators, selling brands an AI layer on top of Zepto's own data. This is the story of designing Edge, the copilot that closes the loop from metric to insight to one-click action, on two rules that make the trust math work: serve the brand's goal, not Zepto's revenue, and make every suggestion legible and reversible.",
     sections: [
       {
-        h: "Context & problem",
-        tldr: "Brands struggled to map intent to the right ad format, and monetisable inventory was limited; the revamp had to fix both.",
+        h: "The platform underneath",
+        tldr: "Zepto Ads is where brands buy reach; a revamp I worked across had just made buying clear, and made the platform worth defending.",
         p: [
-          "Zepto Ads is how brands reach shoppers, but the old platform made buying hard. Advertisers struggled to map what they wanted to the right campaign type, pricing was opaque, and previews were thin, so even large brands set up campaigns with low confidence. At the same time, the platform left money on the table: monetisable inventory was limited and the levers advertisers could pull were blunt.",
-          "The brief had two halves: make campaign creation clear and trustworthy, and deepen monetisation, without breaking the mental models advertisers already relied on.",
-        ],
-        ul: [
-          "Users: brands and their agencies (including teams at HUL and P&G), plus internal ads, search, and analytics partners",
-          "Goal: lift advertiser clarity and control while expanding what, where, and how much they could buy",
-          "Constraint: build on a live, revenue-generating platform without disrupting existing flows",
-        ],
-      },
-      {
-        h: "My role",
-        tldr: "I led and contributed across the revamp: pre-creation, recommendations, review, and the new spend frameworks.",
-        p: [
-          "I led and contributed to a multi-part revamp across the advertiser-facing platform (Jarvis) and the consumer ad surfaces. That spanned the pre-creation redesign, an ad recommendations system, a campaign review surface, and new advertiser frameworks (Ad Multiplier, Day-Parting, and PCA expansion). It meant working across Ads, Search, Design, Tech, and Analytics, and holding one coherent system as formats multiplied. [Add your specific lead-versus-contribute split and the timeline.]",
-        ],
-      },
-      {
-        h: "Mapping intent to the right format",
-        tldr: "A clear hierarchy of campaign types, pricing, and previews lets brands match what they want to how it is bought.",
-        p: [
-          "The core of the creation revamp was helping a brand answer one question: which format do I actually want? I redesigned the pre-creation experience around a clear hierarchy of campaign types and sub-types, each with its pricing model and a real preview, so intent maps cleanly to format before any money is committed.",
-          "Reducing that friction, understanding types, pricing, and what an ad will look like, is what brand teams at HUL and P&G singled out as the biggest clarity gain.",
+          "Zepto Ads is how brands reach shoppers on a quick-commerce app. Through 2026 I led and contributed to a revamp of the buying experience: a pre-creation flow built around a clear hierarchy of campaign types, each with its pricing and a real preview, plus sharper spend levers (Ad Multiplier, Day-Parting, expanded PCA inventory). Brand teams at HUL and P&G called out the clarity gains, and the new inventory and frameworks added crores a month.",
+          "That work matters here as the stage. It made the platform legible enough that brands started asking the next question, and valuable enough that the answer was worth fighting for.",
         ],
         split: "media",
         figure: "Caption: the pre-creation flow, campaign types with their pricing and previews. [Figma: Ads Revamp.]",
         divider: true,
       },
       {
-        h: "Recommendations and a smarter review",
-        tldr: "The platform suggests campaigns from past performance and brand fit, then reviews a draft with predicted performance.",
+        h: "The question after the dashboard",
+        tldr: "Brands could finally see their numbers; they still could not act on them. And destination surfaces had already proven they don't get visited.",
         p: [
-          "Clarity is not only about layout; it is about guidance. I built Ad Recommendations across the pre-creation and elevate flows, surfacing campaigns based on a brand's past performance and fit rather than leaving them to start from a blank slate.",
-          "I also introduced a Campaign Review surface that shows predicted performance and AI-led suggestions to improve a draft before it goes live, turning the last step from a rubber-stamp into a moment of confidence.",
+          "Every advertiser conversation ended at the same wall. The dashboards answered 'how did I do?' but the money question is 'what do I do next?', and answering it meant a human analyst, a spreadsheet, and a week. Worse, when a metric moved, the tools showed the symptom, never the driver; in a mesh of brands, cities, SKUs, and campaigns, naive correlation credits the wrong cause.",
+          "We also knew where the answer could not live. Elevate, our existing insights destination, taught us the hard number: when users have to go somewhere to get intelligence, only about 22% open it and under 4% engage. Whatever we built had to come to the brand, in the flow where they already work.",
         ],
+      },
+      {
+        h: "Someone else was building our layer",
+        tldr: "GobbleCube, founded by ex-Blinkit operators, was already selling brands an AI optimisation layer on top of Zepto, without Zepto's data or consent.",
+        p: [
+          "While we debated, the market answered. GobbleCube, a startup founded by ex-Blinkit operators, raised a reported $15M Series A and reached roughly $2M ARR in nine months, selling about 400 brands, including HUL, Tata, and Reckitt, an AI layer that watches their quick-commerce performance and tells them what to do, across Amazon, Blinkit, Flipkart, and Zepto.",
+          "Read that again from Zepto's side: an outside company was becoming the intelligence layer for our own advertisers, on scraped and exported views of our own data. If a bot owns the 'what do I do next?' conversation, the platform becomes a dumb pipe that executes someone else's decisions. Zepto's own tools, Atom and Zepto GPT, could answer questions when asked, but nothing was proactive and nothing closed the loop into action. That gap was the brief.",
+        ],
+        divider: true,
+      },
+      {
+        h: "My role",
+        tldr: "I lead design for JARVIS end to end: the problem framing, the product structure, the widget system, the voice, and the rollout design.",
+        p: [
+          "I lead design for JARVIS end to end. That has meant the unglamorous whole of it: framing the problem before any screens, structuring what v1 is and deliberately is not, designing the widget system and both surfaces, writing the product's voice, and designing how it rolls out to live, revenue-carrying accounts. Day to day the build runs as a small core: the data-science head, a senior PM from the ads team, and the dev leads of the ads front-end and back-end teams, with the key-account org joining for rollout. As this is written, v1 is rolling out.",
+        ],
+      },
+      {
+        h: "The wedge, run as experiments",
+        tldr: "Before betting on a copilot, we ran guidance as live experiments: AI recommendations and a predicted-performance review reached about 30% adoption and roughly ₹60L a month, de-risking v1.",
+        p: [
+          "Before betting the platform on a copilot, we ran the smallest version of guidance as live experiments, deliberately scoped to test whether v1 was feasible at all. Ad Recommendations surfaces campaigns from a brand's past performance and fit instead of a blank slate, and Campaign Review reads a draft and shows predicted performance with suggestions before it goes live, turning the last click from a rubber-stamp into a moment of confidence.",
+          "The experiments worked. Adoption reached about 30% of advertisers and the work added roughly ₹60L a month in incremental revenue in its first month, with HUL and P&G teams calling out the confidence gain. More important than the revenue was what the reads proved: brands will act on machine guidance when the reasoning is visible. That evidence is what made the full copilot fundable, and v1 ships on the back of it.",
+        ],
+        split: "media",
         figure: "Caption: ad recommendations, and the campaign review surface with predicted performance. [Figma: Ad Elevate.]",
       },
       {
         h: "A brand-true image library, built with AI",
         tldr: "Ad creatives kept bottlenecking on stock and one-off shoots, so I built an AI-generated image library, kept on-brand with Figma Weave, that gives every campaign type a ready, consistent look.",
         p: [
-          "Strong creative is half of a strong ad, and it was the slow half. Every new campaign type needed hero and lifestyle imagery, and leaning on stock or one-off shoots meant uneven quality and a long lead time before a format could even be previewed. I built a product image library generated with AI, so every campaign type had a ready set of on-brand visuals to pull from.",
+          "Guidance was one half of the AI story; creative was the other. Every new campaign type needed hero and lifestyle imagery, and leaning on stock or one-off shoots meant uneven quality and a long lead time before a format could even be previewed. I built a product image library generated with AI, so every campaign type had a ready set of on-brand visuals to pull from.",
           "The risk with AI imagery is drift, where it quietly stops looking like you. I used Figma Weave to keep the library tied to Zepto's brand, generating against our palette, mood, and composition rules so each frame reads as Zepto rather than as generic AI stock. The library plugs straight into the pre-creation previews, so a brand sees a polished, on-brand ad the moment it picks a format.",
         ],
         split: "media",
@@ -961,62 +2846,147 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "New levers: where, when, and how much",
-        tldr: "Ad Multiplier, Day-Parting, and PCA expansion let advertisers combine screen, time, and spend in one strategy.",
+        h: "Framing before screens",
+        tldr: "Edge started as a problem-framing exercise: seven how-might-we questions, a 35-source competitive teardown, and six problem statements, which surfaced a whitespace no incumbent touches.",
         p: [
-          "Beyond creation, the revamp gave advertisers sharper levers. I defined the Ad Multiplier and Day-Parting frameworks, letting brands selectively amplify spend across specific screens, moments, and time windows in the user journey. In parallel, I contributed to launching new ad widgets on Pre-search product carousel ads (PCA), expanding monetisable inventory at a high-intent discovery stage.",
-          "Together these let an advertiser combine three decisions in a single strategy: where (the screen), when (day-parting), and how much (the multiplier).",
+          "Edge did not start in Figma. It started as a framing document: seven how-might-we questions, from 'how might we tell a brand what moves what, defensibly?' to 'how might we time and pace proactivity so it lands as help, not noise?'. Then a competitive teardown across 12 incumbents, from GobbleCube to Amazon Ads to Tableau Pulse, run as a multi-agent research sweep over 35 cited sources, with every vendor claim tagged and fact-checked before it was allowed to shape a decision.",
+          "The synthesis became six problem statements, and one of them turned out to be whitespace. A media buyer, a brand lead, and a leadership team need the same data at three different altitudes, but every incumbent differentiates by permission, not by altitude, so executives get operator noise and operators get executive abstraction. Nobody markets a fix. Rendering one data spine at three altitudes became Edge's most defensible idea, and it came from the framing, not from a screen.",
         ],
-        split: "media",
-        figure: "Caption: the where, when, and how-much levers, and the expanded PCA widgets. [Figma: PLA and Map Pin.]",
+        table: {
+          cols: ["Problem", "Who hurts", "The move"],
+          rows: [
+            ["Brand families", "HUL-scale advertisers with dozens of sub-brands, and SMBs drowning in hierarchy they don't need", "A brand-family tree with weighted roll-up for giants; a flat, prescriptive next-best-action list for SMBs"],
+            ["Trustworthy drivers", "Anyone whose ROAS moved and got a symptom, not a cause", "Decompose the change into a significance-ranked waterfall, control confounders, show confidence and caveats"],
+            ["What and when", "Brands buried in pings that ignore their goal", "The brand's stated goal reshapes which suggestions generate; rank by uplift, pace to an attention budget"],
+            ["Legibility of money moves", "Brands asked to spend more by the platform that profits from it", "Formula-backed derivations, predicted impact, honest scope, approve-with-audit"],
+            ["Role and altitude", "Buyers, brand leads, and leadership all served one framing", "One data spine rendered at three altitudes; the whitespace no incumbent markets"],
+            ["Competitive defense", "Zepto itself, versus the outside bot", "Close the loop with first-party fidelity: live stock binding, one-click write-back, a scoped trust boundary"],
+          ],
+          caption: "Six problem statements from the framing phase; each traces back to a how-might-we and forward to a v1 decision.",
+        },
+        fig: "edgeAltitudes",
+        figure: "The whitespace, drawn: one data spine rendered at three altitudes. The buyer acts, the lead steers, leadership glances; no incumbent differentiates this way.",
+      },
+      {
+        h: "Two rules the product cannot break",
+        tldr: "Serve the brand's goal, not Zepto's revenue. Make every suggestion legible and reversible. Everything else is negotiable.",
+        p: [
+          "An ads platform recommending more ad spend has an obvious conflict of interest, and brands are not stupid. So Edge's constitution is two invariants, written before the widget system and enforced through it.",
+          "First: every suggestion must visibly advance the brand's stated goal, iROAS, awareness, or conversion, never platform revenue. The goal is an input that reshapes what gets suggested at all. Second: every suggestion must be legible and reversible. It leads with the symptom, names the driver with a confidence level and an honest scope note (down to 'this ignores margin'), quantifies the predicted impact, and gates any money-moving action behind a one-click approve with an audit trail and a 24-hour undo.",
+          "These two rules are why the trust math works. The outside bot can claim neutrality; Edge has to prove it, structurally, on every card.",
+        ],
         divider: true,
       },
       {
-        h: "Shipping into a live system",
-        tldr: "Since the PCA layout could not change at once, a phased transition added new widgets without breaking mental models.",
+        h: "Five widgets, one workhorse",
+        tldr: "The whole product is five primitives, and one locked rule: the moment a message carries an action, it becomes a card, not prose.",
         p: [
-          "The hardest part was not the new screens; it was landing them in a live, revenue-generating system. The existing PCA layout could not be changed immediately, so rather than force a rebuild, I designed a phased layout transition that introduced new widgets gradually, without disrupting the mental models that users and advertisers already depended on.",
-          "That meant tight coordination across Ads, Search, Tech, and Analytics, and designing for the in-between states, not just the end state.",
+          "Edge ships as two surfaces, a persistent floater that rides the pages brands already use and a full tab that makes Edge legible as a product, sharing one conversation state. Underneath, the entire system is five primitives: a launcher, an inline prompt attached to any metric or campaign row ('Why did this drop?'), an insight card, a chat panel in three sizes, and a toast-and-bell pair for urgent alerts.",
+          "The insight card is the workhorse. Five variants (suggestion, alert, diagnostic, draft, comparison) share one anatomy: a variant badge, one claim sentence, one primary action, a 'why?' toggle that opens the reasoning, and a dismiss. And one rendering rule is locked: as soon as a message carries a primary action, it is a card, never styled prose. Chat can explain; only a card can act. That single rule keeps conversation and consequence visually distinct, which is what makes one-click apply feel safe.",
+          "The MVP discipline was equally explicit: launcher, sidebar chat, two card variants, inline prompts on Analytics only, one toast. Everything else, three more card variants, the bell backlog, the reasoning toggle, full-page chat, was deliberately sequenced behind it.",
+        ],
+        fig: "edgeCard",
+        figure: "The workhorse, dissected: one anatomy carrying five variants. The parts never move; only the voice changes. And the locked rule underneath: carries an action, so it is a card, never prose.",
+      },
+      {
+        h: "Decisions",
+        tldr: "The forks that shaped Edge, and the directions we turned down on evidence, not taste.",
+        p: [
+          "Six forks in the design, and the option we said no to at each one:",
+        ],
+        table: {
+          cols: ["The fork", "The call", "Why"],
+          rows: [
+            ["Where Edge lives", "A floater riding existing pages, plus a tab; not a destination bot", "Elevate proved destinations fail: about 22% open, under 4% engage. The floater meets nearly all traffic where it already is"],
+            ["What Edge may touch", "Mutate with explicit approval; not read-only, not autonomous", "Approval makes 'action taken on Edge' a real, measurable metric; autonomy waits for audit, rollback, and safety evals in v2"],
+            ["Action rendering", "Any message with an action becomes a card", "Conversation and consequence must look different for one-click apply to feel safe"],
+            ["Proactivity pacing", "Interrupt cap of about one a day, digest for the rest, festival-aware baselines, dismissal cool-downs", "A stream of pings reads as noise; pacing is what makes proactivity land as help"],
+            ["Sample prompts", "A curated, fixed set in v1; not model-generated", "Predictable behaviour for evaluation before we let the model improvise"],
+            ["Rollout", "Top 50 brands by spend with account managers in the loop, then 50%, then 100%", "Live money deserves named-account betas before general release"],
+          ],
+          caption: "Each 'no' had a number or a precedent behind it; these six rows are the case study's honest spine.",
+        },
+        fig: "edgeFloater",
+        figure: "The biggest fork, animated: Edge lives as a pill on the pages brands already use. It escalates only when money is burning, and opens already knowing what you are looking at.",
+        divider: true,
+      },
+      {
+        h: "The voice",
+        tldr: "Edge talks like a sharp ops lead who has already done your homework: short sentences, real numbers, the next move ready to go.",
+        p: [
+          "AI products default to a voice that is polite, hedged, and long. For a brand manager mid-campaign, that voice is friction. I wrote Edge's voice as a design system in its own right: direct, tactical, forward. Specific numbers over adjectives ('₹12K wasted' beats 'significant waste'). Verbs that move: shift, pause, rotate, cut. Every message ends with a next step. No emoji, no exclamation marks, no 'Great question!', and a banned-word list that executes the corporate register on sight: leverage, synergize, seamless, circle back.",
+          "The before-and-after makes the case faster than the rules do. Before: 'I've analyzed your campaign performance and noticed that the click-through rate has experienced a noticeable decline over the past few days. This may be attributable to a number of factors we should investigate together.' After: 'CTR dropped 22% on Monday. Likely creative fatigue on banner B, live 14 days, frequency 8.2. Rotate two variants?'",
+          "The same fingerprint runs from the floater's idle pill ('Ask Edge') to the empty state ('Hey Beco. I run your numbers, ship campaigns, and catch what's bleeding.') to the apply confirmation ('Done. Live in 4 minutes.' with Undo beside it). Voice is the part of an AI product users touch most often; it deserved a spec, not an afterthought.",
         ],
       },
       {
-        h: "Impact",
-        tldr: "Roughly ₹60L a month in incremental revenue in month one, about 30% recommendation adoption, and new inventory adding more on top.",
+        h: "Shipping into live money",
+        tldr: "The scariest alert is also the wedge: 'this SKU is being advertised and goes out of stock by 7 PM.' Only Zepto can know that, and Edge is how brands find out in time.",
         p: [
-          "The revamp launched and showed business impact quickly, while raising the quality and usability of the whole ads creation experience:",
+          "Edge's launch design starts from the one alert no outside bot can build: the real-time join between what a brand is advertising and what its dark stores are about to run out of. '3 advertised SKUs going OOS in BLR-South by 7 PM' is money actively burning, it is quick-commerce-native, and it is only knowable with first-party stock data. That alert is v1's magic moment and, honestly, its single biggest data dependency.",
+          "The rest of the shipping design is restraint. Single-user threads with shared alerts in v1, multi-user write permissions deferred. WhatsApp alerts deferred. Conversation state continuous between floater and tab so no thread is ever orphaned. And the rollout runs top-50 brands with key-account managers in the loop for the first weeks, then 50%, then everyone: live budgets earn a slow ramp.",
         ],
-        ul: [
-          "Incremental ad revenue from the revamp: 0 to roughly ₹60L a month in the first month",
-          "Recommendation adoption: 0 to about 30%",
-          "New PCA inventory: 0 to around ₹2Cr a month",
-          "Ad Multiplier and Day-Parting: 0 to around ₹80L a month",
-          "Strong qualitative validation from brand teams at HUL and P&G on clarity and confidence",
+        fig: "edgeOos",
+        figure: "The magic alert, start to finish: the toast lands, the card explains the join, one click pauses the SKUs, and the undo stays open. No outside bot can see both sides of this.",
+      },
+      {
+        h: "The scoreboard",
+        tldr: "Edge is rolling out now, so this study declares its scoreboard rather than quoting early numbers: the metrics were designed before launch, at three levels.",
+        p: [
+          "The wedge experiments and their reads are above. Edge v1 is rolling out as this is written, and a product built on legibility should not quote numbers before the cohorts behind them have matured. What I can show is the scoreboard we committed to before launch, designed at three levels so product wins cannot hide business losses, or the other way around.",
         ],
+        table: {
+          cols: ["Signal", "The question it answers", "Level"],
+          rows: [
+            ["Edge interactions per brand per week", "Is it part of the weekly workflow, or a demo?", "Product"],
+            ["Apply rate: actions taken via Edge", "Does advice convert into action? The metric the approval gate exists to make real", "Product"],
+            ["Month-on-month budget per Edge-active brand, versus control", "Does guided spending grow accounts?", "Business"],
+            ["Budget utilisation rate", "Do brands actually spend what they book?", "Business"],
+            ["Median and p95 latency, and cost per successful interaction", "Can we afford the copilot at scale?", "System"],
+            ["Hallucination rate on a curated eval set", "Can the reasoning be trusted before it touches money?", "System"],
+            ["Thumbs-up rate and NPS", "Do brands want it back tomorrow?", "Product"],
+          ],
+          caption: "The scoreboard, declared before the score. Numbers land here as the rollout cohorts mature.",
+        },
       },
       {
         h: "Reflection",
-        tldr: "The work continues: restructuring creation flows for system-level consistency as formats keep multiplying.",
+        tldr: "The docs skew HUL-shaped; the SMB promise must not become a footnote. And the eval set is design work, not an engineering chore.",
         p: [
-          "An ads platform is never finished; it grows a new format every quarter. The ongoing work is to restructure the creation flows so the system holds together as formats multiply, the same coherence problem one level up. [What I'd do differently next time, to add.]",
+          "Two honest worries, written down now so they cannot be quietly forgotten. First, almost every hard example in Edge's framing is an HUL-shaped enterprise, yet the design promises SMBs a flat, prescriptive mode; if the long tail gets a scaled-down enterprise product instead, we will have failed the persona that needed guidance most. Second, the hallucination eval is on the scoreboard, which means someone has to design what 'wrong' means for a suggestion that moves money; I count that as design work, and it is mine to shape.",
+          "The autonomy line will also move. v2 plans a rule engine that acts within guardrails, and the only reason that will be safe to ship is the discipline v1 builds now: approvals, audits, undo, and a scoreboard that measures trust instead of assuming it.",
         ],
       },
     ],
     todo: [
-      "Your exact lead-versus-contribute split per workstream, and the timeline",
-      "Confirm the revenue figures and whether they are additive",
-      "Any usability-testing moment that changed the design (before to after)",
-      "Screens from the four Figma files (Ads Revamp, Ad Elevate, Map Pin, PLA)",
-      "A line for what you'd do differently",
+      "Team CONFIRMED (Agam, 2026-07-05): DS head + senior PM (ads) + dev leads of ads FE and BE teams. Add individual names only if Agam wants them public. STATUS UPDATE (Agam, 2026-07-20): v1 IS ROLLING OUT NOW; the 'month from rollout' lines are corrected. Next: fill the scoreboard with real cohort numbers as they land, which is the single highest-value upgrade to this case",
+      "Wedge numbers CONFIRMED as feasibility experiments for v1 (not shipped product); reframed accordingly. Fill the scoreboard as v1 cohort numbers stabilise",
+      "GobbleCube naming CLEARED by Agam (2026-07-05); deep competitor dossier stays in the locked /work/jarvis-prd (passcode edge2026)",
+      "Real screens still to export from Figma: Ads Revamp (pre-creation) and Ad Elevate (recs + review) for the two design-plate placeholders",
+      "The old revamp-only sections (pre-creation detail, Multiplier/Day-Parting, PCA phasing) were compressed into 'The platform underneath'; parked in git history if a separate platform-revamp entry is ever wanted",
     ],
   },
   dassh: {
     accent: "#EA580C",
+    deck: dasshDeck,
     eyebrow: "Dassh · Case study",
     title: "Building a B2B SaaS from the ground up",
     meta: "Design consultant & Director · Dassh · 2025",
+    // Compact PDF cut (?cut=compact).
+    pdfSections: [
+      "Context & problem",
+      "My role",
+      "The bet: an AI employee, not another tool",
+      "Designing the call",
+      "What the pilots changed",
+      "Asking about the day, not the dashboard",
+      "The homepage is a daily report",
+      "From pilots to a company",
+      "Outcomes & reflection",
+    ],
     cover: "Dassh",
     lead:
-      "Dassh builds Stella, an AI recruiter that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, and keeping the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build the product from zero, the four experiences it ships as, the system that lets anyone create an AI hiring agent, and the design system that turned Figma files into production code. Stella now runs live hiring for enterprises like Zydus Lifesciences, Increff, Cholamandalam and Atomberg. Over 2025 the work took it from zero to those pilots and, as the year closed, a ₹1.2 crore raise.",
+      "Dassh builds Stella, an AI recruiter that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, and keeping the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build the product from zero, the four experiences it ships as, the agent system underneath, including the conversation design of the calls Stella makes to real candidates, and the design system that turned Figma files into production code. Stella now runs live hiring for enterprises like Zydus Lifesciences and Increff. Over 2025 the work took it from zero to those pilots and, as the year closed, a ₹1.2 crore raise.",
     sections: [
       {
         h: "Context & problem",
@@ -1061,7 +3031,7 @@ const caseStudies = {
         tldr: "The same hiring data, surfaced as four purpose-built experiences, because a founder, an agency recruiter, a manager and a candidate do not want the same product.",
         p: [
           "Hiring is not one user. The founder who wants to ask a question, the agency recruiter living in the product eight hours a day, the manager checking in between meetings, and the candidate on the other end all think differently. Rather than ship one interface and water it down for everyone, I designed four, all reading from the same underlying data and all anchored to the same atomic unit, the job.",
-          "Stella is the chat-first experience: full screen, almost no chrome, the conversation is the interface. The agency view is the dense power-user surface: tables, filters, kanban, bulk actions, built for speed. The manager view is summary-first, the system writes the first thing you see, with green, amber and red health signals so a glance is enough. The candidate experience is a light portal plus the messages, calls and interviews the agents run, designed to feel like texting a helpful person rather than navigating a portal.",
+          "Stella is the chat-first experience: full screen, almost no chrome, the conversation is the interface. The agency view is the dense power-user surface: tables, filters, kanban, bulk actions, built for speed. The manager view is summary-first, the system writes the first thing you see, with green, amber and red health signals so a glance is enough. The candidate experience is a light portal plus the messages, calls and interviews the agents run, designed to feel like texting a helpful person rather than navigating a portal. Two rules hold that last surface together: density follows the audience, the operator needs the detail but the candidate only needs the meaning, so their components distil rather than display; and wherever a candidate meets Stella, app, email, WhatsApp or a call, it is the same voice carrying one continuing conversation.",
         ],
         fig: "stellaOnboarding",
         figure:
@@ -1069,44 +3039,56 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "Making an AI agent anyone can create",
-        tldr: "One four-step creation flow that turns hiring intent into a working agent, with smart defaults for the unprepared and full control for power users.",
+        h: "Designing the call",
+        tldr: "The deepest design problem was the calling agent, and we earned it with research: persona-tuned call flows at Zydus, and a 43-call field study that found the calls dying inside our own system, not at the candidate's no.",
         p: [
-          "Under the four experiences sits a system of purpose-built agents, screening, calling, interview, scheduling, messaging, note-taking, each owning one step of the pipeline. The hard design problem was creation: how does a recruiter turn what they want into a working agent without learning a new vocabulary?",
-          "I designed creation as one consistent four-step flow, the same spine for every agent type: link it to a job, define what it should evaluate, give it candidates, set what happens next. The evaluation step became the heart of it, a checklist where each criterion is tagged Essential, Valuable or Not preferred, so the recruiter's priorities are legible to both the AI and any human reviewer. Because people arrive with different levels of preparation, every step supports multiple paths: pick a template, generate one with AI from the job description, or upload your own. Opinionated defaults for the unprepared, full control for the power user.",
-          "Rather than open with every option, the entry collapses to a few clear intents, hire for a role, screen existing candidates, call and qualify, with the rest tucked behind progressive disclosure. And the screening agent returns more than a yes or no: a match score, skill and experience breakdowns, a gap analysis and a priority ranking, so a human can audit the call in seconds instead of re-reading the CV.",
+          "Of all the agents, the calling agent carried the hardest problem, and it is not a modelling problem. A first-round phone screen looks like the most automatable object in hiring: short, repetitive, the same few fitment questions every time. Now take the other end of the line. The candidate is often answering in their second or third language, from a noisy room or a shared phone, and they need the job far more than the system needs them. That power asymmetry changes everything downstream: tone, pacing, what counts as an acceptable failure. The recruiter wants a fast filter, and designed carelessly, that filter becomes a fast, cheap, multilingual machine for humiliating people at scale. So we made a deliberate call: on this one surface, the candidate, not the recruiter, is the primary user.",
+          "The first lessons came from running real calls at Zydus, where the roles that needed AI calling most were factory workers. Pickup was the first wall, and it fell to timing, not pitch: reachability turned out to be persona-dependent, a factory worker and a mid-manager answer at different hours, and pickup improved substantially once calls moved to each persona's hour (directional, the exact lift was not logged). Completion was the real nightmare, and it only cracked when we customised the conversation flow per persona: some people need to be greeted and warmed up first, others want the point straight away, and one script cannot serve both. Because the hires were Ahmedabad-based, the flows also had to carry little bits of Gujarati woven into the conversation, since that is how the callers actually speak. The lesson that stuck, and it became a house rule: the agent is only as good as the user research behind it.",
+          "So the research went formal, and I owned it end to end, the research and the UX; the engineers owned the calling stack. The base ran to about 300 people across the pilots. The sharpest instrument inside it was a field study for a tech-recruiting deployment that treated every candidate as a user of the calling experience: a 43-call log over ten days, every outcome coded into six candidate-experience categories, every recruiter note kept. The headline finding inverted our assumption. The dominant failure mode was not candidates saying no, it was the system breaking: about a quarter of the calls, 10 of the 43, connected and then died before a single question was asked. The mechanism is latency. Production voice agents respond in 1.4 to 1.7 seconds where a human expects a gap of roughly 200 milliseconds, and past about a second of dead air people decide the call is broken and hang up. The log held sharper injuries too: one candidate was dialled 3 times in a single week, and another told us the brand 'always calls but never follows up with real opportunities', which in a market averaging 16.8 spam calls per person per month is exactly how a recruiter becomes spam. The highest-leverage fix was never persuasion; it was making the system stop collapsing on the people who did answer.",
+          "Those findings set the call's design contract, the decisions no default is allowed to make. The agent discloses it is an AI early and plainly (which India's telecom rules now mandate for AI calls in any case), asks the candidate's preferred language, and switches fully to it, because real callers code-switch mid-sentence and rarely stay in one language. The structure is agent-led: a small set of concrete, answerable questions, one at a time, with the load-bearing facts, experience, location, availability, confirmed explicitly. The opening frames the stakes down, a quick fitment check rather than a pass or fail interrogation, because fear is what makes people freeze or hang up. And repair is where the craft went: misrecognition and dead air are normal, not exceptional, so the agent recovers out loud instead of going silent, rephrases, offers an easier way to answer, and the repair path is designed three failures deep, because the third failure is where systems abandon people. Every call closes the same way regardless of fitment: what happens next, when, and how to reach a human.",
+          "Customisation was the deep second half: an HR person has to be able to tune this call without being a conversation designer, and without being able to break the parts that protect the person on the other end. The resolution was a split. The recruiter owns what the call asks: the questions, the criteria checklist with each item tagged Essential, Valuable or Not preferred, the persona-fit of the flow, the language mix. The system owns how the call behaves: disclosure, pacing, confirmation, repair, the respectful close. You can make Stella ask about a forklift certification; you cannot make her interrogate someone.",
+          "The output side holds the same line. The call writes structured facts back to the pipeline, and where it produces a fitment read, that read has to be explainable and contestable, because nobody should be silently filtered out by an accent the model handled poorly. And this is the part I can say plainly: it all shipped. The dead-air recovery, the dedup lock, the concurrency cap tied to backend throughput, the compliance stack with disclosure built in. The number moved with it: of the calls that connect, 71% now complete the whole screen, up from 35 to 40% before the work. The pilot rates are a separate measure and stay separate: about 4 in 10 dials reached a human at all. The one piece still directional is the equity evaluation, disaggregating outcomes by language and dialect, which waits on the next instrumented run.",
         ],
-        fig: "agentWizardFff",
+        ul: [
+          "43-call field log over ten days, 39 unique numbers, outcomes coded into six candidate-experience categories, cross-checked against published latency, spam and telecom-regulation benchmarks",
+          "10 of 43 calls, about a quarter, connected and then died before the first question; roughly 9% of dials were duplicates; at least one clearly interested candidate was lost to a system bug, not disinterest",
+          "Projected to a 1,000-candidate campaign, the pilot's rates meant about 350 dead-air experiences and about 90 duplicate calls, all avoidable before a single script word changes",
+          "Every recommendation shipped, and completion of connected calls climbed to 71%, up from 35 to 40% before the work",
+        ],
+        fig: "callJourney",
         figure:
-          "The four-step creation flow: link a job, define what to evaluate, add candidates, set what happens next, the same spine for every agent.",
+          "The candidate journey from the field study: ring, screen, pick up, engage, outcome. The cliff is at engage, about a quarter of calls die after hello and before the first question, which is why the first fix is recovering out loud instead of going silent. Then the payoff: everything shipped, and 71% of connected calls now complete the screen.",
         divider: true,
       },
       {
         h: "What the pilots changed",
-        tldr: "Running real roles for real enterprises changed the product more than any internal debate.",
+        tldr: "Users kept asking for agent performance. They actually cared about job performance. Catching that misread reshaped the whole reporting layer.",
         p: [
-          "The strongest input was never a design review, it was watching Stella run live roles at Zydus and Increff. Putting an AI recruiter in front of real candidates and real recruiters surfaced things no mockup would.",
-          "[Document the specific changes here: one or two concrete before / insight / after moments from the pilots. For example, a screening criterion that behaved differently in practice, a call script candidates reacted badly to, or a report hiring managers ignored until it was reformatted. This is the highest-value part of the story, so give it the real research findings and the success metrics that came out of them, each with its baseline.]",
+          "The strongest input was never a design review, it was watching Stella run live roles at Zydus and Increff. Putting an AI recruiter in front of real candidates and real recruiters surfaced things no mockup would. The clearest example was a misread we almost built.",
+          "In every early conversation, users asked for agent performance: how many CVs did the screening agent read overnight, how accurate is it, which agent is pulling its weight. It sounded like exactly the right question for an AI product, the metrics already existed in our framework, and honestly we felt the same pull, because a wall of live counters looks like proof the thing works. We came close to shipping a control panel for the machines.",
+          "Then we mocked it and put it in front of a recruiter. She glanced at the overnight screening count, said okay, and every question that followed walked straight past the number: which of these do I actually need to look at, is my req going to close, if I forward this shortlist and one candidate is wrong it is my name in the room, not the agent's. That was the tell. She was asking about the machine because no tool had ever shown her the job. Agent performance was the doorway; job performance was the room.",
+          "The correction became a rule we still design by: job performance is the end, agent performance is the means. Every surface now leads with the outcome the person is accountable for, is this role going to close, well, fast and fairly, in their own register, and agent activity is demoted to a drill-down you open only when a job is off-track and you need to know which agent to tune. Nobody checks the calling agent's connect rate because it is Tuesday; they check it because a role went cold and they want to know why. The founder never sees an agent counter at all. The recruiter gets the agent's reasoning behind each shortlisted candidate, the trust layer one tap in. And the candidate sees no machine anywhere, just her status, a real date, and a human behind the decision.",
         ],
         divider: true,
       },
       {
-        h: "How the use case evolved",
-        tldr: "[One line: how users' use of Stella grew, e.g. from a screening assist to a full hiring teammate.]",
+        h: "Asking about the day, not the dashboard",
+        tldr: "We stopped asking users what they wanted on screen and started asking about their week. One sentence kept coming back, and it collapsed the traditional dashboard into a briefing: agents summarized up top, the jobs list below, a generative read across it.",
         p: [
-          "[Replace with the real evolution story: what users first hired Stella to do, and how that widened as the pilots proved each step. The scaffold below is a placeholder framing.]",
-          "Early on the use was narrow: [the first job users trusted Stella with, e.g. screening the inbound flood]. As that earned trust the use case widened, [calling and qualifying], then [running first-round interviews], then [scheduling, messaging and keeping the ATS current], until Stella was operating the whole execution layer of a role rather than a single task.",
+          "The misread above was caught by a method, not luck. Our earliest interviews had started the obvious way, asking recruiters what they would like to see on the screen, and those answers were not working: ask people what they want and they design their old tools back at you. So we switched to Mom Test questions and asked about their days instead. Walk me through yesterday. What did you check first this morning? What does a bad week look like? Only after that, a couple of pointed questions about needs. Across every one of those conversations, one sentence kept coming back in different words: I want to know how the job is doing.",
+          "Our first translation of that was embarrassingly standard: a traditional dashboard that showed everything at once, every metric, every agent, every pipeline, the layout every ATS ships. It looked complete, and it answered nothing, because it left the reader to do the reading.",
+          "The composition that won was quieter. Agents summarized in one strip at the top, present but compressed. The jobs list beneath, because jobs are what people are accountable for. And a generative layer across the top of it all that reads the day for you: what changed, what is off-track, what needs a decision. It optimized every case at once. When things are fine you glance and go; when something is wrong the summary names it; and the detail is one tap deep, never the landing view. That same composition then mapped to every persona at its own altitude, the founder's portfolio view, the recruiter's dense req list, the manager's narrative cards, which is why four experiences feel like one product.",
         ],
         fig: "evolutionTimeline",
         figure:
-          "How the use case grew: the surface morphs from a screening list to a dashboard to a holistic workspace to a grid of agents running.",
+          "The surface finding its shape: from a screening list to a show-everything dashboard to the workspace that won, agents summarized up top, jobs below, a generative read across the day.",
         divider: true,
       },
       {
         h: "The homepage is a daily report",
         tldr: "Instead of a dashboard you have to read, the homepage is a generated briefing: what is broken, what needs you, what happened.",
         p: [
-          "Most hiring software opens to a dashboard and leaves you to do the reading. I designed the Dassh homepage as a generated report instead, different every time because it reflects what actually changed since you were last there. It answers three questions in order of urgency: what is broken, a stalled pipeline or a failing agent, comes first; what needs you, the decisions only a human can make, like approving a shortlist, comes next; and what happened, the momentum, comes last.",
+          "Most hiring software opens to a dashboard and leaves you to do the reading. I designed the Dassh homepage as a generated report instead, different every time because it reflects what actually changed since you were last there. It answers three questions in order of urgency: what is broken, a stalled pipeline or a failing agent, comes first; what needs you, the decisions only a human can make, like approving a shortlist, comes next; and what happened, the momentum, comes last. This is the agent-versus-job correction from the pilots, shipped: the report is about the jobs and the people, and the machines only surface when something needs tuning.",
           "The same report adapts to the reader. The agency recruiter gets it dense and numbers-forward. The manager gets it as a short written narrative with health cards. In chat, Stella simply tells you, and can act on it in the same breath. It reaches people where they already are, in the app, as a morning email, and as a WhatsApp message from Stella.",
         ],
         fig: "dailyReport",
@@ -1162,10 +3144,13 @@ const caseStudies = {
       },
     ],
     todo: [
-      "Pilot-outcome metrics with baselines: time-to-hire reduction, cost saving, interview-to-offer lift (deferred with the pilot section)",
-      "Verify before publishing: '100+ CVs in about 3 minutes' and 'about 95% screening accuracy' (these came through as unverified marketing claims)",
-      "Two or three concrete pilot-driven design changes (before, insight, after) for 'What the pilots changed' (you're handling this later)",
+      "Pilot-outcome metrics with baselines: time-to-hire reduction, cost saving, interview-to-offer lift (still open)",
+      "Marketing claims ('100+ CVs in about 3 minutes', 'about 95% accuracy') DROPPED entirely per Agam 2026-07-05; do not reintroduce",
+      "Client names CONFIRMED for public use per Agam 2026-07-05, but mention SPARINGLY: full six-name roster appears once (From pilots to a company + outcomes list); lead trimmed to Zydus + Increff; story mentions keep only where load-bearing",
+      "Two pilot-driven changes now documented (agent-vs-job misread; show-everything dashboard -> summarized-agents/jobs-list/generative-read composition, from Mom Test interviews per Agam)",
+      "Check the evolutionTimeline figure still matches the reworked 'Asking about the day' section (its beats: screening list -> dashboard -> workspace -> agent grid)",
       "Two figures still need art (best as Figma exports or a diagram): the daily-report homepage and the Figma-to-code pipeline. The other four are wired from the deck.",
+      "2026-07-22: 'Designing the call' replaced the agent-creation-wizard section (agentWizardFff fig now unused by this case; Essential/Valuable/Not-preferred moved into the call section). Sources = Claude/dassh-voice-agent-spec.md + R5/R6 in dassh-user-requirements.md + the 43-call collision study (Claude/dassh-call-research-collision-study.docx). Evidence layer added same day: Zydus persona/timing/Gujarati arc + the 34.9% collapse finding, candidate details ANONYMIZED (source log has real names/numbers, keep it that way). Figure BUILT (callJourney, incl. the 71% payoff beat). RESOLVED by Agam 2026-07-22: complete owner of the UX (not the coding); everything the study recommended shipped and call success climbed to 71%; about 300 people = base research pool (the 43-call log is the coded instrument inside it; 300/500/1000 in the report stay projection tiers). 71% DEFINED (2026-07-22): completion of screening calls, dialled candidates who finish the whole screen. STILL OPEN: client naming in prose kept to Zydus only, the collision study says 'a tech-recruiting deployment' (Tophire name public elsewhere in the case, Agam to call if it should be named here too).",
     ],
   },
   away: {
@@ -1297,20 +3282,21 @@ const caseStudies = {
   },
   "away-agent": {
     accent: "#2563EB",
+    deck: awayAgentDeck,
     eyebrow: "Away · Case study",
     title: "An agent for the whole trip, that never takes the wheel",
     meta: "Founding Designer · Away · 2026",
     cover: "Away",
     board: ["AWAY", "NOT A WRAPPER, \nTHE WHOLE CASE", "OWNS IT, NEVER \nTAKES THE WHEEL"],
     lead:
-      "Most AI agents are a chat box with good manners: they answer, and then they disappear. But the hard part of almost any job is not the answer, it is the follow-through, the failure, the 2am call, and a thing that forgets you on close can never reach it. Away is built the other way, to own the whole case, not the turn: a travel agent you keep that finds the flight, vets it, books it, watches it for months, and steps in when the trip goes wrong, and talks to you like the friend who just got back from that exact trip. The hard design problem was holding two opposites at once, an agent complete enough to do all of that and disciplined enough to never take the wheel: it does the figuring-out, you still travel. I led design end to end as the only designer on a five-person founding team, across the entire trip lifecycle, tuning how much the agent says, does, and decides at every moment from the first search to a cancelled flight at 2am. We shipped v1, and in its first week, live to an invite-only group, it was already doing around ₹50K in bookings a day, and the number has only grown since.",
+      "Most AI agents are a chat box with good manners: they answer, and then they disappear. But the hard part of almost any job is not the answer. It is the follow-through, the failure, the 2am call, and a thing that forgets you on close can never reach it. Away is built the other way, to own the whole case, not the turn: a travel agent you keep that finds the flight, vets it, books it, watches it for months, and steps in when the trip goes wrong. It talks to you like the friend who just got back from that exact trip. The hard design problem was holding two opposites at once: an agent complete enough to do all of that and disciplined enough to never take the wheel. It does the figuring-out, you still travel. I led design end to end as the only designer on a five-person founding team, across the entire trip lifecycle, tuning how much the agent says, does, and decides at every moment from the first search to a cancelled flight at 2am. We shipped v1. It is live with an invite-only group and the traction is real; the numbers are still young, so this study closes on the measures we fixed before launch rather than a week-one spike.",
     sections: [
       {
         h: "The bet",
         tldr: "Most agents fail the same way, as wrappers that answer a turn and vanish, when the value lives in owning the whole case over time, especially the hard parts no one wants to do.",
         p: [
           "The mistake almost every AI agent makes is to optimise for the turn: answer a question well, then be gone. But booking a flight is the part everyone competes on, and a booking is rarely the hard part of travel. The hard parts come later: the cheap fare that quietly hides a self-transfer, the schedule change three weeks out, the connection you are about to miss, the compensation you are owed and never claim. A chat box that disappears after the answer cannot touch any of it, which is exactly where the value is.",
-          "So Away is built to own the case, not the turn. That reframes the problem from 'a better booking flow' into 'a relationship across the whole trip', a much larger and stranger thing to design: the agent has to be present for months without nagging, sharpen as departure nears, go calm and competent in a crisis, and celebrate when it all works. And there is a second trap on the other side, the over-correction to a wrapper is an agent that takes the wheel and breaks trust the first time it is wrong. So the real target is completeness without autonomy: present and prepared for every step, and still leaving the commit to you. It does the figuring-out; you still travel.",
+          "So Away is built to own the case, not the turn. That reframes the problem from 'a better booking flow' into 'a relationship across the whole trip', a much larger and stranger thing to design: the agent has to be present for months without nagging, sharpen as departure nears, go calm and competent in a crisis, and celebrate when it all works. And there is a second trap on the other side. The over-correction to a wrapper is an agent that takes the wheel and breaks trust the first time it is wrong. So the real target is completeness without autonomy: present and prepared for every step, and still leaving the commit to you. It does the figuring-out, you still travel.",
         ],
         ul: [
           "The failure mode of most agents: a wrapper that answers a turn and forgets you, when the real job lives across time",
@@ -1321,12 +3307,41 @@ const caseStudies = {
         ],
       },
       {
+        h: "They already know",
+        tldr: "Across every scenario we walked travellers through, one sentence kept coming back about human agents: 'I reach out to my agent, and they already know what's going on. I don't have to worry.' That sentence became the bar the agent has to clear.",
+        p: [
+          "Before the screens, I kept walking travellers through their real trips: how they book, what they do when a flight moves, who they call when something breaks abroad. The scenarios differed and the travellers differed, but one line did not. Every single person who used a human agent described the relationship the same way: 'when I'm travelling internationally, I reach out to my agent, and they already know what's going on. I don't have to worry.'",
+          "Read it carefully and it is not a compliment about service, it is a load-bearing assumption. The relationship is predicated on the agent already knowing. Nobody briefs their own agent; the moment you have to explain your trip to the person who is supposed to be watching it, the relationship is dead and they are a call centre.",
+          "That one sentence set the bar for everything after the booking. The watch keeps a diary so the agent can show what it has been watching, not claim it. The doc-check speaks up before you ask. And when a trip breaks, the disruption surface opens already knowing, what changed, what you are owed, the one smart move, never 'how can I help you today?'. The whole design of phases two through five is that you never, ever catch the agent up.",
+        ],
+        divider: true,
+      },
+      {
         h: "My role",
-        tldr: "[Sole] designer on a small founding team; I designed the agent across the full trip lifecycle, its behaviour, its surfaces, and the voice it speaks in.",
+        tldr: "The sole designer on a five-person founding team; I designed the agent across the full trip lifecycle, its behaviour, its surfaces, and the voice it speaks in.",
         p: [
           "I led design end to end as the only designer on a five-person founding team: the CEO, the CTO, two developers, and me. My remit was the agent as a whole experience, not a set of screens.",
           "Concretely, I designed how the agent searches, vets and recommends, how it gates the booking, and how it behaves across every phase of the trip after, including the disruption moments. I also owned the voice: the line between when the agent is allowed an opinion and when it goes quiet, which on a product where the words are the product is itself most of the design.",
         ],
+      },
+      {
+        h: "Decisions",
+        tldr: "The five forks that shaped the agent, and what I turned down at each. The through-line: do the whole job, and never take the wheel.",
+        p: [
+          "Every hard call on this product sat between doing more and staying trustworthy. Read as a ledger, the design is as much the set of things the agent deliberately does not do as the things it does.",
+        ],
+        table: {
+          cols: ["The fork", "What I chose", "Why, and what I turned down"],
+          rows: [
+            ["Answer the turn, or own the case", "Own the whole trip: find, vet, book, watch, rescue, remember", "The value lives in the follow-through, not the booking. I turned down the wrapper that answers well and vanishes."],
+            ["Take the wheel, or hand off", "Prepare, recommend, and hand off; the person always commits", "One wrong auto-action breaks trust on a product moving real money. I turned down autonomy, even where it would feel faster in a crisis."],
+            ["Split domestic and international, or one system", "One system that shifts gears on the price anchor, not the border", "The fare data showed the passport was the wrong line to draw. I abandoned the two-flow build I had almost started."],
+            ["A new paradigm, or the trained habit", "Keep scroll-and-pick, but hand back a vetted, trap-flagged list", "Indian travellers are OTA-trained, so I upgraded the habit instead of fighting the muscle memory."],
+            ["One voice, or a dial", "Three registers, edge, calm, and warmth, routed by how exposed you are", "A joke in the wound is unforgivable, so the agent goes quiet exactly where money moves or the trip breaks."],
+          ],
+          caption: "The agent as a decisions ledger: each row is a fork, the choice, and the direction I turned down.",
+        },
+        divider: true,
       },
       {
         h: "The dial",
@@ -1334,13 +3349,52 @@ const caseStudies = {
         tldr: "The agent has a strong personality, and the craft is knowing when to turn it down: loud and opinionated when it is winning for you, quiet and calm when your money is moving or the trip is breaking.",
         p: [
           "The brand gave me the spine. Away is the friend in the trade: warm and generous pointed at you, dry and unimpressed pointed at the airlines and OTAs that profit from your confusion. The enemy is never the traveller; it is the industry. So the agent has a real point of view, and the whole design is one question asked at every moment: which way is it facing, and how loud is it?",
-          "I think of it as a dial. The edge runs free where the agent is on your side against the industry, the verdict on a search, the warning about a trap, the compensation you are owed. It softens to plain and calm exactly where you are exposed, the first thirty seconds, anything touching money, any error. And it goes all warmth, zero edge, in a real crisis, because a joke in the wound is unforgivable. 'Crisis' and 'delight' are not two piles of screens; they are the two ends of that one dial, and this case study is the dial.",
-          "Two rules hold it all together. The agent does the work of the best human agent on the phone and then exceeds it, the long price watch, the passport check, the compensation claim, things no human agent actually does. And it never takes the wheel: it prepares, recommends, and hands off, but the person always commits. One skill runs the length of it, negotiation, the same muscle that beats the fare is what has your back when the trip goes wrong.",
+          "I think of it as a dial. The edge runs free where the agent is on your side against the industry, the verdict on a search, the warning about a trap, the compensation you are owed. It softens to plain and calm exactly where you are exposed, the first thirty seconds, anything touching money, any error. And it goes all warmth in a real crisis, because a joke in the wound is unforgivable. 'Crisis' and 'delight' are not two piles of screens, they are the two ends of that one dial, and this case study is the dial.",
+          "Two rules hold it all together. The agent does the work of the best human agent on the phone and then exceeds it: the long price watch, the passport check, the compensation claim, things no human agent actually does. And it never takes the wheel. It prepares, recommends, and hands off, but the person always commits. One skill runs the length of it, negotiation: the same muscle that beats the fare is what has your back when the trip goes wrong.",
         ],
-        figure:
-          "The dial: the agent is loudest when it is winning for you against the industry, and quietest when your money is moving or the trip is breaking. [Add the lifecycle dial infographic.]",
+        table: {
+          cols: ["Register", "How it sounds", "Where it shows up"],
+          rows: [
+            ["Edge", "Loud, opinionated, dry at the industry", "The verdict on a search, a trap flagged, the compensation you are owed"],
+            ["Calm", "Plain and restrained, no jokes", "The first thirty seconds, anything touching money, any error"],
+            ["Warmth", "All warmth, zero edge", "A real crisis, a missed connection at 2am"],
+          ],
+          caption: "One dial, three registers: it faces the industry loudly and goes quiet exactly where you are exposed.",
+        },
         divider: true,
       },
+      {
+        h: "Cards, not chat",
+        tldr: "The agent does not just reply, it renders. Every real action, add a passenger, cancel a booking, check in, is a tool the agent calls that draws its own interactive card in the chat, and you are the one who taps commit. The co-pilot rule is not only a tone I write in, it is the architecture.",
+        p: [
+          "Under the friendly voice, the agent works by calling tools, and a tool does not answer in words, it renders a small interactive surface right in the conversation. Ask it to cancel a booking and it cancels nothing: it draws a card of your flights and passengers and waits for you to choose who and press the button. Ask it to add a traveller and a passenger form appears in the thread. Search, refine, filter, the fare calendar, web check-in: each is a tool with its own card. The reply is a piece of UI, not a paragraph, so the agent can do the whole job without leaving the conversation, and without ever taking the last step for you.",
+          "This is where never take the wheel stops being a slogan and becomes a state machine. A tool call moves through a fixed set of states: the arguments stream in, the card becomes ready, and for anything consequential it waits in an approval state until you respond, which resolves to done or, just as deliberately, to denied. Denied is a first-class outcome, the system is built to hear no. Nothing that spends money or changes a booking can skip that gate. The card can be completely prepared, the passengers pre-filled, the cheapest rebooking already worked out, and it still waits for your tap. The design principle and the code are the same sentence.",
+          "Two smaller choices keep it from feeling like a form wizard. When the agent only needs a fact it cannot infer, it asks with a tappable card, and your answer travels back as an ordinary message, the same path as anything you type, so nothing dangles if you ignore the card and say something else instead. And while a tool's arguments are still streaming, its loading card mounts once and fills in place rather than flashing and remounting, so the surface settles quietly instead of blinking.",
+        ],
+        table: {
+          cols: ["The agent's tool", "The card it draws", "Who commits"],
+          rows: [
+            ["Ask a question", "The question with tappable options", "You, by answering in a tap"],
+            ["Search, refine, filter, calendar", "A live flight search, re-ranked in place", "You pick the flight"],
+            ["Add passengers", "A passenger form inside the thread", "You fill it and confirm"],
+            ["Web check-in", "A per-leg check-in card", "You, at the airline's door"],
+            ["Cancel a booking", "Your flights and passengers to select", "You approve, or deny"],
+            ["Navigate", "A jump to the right screen", "You tap through"],
+          ],
+          caption: "The agent acts by calling tools, and every tool renders its own control. The last tap is always the traveller's.",
+        },
+        spec: [
+          {
+            label: "Honest scope",
+            items: [
+              "The tool set is deliberately small: the moments where handing you a real control beats another sentence, not every action the agent could take.",
+              "The disruption rescue and the compensation claim are still designed surfaces ahead of the tools that will back them; today they are rendered, not yet tool-driven.",
+            ],
+          },
+        ],
+        divider: true,
+      },
+      /* Onboarding section hidden per annotation (mqnrmrjj) — uncomment to restore
       {
         h: "Onboarding",
         group: "Zero state",
@@ -1354,6 +3408,7 @@ const caseStudies = {
           "Onboarding: the concierge wakes (the boot as a ritual), a named welcome, every OTP state, and the freemium gate, free agent and invite to book.",
         divider: true,
       },
+      */
       {
         h: "The home",
         group: "Zero state",
@@ -1361,11 +3416,22 @@ const caseStudies = {
         p: [
           "The home adapts to how well the agent knows you. A stranger lands on a convince-first surface, the agent showing what only someone in the trade would know, a route at a three-month low, a season about to peak, with a calm input waiting. A regular lands input-first, their trips and watches on top. You can type, speak, or paste a screenshot of a fare you found elsewhere, and as you go, a single input blooms into just the structured pickers it still needs, location, dates, travellers, so the fast path is never blocked by a form.",
           "The agent does not interrogate your preferences; it infers them and reflects them back with a point of view, the friend who knows the route, not a dumb echo: 'mid-December is brutal on this one, want me to peek at the week after?' And when your wants conflict, it does not silently pick one. It names the fight and claims it as the work: 'cheap and lie-flat usually fight on this route, that gap is the part worth working.' That single turn is the whole product in a sentence.",
-          "Then the result. Indian travellers are trained to scroll a list and pick, so I did not fight that. The agent gives you a list, but one it has already vetted: sorted by which is right rather than merely cheapest, the traps flagged inline with the reason, a hidden self-transfer, a connection one in four people miss, and the fares the OTAs bury surfaced. Even the honest no-win is a trust moment: when the negotiation cannot beat the public fare, the agent says so plainly, shows the work it did, then goes back and offers nearby dates or a reroute, because the one thing no OTA will ever tell you is that you already have the best price.",
+          "Then the result. Indian travellers are trained to scroll a list and pick, so I did not fight that. The agent gives you a list, but one it has already vetted: sorted by which is right rather than merely cheapest, the traps flagged inline with the reason, a hidden self-transfer, a connection one in four people miss, and the fares the OTAs bury surfaced. Even the honest no-win is a trust moment. When the negotiation cannot beat the public fare, the agent says so plainly, shows the work it did, then goes back and offers nearby dates or a reroute, because the one thing no OTA will ever tell you is that you already have the best price.",
         ],
+        table: {
+          cols: ["", "A stranger", "A regular"],
+          rows: [
+            ["Lands on", "A convince-first surface", "An input-first surface"],
+            ["Leads with", "Insider proof: a route at a three-month low, a season about to peak", "Their trips and watches, on top"],
+            ["The input", "A calm box waiting to type, speak, or paste a fare", "Pick up where they left off"],
+          ],
+          caption: "The home adapts to how well the agent knows you: convince a stranger, get out of a regular's way.",
+        },
+        /* figure + caption hidden per annotation (mqnrnbjn / mqnrni7p) — uncomment to restore
         fig: "awHome",
         figure:
           "The adaptive home: convince-first for a stranger (insider proof), the single input blooming into the pickers it needs, and input-first for a regular with the watched trip on top.",
+        */
         divider: true,
       },
       {
@@ -1417,7 +3483,16 @@ const caseStudies = {
         p: [
           "People shop a fare across about 45 days and dozens of visits, and abandon most of it. So the zero state is built to win the return: it drops you onto the one thing you were closest to acting on, and reads differently each visit.",
         ],
-        screen: "The home as a re-entry surface, the returning traveller dropped onto their nearest unfinished decision.",
+        chart: {
+          type: "stats",
+          title: "How a flight actually gets bought",
+          data: [
+            { value: "45", suffix: " days", label: "active shopping window", note: "Expedia clickstream" },
+            { value: "48", label: "searches before booking", note: "Expedia" },
+            { value: "88", suffix: "%", label: "of travel carts abandoned", note: "Amadeus / SaleCycle" },
+          ],
+          caption: "A flight is bought over weeks and dozens of visits, so the home is a re-entry surface, not a launchpad.",
+        },
         divider: true,
       },
       {
@@ -1435,7 +3510,7 @@ const caseStudies = {
         group: "Search",
         tldr: "The agent collects a complete brief as a conversation, never a form, and reads a messy all-at-once request just as well as a tidy one.",
         p: [
-          "A good search needs a lot of facts, so the agent gathers them one tappable question at a time, in a deliberate order, and never asks twice for where you fly from, that is captured the moment you open the app. The preferences you give last, direct only, extra bag, cheapest, low cancellation, become the lens it vets with later.",
+          "A good search needs a lot of facts, so the agent gathers them one tappable question at a time, in a deliberate order. It never asks twice for where you fly from: that is captured the moment you open the app. The preferences you give last, direct only, extra bag, cheapest, low cancellation, become the lens it vets with later.",
           "And not everyone answers one step at a time. One client typed a single paragraph carrying eleven constraints at once, two flexible origins, a date range with tolerance, carriers to avoid, a stop limit, a transit-visa rule. The agent pulls each out into a structured brief, so the messy, real request is never the worse path.",
         ],
         fig: "awIntakeBrief",
@@ -1462,11 +3537,34 @@ const caseStudies = {
         tldr: "A real negotiation takes a couple of minutes, so the agent narrates it as a live timeline built from your own flights, and holds an honesty line: it names the category of work truthfully without claiming a step it cannot guarantee.",
         p: [
           "Negotiating across hundreds of supplier fares is not instant, and a blank spinner for two minutes reads as broken while hiding the work that justifies the price. So the agent narrates: a live timeline built from your actual airlines and routes, scanning inventory, cross-referencing supplier prices, negotiating bulk rates, scoring your options. It leans on the labour-illusion principle, that visible effort is trusted and valued more than a number that simply appears.",
-          "I held a clear line on honesty here. The narration names the category of work truthfully and never claims a specific action the system cannot guarantee, and it resolves on the one thing that is unambiguous, the money: the public fare struck through, the negotiated price beside it.",
+          "I held a clear line on honesty here. The narration names the category of work truthfully and never claims a specific action the system cannot guarantee. It resolves on the one thing that is unambiguous, the money: the public fare struck through, the negotiated price beside it.",
         ],
         fig: "awDeepSearch",
         figure:
           "The deep-search timeline: the agent thinking out loud, a live sequence built from your flights, resolving on the savings reveal.",
+        divider: true,
+      },
+      {
+        h: "What the data changed",
+        group: "Search",
+        tldr: "I assumed domestic and international were two different searches and almost built two flows. The real fare data said the split that matters is not the border, it is whether the traveller has any idea what good costs.",
+        p: [
+          "The obvious move was to treat domestic and international as two products: a fast scan for the home routes, a richer and slower flow for the big trips abroad. I was close to building it that way. Then I pulled the actual fare payloads, and the border turned out to be the wrong line to draw.",
+          "What separates the two is not the passport, it is the price anchor. A four-hour Bangalore to Dubai hop is non-stop, predictably priced, and behaves exactly like a domestic scan: the traveller roughly knows the number, so the job is just to show the options. A thirty-one-hour Bangalore to US trip does not: it is almost always two stops, a third of the fares quietly drop the checked bag, and the price swings through a different hub each time. There the traveller has no idea what good even costs, and that, not the destination, is what calls for the agent to slow down and form an opinion.",
+          "So I built one system that shifts gears instead of two products that drift apart. It reads three signals, the price magnitude, how strong a price anchor the route has, and how much the options actually vary, and dials itself from a quick scan toward a slower, more opinionated vetting. Short-haul international rides the scan path; a gnarly long-haul earns the full treatment. The passport never decides it, the shape of the decision does.",
+        ],
+        table: {
+          cols: ["", "Short-haul international", "Long-haul international"],
+          rows: [
+            ["Example", "Bangalore to Dubai, 4h", "Bangalore to the US, 31h"],
+            ["Stops", "Non-stop", "Almost always two"],
+            ["Price anchor", "Strong, you know the number", "None, no idea what good costs"],
+            ["Checked bag", "Included", "A third of fares quietly drop it"],
+            ["Price behaviour", "Predictable", "Swings through a different hub each time"],
+            ["Agent gear", "Quick scan", "Slow, opinionated vetting"],
+          ],
+          caption: "The border was the wrong line to draw: the price anchor, not the passport, decides how hard the agent works.",
+        },
         divider: true,
       },
       {
@@ -1485,11 +3583,54 @@ const caseStudies = {
       {
         h: "The verdict",
         group: "Search",
-        tldr: "A results card is an argument in six layers, not a list.",
+        tldr: "A results card is an argument, not a row in a list: the one flight the agent would book, and underneath it, the ones it ruled out and exactly why each is a trap.",
         p: [
-          "The card carries the whole round trip, a price-by-date strip when you are flexible, a lens that re-ranks and constraints that filter, the agent's pick with the fine print on tap, the real edge over the OTAs, and one or two defensible reasons. It renders a verdict, then lets you overrule it.",
+          "Most search tools hand you the cheapest and let you discover the catch at the gate. The verdict card does the opposite. It leads with the single flight the agent would book, then shows its work: a short dossier of the options it threw out, each with the reason it lost. The cabin-bag-only fare that is not actually the cheapest once the counter charge lands. The self-transfer on two tickets no airline will cover if the first leg slips. The fare that is cheap because it is a twenty-one-hour grind. Naming the rejected options out loud is the move no OTA makes, and it is what retires the fear that something better was hiding.",
+          "Under the headline, the card is an argument in layers, and the price-by-date strip is the one I want to be precise about, because it looks like a filter and is deliberately not one. It is evidence: proof the agent swept the whole landscape and this is the floor, not a slider you drag to do the agent's work. I built a version with an Airbnb-style price range you could drag, then cut it. In an agent product, making you operate the controls is the failure, not the feature. The bars stay as proof, the handles go.",
+        ],
+        ul: [
+          "The pick, stated first, with the fine print one tap away",
+          "The ruled-out traps, each with the reason it lost",
+          "A price-by-date strip as evidence the floor was found, not a filter to operate",
+          "A lens that re-ranks and constraints that filter, for when you want to drive",
+          "The real edge over the OTAs, the negotiated fare set against the public one",
+          "One or two defensible reasons, and the freedom to overrule the whole thing",
         ],
         fig: "awResultCard",
+        divider: true,
+      },
+      {
+        h: "Under the verdict",
+        group: "Search",
+        tldr: "The verdict is not a vibe. It rests on a scoring engine that grades every flight on the four things travel trades on, against an absolute bar, and disqualifies traps no matter how cheap they look.",
+        p: [
+          "A confident pick needs something defensible underneath it, so the verdict sits on an index that scores each flight on the four things travel actually trades on: price, time, flexibility, comfort. The load-bearing decision was to score against an absolute reference, the route's own history and a real sense of good, rather than against the other flights in the set. Grade a flight only against the poor options beside it and you manufacture a false best out of a bad day, which is the exact illusion the product exists to kill.",
+          "On top of the score sit hard gates that a low price cannot buy back. A self-transfer no airline backstops, a connection that changes airports, a layover under the safe minimum: each is disqualified from the recommendation however cheap the fare, because the cost when it goes wrong is the whole reason to vet. The blended score only ranks the options behind the scenes and is never shown; what you meet is the verdict and the reasons. v1 leans on the signals computable today and degrades honestly rather than inventing a number it cannot stand behind.",
+        ],
+        divider: true,
+      },
+      {
+        h: "Fares are verdicts",
+        group: "Search",
+        tldr: "Airlines sell a thousand messy branded fares; a traveller wants an outcome. So Away stops reselling brands and renders a verdict on every fare across six axes, then names a handful of honest fare types anyone can act on.",
+        p: [
+          "I pulled 45,000 real international fares out of the deep search, and the first thing the data killed was leaning on airline fare brands. There were over a thousand distinct brand strings, Normal, PUBLISHED, SME, TACTICAL, ECO FLEX, half of them supplier-internal noise. You cannot build a shelf out of that. So Away does not resell fare brands; it reads every fare as a point across six axes, cabin, route shape, baggage, flexibility, comfort, and the all-in price with its source, and renders a verdict on it rather than handing over a bare row.",
+          "The old four buckets, Best Price, High Luggage, Low Cancellation, Standard, had to go: no cabin axis, baggage and flexibility flattened into labels when they are really spectrums, and Best Price made the default when it is usually the trap. In their place is a small set of value types, each a verdict with the catch on its face: the Best Value with your seat and bag already inside, the honest Cheapest, the Bare Fare shown unmasked with its stripped atoms greyed, the Low-cancellation, the High-luggage, and the Cabin step-up. Same card, a different verdict.",
+          "One thing is deliberately not a fare type: how the ticket is built. Whether the trip is one ticket all the way, a codeshare flown by a partner, or a self-transfer stitched from separate unprotected tickets is a property of the flight, not a category of fare. So Away highlights it once on the flight itself and carries it into every fare beneath, with the self-transfer flagged red wherever it appears and never sold as just another cheap option.",
+          "The honesty is load-bearing, because the data is unsentimental: across those 45,000 fares the negotiated price beat the public reference only about half the time, and when it did the typical edge was 3.4 percent. So when a constructed rate does not win, the card says already the best price here and shows the public one. It never invents a discount, and where a baggage string or a ticket structure cannot be confirmed, it says so rather than guessing.",
+        ],
+        chart: {
+          type: "stats",
+          title: "What 45,000 real fares said",
+          data: [
+            { value: "1,013", label: "distinct fare-brand strings in the dump, unusable as a shelf" },
+            { value: "50", suffix: "%", label: "of negotiated fares beat the public price at all", note: "the rest tie or cost more" },
+            { value: "3.4", suffix: "%", label: "typical edge when negotiation does win", note: "median of the winners" },
+          ],
+        },
+        fig: "awFareCards",
+        figure:
+          "Structure lives on the flight, highlighted as one of one-ticket, codeshare, or self-transfer; the fare types below are pure value variations. Tap a type to see its verdict: the badge, the true all-in with its source, the attribute strip, the trap ledger, and the honest catch. The Bare fare shows its stripped atoms greyed with the made-whole price beneath.",
         divider: true,
       },
       {
@@ -1503,26 +3644,162 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "The gate",
+        h: "Ticket structure",
         group: "Book",
-        tldr: "The whole agent is free; only the booking sits behind an invite. The gate proves the engine with a few real fares and locks the rest, and the agent never charges a card without your tap.",
+        tldr: "How a ticket is built decides who owes you a flight when something goes wrong, so the agent makes the structure legible before you commit, not at the airport. Four cases are worth knowing, each shown below.",
         p: [
-          "Away is invite-only, but I gated the booking, not the agent. The entire thing, search, negotiation, the watch, the rescue, is free; the invite only bites when you go to book. At that moment the agent does not slam a wall up, it proves itself, showing a few real negotiated fares and locking the rest, so you feel the value before you are asked to join. The most generous possible version of a private club.",
-          "Money is where the dial goes fully calm. The receipt is clean and understated, 'it is taken care of.' The most careful screen in the app is the one right after you pay: it never reads a slow gateway as a failure, it holds you steady ('confirming your payment, this usually takes a few seconds, do not close the app') and polls until it has a real answer, and if the airline is slow to issue the ticket it says so plainly and gives you a place to watch it, so your money is never somewhere you cannot see. And the line the whole product rides on: the agent prepares the booking, but you tap to commit. It never books, and never rebooks, on its own.",
+          "This sits between search and booking: you have a fare you like, and the structure under it is the part most travellers never notice until it is too late. The agent surfaces it up front, sets honest expectations on what it cannot control, and still leaves the commit to you.",
+          "Honest caveat: the shipped app stores both flights in one list but does not yet model PNR-stitching, a codeshare flag, or series-fare holds, so the four cases below are the designed target, not yet built.",
         ],
-        fig: "awBook",
-        figure:
-          "Gate the booking, not the agent: a few real fares shown and the rest locked behind the invite, then the money-in-flight screen that holds you steady, a declined card with no blame, and the receipt that starts the 90-day watch.",
+        table: {
+          cols: ["", "Who protects it", "If you misconnect", "Confirmed", "Best for"],
+          rows: [
+            ["One ticket, one PNR", "The airline, end to end", "Their problem to fix", "At booking", "Peace of mind"],
+            ["Two tickets, self-transfer", "Nobody", "On you, usually non-refundable", "At booking", "The lowest fare, eyes open"],
+            ["Group or series fare", "The airline, once named", "Their problem once confirmed", "About 24h before departure", "Families and groups"],
+            ["Many passengers or mixed", "Per leg", "The weakest leg decides", "Varies by leg", "Complex trips"],
+          ],
+          caption: "The four ticket structures at a glance: who is on the hook when it breaks. Each is detailed below.",
+        },
+        divider: true,
+      },
+      {
+        h: "One ticket",
+        group: "Book",
+        tldr: "One ticket, one PNR: a single booking the airline protects the whole way.",
+        p: [
+          "When both legs sit on one PNR, often a codeshare, it is a single ticket the airline protects end to end; if you misconnect, fixing it is their problem, not yours. The marketed airline may not actually fly every leg, so the agent names the operating partner up front. This is the safe option, and it says so plainly rather than burying it.",
+        ],
+        screen: "One ticket, one PNR: the protected itinerary, the operating partner named, the protection stated plainly.",
+        divider: true,
+      },
+      {
+        h: "Two tickets",
+        group: "Book",
+        tldr: "Two airlines, two PNRs, a self-transfer nobody protects.",
+        p: [
+          "A self-transfer stitches two separate tickets across two airlines. Nobody protects the connection, so a missed first leg is on you, and usually non-refundable. It is often the cheapest row in the results, which is exactly why the agent flags it loudest: it shows the real layover, the minimum safe connection time, and what happens if the inbound is late, all before you commit.",
+        ],
+        screen: "Two tickets, self-transfer: the unprotected connection flagged loudest, with the real layover and the if-leg-one-is-late case.",
         divider: true,
       },
       {
         h: "Group fares",
         group: "Book",
-        tldr: "Booking for a family surfaces the structure under the fare, honestly, before you pay.",
+        tldr: "A block fare confirmed to a name only about 24 hours before departure.",
         p: [
-          "A group fare is cheap because your seat sits in a block the airline confirms to a name only about 24 hours out, and sometimes it slips; a self-transfer across two airlines is protected by no one. The agent sets these expectations up front, not at the airport. Honest caveat: the shipped app does not yet model series fares or PNR-stitching, so this is the designed target, not yet built.",
+          "Group and series fares are blocks pre-booked months ahead at a low price; your seat is confirmed to a name only about 24 hours before departure, and sometimes that confirmation slips. The agent never sells it as done: it states the confirmation window up front and works the booking if it slips, instead of going silent. Best for a family or a group on a fixed budget, where a surprise at the airport is the worst outcome.",
         ],
-        screen: "The family booking: the series-fare confirmation window and the protected-versus-self-transfer distinction, made legible before commit. (proposed, not yet in the shipped data model)",
+        spec: [
+          {
+            label: "How a series fare runs (the copy on the card)",
+            items: [
+              "Now: your seat is confirmed inside the group booking and payment is held; there is no PNR yet, which is normal for this fare, not a fault.",
+              "About 48 to 72 hours out: passenger names are locked with the airline, so the exact passport name is due before then.",
+              "The last 24 hours: the airline releases the PNR and ticket number; the agent issues it and pings you the moment it lands, in time to check in.",
+              "Changes and cancellations are limited, the honest trade for the lower group price; if plans might move, the agent steers you to a movable fare instead.",
+            ],
+          },
+        ],
+        screen: "Group and series fares: the confirmation window shown honestly, the seat firming up close to departure, never sold as done.",
+        divider: true,
+      },
+      {
+        h: "Many passengers",
+        group: "Book",
+        tldr: "Rules differ per passenger and per leg; the agent reconciles them into one picture.",
+        p: [
+          "With several passengers or a mixed itinerary, fare rules, baggage, and seats can differ per person and per segment. The agent reconciles them into one clear picture instead of a pile of policies, and on a mixed trip, one protected leg and one self-transfer, it walks the journey leg by leg with the weakest link called out.",
+        ],
+        screen: "Multiple passengers and mixed itineraries: per-passenger and per-leg rules reconciled into one picture, the weakest link called out.",
+        divider: true,
+      },
+      {
+        h: "Seats and bags",
+        group: "Book",
+        tldr: "In the quiet moment before you pay, the agent offers seat, bag, and meal honestly, only what the airline actually sells, with whatever is already free shown plainly, and you decide.",
+        p: [
+          "Add-ons are where honest products turn pushy. The rule here: offer only what the supplier genuinely sells for this flight, show what the fare already includes so nobody pays twice, and let the person choose. The agent suggests and surfaces the running total and the fee impact; it never selects a seat or a bag on your behalf.",
+        ],
+        spec: [
+          {
+            label: "States",
+            items: [
+              "Selectable only before payment, while the passenger rows are still open; there is no post-payment amend flow.",
+              "Per leg, the agent shows what is available: a seat map, a bag, a meal, or nothing if the airline sells nothing.",
+              "What is already included in the fare is shown plainly, so a free bag is never sold back to you.",
+              "The running total and the fee impact update as you add, before you commit.",
+            ],
+          },
+          {
+            label: "Honest scope",
+            items: [
+              "Add-ons are tracked at flight level, not true per-segment, even though baggage carries per-segment refs; per-segment is the intent, not yet the shipped granularity.",
+              "Infants are excluded from seat and bag selection.",
+            ],
+          },
+        ],
+        screen: "The add-ons moment before payment: only what the airline sells, the already-free items shown plainly, the running total updating, and nothing selected for you.",
+        divider: true,
+      },
+      {
+        h: "Tap to pay",
+        group: "Book",
+        tldr: "Away never charges your card without your tap. You hold the money: the agent prepares the booking and hands you the commit, the convenience fee on UPI is zero, and with Away Advance the ticket is issued before you settle.",
+        p: [
+          "The commit is the one thing the agent never does for you. It finds, vets, and prepares the whole booking, then hands you the tap, no stored-card surprise, no auto-charge, no fare quietly pushed through while you were not looking. Money is where the dial goes fully calm: the screen right after you pay never reads a slow gateway as a failure, it holds you steady and polls until it has a real answer, so your money is never somewhere you cannot see.",
+          "Two things make paying feel safe rather than tense. On UPI the convenience fee is zero, so the price you agreed to is the price you pay. And the order is reversed from a normal OTA: with Away Advance the flight is booked and the ticket issued first, then you settle, so you are never paying into a void and hoping a PNR appears. You commit, the ticket lands, then the money moves.",
+        ],
+        video: "/figures/away-convenience-reel.mp4",
+        videoPoster: "/figures/away-convenience-reel-poster.png",
+        videoCaption: "What you see is what you pay: the fare breakdown with a zero convenience fee on UPI and no last-minute surprises. Exported from the Away Figma motion reel.",
+        divider: true,
+        spec: [
+          {
+            label: "States",
+            items: [
+              "You tap to pay, nothing is charged before that.",
+              "Confirming: the gateway is polled to a real answer while the screen holds you steady.",
+              "Captured: the money is in, the ticket is not issued yet.",
+              "On UPI the convenience fee is zero.",
+              "With Away Advance the ticket is issued first and you settle after.",
+            ],
+          },
+          {
+            label: "If it goes wrong",
+            items: [
+              "A slow gateway is never read as a failure, it keeps polling.",
+              "A declined card lands on a calm retry, no blame.",
+            ],
+          },
+        ],
+      },
+      {
+        h: "Price moved",
+        group: "Book",
+        tldr: "If the fare moves while the agent is verifying your payment, you are told exactly what changed before a rupee is charged, never a silent stale price.",
+        p: [
+          "Fares can shift in the seconds between choosing and paying. When that happens the agent stops and shows the delta, per leg, onward and return, recomputes the convenience fee on the new total, and asks before continuing. A small rise is yours to accept or to look again; a fare that is simply gone sends you back to search rather than charging you for something you cannot have.",
+        ],
+        spec: [
+          {
+            label: "States",
+            items: [
+              "Price confirmed unchanged: payment proceeds normally.",
+              "Price moved: a sheet shows the per-leg delta and the recomputed total, you choose to continue or search again.",
+              "Fare no longer available: the agent says so plainly and sends you back to pick a new fare.",
+            ],
+          },
+          {
+            label: "Honest rails",
+            items: [
+              "A stale price is never charged silently, the gateway check or the booking refetch is the backstop if a live event is missed.",
+              "The convenience fee is non-refundable, and the agent says so rather than hiding it.",
+              "Honest gap: if both legs move and net to zero, the total is accepted even though each leg changed; the per-leg shift is not yet called out.",
+            ],
+          },
+        ],
+        screen: "The price-changed sheet: the per-leg delta, the recomputed total, and a clear choice to continue or search again, before anything is charged.",
         divider: true,
       },
       {
@@ -1537,6 +3814,16 @@ const caseStudies = {
         figure:
           "Confirmation: the emotional payoff, a legible protected-connection ticket, and the paid-but-not-yet-ticketed gap held steady, never a void.",
         divider: true,
+        table: {
+          cols: ["State", "What you see", "What the agent does"],
+          rows: [
+            ["Paid, confirming", "Payment confirmed, the bill already settled", "Clears the chat, starts polling the booking"],
+            ["Ticketing", "Fetching your tickets, a spinner where the PNR will be", "Polls every 10s, then 60s, watching each leg"],
+            ["Issued", "The PNR lands, you are going", "Surfaces the PNR and flips the screen to confirmed"],
+            ["Ticketing fails", "An honest problem with a next step, never an eternal spinner", "Surfaces it plainly, not silence"],
+            ["You step away", "Track in My Bookings", "Holds the wait server-side and pings you when it is done"],
+          ],
+        },
       },
       {
         h: "Charged twice",
@@ -1547,6 +3834,21 @@ const caseStudies = {
         ],
         screen: "The money-in-flight screen holding a double-tap steady, and a declined card retried without blame.",
         divider: true,
+        spec: [
+          {
+            label: "States",
+            items: [
+              "A worried double tap is held, not charged twice, back-navigation is locked while it verifies.",
+              "A decline is retried calmly, with no blame.",
+            ],
+          },
+          {
+            label: "Honest gap",
+            items: [
+              "There is no server-side idempotency guard yet, the locked screen is the real guard.",
+            ],
+          },
+        ],
       },
       {
         h: "What you bought",
@@ -1556,6 +3858,62 @@ const caseStudies = {
           "Once the PNR lands the agent says it plainly: one ticket or two, protected or a self-transfer you own, which leg a partner operates, and a passport-and-visa check run weeks early while it is cheap to fix. The point is not the data, it is you're protected, and here is why.",
         ],
         screen: "The booking read back in plain terms: protection, operated-by, and an early document check.",
+        divider: true,
+        spec: [
+          {
+            label: "States",
+            items: [
+              "The PNR read back in plain words: one ticket or two, protected or a self-transfer, which leg a partner flies.",
+            ],
+          },
+        ],
+      },
+      {
+        h: "Documents",
+        group: "First hours",
+        tldr: "A passport-and-visa check run against this exact trip, early, so a missing document is a fixable problem now, not a denied boarding at the gate.",
+        p: [
+          "The things that strand people are boring and predictable: a passport inside the six-month window, a transit visa for a stop you did not think about, a name that does not match. The agent checks them against this specific itinerary the moment the trip is booked, while there are weeks to fix anything, and flags exactly who is missing what and by when.",
+        ],
+        spec: [
+          {
+            label: "States",
+            items: [
+              "Clear: every passenger has what this trip needs, said once, then quiet.",
+              "Passport expiry inside the six-month window flagged, with the deadline.",
+              "A transit visa required for a specific stop, surfaced per stop, not just per destination.",
+              "A missing passport number or detail on an international booking, caught early rather than at check-in.",
+            ],
+          },
+        ],
+        screen: "The document check against this trip: passport validity, transit visas per stop, and who is missing what, with weeks to fix it.",
+        divider: true,
+      },
+      {
+        h: "The win, paid back",
+        group: "First hours",
+        tldr: "You negotiated instead of just booking, so confirmation is also the moment the agent pays that effort back, honestly.",
+        p: [
+          "Someone who negotiated instead of just booking did real work: comparing fares, waiting through a search, choosing between trade-offs. Confirmation is where that effort gets acknowledged, not with an inflated savings number, but with the terms they actually won read back as a win: a lower-cancellation fare locked, a free check-in bag included, the specific thing they picked for and got.",
+          "(speculative) Two smaller ideas sit alongside this, not yet built: a small Away-cash credit for a completed booking, and a report card built from the trip's own history, how many days they watched, how many searches, how many fares compared, turned into one shareable card. Both are one-tap-to-share by design, so the gratification is also a referral.",
+        ],
+        spec: [
+          {
+            label: "States",
+            items: [
+              "Fare won, read back in the same language as the fare card: bucket name plus the concrete benefit, not a rupee figure.",
+              "(speculative) A booking reward credited automatically.",
+              "(speculative) A report card summarising the search effort behind this booking, one tap to share.",
+            ],
+          },
+          {
+            label: "Honesty rails",
+            items: [
+              "Real negotiation savings run a few percent under other OTAs, not a large number, so the win is framed on terms won, never on an inflated price delta.",
+              "Nothing here celebrates before the PNR is confirmed real.",
+            ],
+          },
+        ],
         divider: true,
       },
       {
@@ -1570,6 +3928,41 @@ const caseStudies = {
         figure:
           "The quiet middle of the trip: the agent watches without nagging (a living diary), catches a passport problem early while it is still fixable, and calls back weeks later when the fare drops.",
         divider: true,
+        table: {
+          cols: ["What it watches", "What you see", "What the agent does"],
+          rows: [
+            ["Tickets issuing", "Fetching tickets, then a tap-to-copy PNR", "Polls fast until issued, then flips to confirmed"],
+            ["Price, until capture", "A prices-have-changed sheet if a fare drifts", "Subscribes to the price channel, asks before continuing, never auto-accepts"],
+            ["Check-in window", "A Check in button per leg when it opens", "Polls the window, reveals the button, copies the PNR"],
+            ["The quiet middle", "A plain line of what it is keeping an eye on", "Watches in silence, pings only when there is something to do"],
+          ],
+        },
+      },
+      {
+        h: "The due date",
+        group: "During the trip",
+        tldr: "If you booked on Away Advance, the settle date can land while you are already traveling, so the agent keeps it from becoming a surprise.",
+        p: [
+          "Pay-later is a relief at booking and a trap if it goes quiet. When the ticket was issued first on Away Advance, the amount is due later, sometimes mid-trip. The agent reminds you ahead of the date, shows exactly what is owed, and makes settling a tap, so the clock never runs out unseen while you are focused on the trip.",
+        ],
+        spec: [
+          {
+            label: "States",
+            items: [
+              "Settled: nothing owed, no reminders.",
+              "Due soon: a gentle heads-up ahead of the date, with the amount and a tap to pay.",
+              "Due while traveling: surfaced inside the trip, not buried, so it is not a surprise on the day.",
+            ],
+          },
+          {
+            label: "Honest gap",
+            items: [
+              "Enforcement is server-side; today the UI simply stops showing the pay-later card once due, there is no client-side countdown or escalation yet.",
+            ],
+          },
+        ],
+        screen: "The Away Advance due date handled mid-trip: a heads-up ahead of time, the amount owed, and settling in a tap.",
+        divider: true,
       },
       {
         h: "Pre-departure",
@@ -1583,6 +3976,14 @@ const caseStudies = {
         figure:
           "One surface across the pre-departure window: 'check in now' at T-72, the day-of boarding pass with a leave-by time, and a close-in cancellation that breaks through with the fix ready.",
         divider: true,
+        table: {
+          cols: ["When", "What you see", "What the agent does"],
+          rows: [
+            ["Check-in opens", "A Check in on the airline button, per leg", "Reveals it when the window opens, copies the PNR, stops at the airline door"],
+            ["Not open or closed", "Opens at a time, or head to the counter", "Says so honestly, no dead button"],
+            ["Morning of", "Live status, gate, terminal, boarding, on-time history, weather", "Fetches live status, resolves the terminal, flags a terminal change"],
+          ],
+        },
       },
       {
         h: "In motion",
@@ -1596,6 +3997,15 @@ const caseStudies = {
         figure:
           "In transit: the agent doing the connection math (forty-seven minutes, the gate's a walk), the layover tightening, and the missed connection with who is on the hook.",
         divider: true,
+        table: {
+          cols: ["State", "What you see", "What the agent does"],
+          rows: [
+            ["Comfortable", "A calm margin readout, a green chip", "Does the math in the background, says nothing"],
+            ["Tight", "A soft watch banner, an amber chip", "Keeps monitoring, does not interrupt"],
+            ["At risk", "A warning, options appearing", "Pre-runs a same-route search so alternatives are ready"],
+            ["Gone", "The connection is missed, the rescue surface", "Protected hands you the desk and the words, self-transfer arms you"],
+          ],
+        },
       },
       {
         h: "Missed connection",
@@ -1606,6 +4016,16 @@ const caseStudies = {
         ],
         screen: "The missed-connection rescue, two branches: protected (airline rebooks) versus self-transfer (you own it), each with the move pre-loaded.",
         divider: true,
+        spec: [
+          {
+            label: "Cases",
+            items: [
+              "Protected, one PNR: the airline owes you the rebook, the agent arrives holding the move, points you at the desk, and hands you the words.",
+              "Self-transfer, two tickets: nobody owes you, the agent arms you with the move, the script, and an honest read of what you are and are not owed.",
+              "Same calm voice in both, opposite mechanics.",
+            ],
+          },
+        ],
       },
       {
         h: "When it breaks",
@@ -1619,6 +4039,15 @@ const caseStudies = {
         figure:
           "The rescue surface: what changed, what you are actually owed (the rights engine, here EU261), the one smart move already worked out, and a clean hand-off, because the agent preps but you commit.",
         divider: true,
+        table: {
+          cols: ["Case", "What you see", "What the agent does"],
+          rows: [
+            ["Delayed", "Live status, delay minutes, gate, on-time history", "Reads back the facts, adds the route's typical delay, offers the actions it has"],
+            ["Cancelled", "A plain cancelled status, Cancel or Amend in chat", "Says what it can and cannot do, runs the cancel you confirm, never rebooks in the dark"],
+            ["A rule changed", "The read-only fare-rule tiers and your booked terms", "Answers from the stored rules, flags, never silently acts"],
+            ["At the airport", "The live gate, terminal, and baggage carousel", "Fetches live status on ask, reads back the facts, hands you the actions"],
+          ],
+        },
       },
       {
         h: "The recap",
@@ -1632,6 +4061,16 @@ const caseStudies = {
         figure:
           "The peak-end: the trip played back as a four-param recap (time, money, comfort, flex), then the single best delight, the agent surfacing compensation you did not know you were owed and drafting the claim.",
         divider: true,
+        spec: [
+          {
+            label: "States",
+            items: [
+              "The trip closes with a recap of what it saved and handled.",
+              "Compensation you are owed, a delay or cancellation under the rules, surfaced with the claim prepared.",
+              "Credits and refunds tracked to completion, not dropped.",
+            ],
+          },
+        ],
       },
       {
         h: "Case map",
@@ -1651,19 +4090,32 @@ const caseStudies = {
           "The trip, phase 5 (post-trip): the recap (the four-param echo, shareable); the proactive 'you are owed this' compensation claim; a refund chase; the reopen ('where next').",
           "Cross-cutting: the trip-structure / PNR visibility (a protected versus self-transfer badge, operated-by clarity); the disruption surface anatomy (what changed, your rights, the one smart move, what the agent is holding, the hand-off: deep-link the airline, the right desk, a drafted message); the rights engine by country (India care-and-refund even in force majeure, the EU cash for 3h-plus delays, the US refund regime, the self-transfer gap); and the system-crisis backbone everywhere (a dropped stream into a silent resume, the offline banner, every error stating what broke and the next step).",
         ],
+        whiteboard: {
+          src: "/figures/whiteboard/zero-states.png",
+          alt: "The zero-states planning whiteboard: the agent's screens and states sketched out by hand.",
+          caption: "Where the case map started: every screen and state sketched on one whiteboard. Tap to expand.",
+        },
         divider: true,
       },
       {
-        h: "Outcomes",
-        tldr: "v1 has shipped and is growing: in its first week, invite-only, the agent was already doing around ₹50K in bookings a day, and climbing.",
+        h: "The scoreboard",
+        tldr: "v1 is live and the early signal is good, but the numbers are still rolling in. So instead of dressing up early noise, here is every number this study will carry, fixed in advance, and the design bet each one tests.",
         p: [
-          "The honest headline is that it shipped, and it is working. In its first week, live to an invite-only group, the agent was doing around ₹50K in bookings a day, and the number has kept climbing since. That is the bet paying off: people are handing a real, end-to-end booking to the agent, not just searching with it. The earlier negotiate experiment, about one in three users negotiating rather than booking the listed price across roughly 1,000 users and 200 bookings, is the baseline this overhaul built on.",
+          "The honest headline today: v1 shipped, it is live with an invite-only group, and the traction is real. But a product built on trust should not quote numbers it does not trust yet, so I am doing the more useful thing and declaring the measurement spec up front. Each signal below is tied to the bet it will prove or break; the numbers land here as they stabilise.",
         ],
-        ul: [
-          "Around ₹50K in bookings a day in the first week, invite-only, and growing",
-          "[A 'caught before it hurt' signal: passport, self-transfer, and compensation catches, to confirm]",
-          "[Repeat use: do people come back for the next trip, to confirm]",
-        ],
+        table: {
+          cols: ["Signal", "The question it answers", "The bet it tests"],
+          rows: [
+            ["Bookings through the agent, end to end", "Do people hand over the whole job, not just the search?", "Own the case, not the turn"],
+            ["Repeat trips per traveller", "Do they come back for the next trip, unprompted?", "An agent you keep: the relationship bet"],
+            ["Caught before it hurt", "Passport flags acted on, self-transfer traps dodged, junk fares avoided", "The vet and the watch pay for themselves"],
+            ["Compensation claims filed and won", "Does the agent actually collect what you are owed?", "The rights engine as the moat"],
+            ["Negotiated wins vs the listed fare", "How often does the negotiation beat the public price?", "The earlier experiment ran one in three; this build inherits that baseline"],
+            ["Dropped-stream recovery rate", "When the connection breaks mid-task, does the case survive?", "Worst-day-first: the crisis backbone"],
+            ["Verdict override rate", "How often do travellers pick against the agent's sort?", "Trust in the vetted list over the raw list"],
+          ],
+          caption: "Every number here is tied to the design bet it will prove or break, written down before any results existed.",
+        },
       },
       {
         h: "What I'd revisit",
@@ -1671,16 +4123,14 @@ const caseStudies = {
         p: [
           "The hardest line in the whole design is how much the agent does for you versus how much it leaves in your hands. Never take the wheel is the right constraint for trust, but every time the agent stops at 'here is the smart move, you take it from there', there is a real cost in the moment: a stranded traveller would often rather it just fixed it. Holding that line honestly, doing everything up to the commit and not past it, is the thing I am least finished thinking about, and where I would test hardest with real travellers in a real disruption.",
           "The other is the rights engine. Encoding passenger rights is the product's clearest moat, but the rules change and vary by country, and an agent that confidently tells you what you are owed had better be right. I scoped it to the regimes Indian travellers hit most and flagged the ones I could not yet verify rather than guess. Keeping that current, and never letting confidence outrun the source, is an ongoing discipline, not a one-time research task.",
-          "[Add the standout moment: a real user reaction or test that changed the design, for example how travellers responded to the agent advising but not acting in a disruption. A real before, insight, after is the most valuable thing this case study can carry.]",
         ],
       },
     ],
     todo: [
       "Replace figure placeholders with real screens (animated SVGs from Figma): the adaptive home + expanding input, the vetted listing, the booking-gate partial reveal, the money-in-flight screen, the five-phase trip surface, the disruption + rights surface, and the savings reveal + recap + compensation claim",
       "Build the lifecycle dial infographic as the hero (the edge-to-calm dial across the trip); a first version is already drafted",
-      "Confirm role, exact title, dates, and team shape for this version of Away",
-      "Instrument the secondary metrics (adoption past booking, caught-before-it-hurt, repeat use); week-one bookings ran around ₹50K a day, invite-only, and growing",
-      "Add one test-driven change (before, insight, after); the standout signal reviewers prize",
+      "Figure for Cards, not chat: a tool card moving through its states (arguments streaming in, the card ready, the approval gate, then done or denied), grounded in the real toolRegister lifecycle",
+      "Fill the scoreboard as numbers stabilise; held back deliberately (Agam, 2026-07-05): week-one ran around ₹50K a day in bookings, invite-only and growing, reinstate once the numbers settle",
       "Finish the rights engine's unverified jurisdictions (Canada, Brazil, Australia, GCC, live Montreal caps) before any rights copy ships",
       "Deep entry; consider a clarity-gate trim for a 5-minute reviewer once figures are in",
     ],
@@ -1723,7 +4173,6 @@ const caseStudies = {
           "I think of it as a dial. The edge runs free where the agent is on your side against the industry, the verdict on a search, the warning about a trap, the compensation you are owed. It softens to plain and calm exactly where you are exposed, the first thirty seconds, anything touching money, any error. And it goes all warmth, zero edge, in a real crisis, because a joke in the wound is unforgivable. 'Crisis' and 'delight' are not two piles of screens; they are the two ends of that one dial, and the moments below are where it turns.",
           "Two rules hold it all together. The agent does the work of the best human agent on the phone and then exceeds it, the long price watch, the passport check, the compensation claim, things no human agent actually does. And it never takes the wheel: it prepares, recommends, and hands off, but the person always commits. One skill runs the length of it, negotiation, the same muscle that beats the fare is what has your back when the trip goes wrong."
         ],
-        "figure": "The dial: the agent is loudest when it is winning for you against the industry, and quietest when your money is moving or the trip is breaking. [Add the lifecycle dial infographic.]",
         "divider": true
       },
       {
@@ -4241,72 +6690,260 @@ const caseStudies = {
       "Add one test-driven change (before, insight, after)."
     ]
   },
-  "occasion-buying": {
-    accent: "#9826C9",
-    eyebrow: "Zepto · Theme & occasion buying · Case study",
-    title: "Rebuilding the aisle a search box deleted",
+  // THE cross-sell case. Until 2026-09-03 there were two: this engine case
+  // (the objective function, the half nobody solved, the licence to recommend)
+  // and "occasion-buying", the surface-craft case (the Ads widgets, the three
+  // surfaces, the Final Experiments board). Agam asked for one. The surface
+  // sections now live here as the "The surfaces" group, plus "Why the brands
+  // wanted it" in Setup; the old entry is archived verbatim at
+  // Claude/2026-09-03_occasion-buying-entry-archive.jsx.txt and its URL
+  // /work/occasion-buying aliases here (CASE_ALIASES).
+  //
+  // HARD RULE for this entry, set with Agam 2026-08-23: NO internal Zepto number
+  // appears anywhere in it, not even tagged as a placeholder. Where one would
+  // sit, the case shows the query that would produce it and the attack that
+  // would break it. Every figure quoted is public: filings, engineering blogs,
+  // the CCPA order, or peer-reviewed work. The method is the evidence.
+  //
+  // Draft, structure and source ledger: Claude/2026-08-23_crosssell-engine-case-study.md
+  //
+  // 2026-09-03 EXCEPTION, UNRESOLVED: the section "Then the data came back"
+  // (fig xsNotebook) carries real internal search and table counts, added at
+  // Agam's request. It conflicts with the rule above. Decide before publish:
+  // keep and retire the rule, redact to shapes, or move it to the local
+  // /writing page. See the todo.
+  // Routed at /work/cross-sell. Intentionally NOT in the `projects` index yet:
+  // the role line is unresolved and the citations need re-verification at source.
+  "cross-sell": {
+    accent: "#0F6E56",
+    eyebrow: "Zepto · Cross-sell · Case study",
+    title: "The half of cross-sell nobody solved",
     meta: "Product Designer · Zepto Ads · 2026",
-    cover: "Occasion",
+    // Portfolio 2026 (dUwMRorsFMXh9G6wlHOh5B) frame "121", node 228:60364, 1512x982,
+    // exported at 2x via REST (figma-pat) on 2026-09-03.
+    heroImage: "/cross-sell/hero.png",
+    pdfSections: [
+      "The walk did the selling",
+      "The ask",
+      "The central question",
+      "Mapping intents",
+      "Where I started, and the document that came out of it",
+      "The first decision the model makes is what to suppress",
+      "The objective function is the design",
+      "Then we built the mechanism together",
+      "Five directions were one direction",
+      "The proof metric is the prosecution's exhibit",
+      "Lift over volume: bought-together isn't belongs-together",
+      "The screen that proved the problem",
+      "What actually ran: split at add-to-cart, start where the traffic is",
+      "Designing the states nobody screenshots",
+      "Split the slots by confidence, not by surface",
+      "The surface nobody claimed",
+      "What I could not know, and the brief I wrote to find out",
+      "Then I asked it to attack me",
+      "Then the data came back, and it was less polite than the brief",
+      "Reflection",
+    ],
+    cover: "Cross-sell",
     lead:
-      "I led the interaction design for Theme & occasion buying, the feature that gives Zepto's search-only store the discovery of a physical one. Every quick-commerce app kept the warehouse and threw away the showroom: you search one item, add it, and leave, and the basket you would have built walking the aisles never forms. The feature rebuilds that aisle as a dynamic, per-user layout across three ad surfaces, reading the occasion you are shopping (movie night, the lunchbox, guests coming) from signals the session already carries, then pairing the right adjacent products, without ever slowing the shopper who came for one thing. The goal is to grow GSV while giving brands big and small a more democratic, occasion-relevant way to reach shoppers. One surface, a paired add-two card, is live; the other two are green-lit for an A/B test against a modelled 20% lift on adjacent categories that the test exists to prove or kill.",
+      "Cross-sell is the cheapest gross profit a quick-commerce platform can buy. No new dark stores, no new cities, no new ad sales. The extra unit rides a trip already dispatched. So everyone builds it, and everyone builds the same half: read the cart, predict the next item. That half was never hard. A trivial baseline, recommend what this person already buys, fills almost all of a next basket on its own. The valuable half, introducing someone to a category they've never bought, sits near zero recall in every published method. This case is what a designer does with that. I wrote the framework the engine would be judged against. Six weeks later, a production model overtook its ship list. So I rebased the work onto the part no model decides: which trips get nothing, what the objective may optimise, and how you keep a persuasive engine on the right side of a live regulatory order, when the number that proves it works is the same number the regulator used as evidence of harm.",
     sections: [
       {
-        h: "The central question",
-        tldr: "How do you give a search-only store the discovery of a real one, without slowing down the search that makes it fast?",
+        h: "The walk did the selling",
+        nav: "The walk",
+        group: "Setup",
+        tldr: "How often do you check out with something you did not walk in for? In a big store, all the time. In this app, never.",
         p: [
-          "A physical store is a machine for adjacency: chips lead to dips, shampoo sits beside conditioner, and roughly a third of a grocery basket was never on the list. A search box deletes that machinery; it returns the one shelf you named and nothing of what sits beside it. So every decision traced back to a single question: how do you rebuild the aisle, the occasion and the basket it builds, on top of a search box, without ever taxing the decisive shopper who came for exactly one thing? Discovery for the open shopper, stillness for the decisive one. That tension is the spine of the design.",
+          "In a DMart, all the time. You went for atta and rice. You left with a mop, a bag of frozen peas and a torch. Nobody sold you those. The walk did. Aisles, end caps, the queue at the till. A big store is a machine for making you pass things.",
+          "Now open Zepto. You search, you tap, you pay. Forty seconds. You never walk past anything, because there is nothing on the way to anything.",
+          "So the question stops being what did you buy. It becomes: with no aisles left, what does the walking? That is the job. Give back what the shelf used to do, in an app where nobody browses, on a trip that ends in ten minutes.",
         ],
-      },
-      {
-        h: "Context & problem",
-        tldr: "Adjacency is how the rest of retail prints money, and it was the line item Zepto did not bill, leaving demand and ad inventory on the floor every session.",
-        p: [
-          "Zepto Ads was monetising a single aisle: the search result. But adjacency is where retail earns. Recommendations drive up to 35% of Amazon's revenue, cross-selling lifts sales around 20%, and combos already contribute 12 to 15% of order value in promo windows on a direct competitor. The academic record is blunt too: the same shopper builds a narrower basket, with measurably fewer impulse buys, in an app than in a store. The interface itself was shrinking the basket to the size of the user's vocabulary, a business problem (unbilled inventory and un-built baskets), a product problem (search can only return demand you already know how to name), and a brand problem at once.",
-        ],
-        ul: [
-          "Users: every shopper, but in five intent-states a single search box treats identically",
-          "Business: grow GSV by billing the cross-sell and occasion inventory that did not exist yet, with committed brand budget already waiting on it",
-          "Constraint: build on a live, revenue-generating platform, and never tax the decisive single-item shopper",
-        ],
-      },
-      {
-        h: "My role",
-        tldr: "I led the interaction design for the feature end to end, from the business framing down to the guardrails and empty states.",
-        p: [
-          "I led the interaction design across all three surfaces and the model that feeds them (internally the project is Zepto cross-sell). The first surface shipped; the other two I designed to a green-lit, testable spec. The work was less about drawing screens than about deciding what the feature is allowed to do: the occasion taxonomy, the confidence rules, and the moments where the right design is to show nothing.",
-        ],
-      },
-      {
-        h: "Designed backward: business, product, user, brand",
-        tldr: "I did not start from a widget. I started from the business case, derived the product bet, grounded it in real user intent-states, and validated it against brand demand, in that order.",
-        p: [
-          "The feature only earns its place if the logic runs backward from value, not forward from an idea. Business first: there is committed, net-new brand budget (25 to 30% of aligned ad spend from a set of brands) with no surface to spend it on, and because the ads-to-sales ratio is fixed, every sale the feature creates compounds straight into ad revenue and GSV.",
-          "Product next: the only thing that unlocks that budget is inventory search cannot produce, impressions for the adjacent and the unsearched, so the bet is an occasion-aware adjacency layer, not a better ranker. User then: that layer maps to how people actually shop, by occasion, not category. Brand last, and this is what converged the design: understanding not just that brands wanted it, but why. Two big names, Beardo and Philips, had independently asked for the same pairing, grooming cream with trimmers, which proved the demand was real. The sharper signal came from the smaller brands. A brand known for protein wants to sell BCAA, a tougher adjacent category it cannot crack by outbidding the giants on the search keyword, because that economics only works at scale. A surface that shows what pairs with what you already buy hands that brand a democratic way in: the shopper who buys protein discovers BCAA, and the brand that makes it, exactly when it is relevant. Seeing the feature serve the challenger as much as the incumbent, and the shopper most of all (no hunting, the right thing surfaced naturally), is what settled the design on a pairs-with-your-basket surface rather than one more paid slot.",
-        ],
-        split: "media",
+        fig: "xsWalk",
+        figBare: true,
         figure:
-          "Caption: the backward chain on one page, business (committed, compounding budget) to product (adjacency, not ranking) to user (occasion, not category) to brand (independent demand converging on the same pairing). [Build as the backward-chain diagram; spec in the figure-specs note.]",
+          "The aisle against the app. Left, the walk wanders past four things nobody came for. Right, three taps make a straight line that passes nothing, and the same four things sit off to the side, never seen.",
         divider: true,
       },
       {
-        h: "The user, mapped as intent-states not personas",
-        tldr: "The same person shops in five modes a week, and a single search box serves exactly one of them well.",
+        h: "The ask",
+        nav: "The ask",
+        group: "Setup",
+        tldr: "Three groups, one sentence: sell the things people don't know we carry. Nobody said recommender, and the difference is the whole case.",
         p: [
-          "Personas were the wrong tool, because the same human shops completely differently within a single day. The unit that matters is the intent-state at the moment of the session, and naming the five made the gaps obvious. Search is a competent tool for one of them and a partial tool for none of the rest. That is the size of the miss, and it is what told me the feature could not be one component; it had to meet different states at different points in the journey.",
+          "Three groups walked in with the same request. Brands wanted their lesser-known categories seen. Product wanted a rail that did it. Business wanted the margin that came with it. Nobody said recommender. They said: sell the things people don't know we carry.",
+          "That sentence is the whole case. It is not a request for a next-item predictor. It is a request for discovery, which is the half of the problem every published method leaves near zero. The brief was easy to read and hard to build, and the first job was making sure the room knew the difference.",
+        ],
+        divider: true,
+      },
+      {
+        h: "Why the brands wanted it",
+        nav: "The brands",
+        group: "Setup",
+        tldr: "Two big names asked for the same pairing. The sharper signal came from the small ones.",
+        p: [
+          "There was committed brand budget with nowhere to land. A set of brands had set aside 25 to 30 percent of aligned ad spend for a surface that didn't exist yet. And because the ads-to-sales ratio is fixed, every sale a cross-sell surface creates compounds straight into ad revenue. Search couldn't produce that inventory. Only impressions for the adjacent and the unsearched could.",
+          "Two big names, Beardo and Philips, had independently asked for the same pairing: grooming cream with trimmers. That proved the demand was real. The sharper signal came from the smaller brands. A brand known for protein wants to sell BCAA, a tougher adjacent category it can't crack by outbidding the giants on the keyword, because that economics only works at scale. A surface that shows what pairs with what you already buy hands that brand a way in. The shopper who buys protein discovers BCAA, exactly when it's relevant.",
+          "Seeing the feature serve the challenger as much as the incumbent, and the shopper most of all, is what settled the design on a pairs-with-your-basket surface rather than one more paid slot.",
+        ],
+        divider: true,
+      },
+      {
+        h: "The central question",
+        nav: "The question",
+        group: "Setup",
+        tldr: "Everyone solved the same half of the recommender. It was the half that was never hard.",
+        p: [
+          "Cross-sell compounds against orders you already serve. The extra unit rides a trip that's already dispatched, so its marginal delivery cost is close to zero. Structurally, it's the cheapest gross profit a quick-commerce platform can buy.",
+          "So of course everyone builds it, and everyone builds the same thing: read the cart, predict the next item. The trouble is a trivial baseline, recommend what this person already buys, fills almost all of a next basket on its own. The best deep models beat it by a few points. Recommending a category the user has never bought sits near zero recall in every published method. The easy half is nearly finished. The valuable half is barely started.",
+          "So the question I took the work on to answer wasn't how do we suggest better. It was: what do you design when the profitable half is already solved and the valuable half isn't tractable?",
+        ],
+        fig: "xsTree",
+        figBare: true,
+        figure:
+          "The whole exploration set, resolved. Seven areas of the app, forty-one approaches, each tagged by where it came from: the framework and its surface score, the Figma board, the ideation thread, the ones ruled out in review, and the evidence dossier. Under each best-suited approach, the metrics that judge it and the public evidence that ranked it. Pick an area on the left. Note the counts: search holds nine approaches, the wait window holds three, and the framework scored those two surfaces equal.",
+        divider: true,
+      },
+      {
+        h: "Mapping intents",
+        nav: "Intents",
+        group: "Setup",
+        tldr: "Sort the evidence by intent and the shape falls out. Two of the four are close to finished. One is the half nobody has solved.",
+        p: [
+          "Before the framework, I sorted the public evidence by what the shopper was trying to do. Not by where a widget could go. Four intents. Discovery, where search already serves the shopper who can name the thing. Explore, where the home feed is mostly for buying what you've bought before, and the published numbers say so. Build, where a shipped model reads the cart in front of the shopper and that half is close to finished. And buy new, where introducing someone to a category they've never bought sits near zero recall in every published method.",
+          "That is the case in one row of cards. Two intents solved, one nearly, and the one that carries the brief still open.",
+        ],
+        fig: "xsIntents",
+        figBare: true,
+        figure:
+          "Four intents, one card each: the claim, and the public evidence under it. Swipe or pick a tab. Every number is from a filing, an engineering blog or a paper. None is internal.",
+        divider: true,
+      },
+      {
+        h: "Where I started, and the document that came out of it",
+        nav: "The framework",
+        group: "Framework",
+        tldr: "Before a single screen, I wrote the framework the engine would be judged against. Five pillars, five intent-states, one objective function, ten refusals.",
+        p: [
+          "I didn't open Figma. I wrote a framework, paired with a model whose assumptions all sat in one tab, so anyone could flex the case before taking it anywhere.",
+          "Five pillars. Intent-state, because the right suggestion for a Restocker is the wrong one for someone buying paracetamol at midnight. Surface times moment: five surfaces scored on reach, intent, inventory match and margin tilt, three of which shipped. Signal stack, ordered by priority and deliberately short. Ranking objective, the real design decision, which gets its own section below. And guardrails, ten of them, written as things we wouldn't do.",
+          "Leading with a document isn't diligence theatre. A recommender is a policy, not a screen. Once the ranker is live, the policy is whatever the objective function says it is, and no interface craft downstream can argue with it. Design the objective first, or someone defaults it to click-through.",
+        ],
+        fig: "xsFramework",
+        figBare: true,
+        figure:
+          "The framework's front page: five pillars and the ten refusals. Pillar one is lit because trip type is the first decision the model makes and everything else is downstream of it. Open a pillar for what it decided, and a refusal for the reason it was written.",
+        divider: true,
+      },
+      {
+        h: "The first decision the model makes is what to suppress",
+        nav: "Suppression",
+        group: "Framework",
+        tldr: "The trip classifier's most consequential output isn't which surface to show. It's which surface to kill.",
+        p: [
+          "Five intent-states, the same five the occasion work mapped: the Restocker who knows exactly what they want, the Mission Shopper assembling an occasion one search at a time, the Wanderer with intent but no query, the Forgetter who'll remember the fourth thing only when they see it, and the Emergency. The classifier can be cheap. A rules-plus-logistic hybrid over time of day, basket size at the moment of suggestion, whether the session searched or browsed, any age-gated or medicinal items, and time since the last order. Retrained weekly. Good enough.",
+          "The output I actually cared about was the emergency branch, where the correct number of suggestions in the checkout path is zero. A missed cross-sell on an emergency trip costs a little. A slowed checkout on the same trip costs a lot, and it's charged against the one promise the whole company is built on. The adjacent buy on that trip is real, and often bigger than the trigger one. It doesn't vanish. It moves to the post-order wait window, after the promise is kept.",
+          "Designing the suppression first is a posture, not a feature. The lesson: the surface is a guest in someone else's errand.",
         ],
         ul: [
-          "The Restocker knows exactly what they want, types it, wants out. Search already serves them; the design job is to not get in their way.",
-          "The Mission Shopper is shopping an occasion they can name (guests, movie night, the lunchbox) but is forced to assemble it one search at a time. This is who search fails most expensively.",
-          "The Wanderer is browsing, open, often late at night, with intent but no query, so search literally cannot serve them.",
-          "The Forgetter wanted three things and will remember the fourth only when they see it, the exact job the end-cap was invented for.",
-          "The Emergency needs one thing fast, in a context where the adjacent buy is often bigger than the trigger one.",
+          "Emergency trips: every in-session surface suppressed before ranking. The adjacent buy moves to the post-order wait window",
+          "A per-trip cap of three surfaces, because the second exposure is worth half the first",
+          "Availability as a hard filter, not a ranking signal: suggesting out-of-stock breaks the speed promise even when the cart goes through",
         ],
+        fig: "xsTrips",
+        figBare: true,
+        figure:
+          "The five intent-states, and the one that gets nothing. The emergency branch is a deliberate blank: the classifier's most consequential output is which surface never fires.",
+        divider: true,
+      },
+      {
+        h: "The objective function is the design",
+        nav: "The objective",
+        group: "Framework",
+        tldr: "I optimised for incremental gross profit per impression, and refused both of the things everyone actually optimises for.",
+        p: [
+          "Click-through? Ruled out. A rail can post a beautiful click rate and cause nothing, because the items would've been added anyway, or the cart abandoned under the extra load. Click-through measures whether the widget was noticed, not whether it helped.",
+          "Margin? Ruled out too. Lead with margin and the catalogue collapses to detergent and house-brand staples within a quarter. Relevance goes, and the rail becomes furniture people learn to scroll past. What survives: pick the most relevant set first, then break ties on margin.",
+          "So the ranker was relevance, times a hard availability filter against the user's own dark store, times one plus a tunable margin tilt on the margin z-score. The tilt starts gentle, and it lives in a named cell in the model, not in someone's head. I also wrote its escalation trigger. If that dial gets pushed past a threshold in production, cross-sell has started to feel margin-led to users, and the answer is a different objective, not a bigger number in the same one.",
+          "Write the trigger down on day one, because nobody notices a dial moving. They notice the quarter it stops working.",
+        ],
+        fig: "xsObjective",
+        figBare: true,
+        figure:
+          "The ranker, annotated with what each term is there to protect, and the two things it refuses to be. The margin-tilt starting value is omitted on purpose.",
+        divider: true,
+      },
+      {
+        h: "Then we built the mechanism together",
+        nav: "Built together",
+        group: "What happened",
+        tldr: "Six weeks after I dated the framework, engineering had a production Transformer reading live carts. That wasn't a team going around a document. It was the document doing its job.",
+        p: [
+          "Six weeks after I dated the framework, the engineering team had a production Transformer reading live carts. A twelve-layer model over current cart contents plus city, day and hour, with published lift on add-to-cart, order value and gross profit per order. That wasn't a team going around a document. It was the document doing its job. The objective, the availability filter and the refusals went into the model room with me, and the ranker was tuned against them.",
+          "What the shipped model made plain was the pivot. It reads the basket in front of the shopper, not the history behind them. That's the tractable half, done well. The unsolved half, introducing someone to a category they've never bought, wasn't a hypothesis anymore. It was disclosed, dated, and precisely shaped.",
+        ],
+        divider: true,
+      },
+      {
+        h: "Five directions were one direction",
+        nav: "Five directions",
+        group: "What happened",
+        tldr: "The board had converged beautifully, and the convergence hid the fact that nothing on it touched the problem.",
+        p: [
+          "By review time there were five directions on the board. A bundled product-combo card. An expansion under a buy-again row. A post-add-to-cart injection. A hoisted feedback module. An end-of-page rail. Real work, well built: a tabbed, category-themed module that scaled cleanly across hair care, gym, dry fruits and electronics.",
+          "Read as strategy, five options. Read honestly, one mechanism on one surface, differing by trigger and by position on the search results page. And every one was category completion. Shampoo leads to conditioner, mask, serum. That's basket-deepening inside a category the shopper has already accepted. It works, it'll show lift, and it's the right v1. It also never touches a category they've never bought, which was the entire premise.",
+          "Two other things had drifted, and naming drift is most of the job. Nearly every card in the final frames carried an ad label, while the framework's rule was that v1 cross-sell is organic and sponsored stays separate. That may be the better answer. But it should be a decision with a relevance floor attached, not something that happened in the pixels. And the surface the framework scored joint-highest, the post-order wait, had never been designed at all.",
+        ],
+        ul: [
+          "Product combo: no trigger, in-grid, with a bottom-sheet breakdown of its two constituents",
+          "Buy Again: user-initiated, expands inline under the row (the only explicit trigger in the set)",
+          "Post-ATC: fires on add-to-cart, injects under the added row, plus a full-screen variant",
+          "ShopX feedback: no trigger, hoisted near the top of the results",
+          "More to explore: no trigger, end of page, after the out-of-stock block",
+        ],
+        fig: "xsDirections",
+        figBare: true,
+        figure:
+          "The five directions read as trigger against position. Five options on the board. One mechanism on one surface underneath, and every one of them category completion.",
+        divider: true,
+      },
+      {
+        h: "The query that settles it",
+        nav: "The query",
+        group: "What happened",
+        tldr: "Whether an engine completes errands or starts them is one pull: the top pairs by lift, tagged in-category or cross-category, and the share that stays inside.",
+        p: [
+          "The convergence on the board was a hypothesis about the data, so I wrote the pull that would test it. Take the top few hundred source-to-recommendation pairs by lift. Tag each pair in-category or cross-category against the source item. The one number that matters is the share that stays inside the source's own category, because that share is the engine's honest ratio of errand-finishing to errand-starting.",
+          "The prediction, before running it: the strongest pairs will be the ones a shopkeeper would guess blind. Leash to collar. Test strips to lancets. Kite thread to kites. Even the clearest discovery category on the platform, baby care, should cross-sell hardest into itself, gift set to dress, blanket to swaddle. Association mining is spectacular at finishing an errand and structurally silent on starting one. The pull exists so the room argues with a ratio, not an anecdote.",
+          "And the attack on it, written in the same brief: high lift on a rare pair is noise, so floor the support before ranking. Pairs inherit the catalogue's category tree, so a taxonomy quirk can masquerade as discovery. And an in-category share measured on what the engine already recommends is partly the engine grading itself. The honest denominator is co-purchase, not co-recommendation.",
+        ],
+        divider: true,
+      },
+      {
+        h: "The proof metric is the prosecution's exhibit",
+        nav: "The regulator",
+        group: "What happened",
+        tldr: "A regulator used a measured uplift in basket size as the evidence of the dark pattern. Attach rate went up is not the defence.",
+        p: [
+          "This finding changes how you design, not what you design. Every cross-sell surface is measured on lift. There's now a live order in this market, against this platform, where a measured engagement uplift from an interface choice was treated as evidence the design was driving user decisions, not proof that it helped. The same order held that remediation begun after scrutiny doesn't excuse the earlier violation.",
+          "No phrasing gets you out of that. The mechanism a regulator described and the mechanism a cross-sell surface uses are, in the general case, the same mechanism. What separates them is whether the person wanted the thing. So wanting has to be measured, on the same dashboard, at the same cadence, from day one.",
+          "Ship a regret metric beside every lift metric. Cross-sell items removed before checkout. Items flagged unwanted on the next order. Return rate and rating on cross-sell-attributed units. Make the launch gate a ratio, not a lift, so a surface can't pass just by being more persuasive. And keep the holdout, because without it lift claims are unfalsifiable, and an unfalsifiable claim is worth nothing in a review room and less in a hearing.",
+        ],
+        ul: [
+          "Every lift metric ships with its paired regret metric, or the surface does not ship",
+          "The gate is a ratio, not a lift",
+          "A persistent five to ten percent holdout, for the life of the experiment",
+          "Checkout add-ons are affirmative and unticked, because the alternative is a documented violation rather than a design risk",
+        ],
+        divider: true,
       },
       {
         h: "The engine: inferring the occasion",
+        nav: "Occasion engine",
+        group: "The surfaces",
         tldr: "Four signals the session already carries, collapsed into a confidence-scored occasion, with the confidence to decline.",
         p: [
-          "The solution is only as good as the model under it. Every session already carries four cheap signals: time (hour, day, and the calendar layer of festival, match day, payday), location (home, office, travel, weather), search and browse intent (the query, its category, and whether the session is decisive or aimless), and cart composition, the strongest and most under-used signal of all. Chips plus cola at 11pm at home is not snacks plus beverages; it is a movie night. I shaped those into a Zepto-native occasion taxonomy, breakfast, tonight's dinner, movie or match night, guests, gifting and festival, late-night craving, grooming, baby and health, on-the-go, each a named moment the surface can dress itself in. The crucial decision was not what the model shows but when it stays quiet: the engine carries a confidence floor and a set of refusals, because its credibility dies the first time it pairs condolence flowers with party poppers.",
+          "Every session already carries four cheap signals. Time: hour, day, and the calendar layer of festival, match day, payday. Location: home, office, travel, weather. Search and browse intent: the query, its category, and whether the session is decisive or aimless. And cart composition, the strongest and most under-used signal of all. Chips plus cola at 11pm at home isn't snacks plus beverages. It's a movie night.",
+          "I shaped those into a Zepto-native occasion taxonomy: breakfast, tonight's dinner, movie or match night, guests, gifting and festival, late-night craving, grooming, baby and health, on-the-go. Each a named moment the surface can dress itself in. The crucial decision wasn't what the model shows. It was when it stays quiet. The engine carries a confidence floor and a set of refusals, because its credibility dies the first time it pairs condolence flowers with party poppers.",
         ],
         fig: "decisionEngine",
         figure:
@@ -4314,102 +6951,393 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "Surface 1: the paired card, and its states",
-        tldr: "The live surface: one high-confidence pair at the top of search, with a single add-two action, designed for restraint over reach.",
+        h: "Lift over volume: bought-together isn't belongs-together",
+        nav: "Lift",
+        group: "The surfaces",
+        tldr: "Pairings come from a million-row co-buy table. I ranked by lift, not order count, and roughly a third of the pairings evaporated.",
         p: [
-          "The first surface is live. It fires at the top of search results with one high-confidence, functional pair, the conditioner to your shampoo, behind a single add-two control that turns a one-item basket into a sensible two-item one in a tap. Three rules earned its place on the fast path: it never blocks the searched item, which stays the hero; it carries a one-line reason (Goes with shampoo) that does almost all the trust work, signalling a shopkeeper rather than a banner; and it holds to exactly one pair, because a second turns help into noise. The states I specified: the default pair, the pressed-and-adding state, the add-two confirmation (the first real micro-delight), the already-in-cart suppression, and the below-confidence state where the card simply does not render.",
+          "The data is a trap. Pairings are mined from a co-purchase table of roughly a million category pairs, and the easy mistake is to read a high co-buy count as a strong pair. It usually isn't. A large share of co-purchases are basket-padding to clear the free-delivery threshold, one weekly stock-up mixing unrelated needs, or a ubiquitous item that sits in half of all baskets. Milk, bread, chips. They co-occur with everything.",
+          "So I ranked candidate pairs by lift: how much more often two things appear together than chance would predict. The gap is stark enough to put on a slide. For Hair Conditioner the top raw co-buys are Toothpaste and Cream Biscuits, and both carry a lift below 1. They appear together less often than chance. Pure padding. Rank the same anchor by lift and the real story surfaces: Hair Mask at 56x, then Hair Cream, Hair Spray, Cleanser. A clean hair-care occasion. Roughly a third of the raw pairings fail this test and get dropped. The de-noising is the feature, because a confidently wrong pair is exactly what teaches a user to ignore the surface forever.",
         ],
-        split: "media",
+        ul: [
+          "Lift around 1: co-occurs only because the rider is popular, the free-delivery padding",
+          "Lift below 1: actively unrelated, surfaced by raw volume alone",
+          "Direction is data too: items like tissues and muesli appear almost only as riders, never anchors",
+        ],
+        divider: true,
+      },
+      {
+        h: "The screen that proved the problem",
+        nav: "Burger bun",
+        group: "The surfaces",
+        tldr: "A live \"pairs best with these\" slot was ranked by ad spend, not affinity. A substitute bun and a weak dip, while the real complements were missing. The whole case, in one screenshot.",
+        p: [
+          "The strongest argument for this work was a screen already in production. On a search for Burger Bun, a slot titled \"Your product pairs best with these!\" surfaced two things: another burger bun and a garlic dip, both carrying an Ad tag.",
+          "Held against the data, it falls apart. The other bun is a substitute, not a complement. A bun shown against a bun search is the one move a pairing slot must never make. The garlic dip is a real but thin association, around 128 co-orders, below the confidence floor I set. And the genuinely high-confidence companions for a bun were nowhere on screen: Patty at a lift of 107 on roughly 7,000 co-orders, and Cheese Slice at a lift of 14. The actual build-a-burger basket.",
+          "The diagnosis is one line. The slot was ranked by ad spend, not by affinity, and labelling an ad-sorted row \"pairs best with these\" spends the exact trust the feature exists to build. Rank by lift first. Let ads compete within relevant items rather than override them. Hard-exclude substitutes from any slot that claims things go together. It's also why occasion isn't a story I imposed. The build-a-burger cluster falls straight out of the de-noised data.",
+        ],
+        ul: [
+          "Shown (ad-ranked): a substitute burger bun + a garlic dip, around 128 co-orders, below floor",
+          "Missing (affinity-ranked): Patty (lift 107, roughly 7,000 orders) and Cheese Slice (lift 14)",
+          "The fix: affinity-first ranking, ads blended within relevance, substitutes excluded",
+        ],
+        divider: true,
+      },
+      {
+        h: "Surface 1: the paired card, and its states",
+        nav: "Paired card",
+        group: "The surfaces",
+        tldr: "The live surface: one high-confidence pair at the top of search, one add-two action, restraint over reach.",
+        p: [
+          "The first surface is live. It fires at the top of search results with one high-confidence, functional pair, the conditioner to your shampoo, behind a single add-two control. One tap turns a one-item basket into a sensible two-item one. Three rules earned its place on the fast path. It never blocks the searched item, which stays the hero. It carries a one-line reason, Goes with shampoo, and that line does almost all the trust work. It signals a shopkeeper, not a banner. And it holds to exactly one pair, because a second turns help into noise.",
+          "The states I specified: the default pair, the pressed-and-adding state, the add-two confirmation, the already-in-cart suppression, and the below-confidence state where the card simply doesn't render.",
+        ],
+        divider: true,
+      },
+      {
+        h: "What actually ran: split at add-to-cart, start where the traffic is",
+        nav: "The experiments",
+        group: "The surfaces",
+        tldr: "The experiment set reorganised the surfaces around one behavioural pivot, the add-to-cart, and one rule: every variant debuts on search, then scales.",
+        p: [
+          "As the work moved from spec to experiment, two decisions reorganised everything above. The first is the pivot. The sharpest behavioural line in a session is the add-to-cart. Before it, intent is generic, a query like Shampoo, so the surface pairs against the search. After it, intent is specific, a committed product, so the surface switches anchors and pairs against the exact item just added, down to wearing that brand's dress. Best pairs with Shampoo before the add becomes Best pairs with Yellow Naturals after it. Generic before commitment, specific after. The whole set hangs on that switch.",
+          "The second is allocation. Rather than launching all three surfaces everywhere, every variant debuts on the search results page. It's the highest-traffic entry in the app, so an experiment reads fastest there. What wins on SRP scales outward to the feed and the existing post-add surfaces. The You-might-also-like rail gets re-ranked by lift rather than replaced.",
+          "Pre-ATC, two variants ran head to head on the SRP grid. A one-to-one slot ad, one cell of the grid given to the paired product. Against it, a many-to-many full-row widget, the tabbed Best-pairs strip that breaks the grid for one row. Post-ATC, the compact one-pair card ran against the brand-anchored widget in its collapsed, expanded and tab-switched states.",
+        ],
+        ul: [
+          "The pivot: pair against the query before add-to-cart, against the added product after it",
+          "The beachhead: every variant starts on SRP, the highest-traffic surface, then scales to feed and post-add rails",
+          "Pre-ATC: one-to-one slot ad vs the many-to-many full-row widget",
+          "Post-ATC: single-pair card vs the brand-dressed tabbed widget, the existing YML rail re-ranked by lift",
+        ],
+        fig: "xsMotion",
+        figBare: true,
         figure:
-          "Caption: the paired card across its states, default pair with reason string, mid-add, the add-two confirmation, and the suppressed state when the pair is already in the cart. [Export from the live build plus the spec frames.]",
+          "The tabbed widget's entrance, designed in Figma Motion and running on a phone from the same keyframes, through the Figma MCP. Move the cursor across it to scrub the sequence.",
         divider: true,
       },
       {
         h: "Surface 2: the occasion widget, the end-cap rebuilt",
+        nav: "Occasion widget",
+        group: "The surfaces",
         tldr: "The most store-like surface: a named, dressed module mid-feed with horizontal category tabs, where the basket assembles as you shop the occasion.",
         p: [
-          "The second surface is the end-cap, and the biggest design opportunity. It fires mid-feed for a Mission Shopper or a Wanderer, and unlike competitors' hand-authored themed banners it is predicted live: the same feed slot can read movie night for one user and baby's morning for another at the same instant. The module names the occasion in its header (Movie night, sorted?) and lays adjacent categories out as horizontal tabs, Snacks, Drinks, Dessert, Dips, each a mini-aisle. The signature interaction is that tapping across tabs visibly assembles a basket: you are shopping an occasion, not hunting SKUs. I specified the full state set most teams skip: the named high-confidence module, a generic fallback header at medium confidence, and the honest below-threshold state where the slot does not render at all. An empty, truthful feed beats a confident wrong guess every time.",
+          "The second surface is the end-cap, and the biggest design opportunity. It fires mid-feed for a Mission Shopper or a Wanderer. Unlike competitors' hand-authored themed banners it's predicted live: the same feed slot can read movie night for one user and baby's morning for another at the same instant. The module names the occasion in its header, Movie night, sorted?, and lays adjacent categories out as horizontal tabs. Snacks, Drinks, Dessert, Dips. Each a mini-aisle. The signature interaction is that tapping across tabs visibly assembles a basket. You're shopping an occasion, not hunting SKUs.",
+          "I specified the full state set most teams skip: the named high-confidence module, a generic fallback header at medium confidence, and the honest below-threshold state where the slot doesn't render at all. An empty, truthful feed beats a confident wrong guess every time.",
         ],
-        split: "media",
+        fig: "bannerLab",
         figure:
-          "Caption: the occasion widget, the named module with category tabs, the basket assembling as tabs are tapped, and the low-confidence state where the slot stays empty. [Build the three states as animated SVG; the basket-build is the hero.]",
+          "Ideating only the banner, tabbed by composition family: type, image, product, object, and minimal, with a few variants in each. Same Movie-night copy and the same widget shell throughout. Only the banner's layout changes. Tap a tab to browse.",
+        divider: true,
+      },
+      {
+        h: "Twenty occasions, one banner system",
+        nav: "Banner system",
+        group: "The surfaces",
+        tldr: "The same banner and shell, re-skinned across twenty real pairings from the cross-sell data sheet. The heading carries the charm, the copy stays plainly functional.",
+        p: [
+          "The banner scales because nothing about it is bespoke. Feed any anchor and its lift-ranked pair through a small set of heading patterns and a background token, and the occasion falls out. Here are twenty, straight from the data sheet, the range the one widget has to cover.",
+        ],
+        fig: "crossSellTable",
+        figure:
+          "Twenty occasion banners generated from the cross-sell data: the anchor and its pair, the heading (the charm) and the copy (the plain reason). Baby and comfort stay neutral. Alcohol is age-gated.",
         divider: true,
       },
       {
         h: "Surface 3: the post-cart tabs, the checkout aisle",
+        nav: "Post-cart tabs",
+        group: "The surfaces",
         tldr: "After add-to-cart, themed tabs replace the flat product rail, reframing the last add as completing the set, not buying more.",
         p: [
-          "The third surface fires the instant something enters the cart, the digital checkout aisle. Today that slot is a flat product rail; I replaced it with themed tabs and, more importantly, reframed the words. After ice cream goes in, the prompt is not more products, it is Make it a movie night? After paneer, Everything for the curry? The user has already committed, so one more relevant add reads as completeness rather than pressure, but only if it is relevant, which is why this surface has the hardest guardrails of the three. The states matter most here because this is post-commitment, where a pushy or wrong suggestion does the most brand damage: the themed-complete state, the single-best-pair fallback, and a clean no-suggestion state when nothing genuinely fits.",
-        ],
-        figure:
-          "Caption: the post-cart widget, themed completion tabs after add-to-cart, the single-pair fallback, and the empty state when nothing fits. [Add screens / spec frames.]",
-      },
-      {
-        h: "Designing the states nobody screenshots",
-        tldr: "The feature's credibility lives in its refusals: the guardrails, the sensitive categories, and the deliberately still path for the decisive shopper.",
-        p: [
-          "The depth of this work is not in the happy path; it is in the moments the model is told to hold back. A personal shopper you do not trust is just a pest, so I spent the most time on the states a portfolio screenshot never shows. Sensitive categories, health, baby, contraception, bereavement-adjacent, never get occasion theming or jokey copy; some aisles are quiet on purpose. The engine never cross-sells what is already in the cart and never pairs two substitutes. And the single most important rule: if the session reads as decisive single-item intent, the surfaces go still, one functional pair at most, no theme, no motion. The fastest path stays the fastest path. Treating restraint as the primary feature, not an afterthought, is what lets the delight in the other states land.",
-        ],
-        ul: [
-          "Confidence floor: below threshold, the themed surfaces do not render at all",
-          "Sensitivity exclusions: no theming or humour on health, baby, and bereavement-adjacent categories",
-          "No double-dipping: never pair a substitute, never re-pair what is already in the cart",
-          "Respect the Restocker: decisive sessions stay calm, still, and fast",
+          "The third surface fires the instant something enters the cart. The digital checkout aisle. Today that slot is a flat product rail. I replaced it with themed tabs and, more importantly, reframed the words. After ice cream goes in, the prompt isn't more products. It's Make it a movie night? After paneer, Everything for the curry? The user has already committed, so one more relevant add reads as completeness rather than pressure. But only if it's relevant, which is why this surface has the hardest guardrails of the three.",
+          "The states matter most here, because this is post-commitment, where a pushy or wrong suggestion does the most brand damage. The themed-complete state. The single-best-pair fallback. And a clean no-suggestion state when nothing genuinely fits.",
         ],
         divider: true,
       },
       {
         h: "The delight layer, placed by the peak-end rule",
+        nav: "Peak-end",
+        group: "The surfaces",
         tldr: "I spent the delight budget where memory is made, the basket-build peak and the doorstep end, and kept the decisive path silent.",
         p: [
-          "People do not remember an experience as an average of every second; they remember its most intense moment and its ending, the peak-end rule. So delight here is placed, not sprinkled. The peak is the basket assembling itself as you tap across occasion tabs, the animation that turns a list of transactions into the feeling of completing a plan. The end is the doorstep: the order arriving is the most charged moment in quick commerce, so a small occasion-aware grace note there (Enjoy movie night) colours the whole memory and costs nothing.",
-          "Between them, smaller beats earn their keep: the add-two confirmation gives a crisp scale-tick and a single light haptic; the ten-minute wait, usually a dead map, gets dressed to the occasion you just shopped, a nod to the contextual screens Swiggy already explores. The house rule that kept it from tipping into noise: the funny line and the functional line are never the same line, so charm lives in occasion titles and empty states while buttons and reason strings stay plainly useful.",
+          "People don't remember an experience as an average of every second. They remember its most intense moment and its ending. So delight here is placed, not sprinkled. The peak is the basket assembling itself as you tap across occasion tabs, the animation that turns a list of transactions into the feeling of completing a plan. The end is the doorstep. The order arriving is the most charged moment in quick commerce, so a small occasion-aware grace note there, Enjoy movie night, colours the whole memory and costs nothing.",
+          "Between them, smaller beats earn their keep. The add-two confirmation gives a crisp scale-tick and a single light haptic. The ten-minute wait, usually a dead map, gets dressed to the occasion you just shopped. And the house rule that kept it from tipping into noise: the funny line and the functional line are never the same line. Charm lives in occasion titles and empty states. Buttons and reason strings stay plainly useful.",
         ],
-        split: "media",
-        figure:
-          "Caption: the emotional curve across the journey, delight concentrated at the basket-build peak and the doorstep end, with the decisive Restocker path held deliberately flat. This is the one moment the case study lingers on. [Build the peak-end map as the signature figure.]",
         divider: true,
       },
       {
         h: "The edge: a personal shopper, not a store map",
-        tldr: "Competitors ship static occasion theming; the same surface, predicted live per user, is a different product.",
+        nav: "The edge",
+        group: "The surfaces",
+        tldr: "Competitors ship static occasion theming. The same surface, predicted live per user, is a different product.",
         p: [
-          "The competition is already building themed widgets and category tabs, but theirs are static: hardcoded themes per keyword, authored by a calendar. The bet is that the same surface, made dynamic, is a categorically better product. A competitor sees a shampoo search and shows hair products. Zepto sees a shampoo search at 7pm from a user who last bought conditioner six weeks ago, and surfaces a hair mask at the right moment for that specific person. The difference is not the widget; it is the engine behind it, and the engine already runs in production.",
+          "The competition is already building themed widgets and category tabs, but theirs are static: hardcoded themes per keyword, authored by a calendar. The bet is that the same surface, made dynamic, is a categorically better product. A competitor sees a shampoo search and shows hair products. Zepto sees a shampoo search at 7pm from a user who last bought conditioner six weeks ago, and surfaces a hair mask at the right moment for that person. The difference isn't the widget. It's the engine behind it, and the engine already runs in production.",
         ],
-        split: "media",
-        figure:
-          "Caption: competitor versus Zepto across pairing logic, occasion inference, and guardrails, static keyword rules against cart-plus-history-plus-time prediction. [Comparison figure.]",
         divider: true,
       },
       {
-        h: "Impact, honestly framed",
-        tldr: "One surface is live and the model already runs; the headline number is directional by design, and the A/B test exists to prove or kill it.",
+        h: "Split the slots by confidence, not by surface",
+        nav: "The discovery slot",
+        group: "Proposal",
+        tldr: "Every rail becomes N minus one high-confidence completers plus exactly one labelled discovery slot, judged on a different metric entirely.",
         p: [
-          "The honest status: the paired card is live in production, the prediction engine is built and running, the brand pipeline is committed, and the other two surfaces are designed and green-lit. The behavioural bet, that an occasion-aware aisle builds a bigger, more complete basket and grows GSV, is what the experiment measures: a control of standard search against a test of all three surfaces, watched not just for cross-sell conversion but for cannibalisation of the primary category, because if the aisle steals from the search it sits next to, the feature does not ship.",
-          "The 20% incremental-sales figure on adjacent categories is a directional, impression-backward model, not a promise; I was deliberate about framing it as the question the test answers, not a result in hand. Leading with the mechanism and the committed demand, and being explicit about what is still unproven, is the honest version of this story. [Add real test results, adoption, and the cannibalisation read once the experiment reports.]",
+          "This is the load-bearing idea, and it's small on purpose. The completer slots keep the existing ranker and the existing objective. Slot N is the discovery slot. It's allowed to be wrong. It's labelled new to you. And it's never judged on same-session add. It's judged on thirty and ninety day category repeat, the only honest measure of whether an introduction worked.",
+          "What that buys is containment. The accuracy problem of the unsolved half no longer pollutes the whole rail, because it's quarantined in one slot with its own budget and its own scoreboard. A rail that's ninety percent reliable and ten percent curious reads as a good shop. A rail that's uniformly speculative reads as noise, and shoppers learn to skip it within a week.",
+          "Two riders. Cross-sell the category, not the SKU, in that slot. Category-level prediction is an order of magnitude more tractable, published work finds a shopper's repeat categories outnumber their repeat items, and the platform's own filing shows the mechanism is real: a cohort widening from under three categories at acquisition to eighteen by month twenty-three. And index the slot on tenure, because that curve is steepest in the first year. Month one gets an adjacent category. Month twelve can meet something genuinely new.",
         ],
         ul: [
-          "Live: the paired add-two card in production; the prediction engine running",
-          "Committed: net-new brand budget (25 to 30% of aligned ad spend) waiting on the surfaces, with smaller brands a new occasion-relevant way in",
-          "Directional: 20% modelled incremental sales on adjacent categories, framed as the A/B hypothesis, not a claim",
-          "[Fill: measured cross-sell conversion, add-two tap rate, session GSV, and the cannibalisation result from the test]",
+          "Completer slots: incremental gross profit, relevance first, availability filtered",
+          "The discovery slot: labelled, category-level, judged on 30 and 90 day repeat, never on same-session add",
+          "A separate novelty dial that can only ever apply to slot N, so the corruption is contained architecturally rather than by policy",
         ],
+        fig: "xsRail",
+        figBare: true,
+        figure:
+          "One rail, two scoreboards. Three completers judged on incremental gross profit, one labelled discovery slot judged on thirty and ninety day category repeat, and indexed on tenure.",
+        divider: true,
+      },
+      {
+        h: "The surface nobody claimed",
+        nav: "The wait window",
+        group: "Proposal",
+        tldr: "Ten minutes of committed attention, at effectively zero marginal delivery cost, and no competitor has designed anything there.",
+        p: [
+          "The framework scored the post-order wait joint-highest and the roadmap put it third. That was wrong. It should've been first, and the reason is economic before it's experiential. In that window the order is placed, the trip is dispatched, and the attention is relaxed. An add rides a vehicle already in motion, so it carries the least marginal cost of any unit on the platform. And a miss costs nothing, because the person already bought what they came for.",
+          "That last property makes it the right home for the discovery slot, and for the emergency trip's adjacent buy, which is often bigger than the trigger one and gets nothing in the checkout path. Everywhere else, a speculative suggestion competes with a conversion in progress. Here it competes with waiting. And on the evidence it's genuinely unclaimed: no published effectiveness or design work on order-tracking or post-delivery surfacing anywhere in the base I assembled.",
+          "As a real screen it needs three things. A live merge countdown. An honest guarantee that adds before the cutoff ride the same trip. A hard stop that doesn't read as punishment. The countdown is the whole interaction, and it's the one place I'd spend the motion budget, because the merge deadline is the only genuinely urgent thing on the surface. Manufactured urgency anywhere else would be exactly the pattern under scrutiny.",
+        ],
+        fig: "xsWait",
+        figBare: true,
+        figure:
+          "The merge window as a state ladder, including the state most teams never draw: the moment after the cutoff, said plainly rather than hidden.",
+        divider: true,
+      },
+      {
+        h: "Trust as the licence: the deposit, not the disclaimer",
+        nav: "Trust",
+        group: "Proposal",
+        tldr: "Occasionally recommend something that lowers the basket, and log it. It costs a little revenue and buys the right to make every other suggestion.",
+        p: [
+          "Three moves, in rising order of how uncomfortable they are to propose. First, why this, on every suggestion: you buy this about every eleven days, this goes with the dip in your cart, this is new near you. Ranking-parameter disclosure is already statutory. The cheap version is compliance. The good version is a reason to believe, and it lets the discovery slot read as help instead of inventory.",
+          "Second, negative cross-sell. Sometimes surface the thing that reduces the order. You already have this arriving Tuesday. The larger pack is cheaper per litre. You don't need two. It costs measurable short-term revenue, and it's the only documentable evidence that the engine acts against its own immediate interest. In the room described two sections above, a policy promise is worth nothing and a log is worth something.",
+          "Third, sampling instead of suggestion. For genuine discovery, don't ask for an add at all. Drop a free or near-free sachet into the basket with one-tap removal, brand-funded. That turns an impression into an actual trial, digitises the one lever that already works in physical retail, and fixes the incentive, because the brand pays for the introduction instead of the platform pricing the discovery slot by margin.",
+        ],
+        divider: true,
+      },
+      {
+        h: "The economics I would settle before the ranker hardens",
+        nav: "One auction",
+        group: "Proposal",
+        tldr: "Don't keep organic and sponsored in separate stacks. Convert the bid into the same unit as the organic score and make the paid slot clear the organic bar.",
+        p: [
+          "The framework parked sponsored cross-sell to protect relevance. Watching the ad labels appear across the final frames convinced me the deferral was the mistake. The question doesn't wait for the roadmap.",
+          "One auction, one currency. Translate a brand's bid into expected incremental gross profit and let it compete head to head with the organic candidate on that single axis. A paid slot wins only when it clears the organic slot's expected value. That's a hard relevance floor expressed in the ranker, not a relevance promise expressed in a document. The difference matters: a peer-reviewed audit of this market found sponsored results costlier than the top organic result in roughly three quarters of cases, and lower-rated in nearly half.",
+          "There's a second rebasing underneath. The P&L story of cross-sell isn't attach rate. It's that these units amortise a last-mile cost that's already sunk. Measured per trip instead of per order, cross-sell is the cheapest contribution the platform can buy. And that framing is what argues for the wait window over everything else on the list.",
+        ],
+        divider: true,
+      },
+      {
+        h: "What I could not know, and the brief I wrote to find out",
+        nav: "The brief",
+        group: "The brief",
+        tldr: "The whole discovery direction rests on one question I had no data for. So I wrote the pull, then I wrote the attack on it.",
+        p: [
+          "The idea under the unsolved half was merchandising by benefit, not by category. Good for gut health, no added sugar, high protein: language people actually search, cutting across aisles the taxonomy keeps apart. And the case for it rests on exactly one number, cross-category attribute affinity. If buying one high-protein item lifts high-protein purchase in a different category, a benefit-led rail can travel. If it doesn't, the direction doesn't survive, and it should be dropped cheaply.",
+          "So the brief starts by refusing to analyse anything. Part A is schema discovery with a hard stop for review, and its real job is the true fill rate on the product attribute fields, not their existence. If the claims and nutrition data are sparse or free-text mush, benefit-led discovery is a content and catalogue project, not a ranking project. That's a different team, a different budget and a different year. Better to learn that on day one than in month three.",
+          "Part B is six analyses. Whether category breadth is actually stalling, and when. Which categories combine low penetration with high repeat after trial. Baby care worked end to end, the clearest case of a shopper who doesn't know what to buy. The attribute affinity question. Where discovery could live, including the wait window. And a deliberately small sizing model, because a defensible small number beats an impressive one.",
+        ],
+        split: "media",
+        figure:
+          "Caption: Part A of the brief, the stop-gate paragraph, pulled as a quote block. [Typeset from the real file.]",
+        divider: true,
+      },
+      {
+        h: "Then I asked it to attack me",
+        nav: "The attack",
+        group: "The brief",
+        tldr: "Part C turns the same analyst into the hostile reviewer, because three specific findings were going to be taken apart, and all three deserved it.",
+        p: [
+          "I couldn't defend numbers I hadn't seen. Neither could the analyst producing them, unless the brief forced it. So the second half is an audit of the first half, and it names the attacks instead of waiting for them.",
+          "Breadth over tenure is survivorship. Users with eighteen months of history are, by definition, the ones who didn't churn. So rerun it on a fixed signup cohort, everyone who left included, and show both curves on the same axes. The category cohort is selected on its outcome. Everyone in a first-baby-care-purchase cohort has already found baby care, so add matched users of the same tenure and spend who never bought it. High-breadth versus low-breadth shoppers isn't causal. Broad shoppers are heavy shoppers, so control for frequency and spend and report what survives. And widget adds aren't incremental. The ranker shows the item most likely to be added anyway, then takes credit for the add. State what fraction is plausibly organic and name the experiment that would settle it.",
+          "Then the hygiene, none of it optional. Reconcile against finance's own books before any interpretation. Row counts before and after every join, fan-out checked. Confidence intervals and a minimum detectable effect on every rate. Cells under fifty users suppressed, never silently dropped. And the top findings rerun on a prior window and a half sample, with anything that moves labelled noise.",
+          "The output contract is the part I'd defend hardest. One claim ledger. Every claim as a row, tagged measured, modelled or assumed, with its source, its sample size, an honest confidence, the strongest argument against it, and what would change my mind. Anything with the word because in it is modelled. Anything from extracted free text is modelled. All sizing is assumed. Then three lists: what survives unqualified, what survives with the exact sentence to say when challenged, and what doesn't survive and what would fix it. Then one page titled how I would attack this, minimum five bullets. A brief where everything comes back high confidence hasn't been audited.",
+        ],
+        fig: "xsLedger",
+        figBare: true,
+        figure:
+          "The claim ledger, empty. The columns are the artefact: every row the analysis produces has to survive all seven of them.",
+        divider: true,
+      },
+      {
+        h: "Then the data came back, and it was less polite than the brief",
+        nav: "The first pull",
+        group: "The brief",
+        tldr: "One notebook on the search side of the problem. Five things it said, and none of them were the numbers I'd have guessed.",
+        p: [
+          "The brief asked for cross-category affinity. The first pull that came back covered the ground that number would stand on instead. Which terms people type. How they split into head, torso and tail. What a themes table built on top of them looked like. So that got read first.",
+          "Five things came out of it. Search is a mountain with a very small peak. The complement signal behind cheese is real, and thin. The themes table disagreed with the central table on exactly the terms that carry volume, because a festival moves faster than a stored label. The table was rebuilt while the notebook was open. And where the seed guess was weak, the theme on top of it was nonsense, and you could see it coming from one column.",
+          "The lesson that survived all five: the interesting number is never the coverage, it's the share behind it. A table can cover every head term and still be wrong at the root.",
+        ],
+        fig: "xsNotebook",
+        figBare: true,
+        figure:
+          "Five panels from one notebook, cells run 31 August to 3 September 2026. Every number is a real count from the table named on the panel.",
+        divider: true,
+      },
+      {
+        // 2026-09-04: the second pull. Facts measured from the 3 September
+        // Databricks export (sections 2, 5, 6, 7: the L3 cross-sell table
+        // data_science.public.prod_l3_cross_sell_ads joined to sku_info),
+        // computed in-session; Fadell register, writing-craft gate green.
+        // Part B (B1..B6) and Part C in that export are SQL with no results.
+        // NOTE: internal recommendation counts and lifts; the entry's
+        // no-internal-numbers rule (2026-08-23) is still open for Agam.
+        h: "The query came back, and the shopkeeper was right",
+        nav: "The second pull",
+        group: "The brief",
+        tldr: "Top pairs by lift, export dated 3 September. Four in five stay inside their own aisle, and the ones that cross are the catalogue tree talking, not the shopper.",
+        p: [
+          "The pull I wrote to settle the argument came back on 3 September. It ran against the live L3 cross-sell table, joined to the catalogue so every pair had a name. Two hundred rows by lift. By catalogue id that's 102 pairs. By name it's 66, because the same shelf sits under more than one tree, and that turned out to matter. The lowest lift in the set is 1,741. The top is 14,527, and it's leash to collar. I'd written that exact pair down as the prediction before the query ran.",
+          "Four in five rows stay inside the source's own category: 158 of 200. Just over half never leave the subcategory. Gift set to baby dress at 4,050. Charcoal burner to hookah chillum at 9,808. Under eye serum to under eye cream. Errands, finished. The engine is very good at the one thing I said it would be good at.",
+          "So what about the fifth that crosses? Ten distinct pairs, and I read every one. Glue gun to glue gun, filed under Stationery on one side and Home Needs on the other. Saree to blouse, because saree sits under Home Needs. Arm sleeve to biking sleeves, the same sleeve in two trees. Kurta to pyjamas. Chopsticks to disposable chopsticks. Nearly all of it is one item living in two places, or an accessory to itself. One pair reads like a different errand: humidifier to scented oil, at 2,605. One in a hundred. That's the discovery rate of association mining, measured, and it's about what I'd guessed blind.",
+          "Then the two aisles the brief cared about. Skincare has 507 recommendation rows pointed at it, and 272 of them start outside skincare. That looked like discovery for about a minute. The top of the list is foot filer to foot scrub and acne treatment to spot corrector: next-door shelves with a category line drawn through them. Further down, baking powder, cake mould, choco chips and whipping cream all recommend Essence, at lifts between 119 and 197. Essence is filed under skincare, and everything that recommends it is baking. The engine is right and the tree is wrong, and a rail built on that tree would put it in a face-care row.",
+          "Milk did what the universal item always does. Toned milk's strongest partner is milk bread, at a lift of 2.1. Then curd, buttermilk, brown bread, all under 2. It's in every basket, so it lifts nothing. The highest lift anywhere on the milk list is premium milk chocolates to dark chocolates at 254, which is the word milk matching a string, not a dairy shopper. And baby care, the clearest discovery category on the platform, cross-sells hardest into itself: a median lift of 115 inside, 54 out. The out list is the same errand continued in another aisle. Bottle brush to bottle cleaner. Gift set to rattle. Cotton balls to cotton wool. What pulls people into baby care is the mirror image: bottle cleaner, rattle, clothing set. Nobody arrives from outside the errand.",
+          "Two things this pull can't say, and the brief predicted both. There's no support column in the table, so the floor I asked for couldn't be applied, and a rare pair with a huge lift is still noise until it is. And the ratio is measured on what the engine already recommends. The denominator is co-recommendation, not co-purchase. The engine is grading itself. Part B, the six analyses that would fix that, is still SQL with nothing under it. Written, not run.",
+          "The lesson I carry out of two pulls in a week: the engine will never start an errand, and it doesn't need to. Let it finish them. Put the starting somewhere else, on a surface that doesn't ask a co-purchase table for permission. That's the rule. And it's the rule the walk taught me before there was a query at all."
+        ],
+        table: {
+          cols: ["Pair", "Lift", "Where it lives"],
+          rows: [
+            ["Leash and pet collar", "14,527", "Pet Care, both sides"],
+            ["Charcoal burner and hookah chillum", "9,808", "Paan Corner, both sides"],
+            ["Glue gun and glue gun & hot gun", "9,267", "Stationery on one side, Home Needs on the other: one item, two trees"],
+            ["Baby gift set and baby dress", "4,050", "Baby Care, both sides"],
+            ["Saree and blouse", "3,589", "Saree filed under Home Needs, blouse under Apparel"],
+            ["Humidifier and scented oil", "2,605", "Electronics to Home Needs: the one pair that reads like a different errand"],
+            ["Under eye serum and under eye cream", "1,149", "Skincare, the strongest pair pointed into it"],
+            ["Toned milk to milk bread", "2.1", "The best partner the universal item has"],
+          ],
+          caption: "From the 3 September export of the L3 cross-sell table joined to the catalogue. Lift is how much more often the pair appears together than chance predicts.",
+        },
+        // 2026-09-04 (this session): the five-panel figure of the second pull,
+        // after the other session's xsPairs on the same section.
+        figsAfter: [
+          {
+            fig: "xsSecondPull",
+            bare: true,
+            caption: "Five panels from the second pull: the aisle share, the top pairs, where skincare's recommendations come from, lift by aisle on one log axis, and baby care in and out.",
+          },
+        ],
+        fig: "xsPairs",
+        figure:
+          "The fourteen largest categories, each one's best partner ranked by orders and then by lift. Computed on the co-purchase export with the 200-order support floor the other table could not supply; duplicate rows per pair summed, corrected 8 September 2026.",
+        divider: true,
+      },
+      {
+        // 2026-09-04: the third pull. The themes table adjudicated end to end -
+        // 1,021,654 rows across Head, Head of Tail, Torso and Tail. Engine,
+        // aggregates, five workbooks and the four exploratory views live in
+        // Active - Zepto/Ads & Strategy/Cross-Sell/theme-review/; session note
+        // 2026-09-04_cross-sell-theme-review-four-segments.md. Figure xsReview.
+        // NOTE: internal counts again, and the underlying tables carry named
+        // seed categories. Agam extended the xsNotebook exception to cover this
+        // on 2026-09-04. The no-internal-numbers rule (2026-08-23) is now open
+        // on two figures; settle both before publish.
+        h: "So I graded the whole table, and the grader disagreed with the humans",
+        nav: "The third pull",
+        group: "The brief",
+        tldr: "Every theme row scored against one rule set, then the rule set scored against the humans who had already done it by hand. The instrument was the finding.",
+        p: [
+          "Two pulls had told me what the engine was good at. Neither told me whether the themes sitting on top of it were safe to show anyone. So I wrote the rule set down and ran it over all of it: every search term crossed with every seed category crossed with every candidate theme, across all four volume bands. A million rows and change. Three verdicts. Ship, review, pull.",
+          "The pull bucket is the one that ends careers, so it went first and it stayed narrow. A tab from a reputationally sensitive world sitting next to a seed, a query and a theme name that give it no reason to be there. Sexual wellness, menstrual, innerwear, medicine, body image, tobacco, alcohol. Adjacent worlds excuse each other, because a panty liner beside sanitary pads is the same aisle and pretending otherwise is theatre. Everything softer became review, not pull, and every ambiguous call went to review too. Uncertainty gets to be slow. It doesn't get to be confident.",
+          "Then the part that mattered more than any of it. One of the four bands had already been graded by hand, eighteen and a half thousand rows of human verdicts sitting in a column. So I stopped grading themes and graded the grader. It pulls one per cent of what the humans approved, and it flags three quarters of what they rejected. It also approves thirty-five per cent of a band where the humans approved ninety-six. The instrument is far more nervous than the people, and now I know by exactly how much, in which direction, and on which rules.",
+          "Building it against those labels is what exposed the bugs, and they were the stupid kind. Hair Serum was reading as alcohol, because rum is inside serum. Highlighter was reading as tobacco, because lighter is inside highlighter. Baby Corn was reading as baby. Naive substring matching, and it had put sixteen hundred perfectly good rows on the pull list. Word boundaries and an adjacency rule took that to a hundred and seventy-nine. The engine that catches your escalation risk will happily manufacture some of its own.",
+          "One more, and this one is not mine to fix. The hour-targeting column arrives as text in one export and as numbers in another. Comparing the two never matches and never errors, so a rule I trusted fired on twelve per cent of a band and quietly pulled things like a breakfast theme aimed at six in the morning. A hundred and seventeen thousand rows became fifteen thousand once the types agreed. I only caught it because that band's pull rate didn't look like its neighbours'. Nothing downstream of that column is safe until it is fixed at source.",
+          "What the four panels below are actually for: the pile is not a tangle. Three quarters of everything in review fails exactly one rule, and one threshold - a single number in a single config - holds two hundred and forty thousand rows on its own. Two of my rules turned out to be asking the same question. And the thing that predicts whether a theme is any good is not its category at all. It is how many product worlds it reaches into. One world ships half the time. Four ships never.",
+        ],
+        // 2026-09-04: the point cloud from the same workbook sits AFTER the four
+        // panels. The renderer paints figsAfter before the main figure, so the
+        // four panels ride in figsAfter and the cloud is the section's main fig.
+        figsAfter: [
+          {
+            fig: "xsReview",
+            bare: true,
+            caption: "Four panels on the adjudication of 1,021,654 theme rows, 4 September 2026. The rule combinations, the threshold, the overlap between rules, and the one relationship that behaves like a mechanism.",
+          },
+          {
+            fig: "xsCloud",
+            bare: true,
+            caption: "The theme space. 40,866 of the 1,021,654 rows, every 25th, each row's 51-number fingerprint projected onto its first two principal components. The axes fell out of the data, food-ness across and body-ness up, and the verdicts do not separate in them: quality problems sit across the whole catalogue, not in one aisle.",
+          },
+        ],
+        // 2026-09-04: the embedding projector (after Google's Embedding
+        // Projector, 2016) on the same sample: PCA in 3D, t-SNE, two custom
+        // supervised axes, nearest neighbours in the full 51-d space, search.
+        fig: "xsProjector",
+        figBare: true,
+        figure:
+          "The same rows as an embedding projector, in the 49 features that are not the verdict itself. Rotate the first three components, switch to t-SNE for local neighbourhoods, or ask the space directly with two supervised axes, Pull to Ship across and Head to Tail up. Click a point for its six nearest neighbours in that space, with distances. Pull has a shape the space can find. Ship against Review is one threshold, and it cannot.",
+        divider: true,
+      },
+      {
+        h: "The guardrails, written before there was anything to guard",
+        nav: "The refusals",
+        group: "The brief",
+        tldr: "Ten refusals, and the ones about vulnerable inference aren't negotiable at any lift.",
+        p: [
+          "Aggregates only. No personally identifying data. No cell under fifty users. No individual-level inference about a child, a health condition or a pregnancy, ever, at any confidence, for any uplift. The age-stage question in the baby care analysis is answered from aggregate purchase sequences and stays there. Free-text search queries get screened for names and numbers before they appear in any document.",
+          "And in the product: age-gated and medicinal categories enforce gating before serving. Sensitive categories get neutral copy, reviewed before ship. Substitutes never appear while the anchor is in stock. First-order users get category heuristics, not pseudo-personalised noise. No more than three surfaces fire on one trip.",
+          "Unglamorous, and they're the actual deliverable. Everything else in this case a model could overtake. These, only a person writes.",
+        ],
+        divider: true,
+      },
+      {
+        h: "What I would do, in order",
+        nav: "In order",
+        group: "Close",
+        tldr: "Three things, and two of them aren't features.",
+        p: [
+          "The wait-window surface first. It's the largest unclaimed inventory on the platform, it has the best marginal economics of anything on the list, and it's the one place a speculative suggestion costs nothing when it misses.",
+          "The one-discovery-slot architecture with its own scoreboard second. It's the only proposal here that touches the unsolved half, and it's a bounded build on rails that already exist.",
+          "The single auction third, settled now rather than later, because it decides the ranker's shape and is expensive to retrofit once organic and paid have grown separate plumbing.",
+          "And under all three, the regret metric shipped with the lift metric, and negative cross-sell in the log. Those aren't garnish. With a live order in this market against this exact mechanism, they're what makes the other three shippable.",
+        ],
+        divider: true,
       },
       {
         h: "Reflection",
-        tldr: "The subtlest problem was not the widget; it was keeping a persuasive feature on the right side of the line, and proving restraint reads as craft.",
+        nav: "Reflection",
+        group: "Close",
+        tldr: "The framework I'm proudest of is the one that got overtaken, because of what it forced me to learn about where design value sits in a recommender.",
         p: [
-          "Adjacency works precisely because it operates just below deliberate decision-making, which is the same property that defines a dark pattern. The whole bet, that being dynamic and genuinely useful beats static theming, only pays if users believe the store is on their side, so the ethics were not a footnote; they were the product. The feature helps you finish the basket you actually came for; it does not manufacture needs, fake scarcity, or bury the thing you searched for.",
-          "What I would revisit: the directional model leaned harder on the high-volume parent category (milk) than I would like, and the real validation has to come from the breadth of occasions, not one base subcategory. And there is a live tension I am still sitting with: how much familiarity (we have got your Friday movie night ready) is delightful before it tips into feeling watched. That line is one notification wide, and I would want the experiment, not my taste, to find it. [Add your own honest revisit once the test runs.]",
+          "I wrote a good document aimed at the tractable half, and a capable team solved that half on their own schedule, publicly, six weeks later. The lesson isn't that the document was wasted. The completer engine was always going to get built by someone. The parts still doing work today are the ones no model produces: which trips get nothing, what the objective may optimise, what the surface owes the person on the other side of it, and which questions we're not permitted to ask of the data.",
+          "The second lesson is about honesty as a design material. Everything persuasive in this project lives one bad quarter away from being the thing a regulator describes. The only durable answer I found is to instrument the doubt. Measure regret next to lift. Keep a holdout you can't argue with. Publish the reason under every suggestion. And occasionally recommend the smaller basket, and keep the receipt.",
+          "The third is quieter. I spent a fortnight designing how I'd find out instead of designing a screen, and the brief and its attack half are the artefacts I'd most want a hiring manager to read. A recommendation surface is easy to draw and nearly impossible to defend. Learning to write the defence first changed what I think the job is.",
+        ],
+        divider: true,
+      },
+      {
+        h: "The rule",
+        nav: "The rule",
+        group: "Close",
+        tldr: "A recommender runs millions of times with no designer present, and the refusals are the only part of your judgement that scales.",
+        p: [
+          "Turns out the design was never the prediction. A model now writes the suggestions. It doesn't decide which trips get nothing. It doesn't decide what the objective may optimise. It doesn't decide what you refuse to ask of the data. So the rule I carry: a recommender runs millions of times with no designer present, and the refusals are the only part of your judgement that scales.",
         ],
       },
     ],
     todo: [
-      "Confirm your exact title and the dates (collaborators intentionally left out, this entry is craft-first)",
-      "Metrics update as the A/B test reports: cross-sell conversion, add-two tap rate, session GSV, and especially the cannibalisation read",
-      "Confirm which surfaces are live vs green-lit at publish time (paired card is described as shipped)",
-      "Build the seven figure assets per Claude/2026-06-19_occasion-buying-figure-specs.md (start with the occasion-widget basket-build, the hero)",
-      "Clarity-gate / length: still around 2,050 narrative words; consider a section-level trim toward the 900-1,400 target if it reads long for an HM",
+      "2026-09-03: MERGED the occasion-buying case into this one (Agam: 'I see 3 separate cross-sell case studies, combine into one'). Added 'Why the brands wanted it' (Setup) and a 'The surfaces' group of ten sections (occasion engine, lift over volume, burger bun, paired card, the experiments, occasion widget, banner system, post-cart tabs, peak-end, the edge), rephrased into the Fadell register with no new facts. DROPPED from the old entry: central question, context, role, intent-states (contradicted the six trip types here), 'states nobody screenshots' (covered by suppression + guardrails), Impact (all [PLACEHOLDER] invented numbers), Reflection. The merged sections carry internal figures (Hair Mask 56x, burger-bun lifts, the 25-30% brand budget): same conflict as the notebook section below. Old entry archived verbatim in Claude/2026-09-03_occasion-buying-entry-archive.jsx.txt; /work/occasion-buying now aliases here.",
+      "2026-09-04: ADDED 'So I graded the whole table' + fig xsReview (the adjudication of all 1,021,654 theme rows: UpSet of rule combinations, the intent-share unlock curve, the rule-overlap arcs, and ship rate against product worlds spanned). Agam EXTENDED the xsNotebook exception to cover it on 2026-09-04, so the no-internal-numbers rule (2026-08-23) is now open on TWO figures and this one also sits on tables carrying named seed categories. Settle both together before publish: keep and retire the rule, redact to shapes, or move both to the local /writing page. Source: Active - Zepto/Ads & Strategy/Cross-Sell/theme-review/ + Claude/2026-09-04_cross-sell-theme-review-four-segments.md.",
+      "2026-09-03: ADDED 'Then the data came back' + fig xsNotebook (five findings from the 'pv_id and cross sell info' Databricks notebook) at Agam's request. It carries INTERNAL search and table counts, which conflicts with the no-internal-numbers rule below. Agam to decide before publish: keep and retire the rule, redact the panels to shapes, or move the section to the local /writing page.",
+      "2026-09-02: integrated the mobile Fadell draft (2026-08-29_case-studies-mobile.html) - added The walk did the selling, The ask, The query that settles it, The rule. WITHHELD per the no-internal-numbers rule: the association-table results (in-category share, the lift figures) and the 'What shipped' slot lift, all still [CONFIRM]-marked in the draft anyway. The draft's alternate kicker ('I wrote what it's not allowed to do, and I wrote it first') is undecided - swap if preferred.",
+      "RESOLVE ROLE LINE before any submission or publish: the framework and both Databricks briefs are single-authored, which supports a strong line, but say it exactly once and say it true. Same unresolved question as /work/occasion-buying.",
+      "RE-VERIFY EVERY PUBLIC CITATION AT SOURCE: the cart-Transformer figures and blog date, the CCPA order wording and penalty, the filing cohort curve (2.6 to 18.0 categories), E-Commerce Rules 5(3)(f) and 4(9), the sponsored-quality audit percentages, and two papers for the repeat-baseline and new-category-recall claims. Anything that will not verify gets CUT, not softened.",
+      "NO internal Zepto number may be added to this entry, in any form, including tagged placeholders. That rule is the case's whole pitch (set with Agam 2026-08-23).",
+      "Confirm nothing in 'The objective function' or 'The economics' discloses a non-public ranker detail. The starting margin-tilt value is omitted on purpose; keep it omitted.",
+      "All eight figures are built (2026-08-24). Two still want real assets rather than coded stand-ins: the five-directions board would be stronger with the Final Experiments exports beside it, and the framework plate could be the real document page.",
+      "2026-09-03: 'Then the mechanism shipped without us' REPLACED by 'Then we built the mechanism together' (annotation: tell the collaboration story, not what happened). Text from the mobile draft minus its [CONFIRM]-marked affinity-query paragraph; the draft still asks which of objective / availability filter / refusals the model actually enforced.",
+      "Not in the `projects` index yet, so it is reachable only by URL. Add it once the role line and citations are resolved.",
     ],
   },
   sample: {
@@ -4457,6 +7385,595 @@ const caseStudies = {
   },
 };
 
+// Duplicate of the scheduled-delivery case study for a concise / clarity-gate cut
+// (Agam verifies first, then I trim this copy to a 5-8 minute read while the
+// full version above stays intact). Deep-cloned, so trimming one never touches
+// the other. Routes at /work/scheduled-delivery-trim.
+caseStudies["scheduled-delivery-trim"] = JSON.parse(JSON.stringify(caseStudies["scheduled-delivery"]));
+caseStudies["scheduled-delivery-trim"].eyebrow = "Zepto · Case study · concise cut";
+
+// 28 Sep 2026: THE PRESENTING CUT of Scheduled Delivery, for presenting end to
+// end to a product leader (about 20 minutes). A deep clone, reordered into the
+// setup -> crisis -> resolution arc; the live page is never touched. Routes at
+// /work/scheduled-delivery-present. What changed against the live page:
+//   - order: hook, stakes, role, why it is hard, the search, the crisis (stuck
+//     cart + state matrices), the resolution, launch, results, learning, reach, close
+//   - My role keeps two of its slides (team, timeline); the rest are backup on
+//     the live page. "What I'd do differently" moves to the close
+//   - "Two ways to say it" is cut (a detour for this audience)
+//   - Impact tells Acts 1 to 4 of the metrics story
+//   - every "[Confirm ...]" note is stripped and the fill-in box dropped
+//   - styleKey keeps every data-case="scheduled-delivery" rule applying
+caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudies["scheduled-delivery"]));
+{
+  const t = caseStudies["scheduled-delivery-present"];
+  t.styleKey = "scheduled-delivery";
+  t.eyebrow = "Zepto · Case study · presenting cut";
+  delete t.todo;
+  const strip = (v) => {
+    if (typeof v === "string") return v
+      .replace(/\s*\[Confirm[^\]]*\]/g, "")
+      .replace(/\[WhatsApp was designed for;[^\]]*\]/g, "(WhatsApp was designed for, but it never went live.)");
+    if (Array.isArray(v)) return v.map(strip);
+    if (v && typeof v === "object") { for (const k of Object.keys(v)) v[k] = strip(v[k]); return v; }
+    return v;
+  };
+  t.sections = strip(t.sections);
+  const pool = t.sections;
+  const take = (h) => {
+    const i = pool.findIndex((s) => s.h === h);
+    return i === -1 ? null : pool.splice(i, 1)[0];
+  };
+  const breaker = (img) => {
+    const i = pool.findIndex((s) => s.breaker && (s.image || "").includes(img));
+    return i === -1 ? null : pool.splice(i, 1)[0];
+  };
+  const role = take("My role");
+  // design lead: leadership over logistics (team + how I led the crits and pods)
+  if (role) role.roleWireframesOnly = ["Who I worked with", "Team leadership"];
+  const impact = take("Impact");
+  if (impact) {
+    impact.figsAfter = (impact.figsAfter || []).map((f) => (f.fig === "schedMetricStory" ? { ...f, fig: "schedMetricStoryCore" } : f));
+    impact.p = (impact.p || []).slice(0, 3); // headline number, why it is mostly fallback, and the value story (a product head asks about value first)
+  }
+  // THE PRINCIPLES, named once and pointed back to at each decision. Every one
+  // is from the record: the first product review (positive copy, the real date),
+  // the test sentence that killed the tabbed flow, and the stuck cart.
+  // 28 Sep: the interviewer is a PRODUCT HEAD hiring a design lead. The story
+  // is framed as a bet, and each key beat closes on its product "so what".
+  const withSo = (sec, line, close) => (sec ? { ...sec, soWhat: line, soWhatClose: !!close } : sec);
+  const bet = {
+    h: "The bet",
+    tldr: "A company built on now could earn trust for later, without weakening now.",
+    points: ["Earn trust for later", "Never dilute now", "Design the promise, not the screen", "Let the data correct us"],
+    pointsLabel: "The bet, in four parts",
+    p: [
+      "The risk was never the slot picker. It was that scheduling could teach people Zepto is sometimes slow, and instant is the moat. So the design job was to make later trustworthy while leaving now untouched. The bet partly paid off and partly surprised us, and the surprise is the most useful part of this story.",
+    ],
+    divider: true,
+  };
+  const principles = {
+    h: "What I designed to",
+    tldr: "Four rules held every decision, from the first review to the last edge case.",
+    points: ["Positive copy, always", "Show the real date", "Keep every choice in view", "Put the hard state in plain sight"],
+    pointsLabel: "Four design principles",
+    p: [
+      "Each one came from evidence, not taste. The first two came out of the first product review and never left. The third came from one sentence a participant said mid-task, which ended the tabbed direction. The fourth came from months on the cart that stays stuck even with a slot.",
+    ],
+    divider: true,
+  };
+  // LEARNING, framed as belief then evidence
+  const learned = take("What users told us");
+  if (learned) {
+    learned.h = "What we believed, what we learned";
+    learned.p = ["Before launch we believed people wanted to plan ahead. After it, 45 interviews told us something harder.", ...(learned.p || [])];
+  }
+  // THE CLOSE, as a design reflection rather than a business one
+  const reflection = take("Reflection");
+  if (reflection) {
+    reflection.p = [
+      (reflection.p || [])[0],
+      "What I would revisit: we shipped one-hour slots and only in-flow slot edits, deliberate trade-offs to launch. Fuller editing came later; finer slots never did, and they were the top ask. I would also have instrumented the empty slot picker from day one, because nothing records a customer who opened it and found nothing bookable.",
+      "What I would take to any team: a summary you can see is itself a trust mechanism, and the fix for a trust feature is almost always to say the true thing one more time.",
+    ].filter(Boolean);
+  }
+  take("Schedule means different things to different people. Even how they say it."); // the pronunciation section, renamed (mukw91sk)
+  // the opening question is a section without a heading, so it is found by its flag
+  const hookAt = pool.findIndex((s) => s.introQuestion);
+  // every unnamed section that sat before Context & problem on the live page
+  // (the hook's plates and figures) stays with the hook, in its original order
+  const ctxAt = pool.findIndex((s) => s.h === "Context & problem");
+  const opening = ctxAt > 0 ? pool.splice(0, ctxAt) : [];
+  const hook = null;
+  t.sections = [
+    ...opening,
+    take("Context & problem"),
+    (() => { const i = pool.findIndex((s) => s.fig === "schedMoments"); return i === -1 ? null : pool.splice(i, 1)[0]; })(), // the six moments
+    withSo(take("The constraints"), "This wasn't a feature request. It was lost revenue from carts we couldn't serve."),
+    take("The central question"),
+    bet,
+    principles,
+    role,
+    breaker("crates-greens"),
+    take("The cart is a complex construct"),
+    take("The explorations"),
+    withSo(take("Two directions"), "I killed the simpler build because it would have cost trust at exactly the moment of commitment."),
+    withSo(take("The stuck cart"), "Hiding failure is cheaper to build and more expensive to own. Support tickets are a design cost."),
+    take("Cart-page states"),
+    take("Slot-page states"),
+    take("The real work"),
+    breaker("crate-packed"),
+    take("After you book"),
+    withSo(take("The go-to-market"), "The restraint was strategic. If scheduling showed up everywhere, it would teach people that Zepto is sometimes slow."),
+    breaker("bag-doorstep"),
+    withSo(impact, "The number I'd defend isn't the biggest one. It's the one that tells us what to build next."),
+    withSo(learned, "We designed for planners and got mostly rescuers. That isn't failure. It's the market telling us where the value is."),
+    take("One scroll across midnight"),
+    take("Returns & refunds"),
+    withSo(reflection, "I design the promise, not just the screen. And when the data tells me I was wrong, that's the part I get most excited about.", true),
+    take("What I'd do differently"), // the live page's own closing section (mukq5ujj)
+    ...pool, // anything not named above keeps its place at the end, so nothing is silently lost
+  ].filter(Boolean);
+}
+
+// WIP concise cut of the Away Agent case (Carnegie: 42 sections is 2-3x every
+// sibling; MIIPS 20-page budget). Deep-cloned then trimmed by merging the short
+// ladder sections into their parent beats; the live away-agent entry is never
+// touched. Merged donors keep their prose and bullets; their figures are dropped
+// (page economy is the point). Routes at /work/away-agent-trim.
+caseStudies["away-agent-trim"] = JSON.parse(JSON.stringify(caseStudies["away-agent"]));
+{
+  const t = caseStudies["away-agent-trim"];
+  t.eyebrow = "Away · Case study · concise cut (WIP)";
+  const pool = t.sections;
+  const take = (h) => {
+    const i = pool.findIndex((s) => s.h === h);
+    if (i === -1) return null;
+    return pool.splice(i, 1)[0];
+  };
+  const merge = (hostH, donorHs) => {
+    const host = take(hostH);
+    if (!host) return null;
+    for (const dh of donorHs) {
+      const d = take(dh);
+      if (!d) continue;
+      if (d.p) host.p = [...(host.p || []), ...d.p];
+      if (d.ul) host.ul = [...(host.ul || []), ...d.ul];
+      if (d.table && !host.table) host.table = d.table;
+    }
+    return host;
+  };
+  // "Missed connection" is cut outright: "In motion" already carries the same
+  // ticket-structure-dependent response in its second paragraph.
+  take("Missed connection");
+  const trimmed = [
+    take("The bet"),
+    take("They already know"),
+    take("My role"),
+    take("Decisions"),
+    take("The dial"),
+    take("Cards, not chat"),
+    merge("The home", ["Time of day", "Slow decision", "Return visit"]),
+    take("The brief"),
+    take("Asks first"),
+    take("The wait"),
+    take("What the data changed"),
+    merge("The verdict", ["Under the verdict", "Trap check"]),
+    take("Fares are verdicts"),
+    merge("Ticket structure", ["One thread", "One ticket", "Two tickets", "Group fares", "Many passengers", "Seats and bags"]),
+    merge("Tap to pay", ["Price moved", "Charged twice"]),
+    merge("Confirmation", ["What you bought", "Documents", "The win, paid back"]),
+    merge("The watch", ["The due date", "Pre-departure", "In motion"]),
+    take("When it breaks"),
+    merge("The recap", ["Case map"]),
+    take("The scoreboard"),
+    take("What I'd revisit"),
+  ].filter(Boolean);
+  // Re-scope the merged hosts' tldr lines to cover what they absorbed.
+  const retldr = (h, s) => {
+    const sec = trimmed.find((x) => x && x.h === h);
+    if (sec) sec.tldr = s;
+  };
+  retldr("The home", "The home adapts to how well the agent knows you, reads the clock through the day, and treats the zero state as a re-entry surface for a decision made over weeks, not minutes.");
+  retldr("The verdict", "A results card is an argument, not a row in a list: the one flight the agent would book, the scoring engine and hard gates underneath it, and the trap flagged inline with its reason.");
+  retldr("Ticket structure", "How a ticket is built decides who owes you a flight when something goes wrong, so the agent makes the structure legible up front, across one ticket, two, group fares, many passengers, and add-ons.");
+  retldr("Tap to pay", "Away never charges without your tap, and the two ways paying goes sideways, a fare that moves mid-verify and a worried double-tap, are both designed to resolve without harm.");
+  retldr("Confirmation", "Confirmation is the emotional payoff and a quiet danger zone, so the agent bridges the paid-to-ticketed gap, reads back what you actually bought, runs the document check early, and pays the negotiation effort back.");
+  retldr("The watch", "After booking, the agent stays awake for the whole trip: the settle-date reminder, the pre-departure clock, and live connection arithmetic in motion.");
+  t.sections = trimmed;
+  // Compact PDF cut (?cut=compact) for the trim: thesis + signature beats only.
+  t.pdfSections = [
+    "The bet",
+    "They already know",
+    "My role",
+    "Decisions",
+    "The dial",
+    "Cards, not chat",
+    "The verdict",
+    "When it breaks",
+    "The scoreboard",
+    "What I'd revisit",
+  ];
+  t.todo = [
+    "WIP trim (2026-07-19): 42 sections -> " + trimmed.length + " by merging the ticket/payment/watch ladders; live away-agent untouched",
+    "Merged donor sections lost their figures; review whether any dropped figure (time-of-day, trap-check, one-thread, due-date, pre-departure, in-motion) must be re-homed",
+    "Seam pass done 2026-07-19: Trap check re-homed under The verdict (was misfiled under The wait; its first line also echoes The home's vetted-list paragraph, candidate for a prose dedupe), Missed connection cut as redundant with In motion, merged hosts' tldrs re-scoped",
+    "Further trim candidates if still long for MIIPS: compress Fares are verdicts (347w); dedupe the vetted-list idea between The home and Trap check prose",
+    "When approved, decide whether this replaces the live entry or ships as the PDF/MIIPS source only",
+  ];
+}
+
+// FROM-SCRATCH REWRITE of the Dassh case study (started 2026-07-22). Deep-cloned
+// from the live entry so /work/dassh is never touched while the rewrite is authored
+// against the full research corpus (the voice-agent spec, the 43-call collision
+// study, R1-R6 in dassh-user-requirements.md, and the interview answers Agam gives).
+// The clone is only a starting surface: `sections` gets replaced wholesale, it is
+// not an edit of the old prose. Routes at /work/dassh-v2.
+caseStudies["dassh-v2"] = JSON.parse(JSON.stringify(caseStudies["dassh"]));
+{
+  const v2 = caseStudies["dassh-v2"];
+  v2.eyebrow = "Dassh · Case study · rewrite";
+  v2.title = "The call that had to be worth answering";
+  v2.meta = "Design consultant & Director · Dassh · 2025";
+  v2.cover = "Dassh";
+  v2.lead =
+    "Dassh builds Stella, an AI recruiter that does the execution work of hiring. I was its design consultant and a director through 2025, and the piece of it I want to talk about is the smallest surface in the product and the one that frightened me most: the first-round phone screen. A screening call is the cheapest thing in hiring to automate and the most expensive thing to get wrong, because the person on the other end needs the job far more than the system needs them. I owned that call end to end, the research and the design, while the engineers owned the stack underneath it. Roughly 300 transcripts, 47 candidates I called myself, and one coded field log later, the calls were completing at 71% of everyone who picked up, against 35 to 40% when I started. This is how they got there, beginning with the man we failed.";
+  // FULL DRAFT written end to end, 2026-07-24, per Claude/dassh-rewrite-brief.md and the
+  // locked decisions in it (spine = the call, second act = the agent-vs-job reversal,
+  // designer-first ownership, hero = the candidate answered by a form). Defaults applied
+  // per the brief's own "if unanswered" guidance where Agam's answer was pending: the
+  // recruiter-mock scene is CUT (unsourced, traced to an auto-generated file built on a
+  // fabricated persona) and rewritten as a design argument; no hire is claimed (Agam:
+  // "not sure if should mention it"); the four-experiences tour, the design system section
+  // and the fundraise are compressed to context rather than kept as standalone sections,
+  // per the locked "only the reversal survives" decision.
+  v2.sections = [
+    {
+      h: "What he told us",
+      tldr:
+        "A candidate said out loud what he wanted. The agent, working exactly as designed, did not hear a word of it.",
+      p: [
+        "He picked up, and somewhere in the first few seconds he said the thing that mattered: he was looking for a job. Not a maybe, not a someday. He was telling the machine on the other end the one fact the whole system existed to act on.",
+        "Stella carried on with the script. She confirmed his details, thanked him, and hung up, because that was precisely her mandate, confirm the fields, not capture intent. Every log for that call would have read as a success. The details were confirmed. The call completed. Nothing in the data would ever have shown a man who volunteered exactly what he needed and was answered by a form.",
+        "I only found him because I was reading transcripts one by one, which is a slow way to spend three weeks and the only reason I know this story at all. Then I called him myself and told him he was still in the pipeline. That call is the least scalable thing I did on this project and the most important, because it is the moment the problem stopped being a metric and became a person. Everything below is what changed after it.",
+      ],
+      divider: true,
+    },
+    {
+      h: "The hardest surface",
+      tldr:
+        "A phone screen looks like the most automatable thing in hiring. Turn it around and it is the least forgiving.",
+      p: [
+        "From the recruiter's side, a first-round screen is the most repetitive thing they do, the same handful of fitment questions, hundreds of times, in a language the candidate may or may not share. It is the obvious thing to hand to a machine, which is why every hiring product on the market is racing to do exactly that.",
+        "Now stand at the other end of the line. The candidate is often answering in a second or third language, from a factory floor or a shared room or a moving bus, on a phone that may not be theirs, from a number they do not recognize, in a country where job scams are common enough that suspicion is the rational default. They need this job. The system does not need them.",
+        "That asymmetry is the whole design problem. Tone, pacing, disclosure and repair are not settings, they are the product, and every one of them defaults badly. Built carelessly, the same tool is a fast, cheap, multilingual machine for humiliating people at scale. So I made one decision early and let it govern everything else: on this surface, the candidate is the primary user, not the recruiter paying for it.",
+      ],
+      divider: true,
+    },
+    {
+      h: "Three hundred transcripts",
+      tldr: "I read every call, then rang forty seven people to find out what the transcripts were lying about.",
+      p: [
+        "The research base was roughly 300 candidate call transcripts across the pilots, read rather than sampled. Inside that sat the instrument, a 43-call field log over ten days, 39 unique numbers, every outcome coded into six mutually exclusive categories of what the candidate actually experienced, the recruiter's own note kept against each one.",
+        "Then I called 47 of them myself, over three weeks. That is the part I would keep if I had to cut this case in half, because it told me two things no transcript could. The captured data was quietly wrong sometimes, what the system had recorded and what the person had actually meant were not the same, which means every downstream decision was running on a slightly false record. And candidates kept raising things the system had no field for. That is the man from the first section, generalized. We had built something that could hear answers and not people.",
+      ],
+      divider: true,
+    },
+    {
+      h: "We were the failure",
+      tldr: "The calls were not dying because candidates said no. They were dying because we broke, right after the hard part.",
+      p: [
+        "The assumption going in, the one the entire outbound calling industry runs on, was that the problem is reach, not enough people pick up, so dial more. The log said otherwise.",
+        "Of the 43 coded calls, about a quarter, 10 of them, connected and then died before a single screening question was asked. The candidate had already done the hard part. They had answered an unknown number, decided we were not a scam, and stayed on the line, and then the system dropped them. Three of those calls carry the diagnosis in the recruiter's own words: one logged simply as incomprehensible, one where the agent could not pronounce the candidate's name and had no fallback for it, and one where the agent fell silent after its own first sentence, a candidate the study itself flags as clearly interested and lost to the failure, not to disinterest.",
+        "The mechanism is latency. Production voice agents were answering in 1.4 to 1.7 seconds where a human conversation runs on a gap of roughly two tenths of a second, and past about a second of silence a person does not think the machine is thinking. They think the call has dropped, and they hang up, and the log records it as a failure to engage.",
+        "The log held two more injuries worth naming. Around 9% of dials were duplicates, one candidate rung three separate times in a single week, which is not a data hygiene issue, it is a person being harassed by software. And one candidate told us plainly that the brand always calls and never follows up with anything real. In a market that saturated with spam, an empty check-in is indistinguishable from spam, and once you are filed under spam you do not get filed back.",
+      ],
+      ul: [
+        "43 calls coded over ten days, 39 unique numbers, six candidate-experience categories, a recruiter note kept against each one",
+        "10 of 43 connected and then died before the first question, about a quarter; roughly 9% of dials were duplicates; at least one clearly interested candidate was lost to a system failure, not disinterest",
+        "The mechanism: 1.4 to 1.7 seconds of agent latency against the roughly two tenths of a second a human conversation expects",
+      ],
+      fig: "callJourney",
+      figure:
+        "The candidate journey from the field log: ring, screen, pick up, engage, outcome. The cliff sits at engage, where about a quarter of connected calls die after hello and before the first question, which is why the first fix taught the agent to recover out loud instead of going silent.",
+      divider: true,
+    },
+    {
+      h: "The agent I killed",
+      tldr: "We built one ambitious, open, do-everything agent. Granularity beat it.",
+      p: [
+        "The first version is the one you would build too. A single agent, one flow, an open conversation that could handle anyone who picked up, because handling anyone is what a capable system should do, and because we thought we were breaking ground.",
+        "It failed on completion, and completion was the nightmare. People would answer and then leak out of the middle of the call. What killed the generalist was not intelligence, it was granularity, the specifics of each use case turned out to be decisive, and one flow could not hold four axes of difference at once. Role level, because a factory worker and a mid-manager are not having the same conversation. Language and region, because how much Gujarati sits inside an English sentence is not a toggle. Job function, because the vocabulary of a technical role and a plant role diverge immediately. And candidate temperature, because someone who applied yesterday and someone being re-engaged cold from a database two years old need entirely different first sentences.",
+        "So I split it. Not into more intelligence, into more specificity, which is the opposite of where the instinct pulls you when the thing you are building is an AI.",
+      ],
+      divider: true,
+    },
+    {
+      h: "When to call",
+      tldr: "Before a single word of the script changed, pickup moved. Timing turned out to be a design variable, not an operations one.",
+      p: [
+        "Pickup was abysmal at the start, and the first real gain had nothing to do with what the agent said. It came from when it dialled. Availability by hour differs predictably by job type, so we stopped dialling a list and started profiling before dialling: job type and shift pattern, the hour a candidate had applied, what had happened on previous attempts to that person, and where they lived relative to the job.",
+        "The finding I did not expect is that for some roles the best window was the commute. The conversation is short, and a candidate on a bus has nothing else competing for the next few minutes, no supervisor, no machine noise, no reason to cut it short. The worst thing you can do to a factory worker is ring them mid-shift, which is exactly what a naive dialer does at eleven in the morning, because that is when call centres are staffed.",
+        "Honest limit: the retiming and the per-flow rewrite went out in the same window, and nobody logged their effects separately. I can tell you both moved. I cannot tell you the split between them, which is a measurement mistake I would not repeat.",
+      ],
+      divider: true,
+    },
+    {
+      h: "Asking first",
+      tldr: "The agent asks whether now is a good time. Most people do not say no, they say when.",
+      p: [
+        "Every call opens by asking whether this is a good moment to talk. In a cold sales call this is close to the worst opening you can use, data from tens of thousands of recorded sales calls puts it among the lowest performing lines measured, because it hands a stranger the easiest possible exit. I knew that going in and used the line anyway, because a job screen is not a sales call, and the psychology runs the other way.",
+        "An unscheduled AI call to someone who already applied for a job is exactly the kind of interaction that makes a person feel cornered, and the well established finding on that feeling is that people resist it rather than comply with it. Asking, and meaning it, hands the choice back. Most candidates did not take the exit. They proposed a time of their own instead, and those callbacks turned into the most engaged conversations in the set, because a person who sets their own appointment has committed to it, which is a steadier yes than one you talk someone into on the spot.",
+        "It is also the honest expression of the stance underneath all of this. If the candidate is the primary user, their time is the constraint the system bends around, not the other way about.",
+      ],
+      divider: true,
+    },
+    {
+      h: "How it sounds",
+      tldr:
+        "Silence reads as a dropped call, but the fix was never to make the machine sound more human. It was an old telephony trick, and saying plainly what it is.",
+      p: [
+        "Latency was the killer, 1.4 to 1.7 seconds where a real conversation runs on a gap closer to two tenths of a second, and the instinct once you know that is to make the agent as fast as possible everywhere. That is not quite right either. A study that spliced a 1.2 second delay into otherwise ordinary conversations found people did not just notice the lag, they rated the other person as less attentive and less friendly for it, character judged by a number nobody consciously registered. So the wait time moves in both directions depending on the moment: as fast as the pipeline allows almost everywhere, and deliberately slower right after a candidate says something that cost them something, because an instant reply there reads as nobody having listened.",
+        "The harder call was the silence itself, and I want to be precise about what I can and cannot claim here. Telephone systems have synthesized a low background hum during silent stretches for decades, for exactly one reason: total digital silence gets misread as a dropped line. That much is a real, decades-old engineering standard, not a hunch. What I cannot claim, because I went looking for the research and it is not there, is that adding ambient sound makes an AI voice feel more human or more trustworthy. The nearest evidence actually points the other way, background noise tends to read as less professional, not more. So the ambient bed in this call does one job only: telling the candidate the line is live. It is not standing in for a person, and I kept it from reading that way on purpose, because dressing a machine up to sound like a busy human office is the same move that cost Google real credibility with Duplex. The honest fix for a fake sense of humanity was never more atmosphere. It was saying plainly what the caller is.",
+        "Which Stella did, every time. She introduced herself as an AI assistant before asking anything. No law in India requires that today, and I want to be honest that this was a choice, not a box I was ticking. But every serious version of this regulation anywhere in the world converges on the same rule for exactly this situation, and the research on what happens when people find out afterward that a call went undisclosed says it more bluntly: getting caught not telling someone costs more trust than telling them would have. Silence was never the safe option. It only felt like one.",
+      ],
+      divider: true,
+    },
+    {
+      h: "Whose language",
+      tldr:
+        "Ahmedabad hires speak Gujarati woven into English, not one language handed to a machine, so almost every default I started with turned out wrong.",
+      p: [
+        "The roles that needed the calling agent most were factory roles in Ahmedabad, and factory-floor candidates there speak Gujarati, or Gujarati and English inside the same sentence. That is the whole design problem in one line: a system that offers a clean choice between two languages has already misread how its user talks.",
+        "On address alone I got several defaults wrong before I got them right. Tame, the honorific you, never tu, on every call to every candidate regardless of role or age, because a model left to choose gets it wrong roughly one time in five, and it gets it wrong in exactly the direction that reads as an employer talking down to an applicant. The name is spoken with bhai or ben resolved once from the record, never the general politeness particle ji, and never a guessed kinship word like kaka or masi, because those carry an age assumption a phone call has no way to check. And the greeting is kem chho, never namaste or jai shri krishna, because both carry real religious weight and roughly one candidate in seven in Ahmedabad district is Muslim. Kem chho carries none of that, and it still does the honorific work, in the same word.",
+        "The place I was wrong in an earlier draft of this case: I wrote that the agent asks a candidate their preferred language and switches fully to it. It does not, and it should not. Proficiency is not something you can ask about honestly on a cold call, people say they are comfortable in English out of politeness and then struggle through it. What actually works is a light nudge: open in Gujarati with a word or two of English already inside it, job, interview, shift, the words people already borrow, then mirror whatever the candidate does on their first real answer. The call finds the mix. It is never assigned one at the start.",
+        "The sharpest failure point was never comprehension, it was numbers and names. Gujarati's teens and twenties into the fifties share their base with the following ten, so a clipped syllable can turn a forty-nine into a fifty-nine and nobody notices until the wrong candidate gets a callback. So every number that matters, a salary, a notice period, a shift time, gets read back and confirmed before it is written down, never accepted on the first pass. Same rule for a name the agent has never pronounced before: read it back, or ask, never guess and move on.",
+        "Honest scope: this is the part of the project with the furthest still to go. We never disaggregated completion by dialect or by how comfortable a candidate was in Gujarati against Hindi against English, so I cannot tell you whether the system quietly worked worse for someone calling in with a rural accent than for someone calling from central Ahmedabad. That is the equity question this design opens and does not yet answer.",
+      ],
+      divider: true,
+    },
+    {
+      h: "Listening underneath",
+      tldr: "The fix the man in the first section forced: a script that confirms, and agents underneath it that listen.",
+      p: [
+        "His call failed for a structural reason, not a careless one. The agent had one job, confirming a set of fields, and it did that job perfectly while a person told it something more important than any of them. You cannot script your way out of that. No version of a questionnaire anticipates everything a person might volunteer, and adding more questions makes the call longer, which is the thing already killing it.",
+        "So the fix was to stop asking one agent to do two kinds of work. The scripted flow keeps doing what it is good at, moving through the fitment questions in order. Underneath it, sub-agents run in parallel across the same conversation, listening for what the script cannot: intent, what this person actually wants and is telling us unprompted; distress, when someone is upset or confused rather than merely quiet; comprehension, whether they are genuinely following or politely agreeing; and escalation, the moment this needs a human and no more machine.",
+        "The design principle underneath it is one sentence. A person is more than the fields you called to collect. The architecture is that sentence made literal, and it is the piece of this project I am proudest of, because it came from one wasted phone call rather than from a framework.",
+      ],
+      fig: "stellaSim",
+      figure:
+        "Take the call yourself. You play the candidate, and every reply you can pick is a real case from the field log, including the ones that broke the system. Tap any of Stella's lines to see the decision behind it. The path worth taking is the one where you tell her you badly need work, because it forks: what the old script did with that, and what the rebuilt one does.",
+      divider: true,
+    },
+    {
+      h: "The dashboard nobody wanted",
+      tldr: "Everyone asked for agent performance. What they were accountable for was the job.",
+      p: [
+        "This one is not about the call, and it earns its place here because it is the same mistake in a different coat.",
+        "In the product's earliest shape, every conversation with users pulled toward agent performance, how many CVs did the screening agent read overnight, how accurate is it, which agent is pulling its weight. It sounds like exactly the right question for an AI product, the metrics already existed, and honestly the pull was real on our side too, because a wall of live counters looks like proof the thing works. We came close to shipping a control panel for the machines.",
+        "It answers nothing anyone is accountable for. Nobody is measured on a calling agent's connect rate. People are measured on whether a role closes, well and fast and fairly, and whether the shortlist they forward with their own name on it holds up in the room. Agent performance was the doorway. Job performance was the room.",
+        "The correction became a rule we designed by afterward: job performance is the end, agent performance is the means. Every surface leads with the outcome a person is accountable for, and agent activity demotes to a drill-down you open only when a role is off track and you need to know what to tune. It rhymes with the calling story exactly. Both are a system showing you what it cares about instead of what you needed.",
+      ],
+      divider: true,
+    },
+    {
+      h: "What changed",
+      tldr: "Of the calls that connect, 71% now finish the screen, up from 35 to 40% before.",
+      p: [
+        "Every recommendation from the field work shipped: recovering out loud instead of falling silent, a hard limit against dialling the same person twice, a concurrency cap tied to what the backend could actually hold at conversational speed, the disclosure line, the retiming, the split flows, and the listening layer underneath. Stella introduces herself as an AI assistant on every call, which is both the honest thing and, increasingly, the direction the law is heading even where it does not yet require it.",
+        "The number that moved is completion. Of the calls that connect, 71% now run all the way through the screen, up from 35 to 40% when I started. I want to be careful with it, because it is easy to state a number in a way that flatters. It is measured over calls that connected, not over everyone dialled, and the connect rate is a separate measure with its own denominator that I will not blend into the same sentence just to make the arc look steeper.",
+        "The human version matters more to me. A candidate who picks up now gets told plainly what this is and how long it will take, gets asked whether now actually suits them, gets heard when they say something the form did not ask for, and gets told what happens next whether or not they fit. That is the outcome I would defend. The number is just the shape it makes in the data.",
+      ],
+      ul: [
+        "Completion of connected calls: 71%, up from 35 to 40% before the work",
+        "Shipped: dead-air recovery, a per-candidate dedup lock, a concurrency cap tied to real backend throughput, AI disclosure, persona-split flows, predictive call timing, and the parallel listening layer",
+        "Method behind it: roughly 300 transcripts read, 47 candidates called personally over three weeks, 43 calls coded against six candidate-experience categories",
+      ],
+      divider: true,
+    },
+    {
+      h: "What I would revisit",
+      tldr: "We measured whether the call finished. We never measured whether it was fair, or whether the machine was right.",
+      p: [
+        "Two changes shipped in the same window, the retiming and the per-persona flows, and nobody logged their effects apart. I can tell you completion moved. I cannot tell you which idea was the good one, and that is a measurement discipline I would build in from day one next time, not add afterward.",
+        "The deeper gap sits under the language work. We never disaggregated completion by dialect or by how comfortable a candidate was in Gujarati against Hindi against English. If the system was quietly working worse for a rural accent than a city one, our aggregate number would have hidden it perfectly, and it would still have gone up. That is the instrumentation I would build before any new capability.",
+        "And we built a whole trust layer, legible reasoning, a human able to override every call, a real escalation path, and never measured the one number that tells you whether any of it was earning its keep: how often a human actually disagreed with what the system recommended. A screening system that only reports speed and volume is, from the outside, indistinguishable from a very fast way of rejecting people. I would instrument that first, before I built anything else.",
+      ],
+    },
+  ];
+  v2.pdfSections = [
+    "What he told us",
+    "The hardest surface",
+    "Three hundred transcripts",
+    "We were the failure",
+    "The agent I killed",
+    "When to call",
+    "Asking first",
+    "How it sounds",
+    "Whose language",
+    "Listening underneath",
+    "The dashboard nobody wanted",
+    "What changed",
+    "What I would revisit",
+  ];
+  v2.todo = [
+    "FULL DRAFT WRITTEN END TO END, 2026-07-24, per Claude/dassh-rewrite-brief.md. 13 sections: hero opening, the hard problem, method, the disaster, the kill, timing, asking first, sound, language, the architectural fix, the reversal, outcomes, reflection. All numbers corrected (71% of CONNECTED calls, 10 of 43 recounted from 34.9%). All research-backed claims (Gujarati register, turn-taking/comfort-noise, permission psychology, disclosure law) sourced from the four verified briefs in Claude/.",
+    "DEFAULTS APPLIED where Agam's answer was still pending, per the brief's own fallback guidance: the recruiter-mock scene is CUT entirely (it traced to an auto-generated file built on a fabricated persona, Sneha Krishnan; the misread itself is real and is told straight as a design argument in 'The dashboard nobody wanted' with no quoted dialogue). No hire is claimed anywhere (Agam: 'not sure if should mention it'); the case closes on the personal callback plus the honest reflection instead. The four-experiences tour, the design-system section and the fundraise are NOT included as sections, per the locked decision that only the reversal survives outside the call spine.",
+    "STILL OPEN, none of them block reading the draft: (1) should a real hire be mentioned if one exists; (2) the shipped-vs-designed ledger for anything beyond the calling agent, since this draft only covers the calling agent and the reversal, not the four experiences or the design system, those are cut rather than resolved; (3) the raw 43-row log, to tighten '10 of 43' to an exact count if Agam pulls it; (4) post-2025 status and whether specific dates can be published; (5) whether the case should stay narrow to the calling agent (current draft) or fold back in a compressed 'zero to one' context section for breadth.",
+    "Deck (dassh.deck.js) and PRD (dasshPrdData.js, dasshPersonaData.js) do not yet reflect this narrative; they still carry the four-experiences framing. Sync only after Agam reviews this draft.",
+    "When approved, decide whether this replaces the live /work/dassh entry or stays a parallel cut.",
+  ];
+}
+
+// A passcode-gated case study: the full interactive Away PRD, embedded behind a
+// soft lock. NOTE: cosmetic only — the doc at prdSrc is a public asset and the
+// passcode ships in the client bundle, so change `passcode` to taste but do not
+// treat it as real security. Routes at /work/away-prd.
+caseStudies["away-prd"] = {
+  locked: true,
+  accent: "#2563EB",
+  brand: "Away",
+  eyebrow: "Away · Product requirements",
+  title: "The Away PRD",
+  blurb:
+    "The full interactive product-requirements doc for the Away agent: the build ladder, the live spec, and the risks. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+  prdSrc: "/prd/away-prd.html",
+};
+
+// The prompt library (WIP): two families under one roof, the voice frameworks that
+// write product copy and the image systems that draw everything else, rendered as a
+// native PRD-style page. Routes at /work/prompt-library.
+caseStudies["prompt-library"] = {
+  locked: true,
+  doc: "prompt-library",
+  accent: "#7c8cff",
+  brand: "Craft",
+  eyebrow: "Craft · Prompt systems",
+  title: "The prompt library",
+  blurb:
+    "Two kinds of prompt in one place. The voice frameworks behind Away and Zepto: personas, principles, word lists, rules, and the moments they generate. And seven image systems: icons, composition, specimen cards, doodle hands, and aircraft turnarounds, each a constant style plus a few dials. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+};
+
+// Team prompts (WIP): text prompts that do each function's working documents, for the
+// seven teams Agam collaborated with. Moved out of the prompt library onto its own
+// route on 2026-09-04. Routes at /work/team-prompts.
+caseStudies["team-prompts"] = {
+  locked: true,
+  doc: "team-prompts",
+  accent: "#7c8cff",
+  brand: "Craft",
+  eyebrow: "Craft · Prompt systems",
+  title: "Team prompts",
+  blurb:
+    "Seven roles, forty-four tasks, one assembler. Data science, product, last mile, backend and frontend engineering, design leads and company leadership, each a persona plus the function's own principles, vocabulary, rules and test, every clause sourced from its practitioners. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+};
+
+// The colour system (WIP): colour libraries under one roof, the way the prompt
+// library holds its voice and image systems. First library is Zepto (six themes,
+// five status states, ten invariants), every ratio computed at render time.
+// Routes at /work/color-system.
+caseStudies["color-system"] = {
+  locked: true,
+  doc: "color-system",
+  accent: "#8B5CF6",
+  brand: "Craft",
+  eyebrow: "Craft · Colour systems",
+  title: "The colour system",
+  blurb:
+    "Colour libraries in one place. Zepto: six themes from green to lavender, five unavailability states where hue is the domain and depth the severity, and ten invariants each learned by breaking it. Away: the brand palette, the app's twelve ramps, and the three accents that disagree. Every contrast ratio on the page is computed from the hex beside it, never typed. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+};
+
+// The Away Deep Search analytics dashboard (WIP). Same soft-lock, but renders the
+// self-contained, theme-aware HTML at `embedSrc` in an iframe that switches with
+// the site's light/dark (via postMessage). Routes at /work/away-deep-search.
+caseStudies["away-deep-search"] = {
+  locked: true,
+  doc: "away-analytics", // native PostHog analytics page (was embedSrc iframe)
+  accent: "#6d5cf0",
+  brand: "Away",
+  eyebrow: "Away · Deep search analytics",
+  title: "Deep search & negotiation",
+  blurb:
+    "A live analytics read of Away's AI negotiation engine: search volume, the retail-vs-negotiated split, credit economics, the results funnel, and the carriers it negotiates on. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+};
+
+// The Away design system (WIP). Same embedSrc iframe pattern — the living
+// design-system gallery (tokens, uiKit primitives, chart/dashboard components),
+// theme-aware so it follows the site's light/dark. Routes at /work/away-design-system.
+caseStudies["away-design-system"] = {
+  locked: true,
+  embedSrc: "/prd/away-design-system.html",
+  accent: "#41aecc",
+  brand: "Away",
+  eyebrow: "Away · Design system",
+  title: "The Away design system",
+  blurb:
+    "The living design-system reference for the Away app: color ramps, semantic tokens, spacing, radius, typography, the uiKit primitives, and the WIP chart/dashboard components — in light and dark. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "away2026",
+};
+
+// The Dassh design system playground (WIP). Embeds the @dassh/ui Storybook static
+// build (public/sds-playground/) in an iframe so components can be poked with live
+// controls/knobs. Regenerate: build Storybook in Code/dassh-ui, copy dist/storybook
+// → public/sds-playground/. Routes at /work/dassh-sds.
+caseStudies["dassh-sds"] = {
+  locked: true,
+  embedSrc: "/sds-playground/index.html",
+  accent: "#F26A1B",
+  brand: "Dassh",
+  eyebrow: "Dassh · Design system",
+  title: "The Dassh design system (@dassh/ui)",
+  blurb:
+    "The centralized Dassh design system as a live Storybook: primitives, layout, compositions, hooks and icons, each with interactive controls to fine-tune. Work in progress.",
+  passcode: "dassh2026",
+};
+
+// The Dassh PRD (WIP). Same soft-lock pattern as away-prd, but rendered from the
+// native React doc (DasshPrdDoc) rather than an embedded HTML asset. `doc: "dassh"`
+// tells LockedCaseStudy which doc component to mount. Routes at /work/dassh-prd.
+caseStudies["dassh-prd"] = {
+  locked: true,
+  doc: "dassh",
+  accent: "#F26A1B",
+  brand: "Dassh",
+  eyebrow: "Dassh · Product requirements",
+  title: "The Dassh PRD",
+  blurb:
+    "The global product-requirements doc for Dassh: the agent fabric, the personas, the Daily Report, and the risks. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "dassh2026",
+};
+
+// The Scheduled Delivery PRD (WIP). Same soft-lock pattern as dassh-prd, rendered
+// from the native React doc (ScheduledPrdDoc). `doc: "scheduled"` tells
+// LockedCaseStudy which doc component to mount. Routes at /work/scheduled-prd.
+caseStudies["scheduled-prd"] = {
+  locked: true,
+  doc: "scheduled",
+  accent: "#6B21D9",
+  brand: "Zepto",
+  eyebrow: "Zepto · Product requirements",
+  title: "The Scheduled Delivery PRD",
+  blurb:
+    "The product-requirements doc for Zepto Scheduled Delivery: the trust bet, the per-shipment model, the slot system, the state matrix, the field gap analysis, and the risks. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "zepto2026",
+};
+
+// The Edge (JARVIS) problem-framing PRD (WIP). Same soft-lock pattern, rendered
+// from the native React doc (JarvisPrdDoc). `doc: "jarvis"` tells LockedCaseStudy
+// which doc component to mount. IDEO steps 1 to 4. Routes at /work/jarvis-prd.
+caseStudies["jarvis-prd"] = {
+  locked: true,
+  doc: "jarvis",
+  accent: "#9826C9",
+  brand: "Zepto",
+  eyebrow: "Zepto · Edge · Product requirements",
+  title: "The Edge PRD",
+  blurb:
+    "The problem-framing and discovery doc for Edge (codename JARVIS), Zepto Ads' AI intelligence layer: the competitor map, the driver and trust problems, the role-altitude whitespace, and the ideas, run through the IDEO process steps 1 to 4. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "edge2026",
+};
+
+// The ZepIris PRD (WIP v0.2). Same soft-lock pattern, rendered from the native
+// React doc (ZepirisPrdDoc). `doc: "zepiris"` tells LockedCaseStudy which doc
+// component to mount. Retroactive v1 record + researched v2 adaptive-capture
+// layer, 70+ verified citations. Routes at /work/zepiris-prd.
+caseStudies["zepiris-prd"] = {
+  locked: true,
+  doc: "zepiris",
+  accent: "#4F46E5",
+  brand: "Zepto",
+  eyebrow: "Zepto · ZepIris · Product requirements",
+  title: "The ZepIris PRD",
+  blurb:
+    "The requirements doc for ZepIris (codename OdinEye), Zepto's open-sourced face-authentication platform: the verified field research (NIST, ISO, ICAO, India's own deployments), the repo read closely, the 16-pattern Adaptive Capture layer, the motion spec, and the honesty ledger. Work in progress. Protected, enter the passcode, or request access.",
+  passcode: "zepiris2026",
+};
+
 /* ---------- minimal client-side router (no deps) ---------- */
 const NavContext = createContext(() => {});
 
@@ -4476,11 +7993,17 @@ function useRoute() {
   return [path, navigate];
 }
 
-function Link({ to, className, style, children }) {
+// `...rest` (20 Sep 2026): this used to destructure exactly four props and drop
+// everything else, so an `aria-label` passed to a Link silently never reached
+// the DOM. That is invisible until a link has no text - the icon-only Back
+// arrow rendered as an unnamed link, announced as just "link". The explicit
+// props still come after the spread, so they win.
+function Link({ to, className, style, children, ...rest }) {
   const navigate = useContext(NavContext);
   const internal = typeof to === "string" && to.startsWith("/");
   return (
     <a
+      {...rest}
       href={to}
       className={className}
       style={style}
@@ -4556,16 +8079,26 @@ function WorkItem({ project, showYear = true }) {
   );
 
   if (project.locked) {
-    return (
-      <div className="work__item work__item--locked" style={style}>
+    const inner = (
+      <>
         {main}
         <span className="work__meta">
           {project.brand}
-          <span className="work__lock">
-            <LockIcon />
-            Locked
-          </span>
+          {/* "Locked" badge commented out — the passcode gate is gone site-wide,
+              so the tag is misleading. Restore this span to bring it back. */}
+          {/* <span className="work__lock"><LockIcon />Locked</span> */}
         </span>
+      </>
+    );
+    // a locked item with an href opens its passcode gate; without one it is an
+    // inert "locked" teaser.
+    return project.href ? (
+      <Link className="work__item work__item--locked" style={style} to={project.href}>
+        {inner}
+      </Link>
+    ) : (
+      <div className="work__item work__item--locked" style={style}>
+        {inner}
       </div>
     );
   }
@@ -4586,9 +8119,11 @@ function WorkItem({ project, showYear = true }) {
   );
 }
 
-function Footer() {
+function Footer({ credits }) {
   return (
     <footer className="footer">
+      {/* per-page credits (a licence that needs attribution, say) */}
+      {credits && <span className="footer__credits">{credits}</span>}
       <a href="mailto:agamagar117@gmail.com">
         <span className="footer__mail">
           <MailIcon />
@@ -4602,8 +8137,12 @@ function Footer() {
   );
 }
 
-/* Scan-mode rows (nan.fyi-style list) built from the read-mode projects. */
-const scanProjects = [
+/* Scan-mode rows (nan.fyi-style list) built from the read-mode projects.
+ *
+ * v1 (full list) — KEPT FOR REFERENCE. The live scan page now renders the
+ * curated 6-project `scanProjects` list defined below. To revert the scan page
+ * to the full list, render `scanProjectsV1` instead of `scanProjects` in Home. */
+const scanProjectsV1 = [
   {
     href: "/work/away-agent",
     brand: "Away",
@@ -4621,12 +8160,12 @@ const scanProjects = [
     blurb: "The same Away agent, told human-first: organised by the moments a traveller lives through, each with the real ways it goes wrong and how the agent meets it.",
   },
   {
-    href: "/work/occasion-buying",
+    href: "/work/cross-sell",
     brand: "Zepto",
     year: "2026",
-    accent: "#9826C9",
-    title: "Rebuilding the aisle a search box deleted",
-    blurb: "Theme & occasion buying: a dynamic, per-user cross-sell layer that rebuilds physical-store adjacency across three Zepto ad surfaces.",
+    accent: "#0F6E56",
+    title: "The half of cross-sell nobody solved",
+    blurb: "Cross-sell at Zepto, end to end: the objective function and the framework, the three ad surfaces that shipped or were green-lit, and the discovery half no engine has solved.",
   },
   {
     href: "/work/away",
@@ -4641,8 +8180,8 @@ const scanProjects = [
     brand: "Zepto",
     year: "2026",
     accent: "#DB2777",
-    title: "Revamping the ads platform",
-    blurb: "Rebuilding Jarvis, the ads platform powering monetisation across Zepto.",
+    title: "The layer someone else was building",
+    blurb: "Designing Edge (JARVIS), the AI copilot that closes the loop from metric to one-click action on Zepto Ads.",
   },
   {
     href: "/work/scheduled-delivery",
@@ -4676,7 +8215,98 @@ const scanProjects = [
     title: "Joyful learning experiences for students",
     blurb: "Habit-forming, joyful learning for millions of K-12 students across India.",
   },
+  {
+    href: "/work/aiims",
+    brand: "AIIMS",
+    year: "2023",
+    accent: "#059669",
+    title: "Teaching empathy to nurses in virtual reality",
+    blurb: "A published AIIMS study: an India-first empathy scale and a VR environment where nurses practise a hard conversation, evaluated against a real control group.",
+  },
 ];
+
+/* v2 (live) — curated to 6. Three confirmed case studies, then three AI-project
+ * slots to be decided. Fill a placeholder by replacing it with a real entry
+ * (href / brand / year / accent / title / blurb) and dropping `placeholder`.
+ *
+ * v3 "departure board / promise ledger" fields (scan view only):
+ *  - status: the outcome as a split-flap board chip (uppercase, short; outcomes
+ *    stay ratio-only per the resume's confidentiality rule — no absolute numbers)
+ *  - role: what Agam personally did (the chip both recruiters and CMU hunt for).
+ *    Omitted where not yet confirmed (away-agent awaits real role facts). */
+const scanProjects = [
+  {
+    href: "/work/away-agent",
+    brand: "Away",
+    year: "2026",
+    accent: "#2563EB",
+    title: "An agent that never takes the wheel",
+    blurb: "An AI travel agent for the whole trip, find, vet, book, watch, rescue, that does the work of the best human agent on the phone and never takes the wheel.",
+    status: "V1 LIVE",
+    role: "Led interaction design",
+  },
+  {
+    href: "/work/scheduled-delivery",
+    brand: "Zepto",
+    year: "2025",
+    accent: "#6B21D9",
+    title: "Scheduled delivery on a 10-minute platform",
+    blurb: "A scheduled cart settles at nearly twice the value of an instant one. Planned, time-slotted delivery on a platform built for 10 minutes, without diluting the promise that made it.",
+    status: "AOV NEARLY 2X",
+    role: "Led interaction design",
+  },
+  {
+    href: "/work/zepiris",
+    brand: "Zepto",
+    // 2026, not 2025. Every other source says so — TIMELINE in helloData
+    // (20/01/2026), the `projects` list above, and scanProjectsV1. This row was
+    // the only place carrying 2025. Corrected 2026-08-07 even though this board
+    // is currently unrendered: a wrong year left in place is a wrong year the
+    // day someone puts the board back.
+    year: "2026",
+    accent: "#4F46E5",
+    title: "The face that clocks in every Zepto site",
+    // "(OdinEye)" removed 2026-08-07: attested as the INTERNAL code name, and
+    // an internal code name is not something a portfolio should publish.
+    blurb: "ZepIris: Zepto's in-house face authentication for riders, pickers and packers, and its first open-source release. I led design end-to-end and the launch. 100% hub coverage, up to ₹50L/month saved, shipped to GitHub.",
+    status: "OPEN SOURCE",
+    role: "Led design end-to-end",
+  },
+  {
+    href: "/work/dassh",
+    brand: "Dassh",
+    year: "2025",
+    accent: "#EA580C",
+    title: "Building a B2B SaaS from the ground up",
+    blurb: "Stella, an AI recruiter: four experiences, an agent system, and a design system that shipped its own code.",
+    status: "0 TO 1",
+    role: "Founding designer",
+  },
+  { placeholder: true, accent: "#6366F1", title: "AI project", blurb: "To be decided.", status: "SCHEDULED" },
+  { placeholder: true, accent: "#6366F1", title: "AI project", blurb: "To be decided.", status: "SCHEDULED" },
+  { placeholder: true, accent: "#6366F1", title: "AI project", blurb: "To be decided.", status: "SCHEDULED" },
+];
+
+// Split-flap status chip for scan rows: each letter is a board tile with a
+// midline seam that flips in once, staggered, on the row's own entry delay
+// (see .scan-flap__cell in index.css; reduced motion parks the settled state).
+// Words are separate flex groups so multi-word statuses wrap cleanly.
+function StatusFlap({ text }) {
+  let fi = 0;
+  return (
+    <span className="scan-flap" role="img" aria-label={text}>
+      {text.split(" ").map((word, w) => (
+        <span className="scan-flap__word" key={w} aria-hidden="true">
+          {word.split("").map((ch, c) => (
+            <span className="scan-flap__cell" style={{ "--fi": fi++ }} key={c}>
+              {ch}
+            </span>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 // Placeholder line-art thumbnail for scan rows (swap for real artwork later).
 function ScanThumb() {
@@ -4699,189 +8329,7 @@ function RightArrow() {
 }
 
 /* ---------- pages ---------- */
-// The avatar drawn as live vector paths so it morphs point-for-point from face
-// state 1 to state 2 as the wave comes in. The head silhouette (two subpaths: the
-// outline + the hole) is resampled to evenly-spaced points and interpolated; the
-// feature lines morph by pure coordinate interpolation; the eyes slide. No crossfade.
-const FACE_HEAD = FACE_PATHS.find((p) => p.kind === "fill");
-const FACE_FEATURES = FACE_PATHS.filter((p) => p.kind === "stroke");
-// The state-2-only brow collapsed to its first point (its resting / state-1 look).
-const FACE_EXTRA_REST = FACE_EXTRA.map((p) => {
-  const n = (p.d.match(/-?\d*\.?\d+/g) || []).map(Number);
-  let i = 0;
-  return p.d.replace(/-?\d*\.?\d+/g, () => {
-    const v = i % 2 === 0 ? n[0] : n[1];
-    i += 1;
-    return v.toFixed(2);
-  });
-});
 
-function MorphFace() {
-  const featRefs = useRef([]);
-  const eyeRefs = useRef([]);
-  const headRef = useRef(null);
-  const extraRef = useRef(null);
-  const groupRef = useRef(null);
-
-  // Layout effect so the start state (t=0) is painted before the first frame, and
-  // the resting DOM ends at state 2 to match the JSX (no revert to state 1 on re-render).
-  useLayoutEffect(() => {
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const nums = (d) => (d.match(/-?\d*\.?\d+/g) || []).map(Number);
-
-    // Resample the head subpaths to even point counts so they interpolate cleanly.
-    const N = 96;
-    let head = null;
-    // Horizontal-centre shift from state 1 to state 2. The group is translated by
-    // dx*(1-t) so states 1 and 3 sit at state 2's horizontal position and the
-    // illustration morphs in place instead of sliding right-to-left.
-    let dx = 0;
-    try {
-      const ns = "http://www.w3.org/2000/svg";
-      const hsvg = document.createElementNS(ns, "svg");
-      hsvg.setAttribute("style", "position:absolute;width:0;height:0;overflow:hidden");
-      const tmp = document.createElementNS(ns, "path");
-      hsvg.appendChild(tmp);
-      document.body.appendChild(hsvg);
-      const sampleSub = (sub) => {
-        tmp.setAttribute("d", sub);
-        const len = tmp.getTotalLength() || 1;
-        const pts = [];
-        for (let i = 0; i <= N; i += 1) {
-          const p = tmp.getPointAtLength((len * i) / N);
-          pts.push([p.x, p.y]);
-        }
-        return pts;
-      };
-      const subs = (d) => d.split(/(?=M)/).map((s) => s.trim()).filter(Boolean);
-      const s1 = subs(FACE_HEAD.d1);
-      const s2 = subs(FACE_HEAD.d2);
-      head = s1.map((sub, i) => ({ a: sampleSub(sub), b: sampleSub(s2[i] || sub) }));
-      // Centre of the head silhouette in each state, to cancel the lateral drift.
-      tmp.setAttribute("d", FACE_HEAD.d1);
-      const b1 = tmp.getBBox();
-      tmp.setAttribute("d", FACE_HEAD.d2);
-      const b2 = tmp.getBBox();
-      dx = b2.x + b2.width / 2 - (b1.x + b1.width / 2);
-      document.body.removeChild(hsvg);
-    } catch (e) {
-      head = null;
-    }
-    const headD = (t) =>
-      head
-        .map(
-          (s) =>
-            "M" +
-            s.a
-              .map(([x, y], k) => `${lerp(x, s.b[k][0], t).toFixed(2)} ${lerp(y, s.b[k][1], t).toFixed(2)}`)
-              .join("L") +
-            "Z"
-        )
-        .join(" ");
-
-    const feats = FACE_FEATURES.map((p) => ({ tmpl: p.d1, n1: nums(p.d1), n2: nums(p.d2) }));
-    // The state-2-only brow line grows in from its first point (no opacity fade).
-    const extras = FACE_EXTRA.map((p) => {
-      const n2 = nums(p.d);
-      return { tmpl: p.d, n1: n2.map((v, i) => (i % 2 === 0 ? n2[0] : n2[1])), n2 };
-    });
-    const buildD = (f, t) => {
-      let i = 0;
-      return f.tmpl.replace(/-?\d*\.?\d+/g, () => {
-        const v = lerp(f.n1[i], f.n2[i], t);
-        i += 1;
-        return v.toFixed(2);
-      });
-    };
-    const render = (t) => {
-      if (groupRef.current)
-        groupRef.current.setAttribute("transform", `translate(${(dx * (1 - t)).toFixed(2)} 0)`);
-      if (head && headRef.current) headRef.current.setAttribute("d", headD(t));
-      feats.forEach((f, i) => {
-        const el = featRefs.current[i];
-        if (el) el.setAttribute("d", buildD(f, t));
-      });
-      FACE_EYES.forEach((e, i) => {
-        const el = eyeRefs.current[i];
-        if (el) {
-          el.setAttribute("cx", lerp(e.cx1, e.cx2, t).toFixed(2));
-          el.setAttribute("cy", lerp(e.cy1, e.cy2, t).toFixed(2));
-        }
-      });
-      if (extraRef.current && extras[0]) extraRef.current.setAttribute("d", buildD(extras[0], t));
-    };
-
-    render(0);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return; // stays at state 1
-    }
-    // Timeline (starts with the wave at 500ms): turn to state 2, hold there until
-    // the wave finishes (wave is 2600ms long), then turn back to state 1.
-    const delay = 0;
-    const durOut = 250; // turn-out, 2x faster
-    const durBack = 350; // turn-back, 2x faster
-    const holdEnd = 3100;
-    const totalEnd = holdEnd + durBack;
-    const ease = (x) => 0.5 - 0.5 * Math.cos(Math.PI * x);
-    let raf = 0,
-      start = 0;
-    const timer = setTimeout(() => {
-      const step = (now) => {
-        if (!start) start = now;
-        const e = now - start;
-        let p;
-        if (e < durOut) p = ease(e / durOut);
-        else if (e < holdEnd) p = 1;
-        else if (e < totalEnd) p = 1 - ease((e - holdEnd) / durBack);
-        else p = 0;
-        render(p);
-        if (e < totalEnd) raf = requestAnimationFrame(step);
-      };
-      raf = requestAnimationFrame(step);
-    }, delay);
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return (
-    <svg className="header__avatar" viewBox={FACE_VIEWBOX} preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden>
-      <g ref={groupRef}>
-        {FACE_HEAD && <path ref={headRef} d={FACE_HEAD.d1} fill={FACE_COLOR} />}
-        {FACE_FEATURES.map((p, i) => (
-          <path
-            key={p.id}
-            ref={(el) => (featRefs.current[i] = el)}
-            d={p.d1}
-            fill="none"
-            stroke={FACE_COLOR}
-            strokeWidth={p.sw || undefined}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ))}
-        {FACE_EXTRA.map((p, i) => (
-          <path
-            key={"x" + i}
-            ref={extraRef}
-            d={FACE_EXTRA_REST[i]}
-            fill="none"
-            stroke={FACE_COLOR}
-            strokeWidth={p.sw}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ))}
-        {FACE_EYES.map((e, i) => (
-          <circle key={"e" + i} ref={(el) => (eyeRefs.current[i] = el)} cx={e.cx1} cy={e.cy1} r={e.r} fill={FACE_COLOR} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-// The greeting assets that pop up beside the avatar, cycled on each replay.
 // States 2 & 3 (the emoji pops) are hidden for now — only the hand wave plays.
 // Re-add the emoji entries below to bring them back into the rotation.
 const HEADER_ASSETS = [
@@ -4889,6 +8337,41 @@ const HEADER_ASSETS = [
   // { kind: "emoji", items: ["🍕", "☕"] },
   // { kind: "emoji", items: ["📐", "📷"] },
 ];
+
+// Optional WIP shelf: src/wip.local.jsx is git-ignored and present only locally.
+// import.meta.glob resolves to {} when the file is absent, so the build never
+// breaks — the section simply doesn't render where the file isn't there.
+const wipMods = import.meta.glob("./wip.local.jsx", { eager: true });
+const WipSection = Object.values(wipMods)[0]?.WipSection || null;
+
+// Optional /socials page: src/socials.local.jsx is git-ignored and present only
+// locally (private drafts). Resolves to null in any build where the file is
+// absent, so the route falls through to Home and nothing ships publicly.
+const socialsMods = import.meta.glob("./socials.local.jsx", { eager: true });
+const SocialsPage = Object.values(socialsMods)[0]?.SocialsPage || null;
+
+// Optional /carnegie page: src/carnegie.local.jsx is git-ignored and present only
+// locally (private grad-application workspace). Resolves to null when the file is
+// absent, so the route falls through to Home and nothing ships publicly.
+const carnegieMods = import.meta.glob("./carnegie.local.jsx", { eager: true });
+const CarnegiePage = Object.values(carnegieMods)[0]?.CarnegiePage || null;
+
+// Optional /pepo-house page: src/pepohouse.local.jsx is git-ignored and present
+// only locally (private client tracker). Resolves to null when the file is
+// absent, so the route falls through to Home and nothing ships publicly.
+const pepoHouseMods = import.meta.glob("./pepohouse.local.jsx", { eager: true });
+const PepoHousePage = Object.values(pepoHouseMods)[0]?.PepoHousePage || null;
+
+// Optional /writing page: src/writing.local.jsx is git-ignored and present only
+// locally — the writing-craft harness's Fadell-register drafts, one tab per piece.
+const writingMods = import.meta.glob("./writing.local.jsx", { eager: true });
+const WritingPage = Object.values(writingMods)[0]?.WritingPage || null;
+
+// Optional /claude-files page: src/claudefiles.local.jsx is git-ignored and
+// present only locally (private registry of Claude-built docs/harnesses/pipelines).
+// Resolves to null when the file is absent, so the route falls through to Home.
+const claudeFilesMods = import.meta.glob("./claudefiles.local.jsx", { eager: true });
+const ClaudeFilesPage = Object.values(claudeFilesMods)[0]?.ClaudeFilesPage || null;
 
 function Home({ mode }) {
   // Replay the avatar greeting every 10s after the first run, cycling the asset
@@ -4906,14 +8389,38 @@ function Home({ mode }) {
     setReplayId((r) => r + 1);
   }, []);
   const asset = HEADER_ASSETS[cycle % HEADER_ASSETS.length];
+  // Phone-width flag for the scan DJ embed: below 760px the widget is a
+  // full-width band, and the camera's world box drops to the /hello booth's
+  // 4.7 (the 9.4 default is mostly empty air above/below the console — fine
+  // beside the header on desktop, dead space on a phone). The CSS aspect-ratio
+  // for .scan-dj-embed at this width must stay 13/4.7 to match.
+  const [compact, setCompact] = useState(
+    () => window.matchMedia("(max-width: 760px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 760px)");
+    const onChange = (e) => setCompact(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
   return (
     <div className={mode === "scan" ? "page page--scan" : "page"}>
+      {/* DJ console hero intentionally NOT embedded here yet — building it out on
+          the standalone /dj route first, then it gets placed on the home page. */}
+
+      {/* The reader's own sky: real local time, real current weather, city-level
+          location from the IP with no permission prompt. Lazy + Suspense-null so
+          WebGL and the fetches never sit in front of the first paint. */}
+      <Suspense fallback={null}>
+        <WeatherSky />
+      </Suspense>
+
       <header className="header">
         <span className="header__avatar-wrap" onMouseEnter={replayGreeting}>
-          {/* the face morphs on load and again on every hover (keyed on replayId);
-              the 10s auto-cycle only replays the asset, not the face. Distinct key
-              namespaces so the two siblings never collide (no stacked faces). */}
-          <MorphFace key={`face-${replayId}`} />
+          {/* the face morphs on load, on every hover (replayId), and on the 10s
+              auto-cycle (cycle) so it animates in step with the looping wave.
+              Distinct key namespace so the two siblings never collide (no stacked faces). */}
+          <MorphFace key={`face-${cycle}-${replayId}`} />
           <span className="header__wave" data-kind={asset.kind} aria-hidden key={`wave-${cycle}-${replayId}`}>
             {asset.kind === "wave" ? (
               <img className="header__wave-img" src="/wave.svg" alt="" width="26" height="26" />
@@ -4934,10 +8441,20 @@ function Home({ mode }) {
           VR enthusiast, photographer, and amateur researcher.
         </p>
         <nav className="header__links">
-          <a href="https://www.agamagarwal.com/img/Resume-Agam+Agarwal.pdf">Resume</a>
+          <a href="/resume/agam-agarwal-product-design.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
           <a href="https://www.linkedin.com/in/agam-agarwal/">LinkedIn</a>
         </nav>
       </header>
+
+      {/* Scan mode only: a compact technical-drawing DJ console + play/pause,
+          parked at the right of the header. Lazy so three.js loads only here. */}
+      {mode === "scan" && (
+        <Suspense fallback={null}>
+          <div className="scan-dj-embed" aria-label="DJ console">
+            <DjConsole variant="scan" frontHeight={compact ? 4.7 : 9.4} />
+          </div>
+        </Suspense>
+      )}
 
       <main>
         {mode === "read" ? (
@@ -4998,27 +8515,71 @@ function Home({ mode }) {
                 </Fragment>
               ))}
             </div>
+
+            {WipSection && <WipSection WorkItem={WorkItem} Link={Link} />}
           </>
         ) : (
-          <div className="scan-list">
-            {scanProjects.map((p, i) => (
-              <Link className="scan-row" key={i} to={p.href}>
-                <span className="scan-row__thumb">
-                  <ScanThumb />
-                </span>
-                <span className="scan-row__head">
-                  <span className="scan-row__title">{p.title}</span>
-                  <span className="scan-row__meta">
-                    {p.brand} · {p.year}
-                  </span>
-                </span>
-                <span className="scan-row__desc">{p.blurb}</span>
-                <span className="scan-row__arrow">
-                  <RightArrow />
-                </span>
-              </Link>
-            ))}
-          </div>
+          <>
+            {/* Scan v3: the departure board. A claim line states the ledger's
+                thesis, a mono board header names the columns, and each row lands
+                its outcome as a split-flap status chip. Read mode untouched. */}
+            <div className="scan-list">
+              {scanProjects.map((p, i) =>
+                p.placeholder ? (
+                  <div
+                    className="scan-row scan-row--placeholder"
+                    style={{ "--accent": p.accent }}
+                    key={i}
+                    aria-hidden
+                  >
+                    <span className="scan-row__thumb">
+                      <ScanThumb />
+                    </span>
+                    <span className="scan-row__body">
+                      <span className="scan-row__head">
+                        <span className="scan-row__title">{p.title}</span>
+                        <span className="scan-row__meta">TBD</span>
+                      </span>
+                      <span className="scan-row__desc">{p.blurb}</span>
+                    </span>
+                    <span className="scan-row__status">
+                      {p.status && <StatusFlap text={p.status} />}
+                    </span>
+                    <span className="scan-row__arrow" />
+                  </div>
+                ) : (
+                  <Link
+                    className="scan-row"
+                    style={{ "--accent": p.accent }}
+                    key={i}
+                    to={p.href}
+                  >
+                    <span className="scan-row__thumb">
+                      <ScanThumb />
+                    </span>
+                    <span className="scan-row__body">
+                      <span className="scan-row__head">
+                        <span className="scan-row__title">{p.title}</span>
+                        <span className="scan-row__meta">
+                          {p.brand} · {p.year}
+                          {p.role && (
+                            <span className="scan-row__role">{p.role}</span>
+                          )}
+                        </span>
+                      </span>
+                      <span className="scan-row__desc">{p.blurb}</span>
+                    </span>
+                    <span className="scan-row__status">
+                      {p.status && <StatusFlap text={p.status} />}
+                    </span>
+                    <span className="scan-row__arrow">
+                      <RightArrow />
+                    </span>
+                  </Link>
+                )
+              )}
+            </div>
+          </>
         )}
       </main>
 
@@ -5029,30 +8590,56 @@ function Home({ mode }) {
 
 // Data-driven case-study / detail page. Looks up content by slug; falls back to
 // the sample. Replace bracketed [...] copy with the real story.
+// "use line icons": was a solid wedge, drawn now, on the same 2px stroke as the
+// back arrow it sits beside.
 function PlayIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden>
       <path d="M7 4.5 19.5 12 7 19.5z" />
     </svg>
   );
 }
 
-// Build a deck from a case study: a title slide, then one slide per section.
-// Each section's `split` ('text' | 'split' | 'media') sets the text/image balance.
+// ---------------------------------------------------------------------------
+// Presentation deck framework.
+//
+// A case study renders to a deck of slides. Two paths:
+//  - Deck mode: the case study declares an explicit `deck: [{ type, ... }]`
+//    composed from the archetype library below (flexible backbone, any order).
+//  - Legacy fallback: no deck, so one `figure` slide per section.
+//
+// Archetype library (the `type` values): title · statement · splitLabeled ·
+// numbered · phaseDivider · phaseIntro · figure · methodFinding · gallery ·
+// compare · impact · closing. Each renders in the site's own visual language
+// (the same tokens, type and motion as the live article).
+// ---------------------------------------------------------------------------
 function buildSlides(cs) {
   const title = {
     kind: "title",
+    type: "title",
     eyebrow: cs.eyebrow,
     title: cs.title,
     meta: cs.meta,
     lead: cs.lead,
   };
-  const sections = cs.sections.map((s) => ({
+
+  // Deck mode: a hand-authored, presentation-ready sequence.
+  if (Array.isArray(cs.deck) && cs.deck.length) {
+    const deck = cs.deck.map((s) => ({ ...s, cover: cs.cover }));
+    if (deck[0]?.type === "title") {
+      return deck.map((s, i) => (i === 0 ? { ...title, ...s } : s));
+    }
+    return [title, ...deck];
+  }
+
+  // Legacy fallback: derive one slide per section.
+  const sections = cs.sections.filter((s) => !s.breaker).map((s) => ({
     kind: "section",
-    split: s.split || (s.figure ? "split" : "text"),
+    type: "figure",
+    layout: s.split || (s.figure ? "split" : "text"),
     h: s.h,
     p: s.p,
-    ul: s.ul,
+    ul: s.ul?.map((li) => (li?.t ? `${li.t}: ${li.d}` : li)), // { t, d } items (mukwqanr) flatten for slides
     figure: s.figure,
     image: s.image,
     fig: s.fig,
@@ -5063,74 +8650,397 @@ function buildSlides(cs) {
     riveArtboard: s.riveArtboard,
     collage: s.collage,
     design: s.design,
+    whiteboard: s.whiteboard,
+    reel: s.reel,
     cover: cs.cover,
   }));
   return [title, ...sections];
 }
 
-function Slide({ slide }) {
-  if (slide.kind === "title") {
-    return (
-      <div className="slide slide--title">
-        <p className="slide__eyebrow">{slide.eyebrow}</p>
-        <h2 className="slide__title">{slide.title}</h2>
-        <p className="slide__meta">{slide.meta}</p>
-        <p className="slide__lead">{slide.lead}</p>
-      </div>
-    );
-  }
-  const text = (
-    <div className="slide__text">
-      <h2 className="slide__h">{slide.h}</h2>
-      {(slide.p || []).map((p, j) => (
-        <p key={j}>{p}</p>
-      ))}
-      {slide.ul && (
-        <ul>
-          {slide.ul.map((li, k) => (
-            <li key={k}>{li}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-  const media =
-    slide.split !== "text" &&
-    (slide.figure || slide.iphone || slide.iphoneSplit || slide.rive || slide.collage || slide.design) ? (
-      <figure className="slide__media">
-        <SectionFigure
-          image={slide.image}
-          fig={slide.fig}
-          iphone={slide.iphone}
-          iphoneSplit={slide.iphoneSplit}
-          rive={slide.rive}
-          riveStateMachines={slide.riveStateMachines}
-          riveArtboard={slide.riveArtboard}
-          collage={slide.collage}
-          design={slide.design}
-          cover={slide.cover}
-          variant="slide"
-        />
-        <figcaption>{slide.figure}</figcaption>
-      </figure>
-    ) : null;
-  const split = media ? slide.split : "text";
+// Shared: the media half of a slide, reusing the article's figure renderer.
+// A "needs" placeholder: a dashed box that names the asset or context still
+// missing, so a whole case study can render in present mode at the screen level
+// with a clear, labelled gap wherever the real material is not in yet.
+function NeedsBox({ label, hint, big, dim }) {
   return (
-    <div className={`slide slide--${split}`}>
-      {text}
-      {media}
+    <div
+      className={`slide__needs${big ? " slide__needs--big" : ""}`}
+      role="img"
+      aria-label={`Placeholder, needs: ${label}`}
+    >
+      {/* Figma-selection framing (after the Diagram deck): corner handles + a dimension chip,
+          so a missing screen reads as a sized, selected artboard waiting to be designed. */}
+      <span className="slide__needs-handle slide__needs-handle--tl" aria-hidden="true" />
+      <span className="slide__needs-handle slide__needs-handle--tr" aria-hidden="true" />
+      <span className="slide__needs-handle slide__needs-handle--bl" aria-hidden="true" />
+      <span className="slide__needs-handle slide__needs-handle--br" aria-hidden="true" />
+      <span className="slide__needs-mark" aria-hidden="true">
+        +
+      </span>
+      <span className="slide__needs-tag">Needs</span>
+      <p className="slide__needs-label">{label}</p>
+      {hint && <p className="slide__needs-hint">{hint}</p>}
+      {dim && (
+        <span className="slide__needs-dim" aria-hidden="true">
+          {dim}
+        </span>
+      )}
     </div>
   );
 }
 
+// Base asset: an outlined "stamp" badge with underlined link text and a slight tilt
+// (after Smith & Diction / Andreas Maris, "See full case study" / "Click to see more").
+function StampBadge({ children, tilt = -4 }) {
+  return (
+    <span className="deck-stamp" style={{ "--stamp-tilt": `${tilt}deg` }}>
+      <span className="deck-stamp__text">{children}</span>
+    </span>
+  );
+}
+
+// Base asset: a marker-swipe highlight on an inline term (after Smith & Diction).
+function Mark({ children, tone }) {
+  return (
+    <mark className="deck-mark" data-tone={tone}>
+      {children}
+    </mark>
+  );
+}
+
+function SlideMedia({ slide, layout, wide }) {
+  const hasMedia =
+    slide.fig ||
+    slide.reel ||
+    slide.image ||
+    slide.iphone ||
+    slide.iphoneSplit ||
+    slide.rive ||
+    slide.collage ||
+    slide.design ||
+    slide.whiteboard;
+  if (layout === "text") return null;
+  // No real asset yet: render the labelled placeholder if the slide says what it needs.
+  if (!hasMedia) {
+    return slide.need ? (
+      <figure className={`slide__media${wide ? " slide__media--wide" : ""}`}>
+        <NeedsBox label={slide.need} hint={slide.needHint} dim={slide.needDim} />
+      </figure>
+    ) : null;
+  }
+  return (
+    <figure className={`slide__media${wide ? " slide__media--wide" : ""}`}>
+      <SectionFigure
+        image={slide.image}
+        fig={slide.fig}
+        iphone={slide.iphone}
+        iphoneSplit={slide.iphoneSplit}
+        rive={slide.rive}
+        riveStateMachines={slide.riveStateMachines}
+        riveArtboard={slide.riveArtboard}
+        collage={slide.collage}
+        design={slide.design}
+        whiteboard={slide.whiteboard}
+        reel={slide.reel}
+        cover={slide.cover}
+        variant="slide"
+      />
+      {slide.stamp && <StampBadge>{slide.stamp}</StampBadge>}
+      {slide.figure && <figcaption>{slide.figure}</figcaption>}
+    </figure>
+  );
+}
+
+const SlideText = ({ slide }) => (
+  <div className="slide__text">
+    {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+    {(slide.p || []).map((p, j) => (
+      <p key={j}>{p}</p>
+    ))}
+    {slide.ul && (
+      <ul>
+        {slide.ul.map((li, k) => (
+          <li key={k}>{li}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+);
+
+function Slide({ slide, onGoto, idMap }) {
+  const type = slide.type || (slide.kind === "title" ? "title" : "figure");
+
+  switch (type) {
+    case "title":
+      return (
+        <div className={`slide slide--title is-${slide.frame || "corner"}`}>
+          <p className="slide__eyebrow">{slide.eyebrow}</p>
+          <h2 className="slide__title">{slide.title}</h2>
+          {slide.meta && <p className="slide__meta">{slide.meta}</p>}
+          {slide.lead && <p className="slide__lead">{slide.lead}</p>}
+        </div>
+      );
+
+    case "statement":
+      return (
+        <div className={`slide slide--statement is-${slide.frame || "quiet"}`}>
+          {slide.kicker && <p className="slide__eyebrow">{slide.kicker}</p>}
+          <p className="slide__statement">{slide.text}</p>
+          {slide.cite && <p className="slide__cite">{slide.cite}</p>}
+        </div>
+      );
+
+    case "splitLabeled":
+      return (
+        <div className="slide slide--labeled">
+          {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+          <div className="slide__labeled-grid" data-cols={(slide.items || []).length}>
+            {(slide.items || []).map((it, i) => (
+              <div className="slide__labeled-item" key={i}>
+                <span className="slide__label">{it.label}</span>
+                <p>{it.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case "numbered":
+      return (
+        <div className={`slide slide--numbered${slide.frame ? " is-" + slide.frame : ""}`}>
+          {slide.kicker && <p className="slide__eyebrow">{slide.kicker}</p>}
+          {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+          <div className="slide__num-grid" data-cols={(slide.items || []).length}>
+            {(slide.items || []).map((it, i) => (
+              <div className="slide__num-item" key={i}>
+                <span className="slide__num-badge">{i + 1}</span>
+                <h3 className="slide__num-title">{it.title}</h3>
+                {it.body && <p className="slide__num-body">{it.body}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case "phaseDivider":
+      return (
+        <div className={`slide slide--phase is-${slide.frame || "scaffold"}`}>
+          <span className="slide__phase-n">{slide.n}</span>
+          <h2 className="slide__phase-name">{slide.name}</h2>
+          {slide.sub && <p className="slide__phase-sub">{slide.sub}</p>}
+        </div>
+      );
+
+    case "phaseIntro":
+      return (
+        <div className="slide slide--intro">
+          <div className="slide__text">
+            {slide.phase && <p className="slide__eyebrow">{slide.phase}</p>}
+            {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+            {(slide.p || []).map((p, j) => (
+              <p key={j}>{p}</p>
+            ))}
+            {slide.ul && (
+              <ul>
+                {slide.ul.map((li, k) => (
+                  <li key={k}>{li}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      );
+
+    case "methodFinding": {
+      const media = <SlideMedia slide={slide} layout={slide.fig || slide.need ? "split" : "text"} />;
+      return (
+        <div className={media ? "slide slide--split" : "slide slide--text"}>
+          <div className="slide__text">
+            {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+            {slide.finding && <p className="slide__finding">{slide.finding}</p>}
+            {(slide.p || []).map((p, j) => (
+              <p key={j}>{p}</p>
+            ))}
+            {slide.ul && (
+              <ul>
+                {slide.ul.map((li, k) => (
+                  <li key={k}>{li}</li>
+                ))}
+              </ul>
+            )}
+            {slide.data && (
+              <dl className="slide__data">
+                {slide.data.map((d, i) => (
+                  <div key={i}>
+                    <dt>{d.k}</dt>
+                    <dd>{d.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+          {media}
+        </div>
+      );
+    }
+
+    case "gallery": {
+      const hasFig = slide.fig || slide.reel || slide.design || slide.collage || slide.image || slide.whiteboard;
+      return (
+        <div className="slide slide--gallery">
+          <div className="slide__text slide__text--top">
+            {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+            {(slide.p || []).map((p, j) => (
+              <p key={j}>{p}</p>
+            ))}
+          </div>
+          {hasFig || slide.need ? (
+            <SlideMedia slide={slide} layout="media" wide />
+          ) : (
+            <div className="slide__tiles">
+              {(slide.tiles || []).map((t, i) => (
+                <div className="slide__tile" key={i}>
+                  <span className="slide__tile-label">{t.label}</span>
+                  {t.sub && <span className="slide__tile-sub">{t.sub}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    case "compare": {
+      const side = (s, won) =>
+        s ? (
+          <div className={`slide__compare-side${won ? " is-winner" : ""}`}>
+            <span className="slide__compare-label">{s.label}</span>
+            <p>{s.body}</p>
+            {s.verdict && <span className="slide__compare-verdict">{s.verdict}</span>}
+          </div>
+        ) : null;
+      return (
+        <div className="slide slide--compare">
+          {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+          <div className="slide__compare-grid">
+            {side(slide.a, slide.winner === "a")}
+            {side(slide.b, slide.winner === "b")}
+          </div>
+          {slide.note && <p className="slide__compare-note">{slide.note}</p>}
+        </div>
+      );
+    }
+
+    case "impact": {
+      const heroIndex = Number.isInteger(slide.heroIndex) ? slide.heroIndex : 0;
+      return (
+        <div className={`slide slide--impact is-monument${slide.frame ? " is-" + slide.frame : ""}`}>
+          {slide.mark && <span className="slide__impact-mark">{slide.mark}</span>}
+          {slide.h && <h2 className="slide__impact-h">{slide.h}</h2>}
+          <div className="slide__metrics" data-cols={(slide.metrics || []).length}>
+            {(slide.metrics || []).map((m, i) => (
+              <div
+                className={`slide__metric${i === heroIndex ? " slide__metric--hero" : ""}`}
+                key={i}
+              >
+                <span className="slide__metric-value">{m.value}</span>
+                <span className="slide__metric-label">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    case "closing":
+      return (
+        <div className={`slide ${slide.kind === "thanks" ? "slide--thanks" : "slide--outcome"}`}>
+          {slide.kind === "thanks" ? (
+            <h2 className="slide__title">{slide.h}</h2>
+          ) : (
+            <h2 className="slide__h">{slide.h}</h2>
+          )}
+          <div className="slide__text">
+            {(slide.p || []).map((p, j) => (
+              <p key={j}>{p}</p>
+            ))}
+          </div>
+        </div>
+      );
+
+    case "needs":
+      return (
+        <div className="slide slide--text slide--needs-full">
+          {slide.kicker && <p className="slide__eyebrow">{slide.kicker}</p>}
+          {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+          {(slide.p || []).map((p, j) => (
+            <p key={j} className="slide__needs-intro">
+              {p}
+            </p>
+          ))}
+          <NeedsBox label={slide.label || slide.need} hint={slide.hint || slide.needHint} dim={slide.dim || slide.needDim} big />
+        </div>
+      );
+
+    case "index": // global archetype name for the interactive table of contents
+    case "contents":
+      return (
+        <div className={`slide slide--contents${slide.type === "index" ? " is-index" : ""}`}>
+          <p className="slide__eyebrow slide__contents-kick">{slide.kicker || "Contents"}</p>
+          <ol className="slide__contents-list">
+            {(slide.items || []).map((it, i) => {
+              const target = it.to && idMap ? idMap[it.to] : undefined;
+              const clickable = Number.isInteger(target);
+              return (
+                <li className="slide__contents-item" key={i} data-on={clickable ? "true" : "false"}>
+                  <span className="slide__contents-n">{it.n != null ? it.n : String(i + 1).padStart(2, "0")}</span>
+                  {clickable ? (
+                    <button type="button" className="slide__contents-label" onClick={() => onGoto && onGoto(target)}>
+                      {it.label}
+                    </button>
+                  ) : (
+                    <span className="slide__contents-label" aria-disabled="true">{it.label}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      );
+
+    case "figure":
+    default: {
+      const layout = slide.layout || slide.split || (slide.fig || slide.reel || slide.need ? "split" : "text");
+      const media = <SlideMedia slide={slide} layout={layout} />;
+      return (
+        <div className={media ? `slide slide--${layout}` : "slide slide--text"}>
+          <SlideText slide={slide} />
+          {media}
+        </div>
+      );
+    }
+  }
+}
+
 // Presentation mode, the case study as a one-slide-at-a-time deck.
-function Presentation({ cs, onExit }) {
+function Presentation({ cs, onExit, theme, toggleTheme }) {
   const slides = useMemo(() => buildSlides(cs), [cs]);
   const [i, setI] = useState(0);
   const go = useCallback(
     (d) => setI((p) => Math.min(slides.length - 1, Math.max(0, p + d))),
     [slides.length]
   );
+  // Absolute jump, for the interactive contents index.
+  const goTo = useCallback(
+    (idx) => setI(Math.min(slides.length - 1, Math.max(0, idx))),
+    [slides.length]
+  );
+  // Map a slide's `id` to its index, so contents rows can jump to their section.
+  const idMap = useMemo(() => {
+    const m = {};
+    slides.forEach((s, k) => { if (s && s.id) m[s.id] = k; });
+    return m;
+  }, [slides]);
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onExit();
@@ -5151,38 +9061,642 @@ function Presentation({ cs, onExit }) {
     };
   }, []);
 
+  // Running chapter label for the deck chrome: the most recent phase divider's name.
+  const chapter = useMemo(() => {
+    for (let k = i; k >= 0; k--) {
+      if (slides[k] && slides[k].type === "phaseDivider") return slides[k].name;
+    }
+    return "";
+  }, [slides, i]);
+
+  // Present chrome shows the year instead of the "Case study" label (derived from
+  // the case-study meta, e.g. "… · 2025"), so the running frame reads "Zepto · 2025".
+  const deckYear = (cs.meta || "").match(/\b(?:19|20)\d{2}\b/)?.[0];
+  const presentEyebrow = deckYear
+    ? (cs.eyebrow || "").replace(/case study/i, deckYear)
+    : cs.eyebrow;
+
   return (
     <div className="present">
-      <div className="present__bar">
-        <span className="present__title">{cs.eyebrow}</span>
-        <span className="present__count">
-          {i + 1} / {slides.length}
+      {/* Deck chrome: a running document frame on every slide (after Smith & Diction /
+          Andreas Maris). Identity top-left, the live chapter in serif italic centre,
+          page + exit right; identity / nav / tagline along the foot. */}
+      <header className="present__chrome present__chrome--top">
+        <span className="present__id">{presentEyebrow}</span>
+        <span className="present__chapter">{chapter}</span>
+        <span className="present__meta">
+          <span className="present__count">
+            {i + 1} / {slides.length}
+          </span>
+          {toggleTheme && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
+          <button className="present__exit" onClick={onExit} aria-label="Exit presentation">
+            Esc ✕
+          </button>
         </span>
-        <button className="present__exit" onClick={onExit} aria-label="Exit presentation">
-          Esc ✕
-        </button>
-      </div>
-      <div className="present__progress">
-        <span style={{ width: `${((i + 1) / slides.length) * 100}%` }} />
-      </div>
+      </header>
       <div className="present__stage">
-        <Slide key={i} slide={slides[i]} />
+        {/* every slide sits in one consistent slate card (fixed aspect ratio + the
+            shared colour treatment) so the deck reads as one designed surface */}
+        <div className="slide-card" key={i}>
+          <Slide slide={slides[i]} onGoto={goTo} idMap={idMap} />
+        </div>
       </div>
-      <div className="present__nav">
-        <button onClick={() => go(-1)} disabled={i === 0}>
-          ← Prev
+      <footer className="present__chrome present__chrome--bottom">
+        <span className="present__id present__id--foot">{cs.title}</span>
+        <div className="present__nav">
+          <button onClick={() => go(-1)} disabled={i === 0} aria-label="Previous slide">
+            ←
+          </button>
+          <button onClick={() => go(1)} disabled={i === slides.length - 1} aria-label="Next slide">
+            →
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// A passcode-gated case study. NOTE: this is a cosmetic gate only — the embedded
+// doc is a public asset and the passcode lives in the client bundle, so it is not
+// real protection, just a "share the code" soft lock.
+// Renders a self-contained HTML doc (cs.embedSrc) in an iframe, passing the
+// site's current light/dark theme in via ?theme + postMessage so the embedded
+// component switches with the global website mode.
+// Related-surfaces tabs: some case studies ship as a family of views (Dassh: the
+// design case study, the PRD, and the design system). This renders a small tab
+// switcher across them so you can move between the three; the active one is lit.
+// Shown on every surface in the family (the native case study + the locked docs).
+const CS_FAMILIES = [
+  [
+    { slug: "dassh", label: "Design" },
+    { slug: "dassh-prd", label: "PRD" },
+    { slug: "dassh-sds", label: "System" },
+  ],
+  [
+    { slug: "scheduled-delivery", label: "Design" },
+    { slug: "scheduled-prd", label: "PRD" },
+  ],
+  [
+    { slug: "away-agent", label: "Design" },
+    { slug: "away-prd", label: "PRD" },
+    { slug: "away-design-system", label: "System" },
+  ],
+];
+// mtpb0swq: `listen` = { on, set } puts the Listen mode in this row as a third
+// tab; the current view's tab reads as active only while not listening, and
+// clicking it returns to reading.
+function CaseStudyTabs({ slug, className, listen }) {
+  const tabs = CS_FAMILIES.find((fam) => fam.some((t) => t.slug === slug));
+  if (!tabs) return null;
+  return (
+    <nav className={`cs-tabs${className ? " " + className : ""}`} aria-label="Related views">
+      {tabs.map((t) => {
+        const current = t.slug === slug;
+        const active = current && !(listen && listen.on);
+        // the site's Link does not forward onClick, so the current tab becomes
+        // a button when Listen is in the row: it only has to leave Listen mode
+        if (current && listen) {
+          return (
+            <button
+              key={t.slug}
+              type="button"
+              className={`cs-tabs__tab${active ? " is-active" : ""}`}
+              aria-pressed={active}
+              onClick={() => listen.set(false)}
+            >
+              {t.label}
+            </button>
+          );
+        }
+        return (
+          <Link
+            key={t.slug}
+            to={`/work/${t.slug}`}
+            className={`cs-tabs__tab${active ? " is-active" : ""}`}
+            aria-current={active ? "page" : undefined}
+          >
+            {t.label}
+          </Link>
+        );
+      })}
+      {listen && (
+        <button
+          type="button"
+          className={`cs-tabs__tab cs-tabs__listen${listen.on ? " is-active" : ""}`}
+          aria-pressed={listen.on}
+          onClick={() => listen.set(true)}
+        >
+          Listen
         </button>
-        <button onClick={() => go(1)} disabled={i === slides.length - 1}>
-          Next →
-        </button>
+      )}
+    </nav>
+  );
+}
+
+function EmbedDoc({ src, title, slug }) {
+  const ref = useRef(null);
+  const isDark = () => document.documentElement.classList.contains("dark");
+  const tell = () => {
+    try {
+      ref.current?.contentWindow?.postMessage({ type: "theme", value: isDark() ? "dark" : "light" }, "*");
+    } catch (e) {}
+  };
+  useEffect(() => {
+    const obs = new MutationObserver(tell);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div className="page page--locked-doc">
+      <div className="locked-doc__bar">
+        <Link to="/" className="back-link">
+          <BackIcon />
+          Back
+        </Link>
+        <CaseStudyTabs slug={slug} className="locked-doc__tabs" />
+      </div>
+      <iframe
+        ref={ref}
+        title={title || "Embedded document"}
+        src={`${src}?theme=${isDark() ? "dark" : "light"}`}
+        onLoad={tell}
+        style={{ width: "100%", flex: "1 1 auto", minHeight: 0, border: 0, display: "block" }}
+      />
+    </div>
+  );
+}
+
+function LockedCaseStudy({ cs, slug }) {
+  const [code, setCode] = useState("");
+  // Passcode gate removed: render the doc directly. Keep the `locked` routing so
+  // the doc/embed/analytics dispatch still works; the gate form below is now dead.
+  const [unlocked, setUnlocked] = useState(true);
+  const [error, setError] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (code.trim().toLowerCase() === String(cs.passcode || "").toLowerCase()) {
+      setUnlocked(true);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
+  if (unlocked) {
+    if (cs.embedSrc) {
+      return <EmbedDoc src={cs.embedSrc} title={cs.title} slug={slug} />;
+    }
+    return (
+      <div className="page page--locked-doc page--locked-doc--native">
+        <div className="locked-doc__bar">
+          <Link to="/" className="back-link">
+            <BackIcon />
+            Back
+          </Link>
+          <CaseStudyTabs slug={slug} className="locked-doc__tabs" />
+        </div>
+        {/* Native portfolio DOM (not an iframe) so Agentation can scan/annotate
+            every element of the PRD. `cs.doc` selects which PRD to mount. */}
+        <Suspense fallback={null}>
+          {cs.doc === "dassh" ? <DasshPrdDoc /> : cs.doc === "scheduled" ? <ScheduledPrdDoc /> : cs.doc === "jarvis" ? <JarvisPrdDoc /> : cs.doc === "zepiris" ? <ZepirisPrdDoc /> : cs.doc === "away-analytics" ? <AwayAnalyticsDoc /> : cs.doc === "prompt-library" ? <PromptLibraryDoc /> : cs.doc === "team-prompts" ? <TeamPromptsDoc /> : cs.doc === "color-system" ? <ColorSystemDoc /> : <PrdDoc />}
+        </Suspense>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page page--gate">
+      <div className="gate">
+        <Link to="/" className="back-link gate__back">
+          <BackIcon />
+          Back
+        </Link>
+        <span className="gate__lock" aria-hidden>
+          <LockIcon />
+        </span>
+        {cs.eyebrow && <p className="gate__eyebrow">{cs.eyebrow}</p>}
+        <h1 className="gate__title">{withBreaks(cs.title)}</h1>
+        {cs.blurb && <p className="gate__blurb">{cs.blurb}</p>}
+        <form className="gate__form" onSubmit={submit}>
+          <input
+            className={`gate__input${error ? " gate__input--error" : ""}`}
+            type="password"
+            inputMode="text"
+            value={code}
+            onChange={(e) => {
+              setCode(e.target.value);
+              setError(false);
+            }}
+            placeholder="Passcode"
+            aria-label="Passcode"
+            autoFocus
+          />
+          <button className="gate__submit" type="submit">
+            Unlock
+          </button>
+        </form>
+        {error && (
+          <p className="gate__error" role="alert">
+            That passcode does not match. Try again, or request access below.
+          </p>
+        )}
+        <a
+          className="gate__request"
+          href={`mailto:agamagar117@gmail.com?subject=${encodeURIComponent(
+            "Access request: " + cs.title
+          )}`}
+        >
+          Request access
+        </a>
       </div>
     </div>
   );
 }
 
-function CaseStudy({ slug, presenting, onExitPresent }) {
-  const cs = caseStudies[slug] || caseStudies.sample;
+// Case studies with an authored spoken walkthrough (Listen mode). The narration is
+// the complete-project interview answer, with the interviewer layer (asks) rendered
+// as "?" marks by NarrationPlayer. Add a case here once its script is written.
+const CASE_NARRATIONS = {
+  "scheduled-delivery": scheduledCaseNarration,
+  "dassh-v2": dasshCaseNarration,
+};
+
+
+// THE ARTICLE BODY ON ITS OWN (annotation msudmgyq, "add scroll here and
+// populate the case study here" - the phone drawer wants the real case study
+// inside it). Lifted out of CaseStudy verbatim so the page and the drawer
+// render ONE body from one place; CaseStudy calls it right where the block
+// used to be. Exported for src/hello/PhoneDetail3.jsx.
+// mujvribt: the role-slide layout for a section's prose, or nothing at all
+function SecWrap({ on, stack, center, side, children }) {
+  // `stack` (28 Sep): label on top, then heading, explanation and figure, one column
+  // `center` (mukwatlg): the stacked content centred, text centre-aligned
+  return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "")}>{children}</div> : <>{children}</>;
+}
+
+export function CaseStudyBody({ cs }) {
+  // the plates row (mtmlg1wh); shared by the standalone render and the duo view
+  const renderPlates = (s) => (
+            <PlatesStack stack={s.platesStack} gradient={s.platesGradient}>
+              {s.plates.map((pl, k) => (
+                <figure className={"article__plate" + (pl.wide ? " article__plate--wide" : "") + (pl.heading ? " article__plate--copy" : "") + (pl.src || pl.video ? "" : " article__plate--empty")} key={`pl-${k}`}>
+                  {/* mtpevnfg: a heading and subheading beside the plate */}
+                  {pl.heading && (
+                    <figcaption className="article__plate-copy">
+                      <h3>{pl.heading}</h3>
+                      {pl.sub && <p>{pl.sub}</p>}
+                    </figcaption>
+                  )}
+                  {pl.auto ? (
+                    // mtmscpnv: the prototype auto-played as a coded scene
+                    <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                      <Suspense fallback={null}>
+                        <AutoTabs />
+                      </Suspense>
+                    </div>
+                  ) : pl.embed ? (
+                    // mtmoja90: a live Figma prototype in the plate, inside a
+                    // phone frame on the card ground, centred, with an optional
+                    // tap cue at [x%, y%] of the screen
+                    <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                      {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
+                          notification scene) over a screen cutout that holds the prototype */}
+                      <div className="article__plate-phone">
+                        <div className="article__plate-screen">
+                          {PROTO_EMBED ? (
+                            <iframe
+                              src={pl.embed}
+                              title={pl.alt || "Figma prototype"}
+                              loading="lazy"
+                              allowFullScreen
+                              data-embed={`pl-${k}`}
+                            />
+                          ) : (
+                            <img
+                              src={PROTO_STILL}
+                              alt={pl.alt || "The scheduled order prototype"}
+                              loading="lazy"
+                              decoding="async"
+                              width="720"
+                              height="1566"
+                            />
+                          )}
+                          {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
+                          {pl.cueBox && !pl.cueNoBox && (
+                            <span
+                              className="article__plate-cuebox"
+                              style={{ left: pl.cueBox[0] + "%", top: pl.cueBox[1] + "%", width: pl.cueBox[2] + "%", height: pl.cueBox[3] + "%" }}
+                              aria-hidden="true"
+                            />
+                          )}
+                          {/* mto4v1ka: a cursor that goes and clicks the cue box's centre, looping in view */}
+                          {pl.cueBox && pl.cueClick && (
+                            <Suspense fallback={null}>
+                              <PlateCursor
+                                target={{ x: pl.cueBox[0] + pl.cueBox[2] / 2, y: pl.cueBox[1] + pl.cueBox[3] / 2 }}
+                                // mto4ygd5: the press drives the prototype to the tab's frame, the
+                                // return leg steps it back (needs the client-id, see figmaEmbedUrl)
+                                onPress={pl.embedClickNode ? () => figmaEmbedPost(document.querySelector(`iframe[data-embed="pl-${k}"]`), { type: "NAVIGATE_TO_FRAME_AND_CLOSE_OVERLAYS", data: { nodeId: pl.embedClickNode } }) : undefined}
+                                onReturn={pl.embedClickNode ? () => figmaEmbedPost(document.querySelector(`iframe[data-embed="pl-${k}"]`), { type: "NAVIGATE_BACKWARD" }) : undefined}
+                              />
+                            </Suspense>
+                          )}
+                        </div>
+                        <img className="article__plate-bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
+                        {/* mtmq59fw: a multiplayer-style cursor (Iconoir pointer) with a
+                            name pill, nudging toward the tab */}
+                        {pl.cueBox && !pl.cueNoPointer && (
+                          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
+                            <span className="article__plate-cursor">
+                              <IconCursor width={20} height={20} strokeWidth={1.6} />
+                            </span>
+                            <b>{pl.cueLabel || "Click here"}</b>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ) : pl.fig ? (
+                    // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
+                    <div className="article__plate-video article__plate-video--fig article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                      <SectionFigure fig={pl.fig} variant="article" bare />
+                    </div>
+                  ) : pl.video ? (
+                    // mtmlmth1: an animation on the Figma card ground
+                    <div className="article__plate-video article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                      <video src={pl.video} autoPlay muted loop playsInline aria-label={pl.alt || ""} />
+                    </div>
+                  ) : pl.blank ? (
+                    // mukxxiz5: a box on the same card ground, waiting for its content
+                    <div className="article__plate-video article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }} aria-hidden="true" />
+                  ) : pl.src ? (
+                    <img className="article__figure-img article__figure-img--real" src={pl.src} alt={pl.alt || ""} loading="lazy" />
+                  ) : (
+                    <div className="article__plate-empty" aria-hidden="true"><span>Plate {k + 1}</span></div>
+                  )}
+                  {pl.caption && <figcaption>{pl.caption}</figcaption>}
+                </figure>
+              ))}
+            </PlatesStack>
+  );
+  return (
+    <div className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
+      {!cs.headFacts && <p className="article__lead">{cs.lead}</p>}
+
+      {/* muky55mj (28 Sep): `hidden: true` parks a whole section (page, index) */}
+      {cs.sections.map((s, i) => s.hidden ? null : s.breaker ? (
+        // Annotation mtmi98gy: a breaker, an image that marks the turn from
+        // context to solution. No heading, no index entry, no slide.
+        <figure className="article__figure article__figure--breaker" key={i} aria-hidden={s.figure ? undefined : true}>
+          {s.fig ? (
+            <SectionFigure fig={s.fig} variant="article" bare />
+          ) : (
+            <img className="article__figure-img article__figure-img--real" src={s.image} alt="" loading="lazy" />
+          )}
+          {s.figure && <figcaption>{s.figure}</figcaption>}
+          {/* Figma 120 (14:57): a display-size line under the figure, kept visible past hideCaptions */}
+          {s.figureHeading && <figcaption className="article__figcap-heading">{s.figureHeading}</figcaption>}
+        </figure>
+      ) : (
+        <Fragment key={i}>
+          {s.dividerBefore && (
+            <p className="article__divider" aria-hidden>
+              · · ·
+            </p>
+          )}
+          {s.split && <SplitSection s={s} i={i} />}
+          {s.roleFrame && <RoleFrame s={s} i={i} />}
+          {/* 27 Sep: go-broad wireframes expanding My role, draft only */}
+          {s.roleWireframes && <SchedRoleWireframes only={s.roleWireframesOnly} />}
+          {/* mtmvvd0m: a section can drop its heading */}
+          {/* mujvribt (27 Sep): on a slideLayout case the prose part of every
+              section takes the role-slide layout (label column + statement +
+              body); figures after it stay full width. SecWrap is a Fragment
+              everywhere else, so other case studies' DOM is unchanged. */}
+          <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage}>
+          {s.split || s.roleFrame ? null : s.noHeading ? <span id={`sec-${i}`} /> : <h2 id={`sec-${i}`}>{s.h}</h2>}
+          {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
+              first under the heading */}
+          {s.serif && <p className="article__serif">{s.serif}</p>}
+          {/* a big open question, set large (Before we start) */}
+          {s.ask && <p className="article__ask">{s.ask}</p>}
+          {/* muky37n5: a photo beside the heading and TL;DR, 50/50 */}
+          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt="" loading="lazy" />}
+          {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
+            <p className="article__tldr">
+              <span className="article__tldr-label">TL;DR</span>
+              {s.tldr}
+            </p>
+          )}
+          {/* mujuytgf: numbered points, Figma HBBgHT1u7e5jsz7BEEZ3fT 46:15909
+              (big numeral over a light label, one column each) */}
+          {s.points && (
+            <ol className="cpts" aria-label={s.pointsLabel || s.h}>
+              {s.points.map((pt, k) => (
+                <li className="cpts__item" key={k}>
+                  <p className="cpts__n" aria-hidden>{k + 1}.</p>
+                  <p className="cpts__label">{pt}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+          {(s.split || s.roleFrame ? [] : s.p || []).map((para, j) => (
+            <Fragment key={j}>
+              <p>{para}</p>
+              {/* an optional figure copy that sits inline under the first paragraph */}
+              {j === 0 && s.inlineFig && (
+                <figure className="article__figure">
+                  <SectionFigure fig={s.inlineFig} variant="article" bare={s.inlineFigBare} />
+                  {s.inlineFigCaption && <figcaption>{s.inlineFigCaption}</figcaption>}
+                </figure>
+              )}
+            </Fragment>
+          ))}
+          {/* a living shader in a framed box, like the cloud hero (golden |
+              iridescent) */}
+          {s.shader && <ShaderBox shader={s.shader} />}
+          {s.ul && !s.split && !s.roleFrame && (
+            <ul className={s.ul[0]?.t ? "article__terms" : undefined}>
+              {s.ul.map((li, k) => (
+                <li key={k}>{li?.t ? <><p className="article__term-t">{li.t}</p><p className="article__term-d">{li.d}</p></> : li}</li>
+              ))}
+            </ul>
+          )}
+          {/* 28 Sep, the presenting cut: the product "so what" that closes a beat */}
+          {s.soWhat && <p className={"cs-sowhat" + (s.soWhatClose ? " cs-sowhat--close" : "")}>{s.soWhat}</p>}
+          {/* mukvom35 (28 Sep): a figure INSIDE the section frame, under the
+              explanation (the section and its cards are one idea) */}
+          {s.figIn && cs.slideLayout && (
+            <div className="cs-sec__in" data-fig={s.figIn}>
+              <SectionFigure fig={s.figIn} variant="article" bare />
+            </div>
+          )}
+          {/* mukvlu72 (28 Sep): a figure inside the section on the RIGHT; the
+              label, heading and explanation stack on the left */}
+          {s.figSide && cs.slideLayout && (
+            <div className="cs-sec__side">
+              <SectionFigure fig={s.figSide} variant="article" bare />
+            </div>
+          )}
+          </SecWrap>
+          {/* a labelled spec block: exhaustive states / edge cases / parameters,
+              shown as titled mini-lists. Used while a moment is being spec'd out
+              before it is written up as prose. */}
+          {s.spec && (
+            <div className="article__spec">
+              {s.spec.map((blk, k) => (
+                <div className="article__spec-block" key={k}>
+                  <p className="article__spec-label">{blk.label}</p>
+                  <ul>
+                    {(blk.items || []).map((it, m) => (
+                      <li key={m}>{it}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+          {s.table && <SmartTable table={s.table} />}
+          {s.chart && <DataViz chart={s.chart} />}
+          {/* extra figures after the main one: [{ fig, caption, bare }] */}
+          {(s.figsAfter || []).map((f, k) => (
+            <figure className="article__figure" key={`fa-${k}`}>
+              {/* mtp8qt8d: an extra figure may be a scene or a still, not only a coded fig */}
+              <SectionFigure fig={f.fig} scene={f.scene} still={f.still} variant="article" bare={f.bare} />
+              {f.caption && <figcaption>{f.caption}</figcaption>}
+            </figure>
+          ))}
+          {/* muienfze: the key finding + central question frame, above the figure */}
+          {/* muilckke: the use-cases frames (Figma 1167:43070), above the key finding */}
+          {s.insightBefore && <SchedUseCases />}
+          {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
+          {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
+          {(s.figure || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || s.scene) && !s.introQuestion && (
+            <figure className="article__figure">
+              {/* muidtvae: a heading above the figure, outside its box */}
+              {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}
+              {s.platesToggle ? (
+                <DuoFigure figure={<SectionFigure
+                image={s.image}
+                fig={s.fig}
+                iphone={s.iphone}
+                iphoneSplit={s.iphoneSplit}
+                rive={s.rive}
+                riveStateMachines={s.riveStateMachines}
+                riveArtboard={s.riveArtboard}
+                collage={s.collage}
+                design={s.design}
+                whiteboard={s.whiteboard}
+                reel={s.reel}
+                still={s.still}
+                stillParallax={s.stillParallax}
+                scene={s.scene}
+                variant="article"
+                bare={s.figBare}
+              />} plates={renderPlates(s)} />
+              ) : (
+                <SectionFigure
+                image={s.image}
+                fig={s.fig}
+                iphone={s.iphone}
+                iphoneSplit={s.iphoneSplit}
+                rive={s.rive}
+                riveStateMachines={s.riveStateMachines}
+                riveArtboard={s.riveArtboard}
+                collage={s.collage}
+                design={s.design}
+                whiteboard={s.whiteboard}
+                reel={s.reel}
+                still={s.still}
+                stillParallax={s.stillParallax}
+                scene={s.scene}
+                variant="article"
+                bare={s.figBare}
+              />
+              )}
+              {s.figure && <figcaption>{s.figure}</figcaption>}
+              {s.figureHeading && <figcaption className="article__figcap-heading">{s.figureHeading}</figcaption>}
+            </figure>
+          )}
+          {/* mujukg3s (27 Sep): the mango scene moved one place up, so the key finding follows it */}
+          {/* mukuyuyb (28 Sep): a coded figure moved in from another section, right after this one's */}
+          {s.figNext && (
+            <figure className="article__figure">
+              <SectionFigure fig={s.figNext} variant="article" bare />
+            </figure>
+          )}
+          {/* mukub9lc (28 Sep): a second scroll scene right after the main one */}
+          {s.sceneAfter && (
+            <figure className="article__figure">
+              <SectionFigure scene={s.sceneAfter} variant="article" bare />
+            </figure>
+          )}
+          {s.insightBefore && s.insightAfterFigure && <SchedInsight />}
+          {/* a deliberate empty slot for a screen still to be designed:
+              a dashed placeholder captioned with what the screen should show. */}
+          {s.screen && (
+            <figure className="article__figure article__screen">
+              <div className="article__screen-box" aria-hidden>
+                <span className="article__screen-tag">Screen</span>
+              </div>
+              <figcaption>{s.screen}</figcaption>
+            </figure>
+          )}
+          {/* a showreel exported from Figma motion, a phone-format MP4 that
+              autoplays muted and loops. */}
+          {s.video && (
+            <VideoFigure
+              src={s.video}
+              poster={s.videoPoster}
+              caption={s.videoCaption}
+            />
+          )}
+          {/* mtmlg1wh: a row of horizontal plates under the figure; a plate
+              without a src is a placeholder waiting for a Figma node */}
+          {s.plates && !s.platesToggle && renderPlates(s)}
+          {s.divider && (
+            <p className="article__divider" aria-hidden>
+              · · ·
+            </p>
+          )}
+        </Fragment>
+      ))}
+
+      {cs.todo && (
+        <div className="article__todo">
+          <p className="article__todo-title">Fill in to finish this case study</p>
+          <ul>
+            {cs.todo.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
+  // ?cut=compact renders only the case's curated pdfSections subset. Used by
+  // tools/export-pdf.mjs to hit hard page caps (MIIPS 20pp, GSD 30pp); cases
+  // without a pdfSections list render in full regardless of the param.
+  const base = caseStudies[slug] || caseStudies.sample;
+  const compact =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("cut") === "compact" &&
+    Array.isArray(base.pdfSections);
+  const cs = compact
+    ? { ...base, sections: base.sections.filter((s) => base.pdfSections.includes(s.h)) }
+    : base;
   const [activeSection, setActiveSection] = useState(0);
+  // Listen mode: the spoken interview walkthrough, for cases that have one.
+  const narration = CASE_NARRATIONS[slug] || null;
+  const [listening, setListening] = useState(false);
+  // mtmsdz2t: Animation / Video toggle for the hero when a case has both
+  const [heroMode, setHeroMode] = useState("anim");
+  useEffect(() => {
+    setListening(false);
+  }, [slug]);
 
   // Scroll-spy: highlight the index entry for the section currently in view.
   useEffect(() => {
@@ -5200,31 +9714,38 @@ function CaseStudy({ slug, presenting, onExitPresent }) {
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, [cs]);
+  }, [cs, listening]);
 
   return (
     <>
-    <div className="page page--article">
+    <div className="page page--article" data-case={cs.styleKey || slug}>
       <div className="article__layout">
         <nav className="article__index" aria-label="Sections">
-          <Link to="/" className="back-link article__back">
-            <BackIcon />
-            Back
-          </Link>
+          <div className="article__index-top">
+            {/* Back is not here any more: it moved into .top-controls so the
+                page has ONE bar of chrome instead of two clusters. The lab's
+                own "Index" link, same base class, is untouched. */}
+            {/* mtmm3lt0 put the Read / Listen switch in the sidebar; mtpb0swq folds
+                Listen into the Design / PRD row and drops the separate switch */}
+            <CaseStudyTabs slug={slug} className="article__index-tabs" listen={narration ? { on: listening, set: setListening } : null} />
+          </div>
           <ul>
-            {cs.sections
-              .reduce((groups, s, i) => {
-                // consecutive sections sharing a group key collapse into one block
-                const last = groups[groups.length - 1];
-                if (s.group && last && last.group === s.group) {
-                  last.items.push({ s, i });
-                } else if (s.group) {
-                  groups.push({ group: s.group, items: [{ s, i }] });
-                } else {
-                  groups.push({ items: [{ s, i }] });
-                }
-                return groups;
-              }, [])
+            {(cs.flatIndex
+              ? // flat: every section is its own ungrouped entry (no group heads)
+                cs.sections.flatMap((s, i) => (s.breaker || s.noHeading || s.hidden ? [] : [{ items: [{ s, i }] }]))
+              : cs.sections.reduce((groups, s, i) => {
+                  if (s.breaker || s.noHeading || s.hidden) return groups; // breakers and heading-less sections have no index entry
+                  // consecutive sections sharing a group key collapse into one block
+                  const last = groups[groups.length - 1];
+                  if (s.group && last && last.group === s.group) {
+                    last.items.push({ s, i });
+                  } else if (s.group) {
+                    groups.push({ group: s.group, items: [{ s, i }] });
+                  } else {
+                    groups.push({ items: [{ s, i }] });
+                  }
+                  return groups;
+                }, []))
               .map((g, gi) => {
                 const link = ({ s, i }) => (
                   <li key={i}>
@@ -5232,7 +9753,7 @@ function CaseStudy({ slug, presenting, onExitPresent }) {
                       href={`#sec-${i}`}
                       className={i === activeSection ? "is-active" : undefined}
                     >
-                      {s.h}
+                      {s.nav || s.h}
                     </a>
                   </li>
                 );
@@ -5251,12 +9772,17 @@ function CaseStudy({ slug, presenting, onExitPresent }) {
         </nav>
 
         <article className="article">
-          <header className="article__head">
-          <p className="article__eyebrow">{cs.eyebrow}</p>
-          <h1 className="article__title">{cs.title}</h1>
-          <p className="article__meta">{cs.meta}</p>
-        </header>
-
+          {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
+          {cs.heroFirst ? (<>
+        {cs.heroVideo && cs.heroFig && figures[cs.heroFig] && !cs.heroToggleHidden && (
+          <div className="fig-toggle fig-toggle--hero" role="group" aria-label="Hero">
+            {[["anim", "Animation"], ["video", "Video"]].map(([k, label]) => (
+              <button key={k} type="button" className={"fig-toggle__btn" + (heroMode === k ? " is-active" : "")} aria-pressed={heroMode === k} onClick={() => setHeroMode(k)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
         {cs.board ? (
           <div className="article__hero-board article__hero-board--shader">
             <Suspense fallback={null}>
@@ -5268,6 +9794,57 @@ function CaseStudy({ slug, presenting, onExitPresent }) {
               </Suspense>
             </div>
           </div>
+        ) : cs.heroVideo && !(cs.heroFig && figures[cs.heroFig] && heroMode === "anim") ? (
+          // a project-specific hero animation (Figma export, converted to mp4);
+          // plays once and holds its last frame, which is also the poster.
+          // Reduced motion gets the poster alone.
+          <div className="article__hero-board article__hero-board--image article__hero-board--video">
+            <video
+              className="article__hero-img"
+              poster={cs.heroPoster}
+              autoPlay={!(typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches)}
+              muted
+              playsInline
+              loop={!!cs.heroLoop}
+              preload="auto"
+              aria-label={cs.heroAlt || ""}
+              // mtmhq999: playback speed as a fraction of real time (0.7 = 70%)
+              onLoadedMetadata={(e) => { if (cs.heroSpeed) e.currentTarget.playbackRate = cs.heroSpeed; }}
+              onPlay={(e) => { if (cs.heroSpeed) e.currentTarget.playbackRate = cs.heroSpeed; }}
+            >
+              {/* mtmhmszl: alpha video, no matte. HEVC-with-alpha first so
+                  Safari takes it, VP9-with-alpha WebM for everyone else. */}
+              {(cs.heroVideo.mov || cs.heroVideo.hevc) && (
+                <source src={cs.heroVideo.mov || cs.heroVideo.hevc} type='video/mp4; codecs="hvc1"' />
+              )}
+              {cs.heroVideo.webm && <source src={cs.heroVideo.webm} type="video/webm" />}
+              {typeof cs.heroVideo === "string" && <source src={cs.heroVideo} />}
+            </video>
+            {/* mtmkjwp3: replay, bottom right */}
+            <button
+              type="button"
+              className="article__hero-replay"
+              aria-label="Replay the header animation"
+              onClick={(e) => {
+                const v = e.currentTarget.parentElement.querySelector("video");
+                if (!v) return;
+                v.currentTime = 0;
+                if (cs.heroSpeed) v.playbackRate = cs.heroSpeed;
+                v.play();
+              }}
+            >
+              {/* mtmlir34: Iconoir only */}
+              <IconRefresh width={15} height={15} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+          </div>
+        ) : cs.heroFig && figures[cs.heroFig] ? (
+          // a project-specific coded figure fills the header frame
+          <div className="article__hero-board article__hero-board--fig">
+            {(() => {
+              const HeroFig = figures[cs.heroFig];
+              return <HeroFig />;
+            })()}
+          </div>
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
           <div className="article__hero-board article__hero-board--image">
@@ -5278,120 +9855,153 @@ function CaseStudy({ slug, presenting, onExitPresent }) {
           // blank frame placeholder until their own hero asset is added
           <div className="article__hero-board article__hero-board--blank" aria-hidden="true" />
         )}
-
-        <div className="article__body">
-          <p className="article__lead">{cs.lead}</p>
-
-          {cs.sections.map((s, i) => (
-            <Fragment key={i}>
-              <h2 id={`sec-${i}`}>{s.h}</h2>
-              {s.tldr && (
-                <p className="article__tldr">
-                  <span className="article__tldr-label">TL;DR</span>
-                  {s.tldr}
-                </p>
-              )}
-              {(s.p || []).map((para, j) => (
-                <Fragment key={j}>
-                  <p>{para}</p>
-                  {/* an optional figure copy that sits inline under the first paragraph */}
-                  {j === 0 && s.inlineFig && (
-                    <figure className="article__figure">
-                      <SectionFigure fig={s.inlineFig} variant="article" bare={s.inlineFigBare} />
-                      {s.inlineFigCaption && <figcaption>{s.inlineFigCaption}</figcaption>}
-                    </figure>
-                  )}
-                </Fragment>
-              ))}
-              {/* a living shader in a framed box, like the cloud hero (golden |
-                  iridescent) */}
-              {s.shader && (
-                <div
-                  className={`article__shader-box article__shader-box--${s.shader}`}
-                  aria-hidden="true"
-                >
-                  <Suspense fallback={null}>
-                    <ShaderCanvas preset={s.shader} className="article__shader-canvas" />
-                  </Suspense>
-                </div>
-              )}
-              {s.ul && (
-                <ul>
-                  {s.ul.map((li, k) => (
-                    <li key={k}>{li}</li>
-                  ))}
-                </ul>
-              )}
-              {/* a labelled spec block: exhaustive states / edge cases / parameters,
-                  shown as titled mini-lists. Used while a moment is being spec'd out
-                  before it is written up as prose. */}
-              {s.spec && (
-                <div className="article__spec">
-                  {s.spec.map((blk, k) => (
-                    <div className="article__spec-block" key={k}>
-                      <p className="article__spec-label">{blk.label}</p>
-                      <ul>
-                        {(blk.items || []).map((it, m) => (
-                          <li key={m}>{it}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {(s.figure || s.rive || s.collage || s.design) && (
-                <figure className="article__figure">
-                  <SectionFigure
-                    image={s.image}
-                    fig={s.fig}
-                    iphone={s.iphone}
-                    iphoneSplit={s.iphoneSplit}
-                    rive={s.rive}
-                    riveStateMachines={s.riveStateMachines}
-                    riveArtboard={s.riveArtboard}
-                    collage={s.collage}
-                    design={s.design}
-                    variant="article"
-                    bare={s.figBare}
-                  />
-                  {s.figure && <figcaption>{s.figure}</figcaption>}
-                </figure>
-              )}
-              {/* a deliberate empty slot for a screen still to be designed:
-                  a dashed placeholder captioned with what the screen should show. */}
-              {s.screen && (
-                <figure className="article__figure article__screen">
-                  <div className="article__screen-box" aria-hidden>
-                    <span className="article__screen-tag">Screen</span>
-                  </div>
-                  <figcaption>{s.screen}</figcaption>
-                </figure>
-              )}
-              {s.divider && (
-                <p className="article__divider" aria-hidden>
-                  · · ·
-                </p>
-              )}
-            </Fragment>
-          ))}
-
-          {cs.todo && (
-            <div className="article__todo">
-              <p className="article__todo-title">Fill in to finish this case study</p>
-              <ul>
-                {cs.todo.map((t, i) => (
-                  <li key={i}>{t}</li>
-                ))}
-              </ul>
+          {cs.headFacts ? (
+          // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
+          // title and the lead on the left, label/value facts on the right; no
+          // eyebrow, no meta line. The lead moves up here from the body.
+          <header className="article__head article__head--facts">
+            <div className="article__head-main">
+              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
+            <dl className="article__facts">
+              {cs.headFacts.map((f) => (
+                <div className="article__fact" key={f.label}>
+                  <dt className="article__fact-label">{f.label}</dt>
+                  <dd className="article__fact-value">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </header>
+          ) : (
+          <header className="article__head">
+          <p className="article__eyebrow">{cs.eyebrow}</p>
+          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__meta">{cs.meta}</p>
+        </header>
           )}
-        </div>
+          </>) : (<>
+          {cs.headFacts ? (
+          // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
+          // title and the lead on the left, label/value facts on the right; no
+          // eyebrow, no meta line. The lead moves up here from the body.
+          <header className="article__head article__head--facts">
+            <div className="article__head-main">
+              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__lead article__lead--head">{cs.lead}</p>
+            </div>
+            <dl className="article__facts">
+              {cs.headFacts.map((f) => (
+                <div className="article__fact" key={f.label}>
+                  <dt className="article__fact-label">{f.label}</dt>
+                  <dd className="article__fact-value">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </header>
+          ) : (
+          <header className="article__head">
+          <p className="article__eyebrow">{cs.eyebrow}</p>
+          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__meta">{cs.meta}</p>
+        </header>
+          )}
+        {cs.heroVideo && cs.heroFig && figures[cs.heroFig] && !cs.heroToggleHidden && (
+          <div className="fig-toggle fig-toggle--hero" role="group" aria-label="Hero">
+            {[["anim", "Animation"], ["video", "Video"]].map(([k, label]) => (
+              <button key={k} type="button" className={"fig-toggle__btn" + (heroMode === k ? " is-active" : "")} aria-pressed={heroMode === k} onClick={() => setHeroMode(k)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+        {cs.board ? (
+          <div className="article__hero-board article__hero-board--shader">
+            <Suspense fallback={null}>
+              <HeroShader className="article__hero-shader" />
+            </Suspense>
+            <div className="article__hero-board-inner">
+              <Suspense fallback={null}>
+                <TextFlippingBoardDemo messages={cs.board} />
+              </Suspense>
+            </div>
+          </div>
+        ) : cs.heroVideo && !(cs.heroFig && figures[cs.heroFig] && heroMode === "anim") ? (
+          // a project-specific hero animation (Figma export, converted to mp4);
+          // plays once and holds its last frame, which is also the poster.
+          // Reduced motion gets the poster alone.
+          <div className="article__hero-board article__hero-board--image article__hero-board--video">
+            <video
+              className="article__hero-img"
+              poster={cs.heroPoster}
+              autoPlay={!(typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches)}
+              muted
+              playsInline
+              loop={!!cs.heroLoop}
+              preload="auto"
+              aria-label={cs.heroAlt || ""}
+              // mtmhq999: playback speed as a fraction of real time (0.7 = 70%)
+              onLoadedMetadata={(e) => { if (cs.heroSpeed) e.currentTarget.playbackRate = cs.heroSpeed; }}
+              onPlay={(e) => { if (cs.heroSpeed) e.currentTarget.playbackRate = cs.heroSpeed; }}
+            >
+              {/* mtmhmszl: alpha video, no matte. HEVC-with-alpha first so
+                  Safari takes it, VP9-with-alpha WebM for everyone else. */}
+              {(cs.heroVideo.mov || cs.heroVideo.hevc) && (
+                <source src={cs.heroVideo.mov || cs.heroVideo.hevc} type='video/mp4; codecs="hvc1"' />
+              )}
+              {cs.heroVideo.webm && <source src={cs.heroVideo.webm} type="video/webm" />}
+              {typeof cs.heroVideo === "string" && <source src={cs.heroVideo} />}
+            </video>
+            {/* mtmkjwp3: replay, bottom right */}
+            <button
+              type="button"
+              className="article__hero-replay"
+              aria-label="Replay the header animation"
+              onClick={(e) => {
+                const v = e.currentTarget.parentElement.querySelector("video");
+                if (!v) return;
+                v.currentTime = 0;
+                if (cs.heroSpeed) v.playbackRate = cs.heroSpeed;
+                v.play();
+              }}
+            >
+              {/* mtmlir34: Iconoir only */}
+              <IconRefresh width={15} height={15} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+          </div>
+        ) : cs.heroFig && figures[cs.heroFig] ? (
+          // a project-specific coded figure fills the header frame
+          <div className="article__hero-board article__hero-board--fig">
+            {(() => {
+              const HeroFig = figures[cs.heroFig];
+              return <HeroFig />;
+            })()}
+          </div>
+        ) : cs.heroImage ? (
+          // a project-specific hero image sits in the header frame
+          <div className="article__hero-board article__hero-board--image">
+            <img className="article__hero-img" src={cs.heroImage} alt="" />
+          </div>
+        ) : (
+          // the departure-board frame is Away-specific; other projects get a
+          // blank frame placeholder until their own hero asset is added
+          <div className="article__hero-board article__hero-board--blank" aria-hidden="true" />
+        )}
+          </>)}
+
+        {narration && listening ? (
+          <div className="article__body article__body--listen">
+            <NarrationPlayer narration={narration} />
+          </div>
+        ) : (
+        <CaseStudyBody cs={cs} />
+        )}
         </article>
       </div>
 
-      <Footer />
+      <Footer credits={cs.credits} />
     </div>
-    {presenting && <Presentation cs={cs} onExit={onExitPresent} />}
+    {presenting && <Presentation cs={cs} onExit={onExitPresent} theme={theme} toggleTheme={toggleTheme} />}
     </>
   );
 }
@@ -5436,29 +10046,234 @@ function M3Track({ label, dur, ease }) {
 function MotionLab() {
   return (
     <div className="page page--lab" style={{ "--accent": "#3e9fff" }}>
-      <Link to="/" className="back-link">
-        <BackIcon />
-        Index
-      </Link>
+      {/* section index, like the case-study pages: fixed left rail with the Back link
+          on top and jump links to each part of the lab */}
+      <nav className="article__index page--lab-index" aria-label="Sections">
+        <div className="article__index-top">
+          <Link to="/" className="back-link article__back">
+            <BackIcon />
+            Index
+          </Link>
+        </div>
+        <ul>
+          {[
+            ["lab-modes", "Motion modes"],
+            ["lab-decks", "Deck presets"],
+            ["lab-hands", "Doodle hands"],
+            ["lab-system", "System catalog"],
+            ["lab-appendix", "Live specimens"],
+          ].map(([id, label]) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  // explicit "instant": the page's html{scroll-behavior:smooth} makes a
+                  // plain scrollIntoView no-op here, so force the jump
+                  document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+                }}
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-      <header className="article__head">
-        <p className="article__eyebrow">Motion lab</p>
-        <h1 className="article__title">Animation techniques, from scratch</h1>
-        <p className="article__meta">
-          A growing reference of dependency-free animations, SVG + CSS + SMIL,
-          benji.org style. Added as we build them.
-        </p>
-      </header>
+      {/* The lab, grouped by animation MODE: each mode's properties (live, copiable)
+          + a live example + its reference, in one place. The consumer register and
+          the per-case skins are folded into their mode sections. */}
+      <section id="lab-modes"><ModesGuide /></section>
 
-      {/* Featured preset: information-sensitive scaffold (shimmer + focal annotation) */}
-      <div style={{ margin: "8px 0 36px" }}>
-        <p className="demo__name" style={{ marginBottom: 4 }}>Information-sensitive scaffold</p>
-        <p className="demo__tech" style={{ marginBottom: 16 }}>
-          Preset: render the UI as static shimmer; keep only the focal element + its annotation real and animated.
-        </p>
-        <AnnotationDemo />
+      {/* Every present-mode deck preset + base asset, as viewable specimens. */}
+      <section id="lab-decks"><DeckPresets /></section>
+
+      {/* The 25-pose doodle hand set (prompt library, Doodle hands group) as
+          hand-coded SVG; click a tile to copy its standalone markup. */}
+      <section id="lab-hands"><HandsSheet /></section>
+
+      {/* The Specimen Sheet: the deeper field guide / full system catalog. */}
+      <section id="lab-system"><SystemSheet /></section>
+
+      {/* Appendix: the live framework specimens at full size + the raw technique grid. */}
+      <div className="ss-appendix" id="lab-appendix">
+        <p className="article__eyebrow">Appendix A</p>
+        <h2 className="ss-appendix__title">Live specimens, at full size</h2>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Hover border gradient</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            A pill whose border is a soft radial highlight that idles around the four edges (top, left, bottom, right, one step per second) and, on hover, blooms into a single blue glow centred on the button. The border is a blurred gradient layer behind an inset black plate, so the "stroke" is light rather than a line.
+          </p>
+          <Suspense fallback={null}>
+            <HoverBorderGradient>
+              <span>Emerald UI Components</span>
+            </HoverBorderGradient>
+          </Suspense>
+          <Ref label="HoverBorderGradient (registry component)" src="src/components/ui/hover-border-gradient.tsx" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Cross-sell: the exploration set, resolved</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Figure 8 for the cross-sell engine case. Every concept that got built or argued for, sorted by the area of the app it lives in, then tiered, with the metrics that judge each best-suited approach hanging off it. The trip classifier sits above the tree rather than inside it, because on an emergency trip none of the branches are reachable. The leaf cycles while on screen; click a row to pin it.
+          </p>
+          <CrossSellTree />
+          <Ref label="CrossSellTree (cross-sell case, figure 8)" src="src/figures/crosssell/CrossSellTree.jsx" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Physicality and interruptibility (§14)</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The Devouring Details layer, live. A real bottom sheet you can grab: it enters from its own edge, tracks the pointer 1:1 while held, carries your flick's momentum on release, and can be caught mid-dismiss and dragged back. Springs, not durations. Try dragging it.
+          </p>
+          <PhysicalSheet />
+          <Ref label="PhysicalSheet (§14 physicality exemplar)" src="src/figures/physicality/PhysicalSheet.jsx" />
+          <Ref label="ds/hooks · spring() presets (throw / bloom / scrub)" src="src/figures/ds/hooks.js" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Detail page v1 (Evidence Card)</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The /hello marquee's original click-to-full-view, archived live the day the scan page moved to the bottom drawer. Click a tile: the phone flies out of the grid to the centre via the phone-hero shared-element View Transition, and the full-page Evidence Card (aside + slide column) lands around it. This mounts the real PhoneDetail2 on the real PHONES data, not a copy.
+          </p>
+          <DetailV1 />
+          <Ref label="PhoneDetail2 (the v1 full-page detail)" src="src/hello/PhoneDetail2.jsx" />
+          <Ref label="PhoneMarqueeStep · openDetail/closeDetail (the morph)" src="src/hello/PhoneMarqueeStep.jsx" />
+          <Ref label="PhoneDetail3 (the v2 bottom drawer that replaced it on scan)" src="src/hello/PhoneDetail3.jsx" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Information-sensitive scaffold</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Render the UI as static shimmer; keep only the focal element and its annotation real and animated.
+          </p>
+          <AnnotationDemo />
+          <Ref label="AnnotationDemo (scaffold preset demo)" src="src/figures/scaffold/AnnotationDemo.jsx" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>System-Explainer · extract</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            One messy input untangled into a structured brief, one mapping per step. Paired panels and a connector.
+          </p>
+          <AwIntakeBrief />
+          <Ref label="AwIntakeBrief (extract archetype)" src="src/figures/awayAgent/AwIntakeBrief.jsx" />
+          <Ref label="ds kit · Panel/Field/Mark/Connector (used here)" src="src/figures/ds/SystemExplainer.jsx" />
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · sequence to score</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Same kit, different archetype: a timeline that advances the agent's work, resolving into weighted scores.
+          </p>
+          <SeqDemo />
+          <Ref label="SeqDemo (sequence to score)" src="src/figures/systemExplainer/SeqDemo.jsx" />
+          <Ref label="ds kit · Panel/Track/ScoreMeter (used here)" src="src/figures/ds/SystemExplainer.jsx" />
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · fan-out / gather</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            A third archetype from the universe research: one query fans out to many sources in parallel, fares return, the field reconciles to the negotiated winner. The Away deep-search, drawn as a hub-and-spoke.
+          </p>
+          <FanOutDemo />
+          <Ref label="FanOutDemo (fan-out / gather archetype)" src="src/figures/systemExplainer/FanOutDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · triage</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Many items sorted into a priority order, a cut-line fencing the few that need you. The Dassh daily report.
+          </p>
+          <TriageDemo />
+          <Ref label="TriageDemo (triage archetype)" src="src/figures/systemExplainer/TriageDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · trade-off (Pareto)</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            No option wins on every axis, so the honest answer is the frontier: cheapest, fastest, and the balance, the rest beaten on both.
+          </p>
+          <TradeOffDemo />
+          <Ref label="TradeOffDemo (trade-off / Pareto archetype)" src="src/figures/systemExplainer/TradeOffDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · backtrack</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Reasoning that explores, hits a dead end, rewinds to the fork, and takes the other branch. An agent debugging.
+          </p>
+          <BacktrackDemo />
+          <Ref label="BacktrackDemo (backtrack archetype)" src="src/figures/systemExplainer/BacktrackDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · update (Bayesian)</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            A confidence number revised as each piece of evidence lands, order mattering. The Zepto face-auth verdict.
+          </p>
+          <UpdateDemo />
+          <Ref label="UpdateDemo (update / Bayesian archetype)" src="src/figures/systemExplainer/UpdateDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · recover</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            A plan breaks and is repaired while keeping the goal, the dead end shown honestly. The Away disruption reroute.
+          </p>
+          <RecoverDemo />
+          <Ref label="RecoverDemo (recover archetype)" src="src/figures/systemExplainer/RecoverDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · decompose</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            One unanswerable question cleaved into non-overlapping, covering parts (MECE), then one branch unfolded into runnable checks.
+          </p>
+          <DecomposeDemo />
+          <Ref label="DecomposeDemo (decompose archetype)" src="src/figures/systemExplainer/DecomposeDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · spine (root-cause)</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            One effect, many causes clustered into a few bones, then the one that matters. A fishbone for cart abandonment.
+          </p>
+          <SpineDemo />
+          <Ref label="SpineDemo (spine / root-cause archetype)" src="src/figures/systemExplainer/SpineDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · sense-plan-act</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The agent's core, drawn as a closed loop: perceive, decide, act, on repeat, the world changing between laps.
+          </p>
+          <LoopDemo />
+          <Ref label="LoopDemo (sense-plan-act archetype)" src="src/figures/systemExplainer/LoopDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · weigh</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Reasons for and against landing on a balance until one side tips. Book now, or wait?
+          </p>
+          <WeighDemo />
+          <Ref label="WeighDemo (weigh archetype)" src="src/figures/systemExplainer/WeighDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · hedge</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            A conclusion held with its spread, the band narrowing as evidence lands but never faking a single number.
+          </p>
+          <HedgeDemo />
+          <Ref label="HedgeDemo (hedge archetype)" src="src/figures/systemExplainer/HedgeDemo.jsx" />
+
+          <p className="demo__name" style={{ margin: "28px 0 4px" }}>System-Explainer · watch</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            Long quiet monitoring that earns attention at the one right moment. The silent steward, weeks of nothing, then a catch.
+          </p>
+          <WatchDemo />
+          <Ref label="WatchDemo (watch archetype)" src="src/figures/systemExplainer/WatchDemo.jsx" />
+        </div>
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Presentation-mode kit</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The building blocks behind the Scheduled-Delivery reel, each looping on its own: the camera push-in, the glow ring, the tap pulse, the screen crossfade, the microlabel, and the spotlight.
+          </p>
+          <ReelPresets />
+        </div>
+
+        <div style={{ margin: "8px 0 36px" }}>
+          {/* mtmlfoo3: the reel moved here from the Scheduled Delivery case */}
+          <p className="demo__name" style={{ marginBottom: 4 }}>Presentation mode · Scheduled Delivery reel</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The full reel: one phone the camera zooms around, each component of the schedule order animating in turn, from the schedule toggle to the cross-midnight relabel to a confirmed slot.
+          </p>
+          <ReelFigure name="schedDelivery" />
+        </div>
+
+        <div style={{ margin: "8px 0 36px" }}>
+          <p className="demo__name" style={{ marginBottom: 4 }}>Presentation mode · split walkthrough</p>
+          <p className="demo__tech" style={{ marginBottom: 16 }}>
+            The second reel shape: one tall page instead of a flow of screens. The camera holds the phone left and the real Zepto brand page scrolls inside it, a soft dim brackets the live section, and the pitch for that section lands on the right. Zoom, scroll and dwell are all derived from the section box and the copy length, so re-writing a line re-times the reel.
+          </p>
+          <ReelFigure name="brandPage" />
+          <Ref label="BrandPageReel (split walkthrough)" src="src/figures/reel/BrandPageReel.jsx" />
+        </div>
       </div>
 
+      <p className="article__eyebrow" style={{ marginTop: "1rem" }}>Appendix B</p>
+      <h2 className="ss-appendix__title">Raw technique demos</h2>
       <div className="lab-grid">
         {/* 1. Self-drawing path */}
         <DemoCard name="Self-drawing path" technique="SVG pathLength + stroke-dashoffset">
@@ -5591,54 +10406,31 @@ function MotionLab() {
 
 // One persistent control across all pages. It never unmounts on navigation, so
 // changing `variant` animates the toggle <-> play morph via CSS.
-function PageControl({ variant, mode, accent, onRead, onScan, onPresent }) {
-  // The selection is a sliding "thumb". On a mode switch it briefly turns to
-  // glass and lifts as it travels to the other icon, then settles back to the
-  // solid white selected state. `switching` is true only for the slide.
+function PageControl({ variant, mode, onScan, onRead, onPresent, i = 0 }) {
+  // 07 Sep 2026: the view toggle is back on the index (pin mtqrg97m) as two
+  // views: scan (the phone-frames landing, default) and read (the list). Art
+  // mode stays removed. The sliding thumb is the same as before.
   const [switching, setSwitching] = useState(false);
   const prevMode = useRef(mode);
   useEffect(() => {
     if (prevMode.current === mode) return;
     prevMode.current = mode;
     setSwitching(true);
-    const t = setTimeout(() => setSwitching(false), 500); // matches the slide duration
+    const t = setTimeout(() => setSwitching(false), 500);
     return () => clearTimeout(t);
   }, [mode]);
-
   return (
-    <div className={`page-control page-control--${variant}`}>
-      <div
-        className={`page-control__toggle${switching ? " is-switching" : ""}`}
-        data-mode={mode}
-        role="tablist"
-        aria-label="View mode"
-      >
+    <div className={`page-control page-control--${variant}`} style={{ "--i": i }}>
+      <div className={`page-control__toggle${switching ? " is-switching" : ""}`} data-mode={mode} role="tablist" aria-label="View mode">
         <span className="page-control__thumb" aria-hidden />
-        <button
-          type="button"
-          aria-label="Read mode"
-          className={mode === "read" ? "is-active" : undefined}
-          onClick={onRead}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        <button type="button" aria-label="Scan mode" className={mode === "scan" ? "is-active" : undefined} onClick={() => { if (mode !== "scan") feedback("toggle"); onScan(); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" /><path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" /><path d="M7 8h8" /><path d="M7 12h10" /><path d="M7 16h6" />
           </svg>
         </button>
-        <button
-          type="button"
-          aria-label="Scan mode"
-          className={mode === "scan" ? "is-active" : undefined}
-          onClick={onScan}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-            <path d="M7 8h8" />
-            <path d="M7 12h10" />
-            <path d="M7 16h6" />
+        <button type="button" aria-label="Read mode" className={mode === "read" ? "is-active" : undefined} onClick={() => { if (mode !== "read") feedback("toggle"); onRead(); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
         </button>
       </div>
@@ -5655,31 +10447,40 @@ function PageControl({ variant, mode, accent, onRead, onScan, onPresent }) {
 // element animation driven by CSS when the `.dark` class flips on <html>): the
 // core grows, the beams retract + fade, and a masked "bite" slides across to
 // carve the crescent. No box, just the icon. Sits left of the page control.
-function ThemeToggle({ theme, onToggle }) {
+// The site's two persistent switches are both `toggle` events — a binary state
+// flips and the flip is the point. See src/ui/feedback.js and the base layer doc.
+function ThemeToggle({ theme, onToggle, i = 0 }) {
   const isDark = theme === "dark";
   return (
     <button
       type="button"
+      style={{ "--i": i }}
       className="theme-toggle"
+      data-tip
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       aria-pressed={isDark}
-      title="Toggle theme"
-      onClick={onToggle}
+      onClick={() => {
+        feedback("toggle");
+        onToggle();
+      }}
     >
-      <svg className="theme-toggle__icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-        <mask id="theme-moon-mask">
-          <rect x="0" y="0" width="24" height="24" fill="white" />
-          <circle className="theme-toggle__bite" cx="24" cy="10" r="6" fill="black" />
-        </mask>
-        <circle
-          className="theme-toggle__core"
-          cx="12"
-          cy="12"
-          r="6"
-          fill="currentColor"
-          mask="url(#theme-moon-mask)"
-        />
-        <g className="theme-toggle__beams" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      {/* "use line icons and match the size of the back arrow icon": 18 -> 15,
+          and the core is a drawn ring rather than a solid disc. The moon mask
+          still bites it, so dark mode reads as an outlined crescent. */}
+      {/* "use line icons and match the size of the back arrow icon" (15px, 2px
+          stroke), then "dark mode icon broken".
+
+          The moon used to be made by MASKING the core: a solid disc with a
+          circle bitten out of it is a crescent. That only works on a FILLED
+          shape. Once the core became a drawn ring, the same bite just cut the
+          ring open and left a bare arc, a "C" rather than a moon.
+
+          So the moon is its own crescent PATH now (Iconoir HalfMoon, the house
+          set), and the two states cross-fade instead of morphing through a
+          mask. The sun keeps its ring and its retracting beams. */}
+      <svg className="theme-toggle__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle className="theme-toggle__core" cx="12" cy="12" r="6" />
+        <g className="theme-toggle__beams">
           <line x1="12" y1="1" x2="12" y2="3" />
           <line x1="12" y1="21" x2="12" y2="23" />
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
@@ -5689,23 +10490,408 @@ function ThemeToggle({ theme, onToggle }) {
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
         </g>
+        <path className="theme-toggle__moon" d="M3 11.5066C3 16.7497 7.25034 21 12.4934 21C16.2209 21 19.4466 18.8518 21 15.7259C12.4934 15.7259 8.27411 11.5066 8.27411 3C5.14821 4.55344 3 7.77915 3 11.5066Z" />
       </svg>
     </button>
   );
 }
 
+// Sound toggle — the theme toggle's sibling (annotation msb82xcx). Same shape:
+// no box, one 18px icon that morphs between two states, sitting in .top-controls.
+//
+// It is OFF by default and stays off until it is asked for. A landing page that
+// makes noise on arrival is the thing everybody hates about landing pages, and
+// autoplay policy would block it anyway. The preference is global — it lives on
+// <html data-sound> so any surface can read it without prop-drilling — and is
+// broadcast as a `sound-pref` event so already-mounted audio (the booth) can
+// react without a re-render.
+const SOUND_KEY = "sound";
+export function readSoundPref() {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(SOUND_KEY) === "on";
+  } catch {
+    return false;
+  }
+}
+
+function SoundToggle({ on, onToggle, i = 0 }) {
+  return (
+    <button
+      type="button"
+      style={{ "--i": i }}
+      className="sound-toggle"
+      data-tip
+      aria-label={on ? "Mute sound" : "Unmute sound"}
+      aria-pressed={on}
+      title="Toggle sound"
+      onClick={() => {
+        // THE MUTE CONTROL IS ITSELF A `toggle`, and per §7 it is the one
+        // control allowed to confirm itself in the channel it governs.
+        //
+        // ORDER MATTERS, and the first version had it wrong (annotation
+        // msmqar1v): it fired BEFORE flipping the preference, so switching
+        // sound ON was silent - at that instant the preference still said off
+        // and the sound layer correctly refused to make a noise. The one press
+        // that is supposed to demonstrate the channel was the one press that
+        // could not. Flip first, then fire.
+        //
+        // Turning it OFF stays silent: a parting sound from a control whose
+        // whole purpose is to stop sounds is a joke that lands once. The haptic
+        // still fires either way, which is what confirms the press itself.
+        // ALWAYS FLIP FIRST, THEN FIRE - one path, and the preference does the
+        // rest. Turning ON: the flip lands, the sound layer now says yes, and
+        // the press confirms itself. Turning OFF: the flip lands, the sound
+        // layer says no, and the press is silent - a parting noise from the
+        // control whose job is to stop noises is a joke that lands once.
+        //
+        // The haptic fires either way, so the press is still confirmed on the
+        // way out; it just uses the channel that is still open.
+        onToggle();
+        requestAnimationFrame(() => feedback("toggle"));
+      }}
+      data-on={on ? "true" : undefined}
+    >
+      {/* Drawn to the same optical size as ThemeToggle — artwork fills ~19x16 of
+          the 24 grid, one 2px stroke weight throughout — so the pair reads as one
+          set rather than a big sun beside a small speaker (annotation msb8bruz). */}
+      <svg className="sound-toggle__icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden>
+        {/* the speaker body is constant; only the waves and the slash change */}
+        <mask id="sound-cut">
+          <rect x="0" y="0" width="24" height="24" fill="white" />
+          <line
+            className="sound-toggle__cut"
+            x1="2.1"
+            y1="3.6"
+            x2="18.9"
+            y2="20.4"
+            stroke="black"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </mask>
+        <g mask="url(#sound-cut)">
+          <path
+            d="M3 9h3.7L11.5 4.2v15.6L6.7 15H3z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+          <g
+            className="sound-toggle__waves"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          >
+            <path className="sound-toggle__wave" d="M15.1 8.8a4.6 4.6 0 0 1 0 6.4" />
+            <path className="sound-toggle__wave" d="M18.2 5.7a8.8 8.8 0 0 1 0 12.6" />
+          </g>
+        </g>
+        {/* The slash CROSSES the speaker (annotation msbe04ei). It used to sit
+            beside it, in the gap the waves vacate, which read as a stray diagonal
+            floating next to a speaker rather than a mute mark. Running it over the
+            speaker needs a gap punched through whatever it crosses, or the line
+            vanishes into the filled cone: the mask does that, with a cut stroke
+            2px wider than the slash so a 1px margin shows on each side. Cut and
+            slash share the dash animation so they arrive and leave together. */}
+        {/* nudged 1.5 units left of the geometric diagonal (annotation msbg811r):
+            the speaker sits left of the viewBox centre, so the true diagonal read
+            as right-heavy against the artwork */}
+        <line
+          className="sound-toggle__slash"
+          x1="2.1"
+          y1="3.6"
+          x2="18.9"
+          y2="20.4"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
+/* ---------- Resume viewer (WIP tool) ----------
+   A tabbed viewer for the resume and its per-role tailored presets. Each preset is
+   one tab: the org or person it is aimed at, a note on how the base was customized
+   for them, the PDF inline, and a download. Add a preset by dropping one object into
+   RESUME_PRESETS and putting its PDF in public/resume/. Routed at /work/resume via
+   the WIP shelf. The base PDF is generated from ../Resume/resume.html — re-copy it to
+   public/resume/agam-agarwal-base.pdf after regenerating. */
+const RESUME_PRESETS = [
+  {
+    id: "format",
+    label: "Two-column",
+    aim: "The live two-column layout",
+    note: "Edited in code (src/Resume.jsx). Download PDF prints this page; a tailored version can open in its own tab.",
+    html: true,
+  },
+  {
+    id: "base",
+    label: "Base",
+    aim: "The master resume",
+    note: "Positioned for experience-led, high-growth consumer product companies (Series A to C): 0-to-1 product design, craft, and data-informed impact. Every tailored version starts from this.",
+    pdf: "/resume/agam-agarwal-base.pdf",
+    file: "Agam Agarwal - Product Designer.pdf",
+  },
+  {
+    id: "classic",
+    label: "Classic",
+    aim: "Classic two-column format",
+    note: "The same content in a more traditional, prose-led two-column layout (blue title, monospace dates), for recruiters who prefer a familiar resume shape.",
+    pdf: "/resume/agam-agarwal-classic.pdf",
+    file: "Agam Agarwal - Product Designer (Classic).pdf",
+  },
+  {
+    id: "headout",
+    label: "Headout",
+    aim: "Sent to Headout, Lead Product Designer",
+    note: "Tailored to the JD's five asks. Selected Projects moved up so the travel work (Away) and the AI trust work (Dassh) sit high; Scheduled Delivery reframed around defining the right problem; Jarvis reframed as the confirmation moment before money moves; skills lead with shipping production front-end in Claude Code.",
+    pdf: "/resume/agam-agarwal-headout.pdf",
+    file: "Agam Agarwal - Product Designer (Headout).pdf",
+  },
+  // Add a tailored preset like this (drop the PDF in public/resume/):
+  // {
+  //   id: "groww",
+  //   label: "Groww",
+  //   aim: "Sent to Groww, Product Designer",
+  //   note: "Led with the Zepto 0-to-1 and AOV story; reordered skills to mirror Groww's JD (product thinking, motion, research).",
+  //   pdf: "/resume/agam-agarwal-groww.pdf",
+  //   file: "Agam Agarwal - Groww.pdf",
+  // },
+];
+
+function ResumeViewer() {
+  const [active, setActive] = useState(RESUME_PRESETS[0].id);
+  const [open, setOpen] = useState(false);
+  const preset = RESUME_PRESETS.find((p) => p.id === active) || RESUME_PRESETS[0];
+  return (
+    <div className="resume-viewer">
+      <div className="resume-bar">
+        <Link to="/" className="back-link">
+          <BackIcon />
+          Back
+        </Link>
+        <span className="resume-bar__label">{preset.label} resume</span>
+        {preset.html ? (
+          <button type="button" className="resume-download" onClick={() => window.print()}>
+            Download PDF
+          </button>
+        ) : (
+          <a className="resume-download" href={preset.pdf} download={preset.file}>
+            Download PDF
+          </a>
+        )}
+      </div>
+      {preset.note && (
+        <p className="resume-note">
+          {preset.aim && <strong>{preset.aim}. </strong>}
+          {preset.note}
+        </p>
+      )}
+      <div className="resume-stage">
+        {preset.html ? (
+          <div className="resume-html-scroll">
+            <Suspense fallback={null}>
+              <Resume />
+            </Suspense>
+          </div>
+        ) : (
+          <iframe
+            key={preset.id}
+            className="resume-frame"
+            title={`Resume, ${preset.label}`}
+            src={`${preset.pdf}#view=FitH&navpanes=0`}
+          />
+        )}
+      </div>
+
+      {/* version switcher as a bottom floating toggle: expand to the list; the base
+          shows inline, and any version can be opened (and kept) in a new tab. */}
+      <div className={`resume-floater${open ? " resume-floater--open" : ""}`}>
+        {open && (
+          <div className="resume-floater__panel" role="listbox" aria-label="Resume versions">
+            <p className="resume-floater__head">Versions</p>
+            {RESUME_PRESETS.map((p) => (
+              <div key={p.id} className={`resume-vrow${p.id === active ? " resume-vrow--active" : ""}`}>
+                <button
+                  type="button"
+                  className="resume-vrow__pick"
+                  role="option"
+                  aria-selected={p.id === active}
+                  onClick={() => { setActive(p.id); setOpen(false); }}
+                >
+                  <span className="resume-vrow__label">{p.label}</span>
+                  {p.aim && <span className="resume-vrow__aim">{p.aim}</span>}
+                </button>
+                <a
+                  className="resume-vrow__tab"
+                  href={p.pdf || "/work/resume"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open in a new tab"
+                  aria-label={`Open the ${p.label} resume in a new tab`}
+                >↗</a>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          type="button"
+          className="resume-floater__btn"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label="Switch resume version"
+        >
+          <span className="resume-floater__now">{preset.label}</span>
+          <span className="resume-floater__meta">
+            {RESUME_PRESETS.length} version{RESUME_PRESETS.length === 1 ? "" : "s"}
+          </span>
+          <svg className="resume-floater__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d={open ? "M6 9l6 6 6-6" : "M6 15l6-6 6 6"} />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
-  const [path, navigate] = useRoute();
+  const [rawPath, navigate] = useRoute();
+  // 5 Oct (going live): the public build (VITE_PUBLIC_SITE=1, set in amplify.yml)
+  // serves only the home page and the case studies. Any other route (the labs,
+  // /dj, /stella, /carnegie...) falls back to the home page. Dev keeps them all.
+  const PUBLIC_ONLY = import.meta.env.VITE_PUBLIC_SITE === "1";
+  // /work/resume (the tailored-CV builder) is private too; the header's single
+  // product-design PDF is the only resume that ships
+  const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
+  const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
   const isLab = path === "/lab";
-  const slug = path.startsWith("/work/") ? path.slice("/work/".length) : null;
-  const [mode, setMode] = useState("read");
+  // The cross-sell decision tree, standalone and edge to edge (unlisted, like
+  // /lab and /mockups). Same component as figure 1 of /work/cross-sell.
+  const isCrossSellTree = path === "/cross-sell-tree";
+  const isReelExport = path === "/reel-export";
+  const isMockups = path === "/mockups";
+  const isZeptoIcons = path === "/zepto-premium-icons";
+  const isBrickLab = path === "/brick-lab";
+  const isShaders = path === "/shaders";
+  // Every state the Living Sky can be in: weather x time x season x latitude,
+  // plus a contact sheet of all fifteen conditions (unlisted, like /shaders).
+  const isSky = path === "/sky";
+  const isThreeLines = path === "/three-lines";
+  // The Figma-motion verification harness (unlisted, like /lab and /mockups):
+  // mounts the motion-built components and holds them to the exact keyframes
+  // and boxes their source files report. See tools/figma-motion/README.md.
+  const isMotionCheck = path === "/motion-check";
+  const isMascot = path === "/mascot";
+  const isStella = path === "/stella";
+  const isDj = path === "/dj";
+  const isWindow = path === "/window";
+  const isSdAvail = path === "/sd-availability";
+  // RENAMED. What was /hello2 is now /hello — it is the live candidate, so it
+  // gets the plain name; the earlier version it was compared against moved to
+  // /hello0. /hello2 still resolves, as an alias rather than a redirect: the URL
+  // is what annotations are keyed on and what open tabs are sitting at, and a
+  // silent replaceState would strand both.
+  const isHello0 = path === "/hello0";
+  const isHello = path === "/hello" || path === "/hello2";
+  const isHello3 = path === "/hello3";
+  // /portfolio: the phone-frames landing (Hello3), same as the root (07 Sep). The
+  // old list home moved to /list so it stays reachable.
+  const isPortfolio = path === "/portfolio";
+  const isList = path === "/list";
+  const isSocials = path === "/socials" && SocialsPage;
+  const isCarnegie = (path === "/carnegie" || path === "/masters") && CarnegiePage;
+  const isPepoHouse = path === "/pepo-house" && PepoHousePage;
+  const isClaudeFiles = path === "/claude-files" && ClaudeFilesPage;
+  const isWriting = path === "/writing" && WritingPage;
+  // Old case URLs that were merged into another entry keep resolving.
+  const CASE_ALIASES = { "occasion-buying": "cross-sell" };
+  const rawSlug = path.startsWith("/work/") ? path.slice("/work/".length) : null;
+  const slug = rawSlug ? CASE_ALIASES[rawSlug] || rawSlug : null;
+  // SCAN IS THE DEFAULT. The index opens on the scannable list rather than the
+  // read-through page, so the first thing a visitor gets is the whole body of
+  // work at a glance and the choice of where to go, instead of a document to
+  // start reading. Read mode is one tap away and unchanged.
+  //
+  // Nothing else needed adjusting: both toggle buttons derive `is-active` from
+  // this value and the thumb is placed off `data-mode`, so the control comes up
+  // already on the right-hand side rather than sliding there - a transition does
+  // not run on a value that was never anything else.
+  //
+  // The scroll-reset effect below still skips its first run, so defaulting here
+  // cannot yank a deep link or a restored scroll position to the top.
+  const [mode, setMode] = useState("scan"); // mtqpu3f2: read mode is gone; scan or art only
+  // A MODE CHANGE REPLACES THE PAGE'S CONTENT, so the scroll offset from the old
+  // one means nothing on the new one. Switching to scan at y=700 left you at
+  // y=674 on the hello page — most of the way down, past the hero, at a spot you
+  // never asked for. Same in reverse.
+  //
+  // AFTER THE COMMIT, NOT IN THE CLICK HANDLER. A layout effect runs once the
+  // new tree is committed and before paint, so the scroll lands on the page that
+  // is actually there. Scrolling from the handler would fire against the OLD
+  // document, before the swap, and leave the browser free to adjust the offset
+  // again while the content is replaced. Keyed on `mode` rather than wired into
+  // the buttons for the same reason: any future way of changing mode is covered
+  // without having to remember this.
+  //
+  // INSTANT, and that part is deliberate too. `html { scroll-behavior: smooth }`
+  // is global (index.css), so a bare scrollTo({top: 0}) animates 700px over
+  // content that has already been torn out from under it. Smooth scrolling says
+  // "you are moving through this"; here there is no through, the destination is
+  // a different page. Motion implying continuity that does not exist is worse
+  // than no motion at all.
+  //
+  // Skips the FIRST run: this fires on mount too, and a page that yanks itself
+  // to the top on load would break a deep link or a restored scroll position.
+  const modeRef = useRef(mode);
+  useLayoutEffect(() => {
+    if (modeRef.current === mode) return;
+    modeRef.current = mode;
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [mode]);
   const [presenting, setPresenting] = useState(false);
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
-    const saved = window.localStorage.getItem("theme");
-    if (saved === "dark" || saved === "light") return saved;
-    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    // ?theme=light|dark overrides saved/system theme; used by tools/export-pdf.mjs
+    // so PDF exports always render the light tokens regardless of the machine.
+    const forced = new URLSearchParams(window.location.search).get("theme");
+    if (forced === "dark" || forced === "light") return forced;
+    // a theme the visitor picked recently, else the time of day (lib/autoTheme.js)
+    return manualTheme() ?? themeForTime();
   });
+  // while the clock drives it, re-check each minute, so the page turns at dusk
+  useEffect(() => {
+    const forced = new URLSearchParams(window.location.search).get("theme");
+    if (forced === "dark" || forced === "light") return undefined;
+    const id = setInterval(() => {
+      if (manualTheme()) return;
+      const t = themeForTime();
+      setTheme((cur) => {
+        if (cur !== t) document.documentElement.classList.toggle("dark", t === "dark");
+        return t;
+      });
+    }, 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Sound preference: off until asked for (see SoundToggle).
+  const [sound, setSound] = useState(readSoundPref);
+  useEffect(() => {
+    document.documentElement.dataset.sound = sound ? "on" : "off";
+    try {
+      window.localStorage.setItem(SOUND_KEY, sound ? "on" : "off");
+    } catch {
+      /* storage unavailable */
+    }
+    // already-mounted audio (the booth's console) listens for this rather than
+    // being re-rendered, so an unmute never restarts the WebGL/audio graph
+    window.dispatchEvent(new CustomEvent("sound-pref", { detail: { on: sound } }));
+  }, [sound]);
+  const toggleSound = useCallback(() => setSound((v) => !v), []);
 
   // Apply + persist the theme (a `dark` class on <html> drives the token overrides).
   useEffect(() => {
@@ -5722,6 +10908,7 @@ export default function App() {
   // when the user prefers reduced motion.
   const toggleTheme = (event) => {
     const next = theme === "dark" ? "light" : "dark";
+    setManualTheme(next);
     // toggle the class synchronously so the view-transition snapshot captures the
     // new theme (the useEffect runs after paint, too late for the snapshot)
     const apply = () => {
@@ -5734,7 +10921,11 @@ export default function App() {
     // tactile WebGL wavefront that sweeps out from the toggle point
     const fireRipple = () =>
       window.dispatchEvent(new CustomEvent("theme-ripple", { detail: { x, y } }));
-    if (typeof document.startViewTransition !== "function" || reduce) {
+    // the window scene's canvas (folio page, before the landing): a view transition
+    // freezes it into a snapshot for the reveal and then jumps to the live, re-themed
+    // render, a visible glitch (Agam, 2026-09-27); there the theme flips in place
+    const sceneLive = document.documentElement.dataset.wsceneLanded === "false";
+    if (typeof document.startViewTransition !== "function" || reduce || sceneLive) {
       apply();
       fireRipple();
       return;
@@ -5782,39 +10973,264 @@ export default function App() {
     setPresenting(false);
   }, [slug]);
 
-  const variant = isLab ? "none" : slug ? "play" : "toggle";
+  // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
+  // top-level Present ("play") button does not apply — hide it there.
+  const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
+  const variant = isCrossSellTree || isLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
+
+  // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
+  // an animation for when I scroll the nav elements disappears staggered").
+  //
+  // This behaviour is older than this hook - it was mtr7vwf7 and it lived
+  // inside HeroChips, so when the chips stopped being the nav it went with
+  // them. It belongs to the NAV, not to one page's version of it, so it moves
+  // here and now runs on every route.
+  //
+  // mtr89zat: DIRECTION, not position. Scrolling down past 48px lifts them out;
+  // any scroll back up brings them in again, wherever on the page you are. The
+  // 48 is past the first nudge of a wheel so a resting page never flickers, and
+  // the 4px dead band stops trackpad jitter doing the same.
+  const [navHidden, setNavHidden] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const read = () => {
+      const y = window.scrollY;
+      if (y <= 48) setNavHidden(false);
+      else if (y > last + 4) setNavHidden(true);
+      else if (y < last - 4) setNavHidden(false);
+      last = y;
+    };
+    read();
+    window.addEventListener("scroll", read, { passive: true });
+    return () => window.removeEventListener("scroll", read);
+  }, []);
+
+  // Video-export surface: the bare reel at its 960x600 design size, top-left, with
+  // no site chrome, no background canvas and no theme controls in the frame.
+  // tools/export-reel.mjs points headless Chrome here and steps window.__reel.seek
+  // one frame at a time. Placed after every hook so the early return is legal.
+  if (isReelExport) {
+    const name = new URLSearchParams(window.location.search).get("reel") || "brandPage";
+    const Reel = reels[name] || reels.brandPage;
+    return <Reel surface="export" />;
+  }
 
   return (
     <NavContext.Provider value={navigate}>
       {/* tactile WebGL grain behind all content; ripples from the toggle on theme
           change. Skipped on case studies so the cloud-shader hero (also WebGL)
           isn't starved of a GPU context by a third simultaneous canvas. */}
-      {!slug && <TexturedBackground theme={theme} />}
+      {!slug && !isBrickLab && !isDj && !isWindow && <TexturedBackground theme={theme} />}
       {/* one fixed, right-anchored row so the theme toggle always sits a fixed
           gap to the left of the page control and follows it as it morphs */}
-      <div className="top-controls">
-        <ThemeToggle
-          theme={theme}
-          onToggle={toggleTheme}
-        />
-        <PageControl
+      {/* data-feedback-toolbar marks this persistent control cluster (theme +
+          view-mode + present) non-annotatable to Agentation — its picker returns
+          null inside such a subtree — so this floating chrome stops grabbing the
+          element picker. */}
+      {/* Hidden on /work/resume: that page has its own top bar (Back + Download),
+          and the fixed floating controls otherwise overlap it. */}
+      {/* isStella is in this list because /stella is a full-screen application with
+          its own theme control in its header; without it the site chrome puts two
+          theme toggles side by side driving two different token systems. */}
+      {/* One delegated tooltip for every [data-tip] on the page. Mounted here,
+          at the app root, so it is outside every clipping context. */}
+      <Tooltips />
+
+      <div
+        className={
+          "top-controls"
+        }
+        data-scrolled={navHidden ? "true" : undefined}
+        /* --n is the LAST index, so the stagger can be read backwards on the way
+           back in without the CSS having to know how many buttons there are */
+        data-feedback-toolbar={isPortfolio ? undefined : "true"} /* mtr7e0z9: on /portfolio the row holds the four chips, which need to be annotatable */
+        style={{
+          "--n": variant === "play" ? 3 : 1,
+          ...(slug === "resume" || isBrickLab || isDj || isWindow || isStella ? { display: "none" } : null),
+        }}
+      >
+        {/* "bring this in the same line as the other icons, make a unified
+            states bar": Back used to live in the case study's own sidebar, so
+            the page had two separate clusters of chrome. It is the first item
+            of this row now. `variant === "play"` is exactly the case-study
+            state, which is the only place the arrow means anything. */}
+        <GlassLens />
+        {variant === "play" && (
+          <Link to="/" className="top-controls__back" aria-label="Back" style={{ "--i": 0 }}>
+            <BackIcon />
+          </Link>
+        )}
+        {/* ONE NAV, EVERYWHERE (20 Sep 2026: "make the nav a consistent
+            component across the site only the state changes").
+
+            This used to fork: /portfolio rendered <HeroChips> (mtr6f8xm) and
+            every other route rendered these two toggles. Same job, same place,
+            two components - so crossing between them unmounted one set and
+            mounted the other, and no amount of matching the styles could make
+            that transition rather than pop. The fork is gone; these two are the
+            nav now, on every route, and because they live outside the route
+            switch React keeps the very same elements mounted as you navigate.
+
+            What changes between pages is STATE, not the component: Back appears
+            when there is somewhere to go back to, Present when a case study can
+            be presented. HeroChips is left in the tree unused - it still owns
+            the hero placement's markup - but nothing renders it here any more.
+
+            The cost, named: the chips revealed their label on hover ("Dark
+            mode", "Sound off") and these carry the same words as a tooltip
+            instead. */}
+        <SoundToggle on={sound} onToggle={toggleSound} i={variant === "play" ? 1 : 0} />
+        <ThemeToggle theme={theme} onToggle={toggleTheme} i={variant === "play" ? 2 : 1} />
+        {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
+          <Suspense fallback={null}>
+            <SceneControls i={variant === "play" ? 3 : 2} feedback={feedback} />
+          </Suspense>
+        )}
+        {/* mtqrqf4l: no Scan / Read toggle on /portfolio */}
+        {!isPortfolio && <PageControl
+          i={variant === "play" ? 3 : 2}
           variant={variant}
           mode={mode}
-          accent={accent}
-          onRead={() => setMode("read")}
           onScan={() => setMode("scan")}
+          onRead={() => setMode("read")}
           onPresent={() => setPresenting(true)}
-        />
+        />}
       </div>
-      {isLab ? (
-        <MotionLab />
+      {isCrossSellTree ? (
+        <CrossSellTree standalone />
+      ) : isHello0 ? (
+        <Hello onNavigate={navigate} />
+      ) : isHello ? (
+        <Hello onNavigate={navigate} detail="card" />
+      ) : isHello3 ? (
+        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
+      ) : isLab ? (
+        <>
+          <MotionLab />
+          {/* the audible half of the design system, beside the visual one
+              (annotation msmqar1v) */}
+          <FeedbackBench />
+          {/* ALONGPATH v1, FROZEN (annotation msnzjru1). Parked here so the v2
+              redesign has the shipped version to be compared against - see the
+              header in AlongPathV1.jsx for exactly what this snapshot does and
+              does not preserve. */}
+          <section className="lab-snapshot" aria-label="AlongPath v1 (frozen)">
+            <h2 className="lab-snapshot__title">AlongPath v1 &mdash; frozen 2026-08-11</h2>
+            <p className="lab-snapshot__note">
+              The shipped version at the moment v2 work began. Logic is frozen in
+              its own file; the <code>.ap*</code> CSS is still shared, so v2 should
+              add new class names rather than edit the existing rules.
+            </p>
+            <AlongPathV1 />
+          </section>
+          {/* VERTICAL TIMELINE v1, FROZEN (2026-08-13). The top-to-bottom touch
+              timeline parked before the horizontal redesign. Frozen by contract,
+              not by copy: RailColumn.jsx and every .tlv* rule stay untouched, so
+              v2 must be a new component with new class names. See the header in
+              TimelineVerticalV1.jsx. */}
+          <section className="lab-snapshot" aria-label="Vertical timeline v1 (frozen)">
+            <h2 className="lab-snapshot__title">Vertical timeline v1 &mdash; frozen 2026-08-13</h2>
+            <p className="lab-snapshot__note">
+              The vertical touch timeline (years &middot; glass spine &middot;
+              cards) at the moment the horizontal redesign began. Frozen by
+              contract: <code>RailColumn.jsx</code> and the <code>.tlv*</code> CSS
+              are untouched, so the horizontal v2 must add new class names rather
+              than edit them. Scroll it into the reading line to see the spine
+              magnify.
+            </p>
+            <TimelineVerticalV1 />
+          </section>
+        </>
+      ) : isMockups ? (
+        <MockupLab />
+      ) : isZeptoIcons ? (
+        <IconShowcase />
+      ) : isBrickLab ? (
+        <BrickLab onBack={() => navigate("/")} />
+      ) : isShaders ? (
+        <ShaderGallery onBack={() => navigate("/")} />
+      ) : isSky ? (
+        <SkyLab onBack={() => navigate("/")} />
+      ) : isThreeLines ? (
+        <ThreeLinesLab onBack={() => navigate("/")} />
+      ) : isMotionCheck ? (
+        <Suspense fallback={null}>
+          <MotionCheck onBack={() => navigate("/")} />
+        </Suspense>
+      ) : isMascot ? (
+        <PixelMascotLab onBack={() => navigate("/")} />
+      ) : isStella ? (
+        <StellaLab onBack={() => navigate("/")} />
+      ) : isWindow ? (
+        <Suspense fallback={null}>
+          <WindowScenePage onBack={() => navigate("/")} />
+        </Suspense>
+      ) : isDj ? (
+        <Suspense fallback={null}>
+          <DjConsole onBack={() => navigate("/")} />
+        </Suspense>
+      ) : isSdAvail ? (
+        <Suspense fallback={null}>
+          <SdAvailability onBack={() => navigate("/")} />
+        </Suspense>
+      ) : isSocials ? (
+        <SocialsPage onBack={() => navigate("/")} />
+      ) : isCarnegie ? (
+        <CarnegiePage onBack={() => navigate("/")} />
+      ) : isPepoHouse ? (
+        <PepoHousePage onBack={() => navigate("/")} />
+      ) : isClaudeFiles ? (
+        <ClaudeFilesPage onBack={() => navigate("/")} />
+      ) : isWriting ? (
+        <WritingPage onBack={() => navigate("/")} />
+      ) : slug === "resume" ? (
+        <ResumeViewer />
       ) : slug ? (
-        <CaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} />
+        caseStudies[slug] && caseStudies[slug].locked ? (
+          <LockedCaseStudy cs={caseStudies[slug]} slug={slug} />
+        ) : (
+          <CaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
+        )
+      ) : isPortfolio ? (
+        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
+      ) : isList ? (
+        <Home mode="read" />
+      ) : mode === "scan" ? (
+        /* SCAN MODE IS NOW THE /hello PAGE.
+           Not a variant of Home — the same mount /hello itself gets, so the two
+           can never drift. That also settles the header question by structure
+           rather than by CSS: Home is not rendered at all, so there is no index
+           header or footer to suppress, and /hello's own hero and DJ footer are
+           the only ones on screen.
+
+           THE INTRO PLAYS HERE TOO, per Agam. This reverses the earlier
+           `intro={false}`, whose argument was that a toggle is not an arrival
+           and so has not earned a held viewport. The call now is that scan mode
+           IS the page, not a preview of it — it is the same mount /hello gets,
+           and greeting someone on one and not the other made the greeting feel
+           like a property of the URL rather than of the page. One page, one
+           arrival. The escape hatches are unchanged and do the work the old
+           argument was worried about: reduced-motion starts at rest, and any
+           wheel, touch, pointer or key press skips straight to `reveal`, so
+           nobody who already knows the page is held by it.
+
+           Home still carries its old scan branch — the departure board, the
+           split-flap chips, scanProjects — UNRENDERED and reachable only by
+           putting this back. Kept deliberately, not stranded: the split-flap is
+           craft that exists nowhere else on the site. */
+        /* detail="drawer": scan mode gets the v2 bottom-drawer detail — same
+           phone-hero morph out of the grid, but the evidence rises as a
+           draggable sheet instead of the v1 full page (which /hello keeps,
+           and which is archived live at /lab). */
+        /* 07 Sep 2026, Agam: the phone-frames view (Hello3, the /hello3 mount) is
+           the default at the root; the drawer Hello stays reachable at /hello. */
+        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
       ) : (
         <Home mode={mode} />
       )}
-      {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
+      {/* Agentation floater is mounted once in main.jsx (outside StrictMode) — do
+          not also render it here, or two overlapping floaters appear. */}
     </NavContext.Provider>
   );
 }

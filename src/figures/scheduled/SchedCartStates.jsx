@@ -1,21 +1,56 @@
-import StateGallery from "./StateGallery";
+import { useState } from "react";
+import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
+import "./scheduled.css";
 
-// Every cart-page case: the serviceability matrix across split shipments, from
-// the clean all-instant cart to the worst-case four-way mix. The cart page is
-// where each shipment's state resolves before scheduling.
+// Design Mode: the per-shipment CART STATE MATRIX as a contact sheet of real
+// Zepto cart screens (Schedule Order Handoff). Each tile is a distinct state the
+// Instant/Schedule control resolves into, read roughly as a spectrum from "both
+// paths open" through degrading availability to "scheduled, committed".
+// Frames verified + pulled via the Figma REST API.
 
-const CART = [
-  { label: "Single shipment, instant", kind: "cart", rows: [null], tone: "neutral", note: "One delivery, served now in ten minutes, no scheduling needed." },
-  { label: "All instant", kind: "cart", rows: [null, null], tone: "neutral", note: "Every shipment serves now, so scheduling stays out of the way." },
-  { label: "Schedule one shipment", kind: "cart", rows: ["purple", null], tone: "purple", note: "One shipment booked for a later slot, the other still instant." },
-  { label: "All scheduled", kind: "cart", rows: ["purple", "purple", "purple"], tone: "purple", note: "Every shipment booked for a future window, each its own." },
-  { label: "One can't be served", kind: "cart", rows: ["purple", "red"], tone: "red", note: "Part of the cart served, the rest flagged and removed on save." },
-  { label: "Store closed", kind: "cart", rows: ["amber", null], tone: "amber", note: "A closed store, offered a slot for when it reopens." },
-  { label: "Four-way split", kind: "cart", rows: ["purple", "purple", "red", "amber"], tone: "amber", note: "The worst case: scheduled, unavailable and closed, all at once." },
-  { label: "Nothing serviceable now", kind: "note", tone: "purple", chip: "Schedule instead", note: "The prompt surfaces only when the cart can't be served now." },
-  { label: "Nothing, even later", kind: "cart", rows: ["red", "red"], tone: "red", note: "Unserviceable even with a schedule, stated honestly rather than hidden." },
+const TILES = [
+  { src: "sched-cart-both.png", cap: "Instant + Schedule" },
+  { src: "sched-cart-prompted.png", cap: "Schedule prompted" },
+  { src: "sched-cart-only.png", cap: "Schedule only" },
+  { src: "sched-cart-disabled.png", cap: "Schedule disabled, no slots" },
+  { src: "sched-cart-store-out.png", cap: "Store unserviceable" },
+  { src: "sched-cart-items-out.png", cap: "Items unavailable" },
+  { src: "sched-cart-confirmed.png", cap: "Delivery scheduled" },
+  { src: "sched-cart-edit.png", cap: "Scheduled, edit slot" },
 ];
 
 export default function SchedCartStates() {
-  return <StateGallery title="Cart page · every case" states={CART} />;
+  const reduce = useReducedMotion();
+  const [shown, setShown] = useState(reduce ? TILES.length : 0);
+  const [active, setActive] = useState(-1);
+  const { fitRef, frameRef } = useFitScale(660, 1.06);
+
+  const loopRef = useInViewLoop(!reduce, async ({ wait, alive }) => {
+    while (alive()) {
+      setShown(0); setActive(-1);
+      await wait(240); if (!alive()) break;
+      for (let i = 0; i < TILES.length; i++) { setShown(i + 1); await wait(150); if (!alive()) return; }
+      await wait(650); if (!alive()) break;
+      for (let i = 0; i < TILES.length; i++) { setActive(i); await wait(600); if (!alive()) return; }
+      setActive(-1);
+      await wait(900); if (!alive()) break;
+    }
+  });
+
+  return (
+    <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
+      <div className="ds-root ds-root--phone" ref={frameRef}>
+        <div className="sd-stage sd-stage--gallery">
+          <div className="sdg-grid">
+            {TILES.map((t, i) => (
+              <div className="sdg-tile" key={t.src} data-on={i < shown ? "true" : "false"} data-active={i === active ? "true" : "false"}>
+                <div className="sdg-screen"><img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} /></div>
+                <div className="sdg-cap">{t.cap}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

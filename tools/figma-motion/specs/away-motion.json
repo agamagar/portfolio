@@ -1,0 +1,197 @@
+{
+  "nodes": [
+    {
+      "nodeId": "95:20177",
+      "nodeName": "living-sky",
+      "nodeType": "ROUNDED_RECTANGLE",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.92, scaleY: 0.92, }} animate={{ opacity: [0, 1, 1], scaleX: [0.92, 1, 1], scaleY: [0.92, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.3, 1], ease: [\"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.4, 1], ease: [[0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.4, 1], ease: [[0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20178",
+      "fallbackNodeId": "38:4224",
+      "nodeName": "Ellipse 13366",
+      "nodeType": "INSTANCE",
+      "codeSnippets": {
+        "motionDev": "// Identical motion.dev animation to node living-sky (95:20177) — reuse the same component/variant instead of re-implementing it."
+      }
+    },
+    {
+      "nodeId": "95:20191",
+      "nodeName": "Frame 2147229626",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.7, scaleY: 0.7, }} animate={{ opacity: [0, 0, 1, 1], scaleX: [0.7, 0.7, 1, 1], scaleY: [0.7, 0.7, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.075, 0.225, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.075, 0.225, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.075, 0.225, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20194",
+      "nodeName": "Frame 2147229627",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.7, scaleY: 0.7, }} animate={{ opacity: [0, 0, 1, 1], scaleX: [0.7, 0.7, 1, 1], scaleY: [0.7, 0.7, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.125, 0.275, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.125, 0.275, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.125, 0.275, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20199",
+      "nodeName": "Frame 2147229498",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ y: 24, }} animate={{ y: [24, 24, 0, 0], }} transition={{ y: { duration: 2, times: [0, 0.1, 0.4, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20204",
+      "nodeName": "Good Morning Sukesh",
+      "nodeType": "TEXT",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 14, }} animate={{ opacity: [0, 0, 1, 1], y: [14, 14, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.2, 0.375, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.2, 0.375, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20205",
+      "nodeName": "Where are you travelling today",
+      "nodeType": "TEXT",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 10, }} animate={{ opacity: [0, 0, 1, 1], y: [10, 10, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.26, 0.435, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.26, 0.435, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20864",
+      "nodeName": "Frame 2147229873",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, x: -30, }} animate={{ opacity: [0, 0, 1, 1], x: [-30, -30, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.175, 0.4, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.175, 0.4, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20872",
+      "nodeName": "Frame 2147229879",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, x: -30, }} animate={{ opacity: [0, 0, 1, 1], x: [-30, -30, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.235, 0.46, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.235, 0.46, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20881",
+      "nodeName": "Frame 2147229877",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, x: -30, }} animate={{ opacity: [0, 0, 1, 1], x: [-30, -30, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.295, 0.52, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.295, 0.52, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20892",
+      "fallbackNodeId": "38:4473",
+      "nodeName": "text",
+      "nodeType": "INSTANCE",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 12, }} animate={{ opacity: [0, 1, 1], y: [12, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.2, 1], ease: [[0.25, 0.1, 0.25, 1], \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.2, 1], ease: [[0.25, 0.1, 0.25, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20893",
+      "nodeName": "Component 1495",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 12, }} animate={{ opacity: [0, 0, 1, 1], y: [12, 12, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.06, 0.26, 1], ease: [\"linear\", [0.25, 0.1, 0.25, 1], \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.06, 0.26, 1], ease: [\"linear\", [0.25, 0.1, 0.25, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:20907",
+      "nodeName": "default",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ boxShadow: \"0px 0px 0px 0px rgba(160, 134, 255, 0.5) inset\", }} animate={{ boxShadow: [\"0px 0px 0px 0px rgba(160, 134, 255, 0.5) inset\", \"0px 0px 0px 0px rgba(160, 134, 255, 0.5) inset\", \"0px 0px 0px 0px rgba(160, 134, 255, 0.5) inset\", \"0px 0px 11px 0px rgba(160, 134, 255, 0.5) inset\", \"0px 0px 11px 0px rgba(160, 134, 255, 0.5) inset\", \"0px 0px 11px 0px rgba(160, 134, 255, 0.5) inset\"], }} transition={{ boxShadow: { duration: 2, times: [0, 0.4499, 0.45, 0.5965, 0.9999, 1], ease: [\"linear\", \"linear\", [0.5, 0, 0.5, 1], \"linear\", \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22851",
+      "fallbackNodeId": "38:5492",
+      "nodeName": "Frame 2147231127",
+      "nodeType": "INSTANCE",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ height: -43, }} animate={{ height: [-43, 125, 125], }} transition={{ height: { duration: 2, times: [0, 0.275, 1], ease: [[0.22, 1, 0.36, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22852",
+      "nodeName": "Frame 1814108246",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 16, }} animate={{ opacity: [0, 0, 1, 1], y: [16, 16, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.25, 0.5, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.25, 0.5, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22867",
+      "nodeName": "Frame 1814107699",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 12, }} animate={{ opacity: [0, 0, 1, 1], y: [12, 12, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.3, 0.55, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.3, 0.55, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22868",
+      "fallbackNodeId": "38:5505",
+      "nodeName": "message (button)",
+      "nodeType": "INSTANCE",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.8, scaleY: 0.8, }} animate={{ opacity: [0, 0, 1, 1], scaleX: [0.8, 0.8, 1, 1], scaleY: [0.8, 0.8, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.425, 0.575, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.425, 0.575, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.425, 0.575, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22869",
+      "nodeName": "ArrowRight",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.8, scaleY: 0.8, }} animate={{ opacity: [0, 0, 1, 1], scaleX: [0.8, 0.8, 1, 1], scaleY: [0.8, 0.8, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.465, 0.615, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.465, 0.615, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.465, 0.615, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22873",
+      "nodeName": "ArrowRight",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, scaleX: 0.8, scaleY: 0.8, }} animate={{ opacity: [0, 0, 1, 1], scaleX: [0.8, 0.8, 1, 1], scaleY: [0.8, 0.8, 1, 1], }} transition={{ opacity: { duration: 2, times: [0, 0.505, 0.655, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, scaleX: { duration: 2, times: [0, 0.505, 0.655, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, scaleY: { duration: 2, times: [0, 0.505, 0.655, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "95:22877",
+      "nodeName": "Frame 1814108244",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 8, }} animate={{ opacity: [0, 0, 1, 1], y: [8, 8, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.375, 0.575, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.375, 0.575, 1], ease: [\"linear\", [0.16, 1, 0.3, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    }
+  ],
+  "timelineCohorts": [
+    {
+      "rootNodeId": "95:20176",
+      "durationMs": 2000,
+      "loopMode": "loop",
+      "memberNodeIds": [
+        "95:20177",
+        "95:20178",
+        "95:20191",
+        "95:20194",
+        "95:20199",
+        "95:20204",
+        "95:20205",
+        "95:20864",
+        "95:20872",
+        "95:20881",
+        "95:20892",
+        "95:20893",
+        "95:20907",
+        "95:22851",
+        "95:22852",
+        "95:22867",
+        "95:22868",
+        "95:22869",
+        "95:22873",
+        "95:22877"
+      ]
+    }
+  ]
+}

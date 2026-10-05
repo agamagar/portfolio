@@ -1,0 +1,118 @@
+{
+ "defaults": {
+  "w": 1440,
+  "h": 900,
+  "dpr": 1,
+  "frames": 32,
+  "timeout": 150000,
+  "scene": "require"
+ },
+ "shots": [
+  {
+   "name": "run-p0",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0"
+  },
+  {
+   "name": "run-p025",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.25"
+  },
+  {
+   "name": "run-p05",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.5"
+  },
+  {
+   "name": "run-p075",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.75"
+  },
+  {
+   "name": "run-p09",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.9"
+  },
+  {
+   "name": "run-p1",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=1"
+  },
+  {
+   "name": "run-p1-dark",
+   "url": "/window?capture=1&look=dreamlike&theme=dark&sky=mine&t=0&tod=17.68&wx=partly&p=1"
+  },
+  {
+   "name": "run-p2-025",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p2=0.25"
+  },
+  {
+   "name": "run-p2-05",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p2=0.5"
+  },
+  {
+   "name": "run-p2-1",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p2=1"
+  },
+  {
+   "name": "tod-6",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=6&wx=partly&p=0"
+  },
+  {
+   "name": "tod-9",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=9&wx=partly&p=0"
+  },
+  {
+   "name": "tod-12",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=12&wx=partly&p=0"
+  },
+  {
+   "name": "tod-15",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=15&wx=partly&p=0"
+  },
+  {
+   "name": "tod-1768",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0"
+  },
+  {
+   "name": "tod-1865",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=18.65&wx=partly&p=0"
+  },
+  {
+   "name": "tod-21",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=21&wx=partly&p=0"
+  },
+  {
+   "name": "tod-0",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=0&wx=partly&p=0"
+  },
+  {
+   "name": "wx-clear",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=clear&p=0"
+  },
+  {
+   "name": "wx-partly",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0"
+  },
+  {
+   "name": "wx-overcast",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=overcast&p=0"
+  },
+  {
+   "name": "wx-rain",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=rain&p=0"
+  },
+  {
+   "name": "wx-storm",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=storm&p=0"
+  },
+  {
+   "name": "phone-p0",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0",
+   "w": 390,
+   "h": 844,
+   "dpr": 3
+  },
+  {
+   "name": "phone-p0-webgl2",
+   "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0&backend=webgl2",
+   "w": 390,
+   "h": 844,
+   "dpr": 3
+  }
+ ]
+}

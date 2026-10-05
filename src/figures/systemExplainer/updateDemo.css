@@ -1,0 +1,128 @@
+/* Update / Bayesian figure. Dark System-Explainer vitrine (.ds-root--away supplies
+   figure tokens); evidence chips accumulate on the left while a confidence readout
+   and probability bar tween on the right as each delta lands. Higher specificity
+   than .ds-root.ds-root--away (which forces transparent / border:0) so the frame is
+   a solid dark plate. */
+.ds-root.ds-root--away.ss-upd { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+.ss-upd__stage {
+  display: flex; gap: 18px; align-items: stretch;
+  min-height: 308px;
+}
+.ss-upd__col-label {
+  display: block; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #6f6f7e; margin-bottom: 10px;
+}
+
+/* ---- LEFT: evidence column ---- */
+.ss-upd__evidence {
+  flex: 0 0 248px; display: flex; flex-direction: column;
+}
+.ss-upd__prior {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 9px 12px; border-radius: 10px; background: #15151c; border: 1px solid #20202a;
+  margin-bottom: 10px;
+}
+.ss-upd__prior-k { font-size: 12px; color: #8a8a98; }
+.ss-upd__prior-v { font-size: 13px; font-weight: 600; color: #cbcbd4; font-variant-numeric: tabular-nums; }
+
+.ss-upd__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ss-upd__chip {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; border-radius: 10px; background: #15151c; border: 1px solid #20202a;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 380ms var(--m3-effects-default), transform 380ms var(--m3-spatial-standard-default), border-color 360ms var(--m3-effects-default);
+}
+.ss-upd__chip.is-in { opacity: 1; transform: none; }
+.ss-upd__chip.is-in { border-color: #2f3a52; }
+.ss-upd__chip.is-down.is-in { border-color: #4a2630; }
+.ss-upd__chip-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; flex: 0 0 auto;
+}
+.ss-upd__chip.is-down .ss-upd__chip-dot { background: #f87171; }
+.ss-upd__chip-label { font-size: 12.5px; font-weight: 500; color: #cbcbd4; flex: 1 1 auto; }
+.ss-upd__chip-delta {
+  font-size: 12px; font-weight: 700; color: #4ade80; font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+.ss-upd__chip.is-down .ss-upd__chip-delta { color: #f87171; }
+
+/* ---- RIGHT: belief column ---- */
+.ss-upd__belief {
+  flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
+  padding: 14px 16px; border-radius: 13px; background: #17171f; border: 1px solid #20202a;
+}
+
+.ss-upd__readout {
+  display: flex; align-items: baseline; gap: 2px; position: relative;
+  margin-bottom: 16px;
+}
+.ss-upd__pct {
+  font-size: 64px; line-height: 1; font-weight: 700; color: #f4f4f6;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  animation: ssUpdTick 420ms var(--m3-effects-default);
+}
+.ss-upd__pct-sign { font-size: 26px; font-weight: 600; color: #8a8a98; }
+/* the big number remounts on each new value (React key); rise+settle reads as a tween */
+@keyframes ssUpdTick {
+  0% { opacity: 0.2; transform: translateY(-12px); }
+  100% { opacity: 1; transform: none; }
+}
+
+.ss-upd__badge {
+  margin-left: 12px; align-self: center;
+  font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: #07210f; background: #22c55e; padding: 3px 9px; border-radius: 999px;
+  animation: ssUpdBadge 420ms var(--m3-spatial-standard-default);
+}
+.ss-upd__badge.is-down { color: #2a0d12; background: #f87171; }
+@keyframes ssUpdBadge {
+  0% { opacity: 0; transform: translateY(6px) scale(0.85); }
+  60% { opacity: 1; transform: translateY(0) scale(1.06); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* probability bar */
+.ss-upd__bar {
+  position: relative; height: 14px; border-radius: 999px;
+  background: #0e0e14; border: 1px solid #20202a; overflow: visible;
+  margin-bottom: 28px;
+}
+.ss-upd__bar-fill {
+  display: block; height: 100%; border-radius: 999px; width: 0;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  transition: width 520ms var(--m3-spatial-standard-default), background 420ms var(--m3-effects-default);
+}
+.ss-upd__bar-fill.is-past { background: linear-gradient(90deg, #16a34a, #22c55e); }
+.ss-upd__bar-thresh { position: absolute; top: -3px; bottom: -3px; transform: translateX(-50%); }
+.ss-upd__bar-thresh-tick {
+  position: absolute; inset: 0; width: 2px; left: 50%; transform: translateX(-50%);
+  background: repeating-linear-gradient(#5a5a68 0 3px, transparent 3px 6px);
+}
+.ss-upd__bar-thresh-label {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 5px;
+  white-space: nowrap; font-size: 9.5px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: #6f6f7e; font-variant-numeric: tabular-nums;
+}
+
+/* verdict chip */
+.ss-upd__verdict {
+  margin-top: auto; display: inline-flex; align-items: center; gap: 9px;
+  align-self: flex-start;
+  padding: 9px 13px; border-radius: 11px; background: #112016; border: 1px solid #1f7a3f;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 420ms var(--m3-effects-default), transform 420ms var(--m3-spatial-standard-default);
+}
+.ss-upd__verdict.is-on { opacity: 1; transform: none; }
+.ss-upd__verdict-tick {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%; background: #22c55e; color: #07210f;
+  font-size: 11px; font-weight: 800; flex: 0 0 auto;
+}
+.ss-upd__verdict-text { font-size: 13px; font-weight: 600; color: #4ade80; }
+.ss-upd__verdict-sub { font-size: 11px; color: #6f6f7e; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-upd__pct, .ss-upd__badge { animation: none; }
+  .ss-upd__chip, .ss-upd__bar-fill, .ss-upd__verdict { transition: none; }
+}

@@ -1,0 +1,97 @@
+/* Triage figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens); a generated "daily report" lists items in urgency order, each with a
+   score bar, and a cut-line drops to fence the top-3 that need action today.
+   Higher specificity than .ds-root.ds-root--away (which forces transparent /
+   border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-tri { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* row geometry — fixed so the cut-line's parked position is deterministic */
+.ss-tri { --tri-row-h: 38px; --tri-gap: 9px; }
+
+/* report header */
+.ss-tri__head {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px;
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-tri__head.is-in { opacity: 1; transform: none; }
+.ss-tri__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-tri__head-sub { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+
+/* list of items, top-to-bottom in rank order */
+.ss-tri__list { position: relative; display: flex; flex-direction: column; gap: var(--tri-gap); }
+
+/* one item row: rank · label · urgency track */
+.ss-tri__row {
+  display: grid; grid-template-columns: 20px 1fr 168px; align-items: center; gap: 12px;
+  height: var(--tri-row-h); padding: 0 12px; border-radius: 10px;
+  background: #15151c; border: 1px solid #20202a;
+  opacity: 0; transform: translateY(6px);
+  transition:
+    opacity 360ms var(--m3-effects-default),
+    transform 360ms var(--m3-spatial-standard-default),
+    border-color 320ms var(--m3-effects-default),
+    background 320ms var(--m3-effects-default);
+}
+.ss-tri__row.is-in { opacity: 1; transform: none; }
+
+.ss-tri__rank { font-size: 11px; font-weight: 600; color: #6f6f7e; font-variant-numeric: tabular-nums; text-align: center; }
+.ss-tri__label { font-size: 12.5px; font-weight: 500; color: #cbcbd4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* urgency track + bar (length = score). Bar grows from the left on reveal. */
+.ss-tri__track { position: relative; height: 6px; border-radius: 999px; background: #20202a; overflow: hidden; }
+.ss-tri__bar {
+  position: absolute; inset: 0; border-radius: inherit; transform-origin: left center; transform: scaleX(0);
+  transition: transform 520ms var(--m3-spatial-standard-default), background 320ms var(--m3-effects-default);
+}
+.ss-tri__row--red   .ss-tri__bar { background: #ef4444; }
+.ss-tri__row--amber .ss-tri__bar { background: #f59e0b; }
+.ss-tri__row--green .ss-tri__bar { background: #22c55e; }
+
+/* a touch of band presence in the top-3 even before the cut, via the rank chip */
+.ss-tri__row--red   .ss-tri__rank { color: #f87171; }
+.ss-tri__row--amber .ss-tri__rank { color: #f59e0b; }
+
+/* resolved: the bottom-3 dim to grey — "happened, FYI" */
+.ss-tri__row.is-dim { background: #121218; border-color: #1b1b22; }
+.ss-tri__row.is-dim .ss-tri__label { color: #6f6f7e; }
+.ss-tri__row.is-dim .ss-tri__rank { color: #4a4a56; }
+.ss-tri__row.is-dim .ss-tri__bar { background: #3a3a44; }
+
+/* resolved: the top-3 firm up — band colour kept, border picks up the band */
+.ss-tri__row.ss-tri__row--red:not(.is-dim).is-in,
+.ss-tri__row.ss-tri__row--amber:not(.is-dim).is-in { background: #17171f; }
+
+/* the sliding cut-line. Parked at the top of the list; drops to sit in the gap
+   between row 3 and row 4 on resolve. Down offset = 3 rows + 3 gaps - half a gap,
+   landing it centred in the gap below row 3. */
+.ss-tri__cut {
+  position: absolute; left: -4px; right: -4px; top: -5px; height: 0;
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; pointer-events: none;
+  transform: translateY(0);
+  transition: transform 520ms var(--m3-spatial-standard-default), opacity 300ms var(--m3-effects-default);
+}
+.ss-tri__cut.is-down {
+  opacity: 1;
+  transform: translateY(calc(var(--tri-row-h) * 3 + var(--tri-gap) * 2.5 + 5px));
+}
+.ss-tri__cut-line { flex: 1; height: 1px; background: #2f3a52; box-shadow: 0 0 0 0.5px rgba(59,130,246,0.25); }
+.ss-tri__cut-tag {
+  flex: 0 0 auto; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  color: #bfdbfe; background: #15203a; border: 1px solid #2f3a52; padding: 2px 8px; border-radius: 999px;
+}
+
+/* footer summary strip */
+.ss-tri__foot {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-tri__foot.is-on { opacity: 1; transform: none; }
+.ss-tri__foot b { color: #f4f4f6; font-variant-numeric: tabular-nums; }
+.ss-tri__fyi { color: #6f6f7e; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-tri__head, .ss-tri__row, .ss-tri__bar, .ss-tri__cut, .ss-tri__foot { transition: none; }
+}

@@ -1,0 +1,121 @@
+/* EdgeAltitudes: one data spine, three altitude panels. Layout + reveal only;
+   card, badge, button, and rail primitives come from jarvis.css. */
+
+.eja-main {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* ---- the data spine (static, always lit) ---- */
+.eja-spine {
+  flex: 0 0 130px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border-card);
+  border-radius: 14px;
+  padding: 11px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color var(--ds-dur-state) var(--ds-ease-std);
+}
+.eja-spine__cap {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.eja-metric { display: flex; flex-direction: column; gap: 2px; }
+.eja-metric__label {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.eja-metric__row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.eja-metric__value { font-size: 15px; font-weight: 700; color: var(--ds-text); }
+.eja-metric__delta { font-size: 10.5px; color: var(--ds-text-3); white-space: nowrap; }
+.eja-metric__delta[data-tone="red"] { color: var(--ej-red); }
+.eja-metric__delta[data-tone="amber"] { color: var(--ej-amber); }
+
+/* ---- the three altitude panels ---- */
+.eja-alts {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.eja-alt {
+  position: relative;
+  min-height: 62px;
+  background: var(--ds-field);
+  border: 1px solid var(--ds-border-card);
+  border-radius: 12px;
+  padding: 8px 11px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--ds-dur-expand) var(--ds-ease-out), transform var(--ds-dur-expand) var(--ds-ease-out);
+}
+.eja-alt[data-on="true"] { opacity: 1; transform: none; }
+
+/* hairline from the spine to each panel */
+.eja-alt::before {
+  content: "";
+  position: absolute;
+  left: -21px;
+  top: 50%;
+  width: 21px;
+  height: 1px;
+  background: var(--ds-border);
+  transition: background var(--ds-dur-state) var(--ds-ease-std), box-shadow var(--ds-dur-state) var(--ds-ease-std);
+}
+
+/* step 4: the connected state, spine and hairlines light up pink together */
+.eja-main[data-linked="true"] .eja-alt::before {
+  background: var(--ej-pink-line);
+  box-shadow: 0 0 8px rgba(219, 39, 119, 0.35);
+}
+.eja-main[data-linked="true"] .eja-spine { border-color: var(--ej-pink-line); }
+
+.eja-alt__head { display: flex; align-items: center; gap: 7px; }
+.eja-alt__head .ej-badge { align-self: center; }
+.eja-mode { font-size: 10.5px; font-style: italic; color: var(--ds-text-3); }
+.eja-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  border: 1px solid var(--ds-border);
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.eja-alt__claim { font-size: 12px; font-weight: 600; color: var(--ds-text); line-height: 1.38; }
+.eja-alt__line { font-size: 12px; color: var(--ds-text-2); line-height: 1.4; }
+.eja-mail {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--ds-text-2);
+  line-height: 1.45;
+  background: var(--ds-muted);
+  border-radius: 8px;
+  padding: 6px 9px;
+}
+
+/* compact the shared action row inside a panel */
+.eja-alt .ej-actions { margin-top: 0; }
+.eja-alt .ej-btn { padding: 5px 11px; font-size: 11.5px; }
+.eja-alt .ej-why { font-size: 11.5px; }

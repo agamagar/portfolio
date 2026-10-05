@@ -1,0 +1,58 @@
+/* Native two-column résumé sheet. Fixed light sheet (theme-independent) so it reads
+   and prints the same. Bold black name, blue title, gray labels, monospace dates,
+   numbered achievement points. */
+.rz-sheet {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(1.5rem, 5vw, 4.5rem);
+  background: #fff;
+  color: #3f3f46;
+  font-family: "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+.rz-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+.rz-name {
+  font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; letter-spacing: -0.02em;
+  line-height: 1.02; color: #111; margin: 0;
+}
+.rz-title {
+  font-size: clamp(1.7rem, 4.2vw, 2.45rem); font-weight: 800; letter-spacing: -0.02em;
+  line-height: 1.02; color: #2f6bfe; margin: 0.15rem 0 0;
+}
+.rz-contact { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.95rem; line-height: 1.5; padding-top: 0.5rem; }
+.rz-contact a { color: #3f3f46; text-decoration: none; }
+.rz-contact a:hover { color: #2f6bfe; }
+
+.rz-cols { display: grid; grid-template-columns: 1.55fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 760px) { .rz-cols { grid-template-columns: 1fr; gap: 2rem; } }
+
+.rz-label { font-size: 1.05rem; font-weight: 500; color: #b9b9c0; margin: 0 0 1.4rem; }
+.rz-label--gap { margin-top: 2.4rem; }
+
+.rz-entry { margin-bottom: 1.9rem; }
+.rz-entry__head { font-size: 1.1rem; margin: 0 0 0.35rem; color: #111; letter-spacing: -0.01em; }
+.rz-entry__org { font-weight: 700; }
+.rz-entry__role { font-weight: 400; color: #9a9aa2; }
+.rz-entry__when {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem; letter-spacing: 0.02em; text-transform: uppercase; color: #9a9aa2; margin: 0 0 0.75rem;
+}
+.rz-points { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.rz-points li { font-size: 0.95rem; line-height: 1.5; color: #4a4a52; padding-left: 0.2rem; }
+.rz-points li::marker { color: #b9b9c0; }
+
+.rz-cat { font-size: 0.9375rem; line-height: 1.5; margin: 0 0 0.95rem; color: #4a4a52; }
+.rz-cat__head { font-weight: 700; color: #111; }
+
+/* print / Download PDF: hide the app chrome, print only the sheet, edge to edge */
+@media print {
+  body { background: #fff; }
+  .resume-bar, .resume-note, .resume-floater { display: none !important; }
+  .resume-viewer, .resume-stage { height: auto !important; display: block !important; background: #fff !important; overflow: visible !important; }
+  .rz-sheet { max-width: none; padding: 0; }
+}

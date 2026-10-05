@@ -83,7 +83,7 @@ export default function AwOnboard() {
               {beat === 1 && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 32 }}>
                   <span className="aw-eyebrow">Concierge ready</span>
-                  <span className="aw-greet">Welcome to Away, Pratik.</span>
+                  <span className="aw-greet">Welcome to Away, Agam.</span>
                   <span className="aw-sub">
                     your concierge is ready to plan, book, watch, and step in mid-trip.
                   </span>

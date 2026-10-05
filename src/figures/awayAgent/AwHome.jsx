@@ -72,7 +72,7 @@ export default function AwHome() {
                   </div>
                   <div style={{ flex: 1 }} />
                   <div style={{ marginTop: 10 }}>
-                    <Composer ph="where to, Pratik?" />
+                    <Composer ph="where to, Agam?" />
                   </div>
                 </>
               )}
@@ -85,14 +85,14 @@ export default function AwHome() {
                   <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
                     <Badge tone="indigo" icon={<IClock />}>BOM &rarr; GOI</Badge>
                     <PillRow label="When?" pills={pills} />
-                    <Composer ph="where to, Pratik?" ready={false} />
+                    <Composer ph="where to, Agam?" ready={false} />
                   </div>
                 </>
               )}
 
               {beat === 2 && (
                 <>
-                  <div className="aw-greet">Good evening, Pratik</div>
+                  <div className="aw-greet">Good evening, Agam</div>
                   <div className="aw-panel" data-tone="indigo" style={{ marginTop: 12 }}>
                     <div className="aw-panel__head">
                       <span className="aw-eyebrow">Your trips</span>
@@ -102,7 +102,7 @@ export default function AwHome() {
                   </div>
                   <div style={{ flex: 1 }} />
                   <div style={{ marginTop: 10 }}>
-                    <Composer ph="where to, Pratik?" />
+                    <Composer ph="where to, Agam?" />
                   </div>
                 </>
               )}

@@ -1,0 +1,147 @@
+{
+ "tool": "window-light/render.mjs",
+ "toolVersion": "1",
+ "name": "dj-1440x900",
+ "url": "http://localhost:5173/dj",
+ "base": "http://localhost:5173",
+ "baseSource": "existing",
+ "requested": {
+  "w": 1440,
+  "h": 900,
+  "dpr": 1,
+  "frames": 24,
+  "settle": 3000,
+  "scheme": null,
+  "eval": null,
+  "scene": "auto",
+  "waitFor": "canvas"
+ },
+ "png": {
+  "path": "/Users/agamagarwal/My Drive/Active - Portfolio/Portfolio/tools/window-light/runs/tooling-test/dj-1440x900.png",
+  "width": 1440,
+  "height": 900,
+  "bytes": 121976,
+  "sizeOk": true
+ },
+ "image": {
+  "meanLuma": 170.02,
+  "stdLuma": 37.43,
+  "blackFrac": 0.0081,
+  "whiteFrac": 0.0001,
+  "blank": false
+ },
+ "canvas": {
+  "count": 2,
+  "list": [
+   {
+    "w": 1440,
+    "h": 900,
+    "x": 0,
+    "y": 0,
+    "cw": 1440,
+    "ch": 900,
+    "visible": true,
+    "onScreen": {
+     "x": 0,
+     "y": 0,
+     "w": 1440,
+     "h": 900
+    },
+    "visibleFrac": 1
+   },
+   {
+    "w": 300,
+    "h": 150,
+    "x": 0,
+    "y": 0,
+    "cw": 300,
+    "ch": 150,
+    "visible": false,
+    "onScreen": {
+     "x": 0,
+     "y": 0,
+     "w": 300,
+     "h": 150
+    },
+    "visibleFrac": 1
+   }
+  ],
+  "largest": {
+   "w": 1440,
+   "h": 900,
+   "x": 0,
+   "y": 0,
+   "cw": 1440,
+   "ch": 900,
+   "visible": true,
+   "onScreen": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 900
+   },
+   "visibleFrac": 1,
+   "stats": {
+    "meanLuma": 170.02,
+    "stdLuma": 37.43,
+    "blackFrac": 0.0081,
+    "whiteFrac": 0.0001,
+    "blank": false
+   }
+  }
+ },
+ "timing": {
+  "startedAt": "2026-09-26T16:53:43.792Z",
+  "loadMs": 632,
+  "waitForMs": 1,
+  "capturedMs": 6325,
+  "finishedAt": "2026-09-26T16:53:50.169Z",
+  "totalMs": 6377
+ },
+ "scene": {
+  "present": false
+ },
+ "console": {
+  "errors": 0,
+  "warnings": 0,
+  "exceptions": 0,
+  "log": "/Users/agamagarwal/My Drive/Active - Portfolio/Portfolio/tools/window-light/runs/tooling-test/dj-1440x900.log",
+  "first": []
+ },
+ "gpu": {
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+  "webgl2": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)",
+  "webgpu": {
+   "vendor": "apple",
+   "architecture": "metal-3",
+   "description": "",
+   "isFallbackAdapter": false,
+   "features": 25
+  }
+ },
+ "chrome": {
+  "version": "Chrome/153.0.8010.53",
+  "flags": [
+   "--headless=new",
+   "--no-first-run",
+   "--no-default-browser-check",
+   "--disable-extensions",
+   "--disable-sync",
+   "--hide-scrollbars",
+   "--mute-audio",
+   "--force-color-profile=srgb",
+   "--disable-background-timer-throttling",
+   "--disable-renderer-backgrounding",
+   "--disable-backgrounding-occluded-windows",
+   "--password-store=basic",
+   "--use-mock-keychain",
+   "--use-angle=metal",
+   "--enable-unsafe-webgpu",
+   "--ignore-gpu-blocklist"
+  ]
+ },
+ "status": "ok",
+ "error": null,
+ "warnings": [],
+ "httpStatus": 200
+}

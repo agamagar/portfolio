@@ -1,0 +1,79 @@
+/* One card, five voices (EdgeCard). Figure-specific layer only: anatomy
+   callout positioning + the variant swap transition. Card, badge, buttons and
+   rail primitives all come from jarvis.css. */
+
+.ejc-canvas { position: relative; height: 270px; }
+
+/* the one card, a stable footprint so variants never shift the callouts */
+.ejc-card {
+  position: absolute;
+  left: 84px;
+  top: 46px;
+  width: 330px;
+  min-height: 154px;
+}
+.ejc-swap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  animation: ejc-swap-in 420ms var(--ds-ease-std, ease) both;
+}
+.ejc-swap .ej-actions { margin-top: auto; }
+/* Why? sits at the card's bottom-right, where its callout points */
+.ejc-swap .ej-why { order: 9; margin-left: auto; }
+
+@keyframes ejc-swap-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ejc-swap { animation: none; }
+}
+
+/* anatomy callouts: tiny muted tags + 1px hairline leaders, always dim */
+.ejc-tag {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 560;
+  letter-spacing: 0.05em;
+  color: var(--ds-text-3);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.ejc-lead { position: absolute; background: var(--ds-border); }
+
+.ejc-tag--badge { left: 84px; top: 3px; }
+.ejc-lead--badge { left: 107px; top: 19px; width: 1px; height: 24px; }
+
+.ejc-tag--claim { left: 0; top: 88px; width: 66px; text-align: right; white-space: normal; }
+.ejc-lead--claim { left: 70px; top: 97px; width: 11px; height: 1px; }
+
+.ejc-tag--primary { left: 84px; top: 222px; }
+.ejc-lead--primary { left: 120px; top: 205px; width: 1px; height: 14px; }
+
+.ejc-tag--why { left: 286px; top: 222px; width: 128px; text-align: right; }
+.ejc-lead--why { left: 388px; top: 205px; width: 1px; height: 14px; }
+
+/* quiet caption under the anatomy */
+.ejc-rule {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--ds-text-3);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.ejc-rule::before,
+.ejc-rule::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--ds-line);
+}

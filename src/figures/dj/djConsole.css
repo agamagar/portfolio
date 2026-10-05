@@ -1,0 +1,1137 @@
+/* DjConsole · lo-fi retro. A soft warm-grey studio stage (the WebGL scene sets
+   its own light background) with a warm "paper" HUD: cream panels, ink-brown
+   type, muted accents. Two layouts: full-screen route (.dj--page) and an
+   embedded home band (.dj--hero). */
+
+.dj {
+  position: relative;
+  color: #33291f;
+  overflow: hidden;
+  font-feature-settings: "ss01";
+  --warm: #c1673a;
+  --cool: #4f9c93;
+  --ink: #33291f;
+  --ink-soft: #6b5c49;
+  --paper: rgba(243, 236, 222, 0.82);
+  --paper-line: rgba(90, 72, 48, 0.18);
+  background: radial-gradient(120% 100% at 50% 0%, #c9c3b8 0%, #bdb7ab 55%, #b0a99d 100%);
+}
+
+/* ---- per-style HUD theming (the 3D scene sets its own canvas bg) ---- */
+.dj--realistic {
+  --accent-solid: var(--warm);
+}
+.dj--cardboard {
+  --ink: #4a3115;
+  --ink-soft: #7a5a34;
+  --paper: rgba(228, 210, 180, 0.86);
+  --paper-line: rgba(90, 60, 28, 0.24);
+  --accent-solid: #a9662f;
+  color: #4a3115;
+  background: radial-gradient(120% 100% at 50% 0%, #ded3bc 0%, #d3c7ad 55%, #c6b998 100%);
+}
+.dj--blueprint {
+  --ink: #dcefff;
+  --ink-soft: #86b8e4;
+  --paper: rgba(14, 40, 72, 0.6);
+  --paper-line: rgba(127, 216, 255, 0.32);
+  --accent-solid: #2f7fd0;
+  --warm: #7fd8ff;
+  --cool: #7fd8ff;
+  color: #dcefff;
+  background: radial-gradient(120% 100% at 50% 0%, #123156 0%, #0d2444 55%, #0a1c34 100%);
+}
+.dj--blueprint .dj__song,
+.dj--blueprint .dj__deck {
+  background: rgba(18, 48, 86, 0.55);
+}
+.dj--blueprint .dj__song:hover,
+.dj--blueprint .dj__deck:hover {
+  background: rgba(26, 62, 104, 0.78);
+}
+.dj--blueprint .dj__song-name,
+.dj--blueprint .dj__deck-name {
+  color: #eaf5ff;
+}
+.dj--blueprint .dj__song-genre {
+  color: color-mix(in srgb, var(--chip) 55%, #cfe8ff);
+}
+.dj--blueprint .dj__xf-fill {
+  background: #dcefff;
+  border-color: rgba(127, 216, 255, 0.6);
+}
+
+/* Technical: the HUD becomes flat ink-on-drafting-paper line elements to match
+   the engineering drawing — no blur, no soft shadows, crisp thin ink borders. */
+.dj--technical {
+  --ink: #33291f;
+  --ink-soft: #6b5c49;
+  --paper: #ece5d3;
+  --paper-line: rgba(51, 41, 31, 0.6);
+  --accent-solid: #33291f;
+  color: #33291f;
+  background: #e4dcc7;
+}
+/* the scan widget drops the cream "fill" — its canvas is transparent and the ink
+   flips with the page theme, so the line drawing sits straight on the page */
+.dj--scan.dj--technical,
+.dj--scan {
+  background: transparent;
+}
+.dj--technical .dj__styles,
+.dj--technical .dj__disc-bar,
+.dj--technical .dj__disc-queue,
+.dj--technical .dj__back,
+.dj--technical .dj__crate-rail,
+.dj--technical .dj__transport {
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 7px;
+  border-color: var(--ink);
+}
+.dj--technical .dj__style {
+  border-radius: 5px;
+}
+/* play/pause → a line-circle button (transparent, ink stroke) in every state */
+.dj--technical .dj__disc-play,
+.dj--technical .dj__disc.is-live .dj__disc-play {
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  box-shadow: none;
+}
+.dj--technical .dj__disc-play:hover {
+  background: rgba(51, 41, 31, 0.08);
+}
+.dj--technical .dj__disc.is-live .dj__disc-bar {
+  box-shadow: none;
+  border-color: var(--ink);
+}
+.dj--technical .dj__disc-eyebrow {
+  color: var(--ink-soft);
+}
+/* queue rows → outlined line-drawing rows */
+.dj--technical .dj__disc-track {
+  background: transparent;
+  border: 1px solid rgba(51, 41, 31, 0.28);
+  border-left: 2px solid var(--ink);
+}
+.dj--technical .dj__disc-track:hover {
+  background: rgba(51, 41, 31, 0.07);
+}
+.dj--technical .dj__disc-track.is-current {
+  background: rgba(51, 41, 31, 0.1);
+  border-color: var(--ink);
+}
+.dj--technical .dj__disc-track-genre {
+  color: var(--ink-soft);
+}
+
+.dj--page {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.dj--hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: -6rem;
+  margin-bottom: 2.5rem;
+  height: clamp(440px, 74vh, 760px);
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 26px 70px -36px rgba(60, 46, 28, 0.5);
+}
+
+.dj__stage {
+  position: absolute;
+  inset: 0;
+}
+/* Three.js writes an inline width/height onto the canvas from renderer.setSize(),
+   so if the container changes size and the ResizeObserver has not caught up (or
+   the observer fired before layout settled) the canvas keeps a STALE pixel size
+   and spills out of its box. That is what kept the booth canvas at 404px tall
+   after its container was cut to 188 (annotations msbbntyj / msbcp002 /
+   msbda5d4). Pinning it to the container costs nothing when the sizes agree and
+   makes the overflow impossible when they do not; !important is required because
+   the inline style would otherwise win. */
+.dj__stage > canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ---- render-style toggle (top-right) ---- */
+.dj__styles {
+  position: absolute;
+  top: 24px;
+  right: 26px;
+  z-index: 4;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 22px -12px rgba(60, 46, 28, 0.5);
+}
+.dj--hero .dj__styles {
+  top: 20px;
+  right: 22px;
+}
+.dj__style {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.dj__style:hover {
+  color: var(--ink);
+}
+.dj__style.is-active {
+  color: var(--chip-ink, #fdf7ea);
+  background: var(--accent-solid, var(--warm));
+}
+
+/* ---- header (top-left) ---- */
+.dj__head {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+.dj__head > * {
+  pointer-events: auto;
+}
+.dj--hero .dj__head {
+  top: 20px;
+  left: 24px;
+}
+.dj__back,
+.dj__open {
+  align-self: flex-start;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 11px;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px -10px rgba(60, 46, 28, 0.4);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.dj__back {
+  margin-bottom: 8px;
+}
+.dj__open {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.dj__back:hover,
+.dj__open:hover {
+  background: rgba(248, 242, 230, 0.95);
+  border-color: rgba(90, 72, 48, 0.35);
+}
+.dj__eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.dj__title {
+  font-family: "Newsreader", Georgia, serif;
+  font-size: clamp(24px, 3.4vw, 38px);
+  font-weight: 500;
+  line-height: 1;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* ---- start hint ---- */
+.dj__hint {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  font-size: 14px;
+  color: var(--ink);
+  padding: 9px 18px;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  background: var(--paper);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 26px -14px rgba(60, 46, 28, 0.5);
+  animation: dj-pulse 2.4s ease-in-out infinite;
+}
+@keyframes dj-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ---- compact scan widget (technical only) ---- */
+.dj--scan {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: none;
+  --ink: #33291f;
+  --ink-soft: #6b5c49;
+  --ink-line: rgba(51, 41, 31, 0.22);
+}
+/* dark page: swap to the light line-art ink so the frameless bar reads
+   without any fill behind it (matches the 3D console's scanInk) */
+:root.dark .dj--scan {
+  --ink: #e8e2d6;
+  --ink-soft: #b9ab97;
+  --ink-line: rgba(232, 226, 214, 0.22);
+}
+:root.dark .dj--scan .dj__scan-play.is-live {
+  color: #1b1713;
+}
+.dj--scan .dj__stage {
+  position: absolute;
+  inset: 0;
+  /* -14 -> -34 (msbj6oiz) -> -94 (msbn6m4m, "up by 60px"). This nudges the
+     WHOLE rendered scene inside its box, so it is the right knob for "move the
+     content up" — moving the camera would re-frame the drawing instead.
+     
+     The second term answers mscshh34 ("on hover the cued and up next buttons are
+     overlapping, fix by moving the dj console down"). The overlap only exists ON
+     HOVER — that is when the bar fades in at the top and drops 40px — so the
+     console moves down only on hover too, and the resting composition is left
+     exactly as it was rather than permanently re-shifted.
+     Driven by --dj-front, the same smoothstepped camera progress the bar itself
+     rides, so the two move apart on ONE curve instead of two racing timers.
+     THE TRADE, stated: 70 was picked to clear the bar's hovered extent (top 8 +
+     40 drop + ~40 tall). 58 is 12 less, so the clearance mscshh34 asked for is
+     12px tighter than it was. Measured after the change and the bar still clears
+     the console, but this is the number to revisit first if the "cued / up next"
+     overlap ever comes back. */
+  /* 58px of travel, not 70 (annotation msecw0ep: "on the hover state, don't
+     move the console down this much, reduce by 12px"). Only the HOVER end of
+     the range moves; -94px is the resting position and is untouched, so the
+     console still starts exactly where it did and simply comes forward less. */
+  transform: translateY(calc(-94px + var(--dj-front, 0) * 58px));
+}
+.dj__scanbar {
+  position: absolute;
+  left: 26px;
+  right: 0px;
+  bottom: 2px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: transparent;
+  transition: transform 0.3s;
+}
+/* see the --dj-front note below: the scan bar is driven per frame, so it must
+   not also be transitioning toward the value it has already been given */
+.dj--scan .dj__scanbar {
+  transition: none;
+}
+/* Match the bar to the DRAWN console, not the canvas (annotation msbita97).
+   The console body is 8.4 world units wide inside a 13-unit-wide frustum, so
+   the drawing only ever occupies 8.4/13 of the canvas and sits centred in it;
+   a bar pinned left:26px right:0 was therefore always wider than the object it
+   labels. Written as the ratio rather than a measured percentage so it stays
+   correct if fW changes in DjConsole.jsx.
+   Centred with the `translate` PROPERTY, deliberately: the hover rule below
+   uses `transform` for its Y shift, and a transform here would be overwritten
+   by it (and vice versa). Independent transform properties compose. */
+/* MOVED TO THE TOP, OVER the console (annotation mscs9ldr). It had been walked
+   up from the bottom three times (bottom 2 -> 82 -> 132) chasing a console that
+   had itself moved up 94px; anchoring to the top instead ends that chase, and
+   the bar now overlays the drawing rather than hunting for a gap under it. */
+.dj--scan .dj__scanbar {
+  left: 50%;
+  right: auto;
+  width: calc(100% * 8.4 / 13);
+  translate: -50% 0;
+  top: 8px;
+  bottom: auto;
+}
+
+/* HOVER-ONLY, and driven by the CAMERA rather than its own timer (annotations
+   mscs9ldr "visible only on hover", msbovycc "sync the two"). --dj-front is the
+   smoothstepped front->top progress published by the render loop, so the bar
+   fades in on exactly the curve the camera eases on — one clock, arriving
+   together. A separate CSS transition here would race that lerp, which is the
+   bug msbovycc was raised about.
+   The same variable still drives the 40px drop (msboucdf: 28 + 12), which now
+   reads as the bar dropping IN from the top edge rather than clearing space at
+   the bottom. One number if that travel wants tuning to the new geometry.
+   NO `transition`: the value is already eased, and a transition on a
+   per-frame-written property re-targets every frame and always lags.
+   Hit-testing is switched by :hover, not by the variable — opacity 0 still
+   captures clicks, and an invisible bar must not swallow them. That one is
+   binary, so it needs no easing. */
+.dj--scan .dj__scanbar {
+  /* REVEAL ONLY — no travel (annotation msctntu3: "on hover just reveal, don't
+     move it down"). The 40px drop existed to clear space when the bar lived at
+     the bottom and later to let it fall in from the top; with the slots now in a
+     row the bar is half as tall and needs neither. Opacity still rides
+     --dj-front, so it fades in on the camera's own curve. */
+  opacity: var(--dj-front, 0);
+  pointer-events: none;
+}
+.dj--scan:hover .dj__scanbar {
+  pointer-events: auto;
+}
+/* Touch has no hover, so a bar revealed by --dj-front (a hover-driven camera
+   progress) simply never appears — the widget shipped inert on phones. On
+   hover-less devices the bar is always on and tappable, overlaying the drawing
+   exactly as the hover reveal does (mscs9ldr chose the overlay on purpose). */
+@media (hover: none) {
+  .dj--scan .dj__scanbar {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+.dj--scan:hover {
+  overflow: visible;
+}
+.dj__scan-play {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.dj__scan-play:hover {
+  background: rgba(51, 41, 31, 0.08);
+}
+.dj__scan-play.is-live {
+  background: var(--ink);
+  color: #ece5d3;
+}
+.dj__scan-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.dj__scan-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1;
+}
+.dj__scan-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- dual auto-mix bar: two parallel slots (live deck | up-next) ---- */
+/* SIDE BY SIDE, not stacked (annotation msctntu3: "cued and up next can [be]
+   next to next instead of up and down"). The two slots are peers — the live deck
+   and what follows it — so a row says that; a column implied a hierarchy that is
+   not there. Each slot is already `flex: 1 1 0; min-width: 0`, so a row splits
+   the bar evenly and long track names still truncate rather than push.
+   This also halves the bar's height, which is why the drop below could go. */
+.dj__scanbar--dual {
+  gap: 10px;
+  padding-top: 0;
+  align-items: center;
+  flex-direction: row;
+}
+.dj__scan-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+}
+.dj__scan-slot--next {
+  position: relative;
+}
+/* empty "tap to queue" affordance fills the slot */
+.dj__scan-add {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.dj__scan-add:hover {
+  opacity: 0.7;
+}
+.dj__scan-plus {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px dashed var(--ink-soft);
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dj__scan-name--empty {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+/* queued / mixing state */
+.dj__scan-upnext {
+  position: relative;
+  flex: 1 1 auto;
+  padding-right: 18px;
+}
+.dj__scan-cancel {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.dj__scan-cancel:hover {
+  color: var(--ink);
+}
+.dj__scan-slot--next.is-mixing .dj__scan-eyebrow {
+  color: var(--warm);
+}
+/* indeterminate sweep while a transition runs */
+.dj__scan-mixing {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--ink-line);
+}
+.dj__scan-mixing::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 42%;
+  border-radius: 2px;
+  background: var(--warm);
+  animation: djScanMix 1s ease-in-out infinite;
+}
+@keyframes djScanMix {
+  0% { left: -42%; }
+  100% { left: 100%; }
+}
+/* the song picker, opening upward from the up-next slot */
+.dj__scan-picker {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: calc(100% + 6px);
+  max-height: 168px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 9px;
+  background: rgba(236, 229, 211, 0.98);
+  border: 1px solid var(--ink);
+  box-shadow: 0 8px 22px rgba(51, 41, 31, 0.2);
+  z-index: 6;
+}
+.dj__scan-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 8px;
+  border: 0;
+  border-left: 2px solid var(--chip, var(--warm));
+  border-radius: 5px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+/* THE OPEN DROPDOWN IN LINE STYLE (annotation msbwcb3b). Everywhere else in the
+   scan widget the rule is the same: no fill, one hairline, ink-coloured text —
+   see .dj__scan-play, which is `background: transparent` over `1px solid
+   var(--ink)`. The picker was the one surface still painted the old "paper" way,
+   with a solid cream fill and a drop shadow, so opening it dropped an opaque
+   card on top of a drawing made entirely of lines.
+   Scoped to .dj--scan: /dj's other render styles still want the paper panel.
+   --ink and --ink-line already flip for dark mode above, so this needs no
+   second colour pass and no new value was chosen. */
+.dj--scan .dj__scan-picker {
+  background: transparent;
+  border: 1px solid var(--ink);
+  box-shadow: none;
+  /* the only fill on it: just enough to keep the list legible where the console
+     drawing runs underneath, without reading as a panel */
+  backdrop-filter: blur(6px);
+}
+.dj--scan .dj__scan-pick {
+  border-left-color: var(--chip, var(--ink));
+  color: var(--ink);
+}
+.dj--scan .dj__scan-pick-genre {
+  color: var(--ink-soft);
+}
+/* the hover wash follows the ink too, instead of a hardcoded warm brown that
+   would be invisible on the dark-mode ink */
+.dj--scan .dj__scan-pick:hover {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.dj__scan-pick:hover {
+  background: rgba(51, 41, 31, 0.08);
+}
+.dj__scan-pick-genre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1;
+}
+.dj__scan-pick-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dj__scan-mixing::after { animation: none; left: 0; width: 100%; opacity: 0.6; }
+}
+
+/* ---- per-disc floaters (now playing + queue) ---- */
+.dj__disc {
+  position: absolute;
+  z-index: 4;
+  transform: translate(-50%, -100%);
+  width: 220px;
+  pointer-events: none;
+  --chip: var(--warm);
+}
+.dj__disc--b {
+  --chip: var(--cool);
+}
+.dj__disc > * {
+  pointer-events: auto;
+}
+.dj__disc-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 30px -16px rgba(60, 46, 28, 0.6);
+  transition: border-color 0.25s, box-shadow 0.3s;
+}
+.dj__disc.is-live .dj__disc-bar {
+  border-color: color-mix(in srgb, var(--chip) 60%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--chip) 35%, transparent), 0 12px 30px -14px var(--chip);
+}
+.dj__disc-play {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--paper-line);
+  background: color-mix(in srgb, var(--chip) 16%, transparent);
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.dj__disc.is-live .dj__disc-play {
+  background: var(--chip);
+  color: #fdf7ea;
+  border-color: transparent;
+}
+.dj__disc-play:hover {
+  background: color-mix(in srgb, var(--chip) 40%, transparent);
+}
+.dj__disc-now {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+}
+.dj__disc-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--chip) 70%, var(--ink-soft));
+  line-height: 1;
+}
+.dj__disc-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+.dj__disc-caret {
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+.dj__disc-queue {
+  margin-top: 6px;
+  max-height: 208px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 40px -18px rgba(60, 46, 28, 0.7);
+  scrollbar-width: thin;
+}
+.dj__disc-track {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 6px 9px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  border-left: 3px solid var(--chip);
+  background: rgba(255, 252, 244, 0.5);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background 0.15s, border-color 0.2s;
+}
+.dj--blueprint .dj__disc-track {
+  background: rgba(18, 48, 86, 0.5);
+}
+.dj__disc-track:hover {
+  background: color-mix(in srgb, var(--chip) 16%, rgba(255, 253, 247, 0.7));
+}
+.dj__disc-track.is-current {
+  border-color: color-mix(in srgb, var(--chip) 55%, transparent);
+  background: color-mix(in srgb, var(--chip) 20%, rgba(255, 253, 247, 0.6));
+}
+.dj__disc-track-genre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--chip) 72%, var(--ink-soft));
+}
+.dj__disc-track-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+/* ---- bottom dock ---- */
+.dj__dock {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: 96vw;
+}
+
+/* ---- the crate ---- */
+.dj__crate {
+  width: 100%;
+}
+.dj__crate-rail {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 50px -22px rgba(60, 46, 28, 0.5);
+  overflow-x: auto;
+  max-width: 96vw;
+  scrollbar-width: thin;
+}
+.dj__song {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 132px;
+  padding: 11px 14px;
+  border-radius: 13px;
+  background: rgba(255, 252, 244, 0.6);
+  border: 1px solid var(--paper-line);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s, border-color 0.2s, background 0.2s, box-shadow 0.3s;
+}
+.dj__song::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--chip);
+}
+.dj__song:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 253, 247, 0.92);
+  border-color: color-mix(in srgb, var(--chip) 45%, transparent);
+}
+.dj__song.is-loaded {
+  border-color: color-mix(in srgb, var(--chip) 55%, transparent);
+}
+.dj__song.is-live {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--chip) 55%, transparent), 0 10px 26px -14px var(--chip);
+  background: color-mix(in srgb, var(--chip) 14%, rgba(255, 253, 247, 0.9));
+}
+.dj__song-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: space-between;
+}
+.dj__song-genre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--chip) 72%, #3a2f24 28%);
+}
+.dj__song-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.dj__song-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 6px;
+  color: #fdf7ea;
+}
+.dj__song-tag--a {
+  background: var(--warm);
+}
+.dj__song-tag--b {
+  background: var(--cool);
+}
+
+/* ---- transport ---- */
+.dj__transport {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 50px -24px rgba(60, 46, 28, 0.5);
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 96vw;
+}
+.dj__decks {
+  display: flex;
+  gap: 10px;
+}
+.dj__deck {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 9px;
+  align-items: center;
+  text-align: left;
+  padding: 8px 14px 8px 11px;
+  border-radius: 12px;
+  background: rgba(255, 252, 244, 0.55);
+  border: 1px solid var(--paper-line);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.3s;
+  min-width: 150px;
+}
+.dj__deck:hover {
+  background: rgba(255, 253, 247, 0.9);
+}
+.dj__deck-dot {
+  grid-row: 1 / 3;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(90, 72, 48, 0.28);
+  transition: background 0.25s, box-shadow 0.25s;
+}
+.dj__deck-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.dj__deck-state {
+  font-size: 11px;
+  color: var(--ink-soft);
+  line-height: 1.1;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dj__deck--a.is-live {
+  border-color: color-mix(in srgb, var(--warm) 60%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--warm) 40%, transparent), 0 8px 22px -12px var(--warm);
+}
+.dj__deck--a.is-live .dj__deck-dot {
+  background: var(--warm);
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--warm) 70%, transparent);
+}
+.dj__deck--b.is-live {
+  border-color: color-mix(in srgb, var(--cool) 60%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cool) 40%, transparent), 0 8px 22px -12px var(--cool);
+}
+.dj__deck--b.is-live .dj__deck-dot {
+  background: var(--cool);
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--cool) 70%, transparent);
+}
+.dj__deck.is-live .dj__deck-state {
+  color: var(--ink);
+}
+
+.dj__meta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.dj__xf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.dj__xf-track {
+  position: relative;
+  width: 92px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--warm), rgba(90, 72, 48, 0.25), var(--cool));
+}
+.dj__xf-fill {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fdf7ea;
+  border: 1px solid rgba(90, 72, 48, 0.35);
+  box-shadow: 0 2px 6px rgba(60, 46, 28, 0.4);
+  transform: translate(-50%, -50%);
+}
+.dj__pitch {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.dj__pitch-ch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+.dj__pitch-lbl {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+.dj__pitch-ch--a .dj__pitch-lbl {
+  color: var(--warm);
+}
+.dj__pitch-ch--b .dj__pitch-lbl {
+  color: var(--cool);
+}
+.dj__pitch-ch input[type="range"] {
+  width: 74px;
+  cursor: pointer;
+}
+.dj__pitch-ch--a input[type="range"] {
+  accent-color: var(--warm);
+}
+.dj__pitch-ch--b input[type="range"] {
+  accent-color: var(--cool);
+}
+.dj__pitch-val {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--ink-soft);
+  min-width: 40px;
+  text-align: center;
+}
+
+.dj__master {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.dj__master input[type="range"] {
+  width: 88px;
+  accent-color: var(--warm);
+  cursor: pointer;
+}
+.dj__bpm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--ink);
+}
+.dj__bpm button {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--paper-line);
+  background: rgba(255, 252, 244, 0.6);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.dj__bpm button:hover {
+  background: rgba(255, 253, 247, 0.95);
+  border-color: rgba(90, 72, 48, 0.35);
+}
+.dj__bpm span {
+  min-width: 62px;
+  text-align: center;
+}
+
+/* ---- help line ---- */
+.dj__help {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-soft);
+  max-width: min(92vw, 680px);
+  line-height: 1.5;
+}
+.dj__help b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.dj--hero .dj__help {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .dj__transport {
+    gap: 12px;
+  }
+  .dj__meta {
+    gap: 12px;
+  }
+  .dj__deck {
+    min-width: 130px;
+  }
+  .dj--hero {
+    height: clamp(420px, 68vh, 620px);
+  }
+}

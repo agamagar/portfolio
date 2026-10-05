@@ -1,0 +1,57 @@
+/* XsMotion: the Figma Motion composition as its composed video, 1:1, on its own
+   black plate in both themes. The cursor is the playhead while it is over the
+   stage. */
+
+.xsm { width: 100%; }
+.xsm__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #000;
+  border-radius: 24px;
+  corner-shape: squircle;
+  cursor: ew-resize;
+  outline: none;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.xsm__stage:focus-visible { box-shadow: 0 0 0 2px var(--link); }
+.xsm__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* the scrub line */
+.xsm__scrub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgb(255 255 255 / 0.08);
+}
+.xsm__scrub-fill {
+  display: block;
+  height: 100%;
+  background: rgb(255 255 255 / 0.55);
+}
+.xsm__scrub-t {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: rgb(255 255 255 / 0.55);
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+.xsm__stage[data-hover="1"] .xsm__scrub-t,
+.xsm__stage:focus-visible .xsm__scrub-t { opacity: 1; }
+
+@media (hover: none) {
+  .xsm__stage { cursor: default; }
+}

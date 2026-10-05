@@ -1,0 +1,128 @@
+/* Deck-presets showcase (lab). The specimens reuse the real deck classes from index.css;
+   this file is only the gallery harness + the mini-stage scaling. */
+
+.dp-wrap {
+  margin: 4.5rem auto;
+  max-width: 1400px;
+}
+.dp-intro {
+  max-width: 72ch;
+  margin: 0 0 2rem;
+  padding: 0 1.5rem;
+}
+.dp-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+.dp-sub {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.dp-sub code {
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+}
+@media (max-width: 1200px) {
+  .dp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .dp-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.dp-card {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.dp-head {
+  padding: 1rem 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+}
+.dp-label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.dp-frame {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+}
+.dp-blurb {
+  flex: 1 1 100%;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* the mini stage: a real present-stage at zoom, so layout AND type scale faithfully */
+.dp-stageWrap {
+  height: 304px;
+  overflow: hidden;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+.dp-stage {
+  zoom: 0.6;
+  width: 100%;
+  height: calc(304px / 0.6);
+  --stage-pad: 1.5rem;
+  --stage-max: 100%;
+  --t-monument: 5.5rem;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem 1.5rem;
+  overflow: hidden;
+  position: relative;
+}
+.dp-stage .slide {
+  min-height: 0;
+  max-width: 100%;
+  width: 100%;
+  animation: none;
+}
+
+/* neutral media placeholder plates (real coded figures cannot render in the gallery) */
+.dp-ph {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--fg) 9%, var(--bg)),
+    color-mix(in srgb, var(--fg) 3%, var(--bg))
+  );
+}
+.dp-ph--wide {
+  aspect-ratio: 16 / 9;
+}
+.dp-ph--phone {
+  aspect-ratio: 9 / 19;
+  max-width: 132px;
+  margin: 0 auto;
+  border-radius: 20px;
+}
+.dp-ph--square {
+  aspect-ratio: 1 / 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-stage * {
+    animation: none !important;
+  }
+}

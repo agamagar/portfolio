@@ -1,0 +1,130 @@
+/* Decompose figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens). One unanswerable question cleaves top-down into 4 mutually-exclusive,
+   collectively-exhaustive tier-1 stages; a thin MECE bracket sweeps the tier to
+   assert the partition is clean; then the Payment branch unfolds into 3 answerable
+   leaf checks. Coverage + no-overlap are the point. Higher specificity than
+   .ds-root.ds-root--away (which forces transparent / border:0) so the frame is a
+   solid dark plate. */
+.ds-root.ds-root--away.ss-dec { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-dec__head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+.ss-dec__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-dec__head-q { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+
+.ss-dec__stage { position: relative; }
+.ss-dec__edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* edges: idle grey; draw in (along length) when the branch they belong to opens.
+   Settle to a calm green-tinted state on resolve to read as "wired up". */
+.ss-dec__edge {
+  stroke: #2a2a36; stroke-width: 1.5; fill: none;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 480ms var(--m3-effects-default), stroke 320ms var(--m3-effects-default);
+}
+.ss-dec__edge.is-on { stroke-dashoffset: 0; stroke: #3b82f6; }
+.ss-dec__edge.is-branch.is-on { stroke: #f59e0b; }      /* the unfolded Payment branch */
+.ss-dec__edge.is-done { stroke: #2f3a52; }
+.ss-dec__edge.is-branch.is-done { stroke: #3a3326; }
+
+/* MECE bracket: a thin rail + down-ticks drawn across the tier-1 partition */
+.ss-dec__bracket {
+  stroke: #4ade80; stroke-width: 1.5; fill: none; opacity: 0.9;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default), opacity 320ms var(--m3-effects-default);
+}
+.ss-dec__bracket.is-on { stroke-dashoffset: 0; }
+
+/* the MECE caption chip riding above the bracket */
+.ss-dec__mece {
+  position: absolute; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+  color: #4ade80; white-space: nowrap;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-dec__mece.is-in { opacity: 1; transform: none; }
+
+/* nodes — rounded rects centered on precomputed coords */
+.ss-dec__node {
+  position: absolute; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 10px; border-radius: 10px;
+  background: #15151c; border: 1px solid #2a2a36;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity 380ms var(--m3-effects-default), transform 420ms var(--m3-spatial-standard-default),
+              border-color 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default);
+}
+.ss-dec__node.is-in { opacity: 1; transform: none; }
+.ss-dec__node-text { font-size: 12.5px; font-weight: 500; color: #cbcbd4; white-space: nowrap; }
+
+/* root — the unanswerable question */
+.ss-dec__node.is-root { background: #17171f; border-color: #2f3a52; }
+.ss-dec__node.is-root .ss-dec__node-text { color: #f4f4f6; font-weight: 600; }
+/* root pulses while it's the only thing on stage */
+.ss-dec__node.is-root.is-pulsing { animation: ssDecRootPulse 1.5s ease-in-out infinite; }
+@keyframes ssDecRootPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.0); border-color: #2f3a52; }
+  50% { box-shadow: 0 0 0 5px rgba(59,130,246,0.12); border-color: #3b82f6; }
+}
+/* once cleaved the root recedes a touch — it's been resolved into its parts */
+.ss-dec__node.is-root.is-split { opacity: 0.78; }
+
+/* tier-1 stages */
+.ss-dec__node.is-t1 .ss-dec__node-text { color: #f4f4f6; }
+/* the branch that opens gets the amber accent */
+.ss-dec__node.is-t1.is-branch { border-color: #f59e0b; background: #1d1809; }
+.ss-dec__node.is-t1.is-branch .ss-dec__node-text { color: #fbbf24; font-weight: 600; }
+.ss-dec__opened {
+  position: absolute; right: 7px; top: 50%; width: 6px; height: 6px; margin-top: -3px;
+  border-right: 1.5px solid #f59e0b; border-bottom: 1.5px solid #f59e0b;
+  transform: rotate(45deg); /* a small down-chevron: "expanded" */
+}
+
+/* tier-2 leaves — answerable / runnable checks. Read faintly until resolved. */
+.ss-dec__leaf {
+  position: absolute; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px;
+  padding: 0 10px 0 26px; border-radius: 10px;
+  background: #121218; border: 1px dashed #2a2a36;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity 380ms var(--m3-effects-default), transform 420ms var(--m3-spatial-standard-default),
+              border-color 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default);
+}
+.ss-dec__leaf.is-in { opacity: 1; transform: none; }
+.ss-dec__leaf-q {
+  position: absolute; left: 9px; top: 50%; margin-top: -8px;
+  width: 15px; height: 15px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; font-size: 10px; font-weight: 700; line-height: 1;
+  color: #8a8a98; background: #1c1c24; border: 1px solid #2a2a36;
+  transition: color 300ms var(--m3-effects-default), background 300ms var(--m3-effects-default), border-color 300ms var(--m3-effects-default);
+}
+.ss-dec__leaf-name {
+  font-size: 11.5px; font-weight: 600; color: #cbcbd4; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ss-dec__leaf-sub {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 9.5px; color: #6f6f7e; white-space: nowrap; letter-spacing: -0.01em;
+}
+/* resolve: each leaf becomes a runnable check — solid border, green query glyph */
+.ss-dec__leaf.is-runnable { border-style: solid; border-color: #22c55e; background: #102016; }
+.ss-dec__leaf.is-runnable .ss-dec__leaf-q { color: #06210f; background: #22c55e; border-color: #22c55e; }
+.ss-dec__leaf.is-runnable .ss-dec__leaf-name { color: #f4f4f6; }
+.ss-dec__leaf.is-runnable .ss-dec__leaf-sub { color: #4ade80; }
+
+/* result strip */
+.ss-dec__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-dec__result.is-on { opacity: 1; transform: none; }
+.ss-dec__result b { color: #f4f4f6; }
+.ss-dec__runnable { color: #4ade80; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-dec__node.is-root.is-pulsing { animation: none; }
+  .ss-dec__edge, .ss-dec__bracket, .ss-dec__node, .ss-dec__leaf, .ss-dec__mece, .ss-dec__result { transition: none; }
+}

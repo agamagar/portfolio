@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "border-left-width: 3px",
+        "files": [
+          "src/figures/ds/components.css"
+        ],
+        "createdAt": "2026-07-27T01:21:45.103Z",
+        "reason": "Not a card side tab. This is the FieldRow provenance gutter on a dense 8-row record list: state is told by width and style first and hue only third, because heard-once versus read-back-and-agreed were 1.16:1 apart in greyscale as hues alone. double needs 3px; at 2px it renders as a smudged solid. Closer to a diff gutter than to a card accent."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(0.34, 1.46, 0.64, 1)",
+        "files": [
+          "src/figures/ds/tokens.css"
+        ],
+        "createdAt": "2026-07-27T01:21:45.132Z",
+        "reason": "Scoped to --ds-ease-press, which drives press and release ONLY. A surface that squishes to 0.96 under a finger and springs back is physicality: something pushed it. Entrances were moved off this token to --ds-ease-pop (emphasized-decelerate) precisely because an element that merely arrived has nothing pushing it, and an overshoot there is the dated bounce this rule is about."
+      }
+    ]
+  }
+}

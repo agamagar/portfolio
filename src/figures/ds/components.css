@@ -33,7 +33,7 @@
 .ds-dot--r { background: #f0625a; } .ds-dot--y { background: #f5bf4f; } .ds-dot--g { background: #5bc46b; }
 .ds-top__title { margin-left: var(--ds-2); font-size: var(--ds-fs-app); font-weight: var(--ds-fw-semi); }
 .ds-top__sp { flex: 1; }
-.ds-top__icon { width: 20px; height: 20px; border-radius: 6px; color: var(--ds-text-2); display: grid; place-items: center; }
+.ds-top__icon { width: 20px; height: 20px; border-radius: var(--ds-r-btn); color: var(--ds-text-2); display: grid; place-items: center; }
 .ds-top__icon svg { width: 14px; height: 14px; }
 
 /* ── body layout ─────────────────────────────────────────────────────────── */
@@ -50,15 +50,15 @@
   overflow: hidden;
   transition: border-color var(--ds-dur-expand) var(--ds-ease-out);
 }
-.ds-card[data-active="true"] { border-color: #c4c7cd; }
+.ds-card[data-active="true"] { border-color: var(--ds-line-strong); }
 .ds-card__head { display: flex; align-items: center; gap: var(--ds-4); padding: var(--ds-5) var(--ds-5); height: 46px; box-sizing: border-box; }
 .ds-step {
   flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
-  display: grid; place-items: center; font-size: 10.5px; font-weight: var(--ds-fw-semi);
+  display: grid; place-items: center; font-size: var(--ds-fs-label); font-weight: var(--ds-fw-semi);
   background: var(--ds-muted); color: var(--ds-text-2);
   transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out);
 }
-.ds-card[data-active="true"] .ds-step { background: var(--ds-primary); color: #fff; }
+.ds-card[data-active="true"] .ds-step { background: var(--ds-primary); color: var(--ds-on-primary); }
 .ds-card[data-done="true"] .ds-step { background: var(--ds-green-pill-bg); color: var(--ds-green); }
 .ds-head__txt { flex: 1; min-width: 0; }
 .ds-head__title { font-size: var(--ds-fs-title); font-weight: var(--ds-fw-semi); line-height: 1.25; color: var(--ds-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -88,7 +88,7 @@
   height: 32px; padding: 0 var(--ds-6); border-radius: var(--ds-r-btn);
   background: var(--ds-primary); color: var(--ds-on-primary);
   font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi);
-  transition: transform var(--ds-dur-fast) var(--ds-ease-pop);
+  transition: transform var(--ds-dur-fast) var(--ds-ease-press);
 }
 .ds-btn svg { width: 14px; height: 14px; }
 /* M3 state layer: on-primary overlay at the pressed-state opacity (replaces an
@@ -130,7 +130,10 @@
 /* ── checklist ───────────────────────────────────────────────────────────── */
 .ds-checklist { border: 1px solid var(--ds-line); border-radius: var(--ds-r-control); overflow: hidden; }
 .ds-tabs { display: flex; gap: var(--ds-6); padding: 0 var(--ds-4); border-bottom: 1px solid var(--ds-border); }
-.ds-tab { display: inline-flex; align-items: center; gap: var(--ds-2); height: 30px; font-size: var(--ds-fs-tab); font-weight: var(--ds-fw-semi); color: var(--ds-text); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+/* Tabs are span-only now (see Primitives.jsx). The button resets below are kept
+   deliberately: they cost nothing and they are what a future complete implementation
+   would need, since a UA button background ignores the theme. */
+.ds-tab { display: inline-flex; align-items: center; gap: var(--ds-2); height: 30px; font-size: var(--ds-fs-tab); font-weight: var(--ds-fw-semi); color: var(--ds-text); border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: 0; border-left: 0; border-right: 0; padding: 0; font-family: inherit; }
 .ds-tab svg { width: 13px; height: 13px; color: var(--ds-text-2); }
 .ds-tab[data-on="true"] { border-bottom-color: var(--ds-tab-active); }
 .ds-crow { display: flex; align-items: center; gap: var(--ds-3); padding: var(--ds-2) var(--ds-4); border-bottom: 1px solid var(--ds-line); }
@@ -159,28 +162,28 @@
 .ds-drops { display: flex; gap: var(--ds-3); margin-top: var(--ds-3); }
 .ds-drop { flex: 1; height: 86px; border: 1px dashed var(--ds-border); border-radius: var(--ds-r-card); background: var(--ds-surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ds-2); text-align: center; }
 .ds-drop svg { width: 20px; height: 20px; color: var(--ds-text-2); }
-.ds-drop__title { font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: #303030; }
-.ds-drop__sub { font-size: 8px; color: var(--ds-placeholder); }
+.ds-drop__title { font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.ds-drop__sub { font-size: var(--ds-fs-meta); color: var(--ds-placeholder); }
 .ds-minibtns { display: flex; gap: var(--ds-2); margin-top: var(--ds-3); }
 
 /* ── restriction cards (Follow Up) ───────────────────────────────────────── */
 .ds-restr { display: flex; gap: var(--ds-3); }
 .ds-restr__card { flex: 1; border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); overflow: hidden; }
-.ds-restr__head { display: flex; align-items: center; gap: var(--ds-2); padding: var(--ds-3); border-bottom: 1px dashed rgba(217, 217, 217, 0.6); }
+.ds-restr__head { display: flex; align-items: center; gap: var(--ds-2); padding: var(--ds-3); border-bottom: 1px dashed var(--ds-line); }
 .ds-restr__head svg { width: 14px; height: 14px; color: var(--ds-text-2); flex: 0 0 auto; }
 .ds-restr__name { flex: 1; font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: var(--ds-text); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ds-restr__body { padding: var(--ds-3); }
 .ds-toggle { flex: 0 0 auto; width: 28px; height: 16px; border-radius: var(--ds-r-pill); background: var(--ds-toggle-off); padding: 3px; box-sizing: border-box; }
-.ds-toggle__knob { width: 10px; height: 10px; border-radius: 3px; background: var(--ds-toggle-knob); transition: transform var(--ds-dur-fast) var(--ds-ease-out); }
+.ds-toggle__knob { width: 10px; height: 10px; border-radius: var(--ds-r-mark); background: var(--ds-toggle-knob); transition: transform var(--ds-dur-fast) var(--ds-ease-out); }
 .ds-toggle[data-on="true"] .ds-toggle__knob { transform: translateX(12px); }
 
 /* ── slider ──────────────────────────────────────────────────────────────── */
 .ds-slider__label { font-size: var(--ds-fs-label); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
-.ds-slider__hint { font-size: 8.5px; color: var(--ds-text-neutral2); margin-top: 1px; }
+.ds-slider__hint { font-size: var(--ds-fs-meta); color: var(--ds-text-neutral2); margin-top: 1px; }
 .ds-slider__ctl { display: flex; align-items: center; gap: var(--ds-3); margin-top: var(--ds-3); padding: var(--ds-3); background: var(--ds-field); border: 1px solid var(--ds-border); border-radius: var(--ds-r-control); }
 .ds-slider__rail { position: relative; flex: 1; height: 5px; border-radius: 12px; background: var(--ds-slider-rail); }
 .ds-slider__fill { position: absolute; left: 0; top: 0; bottom: 0; width: 22%; border-radius: 12px 0 0 12px; background: var(--ds-slider-fill); }
-.ds-slider__knob { position: absolute; top: 50%; left: 22%; width: 16px; height: 14px; border-radius: 5px; background: var(--ds-slider-fill); transform: translate(-50%, -50%); }
+.ds-slider__knob { position: absolute; top: 50%; left: 22%; width: 16px; height: 14px; border-radius: var(--ds-r-btn); background: var(--ds-slider-fill); transform: translate(-50%, -50%); }
 .ds-slider__val { font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-text-alt); }
 
 /* ── side rail: Creation Overview ────────────────────────────────────────── */
@@ -192,21 +195,35 @@
 .ds-rail__line { flex: 1; width: 1.5px; background: var(--ds-line); margin: 4px 0; min-height: 10px; }
 .ds-rail__step:last-child .ds-rail__line { display: none; }
 .ds-rail__detail { padding-bottom: var(--ds-5); min-width: 0; transition: opacity var(--ds-dur-state) ease; }
-.ds-rail__name { font-size: 11.5px; font-weight: var(--ds-fw-semi); color: var(--ds-text-2); line-height: 18px; transition: color var(--ds-dur-state) ease; }
+.ds-rail__name { font-size: var(--ds-fs-sub); font-weight: var(--ds-fw-semi); color: var(--ds-text-2); line-height: 18px; transition: color var(--ds-dur-state) ease; }
 .ds-rail__meta { font-size: 9px; color: var(--ds-text-3); margin-top: 3px; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ds-rail__step[data-state="active"] .ds-rail__dot { background: var(--ds-primary); color: #fff; }
+.ds-rail__step[data-state="active"] .ds-rail__dot { background: var(--ds-primary); color: var(--ds-on-primary); }
 .ds-rail__step[data-state="active"] .ds-rail__name { color: var(--ds-text); }
 .ds-rail__step[data-state="done"] .ds-rail__dot { background: var(--ds-green-pill-bg); color: var(--ds-green); }
 .ds-rail__step[data-state="done"] .ds-rail__name { color: var(--ds-text-alt); }
 .ds-rail__step[data-state="todo"] .ds-rail__detail { opacity: 0.35; }
 
 /* ── demo cursor + click ripple ──────────────────────────────────────────── */
-.ds-cursor { position: absolute; top: 0; left: 0; z-index: 20; pointer-events: none; margin: -2px 0 0 -3px; opacity: 0; transition: transform var(--ds-dur-move) var(--ds-ease-move), opacity 220ms ease; filter: drop-shadow(0 3px 5px rgba(20, 16, 45, 0.32)); }
+.ds-cursor { position: absolute; top: 0; left: 0; z-index: 20; pointer-events: none; opacity: 0; transition: transform var(--ds-dur-move) var(--ds-ease-move), opacity var(--ds-dur-expand) ease; }
 .ds-cursor[data-visible="true"] { opacity: 1; }
-.ds-cursor__ptr { display: block; transition: transform 130ms var(--ds-ease-out); transform-origin: 3px 2px; }
-.ds-cursor[data-press="true"] .ds-cursor__ptr { transform: scale(0.82); }
-.ds-ripple { position: absolute; top: 0; left: 0; z-index: 19; pointer-events: none; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid var(--ds-accent-soft); animation: dsRipple 460ms var(--ds-ease-out) forwards; }
-@keyframes dsRipple { from { opacity: 0.7; transform: scale(0.3); } to { opacity: 0; transform: scale(2.1); } }
+/* grow by animating the diameter (not scale) so the 2px boundary stays a
+   constant, crisp stroke at every size — a proper circle. Motion: the DS
+   expand token (emphasized-decelerate, 400ms). */
+/* corner-shape:round overrides the global squircle so border-radius:50% renders a
+   true circle (a squircle pointer reads as a rounded square) — the justified
+   exception to the site-wide squircle rule. */
+/* Scale, not width and height. Animating box dimensions forces layout and paint on
+   every frame; a transform is composited. The dot keeps one authored size and the
+   translate stays in the transform so the two compose rather than fight. */
+.ds-cursor__dot {
+  display: block; width: var(--ds-cursor-size, 36px); height: var(--ds-cursor-size, 36px);
+  border-radius: 50%; corner-shape: round;
+  background: color-mix(in srgb, var(--ds-text) 45%, transparent);
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform var(--ds-dur-expand) var(--ds-ease-out);
+}
+.ds-cursor[data-hover="true"] .ds-cursor__dot { transform: translate(-50%, -50%) scale(1.7); }
+.ds-cursor[data-press="true"] .ds-cursor__dot { transform: translate(-50%, -50%) scale(1.42); }
 
 /* ── variant 1: simplified (no rail, narrower design scaled up) ──────────── */
 .ds-root--simple { width: 520px; }
@@ -220,21 +237,577 @@
 .ds-stepper__item:not(:last-child)::after { content: ""; width: 26px; height: 1.5px; background: var(--ds-line); margin: 0 var(--ds-3); }
 .ds-stepper__dot { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; font-weight: var(--ds-fw-semi); background: var(--ds-muted); color: var(--ds-text-2); transition: background var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out); }
 .ds-stepper__label { font-size: var(--ds-fs-sub); font-weight: var(--ds-fw-semi); color: var(--ds-text-2); transition: color var(--ds-dur-state) ease; }
-.ds-stepper__item[data-state="active"] .ds-stepper__dot { background: var(--ds-primary); color: #fff; }
+.ds-stepper__item[data-state="active"] .ds-stepper__dot { background: var(--ds-primary); color: var(--ds-on-primary); }
 .ds-stepper__item[data-state="active"] .ds-stepper__label { color: var(--ds-text); }
 .ds-stepper__item[data-state="done"] .ds-stepper__dot { background: var(--ds-green-pill-bg); color: var(--ds-green); }
 .ds-focus__card { background: var(--ds-surface); }
 .ds-focus__body { height: 256px; overflow: hidden; padding: 0 var(--ds-5); display: flex; flex-direction: column; justify-content: center; }
 .ds-focus__card .ds-foot { padding: var(--ds-4) var(--ds-5) var(--ds-5); }
 
+/* ── voice-agent set ───────────────────────────────────────────────────────
+   Promoted out of the Stella call simulator. Tone comes from the --ds-tone-*
+   scale via [data-tone], so a consumer never hardcodes a hue. Cards stay FLAT
+   (border-only) like the rest of the Dassh source. */
+
+.ds-pill2 {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  padding: 2px var(--ds-3); border-radius: var(--ds-r-pill);
+  border: 1px solid var(--ds-border);
+  font-size: var(--ds-fs-pill); font-weight: var(--ds-fw-semi);
+  line-height: 1.4; color: var(--ds-text-2);
+}
+.ds-pill2[data-tone="register"] { color: var(--ds-tone-register-ink); border-color: color-mix(in srgb, var(--ds-tone-register) 35%, transparent); }
+.ds-pill2[data-tone="numbers"]  { color: var(--ds-tone-numbers-ink);  border-color: color-mix(in srgb, var(--ds-tone-numbers) 35%, transparent); }
+.ds-pill2[data-tone="repair"]   { color: var(--ds-tone-repair-ink);   border-color: color-mix(in srgb, var(--ds-tone-repair) 40%, transparent); }
+.ds-pill2[data-tone="trust"]    { color: var(--ds-tone-trust-ink);    border-color: color-mix(in srgb, var(--ds-tone-trust) 35%, transparent); }
+.ds-pill2[data-soft="true"][data-tone="register"] { background: var(--ds-tone-register-bg); }
+.ds-pill2[data-soft="true"][data-tone="numbers"]  { background: var(--ds-tone-numbers-bg); }
+.ds-pill2[data-soft="true"][data-tone="repair"]   { background: var(--ds-tone-repair-bg); }
+.ds-pill2[data-soft="true"][data-tone="trust"]    { background: var(--ds-tone-trust-bg); }
+.ds-pill2[data-soft="true"][data-tone="neutral"]  { background: var(--ds-tone-neutral-bg); }
+
+.ds-statusdot {
+  width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--ds-tone-numbers);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-tone-numbers) 22%, transparent);
+  transition: background var(--ds-dur-state) var(--m3-standard), box-shadow var(--ds-dur-state) var(--m3-standard);
+}
+.ds-statusdot[data-tone="trust"]  { background: var(--ds-tone-trust);  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-tone-trust) 22%, transparent); }
+.ds-statusdot[data-tone="repair"] { background: var(--ds-tone-repair); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-tone-repair) 22%, transparent); }
+.ds-statusdot[data-off="true"] { background: var(--ds-toggle-off); box-shadow: none; }
+
+.ds-wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 9px; }
+/* Hidden by default because the visible "Speaking" word is rendered by the consumer
+   beside it; under reduced motion this becomes the only channel. */
+.ds-wave__word {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; margin: -1px;
+  font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); color: var(--ds-tone-trust-ink);
+}
+.ds-wave i {
+  width: 2px; border-radius: var(--ds-r-mark); background: var(--ds-tone-trust);
+  animation: dsWave 900ms var(--m3-standard) infinite;
+}
+.ds-wave[data-tone="numbers"] i { background: var(--ds-tone-numbers); }
+.ds-wave[data-tone="repair"] i { background: var(--ds-tone-repair); }
+.ds-wave i:nth-child(1) { height: 4px; animation-delay: 0ms; }
+.ds-wave i:nth-child(2) { height: 9px; animation-delay: 140ms; }
+.ds-wave i:nth-child(3) { height: 6px; animation-delay: 280ms; }
+@keyframes dsWave { 0%, 100% { transform: scaleY(0.5); } 50% { transform: scaleY(1); } }
+
+.ds-soundtoggle {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  height: 30px; padding: 0 var(--ds-4); flex: 0 0 auto;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-r-btn);
+  background: var(--ds-surface); color: var(--ds-text);
+  font-family: inherit; font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi);
+  cursor: pointer;
+  transition: background var(--ds-dur-fast) var(--m3-standard), color var(--ds-dur-fast) var(--m3-standard);
+}
+.ds-soundtoggle svg { width: 15px; height: 15px; }
+.ds-soundtoggle:hover { background: var(--ds-muted); }
+/* The off state gets a background shape, which is the sanctioned toggle mechanism, and
+   stops using --ds-text-3 as a state colour (it put the label at 3.32:1). */
+.ds-soundtoggle[data-state="off"] {
+  background: var(--ds-muted); color: var(--ds-text-2);
+}
+.ds-soundtoggle__label { font-size: var(--ds-fs-meta); letter-spacing: 0.02em; }
+/* Blocked is an invitation, not a failure: it reads as the one thing to press. */
+.ds-soundtoggle[data-state="blocked"] {
+  border-color: var(--ds-tone-trust); color: var(--ds-tone-trust-ink);
+  background: var(--ds-tone-trust-bg);
+}
+
+/* An agent recommendation put to the human who owns the decision. Flat like every
+   other card; the tone shows only in the label and the left rule, so a recommendation
+   never shouts louder than the evidence under it. */
+.ds-verdict {
+  display: flex; flex-direction: column; gap: var(--ds-4);
+  border: 1px solid color-mix(in srgb, var(--ds-tone-numbers) 42%, var(--ds-border-card));
+  border-radius: var(--ds-r-card);
+  padding: var(--ds-5); background: var(--ds-surface);
+}
+/* NO side tab. A 1px card border plus a 3px coloured left border is the single most
+   recognisable tell of generated UI, and it is also the laziest way to say "this block
+   has a state": it bolts an accent onto a card instead of letting the card carry the
+   state. The tone now tints the WHOLE border and adds a dot beside the label, so the
+   state is expressed by the object rather than by a stripe on its edge. The label
+   already carries the tone as ink, so this is a third channel, not the only one. */
+.ds-verdict[data-tone="repair"] { border-color: color-mix(in srgb, var(--ds-tone-repair) 42%, var(--ds-border-card)); }
+.ds-verdict[data-tone="trust"] { border-color: color-mix(in srgb, var(--ds-tone-trust) 42%, var(--ds-border-card)); }
+.ds-verdict[data-tone="neutral"] { border-color: var(--ds-border); }
+.ds-verdict__label::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex: 0 0 auto;
+}
+.ds-verdict__label {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  font-size: var(--ds-fs-meta);
+  font-weight: var(--ds-fw-semi); color: var(--ds-tone-numbers-ink);
+}
+.ds-verdict[data-tone="repair"] .ds-verdict__label { color: var(--ds-tone-repair-ink); }
+.ds-verdict[data-tone="trust"] .ds-verdict__label { color: var(--ds-tone-trust-ink); }
+.ds-verdict[data-tone="neutral"] .ds-verdict__label { color: var(--ds-text-2); }
+.ds-verdict__headline {
+  margin: 0; font-size: var(--ds-fs-title); font-weight: var(--ds-fw-semi);
+  line-height: 1.35; color: var(--ds-text);
+}
+.ds-verdict__block { display: flex; flex-direction: column; gap: var(--ds-2); }
+.ds-verdict__blockhead {
+  margin: 0; font-size: var(--ds-fs-meta);
+  letter-spacing: 0.06em; color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.ds-verdict__list { margin: 0; padding-left: var(--ds-5); display: flex; flex-direction: column; gap: 3px; }
+.ds-verdict__list li { font-size: var(--ds-fs-body); line-height: 1.5; color: var(--ds-text); }
+/* what the agent could not establish is styled as evidence, not as an apology */
+.ds-verdict__block[data-unsure="true"] .ds-verdict__list li { color: var(--ds-text-2); }
+
+/* One row of a structured record. The state is carried by a left rule rather than a
+   fill, so a filling record reads as a column of evidence and never as a form. */
+.ds-fieldrow {
+  display: flex; flex-direction: column; gap: 1px;
+  padding: var(--ds-3) 0 var(--ds-3) var(--ds-4);
+  border-left: 2px solid var(--ds-toggle-off);
+  transition: border-color var(--ds-dur-state) var(--m3-standard);
+}
+.ds-fieldrow__label {
+  /* A field LABEL, not a section head: regular weight, one tier down in colour. */
+  font-size: var(--ds-fs-label); color: var(--ds-text-2); font-weight: 400;
+}
+.ds-fieldrow__value { font-size: var(--ds-fs-body); line-height: 1.45; color: var(--ds-text); }
+.ds-fieldrow__empty { color: var(--ds-text-3); }
+.ds-fieldrow__note { font-size: var(--ds-fs-meta); line-height: 1.45; color: var(--ds-text-2); margin-top: 2px; }
+.ds-fieldrow__prov {
+  font-size: var(--ds-fs-meta); line-height: 1.4; color: var(--ds-text-2); margin-top: 2px;
+}
+/* What the LAST turn moved. The whole feedback for a field going empty to heard to
+   confirmed used to be a 220ms border fade on a 2px rule, inside a separate scroller the
+   viewer is not looking at, while their eye was on the transcript they just changed. */
+.ds-fieldrow[data-just="true"] { border-left-color: var(--ds-tone-provisional); }
+.ds-fieldrow__new {
+  align-self: flex-start; margin-top: 2px;
+  font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); line-height: 1;
+  padding: 2px var(--ds-2); border-radius: var(--ds-r-pill);
+  background: var(--ds-tone-provisional-bg); color: var(--ds-tone-provisional-ink);
+}
+
+/* Six states, told by WIDTH and STYLE first and hue only third. They used to differ by
+   hue alone (plus a dash on two), and the two that matter most, heard versus confirmed,
+   were amber against green: 1.16:1 apart in greyscale and the textbook red-green
+   collision. na versus empty was 1.02:1 apart in light. */
+/* asked but unanswered: the rule is present but hollow, so the row cannot be mistaken
+   for a captured value */
+.ds-fieldrow[data-state="empty"] { border-left-width: 1px; border-left-color: var(--ds-line); }
+.ds-fieldrow[data-state="asked"] { border-left-style: dotted; border-left-color: var(--ds-text-3); }
+/* heard versus confirmed was the pair that mattered and the pair hue could not carry:
+   amber against green is 1.16:1 in greyscale. It was a 3px double rule, which worked but
+   bought the distinction with thickness, and a thick coloured left border is a card
+   accent wearing a gutter's clothes. The rule stays 2px like every sibling; the second
+   channel moves to a HOLLOW versus FILLED marker, which survives greyscale outright and
+   matches the tone dot the Verdict and Disposition cards now use. */
+.ds-fieldrow[data-state="heard"] { border-left-color: var(--ds-tone-provisional); }
+.ds-fieldrow[data-state="heard"] .ds-fieldrow__value::before,
+.ds-fieldrow[data-state="confirmed"] .ds-fieldrow__value::before {
+  content: ""; display: inline-block; vertical-align: 0.06em;
+  width: 6px; height: 6px; border-radius: 50%; margin-right: var(--ds-2);
+}
+/* filled: read back and agreed, nothing outstanding */
+.ds-fieldrow[data-state="confirmed"] .ds-fieldrow__value::before {
+  background: var(--ds-tone-numbers);
+}
+/* hollow: captured once, still open */
+.ds-fieldrow[data-state="heard"] .ds-fieldrow__value::before {
+  border: 1.5px solid var(--ds-tone-provisional);
+}
+.ds-fieldrow[data-state="confirmed"] { border-left-color: var(--ds-tone-numbers); }
+.ds-fieldrow[data-state="na"] { border-left-color: var(--ds-text-3); }
+.ds-fieldrow[data-state="na"] .ds-fieldrow__value { color: var(--ds-text-2); }
+/* Off-script: heard by a listener, with no field on the form to hold it. Dashed,
+   because the record has no column for this and that is the point. */
+.ds-fieldrow[data-state="offscript"] {
+  border-left-style: dashed; border-left-color: var(--ds-tone-trust);
+}
+
+/* A turn and its controls. The row exists because as="button" turns the whole bubble
+   into one button, and per-turn controls must sit outside that element to be legal. */
+.ds-bubblerow { display: flex; align-items: flex-start; gap: var(--ds-2); width: 100%; }
+.ds-bubblerow[data-side="end"] { flex-direction: row-reverse; }
+.ds-bubblerow > .ds-bubble { flex: 1 1 auto; min-width: 0; }
+.ds-bubblerow__actions {
+  display: flex; flex-direction: column; gap: var(--ds-1);
+  flex: 0 0 auto; padding-top: var(--ds-3);
+}
+
+.ds-bubble {
+  display: flex; flex-direction: column; gap: var(--ds-1);
+  text-align: left; font-family: inherit;
+  border: 1px solid var(--ds-line); border-radius: var(--ds-r-card);
+  padding: var(--ds-5); max-width: 86%;
+  background: var(--ds-surface); color: inherit;
+  position: relative;
+  transition: border-color var(--ds-dur-fast) var(--m3-standard);
+}
+button.ds-bubble { cursor: pointer; }
+.ds-bubble[data-side="start"] { align-self: flex-start; }
+.ds-bubble[data-side="end"] {
+  align-self: flex-end; background: var(--ds-muted); border-color: transparent;
+}
+.ds-bubble[data-side="full"] {
+  align-self: stretch; max-width: 100%;
+  background: var(--ds-field); border-style: dashed; border-color: var(--ds-border);
+}
+.ds-bubble[data-active="true"] { border-color: var(--ds-text); }
+/* Speaking must survive beside a selected tone. It lost the specificity contest, so a
+   selected turn that was speaking showed no border change at all. */
+.ds-bubble[data-speaking="true"][data-speaking="true"] {
+  border-color: var(--ds-tone-trust);
+  box-shadow: inset 3px 0 0 0 var(--ds-tone-trust);
+}
+.ds-bubble[data-active="true"][data-tone="register"] { border-color: var(--ds-tone-register); }
+.ds-bubble[data-active="true"][data-tone="numbers"]  { border-color: var(--ds-tone-numbers); }
+.ds-bubble[data-active="true"][data-tone="repair"]   { border-color: var(--ds-tone-repair); }
+.ds-bubble[data-active="true"][data-tone="trust"]    { border-color: var(--ds-tone-trust); }
+.ds-bubble[data-speaking="true"] { border-color: var(--ds-tone-trust); }
+.ds-bubble__speaker {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  font-size: var(--ds-fs-meta); text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Not `animation: none` alone: three still bars where a live state was is a decorative
+     shape, not an equivalent. The bars go, the word arrives. */
+  /* The marker is the information, the fade is not: keep .ds-fieldrow__new, drop only
+     the transition. */
+  .ds-fieldrow { transition: none; }
+  .ds-wave i { display: none; }
+  .ds-wave__word { position: static; width: auto; height: auto; clip-path: none; margin: 0; }
+  .ds-bubble, .ds-statusdot, .ds-soundtoggle { transition: none; }
+}
+
 /* ── side-by-side comparison scaffold (temporary) ────────────────────────── */
 .aw-compare { display: flex; flex-direction: column; gap: 28px; width: 100%; }
-.aw-compare__label { font-size: 12px; font-weight: 600; color: var(--muted, #888); margin-bottom: 10px; letter-spacing: 0.01em; }
+.aw-compare__label { font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-text-2); margin-bottom: 10px; letter-spacing: 0.01em; }
 
 /* ── reduced motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .ds-card, .ds-card__body, .ds-step, .ds-chev, .ds-cursor, .ds-cursor__ptr,
+  .ds-card, .ds-card__body, .ds-step, .ds-chev, .ds-cursor, .ds-cursor__dot,
   .ds-rail__dot, .ds-rail__name, .ds-rail__detail, .ds-toggle__knob { transition: none !important; }
   .ds-card[data-active="true"] .ds-stagger > * { animation: none !important; }
-  .ds-ripple { display: none !important; }
+}
+
+/* ── agent-loop set ──────────────────────────────────────────────────────── */
+.ds-plan { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.ds-plan__row {
+  display: grid; grid-template-columns: 12px 1fr; gap: var(--ds-3);
+  align-items: baseline; padding: 3px 0;
+  font-size: var(--ds-fs-sub); line-height: 1.45; color: var(--ds-text-2);
+}
+.ds-plan__mark {
+  width: 6px; height: 6px; border-radius: 50%; justify-self: center;
+  border: 1px solid var(--ds-toggle-off); transform: translateY(-1px);
+}
+.ds-plan__row[data-status="done"] { color: var(--ds-text); }
+.ds-plan__row[data-status="done"] .ds-plan__mark { background: var(--ds-tone-numbers); border-color: var(--ds-tone-numbers); }
+.ds-plan__row[data-status="struck"] .ds-plan__label { text-decoration: line-through; opacity: 0.62; }
+.ds-plan__row[data-status="struck"] .ds-plan__mark { border-color: var(--ds-tone-repair); }
+.ds-plan__row[data-status="added"] { color: var(--ds-text); }
+.ds-plan__row[data-status="added"] .ds-plan__mark { background: var(--ds-tone-trust); border-color: var(--ds-tone-trust); }
+.ds-plan__why { grid-column: 2; font-size: var(--ds-fs-meta); line-height: 1.45; color: var(--ds-text-3); }
+.ds-plan__row[data-status="struck"] .ds-plan__why { color: var(--ds-tone-repair-ink); }
+.ds-plan__row[data-status="added"] .ds-plan__why { color: var(--ds-tone-trust-ink); }
+
+.ds-caught {
+  display: flex; flex-direction: column; gap: 1px; margin-top: var(--ds-2);
+  padding-left: var(--ds-3); border-left: 2px solid var(--ds-tone-numbers);
+}
+.ds-caught[data-which="distress"] { border-left-color: var(--ds-tone-repair); }
+.ds-caught[data-which="escalation"] { border-left-color: var(--ds-tone-trust); }
+.ds-caught[data-which="comprehension"] { border-left-color: var(--ds-tone-register); }
+.ds-caught__who {
+  font-size: var(--ds-fs-meta);
+  font-weight: var(--ds-fw-semi); color: var(--ds-tone-numbers-ink);
+}
+.ds-caught[data-which="distress"] .ds-caught__who { color: var(--ds-tone-repair-ink); }
+.ds-caught[data-which="escalation"] .ds-caught__who { color: var(--ds-tone-trust-ink); }
+.ds-caught[data-which="comprehension"] .ds-caught__who { color: var(--ds-tone-register-ink); }
+.ds-caught__what { font-size: var(--ds-fs-sub); line-height: 1.45; color: var(--ds-text-2); }
+
+.ds-disposition {
+  display: flex; flex-direction: column; gap: var(--ds-2); width: 100%;
+  border: 1px solid color-mix(in srgb, var(--ds-tone-numbers) 42%, var(--ds-border-card));
+  border-radius: var(--ds-r-card); padding: var(--ds-5); background: var(--ds-surface);
+}
+.ds-disposition[data-tone="repair"] { border-color: color-mix(in srgb, var(--ds-tone-repair) 42%, var(--ds-border-card)); }
+.ds-disposition[data-tone="trust"] { border-color: color-mix(in srgb, var(--ds-tone-trust) 42%, var(--ds-border-card)); }
+.ds-disposition[data-tone="neutral"] { border-color: var(--ds-border); }
+.ds-disposition__label::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex: 0 0 auto;
+}
+.ds-disposition__label {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  display: flex; align-items: center; gap: var(--ds-3); flex-wrap: wrap;
+  font-size: var(--ds-fs-title); font-weight: var(--ds-fw-semi); color: var(--ds-text);
+}
+.ds-disposition__detail { margin: 0; font-size: var(--ds-fs-body); line-height: 1.55; color: var(--ds-text-2); }
+.ds-disposition__contra {
+  margin: 0; font-size: var(--ds-fs-sub); line-height: 1.55; color: var(--ds-tone-repair-ink);
+  padding-left: var(--ds-4); border-left: 2px dashed var(--ds-tone-repair);
+}
+
+.ds-scopenote {
+  display: flex; gap: var(--ds-3); align-items: baseline; flex-wrap: wrap;
+  border: 1px dashed var(--ds-border); border-radius: var(--ds-r-btn);
+  padding: var(--ds-3) var(--ds-5); background: var(--ds-field);
+}
+.ds-scopenote__tag {
+  font-size: var(--ds-fs-meta);
+  font-weight: var(--ds-fw-semi); color: var(--ds-text-2); flex: 0 0 auto;
+}
+.ds-scopenote__body { font-size: var(--ds-fs-sub); line-height: 1.5; color: var(--ds-text-2); }
+
+/* ── pane title ──────────────────────────────────────────────────────────────
+   Level one of a three-level pane hierarchy: pane title, then subsection head
+   (uppercase micro-label), then disclosure summary. A pane that gives all three the
+   same treatment ranks nothing, and the eye has no entry point. Sentence case at
+   section size on full-strength ink, so it outranks a micro-label by weight and size
+   rather than by being louder in the same register. */
+.ds-panetitle {
+  margin: 0; display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--ds-3);
+  font-size: var(--ds-fs-section); font-weight: var(--ds-fw-semi); color: var(--ds-text);
+  text-transform: none; letter-spacing: 0;
+}
+.ds-panetitle__count {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  font-size: var(--ds-fs-meta); font-weight: 400; color: var(--ds-text-2);
+  text-transform: none; letter-spacing: 0;
+}
+/* Same treatment as the row marker, so the two read as one signal at two scales. */
+.ds-panetitle__new {
+  font-weight: var(--ds-fw-semi); line-height: 1;
+  padding: 2px var(--ds-2); border-radius: var(--ds-r-pill);
+  background: var(--ds-tone-provisional-bg); color: var(--ds-tone-provisional-ink);
+}
+
+/* ── disclosure ──────────────────────────────────────────────────────────────
+   The chevron is shared with the folded scope note, so both are declared once. */
+.ds-disclosure { border-top: 1px solid var(--ds-line); padding-top: var(--ds-4); }
+.ds-disclosure__sum,
+.ds-scopenote--fold > summary {
+  display: flex; align-items: center; gap: var(--ds-2); cursor: pointer;
+  list-style: none; min-height: 32px;
+}
+.ds-disclosure__sum {
+  font-size: var(--ds-fs-label);
+  font-weight: var(--ds-fw-semi); color: var(--ds-text-2);
+}
+.ds-disclosure__sum::-webkit-details-marker,
+.ds-scopenote--fold > summary::-webkit-details-marker { display: none; }
+.ds-disclosure__sum::after,
+.ds-scopenote--fold > summary::after {
+  content: ""; width: 5px; height: 5px; border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-1px);
+  transition: transform var(--ds-dur-fast) var(--m3-standard, ease);
+}
+.ds-disclosure[open] > .ds-disclosure__sum::after,
+.ds-scopenote--fold[open] > summary::after { transform: rotate(-135deg) translateY(-1px); }
+.ds-disclosure__meta {
+  text-transform: none; letter-spacing: 0; font-size: var(--ds-fs-meta);
+  color: var(--ds-text-3); font-weight: 400;
+}
+.ds-disclosure__body { padding-top: var(--ds-3); }
+
+/* Folded variant: one line until asked for. Block layout so the body drops under the
+   summary rather than fighting it on the baseline. */
+.ds-scopenote--fold { display: block; }
+.ds-scopenote--fold[open] > .ds-scopenote__body { display: block; margin-top: var(--ds-3); }
+
+
+/* ── ghost-completing composer ───────────────────────────────────────────────
+   The mirror and the input MUST share font, size, weight, letter-spacing and
+   horizontal padding, or the completion will not sit flush against the typed text.
+   Any change to one belongs in both. */
+.ds-ghost { position: relative; display: flex; flex: 1; min-width: 0; align-items: stretch; }
+.ds-ghost__input,
+.ds-ghost__mirror {
+  font-family: inherit;
+  font-size: var(--ds-fs-body);
+  font-weight: 400;
+  letter-spacing: normal;
+  padding: 0 var(--ds-4);
+  height: 34px;
+  line-height: 34px;
+  box-sizing: border-box;
+}
+.ds-ghost__input {
+  flex: 1; min-width: 0; position: relative; z-index: 1;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-r-btn);
+  background: transparent; color: var(--ds-text);
+}
+.ds-ghost__input::placeholder { color: var(--ds-placeholder); }
+.ds-ghost__input:focus { border-color: var(--ds-tone-trust); }
+/* sits under the input, showing the typed text invisibly so the completion lands
+   at exactly the right x-offset */
+.ds-ghost__mirror {
+  position: absolute; inset: 0; z-index: 0;
+  display: flex; align-items: center;
+  white-space: pre; overflow: hidden;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+.ds-ghost__typed { color: transparent; }
+.ds-ghost__rest { color: var(--ds-text-2); }  /* was --ds-text-3 at 3.32:1 */
+/* A real control, not a hint. No background: it used --ds-field over the composer's
+   --ds-surface, so it painted a lighter rectangle across the tail of the completion it
+   was advertising. pointer-events is NOT none any more, or the button is unclickable. */
+.ds-ghost__accept {
+  position: absolute; right: var(--ds-3); top: 50%; transform: translateY(-50%);
+  z-index: 2; min-height: 28px; padding: 0 var(--ds-3);
+  display: inline-flex; align-items: center; gap: var(--ds-1);
+  border: 1px solid var(--ds-border-control); border-radius: var(--ds-r-btn);
+  background: transparent; color: var(--ds-text-2);
+  font-family: inherit; font-size: var(--ds-fs-meta); cursor: pointer;
+}
+.ds-ghost__accept:hover { color: var(--ds-text); border-color: var(--ds-text); }
+/* Reserve the control's width on BOTH the input and its mirror, so a completion can
+   never sit underneath it. */
+.ds-ghost__input, .ds-ghost__mirror { padding-right: 104px; }
+
+/* Visually hidden, still announced. Not display:none, which removes it from the
+   accessible tree, and not opacity:0, which keeps it in the layout. */
+.ds-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* ── focus and press ─────────────────────────────────────────────────────────
+   There was no focus style anywhere in this system, and `outline: none` appeared twice
+   as the only focus declarations in either stylesheet. One ring, declared once, so a
+   consumer never has to invent its own (changes 11 and 17 both would have).
+   Scoped to .ds-root--live because a scaled-down figure is not operated by keyboard. */
+.ds-root--live :focus-visible {
+  outline: var(--ds-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--ds-r-btn);
+}
+
+/* "Always include a press state for a custom button. Without a press state, a button
+   can feel unresponsive." A grep for :active across the DS and Stella returned NOTHING,
+   so no control on the surface confirmed its own press. */
+/* This list used to name nine figure-private classes, and four real <button>s in the same
+   figure were simply absent from it (.ats__back, .cand__back, .thr__new, .stl__navback),
+   so they had no press feedback at all. An allowlist whose omissions are invisible is the
+   same failure mode twice. Now `.ds-button` carries it for every promoted control, and
+   only the genuinely bespoke ones are named. */
+.ds-root--live .ds-button:not(:disabled):not([aria-disabled="true"]):active,
+.ds-root--live .ds-bubble[role="button"]:active,
+.ds-root--live button.ds-bubble:active,
+.ds-root--live .ds-soundtoggle:active,
+.ds-root--live .ds-ghost__accept:active,
+.ds-root--live .stl__choice:active,
+.ds-root--live .stl__navitem:not([data-off="true"]):active,
+.ds-root--live .stl__navback:active,
+.ds-root--live .stl__mode:active,
+.ds-root--live .stl__replaybtn:active,
+.ds-root--live .stl__play:active {
+  transform: scale(0.985);
+}
+
+/* Buffering: a static three-dot mark, so a wait never looks like a finished state and
+   never looks like speech either. Deliberately not animated, so it reads under
+   prefers-reduced-motion without a substitute. */
+.ds-buffer { display: inline-flex; align-items: center; gap: 2px; }
+.ds-buffer i {
+  width: 3px; height: 3px; border-radius: 50%; background: var(--ds-text-3);
+}
+
+/* ── the button ──────────────────────────────────────────────────────────────
+   One chassis, five variants, four sizes. Replaces fourteen hand-rolled button
+   rule groups in a single figure (four heights, three border tokens, two
+   byte-identical duplicates). Colour only ever arrives through a variant, and the
+   tone variant reads the scale via [data-tone], so no consumer names a hue. */
+.ds-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--ds-2); flex: 0 0 auto;
+  border-radius: var(--ds-r-btn);
+  font-family: inherit; font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi);
+  cursor: pointer;
+  /* Colour and border transition; NOT transform, which the shared press rule owns. */
+  transition: background var(--ds-dur-fast) var(--m3-standard),
+              color var(--ds-dur-fast) var(--m3-standard),
+              border-color var(--ds-dur-fast) var(--m3-standard);
+}
+.ds-button svg { width: 14px; height: 14px; }
+
+/* Sizes. Four heights for one control was the defect, so these are the whole set. */
+.ds-button[data-size="sm"]   { height: 28px; padding: 0 var(--ds-4); font-size: var(--ds-fs-sub); }
+.ds-button[data-size="md"]   { height: 30px; padding: 0 var(--ds-5); }
+.ds-button[data-size="lg"]   { height: 34px; padding: 0 var(--ds-5); }
+/* Content height, for a control whose label is allowed to wrap. */
+.ds-button[data-size="auto"] {
+  height: auto; min-height: 30px; padding: var(--ds-3) var(--ds-4);
+  font-size: var(--ds-fs-sub); line-height: 1.4;
+}
+
+/* Variants. --ds-border-control is the token for a boundary a person clicks (3.06:1),
+   as against --ds-border, which is a divider and measures 1.39:1. */
+.ds-button[data-variant="quiet"] {
+  background: transparent; color: var(--ds-text-2);
+  border: 1px solid var(--ds-border-control);
+}
+.ds-button[data-variant="quiet"]:hover { color: var(--ds-text); background: var(--ds-muted); }
+
+.ds-button[data-variant="outline"] {
+  background: var(--ds-surface); color: var(--ds-text);
+  border: 1px solid var(--ds-border-control);
+}
+.ds-button[data-variant="outline"]:hover { background: var(--ds-muted); border-color: var(--ds-text); }
+
+.ds-button[data-variant="filled"] {
+  background: var(--ds-primary); color: var(--ds-on-primary);
+  border: 1px solid transparent;
+}
+.ds-button[data-variant="filled"]:hover { background: var(--ds-primary-press); }
+
+/* Text takes the -ink pair (4.5:1); the border keeps the fill, where 3:1 is the bar. */
+.ds-button[data-variant="tone"] { background: transparent; border: 1px solid var(--ds-border-control); }
+.ds-button[data-variant="tone"][data-tone="register"] { color: var(--ds-tone-register-ink); border-color: var(--ds-tone-register); }
+.ds-button[data-variant="tone"][data-tone="numbers"]  { color: var(--ds-tone-numbers-ink);  border-color: var(--ds-tone-numbers); }
+.ds-button[data-variant="tone"][data-tone="repair"]   { color: var(--ds-tone-repair-ink);   border-color: var(--ds-tone-repair); }
+.ds-button[data-variant="tone"][data-tone="trust"]    { color: var(--ds-tone-trust-ink);    border-color: var(--ds-tone-trust); }
+.ds-button[data-variant="tone"][data-tone="register"]:hover { background: var(--ds-tone-register-bg); }
+.ds-button[data-variant="tone"][data-tone="numbers"]:hover  { background: var(--ds-tone-numbers-bg); }
+.ds-button[data-variant="tone"][data-tone="repair"]:hover   { background: var(--ds-tone-repair-bg); }
+.ds-button[data-variant="tone"][data-tone="trust"]:hover    { background: var(--ds-tone-trust-bg); }
+
+.ds-button[data-variant="icon"] {
+  width: 28px; height: 28px; padding: 0;
+  background: transparent; color: var(--ds-text-3);
+  border: 1px solid var(--ds-border-control);
+}
+.ds-button[data-variant="icon"]:hover { color: var(--ds-text); border-color: var(--ds-text); }
+
+/* Selected. Carried here rather than per figure because "this one is chosen" is the
+   state most likely to be re-invented, and a fill plus a border is the sanctioned
+   toggle mechanism (state is not hue alone). */
+.ds-button[data-on="true"] {
+  background: var(--ds-primary); color: var(--ds-on-primary); border-color: var(--ds-primary);
+}
+.ds-button[data-block="true"] {
+  width: 100%; justify-content: flex-start; text-align: left;
+}
+/* Disabled is a real state, not just a dimmed one: the border returns so the control
+   still reads as a control, and the cursor stops promising an action. */
+.ds-button:disabled,
+.ds-button[aria-disabled="true"] {
+  background: var(--ds-muted); color: var(--ds-text-3);
+  border: 1px solid var(--ds-border); cursor: default;
+}
+.ds-button:disabled:hover,
+.ds-button[aria-disabled="true"]:hover { background: var(--ds-muted); color: var(--ds-text-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-button { transition: none; }
 }

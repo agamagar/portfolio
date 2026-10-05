@@ -16,3 +16,29 @@ opencode.json
 
 # temp asset backups
 *.prev.png
+
+# local-only, never-committed modules (e.g. src/wip.local.jsx — the WIP shelf)
+*.local.jsx
+*.local.js
+*.local.css
+
+# Dassh SDS Storybook static (regenerate from Code/dassh-ui: storybook:build -> copy to public/sds-playground/)
+public/sds-playground/
+
+# DJ console audio — the /dj tracks are large binaries kept out of git.
+# They still ship via the local `vite build` (copied into dist/dj/). See
+# public/dj/README.md. The folder + README stay tracked; only the mp3s are ignored.
+public/dj/*.mp3
+exports/
+.asset-backups/
+
+# 5 Oct (going live): scratch logs and hand-made backups never ship
+*.log[0-9]*
+*.bak-*
+*.generated-bak.*
+# raw Zepto exports stay local; the site ships the percentages-only copy
+public/data/sd_slot_availability_daily_2026.csv
+public/data/sd/
+# only the header's product-design resume is public; tailored ones stay local
+public/resume/*.pdf
+!public/resume/agam-agarwal-product-design.pdf

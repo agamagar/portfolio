@@ -1,0 +1,114 @@
+{
+  "root": {
+    "id": "80:4215",
+    "name": "Frame 2147231130",
+    "w": 360,
+    "h": 1460.1358642578125
+  },
+  "durationMs": 5000,
+  "loopMode": "loop",
+  "notFound": [],
+  "hiddenCount": 0,
+  "layers": [
+    {
+      "id": "80:4215",
+      "name": "Frame 2147231130",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 0,
+        "top": 0,
+        "width": 100,
+        "height": 100
+      },
+      "parentBox": {
+        "left": 0,
+        "top": 0,
+        "width": 100,
+        "height": 100
+      },
+      "size": {
+        "w": 360,
+        "h": 1460.1358642578125
+      },
+      "tracks": [
+        {
+          "prop": "y",
+          "duration": 5,
+          "times": [
+            0,
+            0.058,
+            0.2779,
+            0.3313,
+            0.4352,
+            0.5086,
+            0.6528,
+            0.7426,
+            0.8426,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            -400,
+            -400,
+            -620,
+            -620,
+            -940,
+            -940,
+            -8,
+            -8
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.42,
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.42,
+                0,
+                0,
+                1.002
+              ]
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.42,
+                0,
+                0,
+                1.005
+              ]
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ekam — Social Content: Instagram · X · Reddit</title>
+<style>
+  :root{
+    --paper:#F5F1E9; --panel:#FBF8F2; --ink:#191713; --muted:#6B6459;
+    --rule:#DED6C7; --accent:#A33A2B; --accent-soft:#F0E3DE;
+    --ig:#B4472F; --x:#2E2A24; --rd:#8A5A1E;
+    --serif:ui-serif,"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#14120F; --panel:#1C1A16; --ink:#EDE7DA; --muted:#9A9285;
+      --rule:#302C25; --accent:#D9705C; --accent-soft:#2A1F1B;
+      --ig:#D9705C; --x:#CFC8B9; --rd:#C99A50;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* subtle material grain — texture over warm colour (art direction §3) */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.055;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:0 24px 96px}
+
+  /* ---------- header ---------- */
+  header{padding:64px 0 32px; border-bottom:1px solid var(--rule)}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 20px}
+  h1{font-family:var(--serif); font-weight:400; font-size:clamp(30px,5.5vw,46px); line-height:1.12; letter-spacing:-.015em; margin:0 0 18px}
+  .lede{font-size:17px; color:var(--muted); max-width:62ch; margin:0}
+  .lede b{color:var(--ink); font-weight:600}
+
+  /* ---------- tabs ---------- */
+  nav{position:sticky; top:0; z-index:5; display:flex; gap:6px; flex-wrap:wrap;
+      padding:14px 0; margin-bottom:8px; background:var(--paper); border-bottom:1px solid var(--rule)}
+  nav button{
+    font-family:var(--sans); font-size:13px; font-weight:500; color:var(--muted);
+    background:transparent; border:1px solid var(--rule); border-radius:999px;
+    padding:7px 15px; cursor:pointer; transition:.15s;
+  }
+  nav button:hover{color:var(--ink); border-color:var(--muted)}
+  nav button[aria-selected="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+
+  /* ---------- platform section ---------- */
+  section{padding:44px 0 8px; border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:0}
+  .phead{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px}
+  .phead h2{font-family:var(--serif); font-weight:400; font-size:27px; letter-spacing:-.01em; margin:0}
+  .phead .count{font-family:var(--mono); font-size:11px; color:var(--muted)}
+  .register{
+    font-size:15px; color:var(--muted); max-width:66ch; margin:10px 0 30px;
+    padding-left:16px; border-left:2px solid var(--accent);
+  }
+  .register b{color:var(--ink); font-weight:600}
+
+  /* ---------- card ---------- */
+  article{
+    background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+    padding:24px 26px; margin-bottom:18px;
+  }
+  .meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
+  .tag{
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:4px 8px; border-radius:2px; background:var(--accent-soft); color:var(--accent); white-space:nowrap;
+  }
+  .tag.plain{background:transparent; border:1px solid var(--rule); color:var(--muted)}
+  article h3{font-family:var(--serif); font-weight:400; font-size:21px; line-height:1.3; margin:0 0 6px}
+  .src{font-size:13px; color:var(--muted); margin:0 0 18px}
+  .src code{font-family:var(--mono); font-size:12px}
+
+  .label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); margin:22px 0 10px; display:flex; align-items:center; gap:10px;
+  }
+  .label::after{content:""; flex:1; height:1px; background:var(--rule)}
+
+  /* frames */
+  ol.frames{list-style:none; margin:0; padding:0; counter-reset:f}
+  ol.frames li{
+    counter-increment:f; display:grid; grid-template-columns:26px 1fr; gap:14px;
+    padding:12px 0; border-top:1px solid var(--rule);
+  }
+  ol.frames li::before{
+    content:counter(f); font-family:var(--mono); font-size:11px; color:var(--muted);
+    padding-top:3px;
+  }
+  .on{font-family:var(--serif); font-size:17px; line-height:1.4}
+  .vis{font-size:13.5px; color:var(--muted); margin-top:5px}
+  .vis::before{content:"visual — "; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase}
+
+  /* tweets */
+  ol.tweets{list-style:none; margin:0; padding:0; counter-reset:t}
+  ol.tweets li{
+    counter-increment:t; position:relative; padding:13px 62px 13px 30px;
+    border-top:1px solid var(--rule); font-size:15.5px;
+  }
+  ol.tweets li::before{
+    content:counter(t)"/"; position:absolute; left:0; top:16px;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+  }
+  .cc{position:absolute; right:0; top:15px; font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+  .cc.over{color:var(--accent); font-weight:700}
+
+  /* prose blocks (captions, reddit bodies) */
+  .body{font-size:15.5px}
+  .body p{margin:0 0 13px}
+  .body p:last-child{margin-bottom:0}
+  .body ul{margin:0 0 13px; padding-left:20px}
+  .body li{margin-bottom:5px}
+  .caption{background:var(--paper); border:1px solid var(--rule); border-radius:2px; padding:16px 18px; font-size:15px}
+  .caption p{margin:0 0 11px}
+  .caption p:last-child{margin-bottom:0}
+  .tags-line{font-family:var(--mono); font-size:12.5px; color:var(--muted); word-spacing:.2em}
+  .rtitle{font-family:var(--serif); font-size:19px; line-height:1.35; margin:0 0 4px}
+  .sub{font-family:var(--mono); font-size:12px; color:var(--rd); margin:0 0 16px}
+
+  .note{
+    margin-top:20px; padding:14px 16px; border-radius:2px;
+    background:var(--accent-soft); font-size:14px; line-height:1.55;
+  }
+  .note b{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:6px; color:var(--accent)}
+
+  blockquote{
+    margin:22px 0 0; padding:18px 22px; border-left:2px solid var(--accent);
+    background:var(--paper); font-family:var(--serif); font-size:18px; line-height:1.45;
+  }
+  blockquote cite{display:block; margin-top:9px; font-family:var(--sans); font-size:12.5px; font-style:normal; color:var(--muted)}
+
+  button.copy{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--rule); color:var(--muted);
+    padding:6px 11px; border-radius:2px; cursor:pointer; margin-top:18px; transition:.15s;
+  }
+  button.copy:hover{color:var(--ink); border-color:var(--muted)}
+
+  /* tables */
+  .scroll{overflow-x:auto; margin:0 0 8px}
+  table{width:100%; border-collapse:collapse; font-size:14px; min-width:520px}
+  th,td{text-align:left; padding:10px 14px 10px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+  th{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:400}
+
+  footer{padding:52px 0 0}
+  footer h2{font-family:var(--serif); font-weight:400; font-size:25px; margin:0 0 20px}
+  .flag{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:13px 0; border-top:1px solid var(--rule); font-size:14.5px}
+  .flag span{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); padding-top:4px}
+  .hidden{display:none}
+  @media (max-width:560px){
+    .wrap{padding:0 18px 72px}
+    article{padding:20px 18px}
+    ol.tweets li{padding:13px 0 30px 26px}
+    .cc{right:auto; left:26px; top:auto; bottom:10px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Ekam · Dehradun · content draft · 25 Jul 2026</p>
+  <h1>The same knowledge, said three&nbsp;different&nbsp;ways</h1>
+  <p class="lede">Ten pieces adapted from Dr. Richa's drafts in <b>ekam writing drafts</b> for Instagram, X and Reddit. The clinical content is hers and unchanged — what shifts per platform is register, length and how much the format is allowed to carry. Every piece was filtered against §13 voice rules: <b>name the condition, speak in "you", never moralize a symptom, never use fear to drive a booking.</b></p>
+</header>
+
+<nav id="tabs">
+  <button data-f="all" aria-selected="true">All 10</button>
+  <button data-f="ig">Instagram · 4</button>
+  <button data-f="x">X · 3</button>
+  <button data-f="rd">Reddit · 3</button>
+  <button data-f="map">Source map</button>
+</nav>
+
+<!-- ================= INSTAGRAM ================= -->
+<section data-p="ig">
+  <div class="phead"><h2>Instagram</h2><span class="count">4 pieces · primary channel</span></div>
+  <p class="register"><b>Register:</b> the carousel does the unpacking, so the caption never has to argue. Lead frame earns the swipe with a true sentence, not a hook. Anatomy drawn plainly and accurately — no flowers or fruit standing in for a body (§7 kill list). Sensitive topics stay static, never Reels.</p>
+
+  <article data-p="ig">
+    <div class="meta"><span class="tag">Explain</span><span class="tag plain">Carousel · 10 frames</span></div>
+    <h3>The story of an egg</h3>
+    <p class="src">From <code>Menstrual cycle elaborated</code> — the most storyboard-ready draft in the folder. Dr. Richa's metaphors kept; the sequence tightened to one idea per frame.</p>
+
+    <div class="label">Frames</div>
+    <ol class="frames copy-src">
+      <li><div><div class="on">The story of an egg.</div><div class="vis">Cover. Wordmark small, top-left. One drawn follicle, ink on warm ground.</div></div></li>
+      <li><div><div class="on">Inside you there are two ovaries. Every egg you will ever have is already in them.</div><div class="vis">Both ovaries, drawn in outline, actual scale.</div></div></li>
+      <li><div><div class="on">Slice one open and you'd see follicles — fluid-filled bags, each holding a single egg.</div><div class="vis">Cross-section, follicles at varied sizes. Precise, unshaded.</div></div></li>
+      <li><div><div class="on">That bag has two jobs. It holds the egg. It also makes your estrogen and progesterone.</div><div class="vis">One follicle enlarged, two labelled arrows leaving it.</div></div></li>
+      <li><div><div class="on">Every month, once bleeding starts, about ten of them begin to grow. They reach the size of a pea.</div><div class="vis">Ten follicles, pea shown beside for scale.</div></div></li>
+      <li><div><div class="on">Only one or two are chosen. That one grows to the size of a peanut — a balloon full of fluid.</div><div class="vis">Nine faded back, one carried forward.</div></div></li>
+      <li><div><div class="on">Then it makes an opening in the wall of the ovary, and bursts. The egg is released. That is ovulation.</div><div class="vis">The moment itself. Drawn with care, not drama.</div></div></li>
+      <li><div><div class="on">The tube reaches out and picks it up — and holds it there for about three days.</div><div class="vis">Fimbriae as an open hand. Dr. Richa's image, kept.</div></div></li>
+      <li><div><div class="on">If a sperm meets it, that egg can become a person. If none does, it dies — and about fourteen days later, you bleed.</div><div class="vis">Split frame. Both outcomes given equal weight and equal calm.</div></div></li>
+      <li><div><div class="on">Then ten more begin to grow. Nothing in that is a mystery, and nothing in it is unclean.</div><div class="vis">Loop back to frame 5's composition. Closes the circle.</div></div></li>
+    </ol>
+
+    <div class="label">Caption</div>
+    <div class="caption copy-src">
+      <p>Most of us learned the word "cycle" and never the thing itself.</p>
+      <p>So: ten follicles start growing every month. One is chosen. It fills, bursts, and releases an egg that waits about three days in the tube. If nothing meets it, it dies, and roughly fourteen days later you bleed — and ten more begin.</p>
+      <p>That's it. That's the month. The follicle that holds the egg is also the thing making your estrogen and progesterone, which is why a cycle that goes wrong is rarely <em>only</em> about bleeding.</p>
+      <p>If yours doesn't look like this — long gaps, no gaps, bleeding that arrives unannounced — that's worth a conversation, not a wait.</p>
+      <p class="tags-line">#menstrualhealth #periods #gynaecology #womenshealth #pcod #dehradun #ekam</p>
+    </div>
+    <button class="copy">Copy piece</button>
+  </article>
+
+  <article data-p="ig">
+    <div class="meta"><span class="tag">De-stigmatize</span><span class="tag">Access</span><span class="tag plain">Carousel · 9 frames</span></div>
+    <h3>Three things you've been told about the HPV vaccine</h3>
+    <p class="src">From <code>HPV VACCINE: WHAT IS IT</code> — the only draft already carrying Ekam pricing and a disclaimer. Myth-first order preserved from the source.</p>
+
+    <div class="label">Frames</div>
+    <ol class="frames copy-src">
+      <li><div><div class="on">Three things you've been told about the HPV vaccine. All three are wrong.</div><div class="vis">Cover. Type only, generous space. No syringe imagery — it reads as fear.</div></div></li>
+      <li><div><div class="on">"It's only for girls." — It causes cancer in men too: mouth, throat, penis, anus. Incidence is about 3% in women, 2% in men.</div><div class="vis">Mucosal sites marked on two neutral silhouettes.</div></div></li>
+      <li><div><div class="on">"I've left it too late." — It's given from age nine. Adults can still take it up to forty-five, after talking to a doctor.</div><div class="vis">A plain age line, 9 → 45. No anxious styling.</div></div></li>
+      <li><div><div class="on">"The vaccine causes cancer." — There is no live virus in it. It's built from the outer shell proteins of the virus. There is nothing in it that can infect you.</div><div class="vis">Shell protein drawn as an empty vessel — clay, hollow, no contents.</div></div></li>
+      <li><div><div class="on">What it is actually protecting you from: cervical cancer, the most common of the HPV cancers.</div><div class="vis">Cervix drawn accurately, body faded to outline around it.</div></div></li>
+      <li><div><div class="on">And "cervix" simply means neck. It's the neck of the womb — the passage for blood, and for a baby.</div><div class="vis">Same drawing, now labelled.</div></div></li>
+      <li><div><div class="on">It covers the most common cancer-causing strains. There are more than a hundred strains. So: good protection, not a guarantee.</div><div class="vis">Honest ratio, shown as marks — not a scare statistic.</div></div></li>
+      <li><div><div class="on">Which is why Pap smears every three years still matter. The vaccine doesn't replace the check.</div><div class="vis">Two things side by side, equal size. Neither replaces the other.</div></div></li>
+      <li><div><div class="on">Under 14: two doses. 14 and over: three. At Ekam — Gardasil ₹3,927 · Gardasil 9 ₹10,850.</div><div class="vis">Plain table. Footer disclaimer, small: schedules simplified for awareness; yours may differ.</div></div></li>
+    </ol>
+
+    <div class="label">Caption</div>
+    <div class="caption copy-src">
+      <p>There are only two vaccines in the world that prevent a cancer. One is Hepatitis B, and every newborn in India gets it. The other is HPV, and most adults here have never been offered it.</p>
+      <p>HPV infects mucosa — the pink, shiny skin inside your mouth, your cervix, your anus. Usually it causes something forgettable: a wart, a skin tag, gone before you noticed. In some people the infection keeps flaring, and over years that damage can become cancer.</p>
+      <p>It is not a women's vaccine. It's talked about that way because cervical cancer is the biggest share of the harm, not because men are unaffected.</p>
+      <p>Ages nine and up. Up to forty-five, worth asking your doctor about. Swipe for the schedule and what it costs here.</p>
+      <p class="tags-line">#hpvvaccine #cervicalcancer #cancerprevention #vaccination #womenshealth #dehradun #ekam</p>
+    </div>
+    <div class="note"><b>Check before posting</b>Pricing is lifted from the draft as written. Confirm both figures are current with the front desk — this is the one piece on the page that puts a number in public.</div>
+    <button class="copy">Copy piece</button>
+  </article>
+
+  <article data-p="ig">
+    <div class="meta"><span class="tag">De-stigmatize</span><span class="tag plain">Carousel · 10 frames</span></div>
+    <h3>PCOD is not "just lose weight"</h3>
+    <p class="src">From <code>PMOS/ PCOS</code>. Serves the 40% of the patient mix. The final two frames are Dr. Richa's own words, near-verbatim — they're the strongest writing in the folder.</p>
+
+    <div class="label">Frames</div>
+    <ol class="frames copy-src">
+      <li><div><div class="on">PCOD is not "just lose weight."</div><div class="vis">Cover. Type only. Flat, certain, unshouted.</div></div></li>
+      <li><div><div class="on">"Polycystic" means the egg bags stalled. Many grew big enough to cause trouble, none big enough to release an egg.</div><div class="vis">Ovary cross-section, many mid-sized follicles, none bursting.</div></div></li>
+      <li><div><div class="on">They keep signalling the brain that they need to grow. The brain keeps answering. Nothing completes.</div><div class="vis">A signal loop that never closes.</div></div></li>
+      <li><div><div class="on">Three things are going wrong at once. Your weight is not the first of them.</div><div class="vis">Three marks, drawn to be revealed one at a time.</div></div></li>
+      <li><div><div class="on">One — insulin resistance. Insulin's job is to let sugar into your cells. Here, the cells stop answering the door.</div><div class="vis">A knock at a door. Literal, warm, not cute.</div></div></li>
+      <li><div><div class="on">So your body reads it as hunger. Insulin climbs, sugar climbs — and the rhythm of your female hormones breaks.</div><div class="vis">A steady wave losing its beat.</div></div></li>
+      <li><div><div class="on">Two — less dopamine in the brain. The brain's control over the ovaries slips, and cycles turn irregular.</div><div class="vis">Brain-to-ovary line, drawn thinning.</div></div></li>
+      <li><div><div class="on">Three — testosterone rises. Mostly because of the first two. It's the part you can see: acne, hair, hair fall.</div><div class="vis">The visible symptoms, listed plainly. No before-and-after faces, ever.</div></div></li>
+      <li><div><div class="on">Can it be cured? No. It stays in the background, waiting for you to falter. What it can be is managed — medication for the big imbalances, and real change in how you sleep and eat.</div><div class="vis">Type only. Let the honesty sit.</div></div></li>
+      <li><div><div class="on">We are not asking you to be a warden for your body — scrutinising it, criticising it. We're asking you to be a friend to it. And on the days you fail at that, you forgive yourself and walk on ahead.</div><div class="vis">Closing frame. Warmest material in the set — cloth, thread, or worn clay.</div></div></li>
+    </ol>
+
+    <div class="label">Caption</div>
+    <div class="caption copy-src">
+      <p>Forty percent of the people who come to us come with PCOD. Almost all of them have already been told to lose weight, and almost none of them have been told what is actually happening.</p>
+      <p>Three things, at once: cells that stop responding to insulin, less dopamine in the brain, and testosterone rising because of the first two. Irregular cycles and acne are the visible end of that — not the whole of it.</p>
+      <p>Which also means it isn't cured, it's managed. That sounds like bad news and isn't: it means the work you put in is the thing that holds it, and a bad week doesn't undo you.</p>
+      <p>If it's gone unaddressed for years — that's the appointment. Not a lecture.</p>
+      <p class="tags-line">#pcod #pcos #insulinresistance #hormonalhealth #womenshealth #dehradun #ekam</p>
+    </div>
+    <blockquote>Your ways might be hard to change. We aren't going to make you a warden for your body, to scrutinise and criticise, but to be a friend to it.<cite>Dr. Richa Chandra, from the PCOS draft — the line the whole pillar should be built around</cite></blockquote>
+    <button class="copy">Copy piece</button>
+  </article>
+
+  <article data-p="ig">
+    <div class="meta"><span class="tag">Explain</span><span class="tag plain">Single graphic</span></div>
+    <h3>"Why am I on Glycomet? I don't have diabetes."</h3>
+    <p class="src">Topic #4 from <code>List of topics for socials</code>, answered with the insulin mechanism from the PCOS draft. The highest-intent question in the list — it's asked <em>after</em> a prescription, when trust is wobbling.</p>
+
+    <div class="label">On-graphic</div>
+    <div class="body copy-src">
+      <p><strong>"Why am I on Glycomet? I don't have diabetes."</strong></p>
+      <p>You don't. You have cells that have stopped responding to insulin — and that's the same problem metformin was built for.</p>
+      <p>It isn't treating sugar. It's treating the reason your cycles won't settle.</p>
+    </div>
+
+    <div class="label">Caption</div>
+    <div class="caption copy-src">
+      <p>This is one of the most common questions we get after a PCOD consult, and it usually arrives with a bit of suspicion attached. Fair enough — nobody explained it.</p>
+      <p>In PCOS, insulin knocks and the cells don't open. Your body reads that as hunger, so insulin and blood sugar both climb, and rising insulin interferes directly with the rhythm your female hormones need. Glycomet (metformin) makes the cells answer again. Cycles are downstream of that.</p>
+      <p>You should never have to guess why you're taking something. If a prescription from us wasn't explained well enough, ask us again — we'll explain it again, differently.</p>
+      <p class="tags-line">#pcod #metformin #glycomet #insulinresistance #womenshealth #ekam</p>
+    </div>
+    <button class="copy">Copy piece</button>
+  </article>
+</section>
+
+<!-- ================= X ================= -->
+<section data-p="x">
+  <div class="phead"><h2>X</h2><span class="count">3 pieces · character counts live</span></div>
+  <p class="register"><b>Register:</b> no carousel to hide behind, so the first line has to be the sharpest <em>true</em> sentence available — never a curiosity gap. Threads teach; standalones correct one wrong belief and stop. This is the platform where the discretion rule is easiest to break, so: no quote-tweet arguments, no engagement bait, no replying to bad medicine with contempt.</p>
+
+  <article data-p="x">
+    <div class="meta"><span class="tag">Access</span><span class="tag plain">Thread · 8</span></div>
+    <h3>Only two vaccines prevent cancer</h3>
+    <p class="src">From <code>HPV VACCINE: WHAT IS IT</code>. Same content as the Instagram carousel, restructured — X rewards the fact that leads, Instagram rewards the myth that leads.</p>
+    <ol class="tweets copy-src">
+      <li>There are only two vaccines in the world that prevent a cancer. One is Hepatitis B — every newborn in India gets it. The other is HPV, and most adults here have never been offered it. What it actually does: 🧵</li>
+      <li>HPV is a DNA virus that infects mucosa — the pink, shiny skin inside your mouth, your cervix, your anus. Usually it causes something forgettable: a wart, a skin tag. Most people clear it and never know they had it.</li>
+      <li>In some people the infection keeps flaring. Over years, that damage can become cancer — mouth, head and neck, cervix, vagina, penis, anus. Anywhere that mucosa exists.</li>
+      <li>The most common of those is cervical cancer. "Cervix" just means neck — it's the neck of the womb, deep inside the vagina. You can't see it without clinical help, and it takes more wear and tear than any other part of the tract.</li>
+      <li>It is not a women's-only vaccine. HPV cancer incidence runs about 3% in women, 2% in men. Women hear about it more because cervical cancer is the biggest share of the harm — not because men are unaffected.</li>
+      <li>Why from age nine, and not at birth with the other vaccines? Because transmission is tied to sexual contact, and that includes contact without penetration. It's given ahead of likely exposure, not ahead of adulthood.</li>
+      <li>It contains no live virus. It's made from the outer shell proteins of the virus using recombinant DNA — nothing in it can infect you. Side effects are the ordinary ones: headache, fever, nausea, stomach upset, fainting.</li>
+      <li>It covers the most common cancer-causing strains, and there are 100+ strains. Good protection, not a guarantee — so Pap smears every 3 years still matter. Under 14: 2 doses. 14+: 3 doses. Adults to 45, after asking a doctor.</li>
+    </ol>
+    <button class="copy">Copy thread</button>
+  </article>
+
+  <article data-p="x">
+    <div class="meta"><span class="tag">De-stigmatize</span><span class="tag plain">Thread · 6</span></div>
+    <h3>PCOD is a metabolic problem wearing a period problem's clothes</h3>
+    <p class="src">From <code>PMOS/ PCOS</code>. Ends on the consequence, because X readers who don't act at tweet 6 won't act at all — stated as fact, not warning (§13: no fear to drive bookings).</p>
+    <ol class="tweets copy-src">
+      <li>PCOD is not a weight problem with a hormonal side effect. It's a metabolic problem, and the irregular periods are the part you can see. Three things go wrong at once — and weight isn't the first of them. 🧵</li>
+      <li>First: insulin resistance. Insulin's job is to walk sugar into your cells. In PCOS the cells stop answering the door. The body reads that as hunger, so insulin and blood sugar both climb — and rising insulin breaks the rhythm your female hormones run on.</li>
+      <li>Second: less dopamine in the brain. That loosens the brain's control over the ovaries. Cycles turn irregular and follicles stall — growing big enough to cause trouble, never big enough to release an egg.</li>
+      <li>Third: testosterone rises, mostly as a result of the first two. Acne, facial hair, hair fall. It's the most visible feature, which is why it gets treated as the whole diagnosis.</li>
+      <li>Genetics sets it up. Sleep that never settles, eating at no fixed hour, and heavily packaged food all push on the same three levers. This is why "just lose weight" isn't a plan — it's an instruction with the mechanism removed.</li>
+      <li>It doesn't get cured, it gets managed — and left unmanaged it isn't only about periods and acne. The same imbalances raise your risk of high BP, diabetes and heart disease. Which is the actual reason to treat it early.</li>
+    </ol>
+    <button class="copy">Copy thread</button>
+  </article>
+
+  <article data-p="x">
+    <div class="meta"><span class="tag">De-stigmatize</span><span class="tag">Explain</span><span class="tag plain">5 standalones</span></div>
+    <h3>Standalone posts — one correction each</h3>
+    <p class="src">Drawn across all five drafts. Post between threads; each corrects exactly one wrong belief and stops.</p>
+    <ol class="tweets copy-src">
+      <li>The follicle isn't just a bag holding an egg. It's also what makes your estrogen and progesterone. Which is why a cycle that goes wrong is almost never <em>only</em> about bleeding — and why "it's just your period" is bad medicine.</li>
+      <li>"Cervical" doesn't mean neck as in spine. Cervix <em>means</em> neck. It's the neck of your womb — the passage for menstrual blood and for a baby, and the single most common site of HPV cancer. You cannot see it without clinical help.</li>
+      <li>Heavy or unannounced bleeding is either structural — something a scan can actually see — or functional: hormones, metabolic health. Those are two different treatments. Which is why "take iron and wait" isn't a plan, it's a delay.</li>
+      <li>PCOD doesn't get cured. It gets managed. That sounds like bad news and isn't — it means the work you put in is the thing holding it, and one bad week doesn't undo you.</li>
+      <li>If you've been put on metformin and you don't have diabetes: it isn't treating your sugar. In PCOS your cells stop responding to insulin, and that's what's disturbing your cycles. Metformin is aimed at the cause, not the symptom.</li>
+    </ol>
+    <button class="copy">Copy all five</button>
+  </article>
+</section>
+
+<!-- ================= REDDIT ================= -->
+<section data-p="rd">
+  <div class="phead"><h2>Reddit</h2><span class="count">3 pieces · read the rules first</span></div>
+  <p class="register"><b>Register:</b> Reddit is the one platform where the clinic cannot be the point. Almost every relevant subreddit bans self-promotion outright, and a post that reads as marketing gets removed, or worse, remembered. So: no clinic name in the body, no CTA, no link. Value density instead — the thing a person searching at 2am actually needed. The clinic only ever gets named in a reply, when someone asks, and always with the affiliation disclosed.</p>
+
+  <article data-p="rd">
+    <div class="meta"><span class="tag">Explain</span><span class="tag plain">Text post</span></div>
+    <p class="sub">r/PCOS · r/PCOSIndia · flair: Verified Doctor (apply first)</p>
+    <p class="rtitle">Gynaecologist here — the three things actually going wrong in PCOS, and why you've been put on metformin without having diabetes</p>
+    <p class="src">From <code>PMOS/ PCOS</code>. Answers the two questions r/PCOS asks most, in one post.</p>
+    <div class="body copy-src">
+      <p>I'm an obstetrician-gynaecologist in India and a large share of my practice is PCOS. The single most common thing I see is someone who has been told to lose weight, given a prescription, and told nothing about the mechanism. So here is the mechanism.</p>
+      <p><strong>What "polycystic" actually describes.</strong> A follicle is a fluid-filled bag holding one egg. Normally about ten start growing each month, one or two are selected, and the chosen one grows, bursts through the ovary wall and releases the egg. In PCOS they reach growth arrest — many grow big enough to cause problems, none big enough to release. They keep signalling the brain to grow, the brain keeps answering, nothing completes. What a scan shows as "cysts" are those stalled follicles.</p>
+      <p><strong>Three things go wrong at once.</strong></p>
+      <ul>
+        <li><strong>Insulin resistance.</strong> Insulin's job is to let glucose into your cells. In PCOS — much like type 2 diabetes — the receptors stop recognising insulin when it knocks with the food supply. Your body reads that as hunger, so both insulin and blood sugar rise. Raised insulin then interferes, directly and indirectly, with the rhythmic release of your female hormones.</li>
+        <li><strong>Reduced dopamine in the brain.</strong> This alters the brain's control over the ovaries, which produces both the irregular cycles and the polycystic appearance.</li>
+        <li><strong>Raised testosterone.</strong> Largely a consequence of the first two. It's the most visible feature — acne, hirsutism, hair fall — which is why it often gets mistaken for the whole condition.</li>
+      </ul>
+      <p><strong>Why metformin, if your sugars are normal.</strong> Because it isn't aimed at your sugar. It's aimed at the insulin resistance sitting underneath everything above. Treat that and you're working upstream of the cycles, rather than managing symptoms one at a time. Normal fasting glucose doesn't mean absent insulin resistance — it often means your pancreas is still successfully compensating for it.</p>
+      <p><strong>Why it happened.</strong> Genetics first. Then irregular sleeping and eating patterns, and a diet heavy in fast and packaged food — which adds to the insult, because those affect the same three mechanisms directly or indirectly.</p>
+      <p><strong>The part people don't like hearing.</strong> It cannot really be cured. It sits in the background waiting for you to falter, and it relapses. The only true treatment is to be aware of the situation and keep working toward a healthier life each day without resentment — and on the days, weeks or phases where you get overwhelmed and fail at it, to forgive yourself and walk on ahead.</p>
+      <p>I'll say the rest plainly, because it's the reason to bother: if this goes unmanaged it isn't only irregular periods and acne. Your body is dealing with major imbalances continuously, and that carries real risk of high blood pressure, diabetes and heart disease. And it is badly underrated what those hormones do to your mood and your mind — that part is not in your imagination.</p>
+      <p>You don't need to become a warden for your body, scrutinising and criticising it. A friend to it is enough, and it's more effective. Happy to answer questions in the comments — general information only, not a substitute for your own doctor who can actually examine you.</p>
+    </div>
+    <div class="note"><b>Before posting</b>Apply for verified-flair first — most health subs require credentials before a doctor may post as one, and posting without it reads as an ad. Check each sub's self-promo rule, and don't cross-post the same text to both subs on the same day.</div>
+    <button class="copy">Copy post</button>
+  </article>
+
+  <article data-p="rd">
+    <div class="meta"><span class="tag">Access</span><span class="tag plain">Text post</span></div>
+    <p class="sub">r/TwoXIndia · r/india · r/IndiaSpeaks (adjust tone down for the last)</p>
+    <p class="rtitle">The HPV vaccine in India — actual costs, the real schedule, and the four myths I hear every week in clinic</p>
+    <p class="src">From <code>HPV VACCINE: WHAT IS IT</code>. Cost transparency is the value here, and it's what makes this non-promotional: the numbers are given as market information, not as an offer.</p>
+    <div class="body copy-src">
+      <p>I'm a gynaecologist in Dehradun. I get asked about this constantly and there's very little plain Indian-context information around, so here it is in one place.</p>
+      <p><strong>What HPV is.</strong> A DNA virus that infects mucosa — the pink, shiny skin inside your mouth, cervix, vagina, anus. It damages it in a way that makes it overgrow into a wart or skin tag. Usually this needs no attention, so it gets ignored. In some people the infection keeps flaring, and over years it can cause cancer: mouth, head and neck, cervix, vagina, penis, anus. Cervical cancer is the most common of them.</p>
+      <p><strong>Cost, privately, as of now.</strong> Gardasil, covering 4 strains: about ₹3,927 per dose. Gardasil 9, covering 9 strains: about ₹10,850 per dose. Multiply by two or three depending on your age. Both give meaningful protection — Gardasil 9 covers more strains, and if cost is what's deciding, the 4-strain vaccine is very far from nothing. Prices vary by city and clinic, so treat these as a reference point, not a quote.</p>
+      <p><strong>The schedule.</strong> Under 14: two doses, at 0 and 2 months. 14 and above: three doses, at 0, 2 and 6 months. Given from age 9. Adults can still take it up to 45 after a discussion with their doctor.</p>
+      <p><strong>Four myths, in the order I hear them.</strong></p>
+      <ul>
+        <li><em>"It's only for women."</em> No. HPV cancer incidence is roughly 3% in women and 2% in men. It's discussed from a women's-health angle because cervical cancer is the largest share — not because men aren't affected.</li>
+        <li><em>"There's an age cut-off and I've missed it."</em> The lower bound is 9. The upper bound is a conversation, not a wall — up to 45 with your doctor.</li>
+        <li><em>"The vaccine causes cancer."</em> It contains no live virus. It's an extract of non-infectious viral proteins made by recombinant DNA technology — the outer shell of the virus, with nothing inside it that can infect you. Real side effects exist and are ordinary: headache, fever, nausea, diarrhoea, abdominal pain, fainting.</li>
+        <li><em>"If I'm vaccinated I don't need check-ups."</em> Wrong, and this is the one that actually costs lives. It protects against a few of the most common strains and there are more than 100. Pap smears every 3 years are still recommended.</li>
+      </ul>
+      <p><strong>Why it's given at 9 rather than at birth.</strong> Because it's tied to sexual contact — and not only penetrative contact. Exposure can begin at any point after puberty, and the vaccine works best before exposure. Societal norms will give you a number; honestly, it's to each their own acceptable age.</p>
+      <p>For context on why this is worth the money: this is one of only two vaccines that prevent a cancer at all. The other is Hepatitis B, which every child in India now receives at birth. Happy to answer questions below — general information, not personal medical advice.</p>
+    </div>
+    <div class="note"><b>Judgment call</b>Naming the city but not the clinic is deliberate — it makes the post credible without making it an ad. If a mod asks, or anyone asks where you practise, disclose it plainly rather than dodging.</div>
+    <button class="copy">Copy post</button>
+  </article>
+
+  <article data-p="rd">
+    <div class="meta"><span class="tag plain">Comment templates</span></div>
+    <p class="sub">Replies · the only place Ekam gets named</p>
+    <p class="rtitle">How to answer the four comments these posts will get</p>
+    <p class="src">The disclosure problem, pre-solved. Reddit forgives a doctor promoting a clinic once, if they said so first — and never forgives finding it out later.</p>
+    <div class="body copy-src">
+      <p><strong>"Are you advertising? Which clinic is this?"</strong><br>
+      Fair question — I practise at Ekam in Dehradun, so treat me as an interested party. I didn't put it in the post because the information stands on its own and I'd rather it be useful than be an ad. If you're not in Dehradun, any gynaecologist can do all of the above.</p>
+      <p><strong>"Source?"</strong><br>
+      Happy to point you at the guidance rather than ask you to take my word for it — [attach the specific guideline]. Where I'm summarising or simplifying for readability, say so and I'll give you the fuller version.</p>
+      <p><strong>Someone describes their own symptoms and asks what's wrong.</strong><br>
+      I can't diagnose you over text, and I'd be doing you a disservice if I tried — what I can do is tell you what I'd want examined. Based on what you've described, the things worth ruling out are [X and Y], and the tests that answer it are [A and B]. Take that list to whoever you see.</p>
+      <p><strong>Someone repeats something clearly wrong, confidently.</strong><br>
+      Correct the fact, never the person, and don't win. "That was standard advice for a long time, so it's a very reasonable thing to believe — what we now know is [X]." Contempt costs more trust than the misinformation does, and every person reading is watching how you treat them.</p>
+    </div>
+    <button class="copy">Copy templates</button>
+  </article>
+</section>
+
+<!-- ================= SOURCE MAP ================= -->
+<section data-p="map">
+  <div class="phead"><h2>Source map</h2><span class="count">what came from where</span></div>
+  <p class="register">Five drafts in, ten pieces out. The gaps below are as useful as the coverage — they show what to write next.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Source draft</th><th>State</th><th>Used for</th></tr></thead>
+      <tbody>
+        <tr><td>HPV VACCINE: WHAT IS IT</td><td>Publish-ready</td><td>IG carousel · X thread · Reddit post — carried 3 pieces on its own</td></tr>
+        <tr><td>PMOS / PCOS</td><td>Complete draft</td><td>IG carousel · IG single · X thread · Reddit post · 2 standalones</td></tr>
+        <tr><td>Menstrual cycle elaborated</td><td>Complete draft</td><td>IG carousel · 1 standalone</td></tr>
+        <tr><td>HMB or heavy menstrual bleed</td><td>Positioning note, not an article</td><td>1 standalone only — too thin for a carousel yet</td></tr>
+        <tr><td>List of topics for socials</td><td>22-item backlog</td><td>#4 (Glycomet) used. #5, #6, #10 are the same question three times — merge them.</td></tr>
+        <tr><td>PMS</td><td>Stub — stops at "WHAT CAUSES IT?"</td><td>Nothing. Can't be adapted from one paragraph.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <h2>Flags &amp; open questions</h2>
+  <div class="flag"><span>Decide</span><div><strong>Who posts on Reddit.</strong> A personal account under Dr. Richa's name earns verified flair and real credibility; an Ekam-branded account gets removed from most health subs on sight. These drafts assume the personal account. It's the one genuinely strategic choice on this page, and it needs her answer before anything ships.</div></div>
+  <div class="flag"><span>Verify</span><div><strong>The two prices.</strong> ₹3,927 and ₹10,850 come from the HPV draft. They appear publicly in two pieces here. Confirm they're current first.</div></div>
+  <div class="flag"><span>Sign-off</span><div><strong>Clinical review of the PCOS and HPV claims as compressed.</strong> Tightening for a carousel frame means dropping qualifiers. Every number here traces to Dr. Richa's drafts, but she should read the compressed versions as published sentences, not as summaries of her own writing.</div></div>
+  <div class="flag"><span>Provisional</span><div><strong>The accent colour on this page.</strong> A pigment red, chosen to sit inside the material language without landing in the terracotta-and-serif cluster the art direction warns about. It is a placeholder — "own one colour" is still an open decision in the palette phase, and nothing here should be treated as settling it.</div></div>
+  <div class="flag"><span>Next</span><div><strong>Finish the PMS draft.</strong> It's the only source that produced nothing, and mood-and-pain-around-periods is the most searched thing in the whole topics list. It also already has its opening line.</div></div>
+  <div class="flag"><span>Note</span><div><strong>No Reels here.</strong> Nothing in this batch is a Reel — the calendar reserves video for warmer, lower-stakes content, and every piece in this set is either sensitive or explanatory. Team intro and clinic tour are still the right first Reels.</div></div>
+</footer>
+
+</div>
+
+<script>
+  // live character counts on X pieces
+  document.querySelectorAll('ol.tweets > li').forEach(li => {
+    const n = li.textContent.trim().length;
+    const s = document.createElement('span');
+    s.className = 'cc' + (n > 280 ? ' over' : '');
+    s.textContent = n + '/280';
+    li.appendChild(s);
+  });
+
+  // platform filter
+  const tabs = document.querySelectorAll('#tabs button');
+  tabs.forEach(btn => btn.addEventListener('click', () => {
+    const f = btn.dataset.f;
+    tabs.forEach(b => b.setAttribute('aria-selected', b === btn));
+    document.querySelectorAll('section').forEach(sec => {
+      sec.classList.toggle('hidden', f !== 'all' && sec.dataset.p !== f);
+    });
+    if (f === 'all') document.querySelectorAll('section').forEach(s => s.classList.remove('hidden'));
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }));
+
+  // copy
+  document.querySelectorAll('button.copy').forEach(btn => btn.addEventListener('click', async () => {
+    const text = [...btn.closest('article').querySelectorAll('.copy-src')]
+      .map(el => el.innerText.trim()).join('\n\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      const was = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => btn.textContent = was, 1400);
+    } catch (e) {
+      btn.textContent = 'Copy failed — select manually';
+    }
+  }));
+</script>
+</body>
+</html>

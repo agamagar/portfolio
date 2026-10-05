@@ -31,7 +31,7 @@
 /* ── states rail (the narrated inventory beside the phone) ─────────────────*/
 .sd-rail { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; align-self: stretch; padding: 6px 0; }
 .sd-rail__cap { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ds-text-3); margin: 2px 2px 2px; }
-.sd-step { display: flex; gap: 11px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--ds-line); border-radius: 12px; background: #fff; opacity: 0.42; transform: translateY(4px); transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-out), border-color var(--ds-dur-state) var(--ds-ease-std), box-shadow var(--ds-dur-state) var(--ds-ease-std); }
+.sd-step { display: flex; gap: 11px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--ds-line); border-radius: 16px; background: #fff; opacity: 0.42; transform: translateY(4px); transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-out), border-color var(--ds-dur-state) var(--ds-ease-std), box-shadow var(--ds-dur-state) var(--ds-ease-std); }
 .sd-step[data-on="true"] { opacity: 1; transform: none; }
 .sd-step[data-active="true"] { border-color: var(--sd-purple-line); box-shadow: 0 0 0 3px var(--sd-purple-soft); }
 .sd-step__dot { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%; background: var(--ds-muted); border: 1.5px solid var(--ds-border); display: grid; place-items: center; margin-top: 1px; transition: background var(--ds-dur-state) var(--ds-ease-std), border-color var(--ds-dur-state) var(--ds-ease-std); }
@@ -176,6 +176,8 @@
 
 /* ── state catalogue (contact sheet of every case) ─────────────────────────*/
 .sd-board { position: relative; background: var(--ds-surface); border: 1px solid var(--ds-border-card); border-radius: var(--ds-r-frame); box-shadow: var(--ds-shadow-frame); padding: 15px 17px 17px; }
+/* flat: the board IS the frame (mtmlp0i6) */
+.sd-board--flat { border: 0; border-radius: 12px; box-shadow: none; background: var(--ds-surface); padding: 18px 20px 20px; width: 100%; }
 .sd-board__head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
 .sd-board__title { font-size: 13px; font-weight: 700; color: var(--ds-text); }
 .sd-board__count { margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ds-text-3); }
@@ -233,6 +235,18 @@
 /* thumb: mini OTP */
 .sd-totp { display: flex; gap: 5px; }
 .sd-totp span { flex: 1; height: 22px; border: 1px solid var(--ds-border); border-radius: 5px; background: var(--ds-field); }
+
+/* thumb: shipment card with the Instant | Schedule control in a given state */
+.sd-ttog2 { display: flex; flex-direction: column; }
+.sd-ttog2__row { display: flex; gap: 6px; align-items: center; }
+.sd-ttog2__btn { flex: 1; height: 26px; border: 1px solid var(--ds-border); border-radius: 7px; display: grid; place-items: center; color: var(--ds-text-2); background: #fff; }
+.sd-ttog2__btn svg { width: 13px; height: 13px; }
+.sd-ttog2__btn[data-state="off"] { opacity: 0.4; }
+.sd-ttog2__btn[data-state="disabled"] { opacity: 0.3; background: var(--ds-muted); }
+.sd-ttog2__btn--sched[data-state="on"] { border-color: var(--sd-purple); color: var(--sd-purple); }
+.sd-ttog2__btn--sched[data-state="highlighted"] { border-color: var(--sd-purple); background: var(--sd-purple-soft); color: var(--sd-purple); box-shadow: 0 0 0 2px var(--sd-purple-soft); }
+.sd-ttog2__btn--sched[data-state="disabled"] { opacity: 0.3; background: var(--ds-muted); border-color: var(--ds-border); color: var(--ds-text-3); }
+.sd-ttog2__none { flex: 1; height: 26px; border: 1px dashed var(--ds-border); border-radius: 7px; display: grid; place-items: center; font-size: 8px; font-weight: 600; letter-spacing: 0.02em; color: var(--ds-text-3); }
 
 /* ── date switcher (faithful rebuild of the real "Schedule for Later" → PICK A
       TIME SLOT component, Schedule Order Handoff node 9498:77607) ────────────*/
@@ -305,6 +319,174 @@
 .gtm-slotrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .gtm-slot { height: 34px; border: 1px solid #e6e6ea; border-radius: 10px; background: #fff; }
 
+/* ── Design Mode: real screen plate + coded motion in the banner region ─────
+   Authored in the plate's natural 360px space (device width = 360) so the region
+   px line up 1:1 with the export; the whole frame is scaled by --ds-scale. The
+   device clips to the top of the 780px screen so the banner stays the focus. */
+.sd-stage--gtmr { justify-content: center; padding: 20px; }
+/* one phone on a plate: the device scales to the plate width (mtmm2p84) */
+.gtmr-one { display: grid; place-items: start center; width: 100%; }
+/* the bezel wrapper sizes the phone; the screen plate fills the cutout */
+.gtmr-one__phone { height: auto !important; width: min(380px, 46%); }
+.gtmr-one .gtmr-device--bare { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; border: 0; border-radius: 0; box-shadow: none; }
+.gtmr-one .gtmr-plate { width: 100%; height: auto; }
+/* mtmmmo5y: the region sizes itself to the video's own ratio (1080x340), so
+   the banner is never cropped or stretched at any plate width */
+.gtmr-one .gtmr-region { left: 3.33%; top: 14.87%; width: 93.33%; height: auto; aspect-ratio: 1080 / 340; }
+.gtmr-one .gtmr-video { width: 100%; height: auto; object-fit: contain; }
+/* the bezel rides on as .ibz; the device keeps the screen corner radius, no
+   coded border or shadow of its own, and room for the bezel around it */
+.gtmr-device { position: relative; flex: 0 0 auto; width: 360px; aspect-ratio: 360 / 780; border-radius: 13.7% / 6.3%; corner-shape: round; overflow: visible; background: #fff; }
+.gtmr-device .gtmr-plate, .gtmr-device .gtmr-region { border-radius: inherit; }
+.gtmr-device .gtmr-plate { border-radius: 13.7% / 6.3%; }
+.sd-root--gtmr { width: 790px; } /* was an inline style on the frame (2026-09-06) */
+/* mtmrujtc: two framed phones must fit the 790 frame: 24px sides, 40px gap,
+   devices 314 wide (bezel adds 11.8%), 24px of head-room for the bezel top */
+.sd-stage--gtmr { padding: 44px 24px 40px; gap: 40px; }
+.sd-stage--gtmr .gtmr-device { width: 314px; }
+.sd-stage--gtmr .gtmr-plate { width: 100%; height: auto; }
+.sd-stage--gtmr .gtmr-region { left: 3.33%; top: 14.87%; width: 93.33%; height: auto; aspect-ratio: 1080 / 340; }
+.gtmr-plate { position: absolute; top: 0; left: 0; width: 360px; height: 780px; display: block; }
+.gtmr-region { position: absolute; left: 12px; top: 116px; width: 336px; height: 106px; overflow: hidden; border-radius: 16px; }
+.gtmr-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── slot-picker Design Mode plate (3 real screens, node 10246:2921) ────────*/
+.sd-stage--pgreal { padding: 20px; justify-content: center; }
+.pgreal-plate { width: 100%; height: auto; display: block; border-radius: 16px; }
+
+/* ── slot-picker Design Mode, ANIMATED (real device frame + states + cursor) ─*/
+.sd-stage--slotreal { justify-content: flex-start; gap: 30px; }
+.slotreal-device { position: relative; flex: 0 0 auto; width: 232px; }
+/* phone frame removed (annotation mqryekfl) — the screen is now the device,
+   kept at the former cutout's 232 x 504 proportions so cursor coords hold */
+.slotreal-screen { position: relative; width: 100%; aspect-ratio: 232 / 504; overflow: hidden; border-radius: 28px; border: 1px solid var(--ds-border-card); box-shadow: var(--ds-shadow-frame); background: #fff; }
+.slotreal-img { position: absolute; top: 0; left: 0; width: 100%; height: auto; opacity: 0; transition: opacity 520ms var(--ds-ease-out); }
+.slotreal-img[data-on="true"] { opacity: 1; }
+/* pointer: shared glass Cursor (ds/Cursor) rendered inside .slotreal-screen */
+
+/* ── design-mode galleries: real-screen contact sheets ─────────────────────*/
+.sd-stage--gallery { display: block; padding: 16px 16px 8px; }
+.sdg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 14px; }
+.sdg-tile { display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateY(8px); transition: opacity 420ms var(--ds-ease-out), transform 420ms var(--ds-ease-out); }
+.sdg-tile[data-on="true"] { opacity: 1; transform: none; }
+.sdg-screen { position: relative; width: 100%; aspect-ratio: 132 / 212; overflow: hidden; border-radius: 16px; background: #fff; border: 1px solid var(--ds-line); box-shadow: 0 8px 20px -12px rgba(20, 16, 45, 0.22); transition: border-color 260ms var(--ds-ease-std), box-shadow 260ms var(--ds-ease-std); }
+.sdg-tile[data-active="true"] .sdg-screen { border-color: var(--sd-purple-line); box-shadow: 0 0 0 3px var(--sd-purple-soft), 0 8px 20px -12px rgba(20, 16, 45, 0.22); }
+.sdg-screen img { position: absolute; top: 0; left: 0; width: 100%; height: auto; display: block; }
+.sdg-cap { font-size: 10.5px; font-weight: 600; color: var(--ds-text-2); line-height: 1.3; text-align: center; padding: 0 2px; }
+
+/* ── design-mode 2-up comparison (killed vs shipped) ───────────────────────*/
+.sd-stage--cmp { gap: 30px; align-items: flex-start; justify-content: center; padding: 18px; }
+.sdcmp { display: flex; flex-direction: column; gap: 11px; flex: 0 0 auto; width: 216px; }
+.sdcmp__tag { display: inline-flex; align-items: center; gap: 6px; align-self: center; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
+.sdcmp__tag[data-kind="killed"] { background: var(--ds-focal-red-fill); color: var(--ds-focal-red); }
+.sdcmp__tag[data-kind="shipped"] { background: var(--ds-focal-green-fill); color: var(--ds-green); }
+.sdcmp__screen { position: relative; width: 100%; aspect-ratio: 216 / 430; overflow: hidden; border-radius: 22px; background: #fff; border: 1px solid var(--ds-line); box-shadow: var(--ds-shadow-frame); }
+.sdcmp__screen img { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
+.sdcmp__note { font-size: 11px; color: var(--ds-text-2); line-height: 1.4; text-align: center; }
+
+/* ── R&R Design Mode plate ─────────────────────────────────────────────────*/
+.sd-stage--rnr { justify-content: center; padding: 20px; }
+.rnr-device { position: relative; flex: 0 0 auto; width: 360px; aspect-ratio: 360 / 780; border-radius: 40px; overflow: hidden; border: 1px solid var(--ds-border-card); box-shadow: var(--ds-shadow-frame); background: #fff; }
+.rnr-plate { position: absolute; top: 0; left: 0; width: 100%; height: auto; display: block; }
+
+/* ── explorations: the options we explored before converging ───────────────*/
+.expl-row { display: flex; align-items: flex-start; gap: 14px; padding: 13px 2px; }
+.expl-row + .expl-row { border-top: 1px solid var(--ds-line); }
+.expl-label { flex: 0 0 96px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; color: var(--ds-text-2); padding-top: 6px; }
+.expl-chips { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.expl-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid var(--ds-border); border-radius: 999px; font-size: 11.5px; font-weight: 600; color: var(--ds-text); background: #fff; transition: opacity var(--ds-dur-state) var(--ds-ease-std), border-color var(--ds-dur-state) var(--ds-ease-std), background var(--ds-dur-state) var(--ds-ease-std), color var(--ds-dur-state) var(--ds-ease-std); }
+.expl-chip__tag { display: inline-flex; align-items: center; justify-content: center; height: 15px; padding: 0 6px; border-radius: 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: var(--ds-muted); color: var(--ds-text-3); opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-std); }
+.expl-chip[data-on="true"] .expl-chip__tag { opacity: 1; }
+.expl-chip[data-on="true"][data-v="killed"] { opacity: 0.5; border-style: dashed; color: var(--ds-text-2); }
+.expl-chip[data-on="true"][data-v="killed"] .expl-chip__tag { background: var(--ds-focal-red-fill); color: var(--ds-focal-red); }
+.expl-chip[data-on="true"][data-v="scale"] { opacity: 0.62; border-color: var(--ds-focal-amber); }
+.expl-chip[data-on="true"][data-v="scale"] .expl-chip__tag { background: var(--ds-focal-amber-fill); color: #b45309; }
+.expl-chip[data-on="true"][data-v="considered"] { opacity: 0.55; border-style: dashed; }
+.expl-chip[data-on="true"][data-v="shipped"] { border-color: var(--sd-purple); background: var(--sd-purple-soft); color: var(--sd-purple); }
+.expl-chip[data-on="true"][data-v="shipped"] .expl-chip__tag { background: var(--sd-purple); color: #fff; }
+.expl-converged { margin-top: 15px; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 12px; background: var(--sd-purple-soft); border: 1px solid var(--sd-purple-line); opacity: 0; transform: translateY(5px); transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-out); }
+.expl-converged[data-on="true"] { opacity: 1; transform: none; }
+.expl-converged__l { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--sd-purple); flex: 0 0 auto; }
+/* mu9to153 / mu9trpy9: the purple TEXT goes to the page's own ink in light
+   mode. Only the text - `--sd-purple` still paints fills, rules and marks,
+   which is where it belongs; it was the type that read as a second voice.
+   Dark is untouched. #111 on white is 18.9:1. */
+:root:not(.dark) .sd-metric__big,
+:root:not(.dark) .expl-converged__l { color: var(--fg); }
+.expl-converged__t { font-size: 12px; font-weight: 600; color: var(--ds-text); }
+
+/* ── post-booking lifecycle (the order's second life) ──────────────────────*/
+.pb-island { position: absolute; left: 50%; top: 2px; transform: translateX(-50%); display: flex; align-items: center; gap: 7px; height: 26px; padding: 0 12px; border-radius: 999px; background: #111114; color: #fff; font-size: 10.5px; font-weight: 600; white-space: nowrap; opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-pop); z-index: 6; }
+.pb-island[data-on="true"] { opacity: 1; }
+.pb-island__dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+.pb-card { border: 1px solid var(--sd-purple-line); border-radius: 14px; background: var(--sd-purple-soft); padding: 13px; display: flex; flex-direction: column; gap: 11px; }
+.pb-card__top { display: flex; align-items: center; gap: 9px; }
+.pb-card__ic { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: var(--sd-purple); color: #fff; display: grid; place-items: center; }
+.pb-card__ic svg { width: 16px; height: 16px; }
+.pb-card__lbl { font-size: 11px; font-weight: 700; color: var(--sd-purple); letter-spacing: 0.02em; }
+.pb-pill { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; height: 21px; padding: 0 9px; border-radius: 6px; background: #fff; font-size: 9.5px; font-weight: 700; color: var(--ds-text-2); }
+.pb-pill__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ds-focal-green); }
+.pb-slot { font-size: 19px; font-weight: 800; color: var(--ds-text); letter-spacing: -0.01em; }
+.pb-slot b { color: var(--sd-purple); }
+.pb-steps { display: flex; align-items: center; gap: 0; }
+.pb-step { flex: 1; display: flex; align-items: center; gap: 0; }
+.pb-step__dot { width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 2px solid var(--ds-border); flex: 0 0 auto; transition: background var(--ds-dur-state) var(--ds-ease-std), border-color var(--ds-dur-state) var(--ds-ease-std); }
+.pb-step[data-done="true"] .pb-step__dot { background: var(--sd-purple); border-color: var(--sd-purple); }
+.pb-step__bar { flex: 1; height: 2px; background: var(--ds-border); transition: background var(--ds-dur-state) var(--ds-ease-std); }
+.pb-step[data-done="true"] .pb-step__bar { background: var(--sd-purple); }
+.pb-rider { display: flex; align-items: center; gap: 10px; padding: 10px 11px; border: 1px solid var(--ds-line); border-radius: 12px; background: #fff; opacity: 0; transform: translateY(5px); transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-out); }
+.pb-rider[data-on="true"] { opacity: 1; transform: none; }
+.pb-rider__av { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: var(--ds-muted); display: grid; place-items: center; color: var(--ds-text-3); }
+.pb-rider__av svg { width: 17px; height: 17px; }
+.pb-rider__txt { display: flex; flex-direction: column; gap: 4px; }
+.pb-rider__t { font-size: 11.5px; font-weight: 600; color: var(--ds-text); }
+.pb-rider__s { font-size: 10px; color: var(--ds-text-2); }
+.pb-channels { display: flex; gap: 7px; }
+.pb-chan { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--ds-line); background: #fff; font-size: 10px; font-weight: 600; color: var(--ds-text-2); opacity: 0; transform: scale(0.8); transition: opacity var(--ds-dur-state) var(--ds-ease-pop), transform var(--ds-dur-state) var(--ds-ease-pop); }
+.pb-chan[data-on="true"] { opacity: 1; transform: none; }
+.pb-chan__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sd-purple); }
+.pb-chan[data-soft="true"] { border-style: dashed; opacity: 0.75; }
+.pb-manage { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; }
+.pb-manage span { flex: 1; height: 30px; display: grid; place-items: center; border: 1px solid var(--ds-line); border-radius: 9px; font-size: 10.5px; font-weight: 600; color: var(--ds-text-2); }
+
+/* ── SchedSinglePage: cursor-driven slot interaction ─────────────────────────*/
+/* Cursor dot overlaid on ds-phone__screen (position:relative, padding 14px). */
+.scsp-cursor { position: absolute; z-index: 20; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.72); border: 2.5px solid rgba(255,255,255,0.96); pointer-events: none; transform: translate(-50%,-50%); transition: top 550ms var(--ds-ease-std), left 550ms var(--ds-ease-std), opacity 240ms ease; box-shadow: 0 2px 8px rgba(0,0,0,0.28); }
+.scsp-cursor[data-visible="false"] { opacity: 0; }
+@keyframes scspClick { 0% { box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 0 rgba(0,0,0,0.38); } 70% { box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 11px rgba(0,0,0,0.09); } 100% { box-shadow: 0 2px 8px rgba(0,0,0,0), 0 0 0 14px rgba(0,0,0,0); } }
+.scsp-cursor[data-clicking="true"] { animation: scspClick 420ms ease; }
+
+/* "More slots" expand trigger */
+.scsp-more { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 5px; height: 32px; border: 1px solid var(--ds-border); border-radius: 9px; font-size: 10.5px; font-weight: 600; color: var(--sd-purple); }
+
+/* Collapsible Late Night wrapper inside sd-slots grid */
+.scsp-late { grid-column: 1 / -1; }
+.scsp-late__expand { display: grid; grid-template-rows: 0fr; overflow: hidden; transition: grid-template-rows 380ms var(--ds-ease-out); }
+.scsp-late[data-open="true"] .scsp-late__expand { grid-template-rows: 1fr; }
+.scsp-late__inner { overflow: hidden; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding-top: 7px; }
+
+/* Tomorrow tab entry: slots rise from below */
+@keyframes scspSlideUp { 0% { opacity: 0; transform: translateY(38px); } 100% { opacity: 1; transform: none; } }
+.scsp-slide-up { animation: scspSlideUp 460ms var(--ds-ease-out) both; }
+
+/* Delivery-type toggle (card variant on the schedule page) */
+.scsp-dtog { display: flex; gap: 7px; margin-bottom: 9px; }
+.scsp-dtog__opt { flex: 1; padding: 7px 9px 8px; border: 1.5px solid var(--ds-border); border-radius: 10px; background: #fff; transition: border-color 240ms var(--ds-ease-std), background 240ms var(--ds-ease-std); }
+.scsp-dtog__t { font-size: 10.5px; font-weight: 700; color: var(--ds-text); margin-bottom: 2px; }
+.scsp-dtog__s { font-size: 9px; font-weight: 500; color: var(--ds-text-3); }
+.scsp-dtog__opt[data-sched] { border-color: rgba(234, 88, 12, 0.6); background: rgba(249, 115, 22, 0.05); }
+.scsp-dtog__opt[data-sched] .scsp-dtog__t { color: #c2410c; }
+
+/* Day tabs (underline-style, with slot count, for the schedule page) */
+.scsp-tabs { display: flex; border-bottom: 1.5px solid var(--ds-line); margin-bottom: 9px; }
+.scsp-tab { flex: 1; display: flex; flex-direction: column; gap: 2px; padding-bottom: 7px; margin-bottom: -1.5px; font-size: 10.5px; font-weight: 600; color: var(--ds-text-3); border-bottom: 2.5px solid transparent; transition: color 240ms var(--ds-ease-std), border-color 240ms var(--ds-ease-std); }
+.scsp-tab[data-on] { color: var(--ds-text); border-bottom-color: #e91e63; }
+.scsp-tab__count { font-size: 9px; font-weight: 500; color: inherit; }
+.scsp-tab[data-on] .scsp-tab__count { color: #e91e63; }
+
+/* Dimmed slot items in the Tomorrow view (past time-of-day sections) */
+.scsp-dim { opacity: 0.35; }
+
 @media (prefers-reduced-motion: reduce) {
   .sd-step, .sd-metric, .sd-nudge { transform: none; }
   .sd-lost { animation: none !important; }
@@ -313,4 +495,1436 @@
   .dsw-slot--enter { animation: none !important; }
   .gtm-clock__hand { animation: none !important; }
   .gtm-pill { animation: none !important; opacity: 1; }
+  .expl-converged { transform: none; }
+  .pb-rider, .pb-chan, .pb-island { transform: none; }
+  .scsp-slide-up { animation: none !important; }
 }
+
+
+/* ── phones (2026-09-06) ────────────────────────────────────────────────────
+   The frames are authored at 660 and scaled to fit, which on a 335 column is
+   0.5x and 11px type becomes 5px. Below 700px the frame is re-authored at 360
+   (useFitScale reads the frame's own width) and every stage stacks: phone on
+   top, rail or second phone below, galleries two-up. */
+@media (max-width: 700px) {
+  .ds-root--phone { width: 360px; }
+  .ds-root--phone .sd-stage { flex-direction: column; align-items: center; gap: 18px; padding: 16px 14px 16px; }
+  .ds-root--phone .sd-stage--rail { justify-content: flex-start; }
+  .ds-root--phone .sd-rail { width: 100%; align-self: auto; padding: 0; }
+  .ds-root--phone .sd-gallery { grid-template-columns: repeat(2, 1fr); }
+  .ds-root--phone .sdg-grid { grid-template-columns: repeat(2, 1fr); }
+  .ds-root--phone .sd-grid { grid-template-columns: 1fr; }
+  .ds-root--phone .rnr-device, .ds-root--phone .gtmr-device { width: 300px; }
+  .ds-root--phone .sd-stage--gtmr .gtmr-device { width: 300px; }
+  .ds-root--phone.sd-root--gtmr, .ds-root--phone:has(.sd-stage--gtmr) { width: 360px; } /* its own rule authors it at 790 */
+  .ds-root--phone .expl-row { flex-direction: column; gap: 8px; }
+  .ds-root--phone .expl-label { flex-basis: auto; padding-top: 0; }
+}
+
+/* "Meeting users where they are…" — Figma 120 (3:3321), synced to the frame's
+   own motion (pin mu3kt85t). Six photographs 448 x 349.5 in a 3 x 2 grid on a
+   24px gutter; each carries one pill at the spot Figma drew it.
+
+   THE PILL IS A PIN AT REST. Figma's Box starts 67 wide and the pill is 67 tall
+   in the frame, so the resting state is a circle; it springs open to the word's
+   width while a clip wipes the word out and the word itself slides in from
+   -20px. Both rest sizes below are 67px at the frame's own scale (14.96% of the
+   448 cell width, 19.2% of its 349.5 height), which stays square at any size
+   because the cell's aspect is fixed.
+
+   Growth is from the CENTRE (Figma moves x by exactly half the width it gains),
+   so a pill is positioned by its centre and translated -50%: no arithmetic, and
+   it holds at every breakpoint.
+
+   Colour is the frame's own: white on #7c3eed measures 5.57:1, and the dashed
+   #f6ebfe edge on that violet is 4.84:1, both past their floors (4.5 text,
+   3 non-text). The cell does NOT clip: several pills overhang onto the
+   neighbouring photo by design. */
+.smo { display: block; }
+.smo__grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+}
+.smo__cell { position: relative; overflow: visible; }
+.smo__photo {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 448 / 349.5; object-fit: cover;
+  border-radius: 0; /* Figma draws these square */
+}
+.smo__pill {
+  /* positioned by CENTRE so it opens symmetrically, and lifted above the photo
+     layer: several pills overhang onto the next cell, which is later in DOM
+     order and would otherwise paint over the overhanging half */
+  position: absolute; left: var(--cx); top: var(--cy);
+  transform: translate(-50%, -50%); z-index: 3;
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  /* the 67px pin. min-width, not just max-width: at rest the clip inside is 0
+     wide, so `max-content` collapses to the 4px of border and a max-width never
+     binds - the pin needs a FLOOR, and the max only has to hold it square. */
+  width: max-content; min-width: 14.96%; max-width: 14.96%;
+  height: 19.2%;                              /* 67px: a circle at rest */
+  margin: 0; padding: 0; cursor: pointer;
+  /* Figma draws a 2px dashed edge on a 4/4 pattern. It has to be a BORDER, not
+     an inset shadow (which cannot dash) and not an outline (which is needed for
+     the focus ring, and a focus state that differs only by dash style is not a
+     focus state). */
+  border: 2px dashed #f6ebfe;
+  border-radius: 999px; corner-shape: round;
+  background: #7c3eed; color: #fff;
+  /* muic1wk4 "these fonts should be smaller": 20 -> 16 at the top. The ceiling
+     was what every desktop hit (1.25cqw of this figure passes 20px well before
+     1400px), so lowering only the max would have left the slope reaching it
+     sooner and changed nothing below; the slope comes down with it (1.25 -> 1)
+     so the whole curve shifts rather than just getting clipped earlier. The
+     floor goes 13 -> 12 to keep the same proportion at the small end. */
+  font: 500 clamp(12px, 1cqw, 16px)/1.2 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  white-space: nowrap; overflow: hidden;
+  /* the frame's timeline: an 81ms squash, then the box opens over 470ms on the
+     spring it was drawn with */
+  transition: max-width 470ms cubic-bezier(0.34, 1.56, 0.64, 1) 81ms,
+              padding 470ms cubic-bezier(0.34, 1.56, 0.64, 1) 81ms,
+              scale 81ms ease-in,
+              background 200ms ease;
+}
+.smo__pill:not([data-on]):hover, .smo__pill:not([data-on]):focus-visible { background: #6b2ee0; }
+.smo__pill:active { scale: 0.92; }              /* the squash, on the way open */
+.smo__pill[data-on] { max-width: 30em; padding: 0 18px; }
+.smo__pill:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+/* Figma's "Text Reveal": a clip the word is wiped out of, 180ms in over 400ms */
+.smo__clip {
+  display: block; overflow: hidden;
+  max-width: 0;
+  transition: max-width 400ms cubic-bezier(0.25, 1, 0.5, 1) 180ms;
+}
+.smo__pill[data-on] .smo__clip { max-width: 30em; }
+/* and the word itself slides from -20px and fades, 219ms in */
+.smo__word {
+  display: block;
+  translate: -20px 0; opacity: 0;
+  transition: translate 360ms cubic-bezier(0.16, 1, 0.3, 1) 219ms,
+              opacity 282ms ease-out 219ms;
+}
+.smo__pill[data-on] .smo__word { translate: 0 0; opacity: 1; }
+.smo__sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.smo[data-reduce="true"] .smo__pill,
+.smo[data-reduce="true"] .smo__clip,
+.smo[data-reduce="true"] .smo__word { transition: none; }
+/* the grid holds three across down to tablet, then two, then one */
+@media (max-width: 900px) { .smo__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+@media (max-width: 560px) { .smo__grid { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+
+/* ---- 26 Sep 2026 (muicr2rh): the collage, Portfolio 2026 node 315:29470 ----
+   Replaces the grid above. The area is the frame's 1512 x 1581 (first row top to
+   last row bottom), so every box is a % of it and the whole thing scales as one;
+   the tags size in cqw of the same 1512 so they scale with it too. */
+.smo .smo__title { /* two classes: outranks `.article__body p` */
+  margin: 0 0 3.97cqw; text-align: center;
+  font: 400 clamp(20px, 2.38cqw, 36px)/1.3 "Stack Sans Headline Variable", "Stack Sans Headline", "Google Sans Flex", sans-serif; /* muidtlv6: the Context and Objective face */
+  color: #33095e;
+}
+html.dark .smo__title { color: #e3d4ff; }
+.smo { container-type: inline-size; width: 100%; } /* containment drops the intrinsic width, so it needs a set one */
+.smo__collage {
+  list-style: none; margin: 0; padding: 0;
+  position: relative; aspect-ratio: 1512 / 1581;
+}
+.smo__collage .smo__cell { position: static; }
+.smo__collage .smo__photo {
+  position: absolute; aspect-ratio: auto;
+  object-fit: cover; border-radius: 1.59cqw; /* 24 of 1512 */
+}
+/* the tag: Figma's 63px pill, 24px Medium white, radius 36 with ONE sharp
+   corner facing its photo. Fill is rgba(85,39,168) at 0.78, not the frame's 0.7:
+   several tags overhang the white page, where 0.7 gives white text 4.38:1 and
+   0.78 gives 5.38:1 (4.5 floor). */
+.smo__collage .smo__pill {
+  left: auto; top: auto; transform: none; translate: none;
+  position: absolute; z-index: 3; cursor: default;
+  height: 4.17cqw; min-width: 4.17cqw; max-width: 4.17cqw;
+  padding: 0; border: 0;
+  background: rgba(85, 39, 168, 0.78);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  color: #fff;
+  font: 500 clamp(11px, 1.59cqw, 24px)/1.2 "Google Sans Flex", "Inter", sans-serif;
+  border-radius: 2.38cqw; corner-shape: round;
+  transition-delay: calc(var(--d, 0ms) + 81ms);
+}
+.smo__collage .smo__pill--tl { border-top-left-radius: 1px; }
+.smo__collage .smo__pill--tr { border-top-right-radius: 1px; }
+.smo__collage .smo__pill--br { border-bottom-right-radius: 1px; }
+.smo__collage .smo__pill[data-on] { max-width: 40cqw; padding: 0 1.59cqw; }
+.smo__collage .smo__pill[data-on] .smo__clip { transition-delay: calc(var(--d, 0ms) + 180ms); }
+.smo__collage .smo__pill[data-on] .smo__word { transition-delay: calc(var(--d, 0ms) + 219ms); }
+.smo__collage .smo__pill:hover { background: rgba(85, 39, 168, 0.78); }
+/* muie431c: the emoji leads the label, drawn larger than the text */
+.smo__collage .smo__word { display: inline-flex; align-items: center; gap: 0.35em; }
+.smo__emoji { font-size: 1.85em; line-height: 1; margin-block: -0.1em; } /* muie6m8n: 1.45 -> 1.85em (19 -> 24px at 816), measured equal on all six; the negative margin keeps the tag its 63-frame height */
+/* muie7ilt: the tags re-sized around the bigger emoji, and the label 2px up.
+   Label 13 -> 15px at the 816 column (1.59cqw + 2px). Emoji 1.65em of that
+   (~25px). Tag height 34 -> 41px (5cqw): the emoji plus about 8px above and
+   below, so it no longer needs the negative margin; the resting pin stays a
+   circle (min-width = height) and the radius stays half the height. */
+.smo__collage .smo__pill {
+  height: 5cqw; min-width: 5cqw; max-width: 5cqw;
+  border-radius: 2.5cqw;
+  font-size: clamp(13px, calc(1.59cqw + 2px), 26px);
+}
+.smo__collage .smo__pill[data-on] { max-width: 44cqw; padding: 0 1.75cqw 0 1.4cqw; }
+.smo__collage .smo__emoji { font-size: 1.65em; margin-block: 0; }
+/* muieeh18: two regressions from muie7ilt. (1) its `border-radius` shorthand
+   came after the one-sharp-corner rules at equal specificity and rounded all
+   four corners, so the tags lost their shape; the frame's radius (36 of 1512)
+   and the sharp corners are restated here, last. (2) the emoji read too big:
+   1.65em -> 1.3em (~19px on the 15px label), and the tag comes down to fit
+   (41 -> 38px, 4.6cqw), still a circle at rest. */
+.smo__collage .smo__pill {
+  height: 4.6cqw; min-width: 4.6cqw; max-width: 4.6cqw;
+  border-radius: 2.38cqw;
+}
+.smo__collage .smo__pill--tl { border-top-left-radius: 1px; }
+.smo__collage .smo__pill--tr { border-top-right-radius: 1px; }
+.smo__collage .smo__pill--br { border-bottom-right-radius: 1px; }
+.smo__collage .smo__emoji { font-size: 1.3em; }
+/* muiehk2f: the title at the Context & problem heading's size (24px / 1.2) */
+.smo .smo__title { font-size: 1.5rem; line-height: 1.2; }
+
+/* ---- SchedInsight (muienfze): Figma 942:64899 ----
+   #33095e on the page white = 15.6:1; the dark ink #b69cea on the dark page =
+   8.4:1 (the Context and Objective pair). */
+.sin {
+  --ink: #33095e;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem;
+  padding: 5rem 1.6rem 2rem;
+  margin: 1rem 0 2rem;
+}
+html.dark .sin { --ink: #b69cea; }
+.sin__col { display: flex; flex-direction: column; gap: 2rem; }
+.sin__icon {
+  width: 35px; height: 35px; display: block;
+  background: var(--ink);
+  -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
+}
+.sin p.sin__label, .sin p.sin__line { margin: 0; color: var(--ink); font-family: "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif; }
+.sin p.sin__label { font-size: 1.2rem; line-height: 1.3; font-weight: 300; }
+.sin__lines { display: flex; flex-direction: column; gap: 0.8rem; }
+.sin p.sin__line { font-size: 1.625rem; line-height: 1.3; font-weight: 400; text-wrap: pretty; }
+@media (max-width: 700px) {
+  .sin { grid-template-columns: 1fr; gap: 3rem; padding: 2.5rem 8% 1.5rem; }
+  .sin p.sin__line { font-size: 1.375rem; }
+}
+/* muif7fu2: optical centring. The emoji BOXES were centred (-0.5px), but the
+   glyph ink is not centred in its box: measured, it runs from 20px above the
+   baseline to 5px below while the line box centres 6.5px above, so the art sat
+   ~1.5px high in the tag. Nudged down by that, as a fraction of its own size. */
+.smo__collage .smo__emoji { translate: 0 0.075em; }
+/* muifjed8: the case study frame default padding, with the TAGS exempt.
+   Top/bottom go on .smo as padding-block (which does not narrow it, so the
+   container width the tags size from is unchanged). Left/right go on the
+   collage as a margin (percent margin resolves against .smo's width, so it
+   is the same 7.94%): the photos inset, while the tags, sized in cqw of .smo,
+   keep their size and stay placed on their photos (% of the collage). */
+.smo { padding-block: var(--case-study-frame-default-padding); }
+.article__body .smo .smo__collage { margin-inline: var(--case-study-frame-default-padding); } /* outranks `.article__body ul` */
+/* muifkpeo: the key finding frame takes the case study frame default height
+   and padding (was a hand-set 5rem/1.6rem); content centred in the frame, and
+   the ratio is a floor so longer copy grows the box instead of clipping. */
+.sin {
+  aspect-ratio: var(--case-study-frame-default);
+  padding: var(--case-study-frame-default-padding);
+  align-content: center;
+}
+@media (max-width: 700px) { .sin { aspect-ratio: auto; } }
+/* muifkzti: draggable tags */
+.smo__collage .smo__pill { cursor: grab; touch-action: none; user-select: none; }
+.smo__collage .smo__pill.is-held {
+  cursor: grabbing; z-index: 10; scale: 1.06;
+  box-shadow: 0 10px 24px -8px rgba(40, 10, 90, 0.45);
+}
+/* muiflkz2: the animated emoji are 72px WebPs drawn at the glyph's size;
+   the optical nudge was for font glyphs, an image centres as drawn */
+.smo__collage img.smo__emoji--anim {
+  width: 1.5em; height: 1.5em; font-size: inherit;
+  translate: 0 0.147em; flex: none; display: block; /* measured 2.2px high in the tag at 15px; centred */
+}
+/* muigerm3: the whole word row sat 2.7px above the tag's centre (measured on
+   all six). It moves down so the LETTERS are optically centred (cap-height
+   centre on the tag centre, +0.45px on top of the box offset: 3.1px, 0.21em);
+   the emoji's own nudge drops by the same amount so it stays centred. */
+.smo__collage .smo__word { position: relative; top: 0.21em; }
+.smo__collage img.smo__emoji--anim { translate: 0 -0.06em; }
+/* muigkm6h: tags 8px taller (38 -> 46px at 816). The resting pin grows with it
+   (still a circle), and the radius follows half the height so the round ends
+   stay round; the one sharp corner per tag is restated after it. */
+.smo__collage .smo__pill {
+  height: calc(4.6cqw + 8px); min-width: calc(4.6cqw + 8px); max-width: calc(4.6cqw + 8px);
+  border-radius: calc(2.3cqw + 4px);
+}
+.smo__collage .smo__pill[data-on] { max-width: 44cqw; }
+.smo__collage .smo__pill--tl { border-top-left-radius: 1px; }
+.smo__collage .smo__pill--tr { border-top-right-radius: 1px; }
+.smo__collage .smo__pill--br { border-bottom-right-radius: 1px; }
+/* muigpjmi: more air between the emoji and the label, 0.35em -> 0.6em (~5 -> 9px) */
+.smo__collage .smo__word { gap: 0.6em; }
+/* muigqqag: 4px more room after the label (right padding 1.75cqw -> +4px) */
+.smo__collage .smo__pill[data-on] { padding-right: calc(1.75cqw + 4px); }
+/* muil7iza: the tags take the PAGE background (--bg, white light / near-black
+   dark) with the page ink (--fg), so they read as cut-outs of the page sitting
+   on the photos; they follow the theme by construction. --fg on --bg is the
+   page's own body-text pair (well past 4.5:1 in both themes). The frosted
+   backdrop is dropped: an opaque page-colour tag has nothing to frost. */
+.smo__collage .smo__pill,
+.smo__collage .smo__pill:hover {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- SchedUseCases (muilckke): Figma 1167:43070 ----
+   Four case-study-frame-default frames. Label 36 light -> ~19px, lead 48 ->
+   26px (the Context and Objective pair). Personas 48 -> 26px, centred, muted
+   ink at Figma's 50% (large text, 3:1 bar: 3.35:1 light, 5.34:1 dark) with the
+   phrase in full ink, semibold. On phones the text falls under "large", so the
+   muted ink rises to 60% (4.56:1). Dark: ink white, labels stay purple. */
+.suc { --ink: #33095e; --muted: rgba(51, 9, 94, 0.5); }
+html.dark .suc { --ink: rgba(255, 255, 255, 0.82); --muted: rgba(255, 255, 255, 0.5); }
+.suc__frame {
+  aspect-ratio: var(--case-study-frame-default);
+  padding: var(--case-study-frame-default-padding);
+  display: flex; flex-direction: column; justify-content: center;
+}
+.suc__frame--lead { align-items: flex-start; gap: 2rem; }
+.suc__frame--persona { align-items: center; }
+.article__body .suc p { margin: 0; font-family: "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif; color: var(--ink); }
+.article__body .suc p.suc__label { font-size: 1.2rem; font-weight: 300; line-height: 1.3; color: #33095e; }
+html.dark .article__body .suc p.suc__label { color: #b69cea; }
+.article__body .suc p.suc__lead { font-size: 1.625rem; line-height: 1.3; text-wrap: pretty; }
+.article__body .suc p.suc__persona {
+  font-family: "Google Sans Flex", "Inter", sans-serif;
+  font-size: 1.625rem; line-height: 1.3; text-align: center; text-wrap: balance;
+  color: var(--muted);
+}
+.suc__persona strong { font-weight: 600; color: var(--ink); }
+@media (max-width: 700px) {
+  .suc__frame { aspect-ratio: auto; min-height: 60vh; }
+  .suc { --muted: rgba(51, 9, 94, 0.6); }
+  .article__body .suc p.suc__persona, .article__body .suc p.suc__lead { font-size: 1.375rem; }
+}
+:root .article__body .suc p.suc__persona { color: var(--muted); } /* outranks `:root.dark .article__body p` */
+
+/* muilfls3: the spheres. Radial lavender orbs (the hero heart's palette,
+   #c9b3f5 -> #9674db), blurred soft, BEHIND the text (the text stays on the
+   page ground at its measured contrast; the spheres sit off-centre so the
+   words land mostly on clear ground). Each persona frame arranges its three
+   differently. A slow drift; none with reduced motion. Dark mode: dimmer. */
+.suc__frame--persona { position: relative; isolation: isolate; overflow: hidden; }
+.suc__frame--persona .suc__persona { position: relative; z-index: 1; }
+.suc__sphere {
+  position: absolute; z-index: 0; border-radius: 50%; corner-shape: round;
+  background: radial-gradient(circle at 35% 30%, #efe6ff 0%, #c9b3f5 45%, #9674db 100%);
+  filter: blur(2px);
+  opacity: 0.55;
+  animation: suc-drift 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+html.dark .suc__sphere { opacity: 0.28; }
+.suc__sphere--a { width: 16%; aspect-ratio: 1; left: 9%;  top: 14%; }
+.suc__sphere--b { width: 9%;  aspect-ratio: 1; right: 13%; top: 20%; animation-duration: 11s; animation-delay: -4s; }
+.suc__sphere--c { width: 12%; aspect-ratio: 1; right: 20%; bottom: 10%; animation-duration: 17s; animation-delay: -8s; }
+.suc__frame--persona[data-i="1"] .suc__sphere--a { left: auto; right: 8%; top: 12%; width: 14%; }
+.suc__frame--persona[data-i="1"] .suc__sphere--b { right: auto; left: 12%; top: auto; bottom: 16%; width: 11%; }
+.suc__frame--persona[data-i="1"] .suc__sphere--c { right: 38%; bottom: auto; top: 8%; width: 7%; }
+.suc__frame--persona[data-i="2"] .suc__sphere--a { left: 18%; top: auto; bottom: 8%; width: 13%; }
+.suc__frame--persona[data-i="2"] .suc__sphere--b { right: 10%; top: 10%; width: 15%; }
+.suc__frame--persona[data-i="2"] .suc__sphere--c { right: auto; left: 6%; bottom: auto; top: 18%; width: 8%; }
+@keyframes suc-drift {
+  from { translate: 0 0; }
+  to   { translate: 6% -10%; }
+}
+@media (prefers-reduced-motion: reduce) { .suc__sphere { animation: none; } }
+/* the spheres, v2: photo circles (replaces the CSS gradient orbs). The frames
+   stop clipping so a sphere can reach up into the frame above; the photo is
+   centre-cropped square and drawn round. A slow float, none with reduced motion. */
+.suc__frame--persona { overflow: visible; }
+.suc__frame--persona img.suc__sphere {
+  position: absolute; z-index: 0; aspect-ratio: 1; height: auto;
+  object-fit: cover; object-position: 50% 45%;
+  border-radius: 50%; corner-shape: round;
+  background: none; filter: none; opacity: 1;
+  animation: suc-float 9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
+@keyframes suc-float { from { translate: 0 0; } to { translate: 0 -12px; } }
+@media (prefers-reduced-motion: reduce) { .suc__frame--persona img.suc__sphere { animation: none; } }
+
+/* "make these bubble": soap bubbles. Layers, back to front:
+   - the photo, slightly magnified and brightened, as seen through a curved
+     film (inner shadow darkens toward the edge, the way a bubble thickens)
+   - ::after, the iridescent rim: a conic spectrum masked to a thin ring,
+     slowly rotating so the colours swim like a real film
+   - ::before, the glints: a soft window reflection up-left, a small one
+     bottom-right
+   The whole bubble floats and breathes (a slight, out-of-phase squash). */
+.suc__frame--persona .suc__bubble {
+  position: absolute; z-index: 0; aspect-ratio: 1;
+  border-radius: 50%; corner-shape: round;
+  overflow: hidden; isolation: isolate;
+  box-shadow:
+    inset 0 0 18px 2px rgba(255, 255, 255, 0.35),
+    inset 0 -10px 24px rgba(40, 10, 80, 0.35),
+    0 12px 28px -14px rgba(40, 10, 90, 0.45);
+  animation: suc-bubble-float 9s ease-in-out infinite alternate, suc-bubble-breathe 4.6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.suc__bubble img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 45%;
+  scale: 1.12; filter: saturate(1.15) brightness(1.08);
+  border-radius: 50%; corner-shape: round;
+  z-index: -1;
+}
+.suc__bubble::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; corner-shape: round;
+  background: conic-gradient(from 0deg, #ff9ad5, #ffe29a, #9affc9, #9ad8ff, #c79aff, #ff9ad5);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 70%, #000 100%);
+  mask: radial-gradient(circle, transparent 60%, #000 70%, #000 100%);
+  opacity: 0.55; mix-blend-mode: screen;
+  animation: suc-bubble-swirl 12s linear infinite;
+}
+.suc__bubble::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; corner-shape: round; z-index: 1;
+  background:
+    radial-gradient(ellipse 30% 18% at 32% 22%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(circle at 74% 80%, rgba(255, 255, 255, 0.55) 0 3%, rgba(255, 255, 255, 0) 7%);
+  rotate: -18deg;
+}
+@keyframes suc-bubble-float { from { translate: 0 0; } to { translate: 4px -14px; } }
+@keyframes suc-bubble-breathe { from { scale: 1 1; } to { scale: 1.025 0.975; } }
+@keyframes suc-bubble-swirl { to { rotate: 1turn; } }
+@media (prefers-reduced-motion: reduce) {
+  .suc__frame--persona .suc__bubble, .suc__bubble::after { animation: none; }
+}
+
+/* ---- SchedHeartLoop (mujk4cl5): Figma 231:8842 on its own 1512 x 982 stage.
+   The hero now CLIPS: the hearts swell x7.52 in this loop and would otherwise
+   paint over the page around the header (the old hero let a static glow run
+   past its frame, mtpb4g2v; a swelling one cannot). ---- */
+/* mujkk1kq (27 Sep): no fill, and NOT clipped: Agam wants the swelling
+   hearts to run past the box (reverses the clip set when the loop landed) */
+.shh.shl, :root.dark .shh.shl { overflow: visible; background: none; }
+.shl__stage {
+  position: absolute; left: 0; top: 0; width: 1512px; height: 982px;
+  transform-origin: 0 0; pointer-events: none;
+}
+.shl__heart, .shl__bolt { position: absolute; transform-origin: 50% 50%; will-change: transform, opacity; }
+.shl__heart img { position: absolute; display: block; max-width: none; width: auto; height: auto; }
+.shl__bolt img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.shl__text { position: absolute; left: -1px; top: 0; width: 1512px; height: 982px; overflow: hidden; }
+.shl__word { position: absolute; top: 447px; height: 88px; }
+.shl__letter {
+  position: absolute; top: 0;
+  font: 500 86px/88px "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif;
+  white-space: nowrap;
+  color: transparent; -webkit-background-clip: text; background-clip: text;
+}
+.shl__icon {
+  position: absolute; left: 654.5px; top: 391px; width: 200px; height: 200px;
+  display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;
+}
+.shl__cal { position: relative; width: 139.259px; height: 156.669px; }
+.shl__cal-body {
+  position: absolute; left: 0; top: 17.41px; width: 139.259px; height: 139.259px;
+  border-radius: 28px; corner-shape: round;
+  background: linear-gradient(135deg, rgb(184, 132, 251) 6.25%, rgb(66, 31, 145) 93.75%);
+  box-shadow: inset 0 0 19.894px 9.947px rgba(51, 23, 124, 0.7);
+}
+.shl__cal-ring {
+  position: absolute; top: 0; width: 19.894px; height: 39.788px;
+  border-radius: 29.841px; corner-shape: round;
+  background: linear-gradient(116.57deg, rgb(184, 132, 251) 6.25%, rgb(66, 31, 145) 93.75%);
+  box-shadow: 0 1.667px 6.667px rgba(0, 0, 0, 0.25), inset 0 0 9.947px 1.492px rgba(51, 23, 124, 0.7);
+}
+.shl__cal-ring--l { left: 29.84px; }
+.shl__cal-ring--r { left: 89.53px; }
+/* the heart vector: 74.76 x 64.792 box, its svg overhangs by the frame's insets */
+.shl__cal-heart {
+  position: absolute;
+  left: calc(32.63px - 74.76px * 0.1157); top: calc(59.61px - 64.792px * 0.1335);
+  width: calc(74.76px * (1 + 0.241 + 0.1157)); height: calc(64.792px * (1 + 0.1335 + 0.2781));
+  max-width: none;
+}
+/* the inline bolt svgs fill their layer box; the glow overflows it */
+.shl__bolt .shl__svg { position: absolute; inset: 0; display: block; overflow: visible; }
+.shl__bolt .shl__svg svg { width: 100%; height: 100%; overflow: visible; }
+/* 27 Sep: bleed cap. The stage sits inside a window that extends --bleed
+   (half the next section's height) past the header on every side and fades to
+   nothing at its edge, so the swollen hearts can glow out of the header but
+   never further than that. Clipped, then feathered over the outer 70%. */
+.shl { --bleed: 265px; }
+.shl__bleed {
+  position: absolute; inset: calc(-1 * var(--bleed));
+  overflow: hidden; pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, #000 calc(var(--bleed) * 0.3), #000 calc(100% - var(--bleed)), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 calc(var(--bleed) * 0.3), #000 calc(100% - var(--bleed) * 0.3), transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0, #000 calc(var(--bleed) * 0.3), #000 calc(100% - var(--bleed)), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 calc(var(--bleed) * 0.3), #000 calc(100% - var(--bleed) * 0.3), transparent 100%);
+  mask-composite: intersect;
+}
+
+/* 27 Sep: draggable bubbles. The wrapper is positioned and dragged; the bubble
+   inside fills it and keeps floating. Hover: a gentle lift (1.06) and a soft
+   lavender glow, on the site's spatial / effects tokens; held: a bit more lift
+   and a deeper shadow. The cursor says "grab". */
+.suc__frame--persona .suc__drag {
+  position: absolute; z-index: 0; aspect-ratio: 1; display: block;
+  cursor: grab; touch-action: none; user-select: none; pointer-events: auto;
+  transition: scale var(--m3-dur-spatial-fast, 350ms) var(--m3-spatial-standard-fast, ease),
+              filter var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease);
+}
+.suc__frame--persona .suc__drag .suc__bubble { position: absolute; inset: 0; width: 100%; height: 100%; left: 0; top: 0; }
+.suc__frame--persona .suc__drag:hover { scale: 1.06; filter: drop-shadow(0 0 18px rgba(150, 116, 219, 0.55)); }
+.suc__frame--persona .suc__drag.is-held { cursor: grabbing; z-index: 5; scale: 1.1; filter: drop-shadow(0 14px 26px rgba(40, 10, 90, 0.45)); }
+.suc__frame--persona .suc__drag img { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .suc__frame--persona .suc__drag { transition: none; } }
+/* mujp7hem: no scale change on the orbs (hover or held). Hover keeps only the
+   soft glow; the "glass" is the lens distortion that follows the pointer. */
+.suc__frame--persona .suc__drag:hover { scale: none; }
+.suc__frame--persona .suc__drag.is-held { scale: none; }
+/* mujp99nn (27 Sep): no hover glow on the orbs; the lens distortion is the only hover response */
+.suc__frame--persona .suc__drag:hover { filter: none; }
+
+/* mujp9wpx: the insight icons draw on, stroke by stroke. Each path runs its
+   dash offset 1 -> 0 over --m3-dur-spatial-standard-slow (750ms) on
+   --m3-emphasized-decelerate, staggered 110ms per stroke. Theme ink via
+   currentColor (no mask any more). */
+.sin__icon.sin__icon--draw { background: none; -webkit-mask: none; mask: none; color: var(--ink); }
+.sin__icon--draw svg { overflow: visible; }
+.sin__icon--draw path {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-emphasized-decelerate, ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.sin__icon--draw.is-drawn path { stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: reduce) { .sin__icon--draw path { transition: none; } }
+/* mujpn8um: the draw is scroll-driven now (inline dash offset per frame), so
+   no CSS transition, which would lag the scroll */
+.sin__icon--draw path { transition: none; }
+
+/* ---- SchedRoleWireframes, drafted in the page system (mujupawd, 27 Sep) ----
+   Each slide is a My role frame (index.css .role-frame): case study frame
+   default ratio (a floor: long slides grow) and padding, no box, the page
+   ground, a 16.5% label column, a Stack Sans statement, Stack Sans body.
+   Colours (the Context and Objective pair, measured):
+   - ink #33095e on white 15.6:1; dark: text white 82%, labels #b69cea 8.4:1
+   - muted ink = #33095e at 65% on white = rgb(122,95,150), 5.4:1 (clears
+     4.5:1 at the 9 to 14px sizes used); dark: white 60%, 7.9:1 on #111
+   - hairlines #33095e at 14% / white 12% (non-text, decorative dividers)
+   - series: scheduled #5b3fd1 / comparison #c0621a light, #8a72ee / #d27d36
+     dark (dataviz-validated); the slot mix is one purple ramp. */
+.rwf-run { margin: 1rem 0 2rem; display: flex; flex-direction: column; }
+.rwf {
+  --ink: #33095e; --lbl: #33095e; --muted: rgba(51, 9, 94, 0.65); --rule: rgba(51, 9, 94, 0.14);
+  --sa: #5b3fd1; --sb: #c0621a; --grid: rgba(51, 9, 94, 0.1); --wash: rgba(51, 9, 94, 0.045);
+  aspect-ratio: var(--case-study-frame-default);
+  padding: var(--case-study-frame-default-padding);
+  display: grid; grid-template-columns: 16.5% 1fr; column-gap: 2rem; align-content: center;
+  color: var(--ink);
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+}
+:root.dark .rwf {
+  --ink: rgba(255, 255, 255, 0.82); --lbl: #b69cea; --muted: rgba(255, 255, 255, 0.6); --rule: rgba(255, 255, 255, 0.12);
+  --sa: #8a72ee; --sb: #d27d36; --grid: rgba(255, 255, 255, 0.09); --wash: rgba(255, 255, 255, 0.04);
+}
+.rwf__main { display: flex; flex-direction: column; gap: 1.75rem; min-width: 0; }
+/* the page forces Google Sans on article paragraphs; this outranks it inside the slides */
+.page--article .article__body .rwf-run .rwf :is(p, ul, ol, dl, li, dt, dd, span, b, s, figcaption) { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: inherit; letter-spacing: 0; }
+.page--article .article__body .rwf-run .rwf p.rwf__tag { margin: 0; font-size: 1.2rem; line-height: 1.3; font-weight: 300; color: var(--lbl); }
+.article__body .rwf-run .rwf h3.rwf__title { margin: 0; font: 400 1.5rem/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--ink); letter-spacing: 0; text-wrap: pretty; }
+.page--article .article__body .rwf-run .rwf p.rwf__lead { margin: 0; font-size: 1.0625rem; line-height: 1.4; }
+.article__body .rwf-run .rwf :is(ul, ol, dl):not(.tlv__list) { margin: 0; padding: 0; list-style: none; } /* the rail list keeps its own -100vh pull and gutter */
+.article__body .rwf-run .rwf li { margin: 0; }
+.page--article .article__body .rwf-run .rwf :is(li, dd, dt, .rwf__detail) { font-size: 0.875rem; line-height: 1.45; }
+
+/* WF01: the leadership line, then the numbers */
+.rwf__leadership { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: -0.75rem !important; }
+.rwf__leadership li { border-top: 1px solid var(--rule); padding-top: 0.6rem; }
+.rwf__stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 2rem; }
+.rwf__stat { border-top: 1px solid var(--rule); padding-top: 0.75rem; display: grid; gap: 0.35rem; }
+.page--article .article__body .rwf-run .rwf dt.rwf__big { font-size: 2rem; line-height: 1.1; font-weight: 300; }
+.page--article .article__body .rwf-run .rwf dd.rwf__small { margin: 0; color: var(--muted); }
+
+/* WF02 team, WF08 promise vs fact: named columns */
+.rwf__map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem 2rem; }
+.rwf__split { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.rwf__group, .rwf__split > div { border-top: 1px solid var(--rule); padding-top: 0.6rem; }
+.page--article .article__body .rwf-run .rwf p.rwf__gname { margin: 0 0 0.4rem; font-size: 0.875rem; font-weight: 500; }
+.rwf__map li, .rwf__split li { color: var(--muted); }
+
+/* WF03 timeline: when | what, with the detail under it */
+.rwf__timeline { display: grid; }
+.rwf__timeline li { display: grid; grid-template-columns: 8.5rem 1fr; column-gap: 1.25rem; padding: 0.7rem 0; border-top: 1px solid var(--rule); }
+.page--article .article__body .rwf-run .rwf .rwf__when { grid-row: span 2; font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.page--article .article__body .rwf-run .rwf .rwf__what { font-size: 1rem; font-weight: 500; line-height: 1.35; }
+.page--article .article__body .rwf-run .rwf .rwf__detail { color: var(--muted); }
+
+/* numbered points, two columns */
+.rwf__list { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; }
+.rwf__list li { border-top: 1px solid var(--rule); padding-top: 0.6rem; }
+.page--article .article__body .rwf-run .rwf .rwf__n { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; color: var(--lbl); font-variant-numeric: tabular-nums; }
+
+/* WF07 copy, before and after */
+.rwf__pairs { display: grid; gap: 0.25rem; }
+.rwf__pairs li { display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: 1rem; padding: 0.7rem 0; border-top: 1px solid var(--rule); }
+.page--article .article__body .rwf-run .rwf .rwf__was { color: var(--muted); text-decoration-thickness: 1px; }
+.page--article .article__body .rwf-run .rwf .rwf__arrow { color: var(--lbl); }
+.page--article .article__body .rwf-run .rwf .rwf__now { font-size: 1.0625rem; font-weight: 500; }
+
+/* WF06 engineering: question | answer */
+.rwf__qa { display: grid; }
+.rwf__qa > div { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 0.7rem 0; border-top: 1px solid var(--rule); }
+.page--article .article__body .rwf-run .rwf .rwf__qa dt { font-weight: 500; }
+.page--article .article__body .rwf-run .rwf .rwf__qa dd { margin: 0; color: var(--muted); }
+.page--article .article__body .rwf-run .rwf p.rwf__note,
+.page--article .article__body .rwf-run .rwf p.rwf__source { margin: 0; font-size: 0.75rem; line-height: 1.4; color: var(--muted); }
+
+@media (max-width: 700px) {
+  .rwf { aspect-ratio: auto; grid-template-columns: 1fr; row-gap: 1rem; padding-block: 3rem; }
+  .rwf__map, .rwf__stats, .rwf__list, .rwf__leadership, .rwf__split, .rwf__qa > div { grid-template-columns: 1fr; gap: 1rem; }
+  .rwf__timeline li { grid-template-columns: 1fr; }
+  .rwf__pairs li { grid-template-columns: 1fr; gap: 0.2rem; }
+  .rwf__arrow { display: none; }
+}
+
+/* WF04 charts: on the page ground, no card */
+.rwf__charts { display: grid; gap: 1.75rem; }
+.rwf-chart { margin: 0; border-top: 1px solid var(--rule); padding-top: 0.6rem; }
+.page--article .article__body .rwf-run .rwf .rwf-chart figcaption,
+.article__body--nocaps .rwf-chart figcaption { display: block; margin: 0 0 0.5rem; font-size: 0.875rem; font-weight: 500; }
+.rwf-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.rwf-chart__grid { stroke: var(--grid); stroke-width: 1; }
+.rwf-chart__axis, .rwf-chart__lbl, .rwf-chart__seglbl { font: 400 9px "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif; fill: var(--muted); }
+.rwf-chart__lbl { font-weight: 500; fill: var(--ink); }
+.rwf-chart__seglbl { fill: #2a1650; font-weight: 500; }
+.rwf-chart__seglbl.is-inv { fill: #fff; }
+.rwf-chart__line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.rwf-chart__line--a { stroke: var(--sa); }
+.rwf-chart__line--b { stroke: var(--sb); stroke-dasharray: 4 3; }
+.rwf-chart__dot { stroke: var(--bg, #fff); stroke-width: 1.5; }
+.rwf-chart__dot--a { fill: var(--sa); } .rwf-chart__dot--b { fill: var(--sb); }
+.rwf-chart__bar--a { fill: var(--sa); } .rwf-chart__bar--b { fill: var(--sb); }
+.rwf-chart__seq--0 { fill: #e4dcfb; background: #e4dcfb; }
+.rwf-chart__seq--1 { fill: #c4b3f5; background: #c4b3f5; }
+.rwf-chart__seq--2 { fill: #9d86ea; background: #9d86ea; }
+.rwf-chart__seq--3 { fill: #7457d9; background: #7457d9; }
+.rwf-chart__seq--4 { fill: #4b2fa8; background: #4b2fa8; }
+.page--article .article__body .rwf-run .rwf p.rwf-chart__key { margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; font-size: 0.75rem; color: var(--muted); }
+.rwf-chart__key span { display: inline-flex; align-items: center; }
+.rwf-chart__sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 0.3rem; }
+.rwf-chart__sw--a { background: var(--sa); } .rwf-chart__sw--b { background: var(--sb); margin-left: 0.6rem; }
+
+/* WF05 artefact: the review thread, comment left, what it became right */
+.rwf-thread { display: grid; }
+.page--article .article__body .rwf-run .rwf p.rwf-thread__head { margin: 0 0 0.5rem; font-size: 0.875rem; font-weight: 500; }
+.page--article .article__body .rwf-run .rwf .rwf-thread__head span { margin-left: 0.4rem; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+.rwf-thread__row { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2rem; align-items: start; padding: 0.75rem 0; border-top: 1px solid var(--rule); }
+.rwf-thread__comment { display: grid; grid-template-columns: 28px 1fr; gap: 0.6rem; }
+.page--article .article__body .rwf-run .rwf .rwf-thread__av {
+  width: 28px; height: 28px; border-radius: 50%; corner-shape: round; display: grid; place-items: center;
+  background: #e9e0fb; color: #33095e; font-size: 0.6875rem; font-weight: 500;
+}
+:root.dark .page--article .article__body .rwf-run .rwf .rwf-thread__av { background: #2c2344; color: #b69cea; }
+.page--article .article__body .rwf-run .rwf p.rwf-thread__meta { margin: 0; font-size: 0.75rem; color: var(--muted); }
+.page--article .article__body .rwf-run .rwf .rwf-thread__meta b { font-weight: 500; color: var(--ink); }
+.page--article .article__body .rwf-run .rwf p.rwf-thread__text { margin: 0.15rem 0 0; font-size: 0.875rem; line-height: 1.45; }
+.page--article .article__body .rwf-run .rwf p.rwf-thread__led { margin: 0; font-size: 0.875rem; line-height: 1.45; color: var(--lbl); border-left: 2px solid #c9b3f5; padding-left: 0.75rem; }
+:root.dark .page--article .article__body .rwf-run .rwf p.rwf-thread__led { border-left-color: #4a3d7a; }
+@media (max-width: 700px) { .rwf-thread__row { grid-template-columns: 1fr; gap: 0.4rem; } }
+
+/* WF09 crit cadence: one purple dot per crit, a hollow ring for an off day */
+.rwf-cad { margin: 0; border-top: 1px solid var(--rule); padding-top: 0.6rem; }
+.page--article .article__body .rwf-run .rwf .rwf-cad figcaption,
+.article__body--nocaps .rwf-cad figcaption { display: block; margin: 0 0 0.6rem; font-size: 0.875rem; font-weight: 500; }
+.page--article .article__body .rwf-run .rwf .rwf-cad figcaption span { margin-left: 0.4rem; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+.rwf-cad__grid { display: grid; gap: 0.35rem; }
+.rwf-cad__row { display: grid; grid-template-columns: 8.5rem repeat(5, 1fr) 2.5rem; align-items: center; gap: 0.4rem; }
+.page--article .article__body .rwf-run .rwf .rwf-cad__row--head span { font-size: 0.75rem; color: var(--muted); text-align: center; }
+.page--article .article__body .rwf-run .rwf .rwf-cad__pace { display: grid; font-size: 0.75rem; line-height: 1.3; color: var(--muted); }
+.page--article .article__body .rwf-run .rwf .rwf-cad__pace b { font-size: 0.875rem; font-weight: 500; color: var(--ink); }
+.rwf-cad__day { display: flex; justify-content: center; align-items: center; gap: 4px; min-height: 26px; border-radius: 6px; background: var(--wash); }
+.rwf-cad__dot { width: 10px; height: 10px; border-radius: 50%; corner-shape: round; background: var(--sa); }
+.rwf-cad__dot--off { background: none; box-shadow: inset 0 0 0 1.5px var(--rule); }
+.page--article .article__body .rwf-run .rwf .rwf-cad__sum { font-size: 0.875rem; font-weight: 500; text-align: center; }
+@media (max-width: 700px) { .rwf-cad__row { grid-template-columns: 5.5rem repeat(5, 1fr) 2rem; gap: 0.25rem; } }
+
+/* WF04 findings: light orange highlight + callout (unchanged, 27 Sep). The
+   highlight is a pale peach (#ffd9b3 at 55%) with a #f0a868 edge, clearly
+   lighter than the #c0621a series; callout text #5a3200 on #fff4e8, 10.6:1. */
+.rwf-hl { fill: #ffd9b3; fill-opacity: 0.55; stroke: none; }
+.rwf-hl--ring { fill: #ffd9b3; fill-opacity: 0.25; stroke: #f0a868; stroke-width: 1.5; stroke-dasharray: 3 2; }
+.rwf-call__box { fill: #fff4e8; stroke: #f0a868; stroke-width: 1; }
+.rwf-call__txt { font: 500 10px "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif; fill: #5a3200; }
+.rwf-call__txt.is-lead { font-weight: 600; }
+.rwf-call__lead { stroke: #f0a868; stroke-width: 1; stroke-dasharray: 2 2; }
+:root.dark .rwf-hl { fill: #b8641f; fill-opacity: 0.28; }
+:root.dark .rwf-hl--ring { fill: #b8641f; fill-opacity: 0.15; stroke: #e0955a; }
+:root.dark .rwf-call__box { fill: #3a2410; stroke: #c07a3c; }
+:root.dark .rwf-call__txt { fill: #ffd8b0; }
+:root.dark .rwf-call__lead { stroke: #c07a3c; }
+/* findings appear on hover or focus (each chart is a tab stop; a tap focuses it) */
+.rwf-chart { cursor: default; outline: none; }
+.rwf-chart:focus-visible { box-shadow: 0 0 0 2px #f0a868; border-radius: 4px; }
+.rwf-chart .rwf-call { opacity: 0; transition: opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease); }
+.rwf-chart .rwf-hl { transition: fill-opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease); fill-opacity: 0.22; }
+.rwf-chart .rwf-hl--ring { fill-opacity: 0.1; stroke-opacity: 0.45; transition: fill-opacity 200ms, stroke-opacity 200ms; }
+.rwf-chart:hover .rwf-call, .rwf-chart:focus-within .rwf-call { opacity: 1; }
+.rwf-chart:hover .rwf-hl, .rwf-chart:focus-within .rwf-hl { fill-opacity: 0.55; }
+.rwf-chart:hover .rwf-hl--ring, .rwf-chart:focus-within .rwf-hl--ring { fill-opacity: 0.25; stroke-opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .rwf-chart .rwf-call, .rwf-chart .rwf-hl { transition: none; } }
+
+/* mujtwppb (27 Sep): collapsed = a 1:1 circle holding only the emoji, centred
+   both ways; clicked = it opens and the label wipes in. The emoji now sits
+   OUTSIDE the clip. Collapsed: no padding, no gap, clip width 0, all four
+   corners round (the sharp corner belongs to the open tag). */
+.smo__collage .smo__pill { display: inline-flex; align-items: center; justify-content: center; gap: 0; padding: 0; cursor: pointer; }
+/* (muju9m8p: the all-round collapsed corners were removed; the sharp corner stays in both states) */
+.smo__collage .smo__pill .smo__emoji--anim { translate: none; margin: 0; flex: none; }
+.smo__collage .smo__pill[data-on] { gap: 0.6em; padding: 0 calc(1.75cqw + 4px) 0 calc(1.4cqw); justify-content: flex-start; }
+.smo__collage .smo__word { top: 0; }
+.smo__collage .smo__pill:focus-visible { outline: 2px solid #f0a868; outline-offset: 3px; }
+/* mujtz56p: reading-aid emoji in the insight statements, a touch smaller than
+   the text and nudged onto its x-height so they sit in the line, not on top */
+.sin__aid { font-size: 0.82em; display: inline-block; translate: 0 -0.04em; margin: 0 0.04em; }
+/* muju0wqt: no mask any more; the hearts' own final size ends the bleed (see
+   heartTracks in SchedHeartLoop.jsx). The window stays for layout only. */
+.shl__bleed { overflow: visible; -webkit-mask-image: none; mask-image: none; }
+
+/* muju9m8p (27 Sep) "QA the transition, extremely smooth". Nothing that cannot
+   animate may change between states: justify-content and gap used to flip at
+   the first frame, jolting the emoji. Now:
+   - the emoji never moves: a FIXED left padding centres it in the collapsed
+     circle, (height - emoji) / 2, and that same padding holds when open
+   - the space before the label is the clip's margin, which animates in with it
+   - only max-width, padding-right and the clip/word reveal change, and all
+     three transition (the pill's own spring timing, unchanged)
+   - the sharp corner (tl/tr/br per tag) stays in BOTH states */
+.smo__collage .smo__pill,
+.smo__collage .smo__pill[data-on] {
+  justify-content: flex-start; gap: 0;
+  padding-left: calc((4.6cqw + 8px - 1.5em) / 2);
+}
+.smo__collage .smo__pill { padding-right: 0; }
+.smo__collage .smo__pill[data-on] { padding-right: calc(1.75cqw + 4px); }
+.smo__collage .smo__pill .smo__clip { margin-left: 0; transition: max-width 400ms cubic-bezier(0.25, 1, 0.5, 1) 180ms, margin-left 400ms cubic-bezier(0.25, 1, 0.5, 1) 180ms; }
+.smo__collage .smo__pill[data-on] .smo__clip { margin-left: 0.6em; }
+.smo__collage .smo__pill .smo__emoji--anim { width: 1.5em; height: 1.5em; }
+
+/* mujv7fzk (27 Sep): a vertical slide, label over content, both centred */
+.rwf.rwf--stack { grid-template-columns: 1fr; row-gap: 1.25rem; justify-items: center; text-align: center; }
+.rwf--stack .rwf__main { align-items: center; }
+.rwf--stack .rwf__map { width: 100%; }
+.rwf--stack .rwf__map { display: flex; flex-wrap: wrap; justify-content: center; }
+.rwf--stack .rwf__group { flex: 0 0 calc((100% - 4rem) / 3); }
+@media (max-width: 700px) { .rwf--stack .rwf__group { flex-basis: 100%; } }
+
+/* mujv80uw (27 Sep): the timeline as a clean Align UI style timeline. A rail
+   on the left with a ringed node per step, the connector running between
+   nodes; each step = date (small, muted) over title (medium) over detail. */
+.rwf__timeline { position: relative; }
+.rwf__timeline li {
+  position: relative; display: grid; grid-template-columns: 1fr; row-gap: 0.15rem;
+  padding: 0 0 1.4rem 2rem; border-top: 0;
+}
+.rwf__timeline li::before { /* node */
+  content: ""; position: absolute; left: 0; top: 0.15rem; width: 12px; height: 12px; box-sizing: border-box;
+  border-radius: 50%; corner-shape: round; background: var(--bg, #fff); border: 2px solid var(--sa);
+}
+.rwf__timeline li::after { /* connector */
+  content: ""; position: absolute; left: 5px; top: 1.05rem; bottom: 0.1rem; width: 2px; border-radius: 1px; background: var(--rule);
+}
+.rwf__timeline li:last-child { padding-bottom: 0; }
+.rwf__timeline li:last-child::after { display: none; }
+.rwf__timeline li:first-child::before, .rwf__timeline li:last-child::before { background: var(--sa); }
+.page--article .article__body .rwf-run .rwf .rwf__when { grid-row: auto; order: -1; font-size: 0.75rem; line-height: 1.3; }
+
+/* mujvdnap (27 Sep): the team as a split list. One row per function: the
+   function name in the left column, then (after a gap) the people with their
+   subtext in the right column. Rows separated by the hairline. */
+.rwf--stack .rwf__map { display: grid; grid-template-columns: 1fr; gap: 0; width: 100%; max-width: 40rem; text-align: left; }
+.rwf--stack .rwf__group { display: grid; grid-template-columns: 11rem 1fr; column-gap: 2rem; padding: 0.8rem 0; flex: none; }
+.page--article .article__body .rwf-run .rwf--stack p.rwf__gname { margin: 0; }
+@media (max-width: 700px) { .rwf--stack .rwf__group { grid-template-columns: 1fr; row-gap: 0.3rem; } }
+/* mujvef11: list points = meta, headline, detail (the timeline step's build) */
+.rwf__list li { display: flex; flex-direction: column; gap: 0.15rem; }
+.page--article .article__body .rwf-run .rwf .rwf__list .rwf__n { margin-bottom: 0.1rem; color: var(--muted); }
+
+/* mujvhkft (27 Sep): the dots become filled icons, one per step, in a soft
+   lavender disc on the rail. Icon #5b3fd1 on #ece5fc = 5.9:1 (light); dark
+   #b69cea on #2c2344 = 6.1:1. The CSS dot stays only for a step with no icon. */
+.rwf__timeline li { padding-left: 2.75rem; }
+.rwf__timeline li:has(.rwf__node)::before { display: none; }
+.rwf__timeline li::after { left: 13px; top: 2rem; }
+.rwf__node {
+  position: absolute; left: 0; top: -0.2rem; width: 28px; height: 28px; border-radius: 50%; corner-shape: round;
+  display: grid; place-items: center; background: #ece5fc; color: #5b3fd1;
+}
+.rwf__node svg { width: 15px; height: 15px; }
+:root.dark .rwf__node { background: #2c2344; color: #b69cea; }
+
+/* mujvibm1: the speed milestones, four across */
+.rwf-speed { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.rwf-speed li { display: flex; flex-direction: column; gap: 0.15rem; border-top: 2px solid var(--sa); padding-top: 0.6rem; }
+@media (max-width: 700px) { .rwf-speed { grid-template-columns: 1fr 1fr; } }
+
+/* mujvjphh: a big filled icon anchors each engineering point (same disc
+   pairing as the timeline nodes: #5b3fd1 on #ece5fc 5.9:1, dark 6.1:1) */
+.rwf__qa > div { grid-template-columns: 44px 1fr 1fr; column-gap: 1.25rem; align-items: start; }
+.rwf__anchor { width: 44px; height: 44px; border-radius: 50%; corner-shape: round; display: grid; place-items: center; background: #ece5fc; color: #5b3fd1; }
+.rwf__anchor svg { width: 24px; height: 24px; }
+:root.dark .rwf__anchor { background: #2c2344; color: #b69cea; }
+@media (max-width: 700px) { .rwf__qa > div { grid-template-columns: 44px 1fr; } .rwf__qa dd { grid-column: 2; } }
+
+/* mujvlj10: the /lab rail inside a slide. The hello section's outer padding is
+   dropped (the slide already has the frame padding); the rail keeps its own. */
+.rwf .rwf-rail.tlx { padding: 0; width: 100%; }
+.article__body .rwf .tlv__list li { margin: 0; }
+
+/* 27 Sep: the metrics story. Each beat is a role slide (label = the act,
+   shown on the act's first beat only), then a beat number, the claim, one
+   plain sentence, and the chart. Charts are the SdChartKit ones, unchanged. */
+.msty .rwf { aspect-ratio: auto; padding-block: 3rem; }
+.msty .rwf__main { gap: 0.9rem; }
+.page--article .article__body .rwf-run .rwf p.msty__body { max-width: 40rem; font-size: 1rem; line-height: 1.5; color: var(--muted); }
+.msty__chart { margin-top: 0.5rem; }
+.msty__chart .sdc__legend { margin-top: 0.4rem; }
+.page--article .article__body .rwf-run .msty__n { margin: 0; }
+.page--article .article__body p.msty__src { margin: 1rem 0 0; padding-inline: var(--case-study-frame-default-padding); font-size: 0.75rem; color: var(--muted, #888); }
+
+/* mujwi96y (27 Sep): the horizontal timeline. Month columns share the width;
+   cards span their months and stack in lanes; the axis runs underneath with a
+   tick per month. Cards on a faint wash, ink per the slide tokens. */
+.rwf--stack .rwf__main:has(.ptk) { align-items: stretch; text-align: left; width: 100%; }
+.rwf--stack .rwf__main:has(.ptk) .rwf__title { text-align: center; }
+.ptk { width: 100%; }
+.ptk__grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 0.5rem; align-items: stretch; }
+.ptk__card {
+  display: flex; flex-direction: column; gap: 0.2rem; min-width: 0;
+  padding: 0.65rem 0.7rem 0.75rem; border-radius: 12px; background: var(--wash);
+  border-top: 2px solid var(--sa);
+}
+.ptk__top { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem; }
+.ptk__icon { width: 22px; height: 22px; flex: none; border-radius: 50%; corner-shape: round; display: grid; place-items: center; background: #ece5fc; color: #5b3fd1; }
+.ptk__icon svg { width: 12px; height: 12px; }
+:root.dark .ptk__icon { background: #2c2344; color: #b69cea; }
+.page--article .article__body .rwf-run .rwf .ptk__card .rwf__when { font-size: 0.6875rem; line-height: 1.2; }
+.page--article .article__body .rwf-run .rwf .ptk__card .rwf__what { font-size: 0.875rem; line-height: 1.25; }
+.page--article .article__body .rwf-run .rwf .ptk__card .rwf__detail { font-size: 0.75rem; line-height: 1.4; }
+.ptk__axis { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; border-top: 1px solid var(--rule); padding-top: 0.4rem; margin-top: 0.25rem; }
+.ptk__axis span { position: relative; font-size: 0.6875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ptk__axis span::before { content: ""; position: absolute; left: 0; top: calc(-0.4rem - 5px); width: 1px; height: 8px; background: var(--rule); }
+@media (max-width: 700px) {
+  .ptk { overflow-x: auto; }
+  .ptk__grid { min-width: 720px; }
+}
+/* roomier: the timeline slide gives up its side padding so the track gets the
+   whole column, and the date sits under the icon instead of beside it */
+.rwf.rwf--stack:has(.ptk) { padding-inline: 0; }
+.ptk__grid { gap: 0.4rem; }
+.ptk__card { padding: 0.6rem 0.6rem 0.7rem; }
+.ptk__top { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+
+/* muk0jers (27 Sep): the team as an annotated diorama. A numbered pin + a
+   name tag on each zone, always visible; hover or focus opens the people.
+   Tags use the page pair (--bg / --fg, the body-text contrast in both themes). */
+.rwf--stack .rwf__main:has(.dio) { width: 100%; }
+.rwf.rwf--stack:has(.dio) { padding-inline: 0; }
+.dio { margin: 0; width: 100%; }
+.dio__stage { position: relative; border-radius: 16px; overflow: visible; }
+.dio__stage > img { display: block; width: 100%; height: auto; border-radius: 16px; }
+.dio__pin {
+  position: absolute; translate: -50% -50%; display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.2rem; border: 0; border-radius: 999px; corner-shape: round;
+  background: var(--bg, #fff); color: var(--fg, #111); cursor: default;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.45); font: 500 0.75rem/1 "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif;
+  white-space: nowrap; z-index: 1;
+}
+.dio__n { width: 20px; height: 20px; border-radius: 50%; corner-shape: round; display: grid; place-items: center; background: #5b3fd1; color: #fff; font-size: 0.6875rem; }
+.dio__card {
+  position: absolute; left: 0; top: calc(100% + 6px); display: grid; gap: 0.2rem; min-width: 12rem; max-width: 16rem;
+  padding: 0.6rem 0.7rem; border-radius: 10px; background: var(--bg, #fff); color: var(--fg, #111);
+  box-shadow: 0 10px 28px -8px rgba(0, 0, 0, 0.5); font-weight: 400; font-size: 0.75rem; line-height: 1.35; white-space: normal; text-align: left;
+  opacity: 0; translate: 0 -4px; pointer-events: none;
+  transition: opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease), translate var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease);
+}
+.dio__pin:hover, .dio__pin:focus-visible { z-index: 3; }
+.dio__pin:hover .dio__card, .dio__pin:focus-visible .dio__card { opacity: 1; translate: 0 0; }
+.dio__pin:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .dio__card { transition: none; } }
+@media (max-width: 700px) { .dio__tag { display: none; } .dio__pin { padding-right: 0.2rem; } }
+/* muk0mnhe: the diorama is a cut-out now (backdrop removed, soft shadows kept),
+   so no rounded plate. muk0mvxm: bigger pins and people cards. */
+.dio__stage > img { border-radius: 0; }
+.dio__pin { gap: 0.5rem; padding: 0.3rem 0.9rem 0.3rem 0.3rem; font-size: 1rem; }
+.dio__n { width: 28px; height: 28px; font-size: 0.875rem; }
+.dio__card { min-width: 15rem; max-width: 20rem; padding: 0.8rem 0.95rem; font-size: 0.9375rem; line-height: 1.4; gap: 0.3rem; }
+/* muk0nxkb: the Wins numbers inside the centred Who I worked with slide */
+.rwf--stack .rwf__stats { width: 100%; max-width: 44rem; text-align: left; }
+
+/* muk0tqj9 (27 Sep): the diorama pins take the moment-tag pill from above
+   (SchedMoments, measured): 46px tall, page ground + page ink, Google Sans Flex
+   15px / 500, radius half the height with ONE sharp corner (1px, top left,
+   like the tag's pin point), the tag's soft shadow. The number sits where the
+   tag's emoji sits: a 23px disc, centred in the pill's left end. */
+.dio__pin {
+  height: 46px; padding: 0 18px 0 11.5px; gap: 0.6em;
+  border-radius: 23px; border-top-left-radius: 1px; corner-shape: squircle;
+  background: var(--bg); color: var(--fg);
+  box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.35);
+  font: 500 15px/1 "Google Sans Flex", "Inter", sans-serif;
+}
+.dio__n { width: 23px; height: 23px; font-size: 12px; }
+.dio__card { font-family: "Google Sans Flex", "Inter", sans-serif; border-radius: 14px; border-top-left-radius: 1px; }
+/* muk0w29b: "more rounded". The pin was already at half-height radius; the
+   global squircle was flattening it, so the pill ends are true round here
+   (the squircle-breaks-circles rule), and the cards go 14 -> 20px. */
+.dio__pin { corner-shape: round; }
+.dio__card { border-radius: 20px; border-top-left-radius: 1px; corner-shape: round; }
+/* muk1dz9x: no number disc, so the pill pads evenly */
+.dio__pin { padding: 0 18px; }
+/* muk1e94x: purple pills. #5b3fd1 with white text = 7.0:1 (the page's
+   scheduled purple, dataviz-validated); the same in both themes, since the
+   pill sits on the photo, not the page. With the numbers gone the name is the
+   pin's only content, so it stays visible on phones too (smaller). */
+.dio__pin { background: #5b3fd1; color: #fff; }
+@media (max-width: 700px) { .dio__tag { display: inline; } .dio__pin { height: 32px; padding: 0 12px; font-size: 12px; } }
+
+/* muk1eggs (27 Sep): the pill EXPANDS on hover or focus, holding the people
+   itself (no separate card). The pill is a two-row grid: the name, then a row
+   that goes 0fr -> 1fr (animatable, no measured heights). The name stays put
+   at the top so nothing under the pointer moves. Timing on the site effects
+   tokens; none with reduced motion. */
+.dio__pin {
+  height: auto; min-height: 46px; display: inline-grid; grid-template-rows: 46px 0fr; align-items: center;
+  justify-items: start; gap: 0; padding: 0 18px; text-align: left;
+  transition: grid-template-rows var(--m3-dur-spatial-standard-slow, 450ms) var(--m3-spatial-standard, ease),
+              box-shadow 200ms var(--m3-effects-default, ease);
+}
+.dio__pin .dio__tag { align-self: center; }
+.dio__pin .dio__card {
+  position: static; min-width: 0; max-width: 15rem; min-height: 0; overflow: hidden;
+  padding: 0; margin: 0; background: none; box-shadow: none; border-radius: 0;
+  color: rgba(255, 255, 255, 0.86); font: 400 13px/1.4 "Google Sans Flex", "Inter", sans-serif;
+  translate: none; opacity: 0; display: grid; gap: 0.15rem; align-content: start;
+  transition: opacity 200ms var(--m3-effects-default, ease);
+}
+.dio__pin:hover, .dio__pin:focus-visible { grid-template-rows: 46px 1fr; box-shadow: 0 10px 26px -8px rgba(40, 10, 90, 0.6); }
+.dio__pin:hover .dio__card, .dio__pin:focus-visible .dio__card { opacity: 1; padding-bottom: 14px; }
+/* white on the pill purple is 7.0:1; the 86% white list text is ~6:1 */
+@media (prefers-reduced-motion: reduce) { .dio__pin, .dio__pin .dio__card { transition: none; } }
+/* at rest the list is 0 wide, so the pill hugs its name; it widens as it opens */
+.dio__pin .dio__card { max-width: 0; transition: opacity 200ms var(--m3-effects-default, ease), max-width var(--m3-dur-spatial-standard-slow, 450ms) var(--m3-spatial-standard, ease); }
+.dio__pin .dio__card > span { width: 13rem; }
+.dio__pin:hover .dio__card, .dio__pin:focus-visible .dio__card { max-width: 13rem; }
+/* muk1fomw: the whole hello glass rail inside the Timeline slide. Full width;
+   the hello section's own outer padding dropped (the slide frames it). */
+.rwf--stack .rwf__main:has(.rwf-glass) { align-items: stretch; width: 100%; }
+.rwf .rwf-glass.tlx { width: 100%; padding: 0; margin: 0; }
+.rwf.rwf--stack:has(.rwf-glass) { padding-inline: 0; }
+/* the hello rail's "Now" card belongs to a live career; this project ended in
+   Feb 2026, so it is hidden here rather than claiming the work runs to today */
+.rwf-glass .tlx__rail-nowcard { display: none; }
+
+/* 28 Sep PERF: the hero's layers each get their own compositor layer. The
+   hearts are SVGs with large baked-in blurs, scaled up to 7.5x in the bloom;
+   without a layer the browser re-rasterised them per frame. Measured on a
+   replay, with the --hero-green scoping fix: 716 frames in 6.5s, one over
+   33ms, worst 33ms (was 215 frames, 46 janky, worst 450ms). */
+.shl__stage * { will-change: transform, opacity; }
+
+/* mukp1kbl (28 Sep): no overlapping cards on this page's glass rail. The rail
+   packs overlapping cards into lanes (--lane) but the hello page draws one flat
+   row, so here each lane steps a full card height away from the line: up for
+   cards above it, down for cards below. Margin, not translate: the rail's
+   hover shift owns translate. Room is reserved above and below for the lanes. */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * -48px); }
+.rwf-glass .tlx__rail-tagcard[data-below="true"]:not(.tlx__rail-measure-card) { margin-top: calc(var(--lane, 0) * 48px); }
+.rwf-glass .tlx__rail { margin-top: 5rem; margin-bottom: 5rem; }
+.rwf__main .rwf__title--second { margin-top: 1.5rem; } /* mukp2jed: a second heading inside a slide */
+/* 28 Sep: no "now" marker on this rail (the project ended); the card was
+   already hidden, now its line and dot go too */
+.rwf-glass .tlx__rail-nowlead, .rwf-glass .tlx__rail-nowcard { display: none; }
+/* connectors follow their card's lane: a lifted card's leader grows by the same
+   48px per lane, upward above the line and downward below it, so every card
+   stays joined to its tick (M1 build, Validation study, Returns and refunds) */
+.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * -48px); padding-top: calc(var(--lane, 0) * 48px); }
+.rwf-glass .tlx__rail-leader[data-below="true"] { padding-bottom: calc(var(--lane, 0) * 48px); }
+/* the leader has a fixed height, so under border-box the lane padding was eaten;
+   content-box makes the padding ADD length (measured: lifted leaders stopped
+   48px short of the rail) */
+.rwf-glass .tlx__rail-leader { box-sizing: content-box; }
+
+/* mukpkglc: the speed charts side by side, one shared legend under both */
+.rwf__charts.rwf__charts--pair { grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+.page--article .article__body .rwf-run .rwf p.rwf-chart__key--shared { margin-top: -0.75rem; }
+@media (max-width: 700px) { .rwf__charts.rwf__charts--pair { grid-template-columns: 1fr; } }
+.rwf-chart__key--shared .rwf-chart__sw--b { margin-left: 0; } /* each entry is its own span now */
+
+/* mukplpen (28 Sep): the four numbers in ONE row (4 x 1), not a 2 x 2 grid.
+   Four across the centred column, so the big numbers step down to fit
+   "506 comments" in a quarter width. */
+.rwf--stack .rwf__stats { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 100%; gap: 1.5rem; }
+.page--article .article__body .rwf-run .rwf--stack dt.rwf__big { font-size: 1.5rem; white-space: nowrap; }
+.page--article .article__body .rwf-run .rwf--stack dd.rwf__small { font-size: 0.8125rem; }
+@media (max-width: 700px) { .rwf--stack .rwf__stats { grid-template-columns: 1fr 1fr; } }
+
+/* mukpmysp (28 Sep): each number in its own box, and the numbers match "The
+   team around the file" exactly: 24px AND weight 400 (they were 300, which
+   read smaller at the same size). Box = the page wash + a hairline, the
+   slide tokens, so it follows the theme. */
+.rwf--stack .rwf__stat {
+  border-top: 0; padding: 1rem 1.1rem 1.1rem; border-radius: 16px;
+  background: var(--wash); box-shadow: inset 0 0 0 1px var(--rule);
+  align-content: start;
+}
+.page--article .article__body .rwf-run .rwf--stack dt.rwf__big { font-weight: 400; }
+/* however many numbers there are, they share one row evenly */
+.rwf--stack .rwf__stats { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+@media (max-width: 700px) { .rwf--stack .rwf__stats { grid-auto-flow: row; grid-template-columns: 1fr 1fr; } }
+
+/* mukpq377: the expanded card on this page's rail reads left-aligned, as bullets */
+.rwf-glass .tlx__rail-detail { text-align: left; align-items: flex-start; justify-items: start; }
+.rwf-glass .tlx__rail-detail-bullets { text-align: left; margin: 0.35rem 0 0; padding-left: 1.1em; display: grid; gap: 0.2rem; list-style: disc; }
+.rwf-glass .tlx__rail-detail-bullets li { text-align: left; margin: 0; }
+
+/* mukpz799: each bullet leads with its Material Symbols icon instead of a dot.
+   Filled, rounded, 18px, in the slide purple (#5b3fd1, 7.0:1 on white as a
+   non-text mark; dark #b69cea). */
+.rwf-glass .tlx__rail-detail-bullets:has(li[data-icon]) { list-style: none; padding-left: 0; gap: 0.35rem; }
+.rwf-glass .tlx__rail-detail-bullets li[data-icon] { display: flex; align-items: flex-start; gap: 0.45rem; }
+.rwf-glass .tlx__rail-detail-icon {
+  font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 18px; line-height: 1;
+  letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; flex: none;
+  -webkit-font-smoothing: antialiased; font-feature-settings: "liga"; color: #5b3fd1; translate: 0 -1px;
+}
+:root.dark .rwf-glass .tlx__rail-detail-icon { color: #b69cea; }
+/* the slide rule that sets Stack Sans on every span outranked the icon font;
+   this selector outranks it back */
+.page--article .article__body .rwf-run .rwf .rwf-glass span.tlx__rail-detail-icon { font-family: "Material Symbols Rounded"; font-weight: 400; letter-spacing: normal; }
+/* 28 Sep (Agam): the glass rail block was too tall (876px). 80px off the top
+   and 120px off the bottom: the 5rem reserves become 0 and -40px */
+.rwf-glass .tlx__rail { margin-top: 0; margin-bottom: -40px; }
+
+/* mukpzwqz: the standardised people card inside the expanded pill */
+.dio__pin .dio__card { gap: 0.45rem; }
+.page--article .article__body .rwf-run .rwf .dio span.dio__count {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.1rem;
+}
+.dio__row { display: flex; align-items: flex-start; gap: 0.5rem; }
+.page--article .article__body .rwf-run .rwf .dio span.dio__icon {
+  font-family: "Material Symbols Rounded"; font-weight: 400; font-style: normal; font-size: 18px; line-height: 1;
+  letter-spacing: normal; text-transform: none; white-space: nowrap; -webkit-font-smoothing: antialiased;
+  font-feature-settings: "liga"; flex: none; color: #fff; opacity: 0.9;
+}
+.page--article .article__body .rwf-run .rwf .dio span.dio__who { display: grid; gap: 0.05rem; line-height: 1.3; }
+.dio__who b { font-weight: 600; color: #fff; }
+.dio__who em { font-style: normal; color: rgba(255, 255, 255, 0.75); font-size: 12px; }
+/* the stats now follow the image, with room between */
+.rwf--stack .dio + .rwf__stats { margin-top: 0.5rem; }
+
+/* mukq4l29 (28 Sep): "Leading with design", five slides as five tabs. The tab
+   row is a pill segmented control in the slide purple; the selected tab is
+   filled #5b3fd1 with white text (7.0:1), the rest are ink on the wash. */
+.rwf__tabwrap { display: grid; gap: 1.5rem; min-width: 0; }
+.rwf-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.3rem; border-radius: 999px; corner-shape: round; background: var(--wash); box-shadow: inset 0 0 0 1px var(--rule); width: fit-content; }
+.page--article .article__body .rwf-run .rwf button.rwf-tabs__tab {
+  border: 0; cursor: pointer; padding: 0.45rem 0.95rem; border-radius: 999px; corner-shape: round;
+  background: transparent; color: var(--ink);
+  font: 500 0.875rem/1 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  transition: background-color 200ms var(--m3-effects-default, ease), color 200ms var(--m3-effects-default, ease);
+}
+.page--article .article__body .rwf-run .rwf button.rwf-tabs__tab:hover { background: var(--rule); }
+.page--article .article__body .rwf-run .rwf button.rwf-tabs__tab[aria-selected="true"] { background: #5b3fd1; color: #fff; }
+.rwf-tabs__tab:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
+.rwf-tabs__panel > .rwf__main { gap: 1.75rem; }
+@media (prefers-reduced-motion: reduce) { .rwf-tabs__tab { transition: none; } }
+
+/* mukq87g4: one height for every tab. The panels stack in one grid cell;
+   inactive ones are invisible (not removed), so they still hold the height. */
+.rwf-tabs__stack { display: grid; }
+.rwf-tabs__stack > .rwf-tabs__panel { grid-area: 1 / 1; visibility: hidden; opacity: 0; transition: opacity 200ms var(--m3-effects-default, ease); }
+.rwf-tabs__stack > .rwf-tabs__panel[data-on] { visibility: visible; opacity: 1; }
+/* content refactor: points three across in the tabs, so tall tabs shrink */
+.rwf-tabs__panel .rwf__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 700px) { .rwf-tabs__panel .rwf__list { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .rwf-tabs__stack > .rwf-tabs__panel { transition: none; } }
+.rwf-tabs__panel .rwf__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* four points go 2 x 2, no orphan */
+
+/* mukqb0zz (28 Sep): smoother, seamless pill expansion.
+   - anchored by an edge with a fixed -23px (half the resting 46px), not
+     translate(-50%, -50%): a centred box moves its own name as it grows
+   - right-side pills grow leftward (right-anchored), so Design no longer clips
+   - width and height share ONE curve and duration (emphasized decelerate,
+     420ms); the list fades in once the shape is mostly open, and fades out
+     fast on close so it never lingers outside a shrinking pill */
+.dio__pin { translate: -40px -23px; }
+.dio__pin[data-side="right"] { translate: 40px -23px; }
+.dio__pin {
+  transition: grid-template-rows 420ms cubic-bezier(0.05, 0.7, 0.1, 1), box-shadow 300ms var(--m3-effects-default, ease);
+}
+.dio__pin .dio__card {
+  transition: max-width 420ms cubic-bezier(0.05, 0.7, 0.1, 1), opacity 120ms linear, padding-bottom 420ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+.dio__pin:hover .dio__card, .dio__pin:focus-visible .dio__card {
+  transition: max-width 420ms cubic-bezier(0.05, 0.7, 0.1, 1), opacity 220ms ease-out 140ms, padding-bottom 420ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+@media (prefers-reduced-motion: reduce) { .dio__pin, .dio__pin .dio__card, .dio__pin:hover .dio__card { transition: none; } }
+/* right-anchored pills keep their NAME on the anchored (right) edge too, so it
+   stays still while the pill grows leftward; the people list reads left-aligned */
+.dio__pin[data-side="right"] { justify-items: end; }
+.dio__pin[data-side="right"] .dio__card { justify-self: stretch; }
+/* mukqc3av (28 Sep): lifted cards up another 12px (lane step 48 -> 60) so
+   M1 build no longer grazes Problem on the canvas; leaders grow to match */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * -60px); }
+.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * -60px); padding-top: calc(var(--lane, 0) * 60px); }
+
+/* mukqhh5r: an icon on each number box, the leadership icons' disc (filled
+   #5b3fd1 on #ece5fc, 5.9:1; dark #b69cea on #2c2344, 6.1:1) */
+.rwf__stat-icon { width: 36px; height: 36px; border-radius: 50%; corner-shape: round; display: grid; place-items: center; background: #ece5fc; color: #5b3fd1; margin-bottom: 0.4rem; }
+.rwf__stat-icon svg { width: 20px; height: 20px; }
+:root.dark .rwf__stat-icon { background: #2c2344; color: #b69cea; }
+
+/* mukqox8u (28 Sep): a hairline stroke on the moment tags, the site's own
+   --line token (black 8% light / white 12% dark), drawn as a 1px ring beside
+   the existing soft shadow so the tag's size and corners are unchanged */
+.smo__collage .smo__pill,
+.smo__collage .smo__pill:hover { box-shadow: 0 0 0 1px var(--line), 0 2px 10px -4px rgba(0, 0, 0, 0.35); }
+.smo__collage .smo__pill.is-held { box-shadow: 0 0 0 1px var(--line), 0 10px 24px -8px rgba(40, 10, 90, 0.45); }
+
+/* mukq2tj2 (28 Sep): the legend and the source note in one dashed box. The dash only
+   groups, it carries no meaning, so no 3:1 floor applies; it takes --muted, the page's
+   own secondary ink, so it reads a step firmer than the --line hairlines */
+.page--article .article__body .rwf-run .rwf .rwf-keybox {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--muted);
+  border-radius: 10px;
+}
+.page--article .article__body .rwf-run .rwf .rwf-keybox p.rwf-chart__key--shared { margin: 0; }
+
+/* mukt31g5 (28 Sep): the month row, same system as the year labels (Stack Sans
+   11px) but uppercase grey. Grey = white 55% dark (about 7:1 on the page) /
+   black 55% light (about 5.9:1), so it reads quieter than the years (82%).
+   The years step down to make room under the months. */
+.rwf-glass { position: relative; }
+.rwf-months { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.page--article .article__body .rwf-run .rwf span.rwf-months__m {
+  position: absolute; translate: -50% 0; font: 500 10px/1 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0, 0, 0, 0.55); white-space: nowrap;
+}
+:root.dark .page--article .article__body .rwf-run .rwf span.rwf-months__m { color: rgba(255, 255, 255, 0.55); }
+.rwf-glass .tlx__rail-year { translate: 0 14px; }
+/* 28 Sep (Agam: "top green the same as bottom green"): the rail's padding bands
+   were equal (339px) but held unequal content, so the EMPTY space differed:
+   146px above the top card, 190px below the lowest element. Bottom padding
+   44px shorter makes both 146px; the -40px bottom margin trick is dropped so
+   the padding box is the real footprint (net height change 4px). */
+.rwf-glass .tlx__rail { padding-bottom: calc(339px - 44px); margin-bottom: 0; }
+/* the hello rail's own per-card month labels (shown while the pointer is on the
+   rail) duplicated the new month row, one per card start (AUG twice); the
+   month row replaces them on this page only */
+.rwf-glass .tlx__rail-month { display: none; }
+/* mukt767i (28 Sep): the number-box icons lose their circle; just the filled
+   icon in the slide purple (#5b3fd1, 7.0:1 on the white box / #b69cea dark) */
+.rwf__stat-icon { width: auto; height: auto; background: none; place-items: start; display: block; line-height: 0; }
+.rwf__stat-icon svg { width: 24px; height: 24px; }
+:root.dark .rwf__stat-icon { background: none; }
+
+/* mukt7tis (28 Sep): ONE TYPE RULE across the case study. Headings stay Stack
+   Sans; everything else is Google Sans Flex (the page's reading face).
+   Headings = slide labels, titles, big numbers, point headlines, group names,
+   pace names. Body = paragraphs, list text, descriptions, thread, tabs,
+   charts' axes / labels / callouts / legends, footnotes. Icon glyph rules
+   (Material Symbols) are more specific and keep their own font. */
+.page--article .article__body .rwf-run .rwf :is(p, ul, ol, dl, li, dt, dd, span, b, s, figcaption) {
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+}
+.page--article .article__body .rwf-run .rwf :is(.rwf__tag, .rwf__big, .rwf__what, .rwf__gname, .rwf-speed .rwf__what) {
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+}
+.page--article .article__body .rwf-run .rwf button.rwf-tabs__tab { font-family: "Google Sans Flex", "Inter", sans-serif; }
+.rwf-chart__axis, .rwf-chart__lbl, .rwf-chart__seglbl, .rwf-call__txt { font-family: "Google Sans Flex", "Inter", sans-serif; }
+.rwf__stat-icon svg { width: 36px; height: 36px; } /* muku0pbv (28 Sep): 50% bigger, 24 -> 36px */
+
+/* mukuo5m5: the stacked Timeline management slide keeps its charts full width
+   and left-aligned (the stack centres only the label and title) */
+.rwf--stack .rwf__main:has(.rwf__charts--pair) { align-items: stretch; width: 100%; }
+.rwf--stack .rwf__main:has(.rwf__charts--pair) .rwf__title { text-align: center; }
+.rwf--stack .rwf__main:has(.rwf__charts--pair) .rwf__source,
+.rwf--stack .rwf__main:has(.rwf__charts--pair) .rwf-chart__key { text-align: left; }
+
+/* mukuosbf (28 Sep): in Leading with design the points are a VERTICAL list,
+   number on the left, headline and detail on the right */
+.rwf-tabs__panel .rwf__list,
+.rwf-tabs__panel .rwf__list:has(> li:nth-child(4):last-child) { grid-template-columns: 1fr; gap: 0; }
+.rwf-tabs__panel .rwf__list li {
+  display: grid; grid-template-columns: 2.5rem 1fr; column-gap: 1rem; row-gap: 0.15rem;
+  padding: 0.85rem 0; border-top: 1px solid var(--rule);
+}
+.rwf-tabs__panel .rwf__list li .rwf__n { grid-row: 1 / span 2; margin: 0; font-size: 1.25rem; line-height: 1.2; color: var(--lbl); }
+.rwf-tabs__panel .rwf__list li .rwf__what,
+.rwf-tabs__panel .rwf__list li .rwf__detail { grid-column: 2; }
+
+/* mukuxd6o (28 Sep): the step numbers in Leading with design go SUPER big and
+   as thin as the face goes (Stack Sans variable axis is 200 to 700; 200). */
+.rwf-tabs__panel .rwf__list li { grid-template-columns: 5.5rem 1fr; align-items: start; }
+.page--article .article__body .rwf-run .rwf .rwf-tabs__panel .rwf__list li .rwf__n {
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  font-size: 3.5rem; font-weight: 200; line-height: 0.9; letter-spacing: -0.02em; color: var(--lbl);
+}
+/* mukuxrwa (28 Sep): the crit-cadence figure sits inside a dashed box, the
+   same dashed hairline language as the charts' highlight rings */
+.rwf-tabs__panel .rwf-cad { border: 1.5px dashed var(--rule); border-radius: 16px; padding: 1rem 1.1rem 1.1rem; }
+
+/* mukuyuyb: the explorations board in dark mode. The ds dark theme carries the
+   surface and text; the case purple needs a dark pair, because #6b21d9 on the
+   dark surface (#1a1a1f) is about 2.9:1. #b69cea is 8.4:1 there (the case's
+   own dark label colour); the shipped tag flips to dark text on that purple. */
+.ds-root--explore[data-theme="dark"] { --sd-purple: #b69cea; --sd-purple-soft: rgba(182, 156, 234, 0.14); }
+.ds-root--explore[data-theme="dark"] .expl-chip[data-on="true"][data-v="shipped"] .expl-chip__tag { color: #1a1a1f; }
+.ds-root--explore[data-theme="dark"] .expl-chip[data-on="true"][data-v="scale"] .expl-chip__tag { color: #fbbf24; }
+/* the chips hard-coded a white fill; in dark they take the dark field so the
+   ds text (#ededf0) reads on them (about 14:1) */
+.ds-root--explore[data-theme="dark"] .expl-chip { background: var(--ds-field, #232329); }
+.ds-root--explore[data-theme="dark"] .expl-chip[data-on="true"][data-v="shipped"] { background: var(--sd-purple-soft); }
+.ds-root--explore[data-theme="dark"] { --sd-purple-line: rgba(182, 156, 234, 0.4); }
+
+/* mukv082x (28 Sep): each direction's note is a title and a subtitle, no em dash */
+.sdcmp__note { display: grid; gap: 0.2rem; }
+.sdcmp__note-t { font-weight: 600; color: var(--ds-text, currentColor); }
+.sdcmp__note-s { font-weight: 400; opacity: 0.75; }
+
+/* mukvt7cp (28 Sep): the horizontal scroll-in box. The case's card ground
+   (the lavender plate gradient), rounded like the plates, the callout row
+   vertically centred; the row overflows and is clipped by the box. Dark: a
+   deep purple ground so the white callouts still sit on colour. */
+.eta-scroll {
+  position: relative; overflow: hidden; border-radius: 16px;
+  height: 220px; display: flex; align-items: center;
+  background: linear-gradient(112deg, #f2e8ff 8%, #c9b3f5 100%);
+}
+:root.dark .eta-scroll { background: linear-gradient(112deg, #241a38 8%, #3a2a5c 100%); }
+.eta-scroll__row { display: block; flex: none; width: 2468px; height: 100px; max-width: none; will-change: transform; }
+.eta-scroll--still { overflow-x: auto; padding-inline: 24px; }
+
+/* mukw3j1c (28 Sep): Leading with design stacks: the label on top, the panels
+   and tab bar below it at full width (was a label column on the left) */
+.rwf.rwf--tabs { grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
+
+/* mukw52nu (28 Sep): the cart grid, 2 rows x 3. Each tile is a window on a
+   front-on phone over the case's FLAT ground (the lavender #f2e8ff, the start
+   of the plate gradient; dark #1e1a28), the caption below in the reading face.
+   Caption ink: the page --fg at 72% (about 9:1 light, 10:1 dark). */
+.cgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.75rem 1.25rem; } /* mukwerzz (28 Sep): 2 columns x 3 rows */
+.cgrid__tile { margin: 0; display: grid; gap: 0.6rem; }
+.cgrid__window { position: relative; height: 300px; overflow: hidden; border-radius: 16px; background: #f2e8ff; }
+:root.dark .cgrid__window { background: #1e1a28; }
+.cgrid__phone { position: absolute; left: 50%; top: 0; }
+.cgrid__ph { width: 100%; height: 100%; display: grid; place-items: center; background: #e9e4f2; color: #6b6480; font: 500 14px/1.2 "Google Sans Flex", "Inter", sans-serif; }
+.article__body .cgrid figcaption.cgrid__cap, .article__body--nocaps .cgrid figcaption.cgrid__cap {
+  display: block; margin: 0; font: 400 0.875rem/1.4 "Google Sans Flex", "Inter", sans-serif;
+  color: color-mix(in oklab, var(--fg) 72%, transparent); text-align: left;
+}
+@media (max-width: 700px) { .cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* mukw790w (28 Sep): Leading with design, side by side. The text panels on the
+   left; on the right the active tab's figure (the crit cadence) with the tab
+   pills below it. The side figures share one cell like the panels, so the
+   column never jumps; tabs without a figure show just the pills. */
+.rwf__tabwrap { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); column-gap: 2rem; align-items: start; }
+.rwf-tabs__side { display: grid; gap: 1.25rem; align-content: start; position: sticky; top: 5rem; }
+.rwf-tabs__side > .rwf-tabs__sidefig { grid-area: 1 / 1; visibility: hidden; opacity: 0; transition: opacity 200ms var(--m3-effects-default, ease); }
+.rwf-tabs__side > .rwf-tabs__sidefig[data-on] { visibility: visible; opacity: 1; }
+.rwf-tabs__side > .rwf-tabs { grid-row: 2; }
+.rwf-tabs__side .rwf-cad { border: 1.5px dashed var(--rule); border-radius: 16px; padding: 1rem 1.1rem 1.1rem; margin: 0; }
+.rwf-tabs__side .rwf-cad__row { grid-template-columns: 5.5rem repeat(5, 1fr) 2rem; gap: 0.3rem; }
+.rwf-tabs__side .rwf-tabs { flex-wrap: wrap; width: auto; }
+@media (max-width: 700px) { .rwf__tabwrap { grid-template-columns: 1fr; } .rwf-tabs__side { position: static; } }
+
+/* mukwa8bz (28 Sep): the tab pills as a VERTICAL list that fills the right
+   column: one tab per row, full width, left-aligned, same pill language
+   (wash ground + hairline, the active tab filled purple) */
+.rwf-tabs__side .rwf-tabs { flex-direction: column; flex-wrap: nowrap; width: 100%; border-radius: 18px; corner-shape: round; gap: 0.25rem; }
+.page--article .article__body .rwf-run .rwf .rwf-tabs__side button.rwf-tabs__tab { width: 100%; text-align: left; padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.9375rem; }
+.rwf-tabs__side .rwf-tabs, .page--article .article__body .rwf-run .rwf .rwf-tabs__side button.rwf-tabs__tab { box-sizing: border-box; min-width: 0; } /* padding inside the width, so the list fits the column */
+/* the cadence figure fits the side column: a wider side (1.2 : 1), a tighter
+   grid (narrower pace column, flexible day cells, 8px dots) */
+.rwf__tabwrap { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.rwf-tabs__side > .rwf-tabs__sidefig, .rwf-tabs__side .rwf-cad { min-width: 0; }
+.rwf-tabs__side .rwf-cad { padding: 0.8rem 0.8rem 0.9rem; }
+.rwf-tabs__side .rwf-cad__row { grid-template-columns: 4.2rem repeat(5, minmax(0, 1fr)) 1.4rem; gap: 0.2rem; }
+.rwf-tabs__side .rwf-cad__dot { width: 7px; height: 7px; }
+.rwf-tabs__side .rwf-cad__day { gap: 2px; flex-wrap: wrap; padding: 3px 0; }
+
+/* mukwg17w (28 Sep): the right column = the tab list on TOP, then the active
+   tab's own visual. Every visual shares one grid cell (inactive ones hidden,
+   not removed), so the column is always as tall as the tallest and switching
+   tabs never shifts the layout. */
+.rwf-tabs__side > .rwf-tabs { grid-row: auto; }
+.rwf-tabs__vizstack { display: grid; min-width: 0; }
+.rwf-tabs__vizstack > .rwf-tabs__sidefig { grid-area: 1 / 1; min-width: 0; visibility: hidden; opacity: 0; transition: opacity 200ms var(--m3-effects-default, ease); }
+.rwf-tabs__vizstack > .rwf-tabs__sidefig[data-on] { visibility: visible; opacity: 1; }
+.rwf-tabs__sidefig > .rwf__main { gap: 1rem; }
+/* the visuals in a narrow column: the thread and the pairs read one column */
+.rwf-tabs__side .rwf-thread__row { grid-template-columns: 1fr; gap: 0.35rem; }
+.rwf-tabs__side .rwf__pairs li { grid-template-columns: 1fr; gap: 0.2rem; }
+.rwf-tabs__side .rwf__pairs .rwf__arrow { display: none; }
+.rwf-tabs__side .rwf__split { grid-template-columns: 1fr 1fr; gap: 1rem; }
+/* CORNER RADII (mukwg17w): the tab list matches the kit, the dashed figure
+   box (16px, the site's squircle), instead of a rounder 18px true-round pill;
+   the tabs inside step down to 10px */
+.rwf-tabs__side .rwf-tabs { border-radius: 16px; corner-shape: squircle; }
+.page--article .article__body .rwf-run .rwf .rwf-tabs__side button.rwf-tabs__tab { border-radius: 10px; corner-shape: squircle; }
+.cgrid { width: 100%; } /* mukwip0a (28 Sep): fill the figure edge to edge (it was shrink-wrapped to 536 of 806px) */
+
+/* mukwj1ra: the coupon cycle inside tile 1's phone. A light cart screen, the
+   widget at the screen's full width near the top; the three states stack in
+   one cell and crossfade with a small lift on the site effects curve. */
+.cgrid__screen { width: 100%; height: 100%; background: #f4f4f6; padding-top: 30%; box-sizing: border-box; }
+.cgrid__coupons { display: grid; margin: 0 5%; }
+.cgrid__coupon { grid-area: 1 / 1; width: 100%; height: auto; display: block; opacity: 0; translate: 0 6px;
+  transition: opacity 420ms var(--m3-effects-default, ease), translate 420ms var(--m3-effects-default, ease); }
+.cgrid__coupon[data-on] { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) { .cgrid__coupon { transition: none; } }
+
+/* mukwod9g (28 Sep): no phone. The widget sits centred on the flat tile. */
+.cgrid__flat { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 7%; }
+.cgrid__flat > .cgrid__screen { width: 100%; max-width: 340px; height: auto; padding: 0; background: none; }
+.cgrid__flat > .cgrid__screen .cgrid__coupons { margin: 0; }
+.cgrid__flat > .cgrid__screen .cgrid__coupon { border-radius: 12px; }
+.cgrid__flat > .cgrid__ph { position: absolute; inset: 0; background: none; }
+/* mukws5zq (28 Sep): the stage is transparent, so in dark mode the ds ink
+   (#181d27 / #50535a) sat on the near-black page at about 1.1:1. Follow the
+   page's own text tokens instead (--fg #ededed, ~16:1; the sub keeps its 0.75) */
+:root.dark .sdcmp__note { color: var(--fg); }
+:root.dark .sdcmp__note-t { color: var(--fg); }
+
+/* the numbered-points violet pair (.cpts): #33095e on white is ~14:1, #b69cea on
+   the dark page ~8:1, so both clear 4.5:1 for the step numbers */
+.rsty { --rsty-accent: #33095e; }
+:root.dark .rsty { --rsty-accent: #b69cea; }
+/* mukx7ffq (28 Sep): the research + returns story (SchedResearchStory). It
+   rides the msty/rwf beat layout; these are only its three visual kinds */
+.rsty__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.rsty__stat p { margin: 0; }
+.rsty .rsty__stat-v { font-size: 2.5rem; line-height: 1; font-weight: 300; letter-spacing: -0.02em; color: var(--fg); }
+.rsty .rsty__stat-l { margin-top: 0.4rem; font-size: 0.875rem; line-height: 1.35; color: var(--fg); }
+.rsty .rsty__stat-n { margin-top: 0.2rem; font-size: 0.8125rem; color: var(--muted); }
+.rsty__quote { margin: 0; padding: 0 0 0 1rem; border-left: 2px solid var(--rsty-accent); font-size: 1.2rem; line-height: 1.4; font-weight: 300; color: var(--fg); text-wrap: pretty; }
+.rsty__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; counter-reset: rsty; }
+.rsty__steps li { display: grid; grid-template-columns: 1.75rem 1fr; column-gap: 0.5rem; counter-increment: rsty; }
+.rsty__steps li::before { content: counter(rsty); grid-row: span 2; font-size: 0.8125rem; color: var(--rsty-accent); padding-top: 0.15rem; }
+.rsty .rsty__step-t { margin: 0; font-size: 1rem; color: var(--fg); }
+.rsty .rsty__step-d { margin: 0; font-size: 0.875rem; color: var(--muted); }
+@media (max-width: 600px) { .rsty__stats { grid-template-columns: 1fr 1fr; } }
+/* mukxcwq1 (28 Sep): a tile's frames stack in one cell sized by the TALLEST
+   frame, so a shorter one (the single ETA card, the single gift) rode the top
+   edge. Centre each frame in that cell */
+.cgrid__flat > .cgrid__screen .cgrid__coupon { align-self: center; }
+/* mukxi6f6 (28 Sep): a list slide stacked in one column */
+.rwf__list.rwf__list--vertical { grid-template-columns: minmax(0, 1fr); }
+/* mukxrqfz (28 Sep): slot-page states as a horizontal scroll of big screens */
+.sdh { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 0.75rem; scrollbar-width: thin; }
+.sdh__tile { flex: 0 0 min(300px, 72vw); margin: 0; scroll-snap-align: start; }
+.sdh__tile img { display: block; width: 100%; height: auto; border-radius: 20px; border: 1px solid var(--line); }
+.article__body .sdh figcaption.sdh__cap, .article__body--nocaps .sdh figcaption.sdh__cap { display: block; margin-top: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
+.sdh:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+/* mukxvvub (28 Sep): one height for every screen (the exports differ in
+   length), width follows each image's own ratio */
+.sdh__tile { flex: 0 0 auto; }
+.sdh__tile img { width: auto; height: min(640px, 70vh); }
+/* mukxwvur (28 Sep): the cart-state marquee (SchedCartStrip) */
+.cstrip { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.cstrip__track { display: flex; gap: 1.25rem; width: max-content; animation: cstrip-slide 48s linear infinite; }
+.cstrip:hover .cstrip__track, .cstrip:focus-within .cstrip__track { animation-play-state: paused; }
+@keyframes cstrip-slide { to { transform: translateX(calc(-50% - 0.625rem)); } }
+.cstrip__card { flex: 0 0 auto; margin: 0; width: 320px; }
+.cstrip__card img { display: block; width: 100%; height: auto; filter: drop-shadow(0 1px 2px rgba(0,0,0,.08)); }
+.article__body .cstrip figcaption.cstrip__cap, .article__body--nocaps .cstrip figcaption.cstrip__cap { display: block; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--muted); }
+.cstrip:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .cstrip { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .cstrip__track { animation: none; }
+  .cstrip__card[aria-hidden] { display: none; }
+}
+/* mukxzotu (28 Sep): cards differ in height, centre them on one line */
+.cstrip__track { align-items: center; }
+/* muky96u1 (28 Sep): the stuck-cart screen (1080x2487) is taller than the
+   232/504 frame, so its foot was cut. The FRAME grows to the screen's own ratio
+   (and a touch wider) instead of cropping the screen */
+.slotreal-device--tall { width: 252px; }
+.slotreal-device--tall .slotreal-screen { aspect-ratio: 1080 / 2487; }
+.slotreal-device--tall .slotreal-img { height: 100%; object-fit: cover; object-position: top; }
+
+/* ---- SchedReachExplorer (5 Oct): the Morphocode-style reach explorer ---- */
+.rex { --rex-block: color-mix(in srgb, var(--fg) 9%, var(--bg)); --rex-line: color-mix(in srgb, var(--fg) 14%, transparent);
+  display: grid; grid-template-columns: 252px minmax(0, 1fr); width: 100%; border: 1px solid var(--rex-line); border-radius: 16px; overflow: hidden; background: var(--bg); color: var(--fg); text-align: left; }
+.rex p, .rex h4, .rex ul { margin: 0; }
+.rex ul { list-style: none; padding: 0; }
+.rex__mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; font-size: 12px; }
+.rex__panel { border-right: 1px solid var(--rex-line); display: flex; flex-direction: column; }
+.rex__row--slider { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; }
+.rex__row--slider input { flex: 1; accent-color: var(--fg); }
+.rex__seg { display: inline-flex; margin: 4px 16px 14px; border: 1px solid var(--rex-line); border-radius: 999px; padding: 2px; align-self: flex-start; }
+.rex__seg button { font: inherit; font-size: 12px; border: 0; background: none; color: var(--muted); padding: 4px 12px; border-radius: 999px; cursor: pointer; }
+.rex__seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.rex__sec { padding: 14px 16px; border-top: 1px solid var(--rex-line); }
+.rex .rex__h { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.rex .rex__sub { font-size: 12px; color: var(--muted); margin: -6px 0 10px; }
+.rex__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rex .rex__big { font-size: 22px; font-weight: 600; line-height: 1.1; }
+.rex .rex__lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.rex__waffle-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.rex__waffle { display: grid; grid-template-columns: repeat(10, 7px); gap: 2px; }
+.rex__waffle i { width: 7px; height: 7px; border-radius: 50%; corner-shape: round; transition: background 200ms ease; }
+.rex__legend { display: grid; gap: 4px; }
+.rex__legend li { display: grid; grid-template-columns: 8px 1fr auto; gap: 6px; align-items: center; font-size: 12px; }
+.rex__legend i { width: 8px; height: 8px; border-radius: 50%; corner-shape: round; }
+.rex__lead { overflow: hidden; white-space: nowrap; }
+.rex__lead::after { content: " ........................................"; color: var(--muted); }
+.rex__bars { display: grid; gap: 8px; }
+.rex__bars li { display: grid; grid-template-columns: 1fr auto; row-gap: 3px; }
+.rex__bar-l { color: var(--fg); }
+.rex__bar { grid-column: 1 / -1; height: 2px; background: var(--rex-line); }
+.rex__bar b { display: block; height: 100%; background: var(--fg); transition: width 200ms ease; }
+.rex .rex__note { margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--rex-line); font-size: 11px; line-height: 1.4; color: var(--muted); }
+.rex__map { position: relative; min-width: 0; }
+.rex__map svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+.rex__map svg:active { cursor: grabbing; }
+.rex__map svg:focus-visible { outline: 2px solid var(--fg); outline-offset: -4px; }
+.rex__block { transition: fill 180ms ease; }
+.rex__ring { fill: color-mix(in srgb, var(--fg) 3%, transparent); stroke: var(--fg); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.rex__dot { fill: none; stroke: var(--fg); stroke-width: 1.5; }
+.rex__handle circle { fill: var(--bg); stroke: var(--fg); stroke-width: 1.5; cursor: ew-resize; }
+.rex__handle path { stroke: var(--fg); stroke-width: 1.5; pointer-events: none; }
+.rex__store circle { fill: var(--fg); stroke: var(--bg); stroke-width: 2; }
+.rex__store[data-open="false"] circle { fill: var(--bg); stroke: var(--fg); stroke-width: 1.5; }
+.rex__store text { font: 600 11px ui-monospace, "SF Mono", Menlo, monospace; fill: var(--fg); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+.rex .rex__hint { position: absolute; left: 12px; bottom: 10px; font-size: 11px; color: var(--muted); pointer-events: none; }
+@media (max-width: 720px) {
+  .rex { grid-template-columns: 1fr; }
+  .rex__panel { border-right: 0; border-bottom: 1px solid var(--rex-line); order: 2; }
+  .rex__map { order: 1; }
+}
+/* the map fills the panel's height; the tall viewBox is sliced to fit */
+.rex__map { display: flex; }
+.rex__map svg { flex: 1; height: 100%; min-height: 420px; }
+@media (max-width: 720px) { .rex__map svg { min-height: 0; aspect-ratio: 4 / 3; } }

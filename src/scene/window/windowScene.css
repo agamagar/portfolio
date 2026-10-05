@@ -1,0 +1,324 @@
+/* /window: the window scene sandbox (WindowScenePage.jsx).
+   The canvas is fixed under two transparent scroll runways; the stand-in page
+   between them paints the page ground (--bg: #ffffff light, #0e0e11 dark), which is
+   exactly the colour the screen's light becomes at the hand-off, so the seam is
+   invisible. R (the runway's extra scroll) is one viewport. */
+
+.wscene {
+  position: relative;
+  color: var(--fg);
+}
+
+.wscene__host {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wscene__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.wscene__canvas[data-shown="true"] {
+  opacity: 1;
+}
+.wscene__canvas[data-instant="true"] {
+  transition: none;
+}
+.wscene__canvas[data-hidden="true"] {
+  visibility: hidden;
+}
+
+/* runway: one sticky viewport plus R = 1 viewport of travel */
+.wscene__runway {
+  position: relative;
+  z-index: 1;
+  height: 200vh;
+  height: 200svh;
+}
+.wscene__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+/* the hero's text stand-ins (the folio page's greeting and timeline boxes at 1440 x
+   900: x 56 to 296, y 256 to 378 and x 720 to 1440, y 240 to 484; phone 390 x 844:
+   y 120 to 250 and 324 to 783, 16px gutters). Their rects feed the calm field. The
+   label is --fg on a --bg chip: 18.9:1 light (#111111 on #ffffff), 16.5:1 dark
+   (#ededed on #0e0e11) */
+.wscene__hero {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--hero-fade, 1);
+}
+.wscene__standin {
+  position: absolute;
+  border: 1px dashed color-mix(in oklab, var(--bg) 70%, transparent);
+  border-radius: 12px;
+}
+.wscene__standin span {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 500 11px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.02em;
+}
+.wscene__standin--greeting {
+  left: 3.89%;
+  top: 28.44%;
+  width: 16.67%;
+  height: 13.56%;
+}
+.wscene__standin--timeline {
+  left: 50%;
+  right: 0;
+  top: 26.67%;
+  height: 27.11%;
+}
+@media (max-aspect-ratio: 4/5) {
+  .wscene__standin--greeting {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    top: 14.22%;
+    height: 15.4%;
+  }
+  .wscene__standin--timeline {
+    left: 16px;
+    right: 16px;
+    top: 38.39%;
+    height: 54.38%;
+  }
+}
+
+/* reduced motion: no runway, a still and a plain cut */
+.wscene--still .wscene__runway {
+  height: 100vh;
+  height: 100svh;
+}
+
+.wscene__page {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  padding: clamp(40px, 8vw, 96px) clamp(16px, 4vw, 60px) clamp(64px, 10vw, 140px);
+  display: grid;
+  gap: clamp(24px, 4vw, 60px);
+}
+.wscene__note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+.wscene__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(16px, 4vw, 60px);
+}
+.wscene__block {
+  border-radius: 20px;
+  aspect-ratio: 630 / 409;
+  background: color-mix(in oklab, var(--fg) 7%, var(--bg));
+}
+.wscene__block--wide {
+  aspect-ratio: auto;
+  height: clamp(240px, 40vw, 520px);
+}
+.wscene__block--foot {
+  aspect-ratio: auto;
+  height: clamp(160px, 20vw, 280px);
+}
+
+/* capture mode: no DOM chrome at all, only the canvas */
+html.wscene-capture,
+html.wscene-capture body {
+  overflow: hidden !important;
+}
+html.wscene-capture .wscene__page,
+html.wscene-capture .wscene__runway,
+html.wscene-capture [data-agentation-root],
+html.wscene-capture [data-agentation-toolbar],
+html.wscene-capture [data-feedback-toolbar],
+html.wscene-capture .top-controls {
+  display: none !important;
+}
+
+/* ---- the folio page (Hello3 behind ?scene=window, WindowSceneFolio.jsx) ----
+   z-index 0, the same as the sandbox: the app's page wrapper paints the page ground
+   as an in-flow background, which covers anything at -1. The hero rides above it
+   (.hello-hero is z 1), and the canvas is never shown over the work grid: p reaches
+   1 (the screen's light = the page ground, then the canvas hides) exactly as the
+   grid's top meets the bottom of the viewport. */
+.wscene__host--folio {
+  z-index: 0;
+}
+/* the main runway: a spacer above the page, 1.5 viewports of dolly from the room
+   into the monitor; p = 1 as the hero's top reaches the viewport's top */
+.hello-scene-run {
+  height: 150vh;
+  height: 150svh;
+}
+/* until the camera has landed in the screen, the page's own content is held back
+   (the monitor shows it, captured live); opacity, not visibility, because opacity
+   does not inherit, so the live capture (livePoster.js) can restore it on the root's
+   children without revealing closed popovers */
+html[data-wscene-landed="false"] .hello[data-scene="window"] > :not(.wscene__host):not(.hello-scene-run):not(.wscene-nudge) {
+  opacity: 0;
+  pointer-events: none;
+}
+/* ...and it comes back on the very frame the canvas hides: the sections' own opacity
+   transitions (the intro gate's reveals, which the scene skips) faded the work grid in
+   over a white page at the landing, washed out for a few hundred ms (scrollrec,
+   2026-09-27) */
+.hello[data-scene="window"] > :not(.wscene__host):not(.hello-scene-run):not(.wscene-nudge) {
+  transition-property: none;
+}
+/* the contact section is the page's last screen: it fills the viewport (its content
+   centred), so the monitor is left showing only it as the camera pulls back out */
+.hello[data-scene="window"]:has(.hello-scene-end:not(.hello-scene-end--off)) .hello-foot {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+/* the ending: 1.5 viewports past the contact section, the camera's pull-back. OFF for
+   now (Agam, 2026-09-27): the marker is zero-height and the contact section is left as
+   it was (the full-screen rule above only applies with the ending on) */
+.hello-scene-end {
+  height: 150vh;
+  height: 150svh;
+}
+.hello-scene-end--off {
+  height: 0;
+}
+
+/* the cursor over the bead chain, the bike or the car (useWindowScene, engine chainhover): a grab hand, the
+   chain swings along the cursor's motion (room.js) */
+html.wscene-grab,
+html.wscene-grab body {
+  cursor: grab;
+}
+
+/* the scroll nudge (WindowSceneFolio.jsx): the foot of the opening frame, over the
+   monitor's screen, so it sits on a soft pill of the page ground; ink is the page's
+   --fg on --bg (18.9:1 light, 16.5:1 dark), and the pill at 78 % of the ground keeps it
+   well above 4.5:1 over whatever the scene shows behind. It fades over the first 8 % of
+   the runway and is gone at the landing; the arrow bobs 3 px unless motion is reduced */
+.wscene-nudge {
+  position: fixed;
+  left: 50%;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 2;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  color: var(--fg);
+  font: 500 12px/1 "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  opacity: calc(1 - var(--wscene-run, 0) * 12.5);
+  transition: opacity 180ms ease;
+}
+html[data-wscene-landed="true"] .wscene-nudge,
+html.wscene-capture .wscene-nudge {
+  opacity: 0;
+}
+/* the scene could not start and gave the page back (useWindowScene giveBack): no
+   runway to scroll, so no nudge */
+html[data-wscene-off] .wscene-nudge {
+  display: none;
+}
+.wscene-nudge__arrow {
+  display: block;
+  animation: wscene-nudge-bob 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes wscene-nudge-bob {
+  0%, 100% { translate: 0 -1.5px; }
+  50% { translate: 0 1.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wscene-nudge__arrow { animation: none; }
+}
+
+/* ---- the landing poster and loader (2026-09-27, Agam; WindowSceneFolio, landingPoster.js)
+   The opening frame as a still, under the canvas, from the first paint. The canvas
+   (above it in the host) fades in over 900 ms on ready; the still goes once that fade
+   is done, at the landing, or when the scene gives up. */
+.wscene__host--folio .wscene__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+.wscene__host--folio .wscene__canvas {
+  position: relative;
+  z-index: 1;
+  transition-duration: 900ms;
+}
+html[data-wscene-ready] .wscene__poster {
+  visibility: hidden;
+  transition: visibility 0s 1s;
+}
+html[data-wscene-landed="true"] .wscene__poster,
+html[data-wscene-off] .wscene__poster {
+  display: none;
+}
+/* the nudge is the loader until the scene is ready: "loading" and three dots, then
+   "scroll" and the arrow */
+.wscene-nudge__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 4px;
+}
+.wscene-nudge__dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.wscene-nudge__dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: currentColor;
+  animation: wscene-dot 1.2s ease-in-out infinite;
+}
+.wscene-nudge__dots i:nth-child(2) { animation-delay: 0.15s; }
+.wscene-nudge__dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes wscene-dot {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+html:not([data-wscene-ready]) .wscene-nudge__label,
+html:not([data-wscene-ready]) .wscene-nudge__arrow,
+html[data-wscene-ready] .wscene-nudge__loading {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wscene-nudge__dots i { animation: none; opacity: 0.6; }
+}

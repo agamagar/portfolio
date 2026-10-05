@@ -1,0 +1,70 @@
+/* Where Edge lives (EdgeFloater): layout and transitions for the floater pill
+   riding the Analytics page and the side panel it gives way to. Visual
+   primitives (page, pill, card, rail) come from jarvis.css; this file only
+   positions the .ejf- pieces and drives the step transitions. */
+
+.ejf-page {
+  width: 440px;
+  height: 300px;
+}
+.ejf-page .ej-page__brand { margin-right: 6px; }
+
+/* dim dashboard furniture behind the pill */
+.ejf-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px 12px 0;
+}
+.ejf-tile {
+  background: var(--ds-muted);
+  border: 1px solid var(--ds-line);
+  border-radius: 10px;
+  padding: 10px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ejf-tile__label { display: block; height: 7px; border-radius: 4px; background: var(--ds-shim); }
+.ejf-tile__value { display: block; height: 13px; border-radius: 5px; background: var(--ds-shim-soft); }
+.ejf-chart {
+  margin: 10px 12px 0;
+  height: 72px;
+  background: var(--ds-muted);
+  border: 1px solid var(--ds-line);
+  border-radius: 10px;
+  padding: 10px 11px;
+}
+
+/* the floater pill, bottom right of the page; steps aside when the panel opens */
+.ejf-pill {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  transition:
+    opacity var(--ds-dur-state) var(--ds-ease-std),
+    transform var(--ds-dur-state) var(--ds-ease-std),
+    border-color var(--ds-dur-state) var(--ds-ease-std),
+    box-shadow var(--ds-dur-state) var(--ds-ease-std);
+}
+.ejf-pill[data-gone="true"] { opacity: 0; transform: translateY(8px) scale(0.94); }
+
+/* the context panel, sliding in over the right side of the page */
+.ejf-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 230px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  background: var(--ds-surface);
+  border-left: 1px solid var(--ds-border-card);
+  box-shadow: -18px 0 40px -24px rgba(0, 0, 0, 0.65);
+  transform: translateX(104%);
+  transition: transform var(--ds-dur-expand) var(--ds-ease-move);
+}
+.ejf-panel[data-open="true"] { transform: translateX(0); }
+.ejf-panel__ctx { font-size: 10.5px; color: var(--ds-text-3); line-height: 1.45; }

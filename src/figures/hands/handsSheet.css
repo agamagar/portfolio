@@ -1,0 +1,111 @@
+/* Doodle hands showcase (lab). Section chrome on site tokens; the plates are
+   ink-on-paper and keep their own literal palette in both themes, like the
+   dark figure vitrines do. */
+
+.hs-wrap {
+  margin: 4.5rem auto;
+  max-width: 1400px;
+}
+.hs-intro {
+  max-width: 72ch;
+  margin: 0 0 2rem;
+  padding: 0 1.5rem;
+}
+.hs-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+.hs-sub {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.hs-rules {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.hs-rules li {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.hs-rule-k {
+  display: inline-block;
+  min-width: 3.4rem;
+  margin-right: 0.5rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+}
+
+.hs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1.25rem;
+  padding: 0 1.5rem;
+}
+.hs-card {
+  margin: 0;
+}
+.hs-plate {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #ffffff;
+  cursor: pointer;
+  overflow: hidden;
+}
+.hs-plate svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+.hs-plate path {
+  stroke: #1a1a1a;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hs-copied {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #1a1a1a;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity var(--m3-dur-short4, 200ms) var(--m3-standard, ease);
+}
+.hs-copied.is-on {
+  opacity: 1;
+}
+.hs-cap {
+  margin: 0.5rem 2px 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.hs-cell {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.7rem;
+  color: var(--fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-copied {
+    transition: none;
+  }
+}

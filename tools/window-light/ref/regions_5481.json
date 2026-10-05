@@ -1,0 +1,153 @@
+{
+ "version": 1,
+ "image": "ref_5481.png",
+ "images": [
+  "ref_5481.png"
+ ],
+ "size": [
+  1200,
+  1600
+ ],
+ "coords": "normalized",
+ "source": "fix-core round 1: rectangles read on ref_5481.png (1200 x 1600 upright), inset from edges and room bars; score renders of ?shot=ref5481 at 1200 x 1600. The photo had the room's ceiling light on.",
+ "regions": {
+  "pane_L1B": {
+   "desc": "L1 row B glass between the room bars: dusk sky and the outside grid",
+   "polygons": [
+    [
+     [
+      0.45417,
+      0.325
+     ],
+     [
+      0.57917,
+      0.325
+     ],
+     [
+      0.57917,
+      0.6125
+     ],
+     [
+      0.45417,
+      0.6125
+     ]
+    ]
+   ]
+  },
+  "pane_L2B": {
+   "desc": "L2 row B glass left of the room bar",
+   "polygons": [
+    [
+     [
+      0.66667,
+      0.33125
+     ],
+     [
+      0.77917,
+      0.33125
+     ],
+     [
+      0.77917,
+      0.61875
+     ],
+     [
+      0.66667,
+      0.61875
+     ]
+    ]
+   ]
+  },
+  "casing_left": {
+   "desc": "the left casing and its moulding under the ceiling light",
+   "polygons": [
+    [
+     [
+      0.09167,
+      0.125
+     ],
+     [
+      0.23333,
+      0.125
+     ],
+     [
+      0.23333,
+      0.875
+     ],
+     [
+      0.09167,
+      0.875
+     ]
+    ]
+   ]
+  },
+  "lit_stile": {
+   "desc": "L2's hinge stile in the lamp's glow (lower right)",
+   "polygons": [
+    [
+     [
+      0.88333,
+      0.59375
+     ],
+     [
+      0.95833,
+      0.59375
+     ],
+     [
+      0.95833,
+      0.875
+     ],
+     [
+      0.88333,
+      0.875
+     ]
+    ]
+   ]
+  },
+  "rail_BC": {
+   "desc": "L1's B/C rail",
+   "polygons": [
+    [
+     [
+      0.39583,
+      0.625
+     ],
+     [
+      0.57917,
+      0.625
+     ],
+     [
+      0.57917,
+      0.6625
+     ],
+     [
+      0.39583,
+      0.6625
+     ]
+    ]
+   ]
+  },
+  "screen_strip": {
+   "desc": "the monitor's menu bar and dark app at the bottom edge",
+   "polygons": [
+    [
+     [
+      0.0,
+      0.925
+     ],
+     [
+      1.0,
+      0.925
+     ],
+     [
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0
+     ]
+    ]
+   ]
+  }
+ }
+}

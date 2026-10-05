@@ -1,0 +1,117 @@
+/* EdgeOos: figure-specific styles. jarvis.css owns the look; this file owns
+   the page furniture, overlay positioning (toast top-right, card centered,
+   both inside the page panel) and the beat transitions. Prefix .ejo- only. */
+
+.ejo-stage { padding: 14px 16px; }
+.ejo-main { display: grid; align-items: center; }
+
+.ejo-page {
+  width: 430px;
+  max-width: 100%;
+  height: 300px;
+  margin: 0 auto;
+}
+
+/* dim campaign furniture behind the story */
+.ejo-rows {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ejo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--ds-line);
+  border-radius: 10px;
+  background: var(--ds-field);
+  opacity: 0.62;
+}
+.ejo-row__name {
+  font-size: 11.5px;
+  font-weight: 560;
+  color: var(--ds-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ejo-pill {
+  flex: 0 0 auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--ej-green-soft);
+  color: var(--ej-green);
+  transition: background var(--ds-dur-state) var(--ds-ease-std), color var(--ds-dur-state) var(--ds-ease-std);
+}
+.ejo-pill[data-paused="true"] {
+  background: var(--ds-muted);
+  color: var(--ds-text-3);
+}
+
+/* beat 1: the toast slides in top-right, then dims once the card takes over */
+.ejo-toast {
+  position: absolute;
+  top: 42px;
+  right: 10px;
+  width: 236px;
+  z-index: 3;
+  opacity: 0;
+  transform: translateX(28px);
+  transform-origin: top right;
+  transition: transform var(--ds-dur-expand) var(--ds-ease-move), opacity var(--ds-dur-expand) var(--ds-ease-move);
+}
+.ejo-toast[data-on="true"] {
+  opacity: 1;
+  transform: translateX(0);
+}
+.ejo-toast[data-on="true"][data-dim="true"] {
+  opacity: 0.42;
+  transform: translateX(0) scale(0.96);
+}
+
+/* beats 2 and 3: one centered card, two cross-fading faces */
+.ejo-card {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  width: 296px;
+  z-index: 4;
+  display: grid;
+  opacity: 0;
+  transform: translate(-50%, -46%) scale(0.97);
+  transition: transform var(--ds-dur-expand) var(--ds-ease-out), opacity var(--ds-dur-expand) var(--ds-ease-out);
+}
+.ejo-card[data-on="true"] {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.ejo-card__face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ds-dur-state) var(--ds-ease-std), visibility 0s linear var(--ds-dur-state);
+}
+.ejo-card__face[data-show="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--ds-dur-state) var(--ds-ease-std);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ejo-toast,
+  .ejo-card,
+  .ejo-card__face,
+  .ejo-pill {
+    transition: none;
+  }
+}

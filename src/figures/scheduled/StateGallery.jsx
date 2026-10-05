@@ -41,6 +41,20 @@ function ThumbBody({ s }) {
       </div>
     );
   }
+  if (s.kind === "toggle") {
+    // a shipment card with the Instant | Schedule control, the schedule button
+    // shown in its state: on | disabled | highlighted | hidden (button absent).
+    return (
+      <div className="sd-ttog2">
+        <span className="sd-trow" style={{ marginBottom: 7 }}><span className="sd-tbox" /><Shimmer w="40%" h={5} r={3} /></span>
+        <div className="sd-ttog2__row">
+          <span className="sd-ttog2__btn" data-state={s.instant || "on"}><IBolt /></span>
+          {s.sched !== "hidden" && <span className="sd-ttog2__btn sd-ttog2__btn--sched" data-state={s.sched || "on"}><ICal /></span>}
+          {s.sched === "hidden" && <span className="sd-ttog2__none">Schedule N/A</span>}
+        </div>
+      </div>
+    );
+  }
   // default: mini cart (shipment rows + state pill)
   return (
     <div className="sd-tcart">

@@ -1,0 +1,256 @@
+{
+  "nodes": [
+    {
+      "nodeId": "80:2604",
+      "nodeName": "Group 48096742",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 400, }} animate={{ opacity: [0, 1, 1], y: [400, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.3878, 1], ease: [\"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.8, 1], ease: [(t) => 1 - Math.exp(-t * 7.6657) * (Math.cos(t * 6.7605) + 1.1339 * Math.sin(t * 6.7605)), \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2608",
+      "nodeName": "Group 48096627",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 20, filter: \"blur(4px)\", }} animate={{ opacity: [0, 0, 0.5, 0.5], y: [20, 20, 0, 0], filter: [\"blur(4px)\", \"blur(4px)\", \"blur(4px)\", \"blur(4px)\", \"blur(0px)\", \"blur(0px)\", \"blur(0px)\"], }} transition={{ opacity: { duration: 2, times: [0, 0.173, 0.6392, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.1735, 0.6392, 1], ease: [\"linear\", [0.27, -0.004, 0, 0.993], \"linear\"], repeat: Infinity }, filter: { duration: 2, times: [0, 0.1744, 0.1745, 0.5554, 0.5555, 0.9999, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2645",
+      "nodeName": "Group 48096631",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, y: 20, filter: \"blur(4px)\", }} animate={{ opacity: [0, 0, 1, 1], y: [20, 20, 0, 0], filter: [\"blur(4px)\", \"blur(4px)\", \"blur(4px)\", \"blur(4px)\", \"blur(0px)\", \"blur(0px)\", \"blur(0px)\"], }} transition={{ opacity: { duration: 2, times: [0, 0.173, 0.6305, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.1735, 0.6305, 1], ease: [\"linear\", [0.27, -0.004, 0, 0.993], \"linear\"], repeat: Infinity }, filter: { duration: 2, times: [0, 0.1734, 0.1735, 0.5877, 0.5878, 0.9999, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2688",
+      "nodeName": "Group 48096639",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, x: 100, y: 0, }} animate={{ opacity: [0, 0, 0.23, 0.23], x: [100, 100, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.2995, 0.6965, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4365, 0.6965, 1], ease: [\"linear\", [1, 0.008, 0, 0.992], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2689",
+      "nodeName": "Star 12",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -368.076, x: 17.594, y: -0.261, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-368.076, -368.076, -8.076, -8.076], x: [17.594, 17.594, 0, 0], y: [-0.261, -0.261, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4044, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5402, 0.5702, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5402, 0.5702, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2690",
+      "nodeName": "Star 13",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -338.246, x: 49.03, y: -0.246, }} animate={{ opacity: [0, 0, 0.5, 0.5], rotate: [-338.246, -338.246, 21.754, 21.754], x: [49.03, 49.03, 0, 0], y: [-0.246, -0.246, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4044, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5508, 0.5702, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5508, 0.5702, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2691",
+      "nodeName": "Star 15",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -338.059, x: 50.494, y: 0.168, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-338.059, -338.059, 21.941, 21.941], x: [50.494, 50.494, 0, 0], y: [0.168, 0.168, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1267, 0.3767, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.1262, 0.7532, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5352, 0.5562, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5352, 0.5562, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2692",
+      "nodeName": "Star 16",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -360, x: 47.613, y: -0.228, }} animate={{ opacity: [0, 0, 0.4, 0.4], rotate: [-360, -360, 0, 0], x: [47.613, 47.613, 0, 0], y: [-0.228, -0.228, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4046, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7528, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.541, 0.5706, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.541, 0.5706, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2693",
+      "nodeName": "Star 14",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -377.729, x: 24.956, y: -0.539, }} animate={{ opacity: [0, 0, 0.1, 0.1], rotate: [-377.729, -377.729, -17.728, -17.728], x: [24.956, 24.956, 0, 0], y: [-0.539, -0.539, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1262, 0.3762, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.1257, 0.7527, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5237, 0.5557, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5237, 0.5557, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2694",
+      "nodeName": "Star 17",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -241.554, x: 21.538, y: -0.14, }} animate={{ opacity: [0, 0, 0.2, 0.2], rotate: [-241.554, -241.554, 118.446, 118.446], x: [21.538, 21.538, 0, 0], y: [-0.14, -0.14, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4051, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.754, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5418, 0.5714, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5418, 0.5714, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2695",
+      "nodeName": "Star 18",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -290.616, x: 15.148, y: 0.748, }} animate={{ opacity: [0, 0, 0.4, 0.4], rotate: [-290.616, -290.616, 69.384, 69.384], x: [15.148, 15.148, 0, 0], y: [0.748, 0.748, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4046, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7528, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.541, 0.5706, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.541, 0.5706, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2696",
+      "nodeName": "Star 19",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -241.554, x: 21.394, y: 0.002, }} animate={{ opacity: [0, 0, 0.5, 0.5], rotate: [-241.554, -241.554, 118.446, 118.446], x: [21.394, 21.394, 0, 0], y: [0.002, 0.002, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4046, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7528, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5281, 0.5706, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5281, 0.5706, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2697",
+      "nodeName": "Star 20",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -270, x: 17.202, y: -0.969, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-270, -270, 90, 90], x: [17.202, 17.202, 0, 0], y: [-0.969, -0.969, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1257, 0.3757, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.1252, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5092, 0.5552, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5092, 0.5552, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2698",
+      "nodeName": "Star 21",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -241.554, x: 18.615, y: -0.69, }} animate={{ opacity: [0, 0, 0.2, 0.2], rotate: [-241.554, -241.554, 118.446, 118.446], x: [18.615, 18.615, 0, 0], y: [-0.69, -0.69, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4046, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7528, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5281, 0.5706, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5281, 0.5706, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2699",
+      "nodeName": "Star 22",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -275.648, x: 9.881, y: 0.402, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-275.648, -275.648, 84.352, 84.352], x: [9.881, 9.881, 0, 0], y: [0.402, 0.402, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.4044, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5277, 0.5702, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5277, 0.5702, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2700",
+      "nodeName": "Group 48096640",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ opacity: 0, x: -100, }} animate={{ opacity: [0, 0, 0.23, 0.23], x: [-100, -100, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.2995, 0.6965, 1], ease: [\"linear\", \"easeInOut\", \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4365, 0.6965, 1], ease: [\"linear\", [0.42, 0, 0.007, 1.007], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2701",
+      "nodeName": "Star 12",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -188.076, x: 6.877, y: -0.435, }} animate={{ opacity: [0, 0, 0.4, 0.4], rotate: [-188.076, -188.076, 171.924, 171.924], x: [6.877, 6.877, 0, 0], y: [-0.435, -0.435, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5665, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7528, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4941, 0.5667, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4941, 0.5667, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2702",
+      "nodeName": "Star 13",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -518.246, x: 14.126, y: -0.346, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-518.246, -518.246, -158.246, -158.246], x: [14.126, 14.126, 0, 0], y: [-0.346, -0.346, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2703",
+      "nodeName": "Star 15",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -518.059, x: 16.369, y: -0.153, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-518.059, -518.059, -158.059, -158.059], x: [16.369, 16.369, 0, 0], y: [-0.153, -0.153, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.173, 0.566, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.1725, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4936, 0.5662, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4936, 0.5662, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2704",
+      "nodeName": "Star 16",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -180, x: 16.056, y: 0.338, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-180, -180, 180, 180], x: [16.056, 16.056, 0, 0], y: [0.338, 0.338, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: [\"linear\", \"easeInOut\", \"linear\"], repeat: Infinity }, y: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: [\"linear\", \"easeInOut\", \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2705",
+      "nodeName": "Star 14",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -197.729, x: 0, y: 0, }} animate={{ opacity: [0, 0, 0.1, 0.1], rotate: [-197.729, -197.729, 162.271, 162.271], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2706",
+      "nodeName": "Star 17",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -421.554, x: 1.592, y: 0.036, }} animate={{ opacity: [0, 0, 0.2, 0.2], rotate: [-421.554, -421.554, -61.554, -61.554], x: [1.592, 1.592, 0, 0], y: [0.036, 0.036, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2707",
+      "nodeName": "Star 18",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -470.616, x: 8.726, y: 0.448, }} animate={{ opacity: [0, 0, 0.4, 0.4], rotate: [-470.616, -470.616, -110.616, -110.616], x: [8.726, 8.726, 0, 0], y: [0.448, 0.448, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2708",
+      "nodeName": "Star 19",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -421.554, x: 11.585, y: -0.295, }} animate={{ opacity: [0, 0, 0.5, 0.5], rotate: [-421.554, -421.554, -61.554, -61.554], x: [11.585, 11.585, 0, 0], y: [-0.295, -0.295, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4938, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2709",
+      "nodeName": "Star 20",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -450, x: 15.793, y: 0.032, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-450, -450, -90, -90], x: [15.793, 15.793, 0, 0], y: [0.032, 0.032, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.5042, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.5042, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2710",
+      "nodeName": "Star 21",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -421.554, x: 17.674, y: -0.412, }} animate={{ opacity: [0, 0, 0.2, 0.2], rotate: [-421.554, -421.554, -61.554, -61.554], x: [17.674, 17.674, 0, 0], y: [-0.412, -0.412, 0, 0], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, x: { duration: 2, times: [0, 0.4567, 0.5663, 1], ease: \"linear\", repeat: Infinity }, y: { duration: 2, times: [0, 0.4567, 0.5663, 1], ease: \"linear\", repeat: Infinity }, }} />"
+      }
+    },
+    {
+      "nodeId": "80:2711",
+      "nodeName": "Star 22",
+      "nodeType": "VECTOR",
+      "codeSnippets": {
+        "motionDev": "<motion.svg initial={{ opacity: 0, rotate: -455.648, }} animate={{ opacity: [0, 0, 0.3, 0.3], rotate: [-455.648, -455.648, -95.648, -95.648], }} transition={{ opacity: { duration: 2, times: [0, 0.1735, 0.5662, 1], ease: [\"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, rotate: { duration: 2, times: [0, 0.173, 0.7522, 1], ease: [\"linear\", [0.5, 0, 0.5, 1], \"linear\"], repeat: Infinity }, }} />"
+      }
+    }
+  ],
+  "timelineCohorts": [
+    {
+      "rootNodeId": "80:2601",
+      "durationMs": 2000,
+      "loopMode": "loop",
+      "memberNodeIds": [
+        "80:2604",
+        "80:2608",
+        "80:2645",
+        "80:2688",
+        "80:2689",
+        "80:2690",
+        "80:2691",
+        "80:2692",
+        "80:2693",
+        "80:2694",
+        "80:2695",
+        "80:2696",
+        "80:2697",
+        "80:2698",
+        "80:2699",
+        "80:2700",
+        "80:2701",
+        "80:2702",
+        "80:2703",
+        "80:2704",
+        "80:2705",
+        "80:2706",
+        "80:2707",
+        "80:2708",
+        "80:2709",
+        "80:2710",
+        "80:2711"
+      ]
+    }
+  ]
+}

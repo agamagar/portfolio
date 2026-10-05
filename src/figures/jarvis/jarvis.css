@@ -1,0 +1,208 @@
+/* Edge (JARVIS), Zepto Ads AI copilot case-study figures. Desktop register
+   (the advertiser platform, not a phone), DARK vitrine like the Away set: each
+   figure paints its own dark stage and pairs it with a states-rail that names
+   every beat (animation-base-layer §11 treatment). Shared primitives live here,
+   figure-specific styles live beside each component (edge*.css).
+   Voice tags / tones: pink = Edge speaking / a suggestion; green = applied /
+   safe; red = urgent / money burning; amber = caution. One concept per beat.
+   Reuses --ds-dur-* / --ds-ease-* motion tokens; overrides the light surface
+   tokens to dark under .ds-root--edge. */
+
+.ds-root.ds-root--edge {
+  width: 660px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  /* dark surface + text overrides (beat the light .ds-root tokens) */
+  --ds-surface: #101014;
+  --ds-field: #17171d;
+  --ds-muted: #1b1b23;
+  --ds-border: #2b2b35;
+  --ds-border-card: #25252d;
+  --ds-line: #21212b;
+  --ds-text: #f5f4f6;
+  --ds-text-2: #a8a6b2;
+  --ds-text-3: #71707e;
+  --ds-shim: #21212b;
+  --ds-shim-soft: #262630;
+  --ds-shadow-frame: 0 24px 60px -28px rgba(0, 0, 0, 0.7), 0 1px 2px rgba(0, 0, 0, 0.4);
+  /* Edge accent = the case pink (suggestions, Edge's own voice) */
+  --ej-pink: #ec5f9d;
+  --ej-pink-2: #db2777;
+  --ej-pink-soft: rgba(219, 39, 119, 0.16);
+  --ej-pink-line: rgba(219, 39, 119, 0.45);
+  /* semantics on dark */
+  --ej-green: #34d399;
+  --ej-green-soft: rgba(52, 211, 153, 0.14);
+  --ej-red: #f87171;
+  --ej-red-soft: rgba(248, 113, 113, 0.16);
+  --ej-amber: #fbbf24;
+  --ej-amber-soft: rgba(251, 191, 36, 0.14);
+}
+
+/* ---- stage + rail pair (the house layout) ---- */
+.ej-stage {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+  width: 100%;
+}
+.ej-stage__main { flex: 1 1 auto; min-width: 0; position: relative; }
+
+.ej-rail {
+  flex: 0 0 186px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 2px;
+}
+.ej-rail__cap {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  margin-bottom: 4px;
+}
+.ej-step {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  opacity: 0.38;
+  transition: opacity var(--ds-dur-state) var(--ds-ease-std);
+}
+.ej-step[data-active="true"] { opacity: 1; }
+.ej-step__dot {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--ej-pink-soft);
+  color: var(--ej-pink);
+  transition: background var(--ds-dur-state) var(--ds-ease-std), color var(--ds-dur-state) var(--ds-ease-std);
+}
+.ej-step__dot svg { width: 9px; height: 9px; }
+.ej-step[data-tone="green"] .ej-step__dot { background: var(--ej-green-soft); color: var(--ej-green); }
+.ej-step[data-tone="red"] .ej-step__dot { background: var(--ej-red-soft); color: var(--ej-red); }
+.ej-step[data-tone="amber"] .ej-step__dot { background: var(--ej-amber-soft); color: var(--ej-amber); }
+.ej-step__t { display: block; font-size: 12.5px; font-weight: 620; color: var(--ds-text); line-height: 1.3; }
+.ej-step__s { display: block; font-size: 11.5px; color: var(--ds-text-3); line-height: 1.35; margin-top: 1px; }
+
+/* ---- the insight card (the workhorse, shared by every figure) ---- */
+.ej-card {
+  background: var(--ds-field);
+  border: 1px solid var(--ds-border-card);
+  border-radius: 14px;
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.65);
+}
+.ej-badge {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--ej-pink-soft);
+  color: var(--ej-pink);
+}
+.ej-badge[data-tone="red"] { background: var(--ej-red-soft); color: var(--ej-red); }
+.ej-badge[data-tone="green"] { background: var(--ej-green-soft); color: var(--ej-green); }
+.ej-badge[data-tone="amber"] { background: var(--ej-amber-soft); color: var(--ej-amber); }
+.ej-card__claim { font-size: 13.5px; font-weight: 600; color: var(--ds-text); line-height: 1.42; }
+.ej-card__claim b, .ej-card__claim strong { font-weight: 720; }
+.ej-card__detail { font-size: 11.5px; color: var(--ds-text-3); line-height: 1.4; }
+.ej-actions { display: flex; gap: 8px; align-items: center; margin-top: 2px; }
+.ej-btn {
+  font-size: 12px;
+  font-weight: 640;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background: var(--ej-pink-2);
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+}
+.ej-btn--ghost {
+  background: transparent;
+  color: var(--ds-text-2);
+  border: 1px solid var(--ds-border);
+}
+.ej-btn--green { background: var(--ej-green); color: #06281c; }
+.ej-why {
+  font-size: 12px;
+  color: var(--ds-text-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ds-border);
+}
+
+/* ---- the floater pill + toast (out-of-flow voices) ---- */
+.ej-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--ds-field);
+  border: 1px solid var(--ej-pink-line);
+  color: var(--ds-text);
+  font-size: 12.5px;
+  font-weight: 640;
+  box-shadow: 0 12px 30px -14px rgba(219, 39, 119, 0.35);
+  transition: border-color var(--ds-dur-state) var(--ds-ease-std), box-shadow var(--ds-dur-state) var(--ds-ease-std);
+}
+.ej-pill__spark {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--ej-pink);
+}
+.ej-pill[data-tone="red"] { border-color: rgba(248, 113, 113, 0.55); }
+.ej-pill[data-tone="red"] .ej-pill__spark { background: var(--ej-red); }
+.ej-pill__n {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--ej-pink-soft);
+  color: var(--ej-pink);
+}
+.ej-toast {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--ds-field);
+  border: 1px solid var(--ds-border);
+  border-left: 3px solid var(--ej-red);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+}
+.ej-toast__t { font-size: 12.5px; font-weight: 620; color: var(--ds-text); line-height: 1.4; }
+
+/* ---- skeleton page furniture (the platform behind Edge) ---- */
+.ej-page {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border-card);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+.ej-page__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--ds-line);
+}
+.ej-page__brand { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-text-2); }
+.ej-page__tab { font-size: 11px; color: var(--ds-text-3); }
+.ej-page__tab[data-on="true"] { color: var(--ds-text); font-weight: 640; }

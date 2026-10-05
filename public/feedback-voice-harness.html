@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback layer, voice audition</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: rgba(0, 0, 0, 0.56);
+    --muted-2: #6b6a63;
+    --line: rgba(0, 0, 0, 0.08);
+    --hover: rgba(0, 0, 0, 0.04);
+    --link: #1a6fd0;
+    --green: #027a45;
+    --max: 980px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e0e11;
+      --fg: #ededed;
+      --muted: rgba(255, 255, 255, 0.6);
+      --muted-2: #9a9992;
+      --line: rgba(255, 255, 255, 0.12);
+      --hover: rgba(255, 255, 255, 0.06);
+      --link: #6db1ff;
+      --green: #22c55e;
+    }
+  }
+  * { box-sizing: border-box; corner-shape: squircle; }
+  body {
+    margin: 0;
+    padding: 3rem 1.5rem 6rem;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 0 auto; }
+  h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.3rem; }
+  .lede { color: var(--muted); font-size: 0.875rem; margin: 0 0 0.5rem; max-width: 46rem; }
+  .note { color: var(--muted-2); font-size: 0.8125rem; margin: 0 0 2rem; max-width: 46rem; }
+  .eyebrow {
+    font-size: 0.6875rem; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted-2); margin: 0 0 0.75rem;
+  }
+
+  .bar {
+    display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+    padding: 0.875rem 1rem; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--hover); margin-bottom: 2.25rem;
+  }
+  .bar label { font-size: 0.8125rem; color: var(--muted); display: flex; align-items: center; gap: 0.6rem; }
+  input[type=range] { width: 140px; accent-color: var(--fg); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-2); }
+  th:first-child, td:first-child { padding-left: 0; width: 30%; }
+  .ev-name { font-size: 0.875rem; font-weight: 500; }
+  .ev-desc { font-size: 0.75rem; color: var(--muted); }
+
+  button {
+    font: inherit; font-size: 0.8125rem; color: var(--fg);
+    background: transparent; border: 1px solid var(--line);
+    padding: 0.4rem 0.75rem; border-radius: 999px; cursor: pointer;
+    transition: background 160ms cubic-bezier(0.34, 0.8, 0.34, 1), border-color 160ms;
+    min-width: 4.5rem;
+  }
+  button:hover { background: var(--hover); border-color: color-mix(in srgb, var(--fg) 22%, transparent); }
+  button:active { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+  button.playing { border-color: var(--green); color: var(--green); }
+  button.primary { border-color: color-mix(in srgb, var(--fg) 30%, transparent); font-weight: 500; }
+
+  .voices { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin: 0 0 2.5rem; }
+  .voice {
+    border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.125rem 1.125rem;
+  }
+  .voice h3 { margin: 0 0 0.15rem; font-size: 0.9375rem; font-weight: 600; }
+  .voice .tag { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-2); }
+  .voice p { font-size: 0.8125rem; color: var(--muted); margin: 0.5rem 0 0.875rem; }
+
+  .haptic { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .hint { font-size: 0.75rem; color: var(--muted-2); margin-top: 2.5rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8125rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Feedback layer, voice audition</h1>
+  <p class="lede">Four candidate voices for the portfolio's sound vocabulary, across the seven events the site
+  actually has. Pick one voice, or mix per event. Whatever you choose gets written into the spec.</p>
+  <p class="note">Everything here is synthesized live with Web Audio. No audio files, nothing to load, nothing to
+  license. The whole layer is a few hundred bytes of code rather than a folder of samples, which is the only
+  reason sound is defensible on a portfolio at all.</p>
+
+  <div class="bar">
+    <label>Volume <input type="range" id="vol" min="0" max="100" value="55"></label>
+    <label><input type="checkbox" id="hapticOn" checked> Fire haptics too</label>
+    <span class="haptic" id="hapticSupport"></span>
+  </div>
+
+  <p class="eyebrow">The four voices</p>
+  <div class="voices" id="voices"></div>
+
+  <p class="eyebrow">Event by event</p>
+  <table>
+    <thead>
+      <tr><th>Event</th><th>Whisper</th><th>Wood</th><th>Tuned</th><th>Glass</th><th>Haptic</th></tr>
+    </thead>
+    <tbody id="grid"></tbody>
+  </table>
+
+  <p class="hint">Keyboard: press <code>1</code> to <code>4</code> to run each voice's full sequence.
+  The sequence plays a realistic flow, a mode toggle, two card selects, three deck advances,
+  a confirm, then a boundary, so you hear repetition and spacing rather than isolated hits.</p>
+</div>
+
+<script>
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+const master = { gain: null };
+function audio() {
+  if (!ctx) {
+    ctx = new AC();
+    master.gain = ctx.createGain();
+    master.gain.gain.value = 0.55;
+    master.gain.connect(ctx.destination);
+  }
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
+}
+
+/* ---- primitives ---------------------------------------------------- */
+function noiseBuffer(c, secs) {
+  const n = Math.max(1, Math.floor(c.sampleRate * secs));
+  const b = c.createBuffer(1, n, c.sampleRate);
+  const d = b.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+  return b;
+}
+// percussive noise transient through a bandpass
+function tick(c, t, { freq = 2000, q = 6, dur = 0.03, gain = 0.3 }) {
+  const src = c.createBufferSource();
+  src.buffer = noiseBuffer(c, dur + 0.01);
+  const bp = c.createBiquadFilter();
+  bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = q;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(bp).connect(g).connect(master.gain);
+  src.start(t); src.stop(t + dur + 0.02);
+}
+// pitched body with an optional downward glide
+function body(c, t, { freq = 220, to = null, type = 'sine', dur = 0.12, gain = 0.2, detune = 0 }) {
+  const o = c.createOscillator();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+  if (detune) o.detune.value = detune;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(master.gain);
+  o.start(t); o.stop(t + dur + 0.02);
+}
+
+/* ---- events --------------------------------------------------------
+   Seven events, taken from what the portfolio actually does.           */
+const EVENTS = [
+  ['toggle',   'Mode toggle',   'read / scan switch, the site’s one persistent control', [12]],
+  ['select',   'Select',        'a work card or filter chip commits',                          [8]],
+  ['navigate', 'Navigate',      'deck slide advance, repeated many times in a row',            [6]],
+  ['reveal',   'Reveal',        'TL;DR or a panel opens, something arrives',                   [10, 40, 14]],
+  ['confirm',  'Confirm',       'a positive resolution, pairs with --green',                   [14, 60, 22]],
+  ['reject',   'Reject',        'refused or invalid, the only sound allowed to be sour',       [26, 50, 26]],
+  ['boundary', 'Boundary',      'end of deck, nothing further that way',                       [18]],
+];
+
+/* ---- the four voices ------------------------------------------------ */
+const VOICES = {
+  whisper: {
+    name: 'Whisper', tag: 'near-silent, functional',
+    blurb: 'Filtered air at very low gain. Short enough that it reads as texture rather than a sound. You notice it only when it stops.',
+    play(c, t, ev) {
+      const f = { toggle: 2400, select: 3000, navigate: 3400, reveal: 1800, confirm: 2600, reject: 900, boundary: 1400 }[ev];
+      tick(c, t, { freq: f, q: 7, dur: ev === 'reveal' ? 0.05 : 0.022, gain: 0.16 });
+      if (ev === 'confirm') tick(c, t + 0.055, { freq: 3400, q: 8, dur: 0.03, gain: 0.13 });
+      if (ev === 'reject') tick(c, t + 0.05, { freq: 700, q: 4, dur: 0.04, gain: 0.13 });
+    }
+  },
+  wood: {
+    name: 'Wood', tag: 'warm, physical',
+    blurb: 'A knock on a small wooden body: noise transient plus a damped low tone that drops in pitch as it dies. Matches the lo-fi studio direction of the DJ console.',
+    play(c, t, ev) {
+      const map = {
+        toggle:   { f: 190, d: 0.10 }, select: { f: 240, d: 0.085 },
+        navigate: { f: 300, d: 0.065 }, reveal: { f: 150, d: 0.16 },
+        confirm:  { f: 260, d: 0.13 },  reject: { f: 110, d: 0.19 },
+        boundary: { f: 130, d: 0.14 },
+      }[ev];
+      tick(c, t, { freq: map.f * 5, q: 3, dur: 0.02, gain: 0.28 });
+      body(c, t, { freq: map.f, to: map.f * 0.72, type: 'sine', dur: map.d, gain: 0.26 });
+      if (ev === 'confirm') body(c, t + 0.08, { freq: map.f * 1.5, to: map.f * 1.2, dur: 0.12, gain: 0.16 });
+      if (ev === 'boundary') body(c, t + 0.02, { freq: map.f * 0.99, to: map.f * 0.7, dur: 0.16, gain: 0.12, detune: -18 });
+    }
+  },
+  tuned: {
+    name: 'Tuned', tag: 'D pentatonic',
+    blurb: 'Every event is a degree of one scale, so repeated interactions build intervals instead of noise. Navigation climbs, so a deck read has a shape.',
+    play(c, t, ev, i = 0) {
+      const S = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33]; // D E F# A B D
+      const map = {
+        toggle: [S[0]], select: [S[3]], navigate: [S[1], S[2], S[3], S[4], S[5]],
+        reveal: [S[0], S[3]], confirm: [S[3], S[5]], reject: [S[0] * 0.945], boundary: [S[0], S[0]],
+      }[ev];
+      const f = map[Math.min(i, map.length - 1)];
+      body(c, t, { freq: f, type: 'triangle', dur: 0.16, gain: 0.17 });
+      body(c, t, { freq: f * 2, type: 'sine', dur: 0.07, gain: 0.05 });
+      tick(c, t, { freq: f * 6, q: 9, dur: 0.012, gain: 0.07 });
+      if (ev === 'confirm') { body(c, t + 0.09, { freq: map[1], type: 'triangle', dur: 0.22, gain: 0.15 }); }
+      if (ev === 'reveal')  { body(c, t + 0.07, { freq: map[1], type: 'triangle', dur: 0.20, gain: 0.12 }); }
+      if (ev === 'boundary'){ body(c, t + 0.05, { freq: f * 0.98, type: 'triangle', dur: 0.14, gain: 0.10, detune: -30 }); }
+    }
+  },
+  glass: {
+    name: 'Glass', tag: 'airy, long decay',
+    blurb: 'High sine with a slow tail and a slightly detuned partner, so it shimmers. The most present of the four, and the fastest to become tiresome.',
+    play(c, t, ev) {
+      const f = { toggle: 880, select: 1046, navigate: 1174, reveal: 660, confirm: 1318, reject: 415, boundary: 587 }[ev];
+      const dur = ev === 'navigate' ? 0.22 : 0.42;
+      body(c, t, { freq: f, type: 'sine', dur, gain: 0.14 });
+      body(c, t, { freq: f, type: 'sine', dur: dur * 0.8, gain: 0.07, detune: 9 });
+      tick(c, t, { freq: f * 3, q: 10, dur: 0.01, gain: 0.06 });
+      if (ev === 'confirm') body(c, t + 0.10, { freq: f * 1.5, type: 'sine', dur: 0.5, gain: 0.10 });
+      if (ev === 'reject')  body(c, t + 0.02, { freq: f * 0.97, type: 'sine', dur: 0.34, gain: 0.09, detune: -22 });
+    }
+  },
+};
+
+/* ---- playback ------------------------------------------------------- */
+function fire(voiceKey, ev, i = 0) {
+  const c = audio();
+  VOICES[voiceKey].play(c, c.currentTime + 0.005, ev, i);
+  const hap = (EVENTS.find(e => e[0] === ev) || [])[3];
+  if (document.getElementById('hapticOn').checked && hap && navigator.vibrate) navigator.vibrate(hap);
+}
+
+const SEQUENCE = [
+  ['toggle', 0], ['select', 0], ['select', 0],
+  ['navigate', 0], ['navigate', 1], ['navigate', 2],
+  ['confirm', 0], ['boundary', 0],
+];
+function sequence(voiceKey, btn) {
+  const c = audio();
+  let t = c.currentTime + 0.05;
+  const gaps = { toggle: 0.55, select: 0.42, navigate: 0.34, confirm: 0.7, boundary: 0.5 };
+  SEQUENCE.forEach(([ev, i]) => {
+    VOICES[voiceKey].play(c, t, ev, i);
+    t += gaps[ev] || 0.45;
+  });
+  if (btn) {
+    btn.classList.add('playing');
+    setTimeout(() => btn.classList.remove('playing'), (t - c.currentTime) * 1000);
+  }
+}
+
+/* ---- render --------------------------------------------------------- */
+const voicesEl = document.getElementById('voices');
+Object.entries(VOICES).forEach(([key, v], idx) => {
+  const d = document.createElement('div');
+  d.className = 'voice';
+  d.innerHTML = `<span class="tag">${idx + 1} &middot; ${v.tag}</span><h3>${v.name}</h3><p>${v.blurb}</p>`;
+  const b = document.createElement('button');
+  b.className = 'primary';
+  b.textContent = 'Play sequence';
+  b.onclick = () => sequence(key, b);
+  d.appendChild(b);
+  voicesEl.appendChild(d);
+});
+
+const grid = document.getElementById('grid');
+EVENTS.forEach(([key, name, desc, hap]) => {
+  const tr = document.createElement('tr');
+  const td0 = document.createElement('td');
+  td0.innerHTML = `<div class="ev-name">${name}</div><div class="ev-desc">${desc}</div>`;
+  tr.appendChild(td0);
+  Object.keys(VOICES).forEach(vk => {
+    const td = document.createElement('td');
+    const b = document.createElement('button');
+    b.textContent = 'Play';
+    b.onclick = () => fire(vk, key);
+    td.appendChild(b);
+    tr.appendChild(td);
+  });
+  const tdh = document.createElement('td');
+  tdh.className = 'haptic';
+  tdh.textContent = hap.join(' / ') + ' ms';
+  tr.appendChild(tdh);
+  grid.appendChild(tr);
+});
+
+document.getElementById('vol').oninput = e => {
+  if (master.gain) master.gain.gain.value = e.target.value / 100;
+};
+document.addEventListener('keydown', e => {
+  const i = ['1', '2', '3', '4'].indexOf(e.key);
+  if (i > -1) sequence(Object.keys(VOICES)[i]);
+});
+
+const sup = document.getElementById('hapticSupport');
+sup.textContent = navigator.vibrate
+  ? 'navigator.vibrate is available here, patterns will fire'
+  : 'navigator.vibrate is unavailable in this browser, patterns are shown but silent';
+</script>
+</body>
+</html>

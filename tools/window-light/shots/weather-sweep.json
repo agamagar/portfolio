@@ -1,0 +1,36 @@
+{
+  "defaults": {
+    "w": 1600,
+    "h": 1200,
+    "dpr": 1,
+    "frames": 32,
+    "timeout": 120000,
+    "scene": "require"
+  },
+  "shots": [
+    {
+      "name": "wx-clear",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=clear&look=photo"
+    },
+    {
+      "name": "wx-partly",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=partly&look=photo"
+    },
+    {
+      "name": "wx-overcast",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=overcast&look=photo"
+    },
+    {
+      "name": "wx-rain",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=rain&look=photo"
+    },
+    {
+      "name": "wx-storm",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=storm&look=photo"
+    },
+    {
+      "name": "wx-live",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=live&look=photo"
+    }
+  ]
+}

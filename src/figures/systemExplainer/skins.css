@@ -1,0 +1,69 @@
+/* System-Explainer per-case SKINS.
+
+   The figures read their structural colours from a small --se-* token contract, with
+   the default dark-vitrine values baked in as fallbacks, so an UN-skinned figure looks
+   exactly as before. To re-skin a figure (or a whole case study's figures), set a skin
+   class on ANY ancestor: the --se-* custom properties inherit, so every figure inside
+   re-colours, no per-figure edits.
+
+   The contract (15 tokens):
+     --se-bg          frame plate
+     --se-surface     cards / hub / nodes
+     --se-surface-2   inset rows / fields
+     --se-line        hairlines / borders
+     --se-line-2      stronger border
+     --se-text        strong text / values
+     --se-text-2      body text
+     --se-muted       secondary text
+     --se-faint       labels / meta
+     --se-accent      the working/active accent
+     --se-good / --se-good-2   success (bar fill / win)
+     --se-warn        attention
+     --se-bad / --se-bad-2     error
+
+   Usage: <div className="se-skin--sched"> <SomeDemo /> </div>
+   or set the class on the case-study section so all its figures inherit it.
+
+   The DEFAULT skin (the dark lab vitrine) lives at :root, NOT on .ds-root, so a skin
+   set on any ancestor (a closer scope than :root) can override it. Figures must not
+   re-declare --se-* on their own .ds-root, or the ancestor skin can't reach them. */
+:root {
+  --se-bg:        #0a0a0e;
+  --se-surface:   #15151c;
+  --se-surface-2: #17171f;
+  --se-line:      #20202a;
+  --se-line-2:    #2a2a36;
+  --se-text:      #f4f4f6;
+  --se-text-2:    #cbcbd4;
+  --se-muted:     #8a8a98;
+  --se-faint:     #6f6f7e;
+  --se-accent:    #3b82f6;
+  --se-good:      #22c55e;
+  --se-good-2:    #4ade80;
+  --se-warn:      #f59e0b;
+  --se-bad:       #ef4444;
+  --se-bad-2:     #f87171;
+}
+
+/* ---- Scheduled Delivery (Zepto) ----
+   PROVISIONAL, pending Agam's references. A dark-plum vitrine carrying the Zepto
+   magenta as the accent (keeps the premium "specimen under glass" feel, re-hued to
+   the case). If the references call for a light, app-like skin instead, only these
+   values change. Semantic good/warn/bad kept universal for now. */
+.se-skin--sched {
+  --se-bg:        #160811;
+  --se-surface:   #22101a;
+  --se-surface-2: #2b1422;
+  --se-line:      #3a1e2e;
+  --se-line-2:    #4c2839;
+  --se-text:      #f8eef4;
+  --se-text-2:    #ddc8d5;
+  --se-muted:     #a98aa0;
+  --se-faint:     #7a6470;
+  --se-accent:    #d23c95;
+  --se-good:      #22c55e;
+  --se-good-2:    #4ade80;
+  --se-warn:      #f59e0b;
+  --se-bad:       #ef4444;
+  --se-bad-2:     #f87171;
+}

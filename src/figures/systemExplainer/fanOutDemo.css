@@ -1,0 +1,59 @@
+/* Fan-Out / Gather figure. Dark System-Explainer vitrine (.ds-root--away supplies
+   figure tokens); a hub on the left dispatches wires to N sources on the right,
+   fares return, the cheapest wins. Higher specificity than .ds-root.ds-root--away
+   (which forces transparent / border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-fan { border: 1px solid var(--se-line, #20202a); border-radius: 16px; background: var(--se-bg, #0a0a0e); padding: 16px; }
+.ss-fan__stage { position: relative; }
+.ss-fan__wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* wires: draw in on dispatch, the winner goes green + thicker on resolve */
+.ss-fan__wire {
+  stroke: var(--se-line-2, #2a2a36); stroke-width: 1.5; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default), stroke 300ms var(--m3-effects-default), stroke-width 300ms var(--m3-effects-default);
+}
+.ss-fan__wire.is-on { stroke-dashoffset: 0; stroke: var(--se-accent, #3b82f6); }
+.ss-fan__wire.is-win { stroke: var(--se-good, #22c55e); stroke-width: 2.5; }
+
+/* hub */
+.ss-fan__hub {
+  position: absolute; width: 156px; padding: 12px 14px; border-radius: 13px;
+  background: var(--se-surface, #15151c); border: 1px solid var(--se-line-2, #2a2a36); display: flex; flex-direction: column; gap: 3px;
+}
+.ss-fan__hub-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--se-faint, #6f6f7e); }
+.ss-fan__hub-trip { font-size: 13px; font-weight: 600; color: var(--se-text, #f4f4f6); }
+.ss-fan__hub-pulse { position: absolute; right: 12px; top: 12px; width: 7px; height: 7px; border-radius: 50%; background: var(--se-accent, #3b82f6); opacity: 0; }
+.ss-fan__hub-pulse.is-on { opacity: 1; animation: ssFanPulse 1.4s ease-in-out infinite; }
+@keyframes ssFanPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); } 50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); } }
+
+/* source nodes */
+.ss-fan__src {
+  position: absolute; width: 180px; padding: 8px 12px; border-radius: 11px;
+  background: var(--se-surface, #15151c); border: 1px solid var(--se-line, #20202a); display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  opacity: 0; transform: translateX(10px);
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default), border-color 300ms var(--m3-effects-default), background 300ms var(--m3-effects-default);
+}
+.ss-fan__src.is-in { opacity: 1; transform: none; }
+.ss-fan__src.is-back { border-color: #2f3a52; }
+.ss-fan__src.is-win { border-color: var(--se-good, #22c55e); background: #112016; }
+.ss-fan__src-name { font-size: 12.5px; font-weight: 500; color: var(--se-text-2, #cbcbd4); }
+.ss-fan__src.is-win .ss-fan__src-name { color: var(--se-text, #f4f4f6); }
+.ss-fan__src-fare { font-size: 12.5px; font-weight: 600; color: var(--se-text, #f4f4f6); font-variant-numeric: tabular-nums; }
+.ss-fan__src.is-win .ss-fan__src-fare { color: var(--se-good-2, #4ade80); }
+.ss-fan__scan { font-size: 11px; font-weight: 400; color: var(--se-faint, #6f6f7e); animation: ssFanScan 1.2s ease-in-out infinite; }
+@keyframes ssFanScan { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+.ss-fan__src-tag { position: absolute; right: -6px; top: -8px; font-size: 8.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #07210f; background: var(--se-good, #22c55e); padding: 2px 6px; border-radius: 999px; }
+
+/* result strip */
+.ss-fan__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: var(--se-surface, #15151c); border: 1px solid var(--se-line, #20202a);
+  font-size: 12.5px; color: var(--se-text-2, #cbcbd4); opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-fan__result.is-on { opacity: 1; transform: none; }
+.ss-fan__result b { color: var(--se-text, #f4f4f6); }
+.ss-fan__save { color: var(--se-good-2, #4ade80); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-fan__hub-pulse.is-on, .ss-fan__scan { animation: none; }
+  .ss-fan__wire { transition: none; }
+}

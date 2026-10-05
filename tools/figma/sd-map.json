@@ -1,0 +1,124 @@
+{
+  "_about": "Section <-> Figma frame map for the Scheduled Delivery case (file dUwMRorsFMXh9G6wlHOh5B, column 315:29324). Keys are section headings in src/App.jsx; values are the Figma frame ids that render that section, in order. Kept by hand by the bridge (2026-09-06).",
+  "hero": [
+    "319:45000"
+  ],
+  "header": [
+    "559:7888",
+    "561:14198"
+  ],
+  "Scheduled delivery, in motion": [
+    "460:53122"
+  ],
+  "Before we start": [
+    "315:29335"
+  ],
+  "The central question": [
+    "315:29489",
+    "460:53090",
+    "460:53298",
+    "581:11551"
+  ],
+  "My role": [
+    "546:8975"
+  ],
+  "The constraints": [
+    "546:8984",
+    "460:53299"
+  ],
+  "breaker:pronCards": [
+    "315:29388"
+  ],
+  "One cart, many hubs": [
+    "315:29496",
+    "581:11559"
+  ],
+  "The explorations": [
+    "366:10641",
+    "581:11581"
+  ],
+  "Two directions": [
+    "315:29585",
+    "582:11533"
+  ],
+  "The real work": [
+    "315:29945",
+    "582:11544"
+  ],
+  "One scroll across midnight": [
+    "546:9018"
+  ],
+  "The go-to-market": [
+    "546:8996"
+  ],
+  "The stuck cart": [
+    "546:9030"
+  ],
+  "Cart-page states": [
+    "315:30305",
+    "582:11568"
+  ],
+  "Slot-page states": [
+    "315:30665",
+    "582:11604"
+  ],
+  "After you book": [
+    "315:31025",
+    "583:11533"
+  ],
+  "Impact": [
+    "546:9041"
+  ],
+  "What users told us": [
+    "366:11812",
+    "583:11558"
+  ],
+  "Returns & refunds": [
+    "315:31385",
+    "583:11582"
+  ],
+  "Reflection": [
+    "546:9007"
+  ],
+  "_parked": [
+    "315:31745",
+    "366:11076"
+  ],
+  "_immovable": [
+    "460:53122",
+    "460:53090",
+    "460:53298",
+    "460:53299",
+    "315:29585",
+    "315:29945",
+    "315:30305",
+    "315:30665",
+    "315:31025",
+    "315:31385",
+    "315:31745",
+    "366:11076"
+  ],
+  "Context and objective": [
+    "315:29373"
+  ],
+  "Two screens, in motion": [
+    "561:14549"
+  ],
+  "Context & problem": [
+    "319:50317",
+    "581:11533"
+  ],
+  "Three cards": [
+    "315:29470"
+  ],
+  "_note_2026-09-06_0455": "Figma column reordered by Agam: hero, header(139), question, phone, context, plate1, plate2, cards, ... The intro is split into five site sections to mirror it.",
+  "_note_2026-09-06_1035": "Agam replaced 561:14217 with frame 146 (561:14549) at position 6; mirrored as the 'Two screens, in motion' scene.",
+  "_removed_2026-09-06_0510": {
+    "In motion, the plates": [
+      "560:11533",
+      "560:11536"
+    ],
+    "why": "Agam deleted both plate frames; section removed from the site (copy kept in the session note)."
+  },
+  "_note_2026-09-06_1215": "'· text from code' frames (Stack Sans Headline h2, Google Sans Flex body) inserted after each section's figure frame for the sections that had no prose in Figma; After you book / What users told us / Returns & refunds ids added once the last chunk returns."
+}

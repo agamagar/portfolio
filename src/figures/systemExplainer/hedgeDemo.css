@@ -1,0 +1,100 @@
+/* Hedge figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens); a confidence band over a time strip narrows as evidence lands, but
+   never collapses to a point. Higher specificity than .ds-root.ds-root--away
+   (which forces transparent / border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-hedge { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-hedge__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.ss-hedge__title { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-hedge__conf {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; border: 1px solid #2a2a36; color: #8a8a98;
+  opacity: 0; transform: translateY(-3px);
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default), color 360ms var(--m3-effects-default), border-color 360ms var(--m3-effects-default), background 360ms var(--m3-effects-default);
+}
+.ss-hedge__conf.is-on { opacity: 1; transform: none; }
+.ss-hedge__conf--low { color: #8a8a98; }
+.ss-hedge__conf--fair { color: #93b4f5; border-color: #2f3a52; }
+.ss-hedge__conf--high { color: #4ade80; border-color: #1f5132; background: #0e1c13; }
+
+/* stage + plot */
+.ss-hedge__stage { position: relative; }
+.ss-hedge__plot { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* axis + ticks */
+.ss-hedge__axis {
+  stroke: #2a2a36; stroke-width: 1.5; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default);
+}
+.ss-hedge__axis.is-on { stroke-dashoffset: 0; }
+.ss-hedge__tickgrp { opacity: 0; transition: opacity 360ms var(--m3-effects-default); }
+.ss-hedge__tickgrp.is-on { opacity: 1; }
+.ss-hedge__tick { stroke: #2a2a36; stroke-width: 1.5; }
+.ss-hedge__ticklab { fill: #6f6f7e; font-size: 10px; font-variant-numeric: tabular-nums; }
+
+/* the confidence band — geometry (d / x) changes each step, so animate those for
+   the visible narrowing-and-sliding motion; opacity fades the whole band in */
+.ss-hedge__band {
+  opacity: 0;
+  transition: d 460ms var(--m3-spatial-standard-default), opacity 400ms var(--m3-effects-default), fill 460ms var(--m3-effects-default);
+}
+.ss-hedge__band.is-on { opacity: 1; }
+
+.ss-hedge__edge {
+  stroke: #3b82f6; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0;
+  transition: x1 460ms var(--m3-spatial-standard-default), x2 460ms var(--m3-spatial-standard-default), opacity 400ms var(--m3-effects-default), stroke 460ms var(--m3-effects-default);
+}
+.ss-hedge__edge.is-on { opacity: 0.5; }
+.ss-hedge__edge.is-tight { stroke: #22c55e; }
+
+/* centre tick — the provisional point estimate */
+.ss-hedge__center {
+  stroke: #3b82f6; stroke-width: 2; opacity: 0;
+  transition: x1 460ms var(--m3-spatial-standard-default), x2 460ms var(--m3-spatial-standard-default), opacity 400ms var(--m3-effects-default), stroke 460ms var(--m3-effects-default);
+}
+.ss-hedge__center.is-on { opacity: 1; }
+.ss-hedge__center.is-tight { stroke: #22c55e; }
+
+.ss-hedge__estimate {
+  fill: #f4f4f6; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; opacity: 0;
+  transition: x 460ms var(--m3-spatial-standard-default), opacity 400ms var(--m3-effects-default), fill 460ms var(--m3-effects-default);
+}
+.ss-hedge__estimate.is-on { opacity: 1; }
+.ss-hedge__estimate.is-tight { fill: #4ade80; }
+
+.ss-hedge__spread {
+  fill: #cbcbd4; font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; opacity: 0;
+  transition: x 460ms var(--m3-spatial-standard-default), opacity 400ms var(--m3-effects-default);
+}
+.ss-hedge__spread.is-on { opacity: 1; }
+
+/* evidence feed — chips land one by one on the left */
+.ss-hedge__feed { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 24px; }
+.ss-hedge__chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 500; color: #cbcbd4;
+  padding: 4px 9px; border-radius: 999px; background: #15151c; border: 1px solid #20202a;
+  opacity: 0; transform: translateX(-8px);
+  transition: opacity 360ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default), border-color 300ms var(--m3-effects-default), color 300ms var(--m3-effects-default);
+}
+.ss-hedge__chip.is-in { opacity: 1; transform: none; }
+.ss-hedge__chip-dot { width: 5px; height: 5px; border-radius: 50%; background: #3b82f6; flex: 0 0 auto; }
+.ss-hedge__chip.is-last { border-color: #1f5132; color: #f4f4f6; }
+.ss-hedge__chip.is-last .ss-hedge__chip-dot { background: #22c55e; }
+
+/* result strip */
+.ss-hedge__result {
+  margin-top: 12px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-hedge__result.is-on { opacity: 1; transform: none; }
+.ss-hedge__result b { color: #f4f4f6; }
+.ss-hedge__tightspan { color: #4ade80; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-hedge__axis, .ss-hedge__tickgrp, .ss-hedge__band, .ss-hedge__edge,
+  .ss-hedge__center, .ss-hedge__estimate, .ss-hedge__spread, .ss-hedge__conf,
+  .ss-hedge__chip, .ss-hedge__result { transition: none; }
+}

@@ -7,3 +7,46 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @custom-variant dark (&:where(.dark, .dark *));
 @source "./**/*.{js,jsx,ts,tsx}";
+
+/* ---- AnimatedShinyText (src/components/ui/animated-text-01.tsx) ----
+   The sweep runs on --m3-dur-effects-cinematic, whose own definition in
+   index.css reads "slow hero light sweep (flat curve)" — so this is not a new
+   duration, it is the token that already described exactly this move. Three
+   cycles of it gives a 1s sweep inside a 3s beat, which is the pause that stops
+   a shimmer reading as a loading state.
+
+   ONE-WAY. The registry keyframe runs left, holds, then runs back right again,
+   so the band wipes across the word a second time in reverse — which reads as a
+   malfunction, not a shine. Here it crosses once and then simply stays parked
+   off the right for the rest of the cycle; the jump back to the left happens on
+   the loop restart, while the band is outside the box and invisible.
+
+   Positions resolve against the BAND layer, whose size is --shiny-width:
+     0%   -> calc(-100% - B) = -(W - B) - B = -W   band sits at [-W, -W+B]
+     35%  -> calc(100% + B)  =  (W - B) + B =  W   band sits at [W,  W+B]
+   Both are wholly outside the box, PROVIDED B <= W. That constraint is real:
+   a band wider than the shortest word never parks and the shimmer becomes a
+   permanent smear. See the note in hello.css. */
+@theme {
+  /* `linear` named explicitly: omitting it let the shorthand fall back to the
+     UA default `ease`, which is not a curve this site uses. */
+  --animate-shiny-text: shiny-text calc(var(--m3-dur-effects-cinematic) * 3) linear infinite;
+}
+@keyframes shiny-text {
+  0% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+  }
+  35%,
+  100% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+  }
+}
+/* a shimmer is decoration; under reduced motion the word simply sits at its
+   full ink and the band never travels */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shiny-text {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}

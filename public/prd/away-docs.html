@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Away Design System — Docs</title>
+<style>
+  :root{
+    --bg:#0b0b14; --bg-1:#0f0f1a; --bg-2:#13131f; --bg-3:#1c222f; --bg-4:#263040;
+    --text:#e7ebf3; --text-2:#9aa5b8; --text-3:#657089; --text-4:#455066;
+    --border:#202634; --border-2:#2c3648;
+    --acc:#8b7bff; --acc-2:#6d5cf0; --acc-soft:rgba(139,123,255,.13); --acc-line:rgba(139,123,255,.4);
+    --ok:#34d399; --warn:#fbbf24; --bad:#f87171; --acc-on:#0b0b14; --acc-soft2:rgba(139,123,255,.16);
+    --code-bg:#0c0c16;
+    --nav-h:56px; --side-w:270px; --toc-w:220px;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --r:10px;
+  }
+  html[data-theme="light"]{
+    --bg:#ffffff; --bg-1:#fbfbfd; --bg-2:#f6f7f9; --bg-3:#eef0f4; --bg-4:#e4e7ee;
+    --text:#15161c; --text-2:#565b69; --text-3:#8a91a1; --text-4:#aab0be;
+    --border:#eaecf1; --border-2:#dfe2e9;
+    --acc:#5b4bd6; --acc-2:#6d5cf0; --acc-soft:rgba(109,92,240,.09); --acc-line:rgba(109,92,240,.35); --acc-on:#ffffff; --acc-soft2:rgba(109,92,240,.12);
+    --code-bg:#0c0c16;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.6;font-size:15px}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--acc-soft)}
+  code{font-family:var(--mono);font-size:.86em}
+
+  /* ---- top nav ---- */
+  .nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:40;display:flex;align-items:center;gap:16px;
+    padding:0 20px;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;font-size:15px}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(140deg,var(--acc-2),#3b2fb0);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+  .ver{font-size:11px;font-weight:600;color:var(--acc);background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:999px;padding:2px 8px}
+  .nav-search{flex:1;max-width:440px;margin:0 auto;position:relative}
+  .nav-search input{width:100%;height:36px;border-radius:9px;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    font:inherit;font-size:13.5px;padding:0 36px 0 32px;outline:none}
+  .nav-search input:focus{border-color:var(--acc-line)}
+  .nav-search .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px}
+  .nav-search .kbd{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:600 11px/1 var(--mono);color:var(--text-3);
+    background:var(--bg-3);border:1px solid var(--border-2);border-radius:5px;padding:3px 6px}
+  .nav-right{display:flex;align-items:center;gap:6px}
+  .nav-btn{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-2);cursor:pointer;border:1px solid transparent}
+  .nav-btn:hover{background:var(--bg-2);color:var(--text)}
+  .nav-btn svg{width:17px;height:17px}
+
+  /* ---- shell ---- */
+  .shell{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr) var(--toc-w);max-width:1400px;margin:0 auto;padding-top:var(--nav-h)}
+  .side{position:sticky;top:var(--nav-h);align-self:start;height:calc(100vh - var(--nav-h));overflow-y:auto;padding:24px 14px 60px 20px;border-right:1px solid var(--border)}
+  .side::-webkit-scrollbar,.toc::-webkit-scrollbar{width:7px}
+  .side::-webkit-scrollbar-thumb,.toc::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:4px}
+  .grp{margin-bottom:22px}
+  .grp-t{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);padding:0 10px;margin-bottom:8px}
+  .nav-i{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;color:var(--text-2);font-size:13.5px;cursor:pointer;position:relative}
+  .nav-i:hover{background:var(--bg-2);color:var(--text)}
+  .nav-i.active{color:var(--acc);background:var(--acc-soft);font-weight:550}
+  .nav-i .tag{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.04em;padding:1px 5px;border-radius:4px;background:var(--bg-3);color:var(--text-3)}
+  .nav-i .tag.free{color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,transparent)}
+  .nav-i .tag.new{color:var(--acc);background:var(--acc-soft)}
+
+  /* ---- main ---- */
+  .main{min-width:0;padding:44px 56px 120px;max-width:820px}
+  .crumbs{font-size:12.5px;color:var(--text-3);margin-bottom:14px;display:flex;gap:7px;align-items:center}
+  .crumbs b{color:var(--text-2);font-weight:500}
+  h1{font-size:32px;font-weight:680;letter-spacing:-.02em;margin:0 0 12px}
+  .lead{font-size:16.5px;color:var(--text-2);margin:0 0 28px;line-height:1.65}
+  h2{font-size:21px;font-weight:640;letter-spacing:-.01em;margin:40px 0 12px;scroll-margin-top:80px;padding-top:4px}
+  h3{font-size:16px;font-weight:620;margin:26px 0 8px;scroll-margin-top:80px}
+  .page p{color:var(--text-2);margin:0 0 14px}
+  .page p b,.page li b{color:var(--text);font-weight:600}
+  .page ul{color:var(--text-2);padding-left:20px;margin:0 0 16px}
+  .page li{margin:5px 0}
+  .page a.link{color:var(--acc);border-bottom:1px solid var(--acc-line)}
+  hr{border:0;border-top:1px solid var(--border);margin:36px 0}
+
+  /* code */
+  .code{position:relative;background:var(--code-bg);border:1px solid var(--border-2);border-radius:var(--r);margin:0 0 18px;overflow:hidden}
+  .code-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;color:#8b93a7}
+  .code-h .dot{width:9px;height:9px;border-radius:50%;background:#2c3546}
+  .code pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.65;color:#c7d0e0}
+  .code .cp{position:absolute;top:8px;right:8px;font-size:11px;font-weight:600;color:#8b93a7;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 9px;cursor:pointer}
+  .code .cp:hover{color:#fff}
+  .tok-k{color:#c792ea}.tok-s{color:#c3e88d}.tok-c{color:#5c6473;font-style:italic}.tok-f{color:#82aaff}.tok-n{color:#f78c6c}
+
+  /* callout */
+  .cal{display:flex;gap:12px;border:1px solid var(--border-2);border-left:3px solid var(--acc);border-radius:var(--r);padding:14px 16px;margin:0 0 18px;background:var(--acc-soft)}
+  .cal .ic{color:var(--acc);flex:none;margin-top:1px}
+  .cal.warn{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 9%,transparent)}.cal.warn .ic{color:var(--warn)}
+  .cal .b{font-size:14px;color:var(--text-2)}.cal .b b{color:var(--text)}
+
+  /* cards */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 20px}
+  .card{border:1px solid var(--border);border-radius:var(--r);padding:16px;background:var(--bg-1);transition:border-color .15s,transform .15s;cursor:pointer}
+  .card:hover{border-color:var(--acc-line);transform:translateY(-2px)}
+  .card .t{font-weight:620;font-size:14.5px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+  .card .n{font-size:10px;font-weight:700;color:var(--acc);background:var(--acc-soft);border-radius:4px;padding:1px 6px}
+  .card .d{font-size:13px;color:var(--text-3)}
+
+  /* prop table */
+  .tbl-wrap{border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;margin:0 0 20px}
+  .tbl-wrap table{min-width:560px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{text-align:left;font-weight:600;color:var(--text-3);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;padding:10px 14px;background:var(--bg-2);border-bottom:1px solid var(--border)}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-2)}
+  tbody tr:last-child td{border-bottom:0}
+  td .pn{font-family:var(--mono);font-size:12.5px;color:var(--acc);font-weight:500}
+  td .pt{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+  td .pd{font-family:var(--mono);font-size:12px;color:var(--text-3);background:var(--bg-3);border-radius:4px;padding:1px 5px}
+
+  /* preview box */
+  .prev{border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:28px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;background:
+    radial-gradient(circle at 1px 1px, var(--bg-3) 1px, transparent 0) 0 0/18px 18px;border-bottom:0}
+  .prev{position:relative;overflow:hidden}
+  .prev + .code{border-radius:0 0 var(--r) var(--r);margin-top:0;border-top-left-radius:0;border-top-right-radius:0}
+  .demo-btn{height:40px;padding:0 16px;border-radius:10px;font:inherit;font-weight:600;font-size:14px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .swz{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;margin:0 0 8px}
+  .swz i{aspect-ratio:1;border-radius:6px;position:relative;border:1px solid rgba(255,255,255,.06)}
+
+  /* toc */
+  .toc{position:sticky;top:var(--nav-h);align-self:start;height:calc(100vh - var(--nav-h));overflow-y:auto;padding:44px 20px 60px;font-size:13px}
+  .toc-t{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px}
+  .toc a{display:block;color:var(--text-3);padding:5px 0 5px 12px;border-left:1.5px solid var(--border);line-height:1.4}
+  .toc a:hover{color:var(--text-2)}
+  .toc a.active{color:var(--acc);border-left-color:var(--acc)}
+  .toc a.sub{padding-left:24px;font-size:12.5px}
+
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:56px;border-top:1px solid var(--border);padding-top:24px}
+  .pager a{flex:1;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer}
+  .pager a:hover{border-color:var(--acc-line)}
+  .pager .l{font-size:12px;color:var(--text-3)}
+  .pager .n{font-size:14.5px;font-weight:600;color:var(--text);margin-top:2px}
+  .pager .r{text-align:right}
+
+
+  /* ---- live preview widgets (theme-aware) ---- */
+  .dw{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;font-family:var(--sans)}
+  .dw-col{flex-direction:column;align-items:stretch;gap:10px;width:100%;max-width:340px}
+  .db{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;font-weight:600;font-size:14px;border:1px solid transparent;cursor:pointer;user-select:none;transition:transform .1s,filter .12s}
+  .db:active{transform:scale(.97)} .db:hover{filter:brightness(1.08)}
+  .db.solid{background:var(--acc);color:var(--acc-on)} .db.soft{background:var(--acc-soft2);color:var(--acc)}
+  .db.outline{background:transparent;color:var(--acc);border-color:var(--acc-line)} .db.ghost{background:transparent;color:var(--acc)}
+  .db.ok{background:var(--ok);color:#06210f} .db.bad{background:var(--bad);color:#2b0708} .db.sm{height:32px;font-size:13px;border-radius:8px;padding:0 12px}
+  .dchip{height:32px;padding:0 14px;border-radius:999px;font-size:13px;font-weight:500;border:1px solid var(--border-2);color:var(--text-2);background:transparent;cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px}
+  .dchip.on{background:var(--acc);color:var(--acc-on);border-color:transparent}
+  .dsw{width:44px;height:26px;border-radius:13px;background:var(--bg-4);position:relative;cursor:pointer;flex:none}
+  .dsw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:10px;background:#fff;transition:left .16s}
+  .dsw.on{background:var(--acc)} .dsw.on i{left:21px}
+  .dchk{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-2);display:inline-flex;align-items:center;justify-content:center;color:var(--acc-on);cursor:pointer}
+  .dchk.on{background:var(--acc);border-color:var(--acc)}
+  .drad{width:20px;height:20px;border-radius:10px;border:1.5px solid var(--border-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .drad.on{border-color:var(--acc)} .drad.on i{width:10px;height:10px;border-radius:5px;background:var(--acc)}
+  .drow{display:flex;align-items:center;gap:10px;color:var(--text);font-size:14px;cursor:pointer}
+  .dstep{display:flex;align-items:center;gap:14px}
+  .dstep b{width:34px;height:34px;border-radius:17px;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;color:var(--text);cursor:pointer;font-weight:400;user-select:none}
+  .dstep b:active{transform:scale(.94)} .dstep .v{min-width:22px;text-align:center;font-weight:600;color:var(--text)}
+  .dstar{font-size:28px;cursor:pointer;user-select:none;line-height:1}
+  .dsl{position:relative;height:40px;width:100%;max-width:320px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+  .dsl .tr{position:absolute;left:0;right:0;height:4px;border-radius:2px;background:var(--bg-4)}
+  .dsl .fl{position:absolute;left:0;height:4px;border-radius:2px;background:var(--acc)}
+  .dsl .th{position:absolute;width:22px;height:22px;border-radius:11px;background:var(--acc);border:3px solid var(--bg);transform:translateX(-11px)}
+  .dseg{display:inline-flex;background:var(--bg-3);border-radius:999px;padding:4px}
+  .dseg span{padding:9px 16px;border-radius:999px;font-size:13px;color:var(--text-3);cursor:pointer;user-select:none}
+  .dseg span.on{background:var(--bg);color:var(--acc);font-weight:600}
+  .dtabs{display:flex;gap:22px;border-bottom:1px solid var(--border);position:relative;width:100%}
+  .dtabs span{padding:11px 0;font-size:14px;color:var(--text-3);cursor:pointer;user-select:none} .dtabs span.on{color:var(--text);font-weight:600}
+  .dtabs .ind{position:absolute;bottom:0;height:2px;border-radius:1px;background:var(--acc);transition:all .18s;left:0}
+  .dotp{display:flex;gap:8px;position:relative}
+  .dotp .c{width:44px;height:52px;border-radius:10px;border:1px solid var(--border-2);background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:var(--text)}
+  .dotp .c.act{border:2px solid var(--acc)} .dotp input{position:absolute;inset:0;opacity:0}
+  .dprog{width:100%;max-width:320px} .dprog .tk{height:6px;border-radius:3px;background:var(--bg-4);overflow:hidden;cursor:pointer} .dprog .fi{height:100%;background:var(--acc);border-radius:3px;transition:width .25s}
+  .dcard{border:1px solid var(--border);border-radius:12px;background:var(--bg-2);padding:14px;width:100%;max-width:320px}
+  .dtoastwrap{position:absolute;top:12px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+  .dtoast{width:88%;max-width:320px;display:flex;gap:12px;background:var(--bg-3);border:1px solid var(--border-2);border-left:3px solid var(--ok);border-radius:10px;padding:12px 14px;pointer-events:auto;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:dtin .25s}
+  @keyframes dtin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+  .dov{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:10px;display:flex;opacity:0;transition:opacity .2s;pointer-events:none;z-index:5}
+  .dov.show{opacity:1;pointer-events:auto}
+  .dsheet{margin-top:auto;width:100%;background:var(--bg-2);border-radius:14px 14px 0 0;padding:8px 18px 22px;transform:translateY(40px);transition:transform .22s}
+  .dov.show .dsheet{transform:none}
+  .ddlg{margin:auto;width:min(360px,86%);background:var(--bg-2);border-radius:14px;padding:20px;transform:scale(.95);transition:transform .18s} .dov.show .ddlg{transform:scale(1)}
+  .dgrab{width:36px;height:4px;border-radius:2px;background:var(--bg-4);margin:0 auto 12px}
+  .dspin{width:20px;height:20px;border-radius:50%;border:2px solid var(--bg-4);border-top-color:var(--acc);animation:dspin .8s linear infinite} @keyframes dspin{to{transform:rotate(360deg)}}
+  .dskel{background:var(--bg-3);border-radius:8px;animation:dpulse 1.4s ease-in-out infinite} @keyframes dpulse{0%,100%{opacity:.55}50%{opacity:1}}
+  /* agent (fixed light/indigo) */
+  .ag{--a-s:#fff;--a-o:#f4f4f7;--a-t:#17171f;--a-2:#52525e;--a-3:#8a8a96;--a-st:#e6e6ec;--a-ac:#6d5cf0;--a-acs:#5847d6;--a-am:#cec7fb;--a-af:#eeeaf5;--a-ct:#17171f;font-family:var(--sans)}
+  .ag-card{background:var(--a-s);border:1px solid var(--a-st);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.28);padding:16px 12px 12px;width:300px}
+  .ag-rnd{width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--a-o);color:var(--a-t);cursor:pointer} .ag-rnd.dk{background:var(--a-ct);color:#fff}
+  .ag-in{border:0;background:transparent;outline:none;width:100%;font:inherit;font-weight:300;font-size:14px;color:var(--a-t);padding:4px 6px} .ag-in::placeholder{color:var(--a-2)}
+  .ag-act{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:16px}
+  .ag-send{height:36px;min-width:60px;border-radius:999px;background:#e6e6ec;color:#c2c2ca;display:flex;align-items:center;justify-content:center;cursor:default} .ag-send.on{background:var(--a-ct);color:#fff;cursor:pointer}
+  .ag-ctx{color:var(--a-2);font-size:13px;font-weight:300;flex:1}
+  .ag-cal{width:300px} .ag-cal .h,.ag-cal .w{display:grid;grid-template-columns:repeat(7,1fr)} .ag-cal .h span{text-align:center;font-size:11px;color:var(--a-3);padding-bottom:6px} .ag-cal .h span.we{color:var(--a-ac)}
+  .ag-cal .d{display:flex;flex-direction:column;align-items:center;padding:6px 0;border-radius:6px;color:var(--a-t);font-size:13px;cursor:pointer} .ag-cal .d small{font-size:9px} .ag-cal .d.rg{background:var(--a-af)} .ag-cal .d.en{background:var(--a-ac);color:#fff} .ag-cal .d.mut{color:#c2c2ca}
+  .ag-bars{display:flex;align-items:flex-end;gap:3px;height:90px;width:280px} .ag-bars i{flex:1;border-radius:2px;background:var(--a-af)} .ag-bars i.on{background:var(--a-ac)}
+  @keyframes chd{0%,60%,100%{opacity:.4;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+  .hidden{display:none!important}
+  .side-toggle{display:none}
+  @media(max-width:1180px){ :root{--toc-w:0px} .toc{display:none} .shell{grid-template-columns:var(--side-w) 1fr} }
+  @media(max-width:860px){
+    .shell{grid-template-columns:1fr} .main{padding:28px 20px 100px}
+    .side{position:fixed;top:var(--nav-h);left:0;bottom:0;width:280px;background:var(--bg);z-index:35;transform:translateX(-100%);transition:transform .2s;border-right:1px solid var(--border)}
+    html.side-open .side{transform:none}
+    .side-toggle{display:flex} .nav-search{max-width:none}
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-btn side-toggle" id="side-toggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </div>
+    <a class="brand" data-nav="introduction"><span class="mark">A</span>Away DS<span class="ver">v0.3.0</span></a>
+    <div class="nav-search">
+      <span class="si">⌕</span>
+      <input id="search" type="text" placeholder="Search documentation" autocomplete="off" />
+      <span class="kbd">/</span>
+    </div>
+    <div class="nav-right">
+      <a class="nav-btn" href="https://www.npmjs.com/package/@agamagar/away-design-system" target="_blank" title="npm" aria-label="npm">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 2v20h20V2H2zm18 18h-4V6H9v14H4V4h16v16z"/></svg>
+      </a>
+      <a class="nav-btn" href="https://github.com/agamagar/away-design-system" target="_blank" title="GitHub" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.6 2 12.3c0 4.5 2.9 8.3 6.8 9.7.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.4-3.4-1.4-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.3 10.3 0 0 0 22 12.3C22 6.6 17.5 2 12 2z"/></svg>
+      </a>
+      <div class="nav-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme"></div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="side" id="side"></aside>
+    <main class="main" id="main"></main>
+    <nav class="toc" id="toc"></nav>
+  </div>
+
+<script>
+/* ============================ Away DS docs ============================ */
+var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.from((r||document).querySelectorAll(s))};
+var esc=function(h){return String(h).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+
+/* tiny syntax highlighter (ts/tsx/bash) */
+function hl(code){
+  var s=esc(code);
+  s=s.replace(/(\/\/[^\n]*)/g,'<span class="tok-c">$1</span>');
+  s=s.replace(/(&#39;[^&]*?&#39;|&quot;[^&]*?&quot;|`[^`]*?`)/g,'<span class="tok-s">$1</span>');
+  s=s.replace(/\b(import|from|export|const|let|function|return|default|type|interface|new|await|async|if|else)\b/g,'<span class="tok-k">$1</span>');
+  s=s.replace(/&lt;(\/?[A-Z][A-Za-z0-9]*)/g,'&lt;<span class="tok-f">$1</span>');
+  s=s.replace(/\b(\d+)\b/g,'<span class="tok-n">$1</span>');
+  return s;
+}
+function codeBlock(code,lang){ lang=lang||'tsx';
+  return '<div class="code"><div class="code-h"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:4px">'+lang+'</span></div>'
+    +'<button class="cp" data-copy>Copy</button><pre>'+hl(code)+'</pre></div>'; }
+function propTable(rows){
+  if(!rows||!rows.length) return '';
+  var body=rows.map(function(r){
+    return '<tr><td><span class="pn">'+r[0]+'</span></td><td><span class="pt">'+esc(r[1])+'</span></td><td>'+(r[2]?'<span class="pd">'+esc(r[2])+'</span>':'<span style="color:var(--text-4)">—</span>')+'</td><td>'+r[3]+'</td></tr>';
+  }).join('');
+  return '<div class="tbl-wrap"><table><thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+}
+
+/* ---------------- component data ---------------- */
+var C=function(id,group,label,desc,opts){ opts=opts||{}; return {id:id,group:group,label:label,desc:desc,props:opts.props,code:opts.code,preview:opts.preview,extra:opts.extra,tag:opts.tag}; };
+
+var COMPONENTS=[
+  /* ---- Layout ---- */
+  C('box','Layout','Box','A styled View with token-aware shorthands for padding, background, radius, and border.',{
+    props:[['p / px / py','number (spacing token)','','Padding shorthands'],['bg','keyof colors','','Background token'],['radius','number','','Corner radius'],['bordered','boolean','false','1px border in the divider color']],
+    code:"import { Box } from '@agamagar/away-design-system';\n\n<Box p=\"md\" bg=\"backgroundSecondary\" radius={12} bordered>\n  <Text>Padded, bordered surface</Text>\n</Box>"}),
+  C('stack','Layout','Stack','Flex layout helpers — Stack, HStack, VStack, Spacer — with a token gap.',{
+    props:[['direction','\'row\' | \'column\'','\'column\'','Main axis'],['gap','number (spacing token)','0','Space between children'],['align','FlexAlign','','alignItems'],['justify','FlexJustify','','justifyContent']],
+    code:"import { HStack, VStack, Spacer } from '@agamagar/away-design-system';\n\n<HStack gap=\"sm\" align=\"center\">\n  <Avatar name=\"AA\" />\n  <VStack><Text variant=\"label\">Agam</Text></VStack>\n  <Spacer />\n  <Button label=\"Follow\" tone=\"accent\" size=\"sm\" />\n</HStack>"}),
+  C('divider','Layout','Divider','A hairline separator, horizontal or vertical.',{
+    props:[['orientation','\'horizontal\' | \'vertical\'','\'horizontal\'',''],['inset','number','0','Indent from the leading edge']],
+    code:"<Divider />"}),
+  C('text','Layout','Text','Role-based typography. Roles fix the type scale; `color` accepts emphasis levels or tones.',{
+    props:[['variant','\'display\'|\'title\'|\'heading\'|\'body\'|\'label\'|\'caption\'|\'overline\'','\'body\'','Named type role'],['color','\'primary\'|\'secondary\'|\'tertiary\'|\'inverse\'| Tone','\'primary\'','Emphasis level or tone'],['center','boolean','false',''],['fontFamily','family key','role default','Override the weight']],
+    code:"<Text variant=\"heading\">Where to?</Text>\n<Text variant=\"caption\" color=\"secondary\">Step 1 of 6</Text>\n<Text variant=\"label\" color=\"danger\">Payment failed</Text>"}),
+
+  /* ---- Actions ---- */
+  C('button','Actions','Button','The core action. Every color routes through `resolveVariant`, so re-toning happens in foundation.ts.',{
+    preview:'buttons',
+    props:[['label','string','','Button text (prefer verbs)'],['variant','\'solid\'|\'soft\'|\'outline\'|\'ghost\'','\'solid\'',''],['tone','\'neutral\'|\'accent\'|\'success\'|\'warning\'|\'danger\'|\'info\'','\'neutral\'',''],['size','\'sm\'|\'md\'|\'lg\'','\'md\'','md = 44pt touch target'],['loading','boolean','false','Spinner + blocks presses'],['leading / trailing','ReactNode','','Icon slots'],['fullWidth','boolean','false',''],['onPress','() => void','','']],
+    code:"import { Button } from '@agamagar/away-design-system';\n\n<Button label=\"Search flights\" tone=\"accent\" onPress={search} />\n<Button label=\"Remove\" variant=\"outline\" tone=\"danger\" size=\"sm\" />\n<Button label=\"Booking…\" loading fullWidth />"}),
+  C('icon-button','Actions','IconButton','A square, icon-only pressable at the same tones/sizes as Button.',{
+    props:[['icon','ReactNode','','Glyph slot (icon-agnostic)'],['variant / tone / size','—','','Same as Button'],['accessibilityLabel','string','required','VoiceOver label (icon has no text)']],
+    code:"<IconButton icon={<HeartIcon />} variant=\"soft\" tone=\"danger\"\n  accessibilityLabel=\"Save flight\" onPress={save} />"}),
+  C('chip','Actions','Chip','A selectable/filter pill. Toggles between soft and solid on `selected`.',{
+    preview:'chips',
+    props:[['label','string','',''],['selected','boolean','false','Solid fill when true'],['variant / tone','—','','From foundation'],['leading / trailing','ReactNode','',''],['onPress','() => void','','']],
+    code:"<Chip label=\"Non-stop\" selected tone=\"accent\" onPress={toggle} />\n<Chip label=\"Refundable\" variant=\"outline\" />"}),
+  C('badge','Actions','Badge','A small status marker or count. No label renders an 8px dot.',{
+    props:[['label','string','','Count/text; omit for a dot'],['variant / tone','—','\'soft\' / \'accent\'','']],
+    code:"<Badge label=\"12\" tone=\"danger\" />\n<Badge tone=\"success\" />  {/* status dot */}"}),
+
+  /* ---- Data display ---- */
+  C('card','Data Display','Card','A raised surface at three background levels. Tappable when given `onPress`.',{
+    props:[['level','1 | 2 | 3','1','Background elevation'],['padding','number','md','Inner padding token'],['bordered','boolean','true',''],['onPress','() => void','','Makes the card pressable']],
+    code:"<Card level={1} onPress={open}>\n  <Text variant=\"label\">Goa, IN</Text>\n  <Text variant=\"caption\" color=\"secondary\">Dec 12 – 16</Text>\n</Card>"}),
+  C('list-row','Data Display','ListRow','A 44pt row: leading slot, title/subtitle, trailing slot. The building block of lists.',{
+    props:[['title','string','',''],['subtitle','string','',''],['leading / trailing','ReactNode','',''],['onPress','() => void','','']],
+    code:"<ListRow leading={<Avatar name=\"GA\" />} title=\"Goa, IN\"\n  subtitle=\"Dec 12 – 16 · 2 travellers\" trailing={<Chevron />} onPress={open} />"}),
+  C('avatar','Data Display','Avatar','An image or initials avatar with a tone-tinted fallback.',{
+    props:[['uri','string','','Image source'],['name','string','','Initials fallback'],['size','number','40',''],['tone','Tone','\'accent\'','Fallback tint']],
+    code:"<Avatar uri={user.photo} name=\"Agam Agarwal\" size={36} />"}),
+  C('progress-bar','Data Display','ProgressBar','Determinate progress on a muted track; width animates on change.',{
+    props:[['value','number','','0–1'],['tone','Tone','\'accent\'',''],['height','number','6',''],['animated','boolean','true','']],
+    code:"<ProgressBar value={0.4} tone=\"accent\" />"}),
+  C('rating','Data Display','Rating','A tappable ★ row with adjustable a11y; pass `readonly` for display.',{
+    props:[['value','number','',''],['count','number','5',''],['size','number','28',''],['readonly','boolean','false',''],['onChange','(v:number)=>void','','']],
+    code:"<Rating value={rating} onChange={setRating} />\n<Rating value={4} readonly />"}),
+  C('callout','Data Display','Callout','A quiet, left-accented highlight for tips — lighter than Banner.',{
+    props:[['title','string','','Bold lead-in'],['text','string','','Body (or children)'],['tone','Tone','\'accent\'',''],['icon','ReactNode','','']],
+    code:"<Callout tone=\"info\" title=\"Heads up\"\n  text=\"Fares refresh every 10 minutes.\" />"}),
+  C('banner','Data Display','Banner','An inline, tone-driven alert that stays in layout (unlike a toast).',{
+    props:[['title','string','','Required headline'],['description','string','',''],['tone','Tone','\'info\'',''],['actionLabel','string','','Inline action verb'],['onAction','() => void','',''],['onDismiss','() => void','','Shows the × affordance']],
+    code:"<Banner tone=\"warning\" title=\"Price changed\"\n  description=\"Fare went up ₹1,200\"\n  actionLabel=\"Review\" onAction={review} onDismiss={hide} />"}),
+
+  /* ---- Forms ---- */
+  C('input','Forms','Input','A labelled text field with helper/error slots. Extends RN TextInput.',{
+    props:[['label','string','',''],['helper','string','',''],['error','string','','Replaces helper, tints danger'],['leading / trailing','ReactNode','',''],['…TextInputProps','—','','value, onChangeText, etc.']],
+    code:"<Input label=\"Email\" value={email} onChangeText={setEmail}\n  error={emailError} keyboardType=\"email-address\" />"}),
+  C('form-field','Forms','FormField','Wraps any control with a consistent label + helper/error. Error beats helper.',{
+    props:[['label','string','',''],['required','boolean','false',''],['helper','string','',''],['error','string','','']],
+    code:"<FormField label=\"Cabin\" required error={err}>\n  <SegmentedControl options={['Economy','Business']} value={c} onChange={setC} />\n</FormField>"}),
+  C('checkbox','Forms','Checkbox','A labelled checkbox. Tap the row or the box.',{
+    props:[['checked','boolean','',''],['label','string','',''],['tone','Tone','\'accent\'',''],['onChange','(v:boolean)=>void','','']],
+    code:"<Checkbox checked={direct} label=\"Direct flights only\" onChange={setDirect} />"}),
+  C('radio','Forms','Radio','A single radio; group by sharing one value/onChange in the parent.',{
+    props:[['selected','boolean','',''],['label','string','',''],['onPress','() => void','','']],
+    code:"<Radio selected={cabin==='eco'} label=\"Economy\" onPress={()=>setCabin('eco')} />"}),
+  C('switch','Forms','Switch','An animated on/off toggle.',{
+    props:[['value','boolean','',''],['onChange','(v:boolean)=>void','',''],['tone','Tone','\'accent\'','']],
+    code:"<Switch value={alerts} onChange={setAlerts} />"}),
+  C('slider','Forms','Slider','A single-thumb range control. Drag or tap; adjustable a11y with inc/dec.',{
+    props:[['value','number','',''],['min / max','number','0 / 100',''],['step','number','1',''],['tone','Tone','\'accent\'',''],['label','string','','VoiceOver label'],['onChange','(v:number)=>void','','']],
+    code:"<Slider value={maxPrice} min={1000} max={20000} step={500}\n  label=\"Max price\" onChange={setMaxPrice} />"}),
+  C('stepper','Forms','Stepper','A bounded −/+ counter with adjustable a11y; buttons disable at bounds.',{
+    preview:'stepper',
+    props:[['value','number','',''],['min / max','number','0 / 99',''],['step','number','1',''],['size','Size','\'md\'',''],['label','string','',''],['onChange','(v:number)=>void','','']],
+    code:"<Stepper value={adults} min={1} label=\"Adults\" onChange={setAdults} />"}),
+  C('segmented-control','Forms','SegmentedControl','Theme-aware pill tabs. The active segment lifts onto the background.',{
+    props:[['options','(string | {label,value})[]','',''],['value','string','',''],['size','\'sm\' | \'md\'','\'md\'',''],['onChange','(v:string)=>void','','']],
+    code:"<SegmentedControl options={['Flights','Hotels','Trains']}\n  value={tab} onChange={setTab} />"}),
+  C('search-bar','Forms','SearchBar','A pill search field on the secondary surface with a clear affordance.',{
+    props:[['value','string','',''],['placeholder','string','\'Search\'',''],['leading','ReactNode','','Magnifier slot'],['clearable','boolean','true',''],['onChangeText','(v:string)=>void','','']],
+    code:"<SearchBar value={q} onChangeText={setQ} leading={<SearchIcon />} />"}),
+  C('otp-input','Forms','OtpInput','Segmented one-time-code entry. A hidden field enables paste + OS SMS autofill.',{
+    preview:'otp',
+    props:[['value','string','',''],['length','number','6',''],['onChangeText','(v:string)=>void','',''],['onComplete','(v:string)=>void','','Fires when all filled'],['secure','boolean','false',''],['error','boolean','false','']],
+    code:"<OtpInput value={code} onChangeText={setCode}\n  onComplete={verify} autoFocus />"}),
+
+  /* ---- Feedback ---- */
+  C('toast','Feedback','Toast','A provider + `useToast()` hook. Stacked, animated, auto-dismissing, with an optional action.',{
+    preview:'toast',
+    extra:"<h3>Setup</h3><p>Mount <code>ToastProvider</code> once near the app root, then call <code>useToast()</code> anywhere below it.</p>",
+    props:[['title','string','',''],['description','string','',''],['tone','Tone','\'neutral\'',''],['duration','number','3500','ms; 0 = persistent'],['action','{ label, onPress }','','Inline action'],['icon','ReactNode','','']],
+    code:"// root\n<ToastProvider placement=\"top\">\n  <App />\n</ToastProvider>\n\n// anywhere\nconst { toast } = useToast();\ntoast.show({ tone: 'success', title: 'Booking confirmed', description: 'PNR ABC123' });"}),
+  C('spinner','Feedback','Spinner','A tone-colored activity indicator at control sizes.',{
+    props:[['size','Size','\'md\'',''],['tone','Tone','\'accent\'','']],
+    code:"<Spinner size=\"sm\" tone=\"accent\" />"}),
+  C('skeleton','Feedback','Skeleton','A pulsing placeholder for loading content.',{
+    props:[['width / height','number | string','',''],['radius','number','8','']],
+    code:"<Skeleton width=\"70%\" height={16} />\n<Skeleton width={40} height={40} radius={20} />"}),
+
+  /* ---- Navigation ---- */
+  C('nav-header','Navigation','NavHeader','The top app bar: leading slot, title/subtitle, trailing actions.',{
+    props:[['title','string','',''],['subtitle','string','',''],['leading / trailing','ReactNode','',''],['centered','boolean','false','iOS-style centering'],['bordered','boolean','false','']],
+    code:"<NavHeader title=\"Trip to Goa\" subtitle=\"Dec 12 – 16\"\n  leading={<BackButton />} trailing={<IconButton icon={<More/>} .../>} />"}),
+  C('tab-bar','Navigation','TabBar','Bottom navigation. Icons are slots (library-agnostic); active tab tints accent.',{
+    props:[['items','TabBarItem[]','','{ key, label, icon, badge }'],['activeKey','string','',''],['bottomInset','number','0','Home-indicator inset'],['onChange','(k:string)=>void','','']],
+    code:"<TabBar activeKey={tab} onChange={setTab} bottomInset={insets.bottom}\n  items={[{ key:'home', label:'Home', icon:(a)=><HomeIcon active={a}/> }]} />"}),
+  C('tabs','Navigation','Tabs','Top navigation with an animated underline (distinct from the pill SegmentedControl).',{
+    props:[['tabs','TabItem[]','','{ key, label, count? }'],['value','string','',''],['scrollable','boolean','false',''],['onChange','(k:string)=>void','','']],
+    code:"<Tabs value={t} onChange={setT}\n  tabs={[{key:'up',label:'Upcoming'},{key:'past',label:'Past'}]} />"}),
+  C('bottom-bar','Navigation','BottomBar','A sticky bottom action bar for a screen’s primary CTA, with a value summary.',{
+    props:[['label','string','','Summary label'],['value','string','','Emphasized value'],['bottomInset','number','16',''],['children','ReactNode','','Actions (usually a Button)']],
+    code:"<BottomBar label=\"Total\" value=\"₹9,798\" bottomInset={insets.bottom}>\n  <Button label=\"Continue\" tone=\"accent\" onPress={next} />\n</BottomBar>"}),
+
+  /* ---- Overlays ---- */
+  C('sheet','Overlays','Sheet','A dependency-free bottom sheet: dimmed backdrop, rounded raised surface, grabber, slide-up.',{
+    props:[['visible','boolean','',''],['onClose','() => void','',''],['title','string','',''],['grabber','boolean','true',''],['dismissOnBackdrop','boolean','true',''],['bottomInset','number','16','']],
+    code:"<Sheet visible={open} onClose={close} title=\"Filters\">\n  {/* content */}\n</Sheet>"}),
+  C('dialog','Overlays','Dialog','A centered modal for deliberate decisions; actions render as base Buttons (last = primary).',{
+    props:[['visible','boolean','',''],['onClose','() => void','',''],['title','string','',''],['description','string','',''],['actions','DialogAction[]','','{ label, onPress, tone?, variant? }'],['dismissOnBackdrop','boolean','false','']],
+    code:"<Dialog visible={ask} onClose={cancel} title=\"Remove flights?\"\n  description=\"This clears your cart.\"\n  actions={[{ label:'Keep', onPress:cancel, variant:'ghost' },\n            { label:'Remove', onPress:confirm, tone:'danger' }]} />"}),
+  C('action-sheet','Overlays','ActionSheet','An iOS-style bottom action menu built on Sheet. Destructive rows tint danger; Cancel is separated.',{
+    props:[['visible','boolean','',''],['onClose','() => void','',''],['title','string','',''],['options','ActionSheetOption[]','','{ key, label, onPress, destructive?, icon? }'],['cancelLabel','string','\'Cancel\'','']],
+    code:"<ActionSheet visible={open} onClose={close} title=\"Trip options\"\n  options={[{ key:'share', label:'Share', onPress:share },\n            { key:'del', label:'Delete trip', destructive:true, onPress:del }]} />"}),
+
+  /* ---- Chat kit ---- */
+  C('chat-header','Chat Kit','ChatHeader','The conversation top bar: avatar, agent name, live status with a presence dot.',{tag:'chat',
+    props:[['name','string','',''],['status','string','','Presence line'],['presence','\'online\'|\'busy\'|\'offline\'|\'none\'','\'online\'',''],['avatarUri','string','',''],['leading / trailing','ReactNode','','']],
+    code:"<ChatHeader name=\"Away Concierge\" status=\"Searching flights…\" presence=\"busy\" />"}),
+  C('message-bubble','Chat Kit','MessageBubble','The core chat unit. User = accent right; assistant = surface left. `grouping` flattens run-side corners.',{tag:'chat',preview:'bubbles',
+    props:[['role','\'user\' | \'assistant\'','\'assistant\'',''],['text','string','','Or pass children'],['grouping','\'single\'|\'first\'|\'middle\'|\'last\'','\'single\'',''],['timestamp','string','',''],['status','\'sent\'|\'pending\'|\'error\'','\'sent\'','']],
+    code:"<MessageBubble role=\"user\" text=\"Find me flights to Goa\" grouping=\"first\" />\n<MessageBubble text=\"On it — searching 3 airlines…\" timestamp=\"09:41\" />"}),
+  C('typing-indicator','Chat Kit','TypingIndicator','Three staggered bouncing dots in an assistant bubble; announces typing to screen readers.',{tag:'chat',
+    props:[['bubble','boolean','true','Wrap in an assistant bubble'],['color','string','','Dot color override']],
+    code:"{isTyping && <TypingIndicator />}"}),
+  C('streaming-text','Chat Kit','StreamingText','In-flight assistant output with a blinking caret. Feed accumulated text; flip `streaming` off when done.',{tag:'chat',
+    props:[['children','string','','Accumulated text'],['streaming','boolean','true','Show the caret'],['…TextProps','—','','']],
+    code:"<StreamingText streaming={!done}>{partial}</StreamingText>"}),
+  C('tool-call-card','Chat Kit','ToolCallCard','An agent tool invocation: name + live status + optional expandable detail. Status = label + glyph.',{tag:'chat',
+    props:[['name','string','',''],['status','\'running\'|\'success\'|\'error\'','\'running\'',''],['summary','string','',''],['children','ReactNode','','Expandable detail'],['icons','Partial<Record<status,ReactNode>>','','']],
+    code:"<ToolCallCard name=\"Search flights\" status=\"running\"\n  summary=\"BLR → GOI · Dec 12–16\" />"}),
+  C('agent-status-pill','Chat Kit','AgentStatusPill','A soft pill announcing live agent activity; polite live region so VoiceOver follows along.',{tag:'chat',
+    props:[['label','string','',''],['working','boolean','true','Show the spinner'],['tone','Tone','\'accent\'',''],['leading','ReactNode','','']],
+    code:"<AgentStatusPill label=\"Negotiating fare…\" />"}),
+  C('quick-replies','Chat Kit','QuickReplies','A horizontal rail of suggestion chips shown above the composer.',{tag:'chat',
+    props:[['replies','(string | {label,value})[]','',''],['onSelect','(v:string)=>void','',''],['edgeInset','number','16','']],
+    code:"<QuickReplies replies={['Round trip','Non-stop only']} onSelect={send} />"}),
+  C('chat-composer','Chat Kit','ChatComposer','The message input row: auto-growing field + a send button that enables only with text.',{tag:'chat',
+    props:[['onSend','(text:string)=>void','',''],['value / onChangeText','—','','Controlled (optional)'],['placeholder','string','\'Message\'',''],['leading','ReactNode','','Attach/mic slot'],['maxLines','number','5','']],
+    code:"<ChatComposer onSend={sendMessage} leading={<AttachButton />} />"}),
+  C('date-separator','Chat Kit','DateSeparator','A centered date chip between hairlines, marking a new day.',{tag:'chat',
+    props:[['label','string','','e.g. "Today"']],code:"<DateSeparator label=\"Today\" />"}),
+  C('system-note','Chat Kit','SystemNote','A centered, muted system-event line in the thread.',{tag:'chat',
+    props:[['children','string','','']],code:"<SystemNote>Booking confirmed · PNR ABC123</SystemNote>"}),
+  C('message-actions','Chat Kit','MessageActions','A quiet action row under a bubble (Copy · Retry · Rate). Verbs, 32pt targets.',{tag:'chat',
+    props:[['actions','MessageAction[]','','{ key, label, onPress, destructive?, icon? }'],['align','\'left\' | \'right\'','\'left\'','']],
+    code:"<MessageActions actions={[{key:'copy',label:'Copy',onPress:copy}]} />"}),
+  C('inline-result-card','Chat Kit','InlineResultCard','A rich result the agent drops into the thread (flight, hotel, refund) with a CTA.',{tag:'chat',
+    props:[['title','string','',''],['subtitle','string','',''],['value','string','','Emphasized value'],['media','ReactNode','','Logo/image slot'],['ctaLabel','string','',''],['onCtaPress','() => void','','']],
+    code:"<InlineResultCard media={<AirlineLogo code=\"6E\" />} title=\"IndiGo · Non-stop\"\n  subtitle=\"06:10 → 07:35\" value=\"₹4,899\" ctaLabel=\"View fare\" onCtaPress={open} />"}),
+
+  /* ---- Agent kit ---- */
+  C('agent-input-bar','Agent Kit','AgentInputBar','The concierge composer (light/indigo agent surface): text field + mic/image + dark send pill.',{tag:'agent',
+    props:[['value / onChangeText','—','',''],['onSend','(text:string)=>void','',''],['showVoice / showImage','boolean','true',''],['contextLabel','ReactNode','','e.g. "DEL, BLR +2"'],['disabled','boolean','false','']],
+    code:"<AgentInputBar onSend={ask} contextLabel=\"DEL, BLR +2 others\" />"}),
+  C('agent-card','Agent Kit','AgentCard','The base agent message/confirm surface with title/subtitle/actions/footer slots.',{tag:'agent',
+    props:[['title / subtitle','string','',''],['headerActions','ReactNode','','Right-side round buttons'],['footer','ReactNode','','Centered footer slot'],['minHeight','number','','']],
+    code:"<AgentCard title=\"Remove selected flights?\" subtitle=\"Start a new cart\"\n  headerActions={<>…</>} />"}),
+  C('agent-search-sheet','Agent Kit','AgentSearchSheet','Shared chrome for every agent search step: scrim → white sheet → header → body → dark next FAB.',{tag:'agent',
+    props:[['title','string','',''],['step','string','','e.g. "Step 1 of 6"'],['onClose','() => void','',''],['onNext','() => void','','Shows the next FAB'],['children','ReactNode','','']],
+    code:"<AgentSearchSheet title=\"What is your destination\" step=\"Step 1 of 6\"\n  onNext={next}>{/* content */}</AgentSearchSheet>"}),
+  C('agent-calendar','Agent Kit','AgentCalendar','A price-per-day month grid with range selection, colour-toned fares, and a TODAY badge.',{tag:'agent',
+    props:[['year / month','number','','month is 0-based'],['fares','Record<number, DayFare>','','By day-of-month'],['startDay / endDay','number | null','','Range endpoints'],['onSelectDay','(d:number)=>void','','']],
+    code:"<AgentCalendar year={2026} month={5} fares={fares}\n  startDay={s} endDay={e} onSelectDay={pick} />"}),
+  C('agent-time-dial','Agent Kit','AgentTimeDial','A circular two-thumb range slider over 24 hours (react-native-svg + gesture).',{tag:'agent',
+    props:[['startMin / endMin','number','','Minutes from midnight'],['onChange','(s,e)=>void','',''],['caption','string','\'Earliest departure\'',''],['size','number','240','']],
+    code:"<AgentTimeDial startMin={540} endMin={840} onChange={setRange} />"}),
+  C('agent-screens','Agent Kit','Screens','Faithful, standalone reproductions of the full agent search flow (sample data, not nav-wired).',{tag:'agent',
+    extra:"<p>Six screens covering every <code>type=search</code> archetype:</p><ul><li><b>AgentDestinationScreen</b> — segmented + search + city list</li><li><b>AgentDatesScreen</b> — Fixed calendar / Flexible price bars</li><li><b>AgentPassengersScreen</b> — traveller steppers</li><li><b>AgentTravelClassScreen</b> — cabin single-select</li><li><b>AgentTimeScreen</b> — the time-of-day dial</li><li><b>AgentPreferencesScreen</b> — toggle + stepper rows</li></ul>",
+    code:"import { AgentDestinationScreen } from '@agamagar/away-design-system';\n\n<AgentDestinationScreen onNext={(code)=>…} />"}),
+];
+
+/* ---------------- hand-written pages ---------------- */
+var PAGES={
+  introduction:{title:'Introduction',crumb:'Getting Started',html:function(){return ''
+    +'<p class="lead">A production-ready React Native design system for the Away travel app — theme tokens, a 40-component base layer, an AI-agent chat kit, and the concierge component kit. Built on Expo + Unistyles v3, typed, and accessible by default.</p>'
+    +'<div class="cal"><span class="ic">◆</span><div class="b"><b>Install:</b> <code>npm install @agamagar/away-design-system</code> — then call <code>configureAwayUnistyles()</code> once at startup. See <a class="link" data-nav="installation">Installation</a>.</div></div>'
+    +'<h2 id="whats-included">What’s included</h2>'
+    +'<div class="cards">'
+      +'<div class="card" data-nav="colors"><div class="t">Theme &amp; tokens</div><div class="d">3 themes (light · dark · away), 12 color ramps, semantic tokens, and the agent/indigo layer.</div></div>'
+      +'<div class="card" data-nav="button"><div class="t">Base <span class="n">40</span></div><div class="d">Buttons, forms, surfaces, navigation, overlays, feedback — one variant contract.</div></div>'
+      +'<div class="card" data-nav="message-bubble"><div class="t">Chat kit <span class="n">12</span></div><div class="d">Bubbles, streaming text, tool-call cards, composer — the AI-agent surface.</div></div>'
+      +'<div class="card" data-nav="agent-input-bar"><div class="t">Agent kit <span class="n">16 + 6</span></div><div class="d">The concierge + search components and full standalone screens.</div></div>'
+    +'</div>'
+    +'<h2 id="the-idea">The one idea</h2>'
+    +'<p>Every component resolves its colors, sizes, and type through a single <b>foundation contract</b> — <code>Tone × Variant × Size</code>. Re-accent the system in one file (<code>foundation.ts</code>) and every button, chip, bubble, and pill updates. No component-by-component restyling, no drift.</p>'
+    +codeBlock("import { Button, resolveVariant } from '@agamagar/away-design-system';\n\n// A built-in\n<Button label=\"Search flights\" tone=\"accent\" variant=\"solid\" />\n\n// A custom component that stays on-system\nconst v = resolveVariant(theme, 'soft', 'success');")
+    +'<h2 id="principles">Principles</h2>'
+    +'<ul>'
+      +'<li><b>Precise &amp; token-driven</b> — no hardcoded hex, spacing, or radii; everything reads the theme.</li>'
+      +'<li><b>Accessible by default</b> — 44pt targets, roles + labels, adjustable controls, live regions, reduce-motion-friendly.</li>'
+      +'<li><b>Icon-agnostic</b> — icons are slots, so you bring hugeicons, phosphor, Iconoir, or SVGs.</li>'
+      +'<li><b>Theme-independent agent layer</b> — the concierge surfaces render the same across every base theme.</li>'
+    +'</ul>'
+    +'<h2 id="next">Next steps</h2>'
+    +'<div class="cards"><div class="card" data-nav="installation"><div class="t">Installation →</div><div class="d">Peer deps and the one-time Unistyles setup.</div></div>'
+    +'<div class="card" data-nav="theming"><div class="t">Theming →</div><div class="d">The foundation contract and re-accenting.</div></div></div>';}},
+
+  installation:{title:'Installation',crumb:'Getting Started',html:function(){return ''
+    +'<p class="lead">Add the package and its peer dependencies, then configure Unistyles once before rendering.</p>'
+    +'<h2 id="install">Install</h2>'
+    +codeBlock('npm install @agamagar/away-design-system','bash')
+    +'<h2 id="peers">Peer dependencies</h2>'
+    +'<p>The package expects these in your Expo app (most are already present in an Expo + Unistyles project):</p>'
+    +codeBlock('npx expo install react-native-unistyles react-native-reanimated \\\n  react-native-gesture-handler react-native-svg \\\n  expo-haptics expo-linear-gradient expo-image','bash')
+    +'<div class="cal"><span class="ic">◆</span><div class="b">SVG, gradient, image, and phosphor/hugeicons deps are <b>optional</b> — only pulled in by the components that use them.</div></div>'
+    +'<h2 id="configure">Configure Unistyles</h2>'
+    +'<p>Call <code>configureAwayUnistyles()</code> once, before any component renders — typically at the very top of your root layout.</p>'
+    +codeBlock("// app/_layout.tsx (top of file, before imports that render)\nimport { configureAwayUnistyles } from '@agamagar/away-design-system';\n\nconfigureAwayUnistyles(); // registers light · dark · away themes\n\nexport default function RootLayout() { … }")
+    +'<h2 id="providers">Mount providers</h2>'
+    +'<p>Wrap the app in <code>GestureHandlerRootView</code> (for pressables/gestures) and <code>ToastProvider</code> (for <code>useToast</code>).</p>'
+    +codeBlock("import { GestureHandlerRootView } from 'react-native-gesture-handler';\nimport { ToastProvider } from '@agamagar/away-design-system';\n\n<GestureHandlerRootView style={{ flex: 1 }}>\n  <ToastProvider placement=\"top\">\n    <Slot />\n  </ToastProvider>\n</GestureHandlerRootView>")
+    +'<h2 id="use">Use it</h2>'
+    +codeBlock("import { Button, Text, Card } from '@agamagar/away-design-system';\n\n<Card>\n  <Text variant=\"heading\">Where to?</Text>\n  <Button label=\"Search flights\" tone=\"accent\" onPress={search} />\n</Card>");}},
+
+  theming:{title:'Theming',crumb:'Getting Started',html:function(){return ''
+    +'<p class="lead">The system is driven by one contract. Change the accent, resize controls, or retune type in a single file and every component follows.</p>'
+    +'<h2 id="themes">Themes</h2>'
+    +'<p>Three themes are registered: <b>light</b>, <b>dark</b>, and <b>away</b> (the shipped dark-navy brand theme). All share the same shape — <code>{ colors, spacing, radius, typography }</code> — so the same token indices work everywhere.</p>'
+    +'<h2 id="contract">The foundation contract</h2>'
+    +'<p>Components never hardcode colors. They call resolvers from <code>foundation.ts</code>:</p>'
+    +'<ul>'
+      +'<li><b>Tone</b> — <code>neutral · accent · success · warning · danger · info</code> (semantic intent → a ramp).</li>'
+      +'<li><b>Variant</b> — <code>solid · soft · outline · ghost</code> (visual weight).</li>'
+      +'<li><b>Size</b> — <code>sm · md · lg</code> (<code>md</code> = the 44pt touch-target minimum).</li>'
+    +'</ul>'
+    +codeBlock("import { resolveVariant, resolveTone, CONTROL_SIZES } from '@agamagar/away-design-system';\n\nconst v = resolveVariant(theme, 'soft', 'success');\n// → { backgroundColor, color, borderColor, borderWidth }\nconst s = CONTROL_SIZES.md; // { height:44, paddingHorizontal:16, radius:12, … }")
+    +'<h2 id="reaccent">Re-accenting the system</h2>'
+    +'<p>The accent ramp is set in one place. Point it at a different ramp and every accent control — buttons, chips, tabs, chat bubbles, agent pills — re-skins together.</p>'
+    +codeBlock("// foundation.ts — resolveTone()\nconst ramp = {\n  accent: theme.colors.mysticBlue, // ← change this line\n  success: theme.colors.fuanaGreen,\n  …\n}[tone];")
+    +'<h2 id="custom">Custom components</h2>'
+    +'<p>Build your own on the same rails by importing the resolvers — spacing, tone, and sizing stay consistent with the built-ins.</p>'
+    +codeBlock("import { useUnistyles } from 'react-native-unistyles';\nimport { resolveTone, CONTROL_SIZES } from '@agamagar/away-design-system';\n\nfunction PriceTag({ tone = 'accent' }) {\n  const { theme } = useUnistyles();\n  const t = resolveTone(theme, tone);\n  return <View style={{ backgroundColor: t.soft, borderRadius: CONTROL_SIZES.sm.radius }}>…</View>;\n}");}},
+
+  colors:{title:'Color',crumb:'Foundations',html:function(){return ''
+    +'<p class="lead">Twelve color ramps (50–950), semantic tokens that carry meaning across themes, and the theme-independent agent/indigo layer. Values below are the <b>away</b> theme.</p>'
+    +'<h2 id="semantic">Semantic tokens</h2>'
+    +'<p>Reach for these first — they adapt across themes. Raw ramps are for brand/decorative accents.</p>'
+    +'<div id="sem-doc" class="cards" style="grid-template-columns:1fr 1fr 1fr"></div>'
+    +'<h2 id="ramps">Ramps</h2>'
+    +'<p>Each ramp runs <code>50 → 950</code>. In the dark/away themes the accent ramps are inverted so the same index keeps its role.</p>'
+    +'<div id="ramp-doc"></div>'
+    +'<h2 id="agent">Agent layer</h2>'
+    +'<p>The concierge surfaces use a fixed light + indigo set (<code>theme.colors.agent.*</code>) that renders identically under every base theme.</p>'
+    +'<div id="agent-doc" class="cards" style="grid-template-columns:1fr 1fr 1fr"></div>';}},
+
+  typography:{title:'Typography',crumb:'Foundations',html:function(){return ''
+    +'<p class="lead">Seven named roles keep the type scale consistent. Use the role — not a raw size — and status text stays on-system.</p>'
+    +'<div id="type-doc"></div>'
+    +'<h2 id="usage">Usage</h2>'
+    +codeBlock("<Text variant=\"display\">₹4,899</Text>\n<Text variant=\"heading\">Where to?</Text>\n<Text variant=\"body\" color=\"secondary\">Non-stop · 1h 25m</Text>\n<Text variant=\"overline\" color=\"tertiary\">Cheapest</Text>");}},
+
+  spacing:{title:'Spacing & Radius',crumb:'Foundations',html:function(){return ''
+    +'<p class="lead">A single spacing scale for padding, margin, and gap; a radius scale for corners. Reference tokens, never raw numbers.</p>'
+    +'<h2 id="spacing-scale">Spacing</h2><div id="space-doc"></div>'
+    +'<h2 id="radius-scale">Radius</h2><div id="radius-doc"></div>';}},
+};
+
+/* ---------------- token data (away theme) ---------------- */
+var SEM=[['background','#0b0b14'],['backgroundSecondary','#13131f'],['backgroundTertiary','#1c222f'],['text','#e2e8f0'],['textSecondary','#94a3b8'],['textTertiary','#64748b'],['border','#263040'],['success','#74b338'],['warning','#d08e4f'],['error','#f46e6d'],['info','#41aecc'],['disabled','#475569']];
+var AGENT=[['agent.accent','#6d5cf0'],['agent.accentStrong','#5847d6'],['agent.accentMuted','#cec7fb'],['agent.surface','#ffffff'],['agent.surfaceOverlay','#f4f4f7'],['agent.text','#17171f'],['agent.textSecondary','#52525e'],['agent.stroke','#e6e6ec'],['agent.success','#34d399']];
+var RAMPS={mysticBlue:['#020c1a','#001630','#022f56','#11497c','#2366a5','#4384c5','#62a3e7','#8bc3fe','#abd9ff','#cbecff','#e4f8ff'],fuanaGreen:['#040f00','#051d00','#123800','#255600','#397500','#569405','#74b338','#99d16e','#b6e595','#d2f5bc','#e8fddb'],brightRed:['#1c0203','#330004','#5b040f','#831821','#ae2c33','#d14e4f','#f46e6d','#ff9793','#ffb6b1','#ffd3cf','#ffe9e6'],earthyYellow:['#150800','#270f00','#492300','#6b3a00','#8f5202','#af702e','#d08e4f','#eab07c','#faca9f','#ffe1c2','#fff1df'],vividCyan:['#000e14','#001b26','#003547','#005269','#00708d','#118eac','#41aecc','#77cce6','#9de0f7','#c2f1ff','#dffbff'],tribalIndigo:['#10041f','#200339','#3d0f64','#5b248f','#7b3abc','#995ade','#b77aff','#d3a1ff','#e6beff','#f5d9ff','#fdecff'],neutralBw:['#0b0b14','#13131f','#1c222f','#263040','#334155','#475569','#64748b','#94a3b8','#cbd5e1','#e8e8e9','#f5f5f6']};
+var STOPS=['50','100','200','300','400','500','600','700','800','900','950'];
+var TYPES=[['display','32 / bold','Balances & headline numbers'],['title','24 / semiBold','Screen titles'],['heading','18 / semiBold','Section headers'],['body','16 / regular','Default reading text'],['label','14 / medium','Controls & list titles'],['caption','12 / regular','Secondary & metadata'],['overline','10 / medium · +tracking','Tags & eyebrows']];
+var SPACES=[['xs',4],['xxs',6],['sm',8],['md',12],['md_plus',16],['md_double',20],['lg',24],['xl',32],['xxl',48]];
+var RADII=[['xs',4],['xxs',6],['sm',8],['md',12],['md_plus',16],['md_double',20],['xl',24],['full',9999]];
+
+/* ---------------- build nav ---------------- */
+var NAV=[
+  {title:'Getting Started',items:[{id:'introduction',label:'Introduction'},{id:'installation',label:'Installation'},{id:'theming',label:'Theming'}]},
+  {title:'Foundations',items:[{id:'colors',label:'Color'},{id:'typography',label:'Typography'},{id:'spacing',label:'Spacing & Radius'}]},
+];
+['Layout','Actions','Data Display','Forms','Feedback','Navigation','Overlays'].forEach(function(g){
+  NAV.push({title:g,items:COMPONENTS.filter(function(c){return c.group===g}).map(function(c){return {id:c.id,label:c.label}})});
+});
+NAV.push({title:'Chat Kit',items:COMPONENTS.filter(function(c){return c.group==='Chat Kit'}).map(function(c){return {id:c.id,label:c.label,tag:'chat'}})});
+NAV.push({title:'Agent Kit',items:COMPONENTS.filter(function(c){return c.group==='Agent Kit'}).map(function(c){return {id:c.id,label:c.label,tag:'agent'}})});
+NAV[1].items[0].tag='free';
+
+var CMAP={}; COMPONENTS.forEach(function(c){CMAP[c.id]=c});
+var FLAT=[]; NAV.forEach(function(g){g.items.forEach(function(i){FLAT.push(i.id)})});
+
+/* ---------------- render sidebar ---------------- */
+function renderSide(){
+  $('#side').innerHTML=NAV.map(function(g){
+    return '<div class="grp"><div class="grp-t">'+g.title+'</div>'+g.items.map(function(i){
+      var tag=i.tag==='free'?'<span class="tag free">FREE</span>':i.tag==='chat'?'<span class="tag new">AI</span>':i.tag==='new'?'<span class="tag new">NEW</span>':'';
+      return '<div class="nav-i" data-nav="'+i.id+'">'+i.label+tag+'</div>';
+    }).join('')+'</div>';
+  }).join('');
+}
+
+
+/* ---------------- live demo builders (self-wired) ---------------- */
+function el(h){ var d=document.createElement('div'); d.className='dw'; d.innerHTML=h; return d; }
+function mkToastLayer(box){ var l=box.querySelector('.dtoastwrap'); if(!l){ l=document.createElement('div'); l.className='dtoastwrap'; box.appendChild(l);} return l; }
+
+var DEMOS={
+  button:function(){ var d=el('<span class="db solid">Solid</span><span class="db soft">Soft</span><span class="db outline">Outline</span><span class="db ok">Success</span><span class="db bad">Danger</span>'); return d; },
+  'icon-button':function(){ return el('<span class="db soft" style="width:44px;padding:0">♥</span><span class="db solid" style="width:44px;padding:0">↑</span><span class="db outline" style="width:44px;padding:0">⋯</span>'); },
+  chip:function(){ var d=el('<span class="dchip on">Non-stop ✓</span><span class="dchip">Refundable</span><span class="dchip">Morning</span>');
+    d.querySelectorAll('.dchip').forEach(function(c){ c.onclick=function(){ var on=c.classList.toggle('on'); var t=c.textContent.replace(' ✓',''); c.textContent=on?t+' ✓':t; }; }); return d; },
+  badge:function(){ return el('<span class="dchip on" style="height:20px;min-width:20px;padding:0 7px;font-size:11px">12</span><span style="width:9px;height:9px;border-radius:5px;background:var(--ok);display:inline-block"></span><span class="dchip on" style="height:20px;padding:0 8px;font-size:11px;background:var(--bad);border:0">New</span>'); },
+  avatar:function(){ return el('<span style="width:44px;height:44px;border-radius:22px;background:var(--acc-soft2);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:600">AA</span><span style="width:44px;height:44px;border-radius:22px;background:linear-gradient(140deg,#8b7bff,#3b2fb0);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600">GA</span>'); },
+  stepper:function(){ var d=el('<div class="dstep"><b>−</b><span class="v">2</span><b>+</b></div>'); var v=d.querySelector('.v'), b=d.querySelectorAll('b');
+    b[0].onclick=function(){var n=+v.textContent;if(n>1)v.textContent=n-1}; b[1].onclick=function(){var n=+v.textContent;if(n<9)v.textContent=n+1}; return d; },
+  rating:function(){ var d=el('<div style="display:flex;gap:4px">'+[1,2,3,4,5].map(function(i){return '<span class="dstar" data-i="'+i+'">★</span>';}).join('')+'</div>'); var st=d.querySelectorAll('.dstar'), val=4;
+    function paint(){ st.forEach(function(x,i){ x.style.color=i<val?'var(--warn)':'var(--bg-4)'; }); } st.forEach(function(x){ x.onclick=function(){ val=+x.dataset.i; paint(); }; }); paint(); return d; },
+  switch:function(){ var d=el('<div class="dsw on"><i></i></div><div class="dsw"><i></i></div>'); d.querySelectorAll('.dsw').forEach(function(w){ w.onclick=function(){ w.classList.toggle('on'); }; }); return d; },
+  checkbox:function(){ var d=el('<div class="drow"><span class="dchk on">✓</span>Direct flights only</div><div class="drow"><span class="dchk"></span>Include nearby airports</div>');
+    d.querySelectorAll('.drow').forEach(function(r){ r.onclick=function(){ var c=r.querySelector('.dchk'); c.textContent=c.classList.toggle('on')?'✓':''; }; }); return d; },
+  radio:function(){ var d=el('<div class="dw-col" style="gap:8px"><div class="drow"><span class="drad on"><i></i></span>Economy</div><div class="drow"><span class="drad"><i></i></span>Business</div></div>');
+    var rows=d.querySelectorAll('.drow'); rows.forEach(function(r){ r.onclick=function(){ rows.forEach(function(x){ var rd=x.querySelector('.drad'); rd.classList.remove('on'); rd.innerHTML='<i></i>'; }); r.querySelector('.drad').classList.add('on'); }; }); return d; },
+  slider:function(){ var d=el('<div class="dsl"><div class="tr"></div><div class="fl"></div><div class="th"></div></div>'); var sl=d.querySelector('.dsl'),fl=d.querySelector('.fl'),th=d.querySelector('.th'),val=45;
+    function paint(){ fl.style.width=val+'%'; th.style.left=val+'%'; } function pick(e){ var r=sl.getBoundingClientRect(); val=Math.max(0,Math.min(100,Math.round((e.clientX-r.left)/r.width*100))); paint(); }
+    var dg=false; sl.addEventListener('pointerdown',function(e){dg=true;pick(e);sl.setPointerCapture(e.pointerId)}); sl.addEventListener('pointermove',function(e){if(dg)pick(e)}); sl.addEventListener('pointerup',function(){dg=false}); paint(); return d; },
+  'segmented-control':function(){ var d=el('<div class="dseg"><span class="on">Flights</span><span>Hotels</span><span>Trains</span></div>'); var sp=d.querySelectorAll('span');
+    sp.forEach(function(x){ x.onclick=function(){ sp.forEach(function(y){y.classList.remove('on')}); x.classList.add('on'); }; }); return d; },
+  tabs:function(){ var d=el('<div class="dtabs" style="max-width:360px"><span class="on">Upcoming</span><span>Past</span><span>Cancelled</span><div class="ind" style="width:82px"></div></div>');
+    var sp=d.querySelectorAll('span'), ind=d.querySelector('.ind'); function mv(x){ ind.style.left=x.offsetLeft+'px'; ind.style.width=x.offsetWidth+'px'; }
+    sp.forEach(function(x){ x.onclick=function(){ sp.forEach(function(y){y.classList.remove('on')}); x.classList.add('on'); mv(x); }; }); setTimeout(function(){mv(d.querySelector('.on'))},30); return d; },
+  'otp-input':function(){ var d=el('<div class="dotp"><input inputmode="numeric" maxlength="6"><div class="c">9</div><div class="c">8</div><div class="c act"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>');
+    var inp=d.querySelector('input'), cells=d.querySelectorAll('.c'); inp.value='98';
+    function paint(){ var v=inp.value.replace(/[^0-9]/g,'').slice(0,6); var a=Math.min(v.length,5); cells.forEach(function(c,i){ c.textContent=v[i]||''; c.classList.toggle('act', document.activeElement===inp&&i===a); }); }
+    inp.addEventListener('input',paint); inp.addEventListener('focus',paint); inp.addEventListener('blur',paint); d.querySelector('.dotp').addEventListener('click',function(){inp.focus()}); paint(); return d; },
+  toast:function(){ var d=el('<span class="db solid">Show toast</span><span class="db soft">With action</span>'); var box; setTimeout(function(){ box=d.closest('.prev'); mkToastLayer(box); },0);
+    function fire(html){ var l=mkToastLayer(d.closest('.prev')); var t=document.createElement('div'); t.className='dtoast'; t.innerHTML=html; l.appendChild(t); setTimeout(function(){ t.style.transition='opacity .2s'; t.style.opacity='0'; setTimeout(function(){t.remove()},200); },2800); while(l.children.length>3) l.firstChild.remove(); }
+    d.children[0].onclick=function(){ fire('<div style="flex:1"><div style="color:var(--text);font-weight:600;font-size:14px">Booking confirmed</div><div style="color:var(--text-2);font-size:12px;margin-top:2px">PNR ABC123</div></div>'); };
+    d.children[1].onclick=function(){ fire('<div style="flex:1"><div style="color:var(--text);font-weight:600;font-size:14px">Price dropped</div><div style="color:var(--text-2);font-size:12px;margin-top:2px">₹4,899 → ₹4,299</div></div><span style="color:var(--acc);font-weight:600;font-size:13px;align-self:center;cursor:pointer">Book</span>'); }; return d; },
+  spinner:function(){ return el('<div class="dspin"></div><div class="dspin" style="width:28px;height:28px"></div>'); },
+  skeleton:function(){ return el('<div class="dw-col"><div class="dskel" style="height:16px;width:70%"></div><div class="dskel" style="height:16px;width:92%"></div><div class="dskel" style="height:40px;border-radius:10px"></div></div>'); },
+  'progress-bar':function(){ var d=el('<div class="dprog"><div class="tk"><div class="fi" style="width:40%"></div></div><div style="font-size:11px;color:var(--text-3);margin-top:6px">tap to advance</div></div>'); var fi=d.querySelector('.fi'),v=40;
+    d.querySelector('.tk').onclick=function(){ v=v>=100?10:Math.min(100,v+15); fi.style.width=v+'%'; }; return d; },
+  banner:function(){ return el('<div style="width:100%;max-width:360px;display:flex;gap:12px;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid var(--warn);border-radius:10px;padding:12px"><div style="flex:1"><div style="color:var(--warn);font-size:14px;font-weight:500">Price changed</div><div style="color:var(--text-2);font-size:12px;margin-top:2px">Fare went up ₹1,200</div></div><span style="color:var(--text-3);cursor:pointer">✕</span></div>'); },
+  callout:function(){ return el('<div style="width:100%;max-width:360px;display:flex;gap:12px;background:var(--acc-soft2);border-left:3px solid var(--acc);border-radius:8px;padding:12px"><div><div style="color:var(--acc);font-size:14px;font-weight:500">Heads up</div><div style="color:var(--text-2);font-size:13px;margin-top:2px">Fares refresh every 10 minutes.</div></div></div>'); },
+  card:function(){ return el('<div class="dcard"><div style="color:var(--text);font-size:14px;font-weight:600">Goa, IN</div><div style="color:var(--text-2);font-size:12px;margin-top:2px">Dec 12 – 16 · 2 travellers</div></div>'); },
+  'list-row':function(){ return el('<div class="dcard" style="padding:8px 12px"><div class="drow" style="cursor:default"><span style="width:32px;height:32px;border-radius:16px;background:var(--acc-soft2);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">GA</span><div style="flex:1"><div style="color:var(--text);font-size:14px">Goa, IN</div><div style="color:var(--text-2);font-size:12px">Dec 12 – 16</div></div><span style="color:var(--text-3)">›</span></div></div>'); },
+  sheet:function(){ var d=el('<span class="db solid">Open sheet</span><div class="dov"><div style="flex:1"></div></div>'); var ov=d.querySelector('.dov');
+    var sh=document.createElement('div'); sh.className='dsheet'; sh.innerHTML='<div class="dgrab"></div><div style="color:var(--text);font-size:16px;font-weight:600;margin-bottom:8px">Filters</div><div style="color:var(--text-2);font-size:13px;margin-bottom:14px">Non-stop · Morning · Under ₹8,000</div><span class="db solid" style="width:100%">Apply</span>';
+    ov.appendChild(sh); d.children[0].onclick=function(){ov.classList.add('show')}; ov.onclick=function(e){ if(e.target===ov||e.target.classList.contains('db')) ov.classList.remove('show'); }; return d; },
+  dialog:function(){ var d=el('<span class="db soft">Open dialog</span><div class="dov"></div>'); var ov=d.querySelector('.dov');
+    var c=document.createElement('div'); c.className='ddlg'; c.innerHTML='<div style="color:var(--text);font-size:16px;font-weight:600">Remove flights?</div><div style="color:var(--text-2);font-size:13px;margin-top:6px">This clears your cart.</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><span class="db ghost sm" data-x>Keep</span><span class="db bad sm" data-x>Remove</span></div>';
+    ov.appendChild(c); d.children[0].onclick=function(){ov.classList.add('show')}; ov.onclick=function(e){ if(e.target===ov||e.target.hasAttribute('data-x')) ov.classList.remove('show'); }; return d; },
+  'action-sheet':function(){ var d=el('<span class="db soft">Open menu</span><div class="dov"><div style="flex:1"></div></div>'); var ov=d.querySelector('.dov');
+    var sh=document.createElement('div'); sh.className='dsheet'; sh.innerHTML='<div class="dgrab"></div><div style="background:var(--bg-3);border-radius:10px;overflow:hidden"><div data-x style="min-height:48px;display:flex;align-items:center;padding:0 14px;color:var(--text);cursor:pointer">Share trip</div><div data-x style="min-height:48px;display:flex;align-items:center;padding:0 14px;color:var(--text);border-top:1px solid var(--border);cursor:pointer">Duplicate</div><div data-x style="min-height:48px;display:flex;align-items:center;padding:0 14px;color:var(--bad);border-top:1px solid var(--border);cursor:pointer">Delete trip</div></div><div data-x style="margin-top:8px;min-height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg-3);border-radius:10px;color:var(--text);font-weight:600;cursor:pointer">Cancel</div>';
+    ov.appendChild(sh); d.children[0].onclick=function(){ov.classList.add('show')}; ov.onclick=function(e){ if(e.target===ov||e.target.hasAttribute('data-x')) ov.classList.remove('show'); }; return d; },
+
+  /* chat */
+  'message-bubble':function(){ return el('<div class="dw-col" style="max-width:360px;gap:6px"><div style="align-self:flex-end;max-width:80%;background:var(--acc);color:var(--acc-on);padding:10px 12px;border-radius:16px;border-bottom-right-radius:4px;font-size:14px">Find me flights to Goa</div><div style="align-self:flex-start;max-width:80%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:16px;border-bottom-left-radius:4px;font-size:14px">On it — searching 3 airlines…</div></div>'); },
+  'typing-indicator':function(){ var d=el('<div style="align-self:flex-start;background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:12px 14px;display:flex;gap:4px"><i></i><i></i><i></i></div>');
+    d.querySelectorAll('i').forEach(function(x,i){ x.style.cssText='width:6px;height:6px;border-radius:3px;background:var(--text-3);animation:chd 1.1s infinite;animation-delay:'+(i*0.14)+'s'; }); return d; },
+  'agent-status-pill':function(){ return el('<div style="display:inline-flex;align-items:center;gap:8px;background:var(--acc-soft2);color:var(--acc);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:500"><span class="dspin" style="width:14px;height:14px"></span>Negotiating fare…</div>'); },
+  'quick-replies':function(){ var d=el('<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="dchip">Morning only</span><span class="dchip">Under ₹8k</span><span class="dchip">Non-stop</span></div>'); return d; },
+  'inline-result-card':function(){ return el('<div class="dcard"><div style="display:flex;align-items:center;gap:12px"><div style="width:36px;height:36px;border-radius:8px;background:var(--acc-soft2);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px">6E</div><div style="flex:1"><div style="color:var(--text);font-size:13px;font-weight:500">IndiGo · Non-stop</div><div style="color:var(--text-2);font-size:11px">06:10 → 07:35 · 1h 25m</div></div><div style="text-align:right"><div style="color:var(--text);font-size:16px;font-weight:600">₹4,899</div><div style="color:var(--text-3);font-size:10px">per person</div></div></div><span class="db solid sm" style="width:100%;margin-top:12px">View fare</span></div>'); },
+  'chat-composer':function(){ var d=el('<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:360px"><input placeholder="Message" style="flex:1;background:transparent;border:0;outline:none;color:var(--text);font:inherit;font-size:14px;padding:6px 8px"><div class="snd" style="width:36px;height:36px;border-radius:18px;background:var(--bg-4);color:var(--text-3);display:flex;align-items:center;justify-content:center;flex:none">↑</div></div>');
+    var inp=d.querySelector('input'), snd=d.querySelector('.snd'); inp.addEventListener('input',function(){ var on=inp.value.trim().length>0; snd.style.background=on?'var(--acc)':'var(--bg-4)'; snd.style.color=on?'var(--acc-on)':'var(--text-3)'; snd.style.cursor=on?'pointer':'default'; }); return d; },
+
+  /* agent kit (fixed light) */
+  'agent-input-bar':function(){ var d=el('<div class="ag"><div class="ag-card"><input class="ag-in" placeholder="Type here"><div class="ag-act"><span class="ag-ctx">DEL, BLR +2 others</span><span class="ag-rnd">◉</span><span class="ag-rnd">▤</span><span class="ag-send">↑</span></div></div></div>');
+    var inp=d.querySelector('.ag-in'), snd=d.querySelector('.ag-send'); inp.addEventListener('input',function(){ snd.classList.toggle('on', inp.value.trim().length>0); }); return d; },
+  'agent-card':function(){ return el('<div class="ag"><div class="ag-card"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="color:var(--a-t);font-size:14px">Remove selected flights?</div><div style="color:var(--a-2);font-size:13px;font-weight:300">Start a new cart</div></div><div style="display:flex;gap:8px"><span class="ag-rnd dk">✕</span><span class="ag-rnd dk">✓</span></div></div><div style="color:var(--a-2);font-size:13px;font-weight:300;margin:16px 6px">Listening…</div><div style="display:flex;justify-content:center"><span class="ag-rnd">◉</span></div></div></div>'); },
+  'agent-calendar':function(){ var FARES={20:['18.8k','#fbbf24'],21:['18.9k','#fbbf24'],22:['14.6k','#fbbf24'],23:['14.7k','#fbbf24'],24:['14.9k','#fbbf24'],25:['15.0k','#fbbf24'],26:['15.1k','#fbbf24'],27:['19.8k','#f97316'],28:['19.9k','#f97316'],29:['16.5k','#fbbf24'],30:['10.7k','#34d399']};
+    var d=el('<div class="ag"><div class="ag-card ag-cal"><div style="text-align:center;color:var(--a-t);font-size:14px;font-weight:500;margin-bottom:10px">June 2026</div><div class="h"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span class="we">Sa</span><span class="we">Su</span></div><div class="w"></div></div></div>');
+    var w=d.querySelector('.w'), cS=22, cE=27;
+    function paint(){ w.innerHTML=''; for(var day=15;day<=30;day++){ (function(day){ var c=document.createElement('div'); c.className='d'; var f=FARES[day];
+      if(day===cS||day===cE)c.className='d en'; else if(cS!=null&&cE!=null&&day>cS&&day<cE)c.className='d rg';
+      var col=f?f[1]:'#c2c2ca'; c.innerHTML='<span>'+day+'</span><small style="color:'+(c.className.indexOf('en')>-1?'#fff':col)+'">'+(f?'₹'+f[0]:'₹-')+'</small>';
+      c.onclick=function(){ if(cS==null||cE!=null){cS=day;cE=null;} else if(day>cS){cE=day;} else {cS=day;} paint(); }; w.appendChild(c); })(day); } }
+    paint(); return d; },
+  'agent-price-bars':function(){ var H=[.28,.3,.33,.36,.5,.55,.6,.66,.7,.78,.84,.9,.95,1,.92,.8,.5,.46,.42,.4,.44,.42,.4,.38];
+    var d=el('<div class="ag"><div class="ag-card" style="width:320px"><div style="color:var(--a-t);font-size:14px;margin-bottom:8px">Departure Dates</div><div class="ag-bars"></div><div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--a-3)"><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span></div></div></div>');
+    var bars=d.querySelector('.ag-bars'), labs=d.querySelectorAll('.ag-card span'), bS=1,bE=3;
+    function paint(){ bars.innerHTML=''; H.forEach(function(h,i){ var m=Math.floor(i/4); var b=document.createElement('i'); b.style.height=Math.max(6,h*90)+'px'; if(m>=bS&&m<=bE)b.className='on'; bars.appendChild(b); }); labs.forEach(function(l,m){ var inR=m>=bS&&m<=bE; l.style.color=inR?'var(--a-t)':'var(--a-3)'; l.style.fontWeight=inR?'500':'400'; }); }
+    function pick(e){ var r=bars.getBoundingClientRect(); var m=Math.max(0,Math.min(5,Math.floor((e.clientX-r.left)/r.width*6))); (Math.abs(m-bS)<=Math.abs(m-bE))?(bS=Math.min(m,bE)):(bE=Math.max(m,bS)); paint(); }
+    var dg=false; bars.addEventListener('pointerdown',function(e){dg=true;pick(e);bars.setPointerCapture(e.pointerId)}); bars.addEventListener('pointermove',function(e){if(dg)pick(e)}); bars.addEventListener('pointerup',function(){dg=false}); paint(); return d; },
+  'agent-time-dial':function(){ var d=el('<div class="ag"><div class="ag-card" style="width:220px;display:flex;flex-direction:column;align-items:center"><svg viewBox="0 0 160 160" width="180" height="180" style="touch-action:none;cursor:grab"><circle cx="80" cy="80" r="66" fill="none" stroke="#eceff3" stroke-width="14"/><path class="arc" fill="none" stroke="#6d5cf0" stroke-width="14" stroke-linecap="round"/><circle class="k1" r="10" fill="#fff" stroke="#6d5cf0" stroke-width="3"/><circle class="k2" r="10" fill="#fff" stroke="#6d5cf0" stroke-width="3"/><text x="80" y="76" text-anchor="middle" font-size="10" fill="#8a8a96">Earliest departure</text><text class="tt" x="80" y="94" text-anchor="middle" font-size="18" font-weight="700" fill="#17171f">9:00 AM</text></svg></div></div>');
+    var svg=d.querySelector('svg'), tS=540,tE=840;
+    function pol(a){var r=(a-90)*Math.PI/180;return{x:80+66*Math.cos(r),y:80+66*Math.sin(r)}}
+    function fmt(m){var h=Math.floor(m/60)%24,mm=m%60,ap=h<12?'AM':'PM',h12=h%12===0?12:h%12;return h12+':'+(mm<10?'0':'')+mm+' '+ap}
+    function paint(){ var a1=tS/1440*360,a2=tE/1440*360,p1=pol(a1),p2=pol(a2),lg=(a2-a1)>180?1:0;
+      d.querySelector('.arc').setAttribute('d','M '+p1.x+' '+p1.y+' A 66 66 0 '+lg+' 1 '+p2.x+' '+p2.y);
+      d.querySelector('.k1').setAttribute('cx',p1.x); d.querySelector('.k1').setAttribute('cy',p1.y);
+      d.querySelector('.k2').setAttribute('cx',p2.x); d.querySelector('.k2').setAttribute('cy',p2.y); d.querySelector('.tt').textContent=fmt(tS); }
+    function pick(e){ var r=svg.getBoundingClientRect(),sc=160/r.width,x=(e.clientX-r.left)*sc-80,y=(e.clientY-r.top)*sc-80; var ang=Math.atan2(x,-y)*180/Math.PI; if(ang<0)ang+=360; var m=Math.round(ang/360*1440/15)*15; if(m>=1440)m-=1440;
+      var dS=Math.min(Math.abs(m-tS),1440-Math.abs(m-tS)),dE=Math.min(Math.abs(m-tE),1440-Math.abs(m-tE)); if(dS<=dE){tS=Math.max(0,Math.min(m,tE-15))}else{tE=Math.min(1425,Math.max(m,tS+15))} paint(); }
+    var dg=false; svg.addEventListener('pointerdown',function(e){dg=true;pick(e);svg.setPointerCapture(e.pointerId)}); svg.addEventListener('pointermove',function(e){if(dg)pick(e)}); svg.addEventListener('pointerup',function(){dg=false}); paint(); return d; }
+};
+
+/* ---------------- render a page ---------------- */
+function componentHTML(c){
+  var h='<p class="lead">'+c.desc+'</p>';
+  var hasDemo=!!DEMOS[c.id];
+  if(hasDemo) h+='<div class="prev" data-demo="'+c.id+'"></div>';
+  else if(c.preview) h+=previewHTML(c.preview);
+  if(c.extra) h+=c.extra;
+  if(c.code) h+=((hasDemo||c.preview)?'':'<h2 id="usage">Usage</h2>')+codeBlock(c.code);
+  if(c.props){ h+='<h2 id="props">Props</h2>'+propTable(c.props); }
+  return h;
+}
+function render(id){
+  id=id||'introduction'; if(!CMAP[id] && !PAGES[id]) id='introduction';
+  var main=$('#main'), title, crumb, body;
+  if(PAGES[id]){ title=PAGES[id].title; crumb=PAGES[id].crumb; body=PAGES[id].html(); }
+  else { var c=CMAP[id]; title=c.label; crumb=c.group; body=componentHTML(c); }
+  main.innerHTML='<div class="crumbs"><b>'+crumb+'</b><span>/</span>'+title+'</div><h1>'+title+'</h1><div class="page">'+body+'</div>'+pager(id);
+  // dynamic token blocks
+  if(id==='colors') paintColors();
+  if(id==='typography') paintTypes();
+  if(id==='spacing') paintScales();
+  main.scrollTop=0; window.scrollTo(0,0);
+  $$('.nav-i').forEach(function(el){ el.classList.toggle('active', el.dataset.nav===id); });
+  var act=$('.nav-i.active'); if(act) act.scrollIntoView({block:'nearest'});
+  $$('[data-demo]').forEach(function(box){ var b=DEMOS[box.dataset.demo]; if(b){ try{ box.appendChild(b()); }catch(e){ if(window.console)console.error('demo',box.dataset.demo,e); } } });
+  buildTOC(); wireCopy();
+  location.hash='#/'+id;
+  document.title=title+' — Away DS';
+  document.documentElement.classList.remove('side-open');
+}
+function pager(id){
+  var i=FLAT.indexOf(id); if(i<0) return '';
+  var prev=FLAT[i-1], next=FLAT[i+1];
+  var label=function(x){ return CMAP[x]?CMAP[x].label:(PAGES[x]?PAGES[x].title:x); };
+  var l=prev?'<a data-nav="'+prev+'"><div class="l">Previous</div><div class="n">'+label(prev)+'</div></a>':'<span></span>';
+  var r=next?'<a class="r" data-nav="'+next+'"><div class="l">Next</div><div class="n">'+label(next)+'</div></a>':'<span></span>';
+  return '<div class="pager">'+l+r+'</div>';
+}
+
+/* ---------------- previews ---------------- */
+function previewHTML(kind){
+  var A='#8b7bff', box=function(inner){return '<div class="prev">'+inner+'</div>';};
+  if(kind==='buttons') return box(
+    '<span class="demo-btn" style="background:'+A+';color:#0b0b14">Solid</span>'
+    +'<span class="demo-btn" style="background:rgba(139,123,255,.16);color:#c9c2ff">Soft</span>'
+    +'<span class="demo-btn" style="background:transparent;color:#c9c2ff;border-color:rgba(139,123,255,.5)">Outline</span>'
+    +'<span class="demo-btn" style="background:#74b338;color:#0b0b14">Success</span>'
+    +'<span class="demo-btn" style="background:#f46e6d;color:#0b0b14">Danger</span>');
+  if(kind==='chips') return box(
+    '<span class="demo-btn" style="height:32px;border-radius:999px;background:'+A+';color:#0b0b14;font-size:13px">Non-stop ✓</span>'
+    +'<span class="demo-btn" style="height:32px;border-radius:999px;background:transparent;border-color:var(--border-2);color:var(--text-2);font-size:13px">Refundable</span>');
+  if(kind==='stepper') return box('<div style="display:flex;align-items:center;gap:14px"><span class="demo-btn" style="width:32px;height:32px;padding:0;border-radius:16px;border-color:var(--border-2);background:transparent;color:var(--text)">−</span><b style="min-width:20px;text-align:center;color:var(--text)">2</b><span class="demo-btn" style="width:32px;height:32px;padding:0;border-radius:16px;border-color:var(--border-2);background:transparent;color:var(--text)">+</span></div>');
+  if(kind==='otp') return box('<div style="display:flex;gap:8px">'+[9,8,'','','',''].map(function(d,i){return '<div style="width:44px;height:52px;border-radius:10px;border:'+(i===2?'2px solid '+A:'1px solid var(--border-2)')+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:var(--text)">'+(d===''?'':d)+'</div>';}).join('')+'</div>');
+  if(kind==='toast') return box('<div style="width:100%;max-width:340px;display:flex;gap:12px;background:var(--bg-3);border:1px solid var(--border-2);border-left:3px solid #74b338;border-radius:10px;padding:14px"><div style="flex:1"><div style="color:var(--text);font-size:14px;font-weight:600">Booking confirmed</div><div style="color:var(--text-2);font-size:12px;margin-top:2px">PNR ABC123</div></div></div>');
+  if(kind==='bubbles') return box('<div style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:6px"><div style="align-self:flex-end;max-width:80%;background:'+A+';color:#0b0b14;padding:10px 12px;border-radius:16px;border-bottom-right-radius:4px;font-size:14px">Find me flights to Goa</div><div style="align-self:flex-start;max-width:80%;background:var(--bg-3);border:1px solid var(--border-2);color:var(--text);padding:10px 12px;border-radius:16px;border-bottom-left-radius:4px;font-size:14px">On it — searching 3 airlines…</div></div>');
+  return '';
+}
+
+/* ---------------- dynamic token painters ---------------- */
+function readable(hex){var c=hex.replace('#','');var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return (0.299*r+0.587*g+0.114*b)>140?'#0b0b14':'#e7ebf3';}
+function paintColors(){
+  var sem=$('#sem-doc'); if(sem) sem.innerHTML=SEM.map(function(x){return '<div class="card" style="cursor:default"><div style="height:30px;border-radius:6px;background:'+x[1]+';border:1px solid rgba(255,255,255,.08);margin-bottom:8px"></div><div class="t" style="font-size:12.5px">'+x[0]+'</div><div class="d" style="font-family:var(--mono);font-size:11px">'+x[1]+'</div></div>';}).join('');
+  var ag=$('#agent-doc'); if(ag) ag.innerHTML=AGENT.map(function(x){return '<div class="card" style="cursor:default"><div style="height:30px;border-radius:6px;background:'+x[1]+';border:1px solid rgba(255,255,255,.08);margin-bottom:8px"></div><div class="t" style="font-size:12.5px">'+x[0]+'</div><div class="d" style="font-family:var(--mono);font-size:11px">'+x[1]+'</div></div>';}).join('');
+  var rd=$('#ramp-doc'); if(rd) rd.innerHTML=Object.keys(RAMPS).map(function(name){
+    return '<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">'+name+'</div><div class="swz">'+RAMPS[name].map(function(hex,i){return '<i style="background:'+hex+'" title="'+name+' '+STOPS[i]+' · '+hex+'"><span style="position:absolute;left:4px;bottom:2px;font-size:8px;font-weight:700;color:'+readable(hex)+'">'+STOPS[i]+'</span></i>';}).join('')+'</div></div>';
+  }).join('');
+}
+function paintTypes(){
+  var el=$('#type-doc'); if(!el) return;
+  el.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>Role</th><th>Size / weight</th><th>Sample</th></tr></thead><tbody>'
+    +TYPES.map(function(t){var px=parseInt(t[1]);return '<tr><td><span class="pn">'+t[0]+'</span><div style="color:var(--text-3);font-size:11.5px;margin-top:2px">'+t[2]+'</div></td><td><span class="pt">'+t[1]+'</span></td><td><span style="font-size:'+Math.min(px,26)+'px;color:var(--text)">Plan your trip</span></td></tr>';}).join('')
+    +'</tbody></table></div>';
+}
+function paintScales(){
+  var sp=$('#space-doc'); if(sp) sp.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>Token</th><th>px</th><th></th></tr></thead><tbody>'+SPACES.map(function(s){return '<tr><td><span class="pn">'+s[0]+'</span></td><td><span class="pt">'+s[1]+'</span></td><td><div style="height:14px;width:'+(s[1]*3)+'px;background:var(--acc);border-radius:3px;opacity:.85"></div></td></tr>';}).join('')+'</tbody></table></div>';
+  var rd=$('#radius-doc'); if(rd) rd.innerHTML='<div class="prev" style="border-radius:10px;border-bottom:1px solid var(--border);gap:20px">'+RADII.map(function(r){var v=r[1]>100?28:r[1];return '<div style="text-align:center"><div style="width:60px;height:60px;background:var(--bg-4);border:1px solid var(--border-2);border-radius:'+v+'px"></div><div style="font-family:var(--mono);font-size:11px;color:var(--text-3);margin-top:6px">'+r[0]+' · '+(r[1]>100?'999':r[1])+'</div></div>';}).join('')+'</div>';
+}
+
+/* ---------------- TOC ---------------- */
+var tocLinks=[];
+function buildTOC(){
+  var heads=$$('#main h2, #main h3');
+  var toc=$('#toc');
+  if(!heads.length){ toc.innerHTML=''; return; }
+  toc.innerHTML='<div class="toc-t">On this page</div>'+heads.map(function(h){
+    if(!h.id) h.id=h.textContent.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    return '<a href="#'+h.id+'" class="'+(h.tagName==='H3'?'sub':'')+'" data-h="'+h.id+'">'+h.textContent+'</a>';
+  }).join('');
+  tocLinks=$$('#toc a');
+  $$('#toc a').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); var t=document.getElementById(a.dataset.h); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); }); });
+}
+function onScroll(){
+  if(!tocLinks.length) return;
+  var y=window.scrollY+90, cur=null;
+  $$('#main h2, #main h3').forEach(function(h){ if(h.offsetTop<=y) cur=h.id; });
+  tocLinks.forEach(function(a){ a.classList.toggle('active', a.dataset.h===cur); });
+}
+
+/* ---------------- copy buttons ---------------- */
+function wireCopy(){ $$('[data-copy]').forEach(function(b){ b.addEventListener('click',function(){ var pre=b.parentNode.querySelector('pre'); try{ navigator.clipboard.writeText(pre.innerText); }catch(e){} var o=b.textContent; b.textContent='Copied ✓'; setTimeout(function(){b.textContent=o},1200); }); }); }
+
+/* ---------------- search ---------------- */
+function wireSearch(){
+  var inp=$('#search');
+  inp.addEventListener('input',function(){
+    var q=inp.value.trim().toLowerCase();
+    $$('.grp').forEach(function(g){
+      var any=false;
+      $$('.nav-i',g).forEach(function(i){ var m=!q||i.textContent.toLowerCase().indexOf(q)>-1; i.classList.toggle('hidden',!m); if(m) any=true; });
+      g.classList.toggle('hidden',!any);
+    });
+  });
+  inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ var first=$('.nav-i:not(.hidden)'); if(first){ render(first.dataset.nav); inp.value=''; inp.dispatchEvent(new Event('input')); inp.blur(); } } if(e.key==='Escape'){ inp.value=''; inp.dispatchEvent(new Event('input')); inp.blur(); } });
+  document.addEventListener('keydown',function(e){ if(e.key==='/' && document.activeElement!==inp){ e.preventDefault(); inp.focus(); } });
+}
+
+/* ---------------- theme ---------------- */
+var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>';
+var MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>';
+function setTheme(t){ document.documentElement.setAttribute('data-theme',t); $('#theme-toggle').innerHTML=t==='dark'?SUN:MOON; try{localStorage.setItem('awaydocs-theme',t)}catch(e){} }
+
+/* ---------------- boot ---------------- */
+renderSide();
+wireSearch();
+$('#theme-toggle').addEventListener('click',function(){ setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); });
+try{ var qp=new URLSearchParams(location.search).get('theme'); var saved=localStorage.getItem('awaydocs-theme'); setTheme(qp||saved||'dark'); }catch(e){ setTheme('dark'); }
+window.addEventListener('message',function(e){ if(e.data && e.data.type==='theme' && (e.data.value==='dark'||e.data.value==='light')) setTheme(e.data.value); });
+$('#side-toggle').addEventListener('click',function(){ document.documentElement.classList.toggle('side-open'); });
+document.addEventListener('click',function(e){ var n=e.target.closest('[data-nav]'); if(n){ e.preventDefault(); render(n.dataset.nav); } });
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('hashchange',function(){ var id=location.hash.replace('#/',''); if(id && id!==currentId()) render(id); });
+function currentId(){ return (location.hash.replace('#/','')||'introduction'); }
+render((location.hash.replace('#/','')) || 'introduction');
+</script>
+</body>
+</html>

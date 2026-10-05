@@ -1,0 +1,97 @@
+/* Recover figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens). A booked itinerary runs left-to-right; the connecting flight is
+   cancelled (red), its forward path greys to a dead stub, and a green recovery
+   branch grows down + forward to a new protected flight. The break stays on
+   screen. Higher specificity than .ds-root.ds-root--away (which forces
+   transparent / border:0) so the frame is a solid dark plate. */
+.ds-root.ds-root--away.ss-rec { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-rec__head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 4px; }
+.ss-rec__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-rec__head-trip { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+
+/* the stage's node coords assume the full 620 frame width; cancel the frame's
+   16px side padding so the 0..620 space is exact and the Arrive node fits. */
+.ss-rec__stage { position: relative; margin: 0 -16px; }
+.ss-rec__wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* booked connectors: draw in as the playhead advances; segments past the wall die */
+.ss-rec__seg {
+  stroke: #2a2a36; stroke-width: 1.5; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 460ms var(--m3-effects-default), stroke 320ms var(--m3-effects-default);
+}
+.ss-rec__seg.is-drawn { stroke-dashoffset: 0; stroke: #3b82f6; }
+.ss-rec__seg.is-dead { stroke: #2a2a36; stroke-dasharray: 4 4; }
+
+/* recovery branch: green, draws down then forward */
+.ss-rec__branch {
+  stroke: #22c55e; stroke-width: 2; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 520ms var(--m3-effects-default);
+}
+.ss-rec__branch.is-drawn { stroke-dashoffset: 0; }
+
+/* booked itinerary nodes */
+.ss-rec__node {
+  position: absolute; height: 56px; box-sizing: border-box; padding: 9px 12px; border-radius: 12px;
+  background: #15151c; border: 1px solid #20202a; display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  opacity: 0.45;
+  transition: opacity 360ms var(--m3-effects-default), border-color 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default);
+}
+.ss-rec__node.is-lit { opacity: 1; border-color: #2f3a52; }
+.ss-rec__node.is-cancel { opacity: 1; border-color: #ef4444; background: #1f1214; }
+.ss-rec__node.is-dead { opacity: 0.38; border-color: #20202a; background: #121218; }
+.ss-rec__node-title { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-rec__node.is-cancel .ss-rec__node-title { color: #f87171; }
+.ss-rec__node-sub { font-size: 11px; color: #8a8a98; font-variant-numeric: tabular-nums; }
+.ss-rec__node.is-cancel .ss-rec__node-sub { color: #f87171; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 9.5px; }
+
+.ss-rec__badge {
+  position: absolute; right: -7px; top: -8px; width: 17px; height: 17px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; line-height: 1;
+}
+.ss-rec__badge--red { background: #ef4444; color: #1f0a0a; }
+
+/* confident playhead riding the booked path */
+.ss-rec__play {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;
+  opacity: 0; box-shadow: 0 0 0 0 rgba(59,130,246,0.5);
+  transition: left 420ms var(--m3-spatial-standard-default), opacity 220ms var(--m3-effects-default);
+}
+.ss-rec__play.is-on { opacity: 1; animation: ssRecPulse 1.4s ease-in-out infinite; }
+@keyframes ssRecPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); } 50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); } }
+
+/* recovery resolution node — slides up-and-forward into place, then lights green */
+.ss-rec__rec {
+  position: absolute; box-sizing: border-box; padding: 10px 14px; border-radius: 13px;
+  background: #15151c; border: 1px solid #2a2a36;
+  opacity: 0; transform: translate(-14px, -10px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default), border-color 320ms var(--m3-effects-default), background 320ms var(--m3-effects-default);
+}
+.ss-rec__rec.is-in { opacity: 1; transform: none; }
+.ss-rec__rec.is-lit { border-color: #22c55e; background: #112016; }
+.ss-rec__rec-tag {
+  position: absolute; left: 14px; top: -8px; font-size: 8.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: #07210f; background: #22c55e; padding: 2px 7px; border-radius: 999px;
+}
+.ss-rec__rec-body { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.ss-rec__rec-title { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-rec__rec.is-lit .ss-rec__rec-title { color: #4ade80; }
+.ss-rec__rec-sub { font-size: 11px; color: #8a8a98; font-variant-numeric: tabular-nums; }
+.ss-rec__rec.is-lit .ss-rec__rec-sub { color: #cbcbd4; }
+
+/* result strip */
+.ss-rec__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-rec__result.is-on { opacity: 1; transform: none; }
+.ss-rec__result b { color: #f4f4f6; }
+.ss-rec__keep { color: #4ade80; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-rec__play.is-on { animation: none; }
+  .ss-rec__seg, .ss-rec__branch, .ss-rec__node, .ss-rec__rec, .ss-rec__result, .ss-rec__play { transition: none; }
+}

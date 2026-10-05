@@ -1,0 +1,30 @@
+{
+  "//": [
+    "Added 2026-08-08 so `shadcn add` could resolve the `@/*` alias while installing",
+    "Dither Kit. The project is JavaScript and Vite compiles the handful of .tsx",
+    "files it already had (components/ui/*.tsx) without ever needing this — nothing",
+    "type-checks against it. It exists to satisfy tooling that reads paths from",
+    "tsconfig rather than from vite.config.js, and `allowJs` + `checkJs: false` keep",
+    "it from asserting anything about the .js that makes up the rest of the app."
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

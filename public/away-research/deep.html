@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Field notes: what the inbox reveals</title>
+<style>
+  :root{
+    --bg:#0c0d10; --panel:#131519; --panel-2:#171a1f; --line:#242830; --line-2:#2d323c;
+    --ink:#f4f5f7; --ink-2:#a7adba; --ink-3:#6b7280;
+    --flight:#3987e5; --train:#199e70;
+    --s1:#3987e5; --s2:#199e70; --s3:#c98500; --s4:#008300; --s5:#9085e9; --s6:#e66767;
+    --mono:"SF Mono",ui-monospace,Menlo,monospace;
+    --serif:"Newsreader","Iowan Old Style",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 640px at 82% -6%, rgba(57,135,229,.15), transparent 60%),
+      radial-gradient(820px 560px at 4% 4%, rgba(25,158,112,.10), transparent 55%),
+      var(--bg);
+    color:var(--ink);font-family:var(--sans);line-height:1.5;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:clamp(24px,5vw,72px) clamp(18px,4vw,40px) 120px}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--flight);margin:0 0 18px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px,6.6vw,70px);line-height:1.03;letter-spacing:-.03em;margin:0 0 20px}
+  h1 em{font-style:italic;color:var(--ink-2)}
+  .lede{font-size:clamp(16px,2.1vw,19px);color:var(--ink-2);max-width:62ch;margin:0 0 40px}
+  .lede b{color:var(--ink);font-weight:600}
+  .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:720px){.chips{grid-template-columns:repeat(2,1fr)}}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;corner-shape:squircle}
+  .chip .n{font-family:var(--serif);font-size:clamp(28px,4.6vw,40px);line-height:1;letter-spacing:-.02em}
+  .chip .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-top:9px}
+
+  section{margin-top:clamp(52px,8vw,104px)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .sec-head h2{font-family:var(--serif);font-weight:500;font-size:clamp(23px,3.4vw,33px);letter-spacing:-.02em;margin:0}
+  .idx{font-family:var(--mono);font-size:12px;color:var(--flight);letter-spacing:.1em}
+  .sub{color:var(--ink-2);max-width:66ch;margin:0 0 24px;font-size:15.5px}
+  .sub b{color:var(--ink)} .sub .f{color:var(--flight);font-weight:600} .sub .t{color:var(--train);font-weight:600}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:24px;padding:clamp(20px,3vw,30px);corner-shape:squircle}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+
+  /* two maps */
+  .maps{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.maps{grid-template-columns:1fr}}
+  .maptitle{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+  .maptitle .sw{width:12px;height:12px;border-radius:4px;corner-shape:squircle}
+  .mapcap{color:var(--ink-3);font-size:12.5px;margin:2px 0 10px}
+  .grat{stroke:var(--line);stroke-width:1;fill:none;opacity:.5}
+  .arc{fill:none;stroke-linecap:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.5s cubic-bezier(.6,0,.2,1) forwards var(--d)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .nlabel{font-family:var(--mono);font-size:12px;font-weight:600}
+  .ncity{font-family:var(--sans);font-size:10px}
+  .insight{margin-top:16px;padding:14px 16px;background:rgba(57,135,229,.07);border:1px solid var(--line-2);border-radius:14px;corner-shape:squircle;font-size:14px;color:var(--ink-2)}
+  .insight b{color:var(--ink)}
+
+  /* lead time */
+  .lead-hero{display:flex;align-items:baseline;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .lead-hero .big{font-family:var(--serif);font-size:clamp(46px,8vw,84px);line-height:.9;letter-spacing:-.03em;color:var(--flight)}
+  .lead-hero .lbl{font-size:15px;color:var(--ink-2);max-width:30ch}
+  .hbars{display:grid;grid-template-columns:110px 1fr auto;gap:10px 14px;align-items:center}
+  @media(max-width:560px){.hbars{grid-template-columns:84px 1fr auto}}
+  .hbars .k{font-size:13px;color:var(--ink-2);text-align:right;font-family:var(--mono)}
+  .htrack{height:24px;background:#0e1014;border:1px solid var(--line);border-radius:8px;overflow:hidden;corner-shape:squircle}
+  .hfill{height:100%;width:0;background:var(--flight);border-radius:7px 3px 3px 7px;transition:width 1s cubic-bezier(.5,0,.15,1)}
+  .hbars .v{font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .strip{display:flex;flex-wrap:wrap;gap:5px;margin-top:22px}
+  .dotm{width:11px;height:11px;border-radius:4px;corner-shape:squircle;background:var(--flight);opacity:0;transform:scale(.4);transition:opacity .4s,transform .4s}
+  .dotm.late{background:var(--s3)} .dotm.on{opacity:1;transform:scale(1)}
+
+  /* marketing tax */
+  .tax{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center}
+  @media(max-width:700px){.tax{grid-template-columns:1fr}}
+  .waffle{display:grid;grid-template-columns:repeat(20,1fr);gap:3px}
+  .cell{aspect-ratio:1;border-radius:3px;background:#20242c;corner-shape:squircle;opacity:.35;transition:opacity .5s,background .5s}
+  .cell.real{background:var(--flight);opacity:1;box-shadow:0 0 8px rgba(57,135,229,.5)}
+  .taxbar{display:flex;height:44px;border-radius:12px;overflow:hidden;gap:2px;corner-shape:squircle;margin-top:8px}
+  .tseg{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#0a0f14;font-weight:600;transition:flex-grow 1s ease;flex-grow:0}
+  .taxnum{font-family:var(--serif);font-size:clamp(40px,7vw,66px);line-height:1;letter-spacing:-.02em}
+  .taxnum small{font-size:.4em;color:var(--ink-3);font-family:var(--mono);letter-spacing:.04em}
+
+  /* calendar heat */
+  .heatgrid{display:grid;grid-template-columns:44px repeat(12,1fr);gap:4px;align-items:center}
+  .hcell{aspect-ratio:1.1;border-radius:5px;corner-shape:squircle;background:#0e1014;position:relative}
+  .hlabel{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right;padding-right:6px}
+  .hmonth{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:center}
+  .legend{display:flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .legend .ramp{display:flex;gap:2px}.legend .ramp i{width:16px;height:11px;border-radius:2px}
+
+  /* migration stacked */
+  .stack{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;align-items:end;height:250px}
+  .scol{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:0}
+  .sseg{width:100%;height:0;transition:height 1s cubic-bezier(.5,0,.15,1)}
+  .sseg:first-child{border-radius:5px 5px 0 0}
+  .syr{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:center;margin-top:7px}
+  .keys{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:13px;color:var(--ink-2)}
+  .keys span{display:inline-flex;align-items:center;gap:7px}
+  .kdot{width:11px;height:11px;border-radius:4px;corner-shape:squircle}
+
+  /* lifecycle gantt */
+  .gantt{display:flex;flex-direction:column;gap:12px}
+  .grow{display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:center}
+  @media(max-width:560px){.grow{grid-template-columns:96px 1fr}}
+  .glab{font-size:13.5px;color:var(--ink-2);text-align:right;font-family:var(--mono)}
+  .gtrack{position:relative;height:26px;background:#0e1014;border:1px solid var(--line);border-radius:8px;corner-shape:squircle}
+  .gbar{position:absolute;top:3px;bottom:3px;border-radius:6px;corner-shape:squircle;left:0;width:0;transition:width 1.1s cubic-bezier(.5,0,.15,1),left .3s;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;font-family:var(--mono);font-size:10.5px;color:#0a0f14;font-weight:600;overflow:hidden}
+  .gnote{font-family:var(--mono);font-size:10.5px;color:var(--s3);margin-top:2px}
+  .gaxis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-3);margin:6px 0 0 144px}
+
+  /* clock */
+  .clockwrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}
+  @media(max-width:640px){.clockwrap{grid-template-columns:1fr}}
+  .clocknote{font-size:15px;color:var(--ink-2)} .clocknote b{color:var(--ink)}
+
+  .foot{margin-top:104px;padding-top:32px;border-top:1px solid var(--line);color:var(--ink-3);font-size:14px;max-width:72ch}
+  .foot .big{font-family:var(--serif);font-size:clamp(20px,3vw,26px);color:var(--ink);font-style:italic;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+  .foot b{color:var(--ink-2)} .mono{font-family:var(--mono)}
+  .loading{color:var(--ink-3);font-family:var(--mono);font-size:13px;padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="loading">reading the inbox...</div></div>
+
+<script>
+const F="var(--flight)", T="var(--train)";
+const SER=["var(--s1)","var(--s2)","var(--s3)","var(--s5)","var(--s6)","var(--s4)"];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){grow(e.target);io.unobserve(e.target)}}),{threshold:.2});
+
+fetch("viz2.json").then(r=>r.json()).then(D=>render(D)).catch(e=>{
+  document.getElementById("app").innerHTML='<div class="loading">could not load viz2.json - serve this folder over http.</div>';
+});
+
+function el(html){const d=document.createElement("div");d.innerHTML=html.trim();return d.firstElementChild;}
+
+/* ---------- MAP renderer (shared) ---------- */
+function mapSVG(geo,pairs,nodes,color){
+  const W=460,H=380,pad=54;
+  const lat=Object.values(geo).map(a=>a[1]), lon=Object.values(geo).map(a=>a[2]);
+  const laMin=Math.min(...lat)-1.2,laMax=Math.max(...lat)+1.2,loMin=Math.min(...lon)-1.2,loMax=Math.max(...lon)+1.2;
+  const X=o=>pad+(o-loMin)/((loMax-loMin)||1)*(W-2*pad), Y=a=>pad+(laMax-a)/((laMax-laMin)||1)*(H-2*pad);
+  const P={}; for(const k in geo)P[k]=[X(geo[k][2]),Y(geo[k][1])];
+  let g="";
+  for(let i=0;i<=4;i++){const x=pad+i/4*(W-2*pad);g+=`<line class="grat" x1="${x}" y1="${pad}" x2="${x}" y2="${H-pad}"/>`;}
+  for(let i=0;i<=4;i++){const y=pad+i/4*(H-2*pad);g+=`<line class="grat" x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}"/>`;}
+  const maxC=Math.max(...pairs.map(p=>p[2]),1);
+  pairs.forEach((p,i)=>{const[a,b,c]=p,A=P[a],B=P[b];if(!A||!B)return;
+    const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2,dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1;
+    const cx=mx-dy/L*L*0.24,cy=my+dx/L*L*0.24,w=2+(c/maxC)*11,len=L*1.4;
+    g+=`<path class="arc" d="M${A[0]},${A[1]} Q${cx},${cy} ${B[0]},${B[1]}" stroke="${color}" stroke-width="${w.toFixed(1)}" style="--len:${len.toFixed(0)};--d:${(i*.14).toFixed(2)}s;opacity:.85"/>`;
+  });
+  const maxN=Math.max(...Object.values(nodes),1);
+  for(const k in nodes){const p=P[k];if(!p)continue;const r=5+(nodes[k]/maxN)*15;
+    g+=`<circle cx="${p[0]}" cy="${p[1]}" r="${r+8}" fill="${color}" opacity=".16"/>`;
+    g+=`<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${color}"/>`;
+    g+=`<text class="nlabel" x="${p[0]}" y="${p[1]-r-8}" text-anchor="middle" fill="var(--ink)">${k}</text>`;
+    g+=`<text class="ncity" x="${p[0]}" y="${p[1]+r+15}" text-anchor="middle" fill="var(--ink-3)">${geo[k][0]}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+
+function render(D){
+  const app=document.getElementById("app");
+  app.innerHTML="";
+  const span=D.meta.span.map(s=>s.slice(0,4));
+
+  /* header */
+  app.append(el(`<div>
+    <p class="kick">Away agent &middot; field notes from one inbox</p>
+    <h1>What the inbox<br><em>gives away.</em></h1>
+    <p class="lede">The highlights reel showed <b>where</b>. These are the tells underneath - the ones a good agent would quietly notice: how you book, when, through whom, and the difference between a work trip and a trip home. Parsed from <b>${D.meta.totalEmails.toLocaleString()}</b> emails, ${span[0]}&ndash;${span[1]}.</p>
+    <div class="chips">
+      <div class="chip"><div class="n">${D.meta.realTrips}</div><div class="l">trips reconstructed</div></div>
+      <div class="chip"><div class="n">${D.median} days</div><div class="l">median booking lead</div></div>
+      <div class="chip"><div class="n">${D.meta.pnrs}</div><div class="l">booking refs found</div></div>
+      <div class="chip"><div class="n">${D.destinations}</div><div class="l">places touched</div></div>
+    </div></div>`));
+
+  /* 01 two maps */
+  const s1=el(`<section><div class="sec-head"><span class="idx">01</span><h2>Two lives, two maps</h2></div>
+    <p class="sub">Split the trips by how you travelled. The <span class="f">flights</span> trace a metro work-triangle. The <span class="t">trains</span> do something else entirely - every single one runs between Delhi and one small town.</p>
+    <div class="card"><div class="maps">
+      <div><div class="maptitle"><span class="sw" style="background:${F}"></span>Flights &middot; the work triangle</div><div class="mapcap">Bengaluru &middot; Delhi &middot; Mumbai</div>${mapSVG(D.flights.geo,D.flights.pairs,D.flights.nodes,F)}</div>
+      <div><div class="maptitle"><span class="sw" style="background:${T}"></span>Trains &middot; the line home</div><div class="mapcap">Delhi &harr; Muzaffarnagar</div>${mapSVG(D.trains.geo,D.trains.pairs,D.trains.nodes,T)}</div>
+    </div>
+    <div class="insight">The agent never asked where you live. But <b>every train goes to Muzaffarnagar</b> and <b>every flight connects the metros</b> - so it can infer, on its own, that flights are for work and the train is for going home.</div>
+    </div></section>`);
+  app.append(s1);
+
+  /* 02 lead time */
+  const lb=D.leadBuckets, lmax=Math.max(...Object.values(lb));
+  const within2wk=D.lead.filter(d=>d<=14).length;
+  const s2=el(`<section><div class="sec-head"><span class="idx">02</span><h2>You book on the way to the airport</h2></div>
+    <p class="sub">Days between booking a trip and taking it. Not a planner - a <b>decider</b>.</p>
+    <div class="card">
+      <div class="lead-hero"><div class="big">${D.median}</div><div class="lbl"><b style="color:var(--ink)">days</b>, typical lead time. <b style="color:var(--ink)">${within2wk} of ${D.lead.length}</b> trips were booked inside two weeks.</div></div>
+      <div class="hbars" id="lead-bars"></div>
+      <div class="strip" id="lead-strip"></div>
+    </div></section>`);
+  app.append(s2);
+  const lbEl=s2.querySelector("#lead-bars");
+  Object.entries(lb).forEach(([k,v])=>lbEl.append(el(`<div style="display:contents"><div class="k">${k}</div><div class="htrack"><div class="hfill" data-w="${(v/lmax*100).toFixed(0)}"></div></div><div class="v">${v}</div></div>`)));
+  const strip=s2.querySelector("#lead-strip");
+  D.lead.forEach((d,i)=>strip.append(el(`<div class="dotm ${d>14?'late':''}" data-i="${i}" title="${d} days"></div>`)));
+  io.observe(s2);
+
+  /* 03 marketing tax */
+  const tx=D.tax, ratio=Math.round(tx.emails/tx.realTrips);
+  const s3=el(`<section><div class="sec-head"><span class="idx">03</span><h2>The marketing tax</h2></div>
+    <p class="sub">Of everything that arrived, how little was an actual trip. The rest is offers, points, and refund bait dressed up as booking mail.</p>
+    <div class="card"><div class="tax">
+      <div><div class="waffle" id="waffle"></div></div>
+      <div>
+        <div class="taxnum">${ratio}<small> : 1</small></div>
+        <p style="color:var(--ink-2);font-size:14px;margin:8px 0 18px">about ${ratio} emails for every trip you actually took.</p>
+        <div class="taxbar" id="taxbar"></div>
+        <div class="keys" style="margin-top:14px">
+          <span><i class="kdot" style="background:${F}"></i>Transactional ${tx.transactional}</span>
+          <span><i class="kdot" style="background:var(--s3)"></i>Promotional ${tx.promotional}</span>
+          <span><i class="kdot" style="background:#2b3038"></i>Other ${tx.other}</span>
+        </div>
+      </div>
+    </div></div></section>`);
+  app.append(s3);
+  const waffle=s3.querySelector("#waffle");
+  const N=200, realCells=Math.max(1,Math.round(tx.realTrips/tx.emails*N));
+  for(let i=0;i<N;i++)waffle.append(el(`<div class="cell ${i<realCells?'real':''}" data-i="${i}"></div>`));
+  const tb=s3.querySelector("#taxbar");
+  [["t",tx.transactional,F],["p",tx.promotional,"var(--s3)"],["o",tx.other,"#2b3038"]].forEach(([_,n,c])=>
+    tb.append(el(`<div class="tseg" style="background:${c}" data-grow="${n}">${n>250?n:''}</div>`)));
+  io.observe(s3);
+
+  /* 04 calendar heat */
+  const hmax=Math.max(...D.heat.flat()), M=["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const s4=el(`<section><div class="sec-head"><span class="idx">04</span><h2>Ten years, month by month</h2></div>
+    <p class="sub">Every cell is one month of travel mail, darker = busier. The life quietly idles, then <b>2023&ndash;24 lights up</b> - and the gaps in early 2021 are a pandemic you can see from space.</p>
+    <div class="card">
+      <div class="heatgrid" id="heat"></div>
+      <div class="legend"><span>less</span><div class="ramp" id="ramp"></div><span>more</span></div>
+    </div></section>`);
+  app.append(s4);
+  const heat=s4.querySelector("#heat");
+  heat.append(el(`<div></div>`));
+  M.forEach(m=>heat.append(el(`<div class="hmonth">${m}</div>`)));
+  D.heat.forEach((row,yi)=>{
+    heat.append(el(`<div class="hlabel">${D.years[yi]}</div>`));
+    row.forEach(v=>{const t=v/hmax; const c=t===0?"#0e1014":`color-mix(in srgb, ${F} ${Math.round(18+t*82)}%, #0e1014)`;
+      heat.append(el(`<div class="hcell" style="background:${c}" title="${v} emails"></div>`));});
+  });
+  const ramp=s4.querySelector("#ramp");
+  [0,.25,.5,.75,1].forEach(t=>ramp.append(el(`<i style="background:${t===0?'#0e1014':`color-mix(in srgb, ${F} ${Math.round(18+t*82)}%, #0e1014)`}"></i>`)));
+
+  /* 05 migration */
+  const mig=D.migration, yrTot=D.years.map((_,yi)=>mig.reduce((a,m)=>a+m.series[yi],0));
+  const ymax=Math.max(...yrTot);
+  const s5=el(`<section><div class="sec-head"><span class="idx">05</span><h2>Who you booked through</h2></div>
+    <p class="sub">Travel mail by brand, per year. The mix moves: heavy <b style="color:${SER[0]}">IRCTC</b> rail, an <b style="color:${SER[1]}">OTA</b> middle, then the <b>airlines direct</b> as the flying picks up.</p>
+    <div class="card">
+      <div class="stack" id="stack"></div>
+      <div class="keys" id="migkeys"></div>
+    </div></section>`);
+  app.append(s5);
+  const stack=s5.querySelector("#stack");
+  D.years.forEach((y,yi)=>{
+    const col=el(`<div class="scol" data-yi="${yi}"></div>`);
+    mig.forEach((m,mi)=>{const v=m.series[yi]; const h=v/ymax*100;
+      col.append(el(`<div class="sseg" style="background:${SER[mi]}" data-h="${h.toFixed(2)}" title="${m.brand}: ${v}"></div>`));});
+    col.append(el(`<div class="syr">'${y.slice(2)}</div>`));
+    stack.append(col);
+  });
+  const mk=s5.querySelector("#migkeys");
+  mig.forEach((m,mi)=>mk.append(el(`<span><i class="kdot" style="background:${SER[mi]}"></i>${m.brand}</span>`)));
+  io.observe(s5);
+
+  /* 06 lifecycle gantt */
+  const life=D.lifecycle.slice().sort((a,b)=>a.first.localeCompare(b.first));
+  const toM=s=>{const[y,m]=s.split("-").map(Number);return y*12+(m-1)};
+  const t0=Math.min(...life.map(l=>toM(l.first))), t1=Math.max(...life.map(l=>toM(l.last))), tSpan=(t1-t0)||1;
+  const notes={"Vistara":"merged into Air India, 2024","Akasa Air":"launched 2022"};
+  const s6=el(`<section><div class="sec-head"><span class="idx">06</span><h2>The airlines came and went</h2></div>
+    <p class="sub">First and last time each carrier showed up in your mail. You can watch the industry consolidate from inside one inbox - <b style="color:var(--s3)">Vistara goes dark</b> right when it folded into Air India.</p>
+    <div class="card">
+      <div class="gantt" id="gantt"></div>
+      <div class="gaxis"><span>${Math.floor(t0/12)}</span><span>${Math.floor((t0+t1)/24)}</span><span>${Math.floor(t1/12)}</span></div>
+    </div></section>`);
+  app.append(s6);
+  const gantt=s6.querySelector("#gantt");
+  const gcol=["var(--s1)","var(--s2)","var(--s3)","var(--s5)","var(--s6)","var(--s4)","#8a94a6"];
+  life.forEach((l,i)=>{
+    const left=(toM(l.first)-t0)/tSpan*100, w=Math.max(3,(toM(l.last)-toM(l.first))/tSpan*100);
+    const note=notes[l.name]?`<div class="gnote">${notes[l.name]}</div>`:"";
+    gantt.append(el(`<div class="grow"><div class="glab">${l.name}${note}</div><div class="gtrack"><div class="gbar" style="left:${left}%;background:${gcol[i%gcol.length]}" data-w="${w.toFixed(1)}">${l.n}</div></div></div>`));
+  });
+  io.observe(s6);
+
+  /* 07 clock */
+  const hrs=D.hours, hpk=hrs.indexOf(Math.max(...hrs));
+  const s7=el(`<section><div class="sec-head"><span class="idx">07</span><h2>When the mail lands</h2></div>
+    <p class="sub">Travel mail by hour of day. It clusters where your day does - a working-hours-and-evening rhythm, quiet after midnight.</p>
+    <div class="card"><div class="clockwrap">
+      <div id="clock"></div>
+      <div class="clocknote">Busiest around <b>${hpk}:00&ndash;${hpk+1}:00</b>. The inbox breathes on your schedule: bookings and confirmations pile up through the working day and the evening, then fall off overnight.</div>
+    </div></div></section>`);
+  app.append(s7);
+  s7.querySelector("#clock").innerHTML=clockSVG(hrs);
+
+  /* footer */
+  app.append(el(`<div class="foot">
+    <p class="big">None of this was volunteered. It was inferred.</p>
+    <p>Home town, work cities, booking temperament, the airlines you left behind - a read-only inbox gives them up for free. That is the promise and the unease of an agent that connects to your accounts: <b>it knows you before you introduce yourself</b>. The design job is deciding what it should do with that, and what it should politely pretend not to notice.</p>
+    <p style="margin-top:20px" class="mono">Parser v2 &middot; ${D.meta.realTrips} trips from ${D.meta.totalEmails.toLocaleString()} emails &middot; all processing local &middot; amounts + booking refs excluded. Airline first/last-seen are mail dates; the Vistara&ndash;Air India merger is public record.</p>
+  </div>`));
+
+  // maps already animate on load; strip animates on view via observer
+}
+
+/* radial clock */
+function clockSVG(hrs){
+  const W=320,cx=160,cy=160,rIn=42,rOut=132,max=Math.max(...hrs);
+  let g="";
+  for(let i=0;i<24;i++){
+    const a0=(i/24)*Math.PI*2-Math.PI/2, a1=((i+1)/24)*Math.PI*2-Math.PI/2, am=(a0+a1)/2;
+    const r=rIn+(hrs[i]/max)*(rOut-rIn);
+    const x0=cx+Math.cos(a0)*rIn,y0=cy+Math.sin(a0)*rIn,x1=cx+Math.cos(a0)*r,y1=cy+Math.sin(a0)*r;
+    const x2=cx+Math.cos(a1)*r,y2=cy+Math.sin(a1)*r,x3=cx+Math.cos(a1)*rIn,y3=cy+Math.sin(a1)*rIn;
+    const peak=hrs[i]===max;
+    g+=`<path d="M${x0},${y0} L${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2} L${x3},${y3} A${rIn},${rIn} 0 0 0 ${x0},${y0} Z" fill="${peak?'var(--flight)':'var(--s5)'}" opacity="${peak?1:.72}"/>`;
+    if(i%6===0){const lr=rOut+14,lx=cx+Math.cos(am)*lr,ly=cy+Math.sin(am)*lr;
+      g+=`<text x="${lx}" y="${ly+3}" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--ink-3)">${i}:00</text>`;}
+  }
+  g+=`<circle cx="${cx}" cy="${cy}" r="${rIn-4}" fill="none" stroke="var(--line)"/>`;
+  return `<svg viewBox="0 0 ${W} ${W}" style="max-width:340px;margin:0 auto">${g}</svg>`;
+}
+
+/* grow dispatcher */
+function grow(c){
+  c.querySelectorAll(".hfill").forEach(b=>b.style.width=b.dataset.w+"%");
+  c.querySelectorAll(".sseg").forEach(b=>b.style.height=b.dataset.h+"%");
+  c.querySelectorAll(".gbar").forEach(b=>b.style.width=b.dataset.w+"%");
+  c.querySelectorAll(".tseg").forEach(s=>s.style.flexGrow=s.dataset.grow);
+  const dots=c.querySelectorAll(".dotm");
+  dots.forEach((d,i)=>setTimeout(()=>d.classList.add("on"), i*26));
+}
+if(matchMedia("(prefers-reduced-motion:reduce)").matches){
+  document.documentElement.style.setProperty("--reduce","1");
+}
+</script>
+</body>
+</html>

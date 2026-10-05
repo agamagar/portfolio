@@ -1,0 +1,107 @@
+/* Weigh figure. Dark System-Explainer vitrine (.ds-root--away supplies figure
+   tokens). A literal balance: a fulcrum, a beam that rotates about its pivot, and
+   two pans hanging from the beam ends — BOOK NOW (left) vs WAIT (right). Reason
+   chips drop onto each pan, the beam tips toward the heavier side each beat, and
+   it ends tipped to BOOK NOW with a verdict. Higher specificity than
+   .ds-root.ds-root--away (which forces transparent / border:0) so the frame is a
+   solid dark plate. */
+.ds-root.ds-root--away.ss-weigh { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 16px; }
+
+/* header */
+.ss-weigh__head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+.ss-weigh__head-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #6f6f7e; }
+.ss-weigh__head-q { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+
+.ss-weigh__stage { position: relative; }
+.ss-weigh__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* fulcrum: a post + triangle standing on a ground line */
+.ss-weigh__post { stroke: #2a2a36; stroke-width: 2; }
+.ss-weigh__fulcrum { fill: #15151c; stroke: #2a2a36; stroke-width: 1.5; }
+.ss-weigh__ground { stroke: #20202a; stroke-width: 2; stroke-linecap: round; }
+.ss-weigh__pivot { fill: #3b82f6; stroke: #0a0a0e; stroke-width: 2; }
+
+/* the beam — rotates about the pivot. The transform is set inline per step; this
+   rule supplies the smooth easing so the tip animates between beats. */
+.ss-weigh__beamrot { transition: transform 520ms var(--m3-spatial-standard-default); }
+.ss-weigh__beam { stroke: #cbcbd4; stroke-width: 4; stroke-linecap: round; }
+.ss-weigh__beam-cap { fill: #8a8a98; }
+
+/* pan assemblies (svg) — translate vertically with the beam end they hang from */
+.ss-weigh__panrot { transition: transform 520ms var(--m3-spatial-standard-default); }
+.ss-weigh__string { stroke: #3a3a46; stroke-width: 1.5; }
+.ss-weigh__tray {
+  fill: #15151c; stroke: #2a2a36; stroke-width: 1.5;
+  transition: fill 360ms var(--m3-effects-default), stroke 360ms var(--m3-effects-default);
+}
+.ss-weigh__tray.is-book.is-win { fill: #112016; stroke: #22c55e; }
+
+/* HTML overlay groups — translate vertically in lockstep with their svg pan */
+.ss-weigh__pangroup {
+  position: absolute; inset: 0; pointer-events: none;
+  transition: transform 520ms var(--m3-spatial-standard-default);
+}
+
+/* pan labels (BOOK NOW / WAIT) sit under each tray */
+.ss-weigh__panlabel {
+  position: absolute; transform: translateX(-50%);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: #8a8a98; white-space: nowrap;
+  transition: color 360ms var(--m3-effects-default);
+}
+.ss-weigh__panlabel.is-book { color: #9aa4b8; }
+.ss-weigh__panlabel.is-book.is-win { color: #4ade80; }
+
+/* reason chips — drop in (fade + rise) and stack upward on their tray. Anchored
+   by their bottom edge (translate -100% Y) so the stack grows up cleanly. */
+.ss-weigh__chip {
+  position: absolute; transform: translate(-50%, -100%) translateY(8px);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 5px 10px; border-radius: 9px;
+  background: #17171f; border: 1px solid #2a2a36;
+  font-size: 11.5px; font-weight: 500; color: #cbcbd4;
+  opacity: 0;
+  transition: opacity 320ms var(--m3-effects-default), transform 360ms var(--m3-spatial-standard-default);
+}
+.ss-weigh__chip.is-in { opacity: 1; transform: translate(-50%, -100%); }
+.ss-weigh__chip.is-book { border-color: #2f3a52; }
+.ss-weigh__chip.is-book.is-scarce { border-color: #3b5bdb; background: #141a2e; color: #f4f4f6; }
+.ss-weigh__chip.is-wait { border-color: #3a3320; }
+
+/* "weighs more" tag on the scarce (heavier) reasons */
+.ss-weigh__heavy {
+  font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: #bfd0ff; background: #1e2a4d; padding: 2px 5px; border-radius: 999px;
+}
+
+/* verdict badge — pops on the winning (left) pan at resolve */
+.ss-weigh__verdict {
+  position: absolute; transform: translate(-50%, -100%) scale(0.9);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 6px 12px; border-radius: 999px;
+  background: #112016; border: 1px solid #22c55e;
+  font-size: 12px; font-weight: 700; color: #4ade80; letter-spacing: 0.01em;
+  opacity: 0;
+  transition: opacity 360ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-weigh__verdict.is-on { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+.ss-weigh__verdict-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.18);
+}
+
+/* result strip */
+.ss-weigh__result {
+  margin-top: 14px; padding: 11px 14px; border-radius: 11px; background: #15151c; border: 1px solid #20202a;
+  font-size: 12.5px; color: #cbcbd4; opacity: 0; transform: translateY(6px);
+  transition: opacity 400ms var(--m3-effects-default), transform 400ms var(--m3-spatial-standard-default);
+}
+.ss-weigh__result.is-on { opacity: 1; transform: none; }
+.ss-weigh__result b { color: #f4f4f6; }
+.ss-weigh__scarce { color: #4ade80; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-weigh__beamrot, .ss-weigh__panrot, .ss-weigh__pangroup,
+  .ss-weigh__chip, .ss-weigh__tray, .ss-weigh__verdict, .ss-weigh__result,
+  .ss-weigh__panlabel { transition: none; }
+}

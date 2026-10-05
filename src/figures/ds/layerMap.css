@@ -1,0 +1,92 @@
+/* LayerMap — annotation hotspots over a flat figure. Only mounted while
+   Agentation's element picker is live, so none of this affects normal viewing.
+   Colour comes from Agentation's selected accent (--ds-layer-accent), falling
+   back to the page accent, then Agentation's default blue. */
+
+.ds-layermap {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  /* the container itself never eats pointer events — only the hotspots do, so
+     the figure underneath (and its links) stays clickable between layers */
+  pointer-events: none;
+  --ds-layer-color: var(--ds-layer-accent, var(--accent, #0088ff));
+}
+
+.ds-layer {
+  position: absolute;
+  pointer-events: auto;
+  box-sizing: border-box;
+  /* resting state: a quiet outline so the figure still reads cleanly while
+     annotating, but the layer grid is discoverable */
+  border: 1px dashed color-mix(in srgb, var(--ds-layer-color) 42%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  transition: background var(--m3-dur-effects-fast, 150ms) var(--m3-effects-fast, ease),
+    border-color var(--m3-dur-effects-fast, 150ms) var(--m3-effects-fast, ease);
+  /* brief reveal so the user notices the figure is now layer-annotatable */
+  animation: dsLayerReveal var(--m3-dur-effects-slow, 320ms) var(--m3-effects-default, ease) both;
+}
+
+.ds-layer:hover {
+  background: color-mix(in srgb, var(--ds-layer-color) 12%, transparent);
+  border-color: var(--ds-layer-color);
+  border-style: solid;
+  z-index: 1; /* lift the hovered layer above its siblings */
+}
+
+/* the name tag — hidden until hover, then names the exact layer you are about to
+   annotate (the affordance Agentation's own highlight doesn't provide). A dark
+   chip so it stays legible against any of Agentation's accents; an accent dot
+   keeps it tied to the active annotation colour. */
+.ds-layer__tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+  margin-top: -3px;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  font: 500 10px/1.4 Inter, system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  background: #1c1c1e;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--m3-dur-effects-fast, 150ms) var(--m3-effects-fast, ease);
+}
+
+.ds-layer__tag::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ds-layer-color);
+}
+
+.ds-layer:hover > .ds-layer__tag {
+  opacity: 1;
+}
+
+@keyframes dsLayerReveal {
+  from {
+    border-color: var(--ds-layer-color);
+    background: color-mix(in srgb, var(--ds-layer-color) 10%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-layer,
+  .ds-layer__tag {
+    transition: none;
+    animation: none;
+  }
+}

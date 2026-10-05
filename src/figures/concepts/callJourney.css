@@ -1,0 +1,50 @@
+/* CallJourney: the candidate journey with the cliff at "engage". */
+.cj { padding: 34px 26px 58px; }
+.cj-row { display: flex; align-items: stretch; justify-content: center; gap: 0; }
+.cj-cell { display: flex; align-items: center; }
+.cj-stage {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 104px; padding: 14px 8px 12px; border-radius: 12px;
+  border: 1px solid var(--ds-line); background: var(--ds-field);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity var(--ds-dur-state) var(--ds-ease-out),
+    transform var(--ds-dur-state) var(--ds-ease-out),
+    border-color var(--ds-dur-state) var(--ds-ease-out),
+    box-shadow var(--ds-dur-state) var(--ds-ease-out);
+  position: relative;
+}
+.cj-stage[data-in="true"] { opacity: 1; transform: translateY(0); }
+.cj-stage[data-dim="true"] { opacity: 0.42; }
+.cj-stage[data-hot="true"] {
+  border-color: var(--ds-focal-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-focal-red) 18%, transparent);
+}
+.cj-stage[data-hot="true"] .cj-stat { color: var(--ds-focal-red); }
+.cj-stage[data-win="true"] {
+  border-color: var(--ds-focal-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-focal-green) 16%, transparent);
+}
+.cj-stage[data-win="true"] .cj-stat { color: var(--ds-focal-green); }
+.cj-name { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-text-3); }
+.cj-stat { font-size: 22px; font-weight: 700; line-height: 1.1; color: var(--ds-text-3); opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out), color var(--ds-dur-state) var(--ds-ease-out); }
+.cj-sub { font-size: 9px; color: var(--ds-text-3); opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out); }
+.cj-stat[data-on="true"] { opacity: 1; }
+.cj-sub[data-on="true"] { opacity: 0.75; }
+.cj-fix {
+  position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%) translateY(4px);
+  white-space: nowrap; font-size: 9.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  color: var(--ds-focal-green); border: 1px solid var(--ds-focal-green);
+  background: color-mix(in srgb, var(--ds-focal-green) 10%, transparent);
+  opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out), transform var(--ds-dur-state) var(--ds-ease-out);
+}
+.cj-fix[data-on="true"] { opacity: 1; transform: translateX(-50%) translateY(0); }
+.cj-arrow { width: 22px; height: 1px; background: var(--ds-line); margin: 0 2px; opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out), background var(--ds-dur-state) var(--ds-ease-out); position: relative; }
+.cj-arrow::after { content: ""; position: absolute; right: -1px; top: -2.5px; border-left: 5px solid var(--ds-line); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+.cj-arrow[data-in="true"] { opacity: 1; }
+.cj-arrow[data-cut="true"] { background: var(--ds-focal-red); opacity: 0.55; }
+.cj-verdict {
+  margin: 20px auto 0; max-width: 420px; text-align: center;
+  font-size: 11.5px; line-height: 1.45; color: var(--ds-text-3);
+  opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-out);
+}
+.cj-verdict[data-on="true"] { opacity: 0.9; }

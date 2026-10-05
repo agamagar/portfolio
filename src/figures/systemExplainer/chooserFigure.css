@@ -1,0 +1,51 @@
+/* The interactive chooser figure. Dark System-Explainer vitrine (.ds-root--away
+   supplies the figure tokens); paired panels + connector like the Extract example. */
+/* higher specificity than .ds-root.ds-root--away (which forces transparent/border:0),
+   so the chooser reads as a solid dark vitrine on any page theme */
+.ds-root.ds-root--away.ss-chooser { border: 1px solid #20202a; border-radius: 16px; background: #0a0a0e; padding: 14px; }
+.ss-chooser__grid { display: flex; gap: 0; align-items: stretch; }
+.ss-chooser__left { flex: 0 0 326px; display: flex; flex-direction: column; min-height: 0; }
+.ss-chooser__right { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.ss-chooser .se-panel { display: flex; flex-direction: column; }
+.ss-chooser__conn { flex: 0 0 44px; align-self: center; }
+
+.ss-chooser__moves { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; max-height: 392px; padding-right: 4px; }
+.ss-chooser__move {
+  position: relative; text-align: left; background: transparent; border: 1px solid transparent;
+  border-radius: 10px; padding: 9px 34px 9px 11px; cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+  transition: background var(--m3-dur-effects-default) var(--m3-effects-default), border-color var(--m3-dur-effects-default) var(--m3-effects-default);
+}
+.ss-chooser__move:hover { background: #15151c; }
+.ss-chooser__move.is-on { background: #15151c; border-color: #3b82f6; }
+.ss-chooser__move-name { font-size: 12.5px; font-weight: 600; color: #f4f4f6; }
+.ss-chooser__move-gist { font-size: 10.5px; color: #8a8a98; line-height: 1.35; }
+.ss-chooser__move-count {
+  position: absolute; top: 9px; right: 10px; font-size: 10px; color: #6f6f7e;
+  min-width: 16px; height: 16px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #17171f;
+}
+.ss-chooser__move.is-on .ss-chooser__move-count { color: #cbecff; background: rgba(59, 130, 246, 0.22); }
+
+.ss-chooser__arch { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 392px; padding-right: 4px; }
+.ss-chooser__row {
+  background: #17171f; border: 1px solid #20202a; border-radius: 9px; padding: 9px 11px;
+  opacity: 0; animation: ssChooserIn 0.36s var(--m3-effects-default) forwards;
+}
+@keyframes ssChooserIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.ss-chooser__row-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ss-chooser__row-name { font-size: 13px; font-weight: 600; color: #f4f4f6; }
+.ss-chooser__tag { flex: 0 0 auto; font-size: 8.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 999px; }
+.ss-chooser__tag--built { color: #07210f; background: #22c55e; }
+.ss-chooser__tag--spec { color: #cbecff; background: rgba(59, 130, 246, 0.25); }
+.ss-chooser__tag--new { color: #8a8a98; background: #20202a; }
+.ss-chooser__shape { font-size: 11.5px; color: #cbcbd4; line-height: 1.45; margin: 6px 0 0; }
+.ss-chooser__viz { font-size: 11px; color: #7e8aa0; line-height: 1.4; margin: 3px 0 0; }
+
+@media (max-width: 640px) {
+  .ss-chooser__grid { flex-direction: column; gap: 12px; }
+  .ss-chooser__left { flex: none; }
+  .ss-chooser__conn { display: none; }
+  .ss-chooser__moves, .ss-chooser__arch { max-height: 260px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ss-chooser__row { animation: none; opacity: 1; }
+}

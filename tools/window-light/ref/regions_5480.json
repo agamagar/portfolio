@@ -1,0 +1,153 @@
+{
+ "version": 1,
+ "image": "ref_5480.png",
+ "images": [
+  "ref_5480.png"
+ ],
+ "size": [
+  1200,
+  1600
+ ],
+ "coords": "normalized",
+ "source": "fix-core round 1: rectangles read on ref_5480.png (1200 x 1600 upright), inset from edges and room bars; score renders of ?shot=ref5480 at 1200 x 1600. The photo had the room's ceiling light on.",
+ "regions": {
+  "wall_cream": {
+   "desc": "the cream wall left of the bead chain, lit by the ceiling light",
+   "polygons": [
+    [
+     [
+      0.03333,
+      0.09375
+     ],
+     [
+      0.45,
+      0.09375
+     ],
+     [
+      0.45,
+      0.4625
+     ],
+     [
+      0.03333,
+      0.4625
+     ]
+    ]
+   ]
+  },
+  "casing_left": {
+   "desc": "the left casing's face, glossy brown enamel under the ceiling light",
+   "polygons": [
+    [
+     [
+      0.59333,
+      0.09375
+     ],
+     [
+      0.65833,
+      0.09375
+     ],
+     [
+      0.65833,
+      0.5375
+     ],
+     [
+      0.59333,
+      0.5375
+     ]
+    ]
+   ]
+  },
+  "pane_L1B": {
+   "desc": "L1 row B glass, right of the room bar: the dusk sky through dusty glass",
+   "polygons": [
+    [
+     [
+      0.76667,
+      0.2625
+     ],
+     [
+      0.83333,
+      0.2625
+     ],
+     [
+      0.83333,
+      0.4125
+     ],
+     [
+      0.76667,
+      0.4125
+     ]
+    ]
+   ]
+  },
+  "screen": {
+   "desc": "the main monitor: the dark app with white text",
+   "polygons": [
+    [
+     [
+      0.51667,
+      0.625
+     ],
+     [
+      0.73333,
+      0.625
+     ],
+     [
+      0.73333,
+      0.84375
+     ],
+     [
+      0.51667,
+      0.84375
+     ]
+    ]
+   ]
+  },
+  "portrait_off": {
+   "desc": "the portrait monitor, off",
+   "polygons": [
+    [
+     [
+      0.08333,
+      0.5125
+     ],
+     [
+      0.36667,
+      0.5125
+     ],
+     [
+      0.36667,
+      0.90625
+     ],
+     [
+      0.08333,
+      0.90625
+     ]
+    ]
+   ]
+  },
+  "blind": {
+   "desc": "the Roman blind's lower folds",
+   "polygons": [
+    [
+     [
+      0.50833,
+      0.00625
+     ],
+     [
+      0.98333,
+      0.00625
+     ],
+     [
+      0.98333,
+      0.05625
+     ],
+     [
+      0.50833,
+      0.05625
+     ]
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,101 @@
+{
+  "_source": "Portfolio/src/index.css :root motion block + Claude/consumer-motion-framework.md section 4. Values here are copied verbatim from index.css; the CSS stays the source of truth, this file is the Figma-facing mirror.",
+  "collection": "Motion",
+  "groups": [
+    {
+      "name": "ease",
+      "kind": "STRING",
+      "note": "Figma has no bezier value type; the curve is stored as its CSS string so it can be read into code verbatim. Spatial curves overshoot (y > 1), effects and cinematic curves do not.",
+      "tokens": [
+        { "css": "--m3-spatial-expressive-fast", "name": "ease/m3/spatial-expressive-fast", "value": "cubic-bezier(0.42, 1.67, 0.21, 0.90)", "role": "Bold movement, fast. Overshoots." },
+        { "css": "--m3-spatial-expressive-default", "name": "ease/m3/spatial-expressive-default", "value": "cubic-bezier(0.38, 1.21, 0.22, 1)", "role": "Bold movement, default. Entrance of a figure element (slight overshoot)." },
+        { "css": "--m3-spatial-expressive-slow", "name": "ease/m3/spatial-expressive-slow", "value": "cubic-bezier(0.39, 1.29, 0.35, 0.98)", "role": "Bold movement, slow. Overshoots." },
+        { "css": "--m3-spatial-standard-fast", "name": "ease/m3/spatial-standard-fast", "value": "cubic-bezier(0.27, 1.06, 0.18, 1)", "role": "Restrained movement, fast." },
+        { "css": "--m3-spatial-standard-default", "name": "ease/m3/spatial-standard-default", "value": "cubic-bezier(0.27, 1.06, 0.18, 1)", "role": "Restrained movement, default. Position, size, transform." },
+        { "css": "--m3-spatial-standard-slow", "name": "ease/m3/spatial-standard-slow", "value": "cubic-bezier(0.27, 1.06, 0.18, 1)", "role": "Restrained movement, slow." },
+        { "css": "--m3-effects-fast", "name": "ease/m3/effects-fast", "value": "cubic-bezier(0.31, 0.94, 0.34, 1)", "role": "Opacity and color, fast. Flat, no overshoot." },
+        { "css": "--m3-effects-default", "name": "ease/m3/effects-default", "value": "cubic-bezier(0.34, 0.80, 0.34, 1)", "role": "Opacity and color, default. Fades, crossfades, exits." },
+        { "css": "--m3-effects-slow", "name": "ease/m3/effects-slow", "value": "cubic-bezier(0.34, 0.88, 0.34, 1)", "role": "Opacity and color, slow." },
+        { "css": "--m3-emphasized-decelerate", "name": "ease/m3/emphasized-decelerate", "value": "cubic-bezier(0.05, 0.7, 0.1, 1)", "role": "Pure decelerate, no overshoot. Fade-up-from-black, per-word claim build. Promoted from ds/tokens.css." },
+        { "css": "--m3-standard-accelerate", "name": "ease/m3/standard-accelerate", "value": "cubic-bezier(0.3, 0, 1, 1)", "role": "Flat whip-through accelerate. The specular glint. Promoted from ds/tokens.css." },
+        { "css": "--ds-ease-out", "name": "ease/ds/out", "value": "cubic-bezier(0.05, 0.7, 0.1, 1)", "role": "Enter, expand, settle. Alias of ease/m3/emphasized-decelerate.", "alias": "ease/m3/emphasized-decelerate" },
+        { "css": "--ds-ease-exit", "name": "ease/ds/exit", "value": "cubic-bezier(0.3, 0, 0.8, 0.15)", "role": "Exit, collapse. Equals M3 emphasized-accelerate." },
+        { "css": "--ds-ease-pop", "name": "ease/ds/pop", "value": "cubic-bezier(0.34, 1.46, 0.64, 1)", "role": "Press and pop, spring-ish. Equals M3 expressive." },
+        { "css": "--m3-ease-cine-glide", "name": "ease/cine/glide", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "role": "easeOutExpo. Signature long glide: from-the-void, soft entrance, timed parallax." },
+        { "css": "--m3-ease-cine-settle", "name": "ease/cine/settle", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "role": "easeOutQuint. Firmer no-overshoot landing: turntable, scale jump, mask wipe." },
+        { "css": "--m3-ease-cine-arrive", "name": "ease/cine/arrive", "value": "cubic-bezier(0.12, 0.8, 0.2, 1)", "role": "Asymmetric fly-in: fast out of the gate, very long park." },
+        { "css": "--m3-ease-cinematic-push", "name": "ease/cine/push", "value": "cubic-bezier(0.22, 0.61, 0.36, 1)", "role": "Long flat dolly glide, still creeping at the end." }
+      ]
+    },
+    {
+      "name": "duration",
+      "kind": "FLOAT",
+      "unit": "ms",
+      "tokens": [
+        { "css": "--m3-dur-effects-fast", "name": "duration/m3/effects-fast", "value": 150, "role": "Fast fade or color change; exits." },
+        { "css": "--m3-dur-effects-default", "name": "duration/m3/effects-default", "value": 200, "role": "Default fade or color change." },
+        { "css": "--m3-dur-effects-slow", "name": "duration/m3/effects-slow", "value": 300, "role": "Slow fade; finish swatch crossfade." },
+        { "css": "--m3-dur-spatial-fast", "name": "duration/m3/spatial-fast", "value": 350, "role": "Fast movement; lower-third enter; specular sweep." },
+        { "css": "--m3-dur-spatial-default", "name": "duration/m3/spatial-default", "value": 500, "role": "Default movement; figure entrance; pop-land number." },
+        { "css": "--m3-dur-spatial-expressive-slow", "name": "duration/m3/spatial-expressive-slow", "value": 650, "role": "Slow bold movement; fade up from black." },
+        { "css": "--m3-dur-spatial-standard-slow", "name": "duration/m3/spatial-standard-slow", "value": 750, "role": "Slow restrained movement. The site ceiling for interaction-clock motion." },
+        { "css": "--m3-dur-cine-reveal", "name": "duration/cine/reveal", "value": 900, "role": "Hero reveal beat: from-the-void, turntable, mask wipe." },
+        { "css": "--m3-dur-cine-hero", "name": "duration/cine/hero", "value": 1200, "role": "Singular opener or climax only; also schedules the apex accent." },
+        { "css": "--m3-dur-cinematic-push", "name": "duration/cine/push", "value": 1800, "role": "Slow push-in, pull-back, timed parallax." },
+        { "css": "--m3-dur-effects-scene", "name": "duration/cine/effects-scene", "value": 600, "role": "Cross-dissolve, stage color shift, languid rack focus." },
+        { "css": "--m3-dur-effects-cinematic", "name": "duration/cine/effects-cinematic", "value": 1000, "role": "Slow hero light sweep on a flat curve." },
+        { "css": "--ds-dur-atmosphere", "name": "duration/cine/atmosphere", "value": 6000, "role": "Gradient-wash ambient drift loop." },
+        { "css": "--m3-dur-word-build", "name": "duration/cine/word-build", "value": 420, "role": "Per-word duration in the claim build." }
+      ]
+    },
+    {
+      "name": "stagger",
+      "kind": "FLOAT",
+      "unit": "ms",
+      "note": "delay = index * value",
+      "tokens": [
+        { "css": "--m3-stagger-word", "name": "stagger/word", "value": 110, "role": "Inter-word delay in the claim build." },
+        { "css": "--ds-stagger-cine", "name": "stagger/cine", "value": 90, "role": "Consumer group stagger default. Site B2B figures use about 60." },
+        { "css": "--ds-stagger-scroll", "name": "stagger/scroll", "value": 80, "role": "Enter-on-cross sibling stagger." }
+      ]
+    },
+    {
+      "name": "hold",
+      "kind": "FLOAT",
+      "unit": "ms",
+      "note": "Waits between beats, not transitions.",
+      "tokens": [
+        { "css": "--ds-hold-cine", "name": "hold/cine", "value": 2000, "role": "Hero arrived-state hold." },
+        { "css": "--ds-still-hold", "name": "hold/still", "value": 800, "role": "The let-it-breathe pause." },
+        { "css": "--ds-beat-hold", "name": "hold/beat", "value": 400, "role": "Standard pause between serialized beats." },
+        { "css": "--m3-dur-beat", "name": "hold/crescendo-beat", "value": 700, "role": "The dramatic held pause in the single-word crescendo." }
+      ]
+    },
+    {
+      "name": "scalar",
+      "kind": "FLOAT",
+      "unit": "",
+      "note": "Unitless quantities, not curves or durations.",
+      "tokens": [
+        { "css": "--ds-scrub-smoothing-factor", "name": "scalar/scrub-smoothing", "value": 0.15, "role": "Lerp per rAF tick for scroll-film catch-up." },
+        { "css": "--ds-parallax-back", "name": "scalar/parallax-back", "value": 0.25, "role": "Background plane rate." },
+        { "css": "--ds-parallax-mid", "name": "scalar/parallax-mid", "value": 0.5, "role": "Midground (hero) plane rate." },
+        { "css": "--ds-parallax-fore", "name": "scalar/parallax-fore", "value": 1, "role": "Foreground plane rate." }
+      ]
+    },
+    {
+      "name": "spring",
+      "kind": "FLOAT",
+      "unit": "",
+      "note": "Read via getComputedStyle for the motion library; a bezier cannot express a damping ratio.",
+      "tokens": [
+        { "css": "--ds-spring-momentum-stiffness", "name": "spring/momentum/stiffness", "value": 220, "role": "Gesture or fling reward overshoot, damping ratio 0.8." },
+        { "css": "--ds-spring-momentum-damping", "name": "spring/momentum/damping", "value": 26, "role": "Gesture or fling reward overshoot, damping ratio 0.8." },
+        { "css": "--ds-spring-bloom-stiffness", "name": "spring/bloom/stiffness", "value": 480, "role": "Icon or glyph bloom from scale 0, small elastic settle." },
+        { "css": "--ds-spring-bloom-damping", "name": "spring/bloom/damping", "value": 18, "role": "Icon or glyph bloom from scale 0, small elastic settle." },
+        { "css": "--ds-spring-scrub-stiffness", "name": "spring/scrub/stiffness", "value": 120, "role": "Scroll-film catch-up spring (useSpring)." },
+        { "css": "--ds-spring-scrub-damping", "name": "spring/scrub/damping", "value": 30, "role": "Scroll-film catch-up spring (useSpring)." }
+      ]
+    }
+  ]
+}

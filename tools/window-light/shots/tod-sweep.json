@@ -1,0 +1,48 @@
+{
+  "defaults": {
+    "w": 1600,
+    "h": 1200,
+    "dpr": 1,
+    "frames": 32,
+    "timeout": 120000,
+    "scene": "require"
+  },
+  "shots": [
+    {
+      "name": "tod-0600",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=6.0&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-0730",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=7.5&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-0900",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=9.0&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-1200",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=12.0&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-1500",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=15.0&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-1741",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=17.699&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-1815",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=18.25&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-1840",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=18.667&wx=clear&look=photo"
+    },
+    {
+      "name": "tod-2100",
+      "url": "/window?shot=ref1741&sky=mine&theme=light&capture=1&t=0&tod=21.0&wx=clear&look=photo"
+    }
+  ]
+}

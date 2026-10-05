@@ -86,9 +86,15 @@ export function Flight({ air, time, meta, from, now, nowTone, good, sel, dim, ta
   );
 }
 
-// the verdict line above the listing
-export const Verdict = ({ children }) => (
-  <div className="aw-verdict"><span className="aw-verdict__star"><IShield /></span>{children}</div>
+// The one-line summary above the listing ("8 flights. 3 are worth your time").
+//
+// This was called `Verdict`, colliding with the DS's <Verdict>, which is a completely
+// different thing: a recommendation card with required `because` and `unsure` shapes and
+// an override slot. Two exports, one name, incompatible contracts, and an import would
+// resolve to whichever path was typed. Renamed to what it actually is: a summary line,
+// not a verdict.
+export const SummaryLine = ({ children }) => (
+  <div className="aw-summary"><span className="aw-summary__star"><IShield /></span>{children}</div>
 );
 
 // the trap flag / warning, standalone

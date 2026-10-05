@@ -1,0 +1,449 @@
+{
+ "rows": [
+  {
+   "cat": "Chips",
+   "total": 2584083,
+   "vol_partner": "Cream Biscuits",
+   "vol_orders": 181027,
+   "vol_lift": 2.3,
+   "lift_partner": "Puffs",
+   "lift_orders": 149450,
+   "lift_lift": 3.6,
+   "same": false,
+   "top3": [
+    [
+     "Puffs",
+     149450,
+     3.6
+    ],
+    [
+     "Nachos",
+     90689,
+     3.5
+    ],
+    [
+     "Plastic Glass",
+     1088,
+     2.8
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 2
+  },
+  {
+   "cat": "Curd",
+   "total": 2499235,
+   "vol_partner": "Buttermilk",
+   "vol_orders": 154193,
+   "vol_lift": 2.3,
+   "lift_partner": "Boondi",
+   "lift_orders": 24363,
+   "lift_lift": 3.2,
+   "same": false,
+   "top3": [
+    [
+     "Boondi",
+     24363,
+     3.2
+    ],
+    [
+     "Biryani Masala",
+     4974,
+     2.5
+    ],
+    [
+     "Kewra Water",
+     675,
+     2.4
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Coriander Leaves",
+   "total": 1758732,
+   "vol_partner": "Curry Leaves",
+   "vol_orders": 142100,
+   "vol_lift": 3.5,
+   "lift_partner": "Mint Leaves",
+   "lift_orders": 5545,
+   "lift_lift": 3.8,
+   "same": false,
+   "top3": [
+    [
+     "Mint Leaves",
+     5545,
+     3.8
+    ],
+    [
+     "Curry Leaves",
+     142100,
+     3.5
+    ],
+    [
+     "Chilli",
+     30059,
+     3.1
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Chilli",
+   "total": 1288727,
+   "vol_partner": "Curry Leaves",
+   "vol_orders": 94834,
+   "vol_lift": 3.2,
+   "lift_partner": "Curry Leaves",
+   "lift_orders": 94834,
+   "lift_lift": 3.2,
+   "same": true,
+   "top3": [
+    [
+     "Curry Leaves",
+     94834,
+     3.2
+    ],
+    [
+     "Gongura Leaves",
+     4573,
+     3.0
+    ],
+    [
+     "Kalmi Saag",
+     1109,
+     2.8
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Cucumber",
+   "total": 1207499,
+   "vol_partner": "Buttermilk",
+   "vol_orders": 40696,
+   "vol_lift": 1.2,
+   "lift_partner": "Carrot",
+   "lift_orders": 6380,
+   "lift_lift": 3.0,
+   "same": false,
+   "top3": [
+    [
+     "Carrot",
+     6380,
+     3.0
+    ],
+    [
+     "Beetroot",
+     9548,
+     3.0
+    ],
+    [
+     "Lettuce",
+     267,
+     2.8
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Fresh Cow Milk",
+   "total": 999845,
+   "vol_partner": "Buttermilk",
+   "vol_orders": 58855,
+   "vol_lift": 2.2,
+   "lift_partner": "Fruit Bun",
+   "lift_orders": 3263,
+   "lift_lift": 2.9,
+   "same": false,
+   "top3": [
+    [
+     "Fruit Bun",
+     3263,
+     2.9
+    ],
+    [
+     "Khari",
+     2425,
+     2.8
+    ],
+    [
+     "Sweet Bun",
+     2754,
+     2.5
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Carrot",
+   "total": 990946,
+   "vol_partner": "Curry Leaves",
+   "vol_orders": 40913,
+   "vol_lift": 1.8,
+   "lift_partner": "Beetroot",
+   "lift_orders": 11692,
+   "lift_lift": 4.4,
+   "same": false,
+   "top3": [
+    [
+     "Beetroot",
+     11692,
+     4.4
+    ],
+    [
+     "Knol Khol",
+     3667,
+     4.1
+    ],
+    [
+     "Capsicum",
+     17029,
+     3.3
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Instant Noodles",
+   "total": 987179,
+   "vol_partner": "Cream Biscuits",
+   "vol_orders": 52568,
+   "vol_lift": 1.8,
+   "lift_partner": "Chopsticks",
+   "lift_orders": 384,
+   "lift_lift": 9.6,
+   "same": false,
+   "top3": [
+    [
+     "Chopsticks",
+     384,
+     9.6
+    ],
+    [
+     "Soups",
+     2575,
+     4.4
+    ],
+    [
+     "Magic Masala",
+     1291,
+     4.2
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Lady Finger",
+   "total": 921800,
+   "vol_partner": "Coccinia",
+   "vol_orders": 43076,
+   "vol_lift": 4.6,
+   "lift_partner": "Ivy Gourd",
+   "lift_orders": 3681,
+   "lift_lift": 4.6,
+   "same": false,
+   "top3": [
+    [
+     "Ivy Gourd",
+     3681,
+     4.6
+    ],
+    [
+     "Coccinia",
+     43076,
+     4.6
+    ],
+    [
+     "Bitter Gourd",
+     35401,
+     4.3
+    ]
+   ],
+   "vol_repeat": 1,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Banana",
+   "total": 919551,
+   "vol_partner": "Buttermilk",
+   "vol_orders": 27811,
+   "vol_lift": 1.1,
+   "lift_partner": "Chikoo",
+   "lift_orders": 5278,
+   "lift_lift": 5.4,
+   "same": false,
+   "top3": [
+    [
+     "Chikoo",
+     5278,
+     5.4
+    ],
+    [
+     "Guava",
+     6025,
+     4.8
+    ],
+    [
+     "Papaya",
+     3921,
+     4.7
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Flavoured Biscuits",
+   "total": 884077,
+   "vol_partner": "Cream Biscuits",
+   "vol_orders": 92912,
+   "vol_lift": 3.5,
+   "lift_partner": "Assorted Biscuits",
+   "lift_orders": 998,
+   "lift_lift": 4.9,
+   "same": false,
+   "top3": [
+    [
+     "Assorted Biscuits",
+     998,
+     4.9
+    ],
+    [
+     "Butter Biscuits",
+     5060,
+     4.6
+    ],
+    [
+     "Millet Cookies",
+     2291,
+     4.2
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Crisps",
+   "total": 872931,
+   "vol_partner": "Cream Biscuits",
+   "vol_orders": 81192,
+   "vol_lift": 3.1,
+   "lift_partner": "Puffs",
+   "lift_orders": 80083,
+   "lift_lift": 5.8,
+   "same": false,
+   "top3": [
+    [
+     "Puffs",
+     80083,
+     5.8
+    ],
+    [
+     "Nachos",
+     36192,
+     4.1
+    ],
+    [
+     "Neon Drink",
+     8508,
+     3.9
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 2
+  },
+  {
+   "cat": "Lemon",
+   "total": 798687,
+   "vol_partner": "Curry Leaves",
+   "vol_orders": 38718,
+   "vol_lift": 2.1,
+   "lift_partner": "Squeezer",
+   "lift_orders": 296,
+   "lift_lift": 6.5,
+   "same": false,
+   "top3": [
+    [
+     "Squeezer",
+     296,
+     6.5
+    ],
+    [
+     "Jaljeera Powder",
+     1012,
+     4.0
+    ],
+    [
+     "Mint Leaves",
+     1949,
+     2.9
+    ]
+   ],
+   "vol_repeat": 4,
+   "lift_repeat": 1
+  },
+  {
+   "cat": "Cream Biscuits",
+   "total": 782354,
+   "vol_partner": "Bar Chocolates",
+   "vol_orders": 47441,
+   "vol_lift": 2.4,
+   "lift_partner": "Centre Fills",
+   "lift_orders": 14438,
+   "lift_lift": 5.3,
+   "same": false,
+   "top3": [
+    [
+     "Centre Fills",
+     14438,
+     5.3
+    ],
+    [
+     "Butter Biscuits",
+     3948,
+     4.1
+    ],
+    [
+     "Choco Pie",
+     11690,
+     4.0
+    ]
+   ],
+   "vol_repeat": 1,
+   "lift_repeat": 1
+  }
+ ],
+ "floor": 200,
+ "total": 53869570,
+ "pairs": 847911,
+ "cats": 1496,
+ "distinct_vol": 5,
+ "distinct_lift": 13,
+ "changed": 13,
+ "top_universals": [
+  [
+   "Cream Biscuits",
+   4
+  ],
+  [
+   "Buttermilk",
+   4
+  ],
+  [
+   "Curry Leaves",
+   4
+  ],
+  [
+   "Coccinia",
+   1
+  ]
+ ]
+}

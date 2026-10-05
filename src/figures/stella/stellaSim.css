@@ -1,0 +1,653 @@
+/* Stella call simulator, built on the Dassh design system.
+   Tokens come from ../ds/tokens.css via .ds-root, so surfaces, borders, radii,
+   type scale and spacing are the product's, not the portfolio's. Cards are FLAT
+   (border-only) per the Dassh source; only the window frame floats.
+
+   The four annotation categories map onto the real Stella product palette rather
+   than an invented one: Mystic Blue for trust, Forest Teal for numbers, Brand
+   purple for register, and the accent orange for repair. */
+
+/* .ds-root is normally an absolutely-positioned, transform-scaled figure frame.
+   This one is live and interactive, so it sits in normal flow at natural size. */
+.ds-root--live {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  transform: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  font-family: var(--ds-font);
+  color: var(--ds-text);
+}
+
+/* the product window grows with the conversation instead of the figure's fixed 396px */
+.stl .ds-win { height: auto; }
+.stl .ds-win__body { height: auto; align-items: stretch; }
+.stl .ds-win__main { padding: 0; display: flex; flex-direction: column; min-width: 0; }
+
+/* ── page variant: the whole viewport is the application ─────────────────── */
+.stl--page {
+  position: fixed; inset: 0;
+  display: flex;
+  background: var(--ds-bg);
+  overflow: hidden;
+}
+.stl--page .stl__app {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  background: var(--ds-surface);
+}
+.stl--page .stl__grid { flex: 1; height: auto; min-height: 0; }
+.stl--page .stl__head { padding: var(--ds-6) var(--ds-7); }
+
+/* real app nav, not a shimmer stand-in */
+/* 96px, because every item now carries a visible label. The reason to reach 44px is
+   NOT target size: 34x34 with a pointer already clears the HIG's 28x28pt absolute
+   minimum. It is that an unlabelled glyph has to be hunted for, and hunting is the
+   cost this rail was imposing on every first-time viewer. */
+.stl__nav {
+  flex: 0 0 96px;
+  display: flex; flex-direction: column; align-items: stretch;
+  gap: var(--ds-2); padding: var(--ds-5) var(--ds-3);
+  border-right: 1px solid var(--ds-line-strong);
+  background: var(--ds-bg);
+}
+.stl__brand {
+  width: 30px; height: 30px; border-radius: var(--ds-r-btn);
+  display: grid; place-items: center; margin-bottom: var(--ds-3);
+  background: var(--ds-ink-strong); color: var(--ds-on-primary);
+  font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+}
+.stl__navitem {
+  width: 100%; min-height: 44px; border-radius: var(--ds-r-btn);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: var(--ds-2) 0;
+  color: var(--ds-text-2); font-family: inherit; cursor: pointer;
+  transition: background var(--ds-dur-fast) var(--m3-standard), color var(--ds-dur-fast) var(--m3-standard);
+}
+.stl__navitem svg { width: 17px; height: 17px; }
+.stl__navlabel {
+  font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); line-height: 1;
+  letter-spacing: 0.01em;
+}
+/* There was no hover or focus rule on this rail at all. */
+.stl__navitem:hover { background: var(--ds-muted); color: var(--ds-text); }
+.stl__navitem[data-on="true"] { background: var(--ds-blue-100); color: var(--ds-blue-deep); }
+
+/* A named non-destination. State is carried by a dashed ring and reduced opacity, not
+   by a colour change, so it survives greyscale and a colour-blind reader. */
+.stl__navwrap { position: relative; display: block; }
+.stl__navitem[data-off="true"] {
+  opacity: 0.6; cursor: default;
+  border: 1px dashed var(--ds-border); background: transparent;
+}
+.stl__navitem[data-off="true"]:hover { background: transparent; color: var(--ds-text-2); }
+/* The reason has to be reachable without a pointer: `title` never fires on keyboard
+   focus, so the explanation only existed for mouse users. */
+.stl__navwhy {
+  position: absolute; left: calc(100% + var(--ds-3)); top: 0; z-index: 5;
+  width: 232px; display: none; flex-direction: column; gap: var(--ds-2);
+  padding: var(--ds-4); border: 1px solid var(--ds-border-card);
+  border-radius: var(--ds-r-card); background: var(--ds-surface);
+}
+.stl__navwrap:hover .stl__navwhy,
+.stl__navwrap:focus-within .stl__navwhy { display: flex; }
+.stl__navwhytext { font-size: var(--ds-fs-sub); line-height: 1.5; color: var(--ds-text-2); }
+.stl__navfoot {
+  margin-top: auto; display: flex; flex-direction: column;
+  align-items: stretch; gap: var(--ds-3);
+}
+.stl__navback {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-height: 44px; justify-content: center;
+  border: 0; background: transparent; cursor: pointer; padding: var(--ds-2);
+  color: var(--ds-text-3); font-family: inherit;
+}
+.stl__navback svg { width: 16px; height: 16px; transform: rotate(180deg); }
+.stl__navbacklabel { font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi); }
+.stl__navback:hover { color: var(--ds-text); }
+
+/* ── call header ─────────────────────────────────────────────────────────── */
+.stl__head {
+  display: flex; align-items: center; justify-content: flex-start; gap: var(--ds-5);
+  padding: var(--ds-5) var(--ds-6);
+  border-bottom: 1px solid var(--ds-line);
+}
+.stl__who { display: flex; align-items: center; gap: var(--ds-4); min-width: 0; flex: 1 1 auto; }
+/* At most three item groups, primary trailing. Start over gets extra separation and a
+   quieter treatment: it resets the whole run and shared a height, border and fill with
+   the control that merely mutes audio. Not destructive in the HIG sense (no user data),
+   so this is a grouping argument, not a data-loss one. */
+.stl__headctl { display: flex; align-items: center; gap: var(--ds-3); margin-left: auto; }
+/* The one thing .stl__restart still owns: extra separation, because a control that resets
+   the whole run should not sit flush against the one that merely mutes audio. Its chassis
+   comes from .ds-button. */
+.stl__headctl .stl__restart { margin-left: var(--ds-6); }
+.stl__avatar {
+  width: 30px; height: 30px; border-radius: var(--ds-r-btn);
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: var(--ds-blue-100); color: var(--ds-blue-deep);
+}
+.stl__avatar svg { width: 15px; height: 15px; }
+.stl__title { margin: 0; font-size: var(--ds-fs-title); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.stl__sub { margin: 2px 0 0; font-size: var(--ds-fs-sub); color: var(--ds-text-2); }
+.stl__live {
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi);
+  color: var(--ds-tone-numbers-ink);
+}
+/* The dot greyed out on end and the word stayed green, so the one glanceable signal
+   that the call is over contradicted half of itself. */
+.stl__live[data-off="true"] { color: var(--ds-text-2); }
+/* Operator-thread toggle. ONE declaration: this class was declared twice with conflicting
+   intent, the later block winning on colour while this one supplied the transition, and
+   the old comment here claimed the thread reads as off by default when it boots ON.
+   The on state is NEUTRAL rather than tinted: it is chrome, and borrowing an annotation
+   tone would make one hue mean two things (tone discipline, not an a11y failure, since
+   adding or removing a fill is the sanctioned toggle mechanism). State is carried by
+   fill plus weight plus the glyph inside the button. */
+.stl__mode {
+  height: 30px; padding: 0 var(--ds-4); flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: var(--ds-2);
+  border: 1px solid var(--ds-border-control); border-radius: var(--ds-r-btn);
+  background: transparent; color: var(--ds-text-2);
+  font-family: inherit; font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi);
+  cursor: pointer;
+  transition: background var(--ds-dur-fast) var(--m3-standard),
+              color var(--ds-dur-fast) var(--m3-standard),
+              border-color var(--ds-dur-fast) var(--m3-standard);
+}
+.stl__mode svg { width: 14px; height: 14px; }
+.stl__mode:hover { color: var(--ds-text); border-color: var(--ds-text); }
+.stl__mode[data-on="true"] {
+  background: var(--ds-muted); color: var(--ds-text); font-weight: 700;
+  border-color: var(--ds-border-control);
+}
+/* Below 1100px .stl__threadcol is display:none, so the control cannot act. It says so
+   rather than staying live and wired to a hidden column. */
+.stl__mode[aria-disabled="true"] {
+  opacity: 0.6; cursor: default; border-style: dashed;
+  background: transparent; color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.stl__modewhy { font-size: var(--ds-fs-meta); font-weight: 400; }
+
+
+/* ── layout ──────────────────────────────────────────────────────────────── */
+/* Both columns stretch to the taller of the two; the transcript then grows to fill
+   its column rather than leaving dead space under the choices when the rail runs long. */
+/* A fixed pane height, as the product would have: the transcript and the rail each
+   scroll inside their own column, so a long annotation never stretches the frame. */
+.stl__grid {
+  display: grid; grid-template-columns: 1fr 268px; align-items: stretch;
+  height: 540px;
+}
+/* Stacked below 800px. The rail carries three sections now (why, plan, record), so
+   it must stay capped and scroll; unbounded it ran to 4600px and took the frame with it. */
+@media (max-width: 800px) {
+  .stl__grid { grid-template-columns: 1fr; height: auto; }
+  .stl__rail { max-height: 420px; }
+}
+
+.stl__callcol { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+/* Cap the measure. With the operator thread now off by default the column inherited
+   the whole window, which ran Stella's lines to 800px and left the transcript reading
+   as a mostly empty hall. Only the page variant needs this; the figure is already
+   narrow enough. */
+/* NOTE: Stella's turns are now wrapped in a .ds-bubblerow by Bubble's `actions` slot,
+   so `.stl__log > *` selects the ROW. That is what we want capped, but it means this
+   selector silently stops applying if the wrapper is ever removed. */
+.stl--page .stl__log > *,
+.stl--page .stl__choices > * { max-width: 780px; margin-inline: auto; width: 100%; }
+
+/* Anchored to the bottom like any conversation pane: turns stack upward from the
+   composer rather than hanging from the top with dead space beneath them. */
+.stl__log {
+  padding: var(--ds-6);
+  display: flex; flex-direction: column; justify-content: flex-end; gap: var(--ds-5);
+  flex: 1 1 auto; min-height: 200px; overflow-y: auto;
+  background: var(--ds-bg);
+}
+.stl__turn { flex: 0 0 auto; }
+@media (max-width: 800px) { .stl__log { max-height: 400px; } }
+
+/* ── turn contents ───────────────────────────────────────────────────────────
+   The bubble itself is the DS component (.ds-bubble). What sits inside it is
+   Stella-specific: a spoken Gujarati line, its transliteration, and an English
+   gloss, stacked so a non-Gujarati reader can follow without the script losing
+   primacy. */
+/* Three rungs, in the right order. The transliteration and the gloss used to be the
+   SAME size (both --ds-fs-body), so the two subordinate tiers read as one, and colour
+   then put them the wrong way round: the pronunciation aid took --ds-text-alt (12.9:1
+   in dark) while the meaning took --ds-text-2 (6.2:1). The aid carried twice the
+   contrast of the meaning. Now: script, then meaning, then pronunciation.
+   --ds-text-alt is documented as "labels, input values" and is no longer borrowed. */
+.stl__guj {
+  font-family: var(--ds-font-gu);
+  font-size: var(--ds-fs-guj); line-height: 1.7; color: var(--ds-text);
+}
+.stl__gloss { font-size: var(--ds-fs-body); line-height: 1.55; color: var(--ds-text-2); }
+.stl__translit {
+  font-family: var(--ds-font-gu);
+  font-size: var(--ds-fs-sub); line-height: 1.5; font-style: italic; color: var(--ds-text-2);
+}
+.stl__failwrap { display: flex; flex-direction: column; align-items: flex-start;
+  gap: 2px; margin-top: var(--ds-1); }
+
+/* the system disposition line: a machine record cutting into the call, not speech */
+.stl__turn--system .stl__gloss {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--ds-fs-sub); color: var(--ds-text-alt);
+}
+.stl__turn--system .ds-bubble__speaker { color: var(--ds-tone-repair-ink); }
+
+/* Permanent, and shaped as a control label rather than a category badge. Hover BRIGHTENS
+   it now instead of revealing it, so the affordance exists before the pointer arrives. */
+.stl__cue {
+  position: absolute; top: var(--ds-4); right: var(--ds-4);
+  font-size: var(--ds-fs-meta); line-height: 1;
+  padding: 3px var(--ds-2); border: 1px solid var(--ds-border);
+  border-radius: var(--ds-r-pill);
+  color: var(--ds-text-2); opacity: 1;
+  transition: color var(--ds-dur-cue) var(--m3-standard),
+              border-color var(--ds-dur-cue) var(--m3-standard);
+}
+.stl__turn:hover .stl__cue,
+.stl__turn:focus-visible .stl__cue,
+.stl__turn[data-active="true"] .stl__cue {
+  color: var(--ds-text); border-color: var(--ds-border-control);
+}
+
+/* ── choices ─────────────────────────────────────────────────────────────── */
+.stl__choices {
+  border-top: 1px solid var(--ds-line);
+  padding: var(--ds-5) var(--ds-6) var(--ds-6);
+  background: var(--ds-surface);
+}
+.stl__choicelabel {
+  margin: 0 0 var(--ds-4); font-size: var(--ds-fs-label);
+
+  color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+/* An equal-cell grid, not wrapped flex. Six buttons of varying width gave the eye no
+   reading order at all; equal cells read left to right, top to bottom, and cost half
+   the height a single stack did, which matters because the transcript above is the
+   content and the answers are the control. auto-fit rather than a fixed 1fr 1fr,
+   because the embedded figure is 800px wide inside a much wider viewport, so a
+   viewport media query would never see how narrow the column actually is. */
+.stl__choicerow {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--ds-5); align-content: start;
+}
+.stl__choice {
+  display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-r-btn);
+  background: var(--ds-field); color: var(--ds-text); font-family: inherit;
+  padding: var(--ds-3) var(--ds-5); font-size: var(--ds-fs-body);
+  cursor: pointer; text-align: left; width: 100%; min-height: 44px;
+  justify-content: center;
+  /* Not the body floor. This is the primary control of the application. */
+  font-size: var(--ds-fs-btn);
+  transition: border-color var(--ds-dur-fast) var(--m3-standard), background var(--ds-dur-fast) var(--m3-standard);
+}
+.stl__choice:hover { border-color: var(--ds-text); background: var(--ds-surface); }
+.stl__choicetext { line-height: 1.4; font-weight: var(--ds-fw-semi); }
+/* The failure case a choice exercises is commentary on the control, not part of it.
+   It used to print under every button, so each control spoke in two registers at
+   once. Now it waits for intent: hover, or keyboard focus. */
+.stl__choicetag {
+  font-size: var(--ds-fs-pill); line-height: 1.4; color: var(--ds-tone-repair-ink);
+  font-weight: 400; opacity: 0;
+  /* Reserved at rest, so the button is ALREADY its hover height and nothing reflows.
+     Only opacity animates. */
+  min-height: 1.4em;
+  transition: opacity var(--ds-dur-cue) var(--m3-standard);
+}
+.stl__choice:hover .stl__choicetag,
+.stl__choice:focus-visible .stl__choicetag { opacity: 1; }
+
+
+/* ── annotation rail ─────────────────────────────────────────────────────── */
+.stl__rail {
+  border-left: 1px solid var(--ds-line);
+  padding: var(--ds-6);
+  display: flex; flex-direction: column; gap: var(--ds-5);
+  background: var(--ds-surface);
+  min-height: 0; overflow-y: auto;
+}
+/* ── the record tab ──────────────────────────────────────────────────────── */
+/* The count stays in view. It is the most important state on the surface and it was
+   changing with no mark at all, often below the fold of its own scroller. */
+.stl__record { display: flex; flex-direction: column; gap: var(--ds-3); }
+.stl__record > .ds-panetitle {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--ds-surface); padding: var(--ds-3) 0;
+  margin-top: calc(var(--ds-3) * -1);
+}
+/* Level two: a SUBSECTION head. Changes 3 and 40 pull against each other here, so the
+   split is explicit. 40 is right that this must gain weight, not lose it: it was 10px
+   uppercase on --ds-text-2, shouting at the same volume as a speaker tag. 3 is right that
+   it is part of the record, not its peer. So it takes full-strength ink for the weight
+   and stays a size below .ds-panetitle for the rank. Three levels hold:
+   pane title 13 semibold ink / subsection 11 semibold ink / field label 11 regular dim. */
+.stl__recordhead {
+  margin: var(--ds-3) 0 0; display: flex; align-items: baseline; justify-content: space-between; gap: var(--ds-3);
+  font-size: var(--ds-fs-label);
+  color: var(--ds-text); font-weight: var(--ds-fw-semi);
+}
+.stl__recordlist { display: flex; flex-direction: column; gap: 2px; }
+/* The dashed rule belongs to the GROUP, so the head it names sits inside the boundary.
+   It was on the paragraph alone, which left the head outside the thing it labelled. */
+.stl__recordoff {
+  display: flex; flex-direction: column; gap: var(--ds-2);
+  margin-top: var(--ds-4); padding-left: var(--ds-4);
+  border-left: 2px dashed var(--ds-border);
+}
+.stl__recordoff .stl__recordhead { margin: 0; }
+/* Not tertiary. This is the sentence the whole record argument rests on: what the call
+   heard and had nowhere to put. Tertiary ink is right for a count, wrong for this. */
+.stl__recordempty {
+  margin: 0; font-size: var(--ds-fs-sub); line-height: 1.6; color: var(--ds-text-2);
+}
+
+/* Set where it is actually read. `flex` on a grid item did nothing, so the page rail
+   ran at the figure's 268px. min-width guard: media queries add no specificity, so a
+   bare .stl--page .stl__grid rule would beat the 800px stacking rule below. */
+@media (min-width: 801px) {
+  .stl--page .stl__grid { grid-template-columns: minmax(0, 1fr) 320px; }
+}
+@media (max-width: 800px) {
+  .stl__rail { border-left: 0; border-top: 1px solid var(--ds-line); }
+}
+
+.stl__note { display: flex; flex-direction: column; gap: var(--ds-3); }
+.stl__noterule { margin: 0; font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); line-height: 1.5; color: var(--ds-text); }
+.stl__notewhy { margin: 0; font-size: var(--ds-fs-sub); line-height: 1.6; color: var(--ds-text-2); }
+.stl__notesrc { margin: 0; font-size: var(--ds-fs-meta); line-height: 1.5; color: var(--ds-text-3); }
+
+/* ── the listening strip ─────────────────────────────────────────────────── */
+.stl__agent { display: flex; align-items: baseline; gap: var(--ds-3); font-size: var(--ds-fs-sub); }
+.stl__agent[data-fired="true"] .stl__agentdot {
+  background: var(--ds-teal); box-shadow: 0 0 0 3px var(--ds-teal-100);
+}
+.stl__agentname { text-transform: capitalize; color: var(--ds-text-3); font-weight: var(--ds-fw-semi); }
+.stl__agent[data-fired="true"] .stl__agentname { color: var(--ds-text); }
+.stl__agentnote { font-size: var(--ds-fs-meta); line-height: 1.5; color: var(--ds-text-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Deliberately NOT listing .stl__cue, .stl__choice, .stl__turn or .stl__restart: every
+     one of those transitions only colour or opacity, which is precisely the substitute
+     this preference asks for. What has to stop is movement. */
+  .ds-disclosure__sum::after,
+  .ds-scopenote--fold > summary::after { transition: none; }
+  .stl__play, .stl__mode, .stl__navitem { transition: none; }
+}
+
+/* ── the ATS record: what lands for the recruiter ────────────────────────── */
+.stl__atswrap { flex: 1; min-height: 0; overflow-y: auto; background: var(--ds-bg); }
+/* the nav item is a <button> in its two real destinations, so reset the UA chrome */
+button.stl__navitem { border: 0; background: none; padding: 0; cursor: pointer; font-family: inherit; }
+
+.ats { padding: var(--ds-7); display: flex; flex-direction: column; gap: var(--ds-6); max-width: 980px; }
+.ats__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--ds-6); }
+.ats__eyebrow {
+  margin: 0 0 2px; font-size: var(--ds-fs-meta);
+  letter-spacing: 0.07em; color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.ats__name { margin: 0; font-size: 20px; font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.ats__meta {
+  margin: var(--ds-2) 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: var(--ds-3);
+  font-size: var(--ds-fs-sub); color: var(--ds-text-2);
+}
+.ats__dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ds-text-3); }
+.ats__src { display: inline-flex; align-items: center; gap: var(--ds-2); }
+.ats__empty {
+  margin: 0; max-width: 60ch; font-size: var(--ds-fs-body); line-height: 1.65;
+  color: var(--ds-text-2); padding-left: var(--ds-5);
+  border-left: 2px dashed var(--ds-border);
+}
+
+.ats__body { display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--ds-7); align-items: start; }
+@media (max-width: 900px) { .ats__body { grid-template-columns: 1fr; } }
+.ats__col { display: flex; flex-direction: column; gap: var(--ds-5); min-width: 0; }
+
+/* the override sits at the same weight as the agreement, on purpose */
+.ats__decide { display: flex; flex-direction: column; gap: var(--ds-3); padding-top: var(--ds-4); border-top: 1px solid var(--ds-line); }
+.ats__decidehead {
+  margin: 0; font-size: var(--ds-fs-meta);
+  letter-spacing: 0.06em; color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.ats__decidrow { display: flex; gap: var(--ds-3); flex-wrap: wrap; }
+.ats__decidenote { margin: 0; font-size: var(--ds-fs-sub); line-height: 1.55; color: var(--ds-text-2); }
+
+.ats__offscript {
+  display: flex; flex-direction: column; gap: var(--ds-3);
+  border: 1px dashed var(--ds-tone-trust); border-radius: var(--ds-r-card);
+  padding: var(--ds-5); background: var(--ds-tone-trust-bg);
+}
+.ats__offrow { display: flex; flex-direction: column; gap: 2px; }
+.ats__offvalue { margin: 0; font-size: var(--ds-fs-body); line-height: 1.5; color: var(--ds-text); font-weight: var(--ds-fw-semi); }
+.ats__offnote { margin: 0; font-size: var(--ds-fs-sub); line-height: 1.5; color: var(--ds-text-2); }
+.ats__offwhy { margin: 0; font-size: var(--ds-fs-sub); line-height: 1.55; color: var(--ds-text-2); }
+
+.ats__colhead {
+  margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: var(--ds-3);
+  font-size: var(--ds-fs-label);
+  color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.ats__count { text-transform: none; letter-spacing: 0; font-size: var(--ds-fs-meta); color: var(--ds-text-3); }
+.ats__fields { display: flex; flex-direction: column; gap: 2px; }
+.ats__honest { margin: 0; font-size: var(--ds-fs-sub); line-height: 1.6; color: var(--ds-text-2); }
+
+/* ── the candidate's side ────────────────────────────────────────────────── */
+.cand { padding: var(--ds-7); display: flex; flex-direction: column; gap: var(--ds-6); max-width: 1000px; }
+.cand__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--ds-6); }
+.cand__eyebrow {
+  margin: 0 0 2px; font-size: var(--ds-fs-meta);
+  letter-spacing: 0.07em; color: var(--ds-text-2); font-weight: var(--ds-fw-semi);
+}
+.cand__title { margin: 0; font-size: 20px; font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.cand__meta { margin: var(--ds-2) 0 0; font-size: var(--ds-fs-sub); color: var(--ds-text-2); }
+
+.cand__body { display: grid; grid-template-columns: 340px 1fr; gap: var(--ds-7); align-items: start; }
+@media (max-width: 900px) { .cand__body { grid-template-columns: 1fr; } }
+.cand__phonecol { display: flex; justify-content: flex-start; }
+/* The phone sizes to its thread rather than carrying a fixed height. The last message
+   is the promise the whole design exists to keep, so it must never be the one below the
+   fold, and a magic number would silently break that the moment the copy changes. */
+/* Both are needed: the grid track alone does nothing, because .ds-phone carries
+   width: 300px in ds/scaffold.css. Reflow rather than shrink text to fit. */
+.cand .ds-phone { height: auto; width: 340px; }
+.cand__thread { display: flex; flex-direction: column; gap: var(--ds-4); }
+.cand__msg { max-width: 100%; padding: var(--ds-4); }
+/* The same ladder inside a phone mock, one step down. */
+.cand__guj {
+  font-family: var(--ds-font-gu);
+  font-size: var(--ds-fs-guj-sm); line-height: 1.7; color: var(--ds-text);
+}
+.cand__gloss { font-size: var(--ds-fs-sub); line-height: 1.5; color: var(--ds-text-2); }
+.cand__translit {
+  font-family: var(--ds-font-gu);
+  font-size: var(--ds-fs-sub); line-height: 1.5; font-style: italic; color: var(--ds-text-2);
+}
+.cand__waiting {
+  margin: 0; font-size: var(--ds-fs-sub); line-height: 1.6; color: var(--ds-text-3);
+  padding-left: var(--ds-4); border-left: 2px dashed var(--ds-border);
+}
+
+.cand__notes { display: flex; flex-direction: column; gap: var(--ds-6); min-width: 0; }
+.cand__contrast {
+  display: flex; flex-direction: column; gap: var(--ds-3);
+  border: 1px solid var(--ds-border-card); border-radius: var(--ds-r-card);
+  padding: var(--ds-5); background: var(--ds-surface);
+}
+.cand__contrasttext { margin: 0; font-size: var(--ds-fs-body); line-height: 1.6; color: var(--ds-text-2); }
+.cand__annots { display: flex; flex-direction: column; gap: var(--ds-4); }
+.cand__annot { display: flex; gap: var(--ds-3); align-items: flex-start; }
+.cand__annotdot {
+  width: 5px; height: 5px; border-radius: 50%; flex: 0 0 auto; margin-top: 6px;
+  background: var(--ds-tone-trust);
+}
+.cand__annottag { margin: 0; font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-text); line-height: 1.4; }
+.cand__annotgloss { margin: 2px 0 0; font-size: var(--ds-fs-sub); line-height: 1.5; color: var(--ds-text-2); }
+.cand__honest {
+  margin: 0; font-size: var(--ds-fs-sub); line-height: 1.6; color: var(--ds-text-2);
+  padding-left: var(--ds-5); border-left: 2px dashed var(--ds-border);
+}
+
+/* ── the plan queue: the loop editing its own remaining work ─────────────── */
+/* struck is the argument: a question the call learned not to ask */
+
+/* ── a listener firing, attached to the line it heard ────────────────────── */
+
+/* ── the rail: the record co-present, evidence disclosed beneath it ───────── */
+.stl__railsec { display: flex; flex-direction: column; gap: var(--ds-3); }
+
+
+/* ── how the call closed ─────────────────────────────────────────────────── */
+.stl__endactions { display: flex; align-items: center; justify-content: space-between; gap: var(--ds-5); flex-wrap: wrap; width: 100%; margin-top: var(--ds-4); }
+.stl__replay { display: flex; align-items: center; gap: var(--ds-3); flex-wrap: wrap; }
+.stl__replaylabel { font-size: var(--ds-fs-meta); color: var(--ds-text-2); font-weight: var(--ds-fw-semi); }
+.stl__replaybtn {
+  background: var(--ds-primary); color: var(--ds-on-primary); border: 0; height: 32px;
+  height: 30px; padding: 0 var(--ds-5);
+  border: 1px solid var(--ds-tone-trust); border-radius: var(--ds-r-btn);
+  background: transparent; color: var(--ds-tone-trust-ink);
+  font-family: inherit; font-size: var(--ds-fs-btn); font-weight: var(--ds-fw-semi); cursor: pointer;
+}
+.stl__replaybtn:hover { background: var(--ds-tone-trust-bg); }
+.stl__ended { display: flex; flex-direction: column; align-items: flex-start; gap: 0; width: 100%; }
+
+/* The scope note sits in the app frame, above the panes, never inside a scroller.
+   A statement about what is real must not be scrollable away from the thing it
+   qualifies. */
+.stl__scope { padding: var(--ds-4) var(--ds-7) 0; flex: 0 0 auto; }
+/* At the foot, where a footnote belongs. It held the top band for a while, which put
+   the least urgent content of the app in its most valuable position. */
+.stl__scope--foot { padding: var(--ds-3) var(--ds-7) var(--ds-4); }
+
+/* ── the operator thread, beside the call ────────────────────────────────────
+   The call lives INSIDE the thread rather than behind it. The thread is English and
+   silent because the operator is reading; the call column is Gujarati with audio
+   because the candidate is listening. Only one of these two people is on a phone. */
+.stl__body { flex: 1; display: flex; min-height: 0; min-width: 0; }
+.stl__body > .stl__grid { flex: 1; min-width: 0; }
+/* Two conversations, two planes. Both columns used to sit on --ds-bg rendering the
+   same Bubble with the same "You" and "Stella" labels, divided by one hairline that
+   measures 1.32:1 in dark, so an English silent operator thread and a Gujarati voice
+   call read as one wide inbox. This is the largest comprehension cost of the default
+   view. The operator thread is CHROME, so it goes to the elevated surface alongside
+   the rail and the choices; the transcript keeps --ds-bg because it is the content. */
+.stl__threadcol {
+  flex: 0 0 360px; display: flex; min-height: 0;
+  border-right: 1px solid var(--ds-line-strong); background: var(--ds-surface);
+}
+@media (max-width: 1100px) { .stl__threadcol { display: none; } }
+
+.thr { display: flex; flex-direction: column; min-height: 0; width: 100%; }
+.thr__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ds-3);
+  padding: var(--ds-5) var(--ds-6); border-bottom: 1px solid var(--ds-line);
+}
+/* The column has to say what it is. .thr__title names the ROLE being called; nothing
+   said that this column is the operator side and the one to its right is the call. */
+.thr__eyebrow {
+  margin: 0 0 2px; font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi);
+ color: var(--ds-text-2);
+}
+.thr__title { margin: 0; font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+
+.thr__list {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding: var(--ds-6); display: flex; flex-direction: column; gap: var(--ds-4);
+}
+.thr__msg { max-width: 100%; }
+.thr__text { font-size: var(--ds-fs-body); line-height: 1.55; color: var(--ds-text); }
+.thr__note { display: flex; margin-top: var(--ds-2); }
+
+.thr__callstrip {
+  margin-top: auto; display: flex; flex-direction: column; gap: 2px;
+  border: 1px solid var(--ds-tone-numbers); border-radius: var(--ds-r-card);
+  padding: var(--ds-4) var(--ds-5); background: var(--ds-tone-numbers-bg);
+}
+.thr__callstriplabel {
+  font-size: var(--ds-fs-meta);
+  font-weight: var(--ds-fw-semi); color: var(--ds-tone-numbers-ink);
+}
+.thr__callstriptext { font-size: var(--ds-fs-sub); line-height: 1.45; color: var(--ds-text-2); }
+
+.thr__composer {
+  flex: 0 0 auto; display: flex; gap: var(--ds-3);
+  padding: var(--ds-5) var(--ds-6); border-top: 1px solid var(--ds-line);
+  background: var(--ds-surface);
+}
+/* Its own tokens rather than a blanket opacity on a filled primary: the draft starts
+   empty, so a washed-out primary was the first thing a viewer met. */
+
+.thr--empty { justify-content: center; }
+.thr__hello { padding: var(--ds-7); display: flex; flex-direction: column; gap: var(--ds-3); margin-top: auto; }
+.thr__hellotitle { margin: 0; font-size: 18px; font-weight: var(--ds-fw-semi); color: var(--ds-text); }
+.thr__hellosub { margin: 0; font-size: var(--ds-fs-body); color: var(--ds-text-2); }
+.thr__chips { display: flex; flex-wrap: wrap; gap: var(--ds-3); margin-top: var(--ds-3); }
+.thr__chips--inline { margin-top: var(--ds-3); }
+.stl__scope--figure { padding: 0 var(--ds-6) var(--ds-6); }
+
+
+/* ── per-turn replay ─────────────────────────────────────────────────────────
+   28px in the figure, 32px on the page. 44pt is the iOS touch floor; on pointer web
+   this is honest for a per-turn mark that sits beside its content rather than being
+   hunted for. It stays visible rather than appearing on hover, because a control that
+   only exists on hover does not exist on a touch laptop. */
+.stl__play {
+  width: 28px; height: 28px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-r-btn);
+  background: transparent; color: var(--ds-text-3); cursor: pointer;
+  transition: color var(--ds-dur-fast) var(--m3-standard), border-color var(--ds-dur-fast) var(--m3-standard);
+}
+.stl--page .stl__play { width: 32px; height: 32px; }
+.stl__play svg { width: 14px; height: 14px; }
+.stl__play:hover { color: var(--ds-text); border-color: var(--ds-text-3); }
+.stl__play:active { color: var(--ds-tone-trust-ink); border-color: var(--ds-tone-trust); }
+
+/* Two labelled groups where there used to be one mislabelled row. */
+.stl__choicegroup { display: flex; flex-direction: column; }
+.stl__choicegroup + .stl__choicegroup { margin-top: var(--ds-5); }
+
+/* The speaking state as a word, not only as three moving bars. */
+.stl__speakmark {
+  font-size: var(--ds-fs-meta); font-weight: var(--ds-fw-semi);
+  color: var(--ds-tone-trust-ink); text-transform: none; letter-spacing: 0;
+}
+
+/* A control named by its result, with the reply beneath it, and the consequence stated
+   in the group rather than discovered by pressing. */
+.stl__replaynote {
+  font-size: var(--ds-fs-meta); line-height: 1.5; color: var(--ds-text-2);
+  font-weight: 400; margin-bottom: var(--ds-2);
+}
+.stl__replaybtn {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  text-align: left; padding: var(--ds-3) var(--ds-5); height: auto; min-height: 32px;
+}
+.stl__replayverb { font-weight: var(--ds-fw-semi); font-size: var(--ds-fs-btn); }
+.stl__replaytext { font-size: var(--ds-fs-sub); font-weight: 400; opacity: 0.85; }
+
+/* A glyph inside the selected chip, so the state is not carried by the fill alone. The
+   fill is already a full luminance flip (--ds-primary against --ds-on-primary), which
+   survives greyscale; the check is redundancy, not a rescue. */
+.ats__btncheck { margin-right: var(--ds-1); font-weight: 700; }
+
+/* Styled like .stl__notesrc, because it is the same kind of thing: a reference beside a
+   claim, not a prefix in front of one. */
+.stl__failsrc { font-size: var(--ds-fs-meta); line-height: 1.4; color: var(--ds-text-2); }
+
+/* The looser count, spelled out in person-words. It replaced a single "touched" number
+   that summed confirmed, heard-once and not-applicable together, which is exactly the
+   blur the asked/heard distinction exists to prevent. */
+.ats__breakdown {
+  margin: var(--ds-1) 0 0; font-size: var(--ds-fs-sub); line-height: 1.5;
+  color: var(--ds-text-2);
+}

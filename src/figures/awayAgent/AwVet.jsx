@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import { PhoneWindow } from "../ds/Scaffold";
 import { Rail } from "./Rail";
-import { Verdict, Flight } from "./chrome";
+import { SummaryLine, Flight } from "./chrome";
 import "./awayAgent.css";
 
 // "Vetted, not dumped." A familiar scrollable list the agent has already sorted by
@@ -78,7 +78,7 @@ export default function AwVet() {
         <div className="aw-stage">
           <PhoneWindow title="Results">
             <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-              <Verdict><b>8 flights.</b>&nbsp;3 are worth your time.</Verdict>
+              <SummaryLine><b>8 flights.</b>&nbsp;3 are worth your time.</SummaryLine>
               <div className="aw-flights">
                 <Flight {...f1} />
                 <Flight {...f2} />

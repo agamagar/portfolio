@@ -1,0 +1,12 @@
+{
+  "nodes": [
+    {
+      "nodeId": "80:4215",
+      "nodeName": "Frame 2147231130",
+      "nodeType": "FRAME",
+      "codeSnippets": {
+        "motionDev": "<motion.div initial={{ y: 0, }} animate={{ y: [0, 0, -400, -400, -620, -620, -940, -940, -8, -8], }} transition={{ y: { duration: 5, times: [0, 0.058, 0.2779, 0.3313, 0.4352, 0.5086, 0.6528, 0.7426, 0.8426, 1], ease: [\"linear\", [0.42, 0, 0, 1], \"linear\", [0.42, 0, 0, 1.002], \"linear\", [0.42, 0, 0, 1.005], \"linear\", \"easeOut\", \"linear\"], repeat: Infinity }, }} />"
+      }
+    }
+  ]
+}

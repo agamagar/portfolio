@@ -1,0 +1,71 @@
+/* Consumer / keynote register proof figure. Self-contained dark void stage; every
+   curve + duration is a consumer-register token from index.css :root. Role split:
+   movement on the cine glide, fades on the flat effects curve, the glint on the flat
+   accelerate, holds are waits (in JS). One thing moves per beat. */
+
+.ch-stage {
+  position: relative; height: 384px; border-radius: 18px; overflow: hidden;
+  background: var(--ds-stage-void);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px;
+}
+.ch-vignette { position: absolute; inset: 0; background: var(--ds-vignette); pointer-events: none; }
+
+/* the hero materializes FROM THE VOID: scale 0.92 -> 1 (cine glide) + fade (flat,
+   finishing ~250ms before the scale tail, so it "settles onto a surface"). No overshoot. */
+.ch-hero {
+  position: relative; opacity: 0; transform: scale(0.92); will-change: transform, opacity;
+  transition: transform var(--m3-dur-cine-reveal) var(--m3-ease-cine-glide),
+              opacity var(--m3-dur-spatial-expressive-slow) var(--m3-effects-default);
+}
+.ch-hero.is-in { opacity: 1; transform: scale(1); }
+
+/* contact glow seats the hero (opacity only, not box-shadow animation) */
+.ch-hero__glow {
+  position: absolute; inset: -22% -14%; border-radius: 44px; pointer-events: none;
+  background: radial-gradient(58% 58% at 50% 62%, rgba(120,150,220,0.20), transparent 70%);
+  opacity: 0; transition: opacity var(--m3-dur-cine-reveal) var(--m3-effects-default);
+}
+.ch-hero.is-in .ch-hero__glow { opacity: 1; }
+
+.ch-card {
+  position: relative; width: 282px; padding: 26px 26px 22px; border-radius: 20px;
+  background: linear-gradient(158deg, #1c2230 0%, #11141d 100%);
+  box-shadow: var(--ds-elev-lift); border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex; flex-direction: column; gap: 11px;
+}
+.ch-card__brand { font-size: 11.5px; letter-spacing: 0.34em; color: #8aa0c8; font-weight: 600; }
+.ch-card__route { font-size: 31px; font-weight: 600; color: #f4f6fb; letter-spacing: -0.01em; display: flex; align-items: center; gap: 13px; }
+.ch-card__route i { color: #5b78b0; font-size: 25px; }
+.ch-card__meta { font-size: 12.5px; color: #7e8aa0; }
+
+/* specular sweep: a LIGHT event, fires ONCE at settle (delay = the reveal duration),
+   never loops; clipped to the card; transform of a streak (composited). */
+.ch-hero__sweep { position: absolute; inset: 0; pointer-events: none; border-radius: 20px; overflow: hidden; }
+.ch-hero__sweep::before {
+  content: ""; position: absolute; top: -25%; bottom: -25%; left: 0; width: 34%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  transform: translateX(-240%);
+}
+.ch-hero.is-in .ch-hero__sweep::before {
+  animation: chSweep var(--m3-dur-spatial-fast) var(--m3-standard-accelerate) var(--m3-dur-cine-reveal) 1 both;
+}
+@keyframes chSweep { from { transform: translateX(-240%); } to { transform: translateX(540%); } }
+
+/* the claim builds word by word: rise on the pure decelerate, fade on the flat curve */
+.ch-claim { margin: 0; padding: 0 24px; display: flex; flex-wrap: wrap; justify-content: center; max-width: 380px; }
+.ch-word {
+  font-family: "Newsreader", Georgia, serif; font-size: 27px; line-height: 1.18; color: #e9edf6;
+  opacity: 0; transform: translateY(9px);
+  transition: opacity var(--m3-dur-word-build) var(--m3-effects-default),
+              transform var(--m3-dur-word-build) var(--m3-emphasized-decelerate);
+}
+.ch-claim.is-in .ch-word { opacity: 1; transform: none; }
+
+/* Reduced motion: the parked end state IS the design; no travel, no glint. */
+@media (prefers-reduced-motion: reduce) {
+  .ch-hero, .ch-hero__glow, .ch-word { transition: none; }
+  .ch-hero { opacity: 1; transform: none; }
+  .ch-hero__glow { opacity: 1; }
+  .ch-word { opacity: 1; transform: none; }
+  .ch-hero__sweep::before { animation: none; display: none; }
+}

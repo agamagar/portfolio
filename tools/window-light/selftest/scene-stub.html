@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>window-light contract stub</title>
+<!-- A stand-in page that implements the window.__windowScene capture contract with three r186
+     WebGPURenderer, so render.mjs can be tested end to end before the real scene exists.
+     Serve it with render.mjs --static (no Vite, so Agam's dev server and its dep cache are
+     never touched). -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0e0e11; }
+  canvas { display: block; }
+</style>
+<script type="importmap">
+{ "imports": {
+    "three": "/node_modules/three/build/three.webgpu.js",
+    "three/webgpu": "/node_modules/three/build/three.webgpu.js",
+    "three/tsl": "/node_modules/three/build/three.tsl.js"
+} }
+</script>
+</head>
+<body>
+<script type="module" src="./scene-stub.js"></script>
+</body>
+</html>

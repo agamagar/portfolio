@@ -1,0 +1,14 @@
+/* The twenty-occasion cross-sell table. Neutrals use currentColor so it adapts to light/dark;
+   borders are semi-transparent grey that reads on both. Scrolls horizontally on narrow screens. */
+
+.cst-wrap { width: 100%; overflow-x: auto; }
+.cst { width: 100%; min-width: 660px; border-collapse: collapse; font-family: inherit; font-size: 12.5px; line-height: 1.45; color: inherit; }
+.cst th, .cst td { text-align: left; padding: 9px 12px; vertical-align: top; }
+.cst th { font-size: 11px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; opacity: 0.55; border-bottom: 1px solid rgba(128, 128, 128, 0.3); }
+.cst td { border-bottom: 1px solid rgba(128, 128, 128, 0.14); }
+.cst tbody tr:last-child td { border-bottom: none; }
+.cst-c0 { width: 30px; opacity: 0.5; font-variant-numeric: tabular-nums; }
+.cst-c1 { white-space: nowrap; }
+.cst-c2 { opacity: 0.8; min-width: 150px; }
+.cst-c3 { font-weight: 600; white-space: nowrap; }
+.cst-c4 { opacity: 0.72; min-width: 220px; }

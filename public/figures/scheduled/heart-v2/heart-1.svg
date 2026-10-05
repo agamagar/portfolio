@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="4408.53" height="4088" viewBox="-600 -600 4408.53 4088" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="heart_Vector" filter="url(#filter0_f_0_120)">
+<path d="M2808.53 1074.41C2808.53 1835.84 1692.54 2452.16 1645.02 2477.61C1632.49 2484.43 1618.49 2488 1604.27 2488C1590.04 2488 1576.04 2484.43 1563.52 2477.61C1515.99 2452.16 400 1835.84 400 1074.41C400.199 895.606 470.499 724.185 595.477 597.752C720.454 471.32 889.903 400.202 1066.65 400C1288.68 400 1483.09 496.593 1604.27 659.865C1725.45 496.593 1919.85 400 2141.89 400C2318.63 400.202 2488.08 471.32 2613.06 597.752C2738.03 724.185 2808.33 895.606 2808.53 1074.41Z" fill="url(#paint0_linear_0_120)"/>
+</g>
+<defs>
+<filter id="filter0_f_0_120" x="-600" y="-600" width="4408.53" height="4088" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="200" result="effect1_foregroundBlur_0_120"/>
+</filter>
+<linearGradient id="paint0_linear_0_120" x1="610.269" y1="661.062" x2="2758.39" y2="1873.52" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F2E8FF"/>
+<stop offset="1" stop-color="#9674DB"/>
+</linearGradient>
+</defs>
+</svg>

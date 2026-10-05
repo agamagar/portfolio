@@ -1,0 +1,3421 @@
+/* THE TIMELINE — one stylesheet, one prefix, one row.
+
+   Replaces roughly 4,000 lines of .tl-* rules spread through hello.css, which
+   had accumulated four axis shapes, six lenses, two record strips and three
+   tooltip surfaces, each styled by a different hand.
+
+   THE RULE THIS FILE KEEPS: nothing below knows which reading it is drawing.
+   The lens switcher (Record / Share / Cadence) was cut back to the calendar
+   alone, but the rule outlives it — a second reading, if one ever earns its
+   place, gets the same markup and therefore the same styling for free. If a rule
+   here ever needs to know which reading is up, the reading has been built wrong.
+
+   Colour: bars and dots carry brand accents, which are DECORATION — every fact
+   they sit beside is printed as text in --fg or --muted, so nothing depends on
+   telling two hues apart. Accents are non-text marks; each gets a hairline ring
+   so a low-contrast accent still has an edge against either ground.
+
+   MONO IS NOW THE EXCEPTION, NOT THE DEFAULT (Agam, 2026-08-11: "do a font
+   check for timeline apart from years and organisation names and make it
+   consistent with the website design system ... not very readable as of now").
+
+   What was here: `font-family: ui-monospace` on the section, inherited by
+   everything in it, so a tenure's summary and its outcome bullets were 11px
+   monospace prose. Monospace is a COORDINATE face - it exists so digits line up
+   in a column - and it is the wrong one for sentences: wider glyphs at the same
+   size, no proportional rhythm, and every word harder to take in at a glance.
+   The touch rail had already reached this conclusion for its own role line
+   ("SANS, and said so ... a job title is language, not a coordinate"); this
+   applies the same rule to the whole section.
+
+   WHAT KEEPS MONO, and it is exactly what Agam named: the organisation tags and
+   the years, plus the floating date readout, which is a year in another form.
+   Those are the technical drawing. The prose is not. */
+
+.tlx {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(40px, 8vh, 96px) var(--hello-gutter, 24px) clamp(48px, 10vh, 110px);
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  /* the section inherited -0.016em from the page, which is tracking meant for
+     display type and is wrong under 14px */
+  letter-spacing: normal;
+
+  /* The gutter is the whole layout. One value, read by the ruler and every row,
+     so a name column and its ticks cannot fall out of step. */
+  --tlx-gutter: 208px;
+  --tlx-bar: 10px;
+}
+
+/* ---- head ---------------------------------------------------------------- */
+
+.tlx__head {
+  text-align: center;
+  margin-bottom: clamp(20px, 4vh, 40px);
+}
+.tlx__title {
+  font-family: "Newsreader", Georgia, serif;
+  font-variation-settings: "opsz" 40;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--fg);
+}
+/* Matched to the hero's supporting copy, deliberately opting out of the mono
+   above: the two pieces of prose on this page read as one voice. Line-height is
+   absent on purpose — it inherits the design-system default. */
+.tlx__sub-copy {
+  margin: 22px auto 0;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--muted);
+  /* A MEASURE, which this never had: the paragraph was centred by `auto`
+     margins but free to run the full width of the section, so its line length
+     was whatever the viewport happened to be. 56ch holds it near the 45-75
+     characters prose is comfortable at.
+
+     `balance` rather than `pretty`, and the difference matters for exactly this
+     kind of block: pretty only protects the LAST line from being an orphan,
+     while balance evens out every line in a short centred block - which is what
+     the three hard <br>s used to be doing by hand, at one width only. */
+  max-width: 56ch;
+  text-wrap: balance;
+}
+.tlx__sub-copy mark {
+  background: none;
+  color: var(--fg);
+}
+
+/* PHONES: the same block, sized for the width it is actually read at. 16px over
+   a 335px column is about 42 characters a line, under the comfortable floor, and
+   the section's own padding is the only gutter it has. Dropping a point and
+   tightening the measure gives the balancer something to work with, and 22px of
+   space above a paragraph this size reads as a gap rather than as a relationship.
+   640px is the page's one breakpoint (useSheet.js). */
+
+@media (max-width: 640px) {
+  .tlx__sub-copy {
+    margin-top: 16px;
+    font-size: 15px;
+    max-width: 34ch;
+  }
+}
+
+/* Says what the track's width means, in words. Sans, like the other prose on
+   the page. Kept after the lens switcher was cut: one reading still deserves to
+   be named rather than inferred from a ruler. */
+.tlx__note {
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 78ch;
+  margin: 0 auto clamp(22px, 4vh, 38px);
+  text-align: center;
+  text-wrap: pretty;
+}
+.tlx__note b {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* ---- the draw-style switch ------------------------------------------------ */
+
+.tlx__styles {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 0 0 clamp(18px, 3vh, 30px);
+}
+.tlx__chip {
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  corner-shape: round; /* a pill, not a squircle — see the global corner note */
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+.tlx__chip:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+.tlx__chip[data-active="true"] {
+  color: var(--bg);
+  background: var(--fg);
+  border-color: var(--fg);
+}
+.tlx__chip:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* ---- the grid ------------------------------------------------------------ */
+
+.tlx__grid {
+  border-top: 1px solid var(--line);
+}
+
+/* Ruler and row share ONE column definition. Sticky so the years stay readable
+   while a long record scrolls past them. */
+.tlx__ruler,
+.tlx__row {
+  display: grid;
+  grid-template-columns: var(--tlx-gutter) 1fr;
+  gap: 0 20px;
+}
+.tlx__ruler {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.tlx__ruler .tlx__track {
+  position: relative;
+  height: 14px;
+}
+.tlx__tick {
+  position: absolute;
+  left: var(--x);
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* Ticks at the two ENDS are anchored inward instead of centred, or half of each
+   sits outside the track and is clipped by the section's padding. Driven by the
+   measured x (see tick() in Timeline.jsx), not by :first-child — a lens whose
+   first tick sits 8% in wants that one centred like all the rest. */
+.tlx__tick[data-align="start"] {
+  transform: none;
+}
+.tlx__tick[data-align="end"] {
+  transform: translateX(-100%);
+}
+
+.tlx__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tlx__row {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---- the gutter: every fact, printed ------------------------------------- */
+
+.tlx__gutter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tlx__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+.tlx__sub {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tlx__role,
+.tlx__dates {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.tlx__role {
+  color: var(--fg);
+  opacity: 0.75;
+}
+
+/* ---- the track ----------------------------------------------------------- */
+
+.tlx__track {
+  min-width: 0;
+}
+.tlx__plot {
+  position: relative;
+  height: 18px;
+}
+.tlx__rule {
+  position: absolute;
+  inset-inline: 0;
+  top: calc((18px - 1px) / 2);
+  height: 1px;
+  background: var(--line);
+}
+.tlx__bar {
+  position: absolute;
+  left: var(--x0);
+  width: max(3px, calc(var(--x1) - var(--x0)));
+  top: calc((18px - var(--tlx-bar)) / 2);
+  height: var(--tlx-bar);
+  border-radius: 2px;
+  background: var(--accent);
+  /* THE RING CARRIES THE 3:1, NOT THE FILL. Measured against both grounds, the
+     brand accents fail as a set and no single value fixes them: Toppr teal
+     #2BB3A3 is 2.60:1 on white, Cyware slate #475569 is 2.54:1 and Zepto purple
+     #6B21D9 is 2.61:1 on the dark page. They cannot all be corrected without
+     abandoning the brand colours, and they should not be — the accents are
+     decoration over a record that is already fully printed as text.
+     So the BOUNDARY does the work instead. At 48% of --fg the ring measures
+     3.33:1 on white and 4.46:1 on the dark ground, so every bar has a
+     discernible edge whatever its fill, including the degree's neutral hatch.
+     Raised from 22%, which cleared neither (about 1.6:1 light). */
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--fg) 48%, transparent);
+}
+/* The degree carries no entity colour — AIIMS green stays reserved for AIIMS —
+   so it takes a neutral hatch instead of a fill. It is still a real span, so it
+   is drawn; it just is not an employer. */
+.tlx__bar[data-kind="study"] {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in oklab, var(--fg) 26%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+}
+/* WEIGHT CARRIES THE LANE, NEVER HUE. What held the field is solid; what ran
+   alongside it is ruled. The accents fail as a categorical set, so the
+   distinction has to live in something other than colour. */
+.tlx__bar[data-kind="venture"],
+.tlx__bar[data-kind="internship"],
+.tlx__bar[data-kind="research"] {
+  height: 4px;
+  top: calc((18px - 4px) / 2);
+  border-radius: 999px;
+  corner-shape: round;
+}
+
+/* THE SHIP DOT AND THE SHIP CARD ARE GONE (Agam, 2026-08-11: "remove all the
+   shipped related content"). What stood here: `.tlx__dot`, the 9px accent circle
+   that marked a shipped month on a bar, and the `.tlx__ship*` family - the
+   flush-left card printing brand, month, title and a role/outcome meta line.
+   A row is now its bar and its outcomes. */
+
+.tlx__out {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+/* ---- narrow ---------------------------------------------------------------
+   Under about 720px the two-column grid stops being a grid: 208px of name
+   against whatever is left is not a track any more. The row stacks, the gutter
+   becomes a heading, and the bar keeps its full width, which is the one thing
+   that still reads at that size. */
+@media (max-width: 720px) {
+  .tlx {
+    --tlx-gutter: 0px;
+    /* Compact section padding for the whole phone/large-phone range, not just
+       <=640. Above this, the base rule's clamp(_, 8vh/10vh, _) took over and
+       reintroduced a tall viewport-scaled band on 641-720px handsets. One value
+       here, on the section's step-of-8 scale (Agam, mobile QA 2026-08-13).
+       Top raised 24 -> 64 (Agam, 2026-08-14: "increase the space between side
+       quests and a journey section"): the visible gap measured 87px against
+       the ~125px every other section boundary on the page gets, so this brings
+       that seam onto the same rhythm rather than inventing a new number. */
+    padding-top: 64px;
+    padding-bottom: 32px;
+  }
+  .tlx__ruler,
+  .tlx__row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .tlx__ruler .tlx__gutter {
+    display: none;
+  }
+}
+
+/* ---- DITHER ---------------------------------------------------------------
+   After dither-kit (tripwire.sh/dither-kit). Rebuilt in CSS rather than
+   installed: that kit is a canvas engine for area/bar/pie/radar charts on
+   shadcn, and none of those is a Gantt row.
+
+   An ordered 2x2 dot grid — two offset dot layers on a 4px cell — which is the
+   classic Bayer look at the smallest size that still reads as dots rather than
+   as noise. UNIFORM density, never a ramp: dither-kit varies density to encode
+   magnitude, but here length already encodes duration, so a varying density
+   would be a second measure the record does not have.
+
+   CONTRAST IS WHY THE RING ALREADY EXISTS. A 50%-coverage dot fill halves the
+   bar's effective contrast against the page, which would have put every accent
+   under 3:1 on one ground or the other. The 48% boundary ring measured earlier
+   (3.32:1 light, 4.44:1 dark) carries it regardless of what the fill does —
+   this style is the case that rule was written for, arriving later.
+
+   Everything else is untouched. (This paragraph used to add "the ships stay
+   solid, because a 9px circle rendered as four dots is not a circle" - there are
+   no ship dots to exempt any more.) */
+
+.tlx[data-style="dither"] .tlx__bar {
+  background-color: transparent;
+  background-image:
+    radial-gradient(var(--accent) 42%, transparent 44%),
+    radial-gradient(var(--accent) 42%, transparent 44%);
+  background-size: 4px 4px, 4px 4px;
+  background-position: 0 0, 2px 2px;
+}
+
+/* The degree keeps its neutral ink here too. Under Solid it is distinguished by
+   a hatch; under Dither the hatch would be one texture among many, so the thing
+   that separates it is what always really did — it carries NO entity colour. */
+.tlx[data-style="dither"] .tlx__bar[data-kind="study"] {
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--fg) 55%, transparent) 42%, transparent 44%),
+    radial-gradient(color-mix(in oklab, var(--fg) 55%, transparent) 42%, transparent 44%);
+}
+
+/* The thin lanes (internship, research, venture) are 4px tall, which is one dot
+   cell. A 4px grid on a 4px bar reads as a dashed line, not a dither, so those
+   drop to a 3px cell and keep a legible texture at that height. */
+.tlx[data-style="dither"] .tlx__bar[data-kind="venture"],
+.tlx[data-style="dither"] .tlx__bar[data-kind="internship"],
+.tlx[data-style="dither"] .tlx__bar[data-kind="research"] {
+  background-size: 2px 2px, 2px 2px;
+  background-position: 0 0, 1px 1px;
+}
+
+/* ---- THE GRAPH (dither style only) ----------------------------------------
+   A stacked area of concurrent commitments per month, after the dither-kit
+   reference. Two bands: what held the field, and what ran alongside it.
+
+   THE BANDS ARE CLIPPED DIVS, NOT SVG AREAS. An SVG path stretched to width
+   with preserveAspectRatio="none" stretches its fill pattern with it, and round
+   dither dots become ellipses — which is the one thing this style cannot
+   survive. A CSS background-image stays square no matter what `clip-path` does
+   to the box around it, so the dither reads identically at every viewport. */
+
+.tlx__chart {
+  margin: 0 0 clamp(26px, 5vh, 44px);
+}
+.tlx__chart-plot {
+  position: relative;
+  height: clamp(140px, 22vh, 220px);
+  /* the plot is a percentage box; the bands clip against exactly this */
+  isolation: isolate;
+}
+
+/* Horizontal rules at each whole commitment count, with the count in the
+   margin. The axis is integers all the way up because the value is a COUNT —
+   there is no such thing as 1.5 jobs. */
+.tlx__chart-gridline {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--y);
+  height: 1px;
+  background: var(--line);
+}
+.tlx__chart-gridline i {
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  transform: translate(-100%, -50%);
+  font-style: normal;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.tlx__band {
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  background-repeat: repeat;
+}
+/* THE FLOOR, ONE BOX PER HOLDER. The denser fill, because it is what everything
+   else sits on. Neutral ink and no accents: the run is identified by its printed
+   NAME and by the seam beside it, which works for five entities where five hues
+   would not — the same reason the bars use weight rather than colour. */
+.tlx__floor {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  /* A <button> carries a UA background-color of ButtonFace, which fills the
+     gaps between the dither dots and turns the whole floor into a solid slab.
+     The dither is a background-IMAGE, so the colour underneath it has to be
+     cleared explicitly the moment these became buttons. */
+  background-color: transparent;
+  left: var(--x);
+  width: var(--w);
+  top: var(--top);
+  height: var(--h);
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--fg) 70%, transparent) 42%, transparent 44%),
+    radial-gradient(color-mix(in oklab, var(--fg) 70%, transparent) 42%, transparent 44%);
+  background-size: 4px 4px, 4px 4px;
+  background-position: 0 0, 2px 2px;
+  /* The seam is the whole point of segmenting: a handover is a vertical line in
+     a continuous floor, so the eye reads succession rather than one long slab.
+     Drawn on the leading edge, so the first run has no seam hanging off it. */
+  border-left: 1px solid var(--bg);
+  box-shadow: inset 1px 0 0 color-mix(in oklab, var(--fg) 48%, transparent);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.tlx__floor:first-of-type {
+  border-left: 0;
+  box-shadow: none;
+}
+/* The name only where the run is wide enough to hold it. A two-month stretch has
+   no room and needs none: every row below is labelled. */
+.tlx__floor b {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg);
+  /* a plate behind the name, or it sits on the dither and neither reads */
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+  /* A run's width is a share of the chart, but a name's width is a count of
+     characters, and the two do not track: "Deutsche Bank" fits its 11% run at
+     1200px and is cut off at 800px. Ellipsis rather than a fixed
+     hide-below-N-percent rule, so the label degrades with the viewport instead
+     of vanishing at one arbitrary width. The full name is in the row below
+     either way. */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+}
+.tlx__floor[data-wide="true"] b {
+  opacity: 1;
+}
+/* WHAT RAN ALONGSIDE, one box per named run. Sparser than the floor and on a
+   wider cell, so the two read as different DENSITIES rather than different
+   colours — the same reason the bars use weight and not hue. */
+.tlx__rider {
+  position: absolute;
+  left: var(--x);
+  width: var(--w);
+  top: var(--top);
+  height: var(--h);
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--bg);
+  background-color: transparent;
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--fg) 55%, transparent) 34%, transparent 36%);
+  background-size: 5px 5px;
+  cursor: pointer;
+}
+.tlx__floor,
+.tlx__rider,
+/* `.tlx__chart-ship` (the dots riding the top of the dither plot, with their
+   focus ring and hot state) and the `Shipped` legend swatch went with them. */
+
+
+.tlx__chart-note {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (max-width: 720px) {
+  .tlx__chart-gridline i {
+    left: 0;
+    transform: translate(0, -120%);
+  }
+}
+
+/* ---- THE SCRUB (scrub style only) -----------------------------------------
+   One dash per lived month, after Great UI's RevisionTimeline. Rebuilt in CSS:
+   the reference is Tailwind class strings + framer-motion, and a height plus a
+   translate are two transitions, not a second animation runtime. */
+
+.tlx__scrub {
+  margin: 0 0 clamp(26px, 5vh, 44px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* The month's record. Fixed min-height so stepping through does not make the
+   panel jump every time a month has one fewer line than the last. */
+.tlx__scrub-card {
+  padding: 20px 22px 16px;
+  min-height: 108px;
+}
+.tlx__scrub-month {
+  margin: 0 0 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tlx__scrub-field {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tlx__scrub-field b {
+  font-weight: 600;
+  color: var(--fg);
+}
+.tlx__scrub-riders,
+/* The scrub card's "Shipped:" line, the chip strip under the dial and the
+   jump-to-that-month buttons are all gone with the ships. */
+
+
+
+.tlx__scrub-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px 10px;
+}
+.tlx__scrub-btn {
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+.tlx__scrub-btn:hover:not(:disabled) {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+.tlx__scrub-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.tlx__scrub-btn:focus-visible,
+.tlx__scrub-range:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+/* THE RANGE IS THE REAL CONTROL, not a decoration over one. The dashes are a
+   picture; this holds the value, so arrows, Home and End work without
+   re-implementation. INVISIBLE now, not slim (annotation msl5zwgy): it lies
+   over the whole strip so scrubbing is the strip itself - the control you
+   find by touching the thing you were already looking at. Focus still draws
+   the ring, on the strip's own outline. */
+/* Same padding as the strip below, so thumb and raised dash share an axis. */
+.tlx__scrub-track {
+  padding: 0 22px;
+}
+.tlx__scrub-range {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+.tlx__scrub-strip {
+  position: relative;
+}
+.tlx__scrub-track {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: stretch;
+}
+
+/* The strip is STATIC and spans the box. No translation and no edge mask: the
+   reference needs both because its dash row overflows (161 padded days), and
+   100 months lay across this container without running out of it. Nothing that
+   does not overflow needs a scroller, and nothing that fits needs a fade. */
+.tlx__scrub-strip {
+  height: 56px;
+  padding: 0 22px 10px;
+}
+.tlx__scrub-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100%;
+}
+.tlx__dash {
+  width: 3px;
+  height: var(--h);
+  flex: 0 0 3px;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in oklab, var(--fg) 30%, transparent);
+  transition: height 200ms ease-out, background-color 140ms ease;
+}
+.tlx__scrub-row[data-reduce="true"] .tlx__dash {
+  transition: none;
+}
+/* The brighter dash that marked a month with a shipment is gone (2026-08-11):
+   the dial is a hundred equal steps again, with only the active one lit. */
+.tlx__dash[data-active="true"] {
+  background: var(--fg);
+}
+
+@media (max-width: 720px) {
+  .tlx__scrub-card {
+    padding: 16px 16px 12px;
+  }
+  .tlx__scrub-nav {
+    padding: 0 16px 12px;
+  }
+}
+
+/* ---- THE RAIL (rail style only) -------------------------------------------
+   A vertical spine of the same 100 months, magnified under the pointer, with
+   the month's record following in a card. After Ruixen's ChapterScrubber.
+
+   The wave is a RAISED-COSINE bump computed in JS from one motion value (see
+   Timeline.jsx) — nothing here knows about it. This file only has to leave the
+   ticks free to change width, which is why the row is a fixed-height flex line
+   and the tick has no width of its own. */
+
+/* HORIZONTAL (annotation msivdpd0). Every number below is the same number it
+   was — 64px is still RAIL_PEAK, 4px is still the end padding — read against
+   the other axis. The rail now runs left to right like the ruler and every bar
+   above it, and the ticks rise from a baseline instead of reaching rightward
+   off a spine.
+
+   min-height carries the whole stack now that the card sits BELOW the rail
+   rather than beside it: the 64px crest, a 20px gap, and the card's 260px cap. */
+
+.tlx__rail {
+  position: relative;
+  /* FULL WIDTH (annotation msk7u1er). It used to shrink-wrap to 100 ticks at
+     5px and centre the result, which left a 500px strip adrift in a 1200px
+     section — and, worse, gave the card an origin that was not the timeline's.
+     Spanning the section means the rail shares an x-axis with every other tab,
+     so a month sits at the same place here as it does on the bars above. */
+  width: 100%;
+  /* REAL HEIGHT FOR THE LANES (annotation msl5z4ln, "increase the height"):
+     the tag cards hang 104px below the strip in stacked 30px lanes, and the
+     rail used to reserve nothing for them - they overflowed into whatever
+     came next. The component publishes how many lanes the pack actually
+     used; 40px is the strip-to-cards gap, 26px covers the card row itself. */
+  /* THE RESTING TAG CARDS NOW SIT ABOVE THE STRIP (annotation msl6yagw, "move
+     this above the timeline"), so the space they need is reserved on TOP rather
+     than underneath. Same lane count the pack reports, so it is exact rather
+     than a guessed block height: 30px per lane plus a 12px gap down to the
+     ticks. The layers that are still BELOW the strip (the moving date, the year
+     row, the hover card) offset by this same variable, which is why it is a
+     custom property and not a literal - every one of them measures from the
+     strip, and the strip no longer starts at zero. */
+  /* The band is reserved ON TOP (annotation msl6yagw), and it has to fit the
+     OPENED card as well as the resting lanes, hence the max().
+     
+     ONE CARD SITS BELOW INSTEAD - see [data-below] further down. msmpfmk9 was
+     dropped on the Deutsche Bank pill specifically, and a first pass read it as
+     a rule about the whole set and moved all ten. It was about that one card. */
+  /* THE ROW PITCH, from the Figma reference (msmsv40x): the label there is
+     115x50 with a 12px radius, so a two-line card is 50 tall and 30px lanes
+     would have stacked them into each other. 58 is the card plus an 8px gutter,
+     the same 8 the hero's three lines use. */
+  /* Back to a one-line card (msmtewu7 removed the role line). MEASURED, not
+     computed from the parts: 9px padding + a 10px label at 1.4 line-height +
+     1px borders comes to 34, and the 32 this said first started the leader 2px
+     inside the card it hangs from. The lane is that plus the same 8px gutter
+     the hero's lines use. */
+  --rail-lane: 42px;
+  /* 34 -> 35: the true resting pill height. The tag line is 15.4px and the box
+     carries 18px of padding and 2px of border, so 35 is the height that holds it
+     without a clip - and now that the resting card has an EXPLICIT height for the
+     smooth expand (2026-08-13), a value 1px short cropped the org's descenders.
+     Used as the card height, in the leader's card-bottom math, and by the emoji
+     box, so all three stay on the real pill height. */
+  --rail-card-h: 35px;
+  /* Room for an opened card at FULL LENGTH. MEASURED, not estimated: the ten
+     panels run 234-370px and Dassh is the tallest at 370. Held whether or not
+     anything is open, which is what stops the section resizing as you sweep -
+     and it is static, so switching timeline tabs cannot make it jump either.
+     Was 340 against an estimate of "~324", which was 30px short of the real
+     tallest and part of why the panel met the ticks. */
+  --rail-open-h: 370px;
+  /* THE PANEL NEVER REACHES THE TICKS (annotation msq1…, "the default cards need
+     to move up, hover state is colliding with the dashes - set a rule for
+     expanded cards to be the same 40px distance from the dashes").
+
+     Both halves of that are this one number. Every card now opens from the top
+     of the band and grows DOWN (msq0oyzf), so the band IS the clearance: make it
+     the tallest panel plus 40 and no panel can reach the strip, and because the
+     resting rows are pinned to the top of the band, growing it is also what
+     moves the resting cards up. One term, both effects.
+
+     THE -200 SLACK IS GONE, and had to go. It was subtracted when cards grew
+     UPWARD into empty air above the labels, where running out of room cost
+     nothing - the reserve was theoretical. Downward it is load-bearing: the
+     space it reserves is the space between the panel and the ticks, and Dassh
+     at 370px was already 76px past the old 294 band, which is the collision.
+
+     --rail-open-h is now MEASURED rather than estimated: opening all ten and
+     reading their boxes gives 370 (Dassh), 313 (Away), 295 (UPES), 275 (AIIMS)
+     above the rail and 333 (Toppr) below. 370 is the real tallest, so it is the
+     reserve; re-run that check if the copy grows. */
+  /* HOW FAR ANY CARD STAYS OFF THE DASHES, one number for both sides of the
+     rail (msq1…'s 40px, then msq25623 asking for the same below). Declared so
+     the two sides cannot drift: it is the top band's clearance, the under-rail
+     group's offset from the ticks, and the reserve either side is measured
+     with. */
+  --rail-clear: 40px;
+  /* THE GAP BETWEEN AN OPEN CARD'S NEAR EDGE AND THE DASHES (msqt94fi set this
+     at 36px; Agam raised it to 48px on 2026-08-13). One variable so the expanded
+     card, both leaders, and the resting card's 50%-line centre all move together
+     - the eight places that used to hardcode 36 kept drifting apart otherwise. */
+  --rail-anchor: 48px;
+  /* THE DEEPEST LANE PLUS A WHOLE PANEL (msqrnxi0). While an opening card
+     jumped to the top of the band, one panel's worth of reserve was enough for
+     every lane. Now that it opens WHERE IT RESTS, the card with the least room
+     below it is the one on the lowest lane, so the reserve has to start from
+     there: (lanes - 1) rows down, then the panel, then the clearance. */
+  /* x0.75 (Agam, 2026-08-15, same debug capture: "make the green boxes
+     smaller"). The full sum is what a lowest-lane card needs to open without
+     touching the ticks; at three quarters (536 -> 402) that one card's open
+     panel now runs ~130px past the strip line, over the ticks, while every
+     other card still fits. Chosen over shrinking --rail-open-h (which is the
+     measured tallest record, not a knob) or the lane pitch (which is the
+     resting rhythm). The empty ground at rest is what was asked about, and
+     the overrun only exists while a card is held open. */
+  --rail-band-scale: 0.75;
+  --rail-cards-h: calc(
+    max(
+        calc(var(--tlx-lanes, 1) * var(--rail-lane) + 12px),
+        calc(
+          (var(--tlx-lanes, 1) - 1) * var(--rail-lane) + var(--rail-open-h) +
+            var(--rail-clear)
+        ),
+        /* ...and never less than the BOTTOM side needs (see --rail-band below):
+           every above-rail position measures from this number, so if the lower
+           band ever outgrows the upper one the strip has to move with it. */
+        var(--rail-below-h)
+      ) * var(--rail-band-scale)
+  );
+  /* THE GAP BETWEEN THE LABELS AND THE TICKS, now a DECLARED value rather than
+     a derived one (annotation msmtj46o, "reduce the vertical spacing from the
+     timeline for all").
+
+     It used to be whatever the band had left over after the lanes, and the band
+     is sized for the OPENED card (272px) - so with three one-line lanes it came
+     out at ~154px of empty air on each side, and every leader line was that
+     long. The reservation and the breathing room are two different jobs, and
+     deriving one from the other tied the labels' distance from the timeline to
+     the height of a panel that is not even open.
+
+     Both sides still read this ONE number, so msmq7627's "equal to top" holds by
+     construction rather than by arithmetic. */
+  --rail-gap: 28px;
+  /* ONE BAND, BOTH SIDES (Agam, 2026-08-15, on a debug capture with the two
+     reserves painted green: "make the green parts the same height"). The top
+     reserve is --rail-cards-h (4 lanes -> 536px) and the bottom was its own
+     sum (2 lanes -> 452px), so the strip sat 84px below the section's middle.
+     Both paddings now take the LARGER of the two, so the strip is centred in
+     its band whatever the lane counts come to; the cards keep positioning
+     against --rail-cards-h and the below-rail cards against the strip, so
+     nothing moves except the empty ground under the lower cards. */
+  --rail-below-h: calc(
+    var(--rail-clear) + (var(--tlx-below-lanes, 1) - 1) * var(--rail-lane) +
+      var(--rail-open-h)
+  );
+  --rail-band: var(--rail-cards-h); /* already >= --rail-below-h */
+  padding-top: var(--rail-band);
+  /* the strip-to-date gap, the year row, and room for the one card that sits
+     under all of it */
+  /* THE BOTTOM HAS TO FIT AN OPENED CARD, NOT JUST THE RESTING ROWS (annotation
+     msmsb1s2). Measured: a below-rail card opening its 260px panel ran 75px
+     (CaratLane) and 190px (Zepto) past the bottom of the section and into
+     whatever follows. The top band has always had `max(..., 272px)` for exactly
+     this reason; the bottom was reserving only the 30px lanes because, when it
+     was written, nothing down here ever opened. */
+  /* MINUS 40 (msnxfn5z). Same slack the top has been spending: the reserve is
+     sized for a full-length card on the deepest lane and no card is that tall. */
+  /* THE SAME LAYOUT AS THE TOP SIDE (annotation msq25623, "apply these layout
+     changes to the items like Toppr and all the others below"). The under-rail
+     group now mirrors what msq0oyzf and msq1… did above: it starts --rail-clear
+     from the dashes, its cards open from the top of their own band rather than
+     from whatever lane they were packed into, and the reserve is that clearance
+     plus a full-length panel with no slack subtracted. The -40px fudge is gone
+     for the same reason the top's -200 went: downward the reserve is real. */
+  padding-bottom: var(--rail-band); /* was --rail-below-h alone; see --rail-band */
+  margin: 0 0 clamp(26px, 5vh, 44px);
+  /* the stray `padding-bottom: 4px` that used to sit here was overriding the
+     lane calc above within the same rule - the cascade is source order even
+     inside one block */
+  /* RESIZED with the hint removed (annotation msjwaxga): the crest, the 20px
+     gap and the card's 260px cap. The trailing 20px was the hint's line and its
+     breathing room and went with it. Still a MIN rather than a height, because
+     the card is absolutely positioned and would otherwise collapse the box —
+     and still the card's CAP rather than its actual height, so the section
+     cannot jump as the card's content changes month to month.
+     GROWN BY THE LANES (annotation msl5z4ln): the resting cards stack below
+     the strip, so the floor rises with the lane count the pack reports. */
+  /* The lane term moved into padding-top above, so it is already counted in the
+     box; adding it here too would reserve the cards' height twice. */
+  min-height: calc(var(--tlx-peak, 38px) + 40px + 260px);
+}
+/* CENTRED (annotation msj1ccal). The strip is ~500px of ticks inside a section
+   more than 800 wide, so left-aligned it sat off to one side of a page whose
+   every other element is centred on the same axis. `margin-inline: auto` is
+   correct HERE and was wrong on the hero's meta box earlier today, and the
+   difference is the one that matters: this is a block in normal flow, where an
+   auto margin splits the free space; that was a flex item wider than its line,
+   where an auto margin has no free space to split and collapses to the start.
+
+   The card and the hint are positioned against .tlx__rail, and .tlx__rail is
+   the full section width, so centring the LIST alone would have left them
+   measuring from a different origin than the ticks. The rail shrink-wraps to
+   the list instead and the three keep one coordinate space. */
+
+.tlx__rail-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--tlx-peak, 38px); /* = RAIL_PEAK, so a crest never shifts the layout */
+  width: 100%;
+}
+/* CENTRED, NOT BASELINED (annotation msjw5v8l, "expansion should happen on
+   both side equally"). The first horizontal pass shared a baseline and grew the
+   ticks upward, reading the vertical version's shared LEFT EDGE literally.
+   Agam's call is that the crest should bloom equally above and below a centre
+   line instead, so a rise of 64 now reads as 32 either way.
+
+   What that costs, recorded because it was the reason for the baseline: the
+   resting strip is a line of 12px marks centred on the same axis rather than a
+   row standing on one, so the spine is a touch less emphatic at rest. The
+   symmetry under the cursor is worth more — a lopsided magnifier looks like a
+   bar chart of nothing, since the height carries no value here. */
+.tlx__rail-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  /* A POINTER, not a crosshair (annotation msnx5w68). The crosshair said
+     "precise coordinate", which is what a chart-reading cursor implies - but
+     every tick here is a target you can land on and open, so the hand is the
+     honest cue. */
+  cursor: pointer;
+}
+.tlx__rail-row:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+.tlx__rail-tick {
+  display: block;
+  width: 2px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--fg);
+}
+/* The brighter resting state for a month that shipped is gone (2026-08-11):
+   the tick's opacity floor in JS now only distinguishes NOW from every other
+   month. */
+/* ── THE TWO EXTRA SPINE MODES (annotation msmxjgof) ──────────────────────
+   Both are pure FILL changes on the same 2px tick: the geometry, the heights
+   and the magnifier are untouched, which is what keeps this a draw mode rather
+   than a second reading of the record.
+
+   The rise-driven `opacity` written by RailTick still multiplies over both, so
+   a tick under the cursor still brightens exactly as it does in ink. That is
+   why neither of these sets `opacity` itself - it would fight the sweep. */
+
+/* GLASS. A 2px column is too narrow for a blur to read as frosting on its own,
+   so the glass is made the way glass actually reads at this size: a pale
+   translucent body, a brighter top edge where the light catches, and a hairline
+   of the page showing through. `backdrop-filter` is there for the wide crest
+   under the cursor, where there is finally enough width for it to matter. */
+.tlx__rail[data-ticks="glass"] .tlx__rail-tick {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fg) 85%, transparent) 0%,
+    color-mix(in srgb, var(--fg) 28%, transparent) 45%,
+    color-mix(in srgb, var(--fg) 45%, transparent) 100%
+  );
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fg) 70%, transparent);
+}
+
+/* GRADIENT. Dense where the tick meets the baseline and gone by its tip, so the
+   spine reads as rooted in the axis rather than as a row of floating strokes -
+   and the taller a tick grows under the cursor, the more of the ramp it shows,
+   so the magnifier gets a second cue for free. */
+.tlx__rail[data-ticks="gradient"] .tlx__rail-tick {
+  background: linear-gradient(to top, var(--fg) 0%, color-mix(in srgb, var(--fg) 30%, transparent) 65%, transparent 100%);
+}
+
+/* The control itself: the rail's own, so it sits with the rail. Quiet at rest -
+   it is a preference, not a place to go. */
+.tlx__rail-ticks {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  z-index: 3;
+}
+.tlx__rail-tickbtn {
+  font: inherit;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  corner-shape: round;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--m3-dur-effects-default) var(--m3-effects-default),
+    border-color var(--m3-dur-effects-default) var(--m3-effects-default);
+}
+.tlx__rail-tickbtn:hover {
+  color: var(--fg);
+}
+.tlx__rail-tickbtn[data-active="true"] {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+/* `.tlx__rail-tick[data-ship]` - the full-ink tick on a month that shipped -
+   removed with the rest of the ship content. */
+
+/* THE HOVER PANEL NO LONGER EXISTS as its own element - the tenure's card is
+   the panel (annotations msmnyhki / msmpa2ka). Its rules moved onto
+   `.tlx__rail-tagcard[data-open]` further down, so there is one box with one
+   set of numbers instead of two that had to be kept in agreement. */
+
+/* ---- SOLID'S HOVER CARD ---------------------------------------------------
+   The same Detail panel the visualisations use, floated at the cursor while a
+   row is under it. In the other three tabs the card is the ONLY way to the
+   record; here it is a second copy of a row that is already fully printed, so
+   it is aria-hidden, hover-only, and never blocks anything. */
+
+.tlx__peek {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: min(360px, 60vw);
+  /* Never eats the pointer it is following — a card that swallows its own
+     hover would flicker between shown and hidden forever. */
+  pointer-events: none;
+  background: var(--bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.10), 0 16px 36px -12px rgb(0 0 0 / 0.30);
+}
+/* The panel inside already carries the border and padding. */
+.tlx__peek .tlx__detail {
+  margin-top: 0;
+  min-height: 0;
+  background: var(--bg);
+}
+
+/* A cursor-follow card is meaningless without a cursor. Touch reports
+   `hover: none`, and on a phone the card would either never appear or appear
+   pinned at the last tap. */
+@media (hover: none) {
+  .tlx__peek {
+    display: none;
+  }
+}
+
+/* The row under the pointer lifts, so the card is visibly ABOUT something
+   rather than floating free of the page. */
+.tlx__row:hover {
+  background: color-mix(in oklab, var(--fg) 4%, transparent);
+}
+
+/* ---- the market (market style) ------------------------------------------
+   A copy of Dither's job read as a ticker. The dither texture carries over so
+   the two styles read as one family; what changes is the shape it fills. */
+
+.tlx__mkt {
+  position: relative;
+  height: 320px;
+  margin: 0 0 clamp(26px, 5vh, 44px);
+}
+.tlx__mkt-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* THE DITHERED FILL. Same two offset radial-gradient layers on a 4px cell as
+   the Dither bars, so the two styles are one material and not two things that
+   share a name.
+
+   Painted on an ordinary element and CLIPPED to the area's shape, never as an
+   SVG fill: the chart's geometry lives in a 0..100 viewBox stretched across a
+   box far wider than it is tall, and anything painted in that space is stretched
+   with it. Round dots into ellipses is the one failure this look cannot survive.
+   A clip scales the shape and leaves the background alone. */
+.tlx__mkt-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: transparent;
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--fg) 62%, transparent) 42%, transparent 44%),
+    radial-gradient(color-mix(in oklab, var(--fg) 62%, transparent) 42%, transparent 44%);
+  background-size: 4px 4px, 4px 4px;
+  background-position: 0 0, 2px 2px;
+  pointer-events: none;
+}
+
+/* The clipPath carrier only has to EXIST in the document; it draws nothing. */
+.tlx__mkt-clip {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.tlx__mkt-line {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+.tlx__mkt-years {
+  position: absolute;
+  inset: auto 0 0;
+  height: 0;
+}
+.tlx__mkt-year {
+  position: absolute;
+  left: var(--x);
+  bottom: -18px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.tlx__mkt-marks {
+  position: absolute;
+  inset: 0;
+}
+/* Hit area is 22px, the mark is 7. Coarse pointers get a real target without a
+   row of fat dots covering the line they are meant to annotate. */
+.tlx__mkt-mark {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.tlx__mkt-mark::before {
+  content: "";
+  position: absolute;
+  inset: 7.5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1.5px var(--fg);
+  transition: inset 140ms ease, background-color 140ms ease;
+}
+/* `.tlx__mkt-mark[data-kind="ship"]` - the filled variant of the market chart's
+   mark - removed with the ships. The marks themselves are already unused by the
+   JSX; the rest of the family is left alone. */
+.tlx__mkt-mark[data-hot="true"]::before,
+.tlx__mkt-mark:focus-visible::before {
+  inset: 4.5px;
+}
+.tlx__mkt-mark:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+  border-radius: 999px;
+  corner-shape: round;
+}
+.tlx__mkt-read {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -44px;
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  min-height: 1.4em;
+}
+.tlx__mkt-read b {
+  color: var(--fg);
+  font-weight: 600;
+}
+.tlx__mkt-kind {
+  margin-left: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---- rail: the two tags, the date and the year layer (msk1hbse) ----------
+   The resting card is two tags; the engaged one is the full panel. Height is
+   NOT animated between them — the card is absolutely positioned inside a rail
+   whose min-height already reserves the tall case, so letting it size to its
+   content costs no layout anywhere and a height transition would only add a
+   wobble to a card that is already moving sideways. */
+
+
+.tlx__rail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+/* THE CHROME LIVES ON THE OUTER BOX NOW, not on this label (annotation
+   msmpgo7a, "this element should be the one morphing into the card"). The pill
+   used to be THIS element - border, radius, background - inside a wrapper that
+   was invisible until it became a panel, so opening drew a second box around a
+   pill that stayed a pill. Two boxes cannot morph into one.
+   Now `.tlx__rail-tagcard` is the pill at rest and the panel when open, and
+   this is only the text inside it. */
+/* THE LABEL, to the reference (msmsv40x, Figma node 123-28708): the org set as
+   a heading with the role muted underneath, both mono. */
+/* MONO, EXPLICITLY. It used to get this by inheriting from `.tlx`; the section
+   is sans now, so the two things Agam named as keeping the drawing's register -
+   the organisation tags and the years - declare it for themselves.
+   11px rather than 10: uppercase mono at 10px with 0.06em tracking is the
+   smallest text on the page and the label every card is found by. */
+
+.tlx__rail-tag {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.tlx__rail-role {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+/* THE LEADER LINE, drawn at the month (msmsv40x). A 1px hairline exactly as the
+   reference draws it, with the dot at the CARD end - the end that needs saying,
+   because the tick end is already a tick. `pointer-events: none` throughout:
+   this is a drawn relationship, not a control, and the rail underneath owns the
+   pointer. */
+/* ALWAYS VISIBLE (annotation msnfmrqm, "when I land on this page, the vertical
+   connector lines are not visible").
+   
+   This reverses the hover-only gating I put in for msnevgv2 - and that was a
+   MISREADING on my part: "vertical line present under UPES box in default
+   (non-hover) state too" was describing where the lines are, and I took it as a
+   report that they should not be there. They are part of the resting drawing,
+   which is what the Figma reference shows, and the tie between a label and its
+   month is exactly what the rail was missing before they existed. */
+.tlx__rail-leader {
+  position: absolute;
+  /* rides the same displacement as the ticks (msnd5n7l), written as --shift by
+     the effect in Timeline.jsx */
+  translate: var(--shift, 0px) 0;
+  width: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
+
+.tlx__rail-leader::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--fg);
+}
+/* ABOVE: the line hangs from the card's bottom edge down to the ticks. */
+.tlx__rail-leader:not([data-below]) {
+  /* FROM THE RESTING CARD'S BOTTOM EDGE down to the ticks (annotation msqyqx5v,
+     "all the vertical lines' height should be responsive to boxes"). The cards
+     moved to the 50% line (msqyglbg) and this line was still measured off the
+     old lane row, so it stopped reaching the box it belongs to. It is rebuilt
+     from the SAME expression the card's resting `top` uses, plus the card's own
+     height, so the line's top IS the card's bottom by construction and the two
+     cannot drift again.
+
+     GLUED TO THE CARD'S BOTTOM, on the card's own clock (2026-08-13). The card
+     is centred (translate -50%), so its bottom = centre + height/2; at rest
+     that is centre + card-h/2, open it is centre + och/2. Both endpoints are
+     written here and in the open rule, and `top`/`height` transition with the
+     SAME duration and easing the card's `height` uses - so at every frame of
+     the ease, line-top and card-bottom are the same number and the pair moves
+     as one object (msq1y66s, "attached like one element"), never detaching. */
+  top: calc(
+    var(--rail-cards-h) - var(--rail-anchor) - var(--och, var(--rail-open-h)) / 2 +
+      var(--rail-card-h) / 2
+  );
+  height: calc(
+    var(--rail-anchor) + var(--och, var(--rail-open-h)) / 2 - var(--rail-card-h) / 2
+  );
+  transition:
+    top var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    height var(--m3-dur-spatial-default) var(--m3-ease-cine-settle); /* msu59tph: settle, not overshoot */
+}
+/* ...open: the bloomed bottom sits anchor + lane above the ticks (centre +
+   och/2), so the line runs just that gap. Same clock as the rest state above,
+   so open and close both ease. */
+.tlx__rail-leader[data-open="true"]:not([data-below]) {
+  top: calc(var(--rail-cards-h) - var(--rail-anchor));
+  height: var(--rail-anchor);
+}
+.tlx__rail-leader:not([data-below])::after {
+  top: -2px;
+}
+/* BELOW: it rises from the ticks down to the card's top edge. Long now that the
+   cards rest deep (msqry3cv) - the same length as the gap between the strip and
+   the far-resting card, mirroring the long leaders above. */
+.tlx__rail-leader[data-below="true"] {
+  top: calc(var(--rail-cards-h) + var(--tlx-peak, 38px));
+  /* GLUED TO THE CENTRED CARD'S TOP EDGE = centre - height/2, eased on the
+     card's clock (2026-08-13) - the mirror of the top leader. */
+  height: calc(
+    var(--rail-anchor) + var(--och, var(--rail-open-h)) / 2 - var(--rail-card-h) / 2
+  );
+  transition: height var(--m3-dur-spatial-default) var(--m3-ease-cine-settle); /* msu59tph: settle, not overshoot */
+}
+/* The two-line pill is HALF A LINE taller each way about the same centre, so
+   its leader gives up that half-line (8px) to keep meeting the card's edge
+   exactly. Before the open override in source order, so an open Deutsche still
+   collapses its line to the flat anchor. */
+.tlx__rail-leader[data-twoline="true"][data-below="true"] {
+  height: calc(
+    var(--rail-anchor) + var(--och, var(--rail-open-h)) / 2 -
+      var(--rail-card-h) / 2 - 8px
+  );
+}
+.tlx__rail-leader[data-below="true"][data-open="true"] {
+  height: var(--rail-anchor);
+}
+.tlx__rail-leader[data-below="true"]::after {
+  bottom: -2px;
+}
+
+/* ── THE NOW MARK ────────────────────────────────────────────────────────────
+   A hairline and a box on the last tick, the same two parts every tenure gets,
+   with a rocket where the others carry an org.
+
+   Lane 0 is hard-coded rather than inherited: this mark is not packed, so there
+   is no lane to read. Lane 0 is the topmost row, which is also the only row
+   guaranteed to be clear at the right-hand edge - the packer fills from the top
+   and Aug 2026 is the last month on the rail, so nothing else reaches it.
+
+   The geometry below is the leader's, duplicated. See the note in Timeline.jsx:
+   sharing the class would put an eleventh node in front of the pack effect's
+   index-based querySelectorAll and shift every real card off its lane. */
+/* ── THE HIDDEN MEASURER (per-card centering) ────────────────────────────────
+   One node per card, laid out exactly as the OPEN card is - same width, padding,
+   radius, type and column flow - so the height it reports is the height the card
+   will actually reach. Off-screen and inert: it paints nothing and answers only
+   to getBoundingClientRect. The values below are copied from the open-card rule;
+   if that box ever changes, this has to change with it, which is why the shared
+   RailDetailBody keeps the CONTENT in sync on its own. */
+.tlx__rail-measure {
+  /* FIXED, NOT ABSOLUTE (Agam, 2026-08-15: "where the black areas end the
+     page should end"). Ten stacked open-card clones are ~3000px tall, and an
+     absolutely positioned box - even one parked at left:-9999px - still
+     counts toward the document's scrollable overflow, so the page ran 1260px
+     of blank ground past the footer. A fixed box is measured against the
+     viewport and never extends the scroll height; the cards inside are still
+     laid out at their real 300px width, so the heights it reports are
+     unchanged. */
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+/* The box itself comes from `.tlx__rail-tagcard[data-open="true"]` on the node -
+   this only has to undo the base card's absolute positioning so the measurer
+   cards stack and each reports its own height, and neutralise the open card's
+   own transition so nothing eases while it is read. */
+.tlx__rail-measure-card {
+  position: static !important;
+  transition: none !important;
+  margin-bottom: 8px;
+  /* AUTO HEIGHT, critical: the open-card rule it borrows now sets
+     `height: var(--och)`, but --och is the very thing this layer MEASURES - left
+     alone it would fall back to the reserve and report 370 for every card. Its
+     height must be its content's. */
+  height: auto !important;
+}
+
+.tlx__rail-nowlead {
+  position: absolute;
+  transition: opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+  translate: var(--shift, 0px) 0; /* rides the tick displacement, as leaders do */
+  width: 1px;
+  background: var(--line);
+  pointer-events: none;
+  /* A 60px LINE THAT CONNECTS THE BOX TO THE TICKS (annotation msr14lu4, "make
+     the vertical line connect properly and reduce the height to 60px"). It used
+     to start a full lane BELOW the box - an 8px gap where the two never touched -
+     and run the whole height of the band. Now its top is the box's own bottom
+     (the box sits 60px above the ticks, see below) and it is exactly those 60px,
+     so it meets the box at one end and the dashes at the other. */
+  top: calc(var(--rail-cards-h) - 60px);
+  height: 60px;
+}
+.tlx__rail-nowlead::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--fg);
+}
+.tlx__rail-nowcard {
+  position: absolute;
+  /* BOTTOM 60px ABOVE THE TICKS (annotation msr14lu4), so its 60px leader lands
+     exactly on the dashes. Anchored by the BOTTOM edge - `bottom: 60px` measures
+     from the cards band's floor, which is where the ticks sit - so the box's
+     bottom is the leader's top whatever the box's own height turns out to be.
+     This also keeps it below Away (which now rests at the 50% line, higher up),
+     the placement msq2qqzu asked for. */
+  top: auto;
+  bottom: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* PULLED IN BY MORE THAN HALF. Centring on the tick would hang the box off the
+     right end of the rail, because this is the LAST month - its centre sits
+     ~half a step from the edge. Shifting by the box's full width less that half
+     step lands its right edge on the rail's, so it reads as centred as it can be
+     and still stay inside the drawing. */
+  translate: calc(-100% + 5px + var(--shift, 0px)) 0; /* + the fisheye */
+  /* THE SAME BOX AS THE OTHER TEN (annotation msq1wgwj, "the emoji box does not
+     have the same padding as others, exact same box size please"). Every value
+     below is copied from .tlx__rail-tagcard rather than chosen: 9px/12px
+     padding, a 12px radius, the 1px --line stroke and the page background. It
+     had its own smaller set - 2px/6px, a 6px radius, transparent - which made
+     the one box on the rail that is not a label also the one box that is not the
+     same object.
+
+     --rail-card-h is what makes it the same SIZE and not just the same style.
+     The tag cards are sized by their text, and this one holds a glyph, so
+     matching the padding alone would still leave it short. 34px is the resting
+     card height the lane ladder is built on, so the emoji box now occupies
+     exactly one lane row like everything else. */
+  box-sizing: border-box;
+  min-height: var(--rail-card-h);
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 12px;
+  /* 15px, NOT 1. The tag card's own line box is 15px - 35px of box less 18 of
+     padding and 2 of border - so a unitless line-height left the emoji box a
+     pixel short of "exact same box size". min-height cannot fix that: 34 is the
+     declared row and the real card is 35, so the box has to be built the same
+     way rather than clamped to the same number. */
+  line-height: 15px;
+  /* HOVERABLE NOW (Agam, 2026-08-15: expand state on hover) - it used to be
+     inert so the pointer fell through to the rail; now the box is its own
+     target, like the ten cards. */
+  pointer-events: auto;
+  cursor: default;
+  /* THE EXPAND. Two grid rows: the rocket line, then a 0fr row that opens to
+     1fr - the same "no measuring" trick the timeline rows use - while the box
+     widens to the cards' 300px panel and takes their open chrome. It is
+     anchored by its bottom-right (bottom: 60px, translate -100%), so it grows
+     UP and LEFT out of its resting corner and its leader still lands on the
+     ticks. Same curves as the tag cards' open/close. */
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 0fr;
+  align-items: start;
+  justify-items: start;
+  /* a LENGTH, not max-content, so the open transition interpolates (see the
+     measurement note in Timeline.jsx); the fallback is the glyph's own box */
+  width: var(--now-rest-w, max-content);
+  transition:
+    width var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    grid-template-rows var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    padding var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+}
+.tlx__rail-nowcard-head {
+  display: flex;
+  align-items: center;
+  gap: 0; /* the resting box is the glyph alone (measured 48 wide with a gap
+             beside an empty title; 38 without) - the gap opens with the title */
+  line-height: 15px;
+  transition: gap var(--m3-dur-spatial-default) var(--m3-ease-cine-settle);
+}
+.tlx__rail-nowcard[data-open="true"] .tlx__rail-nowcard-head {
+  gap: 10px;
+}
+.tlx__rail-nowcard-glyph {
+  line-height: 15px;
+}
+/* the title beside the rocket only exists when open: 0 width and clipped at
+   rest so the box is exactly the glyph box the rail was built on */
+.tlx__rail-nowcard-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 0;
+  max-height: 0; /* so the resting head is one 15px line, not the title's two */
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition:
+    max-width var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    max-height var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+}
+.tlx__rail-nowcard-more {
+  min-height: 0;
+  overflow: hidden;
+  /* 0 at rest so the hidden list contributes nothing to the box's max-content
+     width - measured 206px wide with it counting; opens to the panel width */
+  width: 0;
+  transition: width var(--m3-dur-spatial-default) var(--m3-ease-cine-settle);
+}
+.tlx__rail-nowcard[data-open="true"] .tlx__rail-nowcard-more {
+  width: 100%;
+}
+.tlx__rail-nowcard-inner {
+  display: block;
+  padding-top: 10px;
+  opacity: 0;
+  transition: opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+}
+.tlx__rail-nowcard-inner strong {
+  color: var(--fg);
+  font-weight: 500;
+}
+.tlx__rail-nowcard[data-open="true"] {
+  width: 300px;
+  grid-template-rows: auto 1fr;
+  padding: 12px 14px;
+  z-index: 3;
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.10), 0 16px 36px -12px rgb(0 0 0 / 0.22);
+}
+.tlx__rail-nowcard[data-open="true"] .tlx__rail-nowcard-title {
+  max-width: 260px;
+  max-height: 40px;
+  opacity: 1;
+}
+.tlx__rail-nowcard[data-open="true"] .tlx__rail-nowcard-inner {
+  opacity: 1;
+  transition-delay: 120ms;
+}
+/* The 0.35 dim that used to live here is GONE. It faded every leader whenever
+   any card was open, to keep lines from reading through a panel - but since
+   msnevgv2 the leaders only exist WHILE hovering, and hovering always means a
+   card is open, so the rule applied permanently and the set never reached full
+   strength. Its actual job - the open card's own line running out from under
+   it - is done by `.tlx__rail-leader[data-open]::before` above. */
+
+/* The moving date. Sits directly under the strip, above the year layer, so the
+   three read top to bottom as: the marks, the month you are on, the years. */
+.tlx__rail-date {
+  position: absolute;
+  /* +6 -> +30: the year row took the slot directly under the ticks, so the
+     moving readout sits one line below it. The two swapped rather than the date
+     moving far - it is still the thing nearest the strip after the axis itself,
+     which is what "where the readout belongs" was protecting. */
+  /* INSIDE THE STRIP (annotation msu96khh, "this element should be inside the
+     timeline with the vertical glass dashes"). It sat one line under the year
+     row; now it is centred on the 38px tick band itself, riding the crest at
+     the pointer. A small glass pill of the page colour sits under the text so
+     the label reads over the dashes rather than being cut by them, and it
+     stays pointer-transparent so the sweep beneath is untouched. */
+  top: calc(var(--rail-cards-h) + var(--tlx-peak, 38px) / 2);
+  translate: 0 -50%;
+  z-index: 2;
+  pointer-events: none;
+  /* GLASS, FULLY ROUNDED (Agam: "make the pill full rounded and make it a
+     glass material"). Same recipe the glass ticks use - a pale translucent
+     body of the ink, a brighter top edge where the light catches, blur under
+     it - scaled up to a pill: 8% ink body over the page, 40% ink hairline on
+     top via inset shadow, 14% ring, blur 10 with a touch of saturation.
+     `corner-shape: round` because the site's global squircle turns 999px into
+     a rounded rectangle, and "full rounded" means a true stadium. */
+  padding: 3px 9px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fg) 14%, transparent) 0%,
+    color-mix(in srgb, var(--fg) 6%, transparent) 55%,
+    color-mix(in srgb, var(--fg) 9%, transparent) 100%
+  );
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--fg) 40%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--fg) 14%, transparent),
+    0 4px 12px color-mix(in srgb, #000 18%, transparent);
+  /* hidden at rest, shown while the rail is engaged (data-on from Timeline) */
+  opacity: 0;
+  transition: opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.tlx__rail-date[data-on="true"] {
+  opacity: 1;
+}
+
+/* The full year for anyone not reading the glyphs. The touch year buttons draw
+   `’19` because four digits do not fit a hit area at 375 (see the note in
+   Timeline.jsx), and an abbreviation is a DRAWING decision - it should not
+   reach the accessibility tree, where there is no width to save. */
+.tlx__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The fixed frame the moving date is read against. Zero-height so it cannot
+   push the card down; the labels hang off it. */
+.tlx__rail-years {
+  position: absolute;
+  /* STRAIGHT UNDER THE DASHES (annotation: "move the year row just below the
+     vertical dashes").
+
+     It used to be measured from the BOTTOM of the under-rail card stack -
+     cleared of the cards, then 40px lower again - which put it at the far end
+     of the section. That reading made sense while the cards sat tight under the
+     ticks; since msq2p957 moved them to the far edge of their band, deriving
+     the year row from them dragged the scale hundreds of pixels away from the
+     scale it labels.
+
+     So it is measured from the TICKS now, and from nothing else. A ruler's
+     numbers belong against its marks: at +8 the years read as part of the
+     strip, and the whole under-rail stack can move again without taking the
+     axis with it. */
+  top: calc(var(--rail-cards-h) + var(--tlx-peak, 38px) + 8px);
+  left: 0;
+  right: 0;
+  height: 0;
+  display: block;
+}
+/* The years keep the drawing's face, and say so now that the section does not.
+   11px because these are the axis: the labels every bar is read against. */
+
+.tlx__rail-year {
+  position: absolute;
+  left: var(--x);
+  transform: translateX(-50%);
+  /* rides the fisheye with the month it labels (Timeline.jsx writes --shift) */
+  translate: var(--shift, 0px) 0;
+  transition: none;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* ---- rail: every tenure's card, at rest (msk2bq5f) -----------------------
+   One two-tag card per tenure, anchored at the month it began, stacked into
+   lanes by the model so ten of them fit across 500px without touching. */
+
+.tlx__rail-cards {
+  position: absolute;
+  /* zero is the top of the rail's PADDING box, which is exactly the band
+     reserved above the strip - so lane 0 is the topmost row and the lanes stack
+     down toward the ticks they label. */
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  /* A REAL HEIGHT, where this was 0: the upper cards are anchored by their
+     BOTTOM edge now and `bottom` needs a box to measure against. Absolutely
+     positioned, so nothing is pushed by it. */
+  height: var(--rail-cards-h);
+}
+/* Invisible until the component has measured them and assigned lanes. Without
+   this there is one frame with every card at lane 0, piled on top of each other,
+   which then springs apart — an entrance animation on the RESTING state. */
+.tlx__rail-cards {
+  opacity: 0;
+}
+.tlx__rail-cards[data-packed="true"] {
+  opacity: 1;
+}
+.tlx__rail-tagcard {
+  position: absolute;
+  /* THE LABEL RIDES THE WAVE WITH ITS LINE (annotation msq1y66s: "on hover the
+     vertical lines move along the x axis which is nice but the boxes should move
+     in the same motion, they should be attached like one element").
+
+     This restores what mso20g07 removed, and the history is worth keeping
+     because the two notes are not in conflict - they are about different
+     objects. mso20g07 killed the card's x movement when the card was a free
+     label floating near a ruler, and a word that slides while you read it is
+     harder to read. Since msmsv40x the card has a LINE joining it to its month,
+     and the moment two parts are visibly joined, the one that stays put is the
+     one that looks broken: the line moved, the box did not, and the join
+     stretched. Attached, the pair reads as one object being pushed aside, which
+     is what the zoom is supposed to be doing.
+
+     Same --shift the leaders use, written by the same effect in Timeline.jsx, so
+     the two cannot disagree about how far. */
+  /* X carries the hover wave; -50% Y centres the box on its `top` line, so a
+     card of ANY height stays centred there - which is what lets the height
+     animate without the box's centre ever moving. */
+  translate: var(--shift, 0px) -50%;
+  /* ANCHORED BY THE TOP EDGE (annotation msq0oyzf, "the card should not expand
+     with a bottom anchor, can we move the default box up so that we can
+     maintain the hover position and make the animation top anchored").
+
+     This reverses the note that used to sit here. Bottom-anchoring made an
+     opened card grow UPWARD out of its resting edge, which put the growth on
+     the opposite side from the one the reader is looking at: the pill you
+     pointed at slid away from under the cursor as the panel filled in above it.
+     Top-anchored, the edge you pointed at is the edge that stays, and the panel
+     unrolls downward from it - the same direction the under-rail card has
+     always opened, so the two sides of the rail finally behave alike.
+
+     THE ROWS MOVE UP TO THE TOP OF THE BAND to pay for it. Growth downward
+     needs its room below, and below the labels is the timeline; resting them at
+     the bottom edge as before would open every panel straight over the ticks.
+     Lane 0 now sits at the top of the band and the lanes stack DOWN toward the
+     strip, which is also why the leaders get long - see the note there. The
+     cost, recorded because it undoes part of msmtj46o: --rail-gap no longer
+     sets how close the labels sit to the timeline. It only sets the reserve. */
+  /* RESTING AT THE 50% LINE (annotation msqyglbg, "set the default height
+     calculated based on 50% of the expanded height - so if the bottom of the
+     expanded card is 36px from the dash timeline, the default state will be
+     36px + 50% of the expanded height").
+
+     The expanded card runs from 36px above the ticks up to 36 + H. Its CENTRE
+     is at 36 + H/2, and that is where the resting pill sits now: on hover it
+     grows out to full from its own middle, up and down alike, instead of
+     unrolling from a far lane.
+
+     H IS THE CARD'S OWN EXPANDED HEIGHT now (Agam, "per card centering"), read
+     off the hidden measurer in Timeline.jsx and handed here as --och. Each pill
+     therefore sits at the middle of the panel IT will become - a tall record
+     rests lower, a short one higher - so every card grows out from its own
+     centre. --rail-open-h stays as the fallback for the first paint before the
+     measure lands, and for anything the measurer cannot reach. The lane term
+     still stacks them so pills at neighbouring months do not touch, and it is
+     measured from the band bottom (the ticks) so it tracks --rail-anchor. */
+  /* THE CENTRE LINE (restored 2026-08-13 after the bottom-anchor detour was
+     called completely wrong). `top` is the centre of the card's own EXPANDED
+     span - anchor + och/2 above the ticks, lane-stacked - and the -50% translate
+     holds the box centred there at every height. Rest and open share this one
+     line: the pill blooms into the panel about a fixed centre, the bottom
+     landing at anchor above the dashes. This is msqyglbg's 50% rule and the
+     per-card centring, both explicit asks, kept.
+
+     THE LANE TERM IS GONE from all six of these formulas (consistency audit,
+     2026-08-13): it existed to stack resting pills, but it rode into the OPEN
+     state too, so expanded gaps ran 48/90/132/174 across the rail instead of
+     msqt94fi's flat anchor. Measured before removing: the pills' x-ranges do
+     not overlap on the top side at all, and per-card och already scatters the
+     centres - the one true x-overlap (Deutsche/Zepto, below) is noted at that
+     rule. Every card now expands to exactly --rail-anchor from the dashes, on
+     both sides, with its centre still fixed. */
+  top: calc(
+    var(--rail-cards-h) - var(--rail-anchor) - var(--och, var(--rail-open-h)) / 2
+  );
+  display: flex;
+  gap: 5px;
+  white-space: nowrap;
+  /* A PILL AT REST. Every one of these is also an END STATE of the morph
+     below, so each is a real number the open state can interpolate to. */
+  /* THE REFERENCE'S BOX (msmsv40x): 12px radius, 1px stroke, 10px/12px padding,
+     and a COLUMN now that the label is two lines. It stops being a pill - a
+     pill holds one line, and this holds two. */
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  padding: 9px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  overflow: hidden;
+  /* AN EXPLICIT RESTING HEIGHT so the open state has a real number to ease FROM
+     (Agam, 2026-08-13: "the card expand is too abrupt, make it a smooth
+     animation"). The height used to be content-driven, so the box snapped from
+     pill to panel in one frame while only `top` eased - the pop being described.
+     With --rail-card-h here and --och on open, the box now grows on the same
+     clock as its move, and `overflow: hidden` reveals the copy top-down as it
+     opens rather than all at once. */
+  height: var(--rail-card-h);
+  /* THE MORPH, MINUS THE WIDTH (annotation msneg1bs: "opens in a narrow box and
+     then expands to a landscape box").
+     
+     Width was in this list so the pill would visibly BECOME the panel. It reads
+     as a glitch instead, and the reason is that only the box is animated: the
+     text inside is laid out at its final 300px wrap from the first frame, so
+     while the box eases open the copy is clipped by `overflow: hidden` and then
+     appears all at once. Two things arriving on different clocks - a narrow
+     window sliding over finished text - which is exactly the "opens narrow then
+     expands" being described.
+     
+     The box now takes its final width immediately and the CHROME still eases:
+     radius, padding and shadow carry the sense of a pill becoming a card, and
+     the content is never clipped mid-transition. Fixing it the other way -
+     animating the content's own layout to match - would mean re-wrapping text
+     every frame, which is the thing you never animate. */
+  /* THE COLLAPSE IS FAST (annotation msu558a6, "collapse instantly as soon
+     as the mouse moves out"). This is the RESTING rule, so it governs the way
+     back: the open rule below still opens on the 500ms expressive curve, but a
+     panel closing on that curve overshot and lingered half a second after the
+     pointer had gone. 150ms on the settle curve, no overshoot - quick enough
+     to read as immediate without a snap. */
+  /* ...THEN SOFTENED (annotation msu59tph, minutes later: "can we make all
+     hover animations smoother"). 150ms read as a snap; 300ms on the same
+     no-overshoot curve is still prompt - the pointer has left, the card is
+     gone before the eye moves on - without the cut. */
+  transition:
+    height 300ms var(--m3-ease-cine-settle),
+    padding 300ms var(--m3-ease-cine-settle),
+    border-radius 300ms var(--m3-ease-cine-settle),
+    box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+  /* `top` IS OUT OF THE LIST AGAIN (2026-08-13, "remove the y-shift"). With the
+     card centred by `translate ... -50%`, `top` is a fixed centre line that does
+     not change between rest and open - only `height` does - so there is nothing
+     for a `top` transition to animate, and listing it could only ever re-animate
+     a jump if some rule set it. HEIGHT is the whole motion now. */
+  /* A card names a span that STARTS here, so it reads left-to-right from its own
+     month rather than being centred on it — centring would put half of every
+     label before the thing it labels. */
+  transform: none;
+}
+
+/* ---- the opened tenure card (msmnyhki / msmpa2ka) ------------------------
+   Everything the floating panel used to be, on the card that was already
+   naming this tenure. Same box, same radius and shadow it had; what changed is
+   that it is anchored to the card's own x instead of following the pointer, so
+   the record you open is visibly the one you pointed at. */
+
+.tlx__rail-tagcard[data-open="true"] {
+  /* NO `top` HERE ANY MORE (2026-08-13, "remove the y-shift"). The card keeps the
+     centre line the base rule gives it and only its HEIGHT grows; `translate
+     ... -50%` keeps that centre fixed, so the panel blooms symmetrically instead
+     of the box sliding down to a bottom anchor. Its bottom lands anchor + lane
+     above the ticks rather than a flat 48 for every lane - the price of centring
+     each card AND never moving it, which is what was asked. The leader follows
+     the bottom (see its open rule). */
+  /* NO OVERSHOOT ON HEIGHT (annotation msu59tph, "make all hover animations
+     smoother"). The expressive curve's 1.21 sails a growing box past its size
+     and back, and on a panel that is unrolling text that return trip reads as
+     a bounce, not character. Same 500ms, on the settle curve, so the panel
+     lands once. The leaders below make the same change, since they are glued
+     to this edge and would otherwise disagree with it about where it stops. */
+  transition:
+    height var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    padding var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    border-radius var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  /* it wraps once it is a panel; at rest it must not */
+  white-space: normal;
+  width: 300px;
+  /* THE MEASURED EXPANDED HEIGHT, so the box eases open to exactly the size its
+     own content needs (smooth-expand, 2026-08-13). --och is the same number the
+     card's top and its leader already use, so the three move as one. Fallback to
+     the reserve for the first paint before the measure lands. */
+  height: var(--och, var(--rail-open-h));
+  max-height: none;
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.10), 0 16px 36px -12px rgb(0 0 0 / 0.22);
+  z-index: 2;
+}
+/* the nine that are not open get out of the way; the reading is one thing at a
+   time, and nine labels behind an opened panel is the pile-up the resting state
+   was lane-packed to avoid */
+/* THE ONE CARD UNDER THE RAIL (annotation msmpfmk9 put it below the timeline,
+   msmq0z36 then moved it above the years) - the Deutsche Bank pill, and only
+   that one. Measured from the top of the cards region, which starts at the top
+   of the band, so it clears the band itself, then the crest, then the moving
+   date at +6.
+
+   The order under the rail is now: date, this card, years. The year row is
+   pushed down to make the room rather than the card being squeezed into the
+   16px the date left - a 26px pill does not fit between +22 and the ticks, so
+   something had to give and the years are the layer with nothing under them.
+
+   It keeps its packed `left`, so it still starts at the month its tenure does -
+   only the row changes. And it leaves its lane empty above, which is what makes
+   this readable rather than arbitrary: the gap is where the card came from. */
+.tlx__rail-tagcard[data-below="true"] {
+  /* CLEAR THE BOTTOM ANCHOR. The base rule pins these by `bottom` so the upper
+     stack can grow upward; setting `top` as well on an absolutely positioned
+     box does not move it, it STRETCHES it between the two edges - and since
+     this `top` is past the container's own bottom, the box collapsed to its
+     padding. Measured 26px tall against 324px of content. */
+  bottom: auto;
+  /* THE RESTING ROWS SIT AT THE FAR EDGE OF THEIR BAND (annotation msq2p957,
+     "apply the same layout change from the top to the items below like Toppr,
+     Siemens and others").
+
+     This is the mirror of what msq0oyzf did above, and the mirror is in WHICH
+     EDGE, not in the direction of growth. Above: the labels moved to the far
+     end of the band from the ticks, and the panel occupies the band and stops
+     --rail-clear short of them. Below is now the same sentence with "below"
+     substituted - the labels sit at the bottom of the under-rail band, as far
+     from the strip as their counterparts above, and the panel still opens from
+     the near edge so it stays --rail-clear off the dashes.
+
+     What that buys is the thing the top side gained: the labels stop crowding
+     the strip you are trying to read, and the leader lines get long enough to
+     be leaders rather than ticks with a box on top. The lane order is preserved
+     (lane 0 nearest the ticks) so the packer needs to know nothing about this. */
+  /* FAR FROM THE TICKS, the true mirror of the top at last (annotation msqry3cv,
+     "apply the layout properties from these top elements to the elements below").
+
+     What unblocked it: msqt94fi made cards MOVE in y on open (the top card now
+     converges to 36px above the ticks). That was the constraint that made a
+     mirror impossible before - msqrnxi0 had forbidden y-movement, so a
+     far-resting card could only grow, and growing down overflowed. With the
+     card allowed to reposition, it can rest far and converge on open, exactly
+     as the top does.
+
+     CENTRED, the mirror of the top cards (restored 2026-08-13). `top` is the
+     centre of the card's expanded span - anchor + och/2 BELOW the ticks - and
+     the -50% translate holds it there at any height, so the below card blooms
+     about a fixed centre too, its top edge landing anchor (+ lane) below the
+     dashes when open. */
+  top: calc(
+    var(--rail-cards-h) + var(--tlx-peak, 38px) + var(--rail-anchor) +
+      var(--och, var(--rail-open-h)) / 2
+  );
+}
+
+/* NO `top` ON OPEN (2026-08-13, "remove the y-shift") - it keeps its centre line
+   and only its height grows, same as the top group. The old converge-to-anchor
+   rule is gone; the symmetric bloom lands the top edge --rail-anchor below the
+   dashes on its own. */
+
+/* THE TWO-LINE PILL (Agam: "Deutsche Bank can be on 2 lines"; see RAIL_TWO_LINE
+   in Timeline.jsx for why). Resting state only - the open panel is 300px wide
+   and fits the name on one line, and the measurer carries data-open so its
+   heights stay true. `width: min-content` wraps at the longest word, which is
+   what halves the pill; the height gains one 16px line about the same centre. */
+.tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) {
+  height: calc(var(--rail-card-h) + 16px);
+}
+.tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) .tlx__rail-tag {
+  white-space: normal;
+  width: min-content;
+  text-align: left;
+}
+
+/* THE OTHER NINE STAY (annotation msms7nzf, "during hover the other cards
+   should not go away"). This REVERSES the reading the merge shipped with, which
+   hid them so the opened card had the field to itself. Agam's call, and the
+   better one: the set IS the record, and emptying it on every hover meant the
+   whole shape of the career blinked out each time you went to read one part of
+   it. The two lane packs already guarantee they do not collide with each other.
+
+   What the opened card does instead is layer OVER them - it has its own
+   background and a z-index, so it stays readable where it overlaps - and the
+   rest hold their positions. `pointer-events: none` still applies: they are
+   labels, not targets, and the rail underneath owns the pointer. */
+/* THE CARDS ARE TARGETS NOW, dimmed ones included (QA: "info there but not
+   showing up"). They used to be inert labels because the rail underneath owned
+   the pointer - but the rail can only reach one card per month, so five of them
+   could never be opened at all. A dimmed card still has to accept a pointer or
+   you could not move from the open one to any other. */
+.tlx__rail-tagcard {
+  pointer-events: auto;
+  cursor: default;
+}
+.tlx__rail-tagcard[data-open="true"] .tlx__rail-tag {
+  white-space: normal;
+}
+.tlx__rail-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+/* THE SUMMARY IS THE CARD'S SENTENCE, so it takes the ink and the size the
+   touch rail already gives the same line: 13px on 1.5, in the page's sans.
+   It was 11px monospace muted, which is smaller than any other prose on the
+   site and set in a face built for digits. */
+
+.tlx__rail-detail-line,
+.tlx__rail-detail-out {
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+/* The outcome bullets under the summary (msnxin7w). Marker drawn with the
+   list's own `list-style` rather than a typed character, so it is a list to a
+   screen reader as well as to the eye, and the hanging indent comes for free. */
+.tlx__rail-detail-bullets {
+  margin: 2px 0 0;
+  padding-left: 14px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* The bullets sit one step under the summary rather than at the same weight:
+   12.5px muted against 13px full ink. Measured on the dark ground, --muted
+   composites to #9e9e9f and reads 7.2:1 against #0e0e11, so the step down is
+   hierarchy and not a contrast cost. */
+
+.tlx__rail-detail-bullets li {
+  font-size: 12.5px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.tlx__rail-detail-bullets li::marker {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* THE CARD'S HEAD: role, then span. Two lines rather than one joined by a
+   middot, because the role can be two titles ("Product Designer, then Product
+   Designer II") and a joined line wrapped mid-title. The role takes the ink and
+   the span stays the small uppercase label the month used to be, so the
+   hierarchy is company (the tag) > role > when. */
+
+.tlx__rail-detail-role {
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: normal;
+  text-wrap: pretty;
+}
+
+/* The span stays MONO and small: it is a pair of coordinates, the one thing in
+   the card that belongs with the years rather than with the prose. */
+
+.tlx__rail-detail-month {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+
+/* ---- market: the reference legend, independent of Tailwind ---------------
+   BlockLegend ships Tailwind utility classes this project does not define, so
+   every trait the dither-kit reference shows is stated here explicitly: tiny
+   mono text, 8px square swatches, right-ranged, one quiet row above the plot. */
+.tlx__mkt-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 16px;
+  margin: 0 0 12px;
+  padding: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: color-mix(in oklab, var(--fg) 62%, transparent);
+}
+.tlx__mkt-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tlx__mkt-legend li > span:first-child {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  flex: none;
+}
+
+/* ---- scrub: one height across the whole drag (msk2epqe) ------------------
+   Both cards occupy the same grid cell, so the box is as tall as the fattest
+   month at every viewport — no typed min-height to go stale when an outcome
+   line is edited. */
+
+.tlx__scrub-stack {
+  display: grid;
+}
+.tlx__scrub-stack > * {
+  grid-area: 1 / 1;
+}
+/* `visibility`, not `display: none`: a hidden box still reserves its space and a
+   removed one does not, which is the whole mechanism. */
+.tlx__scrub-card--ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE RAIL ON TOUCH — a scrubber, not a magnifier
+   ══════════════════════════════════════════════════════════════════════════
+   Agam's design: let the timeline overflow, keep one card expanded at all
+   times, and make the scrub itself the satisfying part with the feedback layer
+   underneath it.
+
+   Why the desktop interaction cannot survive here, measured at 375 wide: the
+   rail fits 100 months into 335px, so the ticks are 3.34px apart and a 44px
+   fingertip covers THIRTEEN of them. There is nothing to aim at, and no hover
+   to aim with. So the input inverts: instead of moving a cursor along a fixed
+   strip, the finger moves the STRIP under a fixed reading line. */
+
+@media (hover: none) {
+  /* THE STRIP OVERFLOWS. 14px a month is a real target and makes the run about
+     1400px - long enough that scrubbing it feels like travelling a distance
+     rather than nudging a slider. Snap is `proximity`, not `mandatory`: a
+     timeline should let you rest between two months if that is where you
+     stopped, and mandatory snapping fights a slow careful scrub. */
+  .tlx__rail[data-touch="true"] .tlx__rail-list {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* room to bring the FIRST and LAST months to the centre line - without it
+       the run cannot be scrubbed to either end */
+    padding-inline: 50%;
+  }
+  .tlx__rail[data-touch="true"] .tlx__rail-list::-webkit-scrollbar {
+    display: none;
+  }
+  /* width/flex are set INLINE by RailRow - an inline style beats anything here,
+     and having both would be two sources for one number. Only the snapping,
+     which has no inline equivalent, lives in CSS. */
+  .tlx__rail[data-touch="true"] .tlx__rail-row {
+    scroll-snap-align: center;
+  }
+
+  /* THE READING LINE. The month under it is the one being read, so it has to be
+     visible - a scrubber with no mark is a scroll bar. Drawn on the rail rather
+     than in the strip so it does not travel with the content. */
+  .tlx__rail[data-touch="true"] .tlx__rail-list::after {
+    content: "";
+    position: sticky;
+    left: 50%;
+    display: block;
+    width: 1px;
+    height: 100%;
+    background: var(--fg);
+    opacity: 0.5;
+  }
+
+  /* ONE CARD, ALWAYS OPEN, ABOVE THE STRIP. Centred on the reading line and
+     pinned there: the finger is on the strip, so the card is the one thing that
+     must not move under it. */
+  .tlx__rail[data-touch="true"] .tlx__rail-tagcard[data-open="true"] {
+    left: 50%;
+    translate: -50% 0;
+    width: min(300px, calc(100vw - 48px));
+  }
+  /* the other nine have nothing to say on a phone - there is no sweep to give
+     them context, and they would sit under the open card */
+  .tlx__rail[data-touch="true"] .tlx__rail-tagcard[data-dim="true"],
+  .tlx__rail[data-touch="true"] .tlx__rail-leader {
+    display: none;
+  }
+
+  /* the under-rail group has nowhere to be when the strip scrolls */
+  .tlx__rail[data-touch="true"] .tlx__rail-tagcard[data-below="true"] {
+    top: auto;
+    bottom: auto;
+  }
+
+  /* ---- THE YEAR ROW BECOMES THE INDEX (2026-08-11) ---------------------
+     The phone was drawing time twice: the scrub strip with its own reading
+     line, and this row, which could not be pointed at and did not line up with
+     it. Two axes for one quantity.
+
+     BE HONEST ABOUT WHAT THIS DOES AND DOES NOT FIX. The row still cannot be
+     spatially aligned to the strip on touch, and not for want of trying: `--x`
+     is a share of the STRIP, and on touch the strip runs to ~1400px inside a
+     375px window while this row is pinned to the rail. Alignment is not
+     available. What IS available is making the row MEAN something - tap 2022
+     and the strip travels to January 2022 - so it stops being a second axis
+     and becomes an index INTO the first one. That is a different fix from the
+     one the vertical rail will make, and a smaller one; see
+     Claude/2026-08-11_vertical-timeline-plan.md.
+
+     Pulled up tight under the strip, too. It was sitting ~150px below on a
+     `top` calc written for the desktop card stack, marooned in the dead space
+     the section already has too much of - and an index that far from the thing
+     it indexes reads as unrelated furniture. */
+  .tlx__rail[data-touch="true"] .tlx__rail-years {
+    top: calc(var(--rail-cards-h) + var(--tlx-peak, 38px) + var(--rail-gap) + 20px);
+  }
+
+  .tlx__rail[data-touch="true"] .tlx__rail-yearbtn {
+    position: absolute;
+    left: var(--x);
+    /* the -50% is the LABEL's centring and has to survive the touch padding;
+       symmetric padding on a translated box grows both ways, so the centre the
+       model computed is still the centre that gets drawn */
+    transform: translateX(-50%);
+    font: inherit;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    /* MEASURED, not guessed. The years sit 40.2px apart at 375 wide. The
+       two-digit label is ~20px, so 9px a side gives a ~38px target with ~2px
+       of gap - the widest it can be without neighbouring targets OVERLAPPING,
+       which is the failure that actually matters here (an ambiguous tap is
+       worse than a small one). Vertical padding is cancelled by negative
+       margin so the zero-height row stays zero-height; horizontal is not
+       cancelled, because widening the target is the entire point.
+
+       38x50 is under the 44x44 comfort guideline and well over the WCAG 2.2 AA
+       minimum of 24x24. That trade is deliberate: at this pitch 44 wide cannot
+       exist without overlap, and the vertical axis - where there IS room - is
+       spent to compensate. */
+    padding: 20px 9px;
+    margin: -20px 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* WHERE YOU ARE, not where you have been. One year carries full ink and the
+     rest stay muted, so the row answers "which year am I in" at a glance -
+     which is the question the moving date readout above cannot answer while it
+     is moving. */
+  .tlx__rail[data-touch="true"] .tlx__rail-yearbtn[data-on="true"] {
+    color: var(--fg);
+  }
+
+  .tlx__rail[data-touch="true"] .tlx__rail-yearbtn:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ==========================================================================
+   THE VERTICAL RAIL (.tlv) — the touch layout, 2026-08-11
+   ==========================================================================
+   The rail turned ninety degrees. Written as its own namespace rather than as
+   more `@media (hover: none)` overrides on `.tlx__rail-*`, and that is the
+   whole point: the horizontal build stays intact and unpatched behind
+   RAIL_LAYOUT in Timeline.jsx, so switching back is one word rather than an
+   archaeology exercise. The previous attempt to serve both axes from one set of
+   rules is what produced a strip whose year row could not be aligned to it.
+
+   No media query in here. The component only mounts on touch, so the CSS does
+   not need to ask again — and a rule that asks a second time is a second place
+   for the answer to be wrong. */
+
+/* ── THE SECTION'S TYPE, MADE DELIBERATE ────────────────────────────────────
+   Audited 2026-08-11 and it was neither consistent nor chosen. Measured before:
+   five of the six text elements computed `ui-monospace` while only ONE of them
+   declared it - the role, the summary and the bullets were mono by INHERITANCE
+   from the section, not by decision. Sizes ran 15 / 12 / 11 / 10, four steps
+   inside five pixels, with 11 and 12 doing overlapping jobs. Line-heights ran
+   1.25 / 1.3 / 1.55. And the summary carried -0.176px of tracking, inherited,
+   which is the wrong direction for small monospace prose.
+
+   TWO VOICES, and the rule is what each one is FOR:
+
+     sans   language - the name, the role, the sentences. Things you read.
+     mono   coordinates - years and date ranges. Things you scan and compare,
+            and where a fixed advance is the point.
+
+   THREE SIZES, and no more:
+
+     15  the organisation, the only heading in the row
+     12  everything you read in sentences - role, summary, outcomes
+     10  the coordinates - the year axis and the date range
+
+   This deviates from the desktop card's 11px body on purpose. 11 exists there
+   because that card is a small floating label on a rail; here it is the thing
+   in your hand, and 11px monospace prose with negative tracking was the least
+   readable text in the section. */
+
+/* ── THE COLUMN RAIL RESERVES ITS OWN SPACE ────────────────────────────────
+   (Agam, 2026-08-11: "too much spacing and padding in mobile view, please
+   standardise".)
+
+   `.tlx__rail` reserves a band above and below the strip for the desktop tag
+   cards, computed from the lane count and the tallest opened card. In column
+   layout there is no strip and there are no lanes - the rows ARE the cards - so
+   that reserve was 168px of empty air above the list and 328px below it,
+   measured at 375px. Half a phone screen of nothing, twice.
+
+   Keyed on `data-layout`, not on a width: the column is a layout choice made in
+   Timeline.jsx, and the padding is wrong whenever that layout is up rather than
+   whenever the window is narrow. */
+
+.tlx__rail[data-layout="column"],
+/* the horizontal band hit the same 410px-twice padding when it arrived
+   (mobile QA 2026-08-13) — the reserved bands belong to the desktop magnifier,
+   not to any touch layout */
+.tlx__rail[data-layout="band"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.tlv {
+  position: relative;
+  /* THE THREE LANES, left to right: years, spine, text.
+     34 for the years - a 10px mono "2018" measures ~24px, and the rest is
+     target. 36 for the spine, because the glass ticks reach 30px at the crest
+     and the text has to start clear of that or the magnifier draws through the
+     row it is magnifying. 70px of inset on a 375px screen is 19%, which is what
+     an axis costs; the rows are short lines and read fine in what is left. */
+  --tlv-years: 34px;
+  /* AIR BETWEEN THE AXIS AND THE SPINE. The year lane ended exactly where the
+     spine began, so a label's right edge butted against the ticks and the two
+     read as one crowded column instead of an axis and the thing it measures.
+     Widened 14 -> 30 to match the proportions in Agam's reference: the gap there
+     is about 8% of the width against our 3.7%, and the cards start at 35%
+     rather than 27%. The three lanes were right; what was missing was the air
+     between them. */
+  --tlv-year-gap: 20px;
+  /* 42, up from 36. The open card carries 14px of padding, and its BOX has to
+     sit left of the text without reaching into the crest - so the text starts
+     14px further out than the card's edge, and the card's edge still has to
+     clear the tick's 30px reach. 42 is what makes those two true at once. */
+  /* 70, up from 42. The ticks are CENTRED in this lane now rather than growing
+     off its left edge, and a centred 30px crest costs half the lane on each
+     side - the arithmetic is `clearance = gutter/2 - 29`, where the 29 is half
+     the crest plus the card's own 14px of padding sitting left of its text. 42
+     gave -8 (an overlap); 70 gives 6px of daylight between the crest and the
+     card. Every extra 2px of daylight costs 4px of card. */
+  --tlv-gutter: 70px;
+  /* the open card's padding, needed in two places (the row, and the list's
+     left inset that cancels it) - so it is a variable rather than a 14 typed
+     twice with nothing keeping them equal */
+  --tlv-card-pad: 14px;
+  --tlv-line: color-mix(in srgb, var(--fg) 18%, transparent);
+  padding-inline: 4px;
+}
+
+/* ---- the years, down the left of the spine -------------------------------
+   Moved out of a sticky top bar (Agam, 2026-08-11). Beside the spine they are
+   the AXIS the ticks are drawn against rather than a row of destinations, which
+   is what the desktop rail has always used its year layer as.
+
+   Each label is pinned to its OWN January tick, so the spacing between them is
+   the spine's real pitch - uneven, because this axis is anchored to the rows
+   and not to linear time. That unevenness is the point: it is the one place the
+   compromise is visible instead of hidden, and a reader can see where the run
+   stretches and where it packs.
+
+   FOUR DIGITS, still. The horizontal build had to abbreviate to `’19` because
+   its labels were 40.9px wide and sat 40.2px apart. Stacked in a column the
+   constraint is vertical spacing, and horizontally there is a whole 34px lane
+   with nothing else in it. */
+
+/* ---- the year wheel ------------------------------------------------------
+   STICKY AND FULL-HEIGHT, so the wheel's own 50% IS the viewport's centre - the
+   reading line - without any measurement. The labels no longer sit at their
+   months; they are a picker, and the picker's selected item belongs in one
+   fixed place. */
+.tlv__years {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: var(--tlv-years);
+  /* the labels place themselves; the nav is only their coordinate space, and a
+     zero-height box would collapse the absolute positioning it provides */
+  pointer-events: none;
+}
+
+.tlv__wheel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* 50% of a 100vh box is the reading line; then step back by whichever year is
+     active so that one lands on it. */
+  top: 50%;
+  transform: translateY(calc(var(--tlv-active, 0) * var(--tlv-pitch, 52px) * -1));
+  transition: transform var(--m3-dur-spatial-fast, 350ms) var(--m3-effects-default, ease-out);
+}
+
+.tlv__year {
+  position: absolute;
+  left: 0;
+  /* `top` is `i * YEAR_PITCH`, written in the JSX - a fixed ladder the wheel
+     slides, not a position measured from the content. */
+  opacity: 0;
+  /* `top` is the tick's y, so the label has to be pulled up by half its own
+     line to sit ON the mark rather than hanging below it */
+  transform: translateY(-50%);
+  width: 100%;
+  /* the label is ~24px of glyph in a 34px lane; the rest is the target. No
+     negative margins - there is nothing beside it to collide with, which is the
+     whole reason this column is easier than the bar it replaced.
+
+     14px a side takes the box to ~41px tall, and the padding grows symmetrically
+     around the tick because of the translate above, so the label stays on its
+     month. MEASURED against the real spacing before choosing it: the closest two
+     Januaries sit 67px apart, so 41 leaves 26px between targets. The horizontal
+     bar could not have done this - its labels were 40px apart. */
+  padding: 14px 0;
+  font: inherit;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  /* 0.04em, matching the date range - both are coordinates and they were on
+     0.02 and 0.04, which is two answers to one question */
+  letter-spacing: 0.04em;
+  text-align: left;
+  /* 60% OF THE INK, MIXED INTO THE GROUND rather than faded to transparent.
+     Three findings in one line, all measured, none chosen by eye.
+
+     THE RATIO. At the original 30% these came out 2.43:1 on #0e0e11 - and they
+     are not decoration, they are text AND the jump control, so 4.5:1 is the bar.
+
+     BOTH GROUNDS, which is what made 52% wrong. The same percentage does not
+     give the same contrast in the two themes, because the pairs are not
+     symmetric: #ededed on #0e0e11 against #111111 on #ffffff. 52% measured
+     5.02:1 dark and only 3.79:1 LIGHT. The ladder across both:
+
+              dark   light
+       52%    5.02   3.79   <- fails light
+       56%    5.66   4.29   <- still fails
+       58%    5.97   4.61   <- first value that clears both
+       60%    6.36   4.95   <- here, with margin either side
+       65%    7.29   5.92
+
+     One value clears both, so this ships as one value rather than a light/dark
+     pair. The lit year is full --fg: 16.46:1 dark, 18.88:1 light.
+
+     MIXED WITH var(--bg), NOT `transparent`. Mixing to transparent leaves a
+     translucent colour whose contrast depends on whatever ends up behind it,
+     and it serialises to `oklab(... / a)` - which `canvas.fillStyle` silently
+     REFUSES, so a contrast probe reads the background instead and reports a
+     confident, wrong 1:1. Mixing into the ground gives an opaque value that can
+     actually be measured, and it still inverts with the theme because both ends
+     are variables. */
+  color: color-mix(in srgb, var(--fg) 60%, var(--bg));
+  background: none;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--m3-dur-effects-fast, 150ms) ease;
+}
+
+/* WHERE YOU ARE. Read off the spine - the month nearest the reading line - and
+   not off the open row, because nothing starts in 2023 and a row-derived year
+   could never light it even while you are reading straight through it. */
+.tlv[data-ready="true"] .tlv__year {
+  opacity: 1;
+}
+
+.tlv__year[data-on="true"] {
+  color: var(--fg);
+}
+
+.tlv__year:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---- the run ------------------------------------------------------------ */
+
+.tlv__list {
+  position: relative;
+  /* CANCEL THE YEAR COLUMN'S FLOW HEIGHT. .tlv__years is position: sticky with
+     height: 100vh, and as the FIRST child in block flow it reserved a whole
+     viewport of empty space above the run — the first card started exactly one
+     screen down (Agam, mobile QA 2026-08-13, "empty space during scroll"). The
+     years are meant to sit BESIDE the spine, overlaying this lane, not stacked
+     on top of it, so the list is pulled back up over that reserved band. The
+     sticky wheel still pins to the viewport centre; only the dead gap is gone. */
+  margin: -100vh 0 0;
+  /* THE ROW PADDING IS CANCELLED HERE, and that is the whole trick: every row
+     carries the open card's 14px inset at ALL times, and the list pulls the
+     column back by the same 14 - so the text sits in exactly the same place
+     open or shut, and becoming a card moves nothing. It used to indent by 14px
+     on tap, which is a jump on the one element the reader is looking at. */
+  padding: 0 0 0 calc(var(--tlv-years) + var(--tlv-year-gap) + var(--tlv-gutter) - var(--tlv-card-pad));
+  list-style: none;
+}
+
+/* ---- THE GLASS SPINE ----------------------------------------------------
+   The desktop rail's ticks, turned ninety degrees. Same 12px rest, same 38px
+   crest, same golden-ratio thickening — what rotates is which dimension does
+   which job: horizontally a tick RISES from a baseline and thickens sideways,
+   here it REACHES from the spine and thickens vertically.
+
+   `--r` is the wave, 0 at rest and 1 at the crest, written per tick by the
+   scroll handler in RailColumn.jsx. Everything below is a function of it, and
+   nothing below can relayout: the ticks are absolutely positioned, so the two
+   transforms cost the page nothing and the reach is a scaleX rather than a
+   width for the same reason the desktop gives — a width would invalidate a
+   hundred boxes every frame. */
+
+.tlv__spine {
+  position: absolute;
+  /* ITS OWN LANE. Centring the spine on the viewport put it underneath a
+     full-width card - the lens is 192px across and the open card measured
+     268 x 327, so the card covered the crest completely and the wave was
+     invisible exactly where it mattered. A lane is what lets the axis and the
+     card both exist. */
+  left: calc(var(--tlv-years) + var(--tlv-year-gap));
+  top: 0;
+  bottom: 0;
+  width: var(--tlv-gutter);
+  /* THE RUN ENDS WHERE THE LIST DOES. The ticks are laid at a fixed 12px pitch
+     and there are deliberately more of them than fit; clipping is what lets a
+     row open and REVEAL more spine rather than restretching the spine that is
+     already drawn. Nothing on it ever moves. */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tlv__tick {
+  position: absolute;
+  /* CENTRED IN THE LANE rather than growing off its left edge (Agam). With
+     `transform-origin: 50%` the line opens symmetrically from its own middle,
+     which is what makes it read as a mark on an axis instead of a bar chart
+     rooted at a wall. */
+  left: 50%;
+  /* the full reach, scaled DOWN to rest. Declaring the peak and shrinking is
+     what lets scaleX carry the whole animation.
+
+     30, NOT the desktop's 38. Measured: at 38 the crest ran clean under
+     "Deutsche Bank" and its role line - and the crest is BY DEFINITION where
+     the reader is looking, so that is the worst place on the page to put a
+     collision. The gutter grew to 36 at the same time, which leaves 6px of
+     clearance at full reach. 12 -> 30 is still two and a half times, against
+     the desktop's 12 -> 38; the phone is 375px wide and that difference is what
+     it costs to not draw through the words. */
+  width: 30px;
+  height: 2px;
+  /* ROUNDED ENDS, same as the desktop tick (Agam: "the glass elements are not
+     full rounded"). `.tlx__rail-tick` has carried `border-radius: 999px` plus
+     `corner-shape: round` since it was built and this rotation simply did not
+     bring them across - so the vertical spine was a row of square-cut bars
+     where the horizontal one is a row of capsules. `corner-shape` is not
+     optional here for the same reason the dot needed it: the site smooths
+     corners globally, and a squircle capsule is not a capsule. */
+  border-radius: 999px;
+  corner-shape: round;
+  transform-origin: 50% 50%;
+  transform:
+    translateX(-50%)
+    scaleX(calc(0.4 + var(--r, 0) * 0.6)) /* 12/30 at rest, 1 at crest */
+    scaleY(calc(1 + var(--r, 0) * 0.618)); /* PHI, the same second cue */
+  /* NO RESTING INK AT ALL (Agam: "in the non expanded view, please hide the
+     timeline"). The spine used to sit at 0.16 everywhere and brighten under the
+     lens; now it is drawn ONLY where the lens is, which is where the open card
+     is, because both are centred on the same reading line.
+
+     What that turns the spine into is worth naming: it stops being a rule down
+     the side of the page and becomes a thing that exists where you are looking.
+     The section at rest is a list of ten organisations; the timeline appears
+     around the one you are reading and goes again when you leave it.
+
+     `opacity`, not `display` or `visibility`: the ticks must stay in the layout
+     and stay measurable, and the value is already being written every frame by
+     the lens - so hiding them costs nothing extra and the reveal is the same
+     raised cosine that does the magnifying. */
+  opacity: var(--r, 0);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fg) 85%, transparent) 0%,
+    color-mix(in srgb, var(--fg) 28%, transparent) 45%,
+    color-mix(in srgb, var(--fg) 45%, transparent) 100%
+  );
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--fg) 70%, transparent);
+}
+
+/* The `data-start` and `data-now` ink floors are gone with the resting spine.
+   They existed to punctuate a rule that was always visible; there is no longer
+   a rule to punctuate, and a mark that is the only thing on screen does not
+   need to be told apart from its neighbours. (`data-start` had already stopped
+   being written when the pitch went even - a tick is no longer a month.) */
+
+/* REDUCED MOTION KEEPS THE LENS. The desktop rail makes the same call and gives
+   the same reason: the magnification is what tells you where you are, so
+   removing it removes information, not motion. There is no temporal easing here
+   to drop anyway — the wave is a function of scroll position, so it moves only
+   as fast as the reader does. */
+
+/* `position: relative` is gone with the per-row dot it used to anchor - the
+   spine owns the gutter now and positions against the rail, not the row. */
+.tlv__row {
+  padding-inline: var(--tlv-card-pad);
+  /* the box a row becomes, declared at REST so every property has a real value
+     on both sides of the change - a transition from `none` does not interpolate */
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: 0 0 0 0 rgb(0 0 0 / 0), 0 0 0 0 rgb(0 0 0 / 0);
+  /* CHROME ONLY, never height. The desktop card makes the same call and gives
+     the reason: the copy inside is laid out at its final wrap from the first
+     frame, so animating the box around it is a window sliding over finished
+     text. The box arrives; the border, the ground and the shadow ease in. */
+  transition:
+    border-color var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease),
+    background-color var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease),
+    box-shadow var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease);
+}
+
+/* BREATHING ROOM. The rows sat 4px apart - measured, not guessed - which put
+   ten organisations in one undifferentiated block and left the open card with
+   nothing around it to be open IN. 18px between rows and a taller head is what
+   turns a list into a set of things. */
+.tlv__row + .tlv__row {
+  margin-top: 18px;
+}
+
+.tlv__head {
+  display: block;
+  width: 100%;
+  /* 44px is not the target here — the whole row is, and it is taller than that
+     in every state. LEFT-RANGED, and briefly not: an over-broad find-and-replace
+     meant for the year labels centred this and gave it their 5px of side
+     padding. A list of names is scanned down a left edge; a centred column of
+     names gives the eye nothing to run along. */
+  padding: 14px 0;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tlv__org {
+  display: block;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: normal;
+  color: var(--fg);
+}
+
+/* THE ROLE COMES BACK. It was cut from the horizontal tiles (msmtewu7,
+   "remove this subtext from all tiles") because ten of them across 500px turned
+   the rail into a paragraph — the constraint was WIDTH, and that constraint
+   does not exist on this axis. The record always had it; only the drawing could
+   not afford it. */
+/* SANS, and said so. It was mono only because nothing here overrode the
+   section - and a job title is language, not a coordinate. It sits with the
+   name it belongs to rather than with the dates. */
+.tlv__role {
+  display: block;
+  margin-top: 3px;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: normal;
+  color: var(--muted);
+}
+
+.tlv__when {
+  display: block;
+  margin-top: 7px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* ---- the opened row IS the desktop card ---------------------------------
+   Agam: "can we make the expanded state have the same spec cards as desktop".
+   Every number below is copied from `.tlx__rail-tagcard[data-open="true"]` and
+   the `.tlx__rail-detail-*` rules rather than re-invented, so the two views are
+   the same card seen on two devices:
+
+     box       1px var(--line), 12px radius, var(--bg), 12px 14px padding,
+               7px gap, and the two-layer shadow verbatim
+     month     10px, 0.04em, uppercase, muted
+     summary   11px / 1.45, muted
+     bullets   14px indent, 11px / 1.45, 4px gap, 9px markers
+
+   ONE DELIBERATE DIFFERENCE, so it is not read as an oversight: the org and
+   role keep the ROW's type scale (15px / 12px) instead of the desktop card's
+   10px uppercase tag. The desktop card is a label floating on a rail and has to
+   announce itself; here the same text is a list item you scan ten of, and
+   shrinking it to 10px uppercase on tap would make the thing you just chose
+   harder to read than the nine you did not.
+
+   `hidden` does the hiding, so there is no height animation to get wrong and
+   nothing is in the accessibility tree while it is shut. An opening height
+   transition would have to measure content that has not been laid out yet,
+   which is the class of animation that reads as a glitch on the first frame and
+   never quite settles. The chrome eases; the box does not. Same call the
+   desktop card's own note makes, for the same reason. */
+
+/* ── THE EXPANSION ────────────────────────────────────────────────────────
+   BOTH DIRECTIONS EASE, ON THE SAME CLOCK, and that symmetry is what stops the
+   page moving.
+
+   It used to be: opening eases, closing snaps, and a `scrollBy` in
+   RailColumn.jsx cancelled the step the snap caused. That worked and it was
+   wrong - it moved the page on every expansion, which the reader feels, to
+   avoid a drift they would not have. It also fought iOS momentum, since a
+   programmatic scroll during a flick interrupts the flick.
+
+   Now the outgoing row collapses over the same 350ms the incoming one takes to
+   grow. ONE SHRINKS WHILE THE OTHER GROWS, so the section's height barely
+   changes at any instant and there is nothing left to compensate for. The
+   residual is the difference between two cards' heights, spread across the
+   transition - instead of the full height of one card in a single frame.
+
+   `grid-template-rows: 0fr -> 1fr` rather than a height: it interpolates
+   without anybody having to measure content that has not been laid out yet,
+   which is the failure the desktop card's note warns about. */
+
+.tlv__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.tlv__body-in {
+  /* a grid item's automatic minimum is its own content, so without this the row
+     will not go below the height of its text and the collapse does nothing */
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* THE TRANSITION LIVES ON THE BASE RULE so it runs in BOTH directions - on the
+   open rule it only ever described the way in, and the way out is precisely the
+   half that was moving the page. */
+.tlv__body {
+  /* THE SPATIAL DURATION, THE EFFECTS CURVE, and the mix is deliberate.
+     `--m3-dur-spatial-default` is 500ms and every `--m3-spatial-*` easing in the
+     system OVERSHOOTS - y1 of 1.06, 1.21, 1.29, 1.67. Overshoot is right for
+     something springing WITHIN ITSELF; this size change moves the page, and a
+     page that springs past and comes back reads as a bug rather than as
+     character. 500ms is also too long for something that fires as you scroll
+     past a row. So: the fast end of the spatial scale with the effects curve,
+     the only family here that lands without overshooting.
+
+     Both rows are on this exact clock, which is the point - a shrink and a grow
+     that do not finish together would leave a height wobble behind them. */
+  transition:
+    grid-template-rows var(--m3-dur-spatial-fast, 350ms) var(--m3-effects-default, ease-out),
+    opacity var(--m3-dur-effects-default, 200ms) var(--m3-effects-default, ease-out);
+}
+
+.tlv__row[data-open="true"] .tlv__body {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  padding-top: 0;
+}
+
+.tlv__row[data-open="true"] {
+  border-color: var(--line);
+  background: var(--bg);
+  padding-bottom: 16px;
+  box-shadow:
+    0 2px 6px -2px rgb(0 0 0 / 0.1),
+    0 16px 36px -12px rgb(0 0 0 / 0.22);
+}
+
+/* the head loses its own bottom padding inside the card - the card's 7px gap
+   owns the space between the name and the record now */
+.tlv__row[data-open="true"] .tlv__head {
+  padding-bottom: 10px;
+}
+
+.tlv__sum {
+  margin: 0;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  /* the inherited -0.016em was tightening 11px monospace prose, which is the
+     one place tracking should never go negative */
+  letter-spacing: normal;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.tlv__outs {
+  margin: 0;
+  padding-left: 14px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tlv__outs li {
+  margin: 0;
+  font-family: "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.tlv__outs li::marker {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+/* The sweep's hit area, 80px taller than the strip each way (mso0viqx).
+   `padding-block` makes the target; the negative `margin-block` hands the space
+   straight back, so the rail's layout is byte-identical to before. */
+.tlx__rail-hit {
+  padding-block: 80px;
+  margin-block: -80px;
+  position: relative;
+}
+
+/* REDUCED MOTION: the lens STAYS, the chrome stops easing.
+   The desktop rail makes the same call and gives the reason - the magnification
+   is what tells you where you are, so removing it removes information rather
+   than motion. It is also a function of scroll position here, which means it
+   only ever moves as fast as the reader does; there is no independent animation
+   to suppress. What does get suppressed is the card's border-and-shadow ease,
+   which is decoration and has no job beyond feeling nice. */
+@media (prefers-reduced-motion: reduce) {
+  .tlv__row,
+  .tlv__year,
+  .tlv__row[data-open="true"] .tlv__body {
+    transition: none;
+  }
+}
+
+/* THE ACTIVE GLASS — months with an experience attached (mso565d2).
+   The opacity difference above already separates occupied months from empty
+   ones; in glass this adds the thing glass actually does when it is lit: a
+   stronger top edge and a denser body, so an occupied stretch reads as a run of
+   SOLID glass against the hollow months between. Ink and gradient keep the
+   opacity cue alone - a material change only makes sense in the material. */
+.tlx__rail[data-ticks="glass"] .tlx__rail-tick[data-work="true"] {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fg) 95%, transparent) 0%,
+    color-mix(in srgb, var(--fg) 45%, transparent) 45%,
+    color-mix(in srgb, var(--fg) 62%, transparent) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fg) 90%, transparent);
+}
+
+/* ── ONE SPACING SCALE FOR THE PHONE ───────────────────────────────────────
+   The section's own rhythm was three unrelated clamps: 65px above the heading,
+   81px below the rail, 32px under the head, all viewport-derived, so no two
+   gaps on the page were the same number and none of them was a number anyone
+   chose. On a phone they are steps of 8: 40 around the section, 24 under the
+   head, 16 inside the copy. */
+
+@media (max-width: 640px) {
+  /* Section padding now lives in the max-width:720px block above, so it covers
+     large phones too; only the head rhythm is tuned at this narrower breakpoint. */
+  .tlx__head {
+    margin-bottom: 24px;
+  }
+  /* 16px between the rows, down from 18, so the row gap is a step of the same
+     scale rather than a value of its own. The open row keeps its 16px bottom
+     padding, which now matches the gap between rows exactly. */
+  .tlv__row + .tlv__row {
+    margin-top: 16px;
+  }
+  /* 12px, and the tap target is unaffected: the head is 60px tall at its
+     shortest because it holds three lines of text, so this trims air rather
+     than reach. */
+  .tlv__head {
+    padding: 12px 0;
+  }
+}
+
+/* The second rail (msoov1lo). Marked, not styled: it is a place to iterate, and
+   dressing it up now would make the two harder to compare, not easier. */
+.tlx__rail-dupe {
+  position: relative;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE HORIZONTAL RAIL — `.tlh*` (Agam, 2026-08-13: rotate the vertical rail and
+   keep its components + interactions). A NEW namespace beside `.tlv*`, never
+   editing it, so the frozen vertical v1 in /lab stays exactly as it was. Time
+   runs along X; the card list scrolls sideways; the glass spine and the year
+   wheel are ported from the column with `top`→`left`, translateY→translateX.
+   ══════════════════════════════════════════════════════════════════════════ */
+.tlh {
+  position: relative;
+  --tlh-line: color-mix(in srgb, var(--fg) 18%, transparent);
+  /* The card height. A FALLBACK ONLY (Agam, 2026-08-14: "set a height based on
+     the tallest card if the heights were to hug") — RailBand measures every
+     row's true hugged height off an offscreen open copy (`.tlh__measure`) and
+     overrides this with the tallest one as an inline style the instant it has
+     laid out. 300px just covers the gap before that first measurement (and
+     JS-disabled), so it no longer needs to be a guess tall enough for every
+     record — it only has to hold the shortest useful frame for one paint. */
+  --tlh-card-h: 300px;
+  --tlh-head-w: 150px;
+  /* the sliver of the previous and next cards left visible either side of the
+     open one — the scroll affordance the viewport-fit width has to pay for */
+  --tlh-peek: 28px;
+  /* THE YEAR BAND'S HEIGHT IS PADDING, NOT A CHILD MARGIN (mobile QA
+     2026-08-13: the year labels sat ON the cards). The first cut gave the
+     scroller `margin-top: 30px`, and that margin COLLAPSES through `.tlh`'s own
+     top edge — the gap vanished and the absolutely-placed years landed on the
+     card row. Padding cannot collapse, so the band it reserves is real.
+     36, up from 30, so the wheel and the spine under it share more daylight. */
+  padding-top: 36px;
+  /* AIR ABOVE THE YEAR ROW (Agam, mobile QA 2026-08-13: "above the year...
+     the spacing should be more, so the layout can breathe"). A margin, not
+     padding: the years pin to the section's padding edge, so padding above
+     them would move nothing — this pushes the whole section down from the
+     head instead. 40, because it COLLAPSES with the head's own 24px
+     margin-bottom (siblings take the max, not the sum) — a 24 here vanished
+     into the head's and added nothing. */
+  margin-top: 40px;
+}
+
+/* ---- the year wheel: a picker over the scroller, active year on the line ---
+   Absolutely placed over the scroller centre so it does not scroll with the
+   strip; the wheel slides on translateX to put the active year on the line. */
+.tlh__years {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 22px;
+  z-index: 3;
+  pointer-events: none;
+}
+.tlh__wheel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* the active label steps back to the reading line (the scroller's centre,
+     which is where this nav is pinned) */
+  transform: translateX(calc(var(--tlh-active, 0) * var(--tlh-pitch, 64px) * -1));
+  transition: transform var(--m3-dur-spatial-fast, 350ms) var(--m3-effects-default, ease-out);
+}
+.tlh__year {
+  position: absolute;
+  top: 0;
+  /* left is i*pitch; pull back half the label so it sits ON its mark */
+  transform: translateX(-50%);
+  opacity: 0;
+  padding: 4px 8px;
+  font: inherit;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--fg) 60%, var(--bg));
+  background: none;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--m3-dur-effects-fast, 150ms) ease,
+    transform var(--m3-dur-spatial-fast, 350ms) var(--m3-effects-default, ease-out);
+}
+.tlh[data-ready="true"] .tlh__year {
+  opacity: 1;
+}
+
+/* AIR AROUND THE ACTIVE YEAR (Agam, 2026-08-13: "for the active year add more
+   left and right spacing"). The labels sit on a fixed pitch, so padding the lit
+   one moves nothing — instead the NEIGHBOURS step aside: everything before the
+   active label shifts left, everything after shifts right, and the shift rides
+   the same transform that centres each label on its mark. `:has()` is what
+   selects "labels before the active one" without JS; the wheel's slide and this
+   step share the ease, so the two moves read as one. */
+.tlh__year:has(~ .tlh__year[data-on="true"]) {
+  transform: translateX(calc(-50% - 10px));
+}
+.tlh__year[data-on="true"] ~ .tlh__year {
+  transform: translateX(calc(-50% + 10px));
+}
+.tlh__year[data-on="true"] {
+  color: var(--fg);
+}
+.tlh__year:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---- the sideways scroller: the only thing that overflows --------------- */
+.tlh__scroll {
+  /* the year band above is `.tlh`'s padding-top now — a margin here collapsed
+     through the section edge and put the labels on the cards */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* THE DETENT (Agam, 2026-08-14: "the rail is a physical tape"). Native
+     scroll-snap, so the browser's own momentum physics carries a flick and
+     each card CLICKS onto the reading line instead of coasting to an
+     arbitrary stop. The JS selection keeps its job of choosing which card is
+     open; this only decides where the tape may come to rest. `proximity`
+     rather than `mandatory`, because bringX()'s smooth scrollTo and the
+     open-card width transition both move snap points mid-flight — mandatory
+     re-snaps through those and fights the flight; proximity gives the same
+     settle at rest without claiming scrolls it did not start.
+     Snap-align is on the cards; head centre = card centre now that the record
+     stacks BELOW the head, so snapping the card centres the head on the line. */
+  scroll-snap-type: x proximity;
+}
+/* snap stands down while bringX() is flying a card to the line — Chromium
+   otherwise cancels the programmatic smooth scroll at the first snap point it
+   passes (see bringX) — and likewise for the whole of a mouse drag, whose
+   direct scrollLeft writes invite the same fight. Restored on landing, where
+   the re-snap trues up. */
+.tlh__scroll[data-flying="true"] {
+  scroll-snap-type: none;
+}
+/* the grabbing hand and the selection block belong to the DRAG specifically —
+   on data-flying they flickered in on every 500ms tap flight too */
+.tlh__scroll[data-dragging="true"] {
+  user-select: none;
+  cursor: grabbing;
+}
+/* the tape reads as draggable on desktop; heads keep their own pointer */
+.tlh__scroll {
+  cursor: grab;
+}
+.tlh__card {
+  scroll-snap-align: center;
+}
+.tlh__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tlh__strip {
+  position: relative;
+  width: max-content;
+  /* half a viewport of lead-in and run-out, so the first and last cards can
+     reach the centre reading line; the top padding is the SPINE'S OWN BAND
+     (mobile QA 2026-08-13: the spine used to sit inside the card row, behind
+     the card fills, so the wave was invisible exactly where it mattered).
+     Band order, top to bottom: years (in .tlh's padding) / spine / cards.
+     64 = the 42px band plus 22px of daylight down to the cards (Agam, mobile
+     QA 2026-08-13: "spacing below the vertical dashes... should be more, so
+     the layout can breathe").
+     The 28px floor exists for the depth stage's ground shadow: the scroller
+     clips on Y, so without reserved room the open card's 12px/32px shadow is
+     sliced off flat at the card's own bottom edge. */
+  padding: 64px 50vw 28px;
+}
+
+/* ---- the glass spine: one tick per month, along X, in its own band ------- */
+.tlh__spine {
+  position: absolute;
+  left: 50vw;
+  right: 50vw;
+  top: 0;
+  height: 42px;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* THE COLUMN'S GLASS TICK, ROTATED — this is `.tlv__tick` with the axes swapped,
+   not a new drawing (Agam, mobile QA 2026-08-13: "it should be a central line...
+   the glass effect is gone"). What the first pass lost, restored:
+
+     CENTRED ON THE AXIS. The tick sits on the band's own middle and opens
+     symmetrically from its centre — a mark on an axis, not a bar rooted at a
+     floor. `top: 50%` + origin 50% is the rotation of the column's `left: 50%`.
+
+     THE CAPSULE. `border-radius: 999px` + `corner-shape: round`, because the
+     site smooths corners globally and a squircle capsule is not a capsule.
+
+     THE GLASS. The gradient runs along the reach (top-heavy, the lit edge
+     first) with the 1px inset highlight — `.tlv__tick`'s ink, `to right`
+     turned `to bottom`, `inset 1px 0 0` turned `inset 0 1px 0`.
+
+   One deliberate departure: the column draws ticks ONLY under the lens
+   (`opacity: var(--r)`). Here a faint resting ink stays, because with the wave
+   parked at the reading line a fully hidden spine would leave the band reading
+   as empty space — the axis is the thing this row exists to show. */
+.tlh__tick {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2px;
+  /* the full reach, scaled DOWN to rest: 12/30 at rest, 1 at the crest — the
+     column's numbers, on height */
+  height: 30px;
+  border-radius: 999px;
+  corner-shape: round;
+  transform-origin: 50% 50%;
+  transform:
+    translateY(-50%)
+    scaleY(calc(0.4 + var(--r, 0) * 0.6))
+    scaleX(calc(1 + var(--r, 0) * 0.618)); /* PHI, the same second cue */
+  opacity: calc(0.22 + var(--r, 0) * 0.78);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fg) 85%, transparent) 0%,
+    color-mix(in srgb, var(--fg) 28%, transparent) 45%,
+    color-mix(in srgb, var(--fg) 45%, transparent) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fg) 70%, transparent);
+}
+
+/* THE MEASURER — an invisible, fully-open copy of every row (RailBand.jsx),
+   used only to read the true hugged height of each row's content. Absolutely
+   positioned and zero-sized itself so it takes no space in `.tlh`'s own flow;
+   its `.tlh__card` children still lay out to their real (--tlh-open-w) width,
+   which is what makes their offsetHeight the real answer. */
+.tlh__measure {
+  /* FIXED, not absolute (Agam, 2026-08-14: the phantom space below the footer
+     came back on iOS after the overflow fix held in Chrome). An absolute box's
+     clipped overflow SHOULD stay out of the document's scroll extent, but that
+     leaves room for engines to disagree — and Safari did. A fixed-position box
+     is excluded from scrollable overflow by construction, in every engine:
+     fixed content never scrolls, so it can never extend what scrolls. Layout
+     inside is unchanged (same 0x0 box, copies still measure true), and the
+     `--tlh-open-w` the copies size to is 100vw-based, which fixed positioning
+     reads identically. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  /* `clip`, NOT `visible` (Agam, 2026-08-14: "a ton of space after the footer").
+     An absolutely-positioned box's overflowing children still extend the
+     DOCUMENT'S scrollable height even when visibility: hidden — ten fully-open
+     measurement cards stacked ~2.5k px of invisible, scrollable page past the
+     footer. `clip` removes the box from scrollable-overflow accounting without
+     touching layout: the copies still lay out at their true hugged heights, so
+     offsetHeight still measures exactly what it did. */
+  /* `hidden` first as the everywhere-supported fallback, `clip` on top where it
+     exists (Safari < 16 has no `clip`; an unsupported value would have left the
+     original `visible` behaviour and the phantom scroll with it). Either one
+     removes the copies from scrollable-overflow accounting; neither touches
+     their layout, so offsetHeight still measures true. */
+  overflow: hidden;
+  overflow: clip;
+  visibility: hidden;
+  pointer-events: none;
+}
+/* The live card's `height: 100%` reads its height FROM `--tlh-card-h` — the
+   very number this measurer exists to produce. Inside the measurer there is
+   no such parent height to read (`.tlh__measure` is 0 tall on purpose), so
+   `height: auto` lets each copy size to its own content instead of collapsing
+   to its parent's 0.
+
+   ABSOLUTE, ALL OVERLAPPING AT THE TOP (Agam, 2026-08-14: the phantom scroll
+   below the footer SURVIVED both the overflow clip and the fixed-position
+   container on iOS, while Chrome showed zero either way). Stop litigating
+   which engine counts which overflow: in normal flow the ten copies stacked
+   ~4000px tall, which is what any miscounting engine turns into a page tail.
+   Absolutely positioned, they all sit on top of each other at the box's own
+   top — total overflow is ONE card, parked at the top of the viewport, so
+   there is nothing below the footer to count under any interpretation.
+   Each copy still lays out at its full hugged height (absolute boxes lay out
+   normally; the explicit open-card width holds), so offsetHeight measures
+   exactly what it did. */
+.tlh__measure .tlh__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+}
+/* in the measurer the overlay face must be IN FLOW at its open width, or the
+   clone's li has no height to measure (an absolute child sizes nothing) */
+.tlh__measure .tlh__card-in {
+  position: static;
+  transform: none;
+  width: var(--tlh-open-w);
+}
+
+/* ---- the cards, in a horizontal row ------------------------------------- */
+.tlh__list {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  height: var(--tlh-card-h);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* RESPONSIVE CARD, WITH THE NEIGHBOURS PEEKING (Agam, mobile QA 2026-08-13:
+   "the full card is not visible in the viewport... make the cards responsive to
+   the width and show a little of the left and right cards"). The open card was
+   a fixed head-beside-body 452px — wider than a 375px phone, so its record ran
+   off the right edge. Two changes together:
+
+   1. The OPEN card's width is derived from the viewport: 100vw minus the
+      section's gutters minus a peek strip either side, so the whole card fits
+      with a sliver of the previous and next cards visible as the scroll
+      affordance.
+   2. The record STACKS BELOW the head instead of beside it — full-width text at
+      a readable measure, and the body reveal returns to the column's own
+      0fr→1fr on ROWS (the animation the vertical build proved). The card still
+      grows in WIDTH (152 → the responsive width) so the horizontal motion is
+      kept; the text just does not pay for it. */
+/* THE SLOT AND THE OVERLAY (Agam, 2026-08-15: "single swipe left or right is
+   still glitchy"). The glitch was structural: the open card grew IN FLOW, so a
+   swipe's deceleration always collided with a 127px layout shove the moment
+   the arriving card opened — every snap target and flight target moved mid-
+   motion, and iOS re-snapped against churning geometry. So layout and opening
+   are now DECOUPLED:
+
+   - `.tlh__card` (the li) is a fixed slot, one per tenure, width never
+     changes. Snap points sit at fixed pitch; a card's centre is the same X
+     open or closed; nothing in the row ever moves because of a selection.
+   - `.tlh__card-in` is the visible card, absolutely positioned and CENTRED in
+     its slot. Opening grows IT, symmetrically about the slot centre, OVER the
+     neighbours — the depth stage made literal: the near card lifts above the
+     row and casts its shadow on the cards behind it. The open background must
+     therefore be OPAQUE (mixed into --bg, not transparent) or the covered
+     neighbours ghost through it. */
+/* ONE WIDTH, EVERY CARD, EVERY STATE (Agam, 2026-08-15: "width should be the
+   same across all transitions"). The 150px closed head was the last thing
+   left that resized — even moved to a rest-committed overlay it was still a
+   width animation to watch. Now slot and face are BOTH `--tlh-open-w`: the
+   row is a uniform carousel (card + ~38px sliver of each neighbour), faces
+   never overlap, and opening a card animates exactly one thing — the body's
+   0fr→1fr reveal inside a box whose width and height never move. The overlay
+   face structure stays: its centring in the slot is what keeps every measured
+   centre identical to the slot centre, and the shadow still lifts the near
+   card. */
+.tlh__card {
+  --tlh-open-w: calc(100vw - 2 * var(--hello-gutter, 20px) - 2 * var(--tlh-peek, 28px));
+  position: relative;
+  width: var(--tlh-open-w);
+  height: 100%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+.tlh__card[data-open="true"] {
+  z-index: 2; /* the near card sits above the row */
+}
+.tlh__card-in {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--tlh-open-w);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  border: 1px solid var(--tlh-line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+  overflow: hidden;
+  transition: border-color 200ms ease, background-color 200ms ease;
+}
+.tlh__card[data-open="true"] .tlh__card-in {
+  border-color: color-mix(in srgb, var(--fg) 42%, transparent);
+  background: color-mix(in srgb, var(--fg) 7%, var(--bg));
+}
+
+/* THE DEPTH STAGE (Agam, 2026-08-14: "the open card is not wider, it is
+   nearer"). `--dp` is written per card by RailBand's rAF paint — 0 on the
+   reading line, 1 a half-viewport away — so this is scroll-driven, continuous,
+   and always in phase with the spine wave (same frame, same loop). Nearness is
+   said three ways that agree: scale (nearer is bigger), settle (further sinks
+   4px), and light (further dims). No blur — a phone pays real frames for
+   backdrop blur and opacity already reads as atmosphere at this size.
+   Scale is about the centre, so the head-centre X every selection rule
+   measures does not move; translateY only spends the vertical axis, which
+   carries no meaning on this rail. NO transition: a scroll-driven value
+   animated on top of scrolling is two easings fighting, and the finger IS the
+   easing. The width transition stays on its own property, untouched. */
+@media (prefers-reduced-motion: no-preference) {
+  .tlh__card {
+    transform: scale(calc(1 - var(--dp, 1) * 0.055)) translateY(calc(var(--dp, 1) * 4px));
+    opacity: calc(1 - var(--dp, 1) * 0.42);
+    will-change: transform, opacity;
+  }
+  /* the lift: a soft ground shadow that only the near card casts. On the
+     overlay face (which is what actually floats over the row) so it clips
+     with the same radius, and in `--fg` at low alpha rather than black, so it
+     reads on the dark theme as a glow-edge and on light as a drop. */
+  .tlh__card[data-open="true"] .tlh__card-in {
+    box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--fg) 22%, transparent);
+  }
+  /* the measurer's copies are for reading heights, not for staging */
+  .tlh__measure .tlh__card {
+    transform: none;
+    opacity: 1;
+    will-change: auto;
+  }
+}
+
+.tlh__head {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px;
+  gap: 6px;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tlh__head:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -2px;
+  border-radius: 12px;
+}
+.tlh__org {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.tlh__role {
+  font-size: 12px;
+  color: var(--muted);
+}
+.tlh__when {
+  margin-top: 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* THE 0fr→1fr REVEAL, BACK ON ROWS — the column's own body animation, verbatim,
+   now that the record stacks BELOW the head. The card's width transition above
+   carries the horizontal growth; this carries the record's entrance. */
+.tlh__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-height: 0;
+  /* THE BODY TAKES THE CARD'S REMAINING HEIGHT (Agam, 2026-08-13: "the cards
+     should have internal scroll"). Without this the grid row sized to its
+     CONTENT and the card's `overflow: hidden` just clipped the tail — the
+     `overflow-y: auto` further down had no bounded height to scroll within.
+     As a flex child of the fixed-height card, `flex: 1` + `min-height: 0` is
+     what makes the 1fr row a definite height the record can scroll inside. */
+  flex: 1 1 auto;
+  transition: grid-template-rows var(--m3-dur-spatial-fast, 350ms) var(--m3-effects-default, ease-out);
+}
+.tlh__card[data-open="true"] .tlh__body {
+  grid-template-rows: 1fr;
+}
+.tlh__body-in {
+  min-height: 0;
+  overflow: hidden;
+}
+.tlh__sum,
+.tlh__outs {
+  /* hold the OPEN measure even while the card's width is still animating, so
+     the text wraps once to its final width rather than reflowing every frame */
+  width: calc(var(--tlh-open-w) - 32px);
+  box-sizing: border-box;
+}
+.tlh__sum {
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.tlh__head + .tlh__body .tlh__sum {
+  margin-top: 16px;
+}
+.tlh__outs {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+.tlh__outs li {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+/* THE INTERNAL SCROLL IS GONE (Agam, 2026-08-14: "I should be able to swipe
+   the cards directly"). The card height now hugs the tallest record, so no
+   record can outrun its card — the `overflow-y: auto` + `touch-action: pan-y`
+   machinery this rule used to carry had nothing left to scroll, but the
+   pan-y was still EATING horizontal swipes that started on the open card's
+   body, which is most of the screen. With it gone, a swipe anywhere on a card
+   pans the timeline, which is what a tape asks for. */
+.tlh__card[data-open="true"] .tlh__body-in {
+  padding: 0 16px 16px;
+  box-sizing: border-box;
+}
+.tlh__card[data-open="true"] .tlh__sum {
+  margin-top: 0;
+  padding-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tlh__wheel,
+  .tlh__body,
+  .tlh__card {
+    transition: none;
+  }
+}
+
+/* THE DOTTED MARK ON "SPACE-TIME" (annotation msu9a8k4). Copied from
+   .hnote__mark in hello.css - the footer's "firm and cheery" - so the two
+   headings carry the same cue: from-font thickness, 0.18em offset, ink at 45%. */
+.tlx__title-mark {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.18em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* the now-mark under a right-end panel (see nowCovered in Timeline.jsx) */
+.tlx__rail-nowcard[data-covered="true"],
+.tlx__rail-nowlead[data-covered="true"] {
+  opacity: 0;
+  pointer-events: none;
+}

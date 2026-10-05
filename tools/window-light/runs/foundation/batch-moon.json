@@ -1,0 +1,9 @@
+{ "defaults": { "w": 1440, "h": 900, "dpr": 1, "frames": 32, "timeout": 150000, "scene": "require" },
+  "shots": [
+    { "name": "moon-p05-21", "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=21&wx=partly&p=0.5" },
+    { "name": "moon-p025-21", "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=21&wx=partly&p=0.25" },
+    { "name": "moon-p05-21-clear", "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=21&wx=clear&p=0.5" },
+    { "name": "photo-p05-21", "url": "/window?capture=1&look=photo&theme=light&sky=mine&t=0&tod=21&wx=partly&p=0.5" },
+    { "name": "det-a", "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.5" },
+    { "name": "det-b", "url": "/window?capture=1&look=dreamlike&theme=light&sky=mine&t=0&tod=17.68&wx=partly&p=0.5" }
+  ] }

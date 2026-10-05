@@ -1,0 +1,550 @@
+/* ── Presentation Mode ("Reel") ──────────────────────────────────────────────
+   A cinematic, Apple-keynote style motion figure: ONE phone the "camera" zooms
+   around, featuring components one at a time with micro-interactions + effects.
+   The phone is always maintained on screen; close-ups are the camera pushing in
+   (scale + translate), not separate scenes. Built on the ds/ harness
+   (useInViewLoop sequencer, useReducedMotion). Corner radii are border-radius
+   only — the global `corner-shape: squircle` rounds them; never set per element. */
+
+.reel-root {
+  --r-enter: cubic-bezier(0.16, 1, 0.3, 1);     /* decelerate-heavy settle */
+  --r-exit:  cubic-bezier(0.4, 0, 1, 1);        /* accelerate-out */
+  --r-pop:   cubic-bezier(0.34, 1.56, 0.64, 1); /* springy back-out */
+  --r-cam:   cubic-bezier(0.6, 0, 0.18, 1);     /* camera move: confident push-in */
+  --r-purple: #6b21d9;
+  --r-purple-soft: rgba(107, 33, 217, 0.12);
+  --r-purple-line: rgba(107, 33, 217, 0.32);
+  --r-ink: #14141a;
+  --r-sub: #8a8e98;
+  --r-line: #ececf1;
+  --r-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* tokens the shared ds/Cursor (the global cursor) reads for its move + grow */
+  --ds-dur-move: 540ms;
+  --ds-ease-move: cubic-bezier(0.33, 0, 0.15, 1);
+  --ds-dur-expand: 400ms;
+  --ds-ease-out: cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+.reel-presets {
+  --ds-dur-move: 540ms;
+  --ds-ease-move: cubic-bezier(0.33, 0, 0.15, 1);
+  --ds-dur-expand: 400ms;
+  --ds-ease-out: cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+/* ── sizing: a fixed 960×600 design frame, scaled to fit ── */
+.reel-fit { position: relative; width: 100%; overflow: hidden; border-radius: 18px; }
+.reel-fit[data-surface="inline"] { background: #050507; aspect-ratio: 960 / 600; }
+.reel-fit[data-surface="full"] {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 0;
+}
+.reel-root {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 960px;
+  height: 600px;
+  transform: translateX(-50%) scale(var(--reel-scale, 1));
+  transform-origin: top center;
+  overflow: hidden;
+  background: #050507;
+  font-family: var(--r-font);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
+}
+.reel-fit[data-surface="full"] .reel-root {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: scale(var(--reel-scale, 1));
+  transform-origin: center center;
+  border-radius: 22px;
+  box-shadow: 0 40px 120px -40px rgba(0, 0, 0, 0.8);
+}
+
+/* ── stage: dark cinematic ground with a breathing spotlight + vignette ── */
+.reel-stage {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% 120%, rgba(107, 33, 217, 0.20), transparent 60%),
+    radial-gradient(140% 130% at 50% -15%, #16161d 0%, #050507 62%);
+  overflow: hidden;
+}
+.reel-spot {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(62% 62% at 50% 48%, transparent 74%, rgba(0, 0, 0, 0.2) 100%);
+  animation: reelBreathe 8s ease-in-out infinite;
+}
+@keyframes reelBreathe { 0%, 100% { opacity: 0.7; } 50% { opacity: 0.85; } }
+
+/* ── the camera: scales + translates so a region centers in the stage ── */
+.reel-cam {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240px;
+  height: 552px;
+  margin: -276px 0 0 -120px;          /* center the phone in the stage */
+  transform-origin: center center;
+  transition: transform 980ms var(--r-cam);
+  will-change: transform;
+}
+
+/* ── phone: matches the global ds/Scaffold frame (.ds-phone) — thin light
+   border, 30px radius, soft frame shadow; NOT a black bezel. ── */
+.reel-ph {
+  position: relative;
+  width: 240px;
+  height: 552px;
+  border-radius: 30px;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  box-shadow: 0 20px 50px -26px rgba(20, 16, 45, 0.28), 0 1px 3px rgba(20, 16, 45, 0.04);
+  overflow: hidden;
+}
+.reel-ph__screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  color: var(--r-ink);
+}
+
+/* ── coded Zepto screen content ── */
+.reel-scr { padding: 30px 13px 13px; display: flex; flex-direction: column; gap: 12px; }
+.reel-scr__head { display: flex; flex-direction: column; gap: 2px; }
+.reel-scr__title { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+.reel-scr__sub { font-size: 10px; color: var(--r-sub); }
+
+/* toggle tiles (instant | schedule) */
+.reel-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.reel-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 11px;
+  border: 1.5px solid var(--r-line);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 320ms var(--r-enter), background 320ms var(--r-enter), box-shadow 320ms var(--r-enter);
+}
+.reel-tile b { font-size: 12px; font-weight: 700; }
+.reel-tile span { font-size: 9.5px; color: var(--r-sub); }
+.reel-tile[data-sched][data-on="true"] {
+  border-color: var(--r-purple);
+  background: var(--r-purple-soft);
+  box-shadow: 0 0 0 3px var(--r-purple-soft);
+  animation: reelGlow 1.1s var(--r-enter);
+}
+.reel-tile[data-sched][data-on="true"] b { color: var(--r-purple); }
+@keyframes reelGlow {
+  0% { box-shadow: 0 0 0 0 rgba(107, 33, 217, 0.5); }
+  60% { box-shadow: 0 0 0 10px rgba(107, 33, 217, 0); }
+  100% { box-shadow: 0 0 0 3px var(--r-purple-soft); }
+}
+
+/* day tabs */
+.reel-tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--r-line); }
+.reel-tab {
+  flex: 1;
+  text-align: center;
+  padding-bottom: 8px;
+  margin-bottom: -1.5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #aeb0b8;
+  border-bottom: 2.5px solid transparent;
+  transition: color 320ms var(--r-enter), border-color 320ms var(--r-enter);
+}
+.reel-tab[data-on="true"] { color: var(--r-ink); border-bottom-color: var(--r-purple); }
+
+/* section label, with in-place relabel crossfade */
+.reel-sec {
+  position: relative;
+  height: 14px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--r-sub);
+}
+.reel-sec--static { position: static; }
+.reel-sec__a, .reel-sec__b {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 460ms var(--r-enter), transform 460ms var(--r-enter);
+}
+.reel-sec__a[data-on="true"], .reel-sec__b[data-on="true"] { opacity: 1; transform: none; }
+.reel-sec__b { color: var(--r-purple); }
+
+/* slot grid + cell selection */
+.reel-block { display: flex; flex-direction: column; gap: 8px; }
+.reel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.reel-cell {
+  position: relative;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--r-line);
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4b4f57;
+  background: #fff;
+  transition: border-color 280ms var(--r-pop), color 280ms var(--r-pop), background 280ms var(--r-pop), box-shadow 280ms var(--r-pop);
+}
+.reel-cell[data-on="true"] {
+  border-color: var(--r-purple);
+  color: var(--r-purple);
+  background: var(--r-purple-soft);
+  box-shadow: 0 0 0 3px var(--r-purple-soft);
+  animation: reelSelPop 420ms var(--r-pop);
+}
+@keyframes reelSelPop { 0% { transform: scale(1); } 45% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+/* a sparing tap pulse at the moment of selection (no traveling cursor) */
+.reel-cell__tap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 2px solid var(--r-purple);
+  opacity: 0;
+  pointer-events: none;
+}
+.reel-cell__tap[data-on="true"] { animation: reelTap 520ms var(--r-enter); }
+@keyframes reelTap { 0% { opacity: 0.7; transform: scale(0.4); } 100% { opacity: 0; transform: scale(3.2); } }
+
+/* confirmation chip that materializes with a light sweep */
+.reel-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translate(-50%, 14px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--r-purple);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  overflow: hidden;
+  box-shadow: 0 12px 26px -8px rgba(107, 33, 217, 0.6);
+  transition: opacity 380ms var(--r-enter), transform 460ms var(--r-pop);
+  z-index: 4;
+}
+.reel-chip[data-on="true"] { opacity: 1; transform: translate(-50%, 0); }
+.reel-chip[data-on="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.5) 50%, transparent 65%);
+  transform: translateX(-130%);
+  animation: reelSweep 900ms 360ms var(--r-enter);
+}
+@keyframes reelSweep { to { transform: translateX(130%); } }
+
+/* tiny lower-third microlabel (used sparingly: establish + confirm only) */
+.reel-microlabel {
+  position: absolute;
+  left: 40px;
+  bottom: 34px;
+  z-index: 7;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.92);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 460ms var(--r-enter), transform 460ms var(--r-enter);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.reel-microlabel[data-show="true"] { opacity: 1; transform: none; }
+
+/* ── inline card wrapper + expand button ── */
+.reel-card { position: relative; width: 100%; }
+
+/* icon-only controls cluster (info + expand), revealed on hover/focus */
+.reel-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.reel-card:hover .reel-controls,
+.reel-controls:focus-within { opacity: 1; transform: none; }
+.reel-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: #fff;
+  background: rgba(20, 20, 24, 0.62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 220ms ease;
+}
+.reel-ctrl:hover { background: rgba(40, 40, 48, 0.82); }
+.reel-ctrl svg { display: block; }
+
+/* info popover, anchored above the controls.
+   Scoped under .reel-card to outrank .article__body p (which would otherwise
+   force black text + the article's font-size/margin onto this dark popover). */
+.reel-card .reel-info-pop {
+  position: absolute;
+  right: 12px;
+  bottom: 52px;
+  z-index: 11;
+  max-width: 264px;
+  margin: 0;
+  padding: 11px 13px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(20, 20, 24, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  font-family: var(--r-font);
+  font-size: 12.5px;
+  line-height: 1.5;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  animation: reelFade 200ms ease both;
+}
+
+/* ── full-bleed overlay ── */
+.reel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  background: #050507;
+  animation: reelFade 320ms ease both;
+}
+@keyframes reelFade { from { opacity: 0; } to { opacity: 1; } }
+.reel-overlay__bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125rem;
+}
+.reel-overlay__title { color: #fff; font-weight: 500; }
+.reel-overlay__exit {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+.reel-overlay__exit:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.reel-overlay__stage {
+  flex: 1;
+  min-height: 0;
+  padding: clamp(1rem, 4vh, 3rem) clamp(1rem, 5vw, 4rem) clamp(2rem, 5vh, 4rem);
+}
+
+/* ── reduced motion: hold a clean static frame, no camera / effects ── */
+@media (prefers-reduced-motion: reduce) {
+  .reel-cam,
+  .reel-tile,
+  .reel-tab,
+  .reel-sec__a,
+  .reel-sec__b,
+  .reel-cell,
+  .reel-chip,
+  .reel-microlabel,
+  .reel-controls,
+  .reel-ctrl { transition: none !important; }
+  .reel-spot,
+  .reel-tile[data-sched][data-on="true"],
+  .reel-cell[data-on="true"],
+  .reel-cell__tap[data-on="true"],
+  .reel-chip[data-on="true"]::after { animation: none !important; }
+}
+
+/* ── presets gallery: every building block of the kit, looping in isolation ── */
+.reel-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(214px, 1fr));
+  gap: 16px;
+  width: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --r-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --r-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --r-cam: cubic-bezier(0.6, 0, 0.18, 1);
+  --r-purple: #6b21d9;
+  --r-purple-soft: rgba(107, 33, 217, 0.12);
+  --r-purple-line: rgba(107, 33, 217, 0.32);
+  --r-ink: #14141a;
+  --r-sub: #8a8e98;
+  --r-line: #ececf1;
+}
+.reel-preset__stage {
+  position: relative;
+  height: 172px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(120% 100% at 50% 130%, rgba(107, 33, 217, 0.20), transparent 60%),
+    radial-gradient(140% 130% at 50% -15%, #181820 0%, #060608 62%);
+}
+.reel-preset__name { margin: 11px 2px 2px; font-size: 13px; font-weight: 700; color: #181d27; }
+.reel-preset__tech { margin: 0 2px; font-size: 11px; color: #717680; line-height: 1.35; }
+
+.rp-row { display: flex; gap: 8px; align-items: center; justify-content: center; }
+.rp-row .reel-tile { width: 94px; }
+.rp-row .reel-cell { width: 58px; }
+
+.rp-relabel { display: flex; flex-direction: column; gap: 11px; align-items: center; }
+.rp-relabel .reel-sec { width: 190px; height: 13px; text-align: center; }
+
+/* chip preset: the chip floats centered instead of pinned to a phone bottom */
+.rp-chip { position: static; left: auto; bottom: auto; transform: translateY(12px); }
+.rp-chip[data-on="true"] { transform: none; }
+
+.rp-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 17px;
+  background: linear-gradient(150deg, #7c3aed, #6b21d9);
+  box-shadow: 0 0 34px rgba(107, 33, 217, 0.65);
+}
+
+/* mini phone for the camera push-in preset */
+.rp-mini { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.rp-cam { transform-origin: 50% 30%; transition: transform 1000ms var(--r-cam); }
+.rp-cam[data-zoom="true"] { transform: scale(1.9); }
+.rp-phone {
+  width: 98px;
+  height: 152px;
+  border-radius: 18px;
+  background: #0a0a0c;
+  padding: 5px;
+  box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.rp-phone__s {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 11px 7px;
+  height: 100%;
+  border-radius: 14px;
+  background: #fff;
+}
+.rp-srow { height: 22px; border-radius: 7px; background: #eef0f3; }
+.rp-srow--hi {
+  background: var(--r-purple-soft);
+  border: 1.5px solid var(--r-purple);
+  color: var(--r-purple);
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── real Figma screen plates inside the reel phone (crossfaded) ── */
+.reel-screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transform: translateY(18px);          /* the incoming screen slides up as it fades in */
+  transition: opacity 480ms var(--r-enter), transform 620ms var(--r-enter);
+}
+.reel-screen[data-on="true"] { opacity: 1; transform: none; }
+
+/* ── coded effects composited OVER the real plates (motion only) ── */
+.reel-fx-ring {
+  position: absolute;
+  z-index: 4;
+  border: 2.5px solid var(--r-purple);
+  border-radius: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms var(--r-enter);
+}
+.reel-fx-ring[data-on="true"] {
+  opacity: 1;
+  box-shadow: 0 0 0 4px var(--r-purple-soft), 0 0 22px rgba(107, 33, 217, 0.45);
+  animation: reelGlow 1.2s var(--r-enter);
+}
+.reel-fx-tap {
+  position: absolute;
+  z-index: 4;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 2px solid var(--r-purple);
+  opacity: 0;
+  pointer-events: none;
+  animation: reelTap 600ms var(--r-enter);
+}
+
+/* ── preset mini phones (each frames a real screen) ── */
+.rp-phone2 {
+  position: relative;
+  width: 96px;
+  height: 166px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.rp-phone2--lg { width: 104px; height: 180px; }
+.rp-dim { filter: brightness(0.74); }
+.rp-ml { left: 14px; bottom: 14px; font-size: 11px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-cam, .reel-screen, .reel-fx-ring,
+  .reel-presets .reel-tile, .reel-presets .reel-cell,
+  .reel-presets .reel-sec__a, .reel-presets .reel-sec__b, .rp-chip { transition: none !important; }
+  .reel-fx-ring[data-on="true"], .reel-fx-tap { animation: none !important; }
+}

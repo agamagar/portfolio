@@ -1,0 +1,9 @@
+{
+  "defaults": { "w": 1600, "h": 1200, "dpr": 1, "frames": 32, "timeout": 150000, "scene": "require" },
+  "shots": [
+    { "name": "ref-photo", "url": "/window?capture=1&shot=ref1741&look=photo&tod=17.68&wx=partly&theme=light&sky=mine&t=0" },
+    { "name": "ref-photo-webgl2", "url": "/window?capture=1&shot=ref1741&look=photo&tod=17.68&wx=partly&theme=light&sky=mine&t=0&backend=webgl2" },
+    { "name": "ref-heightened", "url": "/window?capture=1&shot=ref1741&look=heightened&tod=17.68&wx=partly&theme=light&sky=mine&t=0" },
+    { "name": "ref-dreamlike", "url": "/window?capture=1&shot=ref1741&look=dreamlike&tod=17.68&wx=partly&theme=light&sky=mine&t=0" }
+  ]
+}

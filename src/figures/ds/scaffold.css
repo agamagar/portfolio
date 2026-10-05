@@ -4,7 +4,7 @@
    figure in .ds-root so DS tokens cascade. */
 
 /* ── shimmer ─────────────────────────────────────────────────────────────── */
-.ds-shim { display: block; background: var(--ds-shim); border-radius: 6px; animation: dsShim 1.6s var(--ds-ease-out) infinite; }
+.ds-shim { display: block; background: var(--ds-shim); border-radius: var(--ds-r-btn); animation: dsShim 1.6s var(--ds-ease-out) infinite; }
 .ds-shim--soft { background: var(--ds-shim-soft); }
 /* offset the pulse per block so the scaffold breathes instead of blinking in unison */
 .ds-shim:nth-child(3n) { animation-delay: 0.2s; }
@@ -16,10 +16,10 @@
 .ds-root--scaf { width: 660px; background: transparent; border: 0; box-shadow: none; }
 .ds-win { position: relative; width: 100%; height: 396px; background: var(--ds-surface); border: 1px solid var(--ds-border-card); border-radius: var(--ds-r-frame); box-shadow: var(--ds-shadow-frame); overflow: hidden; }
 .ds-win__bar { display: flex; align-items: center; gap: var(--ds-3); height: 44px; padding: 0 var(--ds-5); border-bottom: 1px solid var(--ds-line); }
-.ds-win__url { flex: 1; height: 26px; display: flex; align-items: center; padding: 0 var(--ds-4); margin-left: var(--ds-3); background: var(--ds-muted); border-radius: 7px; font-size: 11.5px; color: var(--ds-text-3); }
+.ds-win__url { flex: 1; height: 26px; display: flex; align-items: center; padding: 0 var(--ds-4); margin-left: var(--ds-3); background: var(--ds-muted); border-radius: var(--ds-r-btn); font-size: var(--ds-fs-sub); color: var(--ds-text-3); }
 .ds-win__body { display: flex; height: calc(100% - 44px); }
 .ds-win__rail { flex: 0 0 56px; border-right: 1px solid var(--ds-line); padding: var(--ds-5) 0; display: flex; flex-direction: column; align-items: center; gap: var(--ds-4); }
-.ds-win__rail .ds-shim { width: 26px; height: 26px; border-radius: 7px; }
+.ds-win__rail .ds-shim { width: 26px; height: 26px; border-radius: var(--ds-r-btn); }
 .ds-win__rail-foot { margin-top: auto; }
 .ds-win__main { flex: 1; min-width: 0; padding: var(--ds-5) var(--ds-6); position: relative; }
 .ds-win__head { display: flex; align-items: center; gap: var(--ds-3); margin-bottom: var(--ds-5); }
@@ -29,32 +29,32 @@
 .ds-win__add svg { width: 16px; height: 16px; }
 
 /* skeleton building blocks */
-.ds-skcard { border: 1px solid var(--ds-line); border-radius: 10px; padding: var(--ds-5); display: flex; flex-direction: column; gap: var(--ds-3); }
+.ds-skcard { border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); padding: var(--ds-5); display: flex; flex-direction: column; gap: var(--ds-3); }
 .ds-skrow { display: flex; align-items: center; gap: var(--ds-5); padding: var(--ds-4) 0; }
 
 /* ── annotation pin ──────────────────────────────────────────────────────── */
-.ds-pin { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: var(--ds-anno); color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center; box-shadow: 0 3px 8px rgba(37, 99, 235, 0.4); z-index: 5; }
+.ds-pin { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: var(--ds-anno); color: var(--ds-on-anno); font-size: 12px; font-weight: 600; display: grid; place-items: center; box-shadow: 0 3px 8px color-mix(in srgb, var(--ds-anno) 40%, transparent); z-index: 5; }
 .ds-pin--pop { animation: dsPinPop 360ms var(--ds-ease-pop) both; }
 @keyframes dsPinPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
 /* ── dark annotation popup ───────────────────────────────────────────────── */
-.ds-popup { position: absolute; z-index: 8; width: 300px; background: var(--ds-popup); border-radius: 14px; padding: 16px; box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.55); }
+.ds-popup { position: absolute; z-index: 8; width: 300px; background: var(--ds-popup); border-radius: var(--ds-r-card); padding: 16px; box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.55); }
 .ds-popup__sel { font-size: 12px; color: var(--ds-popup-muted); font-family: ui-monospace, "SF Mono", Menlo, monospace; margin-bottom: 10px; }
-.ds-popup__field { min-height: 56px; background: var(--ds-popup-field); border-radius: 9px; padding: 12px 13px; font-size: 14px; color: var(--ds-popup-text); }
+.ds-popup__field { min-height: 56px; background: var(--ds-popup-field); border-radius: var(--ds-r-btn); padding: 12px 13px; font-size: 14px; color: var(--ds-popup-text); }
 .ds-popup__caret { display: inline-block; width: 1.5px; height: 15px; background: var(--ds-popup-text); margin-left: 1px; vertical-align: -2px; animation: dsCaret 1s steps(1) infinite; }
 @keyframes dsCaret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 .ds-popup__row { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 14px; }
 .ds-popup__cancel { padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--ds-popup-muted); }
-.ds-popup__add { position: relative; overflow: hidden; padding: 8px 18px; font-size: 13px; font-weight: 600; color: #fff; background: var(--ds-anno); border-radius: 999px; transition: transform var(--ds-dur-fast) var(--ds-ease-pop); }
-.ds-popup__add::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-std); pointer-events: none; }
+.ds-popup__add { position: relative; overflow: hidden; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--ds-on-anno); background: var(--ds-anno); border-radius: var(--ds-r-round); transition: transform var(--ds-dur-fast) var(--ds-ease-press); }
+.ds-popup__add::after { content: ""; position: absolute; inset: 0; background: var(--ds-on-anno); opacity: 0; transition: opacity var(--ds-dur-state) var(--ds-ease-std); pointer-events: none; }
 .ds-popup[data-press="true"] .ds-popup__add { transform: scale(0.95); }
 .ds-popup[data-press="true"] .ds-popup__add::after { opacity: var(--m3-state-pressed); }
 
 /* ── control bar (bottom toolbar) ────────────────────────────────────────── */
-.ds-controls { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 6; display: flex; align-items: center; gap: 6px; height: 46px; padding: 0 14px; background: #1c1c1f; border-radius: 999px; box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.5); }
-.ds-controls__btn { width: 28px; height: 28px; display: grid; place-items: center; color: #e8e8e9; opacity: 0.85; }
+.ds-controls { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 6; display: flex; align-items: center; gap: 6px; height: 46px; padding: 0 14px; background: var(--ds-popup); border-radius: var(--ds-r-round); box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.5); }
+.ds-controls__btn { width: 28px; height: 28px; display: grid; place-items: center; color: var(--ds-popup-text); opacity: 0.85; }
 .ds-controls__btn svg { width: 17px; height: 17px; }
-.ds-controls__sep { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.18); margin: 0 4px; }
+.ds-controls__sep { width: 1px; height: 18px; background: color-mix(in srgb, var(--ds-popup-text) 18%, transparent); margin: 0 4px; }
 
 /* ── concept-animation framework (FFF) ───────────────────────────────────── */
 /* freeze: still the shimmer so a beat's focal element animates against calm */
@@ -62,7 +62,7 @@
 
 /* focal outline: the one lit element of a beat. Parent positions it (left/top/
    width/height) in the frame's unscaled coordinate space. */
-.ds-focal { position: absolute; z-index: 4; border-radius: var(--ds-focal-r); border: var(--ds-focal-w) solid var(--ds-focal-blue); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.10); pointer-events: none; animation: dsFocalIn 180ms var(--ds-ease-pop) both; }
+.ds-focal { position: absolute; z-index: 4; border-radius: var(--ds-focal-r); border: var(--ds-focal-w) solid var(--ds-focal-blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ds-focal-blue) 10%, transparent); pointer-events: none; animation: dsFocalIn 180ms var(--ds-ease-pop) both; }
 .ds-focal--green { border-color: var(--ds-focal-green); box-shadow: 0 0 0 4px var(--ds-focal-green-fill); }
 .ds-focal--amber { border-color: var(--ds-focal-amber); box-shadow: 0 0 0 4px var(--ds-focal-amber-fill); }
 .ds-focal--red { border-color: var(--ds-focal-red); box-shadow: 0 0 0 4px var(--ds-focal-red-fill); }
@@ -71,25 +71,25 @@
 
 /* caption chip: a small plain line that NAMES the concept (replaces the dark
    annotation popup — no field, no caret, no buttons). */
-.ds-caption { position: absolute; z-index: 6; display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 13px; background: var(--ds-popup); color: var(--ds-popup-text); border-radius: 8px; font-size: 12.5px; font-weight: 500; box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.5); white-space: nowrap; }
+.ds-caption { position: absolute; z-index: 6; display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 13px; background: var(--ds-popup); color: var(--ds-popup-text); border-radius: 8px; font-size: var(--ds-fs-body); font-weight: var(--ds-fw-semi); box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.5); white-space: nowrap; }
 .ds-caption__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ds-focal-blue); flex: 0 0 auto; transition: background var(--ds-dur-state) var(--ds-ease-std); }
 .ds-caption[data-mode="green"] .ds-caption__dot { background: var(--ds-focal-green); }
 .ds-caption[data-mode="amber"] .ds-caption__dot { background: var(--ds-focal-amber); }
 .ds-caption[data-mode="red"] .ds-caption__dot { background: var(--ds-focal-red); }
 
 /* ── phone device frame (mobile counterpart of AppWindow) ─────────────────── */
-.ds-phone { position: relative; display: flex; flex-direction: column; width: 300px; background: var(--ds-surface); border: 1px solid var(--ds-border-card); border-radius: 30px; box-shadow: var(--ds-shadow-frame); overflow: hidden; }
+.ds-phone { position: relative; display: flex; flex-direction: column; width: 300px; background: var(--ds-surface); border: 1px solid var(--ds-border-card); border-radius: var(--ds-r-bezel); box-shadow: var(--ds-shadow-frame); overflow: hidden; }
 .ds-phone__status { display: flex; align-items: center; justify-content: space-between; height: 30px; padding: 6px 22px 0; font-size: 11px; font-weight: 700; color: var(--ds-text); flex: 0 0 auto; }
 .ds-phone__glyphs { display: inline-flex; align-items: center; gap: 4px; }
-.ds-phone__glyphs i { width: 13px; height: 9px; border-radius: 2px; background: var(--ds-text); opacity: 0.85; }
+.ds-phone__glyphs i { width: 13px; height: 9px; border-radius: var(--ds-r-mark); background: var(--ds-text); opacity: 0.85; }
 .ds-phone__glyphs i:first-child { clip-path: polygon(0 100%, 22% 60%, 44% 100%, 66% 30%, 100% 0, 100% 100%); }
-.ds-phone__batt { width: 18px; height: 9px; border-radius: 2px; border: 1.4px solid var(--ds-text); opacity: 0.85; position: relative; }
-.ds-phone__batt::after { content: ""; position: absolute; inset: 1.5px; right: 6px; border-radius: 1px; background: var(--ds-text); }
+.ds-phone__batt { width: 18px; height: 9px; border-radius: var(--ds-r-mark); border: 1.4px solid var(--ds-text); opacity: 0.85; position: relative; }
+.ds-phone__batt::after { content: ""; position: absolute; inset: 1.5px; right: 6px; border-radius: var(--ds-r-mark); background: var(--ds-text); }
 .ds-phone__appbar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-bottom: 1px solid var(--ds-line); flex: 0 0 auto; }
-.ds-phone__back { font-size: 22px; line-height: 1; color: var(--ds-text-2); margin-top: -2px; }
+.ds-phone__back { font-size: var(--ds-fs-display); line-height: 1; color: var(--ds-text-2); margin-top: -2px; }
 .ds-phone__apptitle { font-size: 13px; font-weight: 600; color: var(--ds-text); }
 .ds-phone__screen { position: relative; flex: 1 1 auto; padding: 14px 14px 6px; min-height: 0; overflow: hidden; }
-.ds-phone__home { width: 110px; height: 5px; border-radius: 3px; background: var(--ds-text); opacity: 0.85; margin: 7px auto 9px; flex: 0 0 auto; }
+.ds-phone__home { width: 110px; height: 5px; border-radius: var(--ds-r-mark); background: var(--ds-text); opacity: 0.85; margin: 7px auto 9px; flex: 0 0 auto; }
 
 @media (prefers-reduced-motion: reduce) {
   .ds-shim { animation: none !important; }

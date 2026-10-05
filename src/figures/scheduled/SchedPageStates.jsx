@@ -1,21 +1,34 @@
-import StateGallery from "./StateGallery";
+import "./scheduled.css";
 
-// Every scheduled-page case: the slot-picker's full state set, from the default
-// arrival through the empty and confirmation states. This is the dense, stateful
-// page the craft went into.
+// Design Mode: the scheduled SLOT-PICKER state set as a contact sheet of real
+// Zepto schedule-page screens (Schedule Order Handoff). From schedule-selected
+// through the slot grid states to the no-slots and the scheduled OTP page.
+// Frames verified + pulled via the Figma REST API.
 
-const PAGE = [
-  { label: "Arrive collapsed", kind: "cart", rows: [null, null], tone: "neutral", note: "You land on the shipment you came from; the rest stay collapsed but visible." },
-  { label: "Instant", kind: "picker", sched: false, tone: "neutral", note: "Instant stays the default for every shipment." },
-  { label: "Scheduled", kind: "picker", sched: true, sel: -1, tone: "purple", note: "The toggle reveals the slot picker inline, never a bottom sheet." },
-  { label: "Slot picked", kind: "picker", sched: true, sel: 1, tone: "purple", note: "Your chosen one-hour window, held in view." },
-  { label: "Today full, tomorrow open", kind: "picker", sched: true, sel: 4, dimUntil: 3, tone: "amber", note: "Today is booked out, so tomorrow's slots lead instead." },
-  { label: "No slots at all", kind: "picker", sched: true, none: true, tone: "red", note: "A shipment with no slot to give, said plainly." },
-  { label: "Cross-day scroll", kind: "picker", sched: true, sel: 3, tone: "purple", note: "Tonight's last slot meets tomorrow's first, one continuous scroll." },
-  { label: "Partial schedule", kind: "cart", rows: ["purple", null], tone: "amber", note: "Some shipments set, some still instant, the running summary in view." },
-  { label: "Scheduled OTP", kind: "otp", chip: "OTP", tone: "purple", note: "A confirmation screen tuned for an order that arrives later." },
+const TILES = [
+  { src: "sched-pg-noslot.png", cap: "Schedule selected, no slot yet" },
+  { src: "sched-pg-default.png", cap: "Slot picker, default" },
+  { src: "sched-pg-picked.png", cap: "Slot picked" },
+  { src: "sched-pg-overview.png", cap: "Instant + scheduled mix" },
+  { src: "sched-pg-partial.png", cap: "Partial day, some slots full" },
+  { src: "sched-pg-crossday.png", cap: "Cross-day late night" },
+  { src: "sched-pg-full.png", cap: "Tomorrow full, no slots" },
+  { src: "sched-pg-otp.png", cap: "Scheduled, pickup OTP" },
 ];
 
+// mukxrqfz (28 Sep): "make this into a horizontal scroll, the bigger images".
+// The fitted contact sheet (every screen shrunk to fit one frame) became a
+// horizontal strip of full-size screens that scroll and snap one at a time.
+// Nothing animates on its own any more: the reader drives it.
 export default function SchedPageStates() {
-  return <StateGallery title="Scheduled page · every case" states={PAGE} />;
+  return (
+    <div className="sdh" role="region" aria-label="Slot-page states, scroll sideways" tabIndex={0}>
+      {TILES.map((t) => (
+        <figure className="sdh__tile" key={t.src}>
+          <img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} loading="lazy" />
+          <figcaption className="sdh__cap">{t.cap}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
 }

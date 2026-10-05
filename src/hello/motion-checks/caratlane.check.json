@@ -1,0 +1,3460 @@
+{
+  "root": {
+    "id": "80:2601",
+    "name": "Frame 1238033",
+    "w": 360,
+    "h": 783
+  },
+  "durationMs": 2000,
+  "loopMode": "loop",
+  "notFound": [],
+  "hiddenCount": 0,
+  "layers": [
+    {
+      "id": "80:2604",
+      "name": "Group 48096742",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 1.6667,
+        "top": 50.2677,
+        "width": 96.6667,
+        "height": 52.9768
+      },
+      "parentBox": {
+        "left": 1.6667,
+        "top": 50.2677,
+        "width": 96.6667,
+        "height": 52.9768
+      },
+      "size": {
+        "w": 348,
+        "h": 414.8080139160156
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.3878,
+            1
+          ],
+          "values": [
+            0,
+            1,
+            1
+          ],
+          "eases": [
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.8,
+            1
+          ],
+          "values": [
+            400,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "spring",
+              "a": 7.6657,
+              "b": 6.7605,
+              "c": 1.1339
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2608",
+      "name": "Group 48096627",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 25.5319,
+        "top": 64.84,
+        "width": 48.6111,
+        "height": 9.3554
+      },
+      "parentBox": {
+        "left": 24.6882,
+        "top": 27.5071,
+        "width": 50.2874,
+        "height": 17.6594
+      },
+      "size": {
+        "w": 175,
+        "h": 73.25271606445312
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.6392,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.5,
+            0.5
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.6392,
+            1
+          ],
+          "values": [
+            20,
+            20,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.27,
+                -0.004,
+                0,
+                0.993
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "filter",
+          "duration": 2,
+          "times": [
+            0,
+            0.1744,
+            0.1745,
+            0.5554,
+            0.5555,
+            0.9999,
+            1
+          ],
+          "values": [
+            "blur(4px)",
+            "blur(4px)",
+            "blur(4px)",
+            "blur(4px)",
+            "blur(0px)",
+            "blur(0px)",
+            "blur(0px)"
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2645",
+      "name": "Group 48096631",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 25.5319,
+        "top": 64.84,
+        "width": 48.6111,
+        "height": 9.3554
+      },
+      "parentBox": {
+        "left": 24.6882,
+        "top": 27.5071,
+        "width": 50.2874,
+        "height": 17.6594
+      },
+      "size": {
+        "w": 175,
+        "h": 73.25271606445312
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.6305,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.6305,
+            1
+          ],
+          "values": [
+            20,
+            20,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.27,
+                -0.004,
+                0,
+                0.993
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "filter",
+          "duration": 2,
+          "times": [
+            0,
+            0.1734,
+            0.1735,
+            0.5877,
+            0.5878,
+            0.9999,
+            1
+          ],
+          "values": [
+            "blur(4px)",
+            "blur(4px)",
+            "blur(4px)",
+            "blur(4px)",
+            "blur(0px)",
+            "blur(0px)",
+            "blur(0px)"
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2688",
+      "name": "Group 48096639",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 8.4783,
+        "top": 64.9537,
+        "width": 18.4397,
+        "height": 9.496
+      },
+      "parentBox": {
+        "left": 7.0465,
+        "top": 27.7216,
+        "width": 19.0755,
+        "height": 17.9249
+      },
+      "size": {
+        "w": 66.38288879394531,
+        "h": 74.3537368774414
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.2995,
+            0.6965,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.23,
+            0.23
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4365,
+            0.6965,
+            1
+          ],
+          "values": [
+            100,
+            100,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                1,
+                0.008,
+                0,
+                0.992
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2689",
+      "name": "Star 12",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 14.1628,
+        "top": 65.8628,
+        "width": 4.1964,
+        "height": 1.9294
+      },
+      "parentBox": {
+        "left": 30.8278,
+        "top": 9.5733,
+        "width": 22.7575,
+        "height": 20.3178
+      },
+      "size": {
+        "w": 15.107052747664511,
+        "h": 15.107052747664625
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4044,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -368.076,
+            -368.076,
+            -8.076,
+            -8.076
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5402,
+            0.5702,
+            1
+          ],
+          "values": [
+            17.594,
+            17.594,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5402,
+            0.5702,
+            1
+          ],
+          "values": [
+            -0.261,
+            -0.261,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2690",
+      "name": "Star 13",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 14.1467,
+        "top": 69.2057,
+        "width": 2.6125,
+        "height": 1.2012
+      },
+      "parentBox": {
+        "left": 30.7407,
+        "top": 44.7769,
+        "width": 14.1679,
+        "height": 12.649
+      },
+      "size": {
+        "w": 9.405036255759114,
+        "h": 9.405036255758887
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4044,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.5,
+            0.5
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -338.246,
+            -338.246,
+            21.754,
+            21.754
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5508,
+            0.5702,
+            1
+          ],
+          "values": [
+            49.03,
+            49.03,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5508,
+            0.5702,
+            1
+          ],
+          "values": [
+            -0.246,
+            -0.246,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2691",
+      "name": "Star 15",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 8.4783,
+        "top": 71.2035,
+        "width": 3.2199,
+        "height": 1.4804
+      },
+      "parentBox": {
+        "left": 0.0001,
+        "top": 65.8155,
+        "width": 17.4616,
+        "height": 15.5897
+      },
+      "size": {
+        "w": 11.591544686930774,
+        "h": 11.591544686930774
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1267,
+            0.3767,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.1262,
+            0.7532,
+            1
+          ],
+          "values": [
+            -338.059,
+            -338.059,
+            21.941,
+            21.941
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5352,
+            0.5562,
+            1
+          ],
+          "values": [
+            50.494,
+            50.494,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5352,
+            0.5562,
+            1
+          ],
+          "values": [
+            0.168,
+            0.168,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2692",
+      "name": "Star 16",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 10.2083,
+        "top": 68.7036,
+        "width": 1.2358,
+        "height": 0.5682
+      },
+      "parentBox": {
+        "left": 9.3823,
+        "top": 39.4894,
+        "width": 6.7017,
+        "height": 5.9832
+      },
+      "size": {
+        "w": 4.448754787445068,
+        "h": 4.448754787445068
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4046,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.4,
+            0.4
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7528,
+            1
+          ],
+          "values": [
+            -360,
+            -360,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.541,
+            0.5706,
+            1
+          ],
+          "values": [
+            47.613,
+            47.613,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.541,
+            0.5706,
+            1
+          ],
+          "values": [
+            -0.228,
+            -0.228,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2693",
+      "name": "Star 14",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 8.7254,
+        "top": 66.3173,
+        "width": 3.1105,
+        "height": 1.4301
+      },
+      "parentBox": {
+        "left": 1.3402,
+        "top": 14.3598,
+        "width": 16.8685,
+        "height": 15.0602
+      },
+      "size": {
+        "w": 11.19779328571758,
+        "h": 11.197793285717466
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1262,
+            0.3762,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.1,
+            0.1
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.1257,
+            0.7527,
+            1
+          ],
+          "values": [
+            -377.729,
+            -377.729,
+            -17.728,
+            -17.728
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5237,
+            0.5557,
+            1
+          ],
+          "values": [
+            24.956,
+            24.956,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5237,
+            0.5557,
+            1
+          ],
+          "values": [
+            -0.539,
+            -0.539,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2694",
+      "name": "Star 17",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 21.8863,
+        "top": 72.1363,
+        "width": 5.0317,
+        "height": 2.3134
+      },
+      "parentBox": {
+        "left": 72.7131,
+        "top": 75.6381,
+        "width": 27.2871,
+        "height": 24.3619
+      },
+      "size": {
+        "w": 18.11397342401142,
+        "h": 18.113973424011647
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4051,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.2,
+            0.2
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.754,
+            1
+          ],
+          "values": [
+            -241.554,
+            -241.554,
+            118.446,
+            118.446
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5418,
+            0.5714,
+            1
+          ],
+          "values": [
+            21.538,
+            21.538,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5418,
+            0.5714,
+            1
+          ],
+          "values": [
+            -0.14,
+            -0.14,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2695",
+      "name": "Star 18",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 15.8928,
+        "top": 71.7717,
+        "width": 2.5897,
+        "height": 1.1907
+      },
+      "parentBox": {
+        "left": 40.2097,
+        "top": 71.7989,
+        "width": 14.0441,
+        "height": 12.5386
+      },
+      "size": {
+        "w": 9.322894710011496,
+        "h": 9.322894710011496
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4046,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.4,
+            0.4
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7528,
+            1
+          ],
+          "values": [
+            -290.616,
+            -290.616,
+            69.384,
+            69.384
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.541,
+            0.5706,
+            1
+          ],
+          "values": [
+            15.148,
+            15.148,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.541,
+            0.5706,
+            1
+          ],
+          "values": [
+            0.748,
+            0.748,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2696",
+      "name": "Star 19",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 19.3529,
+        "top": 66.9991,
+        "width": 3.3544,
+        "height": 1.5423
+      },
+      "parentBox": {
+        "left": 58.9743,
+        "top": 21.5398,
+        "width": 18.1914,
+        "height": 16.2413
+      },
+      "size": {
+        "w": 12.07598314454117,
+        "h": 12.075983144540942
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4046,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.5,
+            0.5
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7528,
+            1
+          ],
+          "values": [
+            -241.554,
+            -241.554,
+            118.446,
+            118.446
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5281,
+            0.5706,
+            1
+          ],
+          "values": [
+            21.394,
+            21.394,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5281,
+            0.5706,
+            1
+          ],
+          "values": [
+            0.002,
+            0.002,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2697",
+      "name": "Star 20",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 23.3074,
+        "top": 69.0445,
+        "width": 1.2358,
+        "height": 0.5682
+      },
+      "parentBox": {
+        "left": 80.4198,
+        "top": 43.0792,
+        "width": 6.7017,
+        "height": 5.9832
+      },
+      "size": {
+        "w": 4.448754981906404,
+        "h": 4.448754981906291
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1257,
+            0.3757,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.1252,
+            0.7522,
+            1
+          ],
+          "values": [
+            -270,
+            -270,
+            90,
+            90
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5092,
+            0.5552,
+            1
+          ],
+          "values": [
+            17.202,
+            17.202,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5092,
+            0.5552,
+            1
+          ],
+          "values": [
+            -0.969,
+            -0.969,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2698",
+      "name": "Star 21",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 19.8473,
+        "top": 70.4081,
+        "width": 3.3544,
+        "height": 1.5423
+      },
+      "parentBox": {
+        "left": 61.6554,
+        "top": 57.439,
+        "width": 18.1914,
+        "height": 16.2413
+      },
+      "size": {
+        "w": 12.07598314454117,
+        "h": 12.075983144540942
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4046,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.2,
+            0.2
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7528,
+            1
+          ],
+          "values": [
+            -241.554,
+            -241.554,
+            118.446,
+            118.446
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5281,
+            0.5706,
+            1
+          ],
+          "values": [
+            18.615,
+            18.615,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5281,
+            0.5706,
+            1
+          ],
+          "values": [
+            -0.69,
+            -0.69,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2699",
+      "name": "Star 22",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 21.8245,
+        "top": 64.9537,
+        "width": 2.706,
+        "height": 1.2442
+      },
+      "parentBox": {
+        "left": 72.3781,
+        "top": 0.0001,
+        "width": 14.6751,
+        "height": 13.1019
+      },
+      "size": {
+        "w": 9.741725288907674,
+        "h": 9.74172528890756
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.4044,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -275.648,
+            -275.648,
+            84.352,
+            84.352
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5277,
+            0.5702,
+            1
+          ],
+          "values": [
+            9.881,
+            9.881,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5277,
+            0.5702,
+            1
+          ],
+          "values": [
+            0.402,
+            0.402,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2700",
+      "name": "Group 48096640",
+      "type": "FRAME",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 74.7153,
+        "top": 64.9537,
+        "width": 18.4397,
+        "height": 8.1324
+      },
+      "parentBox": {
+        "left": 75.5675,
+        "top": 27.7216,
+        "width": 19.0755,
+        "height": 15.3509
+      },
+      "size": {
+        "w": 66.38289436074137,
+        "h": 63.67672928360105
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.2995,
+            0.6965,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.23,
+            0.23
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeInOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4365,
+            0.6965,
+            1
+          ],
+          "values": [
+            -100,
+            -100,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.42,
+                0,
+                0.007,
+                1.007
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2701",
+      "name": "Star 12",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 79.9056,
+        "top": 70.1808,
+        "width": 4.1964,
+        "height": 1.9294
+      },
+      "parentBox": {
+        "left": 28.1473,
+        "top": 64.2755,
+        "width": 22.7574,
+        "height": 23.7246
+      },
+      "size": {
+        "w": 15.10705394235083,
+        "h": 15.107053942351058
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5665,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.4,
+            0.4
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7528,
+            1
+          ],
+          "values": [
+            -188.076,
+            -188.076,
+            171.924,
+            171.924
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4941,
+            0.5667,
+            1
+          ],
+          "values": [
+            6.877,
+            6.877,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4941,
+            0.5667,
+            1
+          ],
+          "values": [
+            -0.435,
+            -0.435,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2702",
+      "name": "Star 13",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 84.874,
+        "top": 68.9965,
+        "width": 2.6125,
+        "height": 1.2012
+      },
+      "parentBox": {
+        "left": 55.0918,
+        "top": 49.7128,
+        "width": 14.1679,
+        "height": 14.77
+      },
+      "size": {
+        "w": 9.405035392929676,
+        "h": 9.40503539292979
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -518.246,
+            -518.246,
+            -158.246,
+            -158.246
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            14.126,
+            14.126,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            -0.346,
+            -0.346,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2703",
+      "name": "Star 15",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 89.9351,
+        "top": 66.7194,
+        "width": 3.2199,
+        "height": 1.4804
+      },
+      "parentBox": {
+        "left": 82.5386,
+        "top": 21.7125,
+        "width": 17.4616,
+        "height": 18.2037
+      },
+      "size": {
+        "w": 11.591543624987025,
+        "h": 11.591543624987253
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.566,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.1725,
+            0.7522,
+            1
+          ],
+          "values": [
+            -518.059,
+            -518.059,
+            -158.059,
+            -158.059
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4936,
+            0.5662,
+            1
+          ],
+          "values": [
+            16.369,
+            16.369,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4936,
+            0.5662,
+            1
+          ],
+          "values": [
+            -0.153,
+            -0.153,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2704",
+      "name": "Star 16",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 90.1892,
+        "top": 70.1316,
+        "width": 1.2358,
+        "height": 0.5682
+      },
+      "parentBox": {
+        "left": 83.9164,
+        "top": 63.6702,
+        "width": 6.7017,
+        "height": 6.9865
+      },
+      "size": {
+        "w": 4.44875517636774,
+        "h": 4.448755176367513
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -180,
+            -180,
+            180,
+            180
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            16.056,
+            16.056,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeInOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            0.338,
+            0.338,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeInOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2705",
+      "name": "Star 14",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 89.7974,
+        "top": 71.656,
+        "width": 3.1105,
+        "height": 1.4301
+      },
+      "parentBox": {
+        "left": 81.7913,
+        "top": 82.4146,
+        "width": 16.8685,
+        "height": 17.5854
+      },
+      "size": {
+        "w": 11.197794082175278,
+        "h": 11.19779408217505
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.1,
+            0.1
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -197.729,
+            -197.729,
+            162.271,
+            162.271
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2706",
+      "name": "Star 17",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 74.7153,
+        "top": 64.9537,
+        "width": 5.0317,
+        "height": 2.3134
+      },
+      "parentBox": {
+        "left": 0.0001,
+        "top": -0.0001,
+        "width": 27.2871,
+        "height": 28.4468
+      },
+      "size": {
+        "w": 18.113971831096478,
+        "h": 18.113971831096478
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.2,
+            0.2
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -421.554,
+            -421.554,
+            -61.554,
+            -61.554
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            1.592,
+            1.592,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            0.036,
+            0.036,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2707",
+      "name": "Star 18",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 83.1507,
+        "top": 66.441,
+        "width": 2.5897,
+        "height": 1.1907
+      },
+      "parentBox": {
+        "left": 45.7462,
+        "top": 18.2889,
+        "width": 14.0441,
+        "height": 14.641
+      },
+      "size": {
+        "w": 9.322894344451015,
+        "h": 9.322894344450788
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.4,
+            0.4
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -470.616,
+            -470.616,
+            -110.616,
+            -110.616
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            8.726,
+            8.726,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            0.448,
+            0.448,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2708",
+      "name": "Star 19",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 85.8372,
+        "top": 71.4308,
+        "width": 3.3544,
+        "height": 1.5423
+      },
+      "parentBox": {
+        "left": 60.3151,
+        "top": 79.6456,
+        "width": 18.1914,
+        "height": 18.9645
+      },
+      "size": {
+        "w": 12.07598208259742,
+        "h": 12.07598208259742
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.5,
+            0.5
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -421.554,
+            -421.554,
+            -61.554,
+            -61.554
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            11.585,
+            11.585,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4938,
+            0.5663,
+            1
+          ],
+          "values": [
+            -0.295,
+            -0.295,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2709",
+      "name": "Star 20",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 77.09,
+        "top": 69.7907,
+        "width": 1.2358,
+        "height": 0.5682
+      },
+      "parentBox": {
+        "left": 12.8785,
+        "top": 59.4784,
+        "width": 6.7017,
+        "height": 6.9865
+      },
+      "size": {
+        "w": 4.448754981906404,
+        "h": 4.448754981906291
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -450,
+            -450,
+            -90,
+            -90
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.5042,
+            0.5663,
+            1
+          ],
+          "values": [
+            15.793,
+            15.793,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.5042,
+            0.5663,
+            1
+          ],
+          "values": [
+            0.032,
+            0.032,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2710",
+      "name": "Star 21",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 78.4315,
+        "top": 67.453,
+        "width": 3.3544,
+        "height": 1.5423
+      },
+      "parentBox": {
+        "left": 20.1535,
+        "top": 30.7329,
+        "width": 18.1914,
+        "height": 18.9645
+      },
+      "size": {
+        "w": 12.07598208259742,
+        "h": 12.07598208259742
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.2,
+            0.2
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -421.554,
+            -421.554,
+            -61.554,
+            -61.554
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "x",
+          "duration": 2,
+          "times": [
+            0,
+            0.4567,
+            0.5663,
+            1
+          ],
+          "values": [
+            17.674,
+            17.674,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "y",
+          "duration": 2,
+          "times": [
+            0,
+            0.4567,
+            0.5663,
+            1
+          ],
+          "values": [
+            -0.412,
+            -0.412,
+            0,
+            0
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80:2711",
+      "name": "Star 22",
+      "type": "VECTOR",
+      "found": true,
+      "hidden": false,
+      "box": {
+        "left": 75.3726,
+        "top": 71.7283,
+        "width": 2.706,
+        "height": 1.2442
+      },
+      "parentBox": {
+        "left": 3.5649,
+        "top": 83.3037,
+        "width": 14.6751,
+        "height": 15.2987
+      },
+      "size": {
+        "w": 9.741726085365372,
+        "h": 9.741726085365144
+      },
+      "tracks": [
+        {
+          "prop": "opacity",
+          "duration": 2,
+          "times": [
+            0,
+            0.1735,
+            0.5662,
+            1
+          ],
+          "values": [
+            0,
+            0,
+            0.3,
+            0.3
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "easeOut"
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        },
+        {
+          "prop": "rotate",
+          "duration": 2,
+          "times": [
+            0,
+            0.173,
+            0.7522,
+            1
+          ],
+          "values": [
+            -455.648,
+            -455.648,
+            -95.648,
+            -95.648
+          ],
+          "eases": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "bezier",
+              "pts": [
+                0.5,
+                0,
+                0.5,
+                1
+              ]
+            },
+            {
+              "type": "linear"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

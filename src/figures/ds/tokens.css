@@ -1,3 +1,11 @@
+/* Anek Gujarati by Ek Type (OFL-1.1, github.com/EkType/Anek). Imported here rather
+   than at an app entry point so the design system stays self-contained: any surface
+   that pulls in these tokens also gets the face they name. The package ships a
+   unicode-range per subset AND a Latin companion under the same family, which is why
+   a code-mixed line ("આ fraud call તો નથી ને?") keeps one skeleton across both
+   scripts instead of falling back to Inter mid-sentence. */
+@import '@fontsource-variable/anek-gujarati';
+
 /* Dassh figure design-system tokens. Scoped to .ds-root (applied to each figure
    frame) so these never collide with the site's own :root / M3 tokens.
 
@@ -18,17 +26,34 @@
 
   /* — borders / lines — */
   --ds-border: #d9d9d9;        /* default: inputs, buttons, tabs, dashed zones */
+  --ds-border-control: #929292;/* a boundary a person CLICKS. 3.06:1 on --ds-field,
+                                  which --ds-border (1.39:1) never reached. WCAG 2.1
+                                  SC 1.4.11, not an HIG number: the HIG's only
+                                  contrast table is text. Dividers stay below it on
+                                  purpose, control boundaries hold 3:1. */
   --ds-border-card: #d4d4d4;   /* card + panel outer (source: 0.5px) */
-  --ds-line: #d5d7da;          /* hairline dividers */
+  --ds-line: #d5d7da;          /* hairline dividers, rows within a pane */
+  --ds-line-strong: #c4c7cd;   /* a boundary between two PLANES, not two rows.
+                                  Deliberately not 3:1: a divider is decoration,
+                                  not a UI component under WCAG 1.4.11, and the
+                                  values that reach 3:1 read as a heavy rule. */
   --ds-border-brand: #f4ebff;  /* prompt input border */
   --ds-tab-active: #303030;    /* active tab underline (2px) */
 
   /* — text — */
   --ds-text: #181d27;          /* Gray/900 — titles, body, pill default */
   --ds-text-alt: #1e1e1e;      /* labels, input values */
-  --ds-text-2: #717680;        /* Gray/500 — subtitles */
-  --ds-placeholder: #757575;   /* input placeholders */
-  --ds-text-3: #b3b3b3;        /* tertiary — empty-slot, phone placeholder */
+  /* Measured, not chosen. Every ratio below is against the WORST ground the token
+     actually lands on. The old values failed 4.5:1 badly (text-2 4.18:1 on muted,
+     text-3 1.92:1) and text-3 carries load-bearing copy: the "Nothing yet" sentence
+     in the record and the eight "not yet" rows at first paint. */
+  --ds-text-2: #50535a;        /* Gray/500 — subtitles. 7.07:1 on --ds-muted */
+  --ds-placeholder: #6e6e6e;   /* 4.86:1 on --ds-field, 4.53:1 on --ds-muted, its
+                                  worst ground. #757575 was 4.23:1 there. */
+  --ds-text-3: #707070;        /* tertiary. 4.54:1 on --ds-muted, 4.95:1 on white.
+                                  Now near-identical to --ds-placeholder: 4.5:1 on
+                                  white cannot be reached any lighter, so the two
+                                  tiers collapse and that is the correct trade. */
   --ds-text-neutral2: #5a5a5a; /* slider helper subtext */
   --ds-pill-text: #252b37;     /* Gray/800 — inactive pill labels */
 
@@ -58,6 +83,9 @@
   --ds-shim: #e7e9ed;          /* skeleton block fill */
   --ds-shim-soft: #eef0f3;
   --ds-anno: #3b82f6;          /* annotation pin / Add button blue */
+  --ds-on-anno: #ffffff;       /* on --ds-anno. NOT --ds-on-primary: that is
+                                  derived from the surface and inverts by theme,
+                                  while --ds-anno stays a mid blue in both. */
   --ds-popup: #1f1f22;         /* dark annotation popup */
   --ds-popup-field: #2c2c30;
   --ds-popup-text: #f3f3f3;
@@ -83,7 +111,51 @@
   --ds-teal-100: #c1f7d6;
   --ds-ink-strong: #0b0b0b;  /* Neutral BW/950 — onboarding button */
 
+  /* — voice-agent tones (the calling pillar). Four concerns a spoken turn can be
+     annotated against, mapped onto the existing product palette rather than a new
+     one: language/register on Brand purple, data accuracy on Forest Teal, error and
+     recovery on the accent, trust and consent on Mystic Blue. Consumed by ds-pill,
+     ds-wave and ds-bubble via [data-tone]. — */
+  /* INVARIANT: a tone background is always rgba of THAT tone's own hue at one alpha.
+     These were five different weights (1.075 to 1.237 against the parent surface, so
+     trust read about three times deeper than register) across two colour models, and
+     --ds-tone-numbers-bg aliased --ds-green-pill-bg, an rgba of #027a48, a hue that is
+     not --ds-tone-numbers. Two of the five were opaque and punched a whiteish hole in
+     their bubble. */
+  --ds-tone-register: var(--ds-purple);
+  --ds-tone-register-bg: rgba(66, 48, 125, 0.10);
+  --ds-tone-numbers: var(--ds-teal);
+  --ds-tone-numbers-bg: rgba(0, 153, 92, 0.10);
+  --ds-tone-repair: var(--ds-accent);
+  --ds-tone-repair-bg: rgba(234, 88, 12, 0.10);
+  --ds-tone-trust: var(--ds-blue);
+  --ds-tone-trust-bg: rgba(67, 132, 197, 0.10);
+  --ds-tone-neutral: var(--ds-text-2);
+  --ds-tone-neutral-bg: rgba(113, 118, 128, 0.10);
+  /* A fifth concern: captured once, not read back. It had been borrowing
+     --ds-focal-amber from the concept-animation framework, which means one hue
+     carrying two unrelated meanings across the system. */
+  --ds-tone-provisional: var(--ds-focal-amber);
+  --ds-tone-provisional-bg: var(--ds-focal-amber-fill);
+
+  /* A tone has a FILL value and an INK value. The fills above are brand hues and stay
+     exactly as they are; these are for the same tone applied as TEXT, where the brand
+     hue lands at 3.2 to 3.9:1 on white and on its own tint. Measured on white and on
+     the 10% tint, in that order. */
+  --ds-tone-register-ink: var(--ds-tone-register);   /* 10.77, 9.03 */
+  --ds-tone-numbers-ink: #00673e;                    /* 6.98, 6.20 */
+  --ds-tone-repair-ink: #9a3a08;                     /* 7.04, 6.22 */
+  --ds-tone-trust-ink: #2e5b88;                      /* 7.08, 6.32 */
+  --ds-tone-provisional-ink: #7a4a05;
+  --ds-tone-neutral-ink: #555961;                    /* 7.03, 6.23 */
+
   /* — control fills — */
+  /* One ring, both themes: --ds-tone-trust is 3.93:1 on white and 7.96:1 on the dark
+     surface, so it clears the 3:1 non-text floor either way. */
+  --ds-dur-cue: 160ms;         /* the smallest feedback beat: cue and tag fades */
+  --ds-focus-ring: 2px solid var(--ds-tone-trust);
+
+  --ds-toggle-off-light: #d5d7da;
   --ds-toggle-off: #d5d7da;
   --ds-toggle-knob: #181d27;
   --ds-slider-rail: #d9d9d9;
@@ -92,17 +164,31 @@
   /* — typography (site Inter ≈ product Eina01; same geometric sans). Compact
      scale preserving the source hierarchy (title 24 / subtitle 16 / label 14…). — */
   --ds-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Anek Gujarati, by Ek Type. Self-hosted, so the render is the same on any reviewer's
+     machine: before this the stack fell through to whichever per-script face the browser
+     happened to have (Gujarati Sangam MN on a Mac, Nirmala UI on Windows, Noto on Linux),
+     each with different stroke weight and vertical metrics, inside a box authored for
+     Inter. A superfamily built for Indic scripts is the right answer for a case study
+     about linguistic care, and the variable wght axis (100 to 800) covers the 400 and 600
+     this system uses. System faces are kept as a fallback for a failed font load only. */
+  --ds-font-gu: "Anek Gujarati Variable", "Anek Gujarati", "Gujarati Sangam MN", "Nirmala UI", sans-serif;
   --ds-fw-semi: 600;
   --ds-fs-app: 13px;     /* top-bar title */
   --ds-fs-title: 15px;   /* card title */
   --ds-fs-sub: 11px;     /* card subtitle */
   --ds-fs-section: 12px; /* section label (Restrictions) */
-  --ds-fs-body: 11.5px;  /* input / row text */
+  --ds-fs-body: 12px;  /* input / row text */
   --ds-fs-label: 10px;   /* field label */
-  --ds-fs-pill: 9.5px;
+  --ds-fs-pill: 10px;
   --ds-fs-btn: 12px;
   --ds-fs-tab: 11px;
   --ds-fs-meta: 9px;     /* hints, counts */
+  /* Gujarati runs a step above the Latin body: above-base matras and below-base
+     conjuncts need the vertical room, so the same nominal size reads smaller. */
+  --ds-fs-guj: 17px;
+  --ds-fs-guj-sm: 15px;  /* the same line inside a phone mock */
+  --ds-fs-display: 20px;    /* view titles: the scale had no step above 15px */
+  --ds-fs-display-sm: 18px;
 
   /* — spacing (compact echo of the source's 4/8/12/16/24 rhythm) — */
   --ds-1: 4px; --ds-2: 6px; --ds-3: 8px; --ds-4: 10px; --ds-5: 12px; --ds-6: 14px; --ds-7: 18px;
@@ -115,6 +201,13 @@
   --ds-r-btn: var(--m3-corner-sm);      /* 8  */
   --ds-r-control: var(--m3-corner-sm);  /* 8  */
   --ds-r-pill: var(--m3-corner-xs);     /* 4  */
+  /* Two steps below the M3 scale, because they have jobs the scale has no answer for:
+     a 2px mark on a 9px status glyph, and a phone-mock bezel, which is not a card.
+     Everything else that was off-scale (3, 5, 6, 7, 9, 10, 14px) was drift and has been
+     consolidated onto a step. Adding a step is a design decision, not a convenience. */
+  --ds-r-mark: 2px;                     /* marks and bars inside a 9 to 16px glyph */
+  --ds-r-bezel: 30px;                   /* phone-mock bezel */
+  --ds-r-round: 999px;                  /* fully round: pills and lozenges */
 
   /* — elevation: cards are FLAT (border-only) per the Dassh source. Only the
      figure frame floats; M3 tonal/elevation is intentionally not applied here. — */
@@ -141,10 +234,153 @@
   --ds-ease-out: var(--m3-emphasized-decelerate);  /* enter / expand / settle */
   --ds-ease-exit: var(--m3-emphasized-accelerate); /* leave / collapse */
   --ds-ease-move: var(--m3-standard);              /* cursor travel, no overshoot */
-  --ds-ease-pop: var(--m3-expressive);             /* press / pop */
+  /* Two different jobs were sharing one overshoot token, and only one of them earns it.
+     A PRESS that squishes to 0.96 and springs back is physicality: a finger left, the
+     surface answered. An ENTRANCE that overshoots is the dated bounce, because nothing
+     is pushing the element: it just arrived. So press keeps the spring and entrances get
+     an exponential decelerate, which is how a real object settles. */
+  --ds-ease-press: var(--m3-expressive);           /* press and release ONLY */
+  --ds-ease-pop: var(--m3-emphasized-decelerate);  /* entrances: no overshoot */
   --ds-ease-std: var(--m3-standard);               /* color / utility state */
   --ds-dur-fast: var(--m3-short4);                 /* 200 */
   --ds-dur-expand: var(--m3-medium4);              /* 400 */
   --ds-dur-move: var(--m3-long2);                  /* 500 */
   --ds-dur-state: var(--m3-medium1);               /* 250 */
+}
+
+/* ── dark theme ────────────────────────────────────────────────────────────
+   Opt in with .ds-root[data-theme="dark"]. The Dassh source is a light product,
+   so this is an extension rather than a transcription: surfaces are re-derived
+   as a warm-neutral dark stack (not pure black, which would break the
+   border-only depth language the light theme depends on), text is inverted
+   through the same four-step hierarchy, and every product hue is lifted to hold
+   contrast on a dark ground. Component CSS never needs to know: it reads the
+   same token names in both themes.
+
+   Depth still comes from borders, not shadows. In dark that means the border has
+   to do MORE work, so --ds-border/--ds-line sit a step brighter relative to the
+   surface than their light counterparts do. */
+.ds-root[data-theme="dark"] {
+  /* surfaces: warm-neutral, lifting toward the viewer as they get more important */
+  --ds-bg: #131316;
+  --ds-surface: #1a1a1f;
+  --ds-field: #212127;
+  --ds-muted: #26262d;
+
+  /* borders carry the depth, so they run brighter than a light-theme translation */
+  --ds-border: #3a3a43;
+  --ds-border-control: #6b6b72;/* 3.03:1 on --ds-field */
+  --ds-border-card: #303038;
+  --ds-line: #2b2b33;
+  --ds-line-strong: #3a3a43;
+  --ds-border-brand: #3d3358;
+  --ds-tab-active: #ededf0;
+
+  /* text: same four-step hierarchy, inverted */
+  --ds-text: #ededf0;
+  --ds-text-alt: #dededf;
+  --ds-text-2: #9b9ba6;
+  --ds-placeholder: #8d8d97;   /* was #7c7c87, 3.88:1 on --ds-field. Now 4.87:1 */
+  --ds-text-3: #8c8c95;        /* was #6b6b76, 3.29:1 on --ds-surface. Now 5.09:1,
+                                  4.51:1 on --ds-muted, its worst ground */
+  --ds-text-neutral2: #a8a8b2;
+  --ds-pill-text: #c9c9d2;
+
+  /* primary button inverts: light chip on a dark ground */
+  --ds-primary: #ededf0;
+  --ds-primary-2: #f5f5f7;
+  --ds-primary-press: #ffffff;
+  --ds-on-primary: #16161a;
+  --ds-on-primary-soft: #2a2a31;
+
+  /* product hues lifted for contrast on dark */
+  --ds-green: #34d399;
+  --ds-green-deep: #6ee7b7;
+  --ds-green-pill-bg: rgba(52, 211, 153, 0.14);
+  --ds-green-bar-bg: rgba(52, 211, 153, 0.12);
+  --ds-purple: #b9a5ff;
+  --ds-purple-bg: rgba(185, 165, 255, 0.13);
+  --ds-accent: #fb8b4c;
+  --ds-accent-soft: rgba(251, 139, 76, 0.5);
+
+  /* Stella product palette */
+  --ds-blue: #7db4ef;
+  --ds-blue-300: #a8cffb;
+  --ds-blue-100: rgba(125, 180, 239, 0.16);
+  --ds-blue-deep: #cfe4fb;
+  --ds-teal: #34d399;
+  --ds-teal-100: rgba(52, 211, 153, 0.18);
+  --ds-ink-strong: #ededf0;
+
+  /* voice-agent tones re-point at the lifted hues */
+  --ds-tone-register: var(--ds-purple);
+  --ds-tone-register-bg: var(--ds-purple-bg);
+  --ds-tone-numbers: var(--ds-teal);
+  --ds-tone-numbers-bg: var(--ds-teal-100);
+  --ds-tone-repair: var(--ds-accent);
+  --ds-tone-repair-bg: rgba(251, 139, 76, 0.14);
+  --ds-tone-trust: var(--ds-blue);
+  --ds-tone-trust-bg: var(--ds-blue-100);
+  --ds-tone-neutral: var(--ds-text-2);
+  --ds-tone-neutral-bg: var(--ds-muted);
+  /* A fifth concern: captured once, not read back. It had been borrowing
+     --ds-focal-amber from the concept-animation framework, which means one hue
+     carrying two unrelated meanings across the system. */
+  --ds-tone-provisional: var(--ds-focal-amber);
+  --ds-tone-provisional-bg: var(--ds-focal-amber-fill);
+
+
+  /* scaffold + focal */
+  --ds-shim: #2a2a31;
+  --ds-shim-soft: #23232a;
+  --ds-anno: #7db4ef;
+  --ds-on-anno: #10101a;
+  --ds-focal-blue: #7db4ef;
+  --ds-focal-green: #34d399;
+  --ds-focal-green-fill: rgba(52, 211, 153, 0.14);
+  --ds-focal-amber: #fbbf4c;
+  --ds-focal-amber-fill: rgba(251, 191, 76, 0.15);
+  /* Dark tones already run 7.35 to 9.02:1 as text, so ink aliases the hue. */
+  --ds-tone-register-ink: var(--ds-tone-register);
+  --ds-tone-numbers-ink: var(--ds-tone-numbers);
+  --ds-tone-repair-ink: var(--ds-tone-repair);
+  --ds-tone-trust-ink: var(--ds-tone-trust);
+  --ds-tone-provisional-ink: var(--ds-tone-provisional);
+  --ds-tone-neutral-ink: var(--ds-text-2);
+  --ds-focal-red: #f87171;
+  --ds-focal-red-fill: rgba(248, 113, 113, 0.14);
+
+  /* controls */
+  --ds-toggle-off: #3f3f49;
+  --ds-toggle-knob: #ededf0;
+  --ds-slider-rail: #3a3a43;
+  --ds-slider-fill: #ededf0;
+
+  /* the frame floats less in dark: a heavy drop shadow reads as grime on a dark
+     ground, so lean on the border and keep only a soft ambient lift */
+  --ds-shadow-frame: 0 18px 44px -28px rgba(0, 0, 0, 0.8);
+}
+
+/* ── live-surface type scale ─────────────────────────────────────────────────
+   Every value here lands on an INTEGER step of the ramp declared in DESIGN.md, and
+   there are no two steps within half a pixel of each other. That is not tidiness: a
+   ramp with 12.5 next to 13, or 13.5 next to 14, is one step pretending to be two, and
+   it buys no hierarchy while costing every consumer a decision it cannot make well.
+   The base ramp above is a MINIATURE of a 24/16/14 source product, authored for a
+   figure that gets transform-scaled down. A live surface runs at 1:1 across a whole
+   viewport, and useFitScale never scales a figure ABOVE 1, so the embedded 800px
+   window runs at 1:1 too. At meta 9 to title 15 the whole ramp spans six pixels,
+   which leaves no headroom to make anything primary. This restores the source's
+   proportions at real size. Set it here, never per-file in a consumer. */
+.ds-root--live {
+  --ds-fs-title: 17px;
+  --ds-fs-app: 15px;
+  --ds-fs-section: 13px;
+  --ds-fs-body: 14px;
+  --ds-fs-sub: 13px;
+  --ds-fs-btn: 13px;
+  --ds-fs-tab: 12px;
+  --ds-fs-label: 11px;
+  --ds-fs-pill: 11px;
+  --ds-fs-meta: 11px;
 }

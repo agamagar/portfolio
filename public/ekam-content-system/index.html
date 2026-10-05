@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ekam — The Content Plan</title>
+<style>
+  :root{
+    --paper:#F5F1E9; --panel:#FBF8F2; --sunk:#EFEAE0; --ink:#191713; --muted:#6B6459;
+    --rule:#DED6C7; --accent:#A33A2B; --accent-soft:#F0E3DE;
+    --ok:#5C6E3F; --gap:#A33A2B; --part:#8A5A1E; --draft:#48566E;
+    --serif:ui-serif,"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#14120F; --panel:#1C1A16; --sunk:#100E0C; --ink:#EDE7DA; --muted:#9A9285;
+      --rule:#302C25; --accent:#D9705C; --accent-soft:#2A1F1B;
+      --ok:#9DB073; --gap:#D9705C; --part:#C99A50; --draft:#92A2BE;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+       font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased}
+  body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.055;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .wrap{position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:0 24px 96px}
+
+  header{padding:64px 0 34px; border-bottom:1px solid var(--rule)}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 20px}
+  h1{font-family:var(--serif); font-weight:400; font-size:clamp(30px,5.4vw,48px); line-height:1.1; letter-spacing:-.015em; margin:0 0 18px}
+  .lede{font-size:17px; color:var(--muted); max-width:64ch; margin:0}
+  .lede b{color:var(--ink); font-weight:600}
+
+  h2{font-family:var(--serif); font-weight:400; font-size:28px; letter-spacing:-.01em; margin:0 0 8px}
+  section{padding:52px 0; border-bottom:1px solid var(--rule)}
+  .snum{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 14px}
+  .intro{font-size:16px; color:var(--muted); max-width:66ch; margin:0 0 30px}
+  .intro b{color:var(--ink); font-weight:600}
+
+  /* six-slot spine */
+  .spine{display:grid; gap:10px; margin:0}
+  .slot{display:grid; grid-template-columns:130px 1fr; gap:18px; align-items:start;
+        background:var(--panel); border:1px solid var(--rule); border-radius:3px; padding:15px 18px}
+  .slot dt{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+  .slot dd{margin:0; font-size:15px}
+  .slot dd > em:last-child{color:var(--muted); font-style:normal; display:block; margin-top:4px; font-size:13.5px}
+
+  /* topic grid */
+  .topics{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:10px}
+  .tcard{text-align:left; background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+         padding:15px 16px; cursor:pointer; font-family:inherit; color:inherit; transition:.15s}
+  .tcard:hover{border-color:var(--muted)}
+  .tcard[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-soft)}
+  .tcard .tn{font-family:var(--serif); font-size:17px; display:block; margin-bottom:7px; line-height:1.3}
+  .tcard .tm{font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); display:block}
+  .dot{display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:1px}
+  .s-full .dot{background:var(--ok)} .s-partial .dot{background:var(--part)} .s-gap .dot{background:var(--gap)}
+  .s-draft .dot{background:var(--draft)}
+  .warnbox.draft{background:transparent; border:1px solid var(--draft)}
+  .warnbox.draft b{color:var(--draft)}
+  ul.verify{margin:10px 0 0; padding-left:20px; font-size:14px}
+  ul.verify li{margin-bottom:5px}
+  .key{display:flex; gap:18px; flex-wrap:wrap; font-family:var(--mono); font-size:10.5px;
+       letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:16px 0 0}
+
+  /* builder */
+  .builder{background:var(--sunk); border:1px solid var(--rule); border-radius:3px; padding:24px 26px; margin-top:8px}
+  .controls{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:6px}
+  label{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:8px}
+  select{width:100%; font-family:var(--sans); font-size:15px; color:var(--ink); background:var(--panel);
+         border:1px solid var(--rule); border-radius:2px; padding:10px 12px; cursor:pointer}
+  .out{margin-top:26px; padding-top:22px; border-top:1px solid var(--rule)}
+  .outhead{display:flex; justify-content:space-between; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:4px}
+  .outhead h3{font-family:var(--serif); font-weight:400; font-size:20px; margin:0}
+  .fnote{font-size:14px; color:var(--muted); margin:6px 0 20px; max-width:66ch}
+  ol.built{list-style:none; margin:0; padding:0; counter-reset:b}
+  ol.built li{counter-increment:b; display:grid; grid-template-columns:30px 1fr; gap:14px;
+              padding:13px 0; border-top:1px solid var(--rule)}
+  ol.built li::before{content:counter(b); font-family:var(--mono); font-size:11px; color:var(--muted); padding-top:4px}
+  .bslot{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:5px}
+  .btext{font-size:15.5px}
+  .btext.serif{font-family:var(--serif); font-size:17px; line-height:1.4}
+  .cc{font-family:var(--mono); font-size:10.5px; color:var(--muted); margin-top:6px; display:block}
+  .cc.over{color:var(--accent); font-weight:700}
+  .empty{color:var(--muted); font-style:italic}
+  .warnbox{background:var(--accent-soft); border-radius:2px; padding:14px 16px; font-size:14.5px; line-height:1.55; margin-bottom:20px}
+  .warnbox b{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:6px; color:var(--accent)}
+
+  button.copy{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--rule); color:var(--muted);
+    padding:7px 12px; border-radius:2px; cursor:pointer; margin-top:20px; transition:.15s}
+  button.copy:hover{color:var(--ink); border-color:var(--muted)}
+
+  /* tables */
+  .scroll{overflow-x:auto}
+  table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:540px}
+  th,td{text-align:left; padding:11px 16px 11px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+  th{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:400}
+  td.no{color:var(--accent)}
+  td.yes{color:var(--ok)}
+  .swap td:first-child{color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px}
+
+  .filter{display:grid; grid-template-columns:auto 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--rule); font-size:15px}
+  .filter span{font-family:var(--mono); font-size:11px; color:var(--accent); padding-top:4px}
+  .cov{display:grid; grid-template-columns:auto 1fr; gap:14px; padding:13px 0; border-top:1px solid var(--rule); font-size:14.5px}
+  .cov b{font-family:var(--mono); font-size:11px; letter-spacing:.06em; white-space:nowrap; padding-top:2px; display:block}
+  footer{padding:52px 0 0}
+  @media (max-width:640px){
+    .wrap{padding:0 18px 72px}
+    .controls{grid-template-columns:1fr}
+    .slot{grid-template-columns:1fr; gap:6px}
+    .builder{padding:20px 18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Ekam · Dehradun · content plan v1 · 25 Jul 2026</p>
+  <h1>Six slots, six formats,<br>one voice</h1>
+  <p class="lede">A system for producing platform-native content fast, without re-deciding the voice every time. It works because of one reduction: <b>every clinical topic collapses into the same six slots</b> — and every platform format is just a different arrangement of those six. Fill the slots once per topic, and the topic can be shipped to Instagram, X and Reddit without rewriting the thinking.</p>
+</header>
+
+<!-- 1 · THE SPINE -->
+<section>
+  <p class="snum">Layer 1</p>
+  <h2>The spine</h2>
+  <p class="intro">Six slots. Every topic gets reduced to these, once, by whoever holds the clinical knowledge. This is the only step that needs Dr. Richa — everything downstream is assembly. The order below is the order of trust: <b>you earn attention with a true sentence, remove a wrong belief, explain the mechanism, admit the limit, then say what to do.</b> Warmth goes last so it reads as care rather than as a sales close.</p>
+  <dl class="spine">
+    <div class="slot"><dt>1 · Hook</dt><dd>The truest sharp sentence available.<em>Never a curiosity gap. If it needs a "wait for it," it isn't the hook — it's bait, and it breaks the register.</em></dd></div>
+    <div class="slot"><dt>2 · Myth</dt><dd>What she has already been told, that is wrong.<em>Correct the belief, never the person holding it. Most patients arrive pre-loaded with bad advice they were given in good faith.</em></dd></div>
+    <div class="slot"><dt>3 · Mechanism</dt><dd>What is physically happening, in plain words. 2–4 beats.<em>The load-bearing slot. One beat per frame or per post — never two mechanisms in one breath.</em></dd></div>
+    <div class="slot"><dt>4 · Limit</dt><dd>What this does <em>not</em> fix, or cannot promise.<em>The trust slot, and the one everyone wants to cut. It's why the rest is believed. "Good protection, not a guarantee."</em></dd></div>
+    <div class="slot"><dt>5 · Next</dt><dd>The actual next action, and the real stakes if ignored.<em>State consequence as fact, never as fear. "This raises your risk of X" — not "don't let this destroy your future."</em></dd></div>
+    <div class="slot"><dt>6 · Warmth</dt><dd>The non-scolding close.<em>Specific, not generic. "We'll explain it again, differently" beats "don't worry!" — and never apologise for what she came in with.</em></dd></div>
+  </dl>
+</section>
+
+<!-- 2 · TOPICS -->
+<section>
+  <p class="snum">Layer 2</p>
+  <h2>The topic map</h2>
+  <p class="intro">Ten topics, built from the five drafts in <b>ekam writing drafts</b>, the 22-question socials list, and the actual patient mix. Colour marks how much of the spine is filled — which is also the honest map of what still needs writing. Click one to load it into the builder below.</p>
+  <div class="topics" id="topics"></div>
+  <p class="key">
+    <span class="s-full"><i class="dot"></i>Spine complete — ship today</span>
+    <span class="s-draft"><i class="dot"></i>Drafted for her, not by her — needs sign-off</span>
+    <span class="s-partial"><i class="dot"></i>Partial — needs slots filled</span>
+    <span class="s-gap"><i class="dot"></i>No source material yet</span>
+  </p>
+</section>
+
+<!-- 3 · BUILDER -->
+<section>
+  <p class="snum">Layer 3</p>
+  <h2>The builder</h2>
+  <p class="intro">Pick a topic and a format. The system arranges that topic's six slots into the chosen platform's skeleton, applies the format's own rules, and gives you a scaffold to write from — with live character counts where the platform enforces them. This is the step that should take seconds.</p>
+
+  <div class="builder">
+    <div class="controls">
+      <div><label for="topic">Topic</label><select id="topic"></select></div>
+      <div><label for="format">Format</label><select id="format"></select></div>
+    </div>
+    <div class="out" id="out"></div>
+    <button class="copy" id="copyBtn">Copy scaffold</button>
+  </div>
+</section>
+
+<!-- 4 · FORMATS -->
+<section>
+  <p class="snum">Layer 4</p>
+  <h2>How each format arranges the spine</h2>
+  <p class="intro">The same six slots, six ways. The differences aren't stylistic — they follow from what each platform actually rewards and punishes.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Format</th><th>Slot order</th><th>Why this order</th></tr></thead>
+      <tbody id="ftable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 5 · VOICE -->
+<section>
+  <p class="snum">Layer 5</p>
+  <h2>The voice engine</h2>
+  <p class="intro">The §13 rules turned into something mechanical enough to apply at speed. Left column is banned; right column is the move that replaces it. If a draft contains anything on the left, it isn't on voice yet — regardless of how good it sounds.</p>
+  <div class="scroll">
+    <table class="swap">
+      <thead><tr><th>Never</th><th>Instead</th></tr></thead>
+      <tbody>
+        <tr><td>"women's issues", "down there", "intimate area"</td><td>Say the word. Cervix. Vagina. Discharge. Bleeding.</td></tr>
+        <tr><td>"if only you'd come in sooner"</td><td>"That's the appointment. Not a lecture."</td></tr>
+        <tr><td>"don't ignore this — it could be serious!"</td><td>"Left unmanaged this raises your risk of X." Fact, flat.</td></tr>
+        <tr><td>"holistic wellness journey", "empowerment"</td><td>Plain words. "We'll find the cause and explain the options."</td></tr>
+        <tr><td>"we know it's embarrassing, but…"</td><td>Nothing. Never apologise for what she came in with.</td></tr>
+        <tr><td>"don't worry!"</td><td>"We'll explain it again, differently." Warmth via specificity.</td></tr>
+        <tr><td>"patients often feel…", "women should…"</td><td>"You." Second person, always.</td></tr>
+        <tr><td>Flowers, fruit, or a peach standing in for anatomy</td><td>Draw the organ, accurately, and name it.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:32px">
+    <p class="snum" style="margin-bottom:12px">The four-question filter — run before anything ships</p>
+    <div class="filter"><span>01</span><div>Does it moralize a symptom anywhere, even by implication?</div></div>
+    <div class="filter"><span>02</span><div>Does it euphemize past the point of clarity?</div></div>
+    <div class="filter"><span>03</span><div>Does it use fear or shock to drive the booking?</div></div>
+    <div class="filter"><span>04</span><div>Does the discretion promise read like an apology for why she's here?</div></div>
+    <p class="intro" style="margin:18px 0 0">Any yes — rewrite. And one addition specific to generating at speed: <b>if a sentence could have been written about any clinic, cut it.</b> Volume is the enemy of voice, and generic filler is the first thing that creeps in when you're producing fast.</p>
+  </div>
+</section>
+
+<!-- 6 · COVERAGE -->
+<section>
+  <p class="snum">Layer 6</p>
+  <h2>What the system exposes</h2>
+  <p class="intro">Mapping the topics against the real patient mix surfaces something the drafts folder alone doesn't show. <b>The source material is inverted against the practice.</b></p>
+  <div class="cov"><b style="color:var(--ok)">PCOD · 40%</b><div>Four spine slots filled and the best writing in the folder. Genuinely ready — this one is solved.</div></div>
+  <div class="cov"><b style="color:var(--draft)">Abortion &amp; missed periods · 30%</b><div>Was zero source material — <strong>now drafted, 25 Jul 2026, and awaiting sign-off.</strong> Second-largest reason people come to Ekam, the most private and most searched-alone topic in women's health, and the one where the discretion register matters most. All six slots are filled and every legal claim is sourced, but this spine was written <em>for</em> Dr. Richa, not <em>by</em> her — she carries the liability, so nothing here publishes until she has corrected it. One slot is blocked on operations rather than on her: slot 6 promises no patient is asked why she came, which is rung #3 of the first-visit risk ladder and has to be true in the clinic before it's true in a caption.</div></div>
+  <div class="cov"><b style="color:var(--gap)">UTI · 20%</b><div>Zero source material, despite being a fifth of the practice and the easiest of all of these to explain well. Fast to write, high search volume, low sensitivity — the cheapest win available.</div></div>
+  <div class="cov"><b style="color:var(--gap)">Post-pregnancy &amp; other · 10%</b><div>Nothing yet. Lower priority than the two above.</div></div>
+  <p class="intro" style="margin:26px 0 0">Put plainly: <b>30% of the patient mix still has no content behind it, and another 30% is drafted but uncleared</b>, while the four original drafts cluster around cycle education and prevention. The system can generate at speed for PCOD, cycle mechanics, heavy bleeding and HPV today. Everything else needs one spine filled first — which is roughly an hour of Dr. Richa's time per topic, not a writing project.</p>
+
+  <div style="margin-top:34px">
+    <p class="snum" style="margin-bottom:12px">Legal sources for the missed-periods spine</p>
+    <p class="intro" style="margin-bottom:12px">Checked 25 Jul 2026. Listed so Dr. Richa and counsel can audit the claims rather than take them on trust — and so a future session doesn't quietly re-derive them from memory.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Claim</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Up to 20 wks: one RMP. 20–24 wks: two RMPs, prescribed categories only. Beyond 24 wks: Medical Board, substantial foetal abnormality only.</td><td>MTP (Amendment) Act 2021, s.3(b); MTP (Amendment) Rules 2021, Rules 3A–3B</td></tr>
+          <tr><td>Her own consent alone at 18+; guardian's written consent if under 18. No spousal consent anywhere in the Act.</td><td>MTP Act s.3(4)</td></tr>
+          <tr><td>Name and particulars must not be revealed except to a person authorised by law; breach punishable by up to one year, fine, or both.</td><td>MTP Act s.5B</td></tr>
+          <tr><td>Marital status is not a bar; "change of marital status" in Rule 3B(c) read to include unmarried women in consensual relationships, 20–24 wks.</td><td>X v. Principal Secretary, Health &amp; Family Welfare Dept, Govt of NCT of Delhi (SC, 29 Sep 2022)</td></tr>
+          <tr><td>Medical abortion permitted to nine weeks (raised from seven); MA drugs are Schedule H — prescription only.</td><td>MTP (Amendment) Rules 2021, Rule 4(ca); Drugs and Cosmetics Rules 1945, Schedule H</td></tr>
+          <tr><td>Mandatory reporting obligation for a patient under 18 — the stated limit on confidentiality.</td><td>POCSO Act 2012, s.19</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <h2>Using it, and its limits</h2>
+  <p class="intro" style="margin-top:14px">The builder produces a <b>scaffold, not a finished post</b>. It guarantees structure, order and voice — it cannot supply the clinical judgment in slot 3, and it shouldn't. Treat the output as the draft you edit, and keep two rules alongside it: pricing and dosing get verified against the front desk before anything goes public, and anything compressed from a longer draft gets read back by Dr. Richa as a published sentence, not as a summary of her own writing.</p>
+  <p class="intro" style="margin-top:14px">Extending it is deliberately cheap. A new topic is six slots. A new platform is one arrangement of those six, plus its own rules — the shape of the system doesn't change when a channel is added, which is the whole point of building it this way rather than as a library of finished posts.</p>
+  <p class="intro" style="margin-top:22px"><a href="2026-07-25_social-content-instagram-x-reddit.html" style="color:var(--accent)">See the system run →</a> Ten finished pieces built from these spines — four Instagram, three X, three Reddit — with captions, character counts and the Reddit disclosure templates.</p>
+</footer>
+
+</div>
+
+<script>
+/* ---------------- TOPICS: the spine, filled ---------------- */
+const TOPICS = {
+  pcos:{
+    name:"PCOS / PCOD", meta:"40% of patient mix", status:"full", src:"PMOS/ PCOS",
+    hook:"PCOD is not a weight problem with a hormonal side effect. It's a metabolic problem, and the irregular periods are the part you can see.",
+    myth:"That it's “just lose weight” — an instruction with the mechanism removed.",
+    mech:[
+      "The follicles — the fluid-filled bags that each hold an egg — reach growth arrest. Many grow big enough to cause problems, none big enough to release. They keep signalling the brain to grow, the brain keeps answering, nothing completes.",
+      "Insulin resistance. Insulin's job is to let glucose into your cells; here the receptors stop recognising it when it knocks with the food supply. The body reads that as hunger, so insulin and blood sugar both climb — and raised insulin disturbs the rhythmic release of your female hormones.",
+      "Reduced dopamine in the brain, which loosens the brain's control over the ovaries — producing both the irregular cycles and the polycystic appearance.",
+      "Raised testosterone, largely a consequence of the first two. Acne, facial hair, hair fall — the visible part, and the part most often mistaken for the whole condition."
+    ],
+    limit:"It cannot really be cured. It sits in the background waiting for you to falter, and it relapses.",
+    next:"Medication to correct the major imbalances, plus real change in how you sleep and eat. Left unmanaged this isn't only periods and acne — the same imbalances raise your risk of high blood pressure, diabetes and heart disease.",
+    warmth:"We aren't going to make you a warden for your body, to scrutinise and criticise, but to be a friend to it. And on the days you fail at it, you forgive yourself and walk on ahead.",
+    qs:["#2 diet and lifestyle for PCOS","#4 why are you putting me on Glycomet","#13 regularising cycles for PCOD"]
+  },
+  cycle:{
+    name:"The cycle, explained", meta:"Foundation topic", status:"full", src:"Menstrual cycle elaborated",
+    hook:"Most of us learned the word “cycle” and never the thing itself.",
+    myth:"That a period is a waste product being expelled — rather than the end of a process that was building something.",
+    mech:[
+      "Every egg you will ever have is already in your ovaries. Sliced open, they hold follicles — fluid-filled bags, each holding one egg.",
+      "That bag does two jobs: it holds the egg, and it makes your estrogen and progesterone. Which is why a cycle that goes wrong is almost never only about bleeding.",
+      "Each month after bleeding starts, about ten follicles begin growing to the size of a pea. One or two are chosen and grow to the size of a peanut — a balloon full of fluid.",
+      "It makes an opening in the ovary wall and bursts, releasing the egg. The tube reaches out, picks it up, and holds it about three days. If no sperm meets it, it dies — and about fourteen days later, you bleed."
+    ],
+    limit:"A cycle that looks textbook can still hide a problem, and an irregular one isn't automatically disease. The pattern matters more than any single month.",
+    next:"If yours doesn't look like this — long gaps, no gaps, bleeding that arrives unannounced — that's worth a conversation, not a wait.",
+    warmth:"Nothing in that is a mystery, and nothing in it is unclean.",
+    qs:["#16 how to understand if your periods are healthy","#17 good practice for a proper cycle","#12 why did the period last long"]
+  },
+  hpv:{
+    name:"HPV & cervical cancer", meta:"Prevention · has pricing", status:"full", src:"HPV VACCINE: WHAT IS IT",
+    hook:"There are only two vaccines in the world that prevent a cancer. One is Hepatitis B, and every newborn in India gets it. The other is HPV, and most adults here have never been offered it.",
+    myth:"Three, in the order they're heard: that it's only for girls, that there's an age cut-off you've missed, and that the vaccine causes cancer.",
+    mech:[
+      "HPV is a DNA virus that infects mucosa — the pink, shiny skin inside your mouth, cervix, vagina, anus. It damages it so it overgrows into a wart or skin tag. Usually forgettable, so it gets ignored.",
+      "In some people the infection keeps flaring, and over years that damage can become cancer: mouth, head and neck, cervix, vagina, penis, anus. Cervical cancer is the most common of them.",
+      "It affects both sexes — roughly 3% incidence in women, 2% in men. It's discussed as a women's issue because cervical cancer is the biggest share of the harm, not because men are unaffected.",
+      "The vaccine contains no live virus: an extract of non-infectious viral proteins made by recombinant DNA — the outer shell, with nothing inside that can infect you. Side effects are the ordinary ones: headache, fever, nausea, diarrhoea, abdominal pain, fainting."
+    ],
+    limit:"It covers a few of the most common cancer-causing strains, and there are more than 100. Good protection — not a guarantee, and not a replacement for screening.",
+    next:"From age 9. Under 14: two doses (0, 2 months). 14 and over: three (0, 2, 6 months). Adults up to 45 after talking to a doctor. Pap smears every 3 years regardless. At Ekam: Gardasil ₹3,927 · Gardasil 9 ₹10,850.",
+    warmth:"Cervical cancer is one of the most preventable cancers there is. That's the whole reason this is worth the trouble.",
+    qs:["#8 vaccination"]
+  },
+  hmb:{
+    name:"Heavy / unannounced bleeding", meta:"Thin source", status:"partial", src:"HMB or heavy menstrual bleed",
+    hook:"Heavy or unpredictable bleeding is either structural or functional. Those are two different treatments — which is why “take iron and wait” isn't a plan.",
+    myth:"That heavy bleeding is just your normal, and that having always had it means nothing is wrong.",
+    mech:[
+      "Structural: something a scan can actually see. Fibroids, polyps, adenomyosis — physical causes with physical answers. [Needs Dr. Richa to expand: which causes, and what each looks like on ultrasound.]",
+      "Functional: governed by hormonal imbalance and poor metabolic health. Nothing shows on the scan, which is exactly why it gets dismissed. [Needs expanding: the specific imbalances and how they're tested.]"
+    ],
+    limit:"",
+    next:"Find the cause while giving symptomatic relief. Once the cause is known, every option — medical or surgical — gets explained, and you decide what suits you.",
+    warmth:"It affects most women at some point. It brings a lot of questions and stress with it, and neither of those is an overreaction.",
+    qs:["#11 scared after seeing blood loss for the first time","#12 how did the period last so long","#6 periods 3–4 times in a month"]
+  },
+  pms:{
+    name:"PMS & cycle mood", meta:"Source is a stub", status:"partial", src:"PMS (incomplete)",
+    hook:"Do those days always arrive with a whole procession — irritation first, then the period, then the pain?",
+    myth:"That this is simply your destiny and something to live with.",
+    mech:[],
+    limit:"",
+    next:"",
+    warmth:"It isn't a character flaw and it isn't weakness — it's your body telling you in signs that it needs help.",
+    qs:["#3 period pain is a big problem","#5 no cramps for 2–4 months"]
+  },
+  missed:{
+    name:"Missed periods & abortion", meta:"30% · drafted, unverified", status:"draft",
+    src:"drafted 25 Jul 2026 — not Dr. Richa's writing",
+    hook:"A late period is not a verdict. And if you are 18 or over, your consent is the only consent the law requires — not a husband's, not a parent's.",
+    myth:"Three, and each one costs weeks: that abortion is illegal in India, that someone else has to agree to it, and that pills from a chemist are the discreet option. The first two are simply false. The third is the one that ends in an emergency.",
+    mech:[
+      "Not every late period is a pregnancy. Thyroid disorders, raised prolactin, PCOS, sudden weight change, stress, and the months after stopping hormonal contraception all delay or stop periods. A urine test answers the first question in minutes; blood tests and a scan answer the rest.",
+      "If you are pregnant, the scan does two jobs beyond confirming it: dating the pregnancy, which determines every option you have, and locating it. A pregnancy growing outside the uterus — ectopic — is the reason self-medication is dangerous. The pills do not treat it, and an untreated ectopic can rupture.",
+      "Termination is legal here, under the MTP Act. Up to 20 weeks it needs one doctor's opinion. Between 20 and 24 weeks it needs two, and only in specified circumstances. Beyond 24 weeks it needs a medical board, and applies only to substantial foetal abnormality. Married or unmarried makes no legal difference — the Supreme Court settled that in 2022.",
+      "Your consent alone is what's required if you are 18 or over. No husband's signature, no parent's. Under 18, the law requires a guardian's written consent. That is the entire list — anyone asking for more is adding a rule the Act does not contain.",
+      "Which route depends on the dating. Up to nine weeks, medicines: a prescribed schedule, with a follow-up scan to confirm it's complete. Past that, a short vacuum procedure. The abortion pill is prescription-only in India for exactly these reasons — it needs the dating, the follow-up, and someone to call."
+    ],
+    limit:"Two honest ones. Medicines are not a guarantee — a small number of pregnancies don't complete and need a short procedure afterwards, which is why the follow-up isn't optional. And confidentiality, though a legal duty with a penalty attached, is not limitless: if you are under 18, the law imposes reporting obligations no clinic can set aside. You'll be told that at the start, not after.",
+    next:"A urine test and a scan, and you'll know where you stand the same day. Bring nothing, bring no one. The gestational limits are real deadlines and every week narrows the options — that's the only reason to come early, and the only pressure in any of this.",
+    warmth:"You will not be asked why. Not to explain the relationship, not to justify the decision, not to bring anyone with you. We'll tell you what we found, what your options are, and what each involves — and then it is yours to decide.",
+    verify:[
+      "Every legal claim above was checked against the MTP Amendment Act 2021, the MTP Amendment Rules 2021 (Rule 3B, Rule 4(ca)), MTP Act s.3(4) and s.5B, and X v. Principal Secretary (SC, 29 Sep 2022). Sources are listed at the foot of this page. It still needs Dr. Richa's sign-off as the practising RMP — she carries the liability, not the research.",
+      "The nine-week medical-abortion limit and the two-doctor 20–24 week rule are stated flatly. Confirm they match how Ekam actually practises, including which of the Rule 3B categories the clinic is equipped to serve.",
+      "The under-18 reporting limit (POCSO s.19) is deliberately stated to the patient rather than buried. Confirm the exact wording with legal counsel — this is the single highest-risk sentence in the whole system.",
+      "The mechanism beats name ectopic pregnancy and incomplete abortion as risks. Verify the framing is clinically proportionate and not alarming beyond what's accurate.",
+      "Slot 6 promises no one will be asked why. That's a promise about front-desk and consult behaviour, not copy — do not publish it until rung #3 (the no-reason rule) actually exists in practice."
+    ],
+    qs:["#20 fear of pregnancy","#19 can pre-cum lead to pregnancy","#21 side effects of i-pills","#15 dealing with conception failure"]
+  },
+  uti:{
+    name:"UTI", meta:"20% of patient mix", status:"gap", src:"— nothing yet",
+    hook:"", myth:"", mech:[], limit:"", next:"", warmth:"", qs:["#7 UTI"]
+  },
+  discharge:{
+    name:"Discharge & hygiene", meta:"High search volume", status:"gap", src:"— nothing yet",
+    hook:"", myth:"", mech:[], limit:"", next:"", warmth:"",
+    qs:["#1 vaginal discharge","#9 general hygiene issues","#18 are flavoured condoms bad"]
+  },
+  contraception:{
+    name:"Contraception & the i-pill", meta:"Myth-dense", status:"gap", src:"— nothing yet",
+    hook:"", myth:"", mech:[], limit:"", next:"", warmth:"",
+    qs:["#21 side effects of i-pills","#22 hormonal changes after losing virginity","#14 sex on periods"]
+  },
+  postpreg:{
+    name:"Post-pregnancy", meta:"10% of patient mix", status:"gap", src:"— nothing yet",
+    hook:"", myth:"", mech:[], limit:"", next:"", warmth:"", qs:[]
+  }
+};
+
+/* ---------------- FORMATS: arrangements of the spine ---------------- */
+const FORMATS = {
+  "ig-carousel":{
+    name:"Instagram carousel", order:["hook","myth","mech*","limit","next","warmth"],
+    why:"The swipe is a commitment, so the cover must be true rather than teasing. One mechanism beat per frame — the format's whole advantage is room to unpack without crowding a frame. Warmth lands on the last card, where she's already decided to trust you.",
+    note:"One idea per frame. Add a visual note per frame as you go — anatomy drawn plainly and accurately, never flowers or fruit. Sensitive topics stay static; never a Reel.",
+    serif:true
+  },
+  "ig-single":{
+    name:"Instagram single graphic", order:["hook","mech1","next"],
+    why:"No room to argue, so it answers exactly one question. Best used for the high-intent question asked after a consult, when trust is already wobbling.",
+    note:"Three lines on the graphic at most. The caption carries the mechanism in full — the graphic only has to stop the scroll and be true.",
+    serif:true
+  },
+  "x-thread":{
+    name:"X thread", order:["hook","mech*","limit","next"],
+    why:"X rewards the fact that leads, where Instagram rewards the myth that leads — so the myth gets folded into the mechanism beats instead of opening. Warmth is dropped: on this platform it reads as performance.",
+    note:"One beat per post, 280 characters hard. Never open a thread with a curiosity gap. No quote-tweet arguments, and never reply to bad medicine with contempt.",
+    limitChars:280
+  },
+  "x-standalone":{
+    name:"X standalone", order:["single"],
+    why:"One slot, alone. Corrects exactly one wrong belief and stops — which is the only thing that travels on this platform without a thread behind it.",
+    note:"Pick the single strongest slot for this topic — usually the myth or the limit. Post between threads.",
+    limitChars:280
+  },
+  "reddit-post":{
+    name:"Reddit text post", order:["hook","mech*","limit","next","warmth"],
+    why:"Value density is the entry fee. The mechanism runs long and unabridged here — this is the one platform that rewards the full explanation. The myth slot becomes a numbered list inside the body rather than an opening move.",
+    note:"No clinic name in the body. No CTA, no link. Apply for verified-doctor flair before posting, read each sub's self-promo rule, and never cross-post the same text to two subs the same day. Close by offering to answer questions — that is the only Reddit-native call to action.",
+    prefix:"I'm an obstetrician-gynaecologist in India. "
+  },
+  "reddit-reply":{
+    name:"Reddit reply", order:["disclose"],
+    why:"The only place Ekam gets named. Reddit forgives a doctor promoting a clinic once, if they disclosed it first — and never forgives finding it out later.",
+    note:"Disclose the affiliation before anyone has to ask for it. Correct facts, never people. Never diagnose over text — say what you'd want examined instead."
+  }
+};
+
+const SLOT_LABEL = {hook:"Hook",myth:"Myth",limit:"Limit",next:"Next",warmth:"Warmth",single:"Strongest single slot",disclose:"Disclosure"};
+
+/* ---------------- render topic cards ---------------- */
+const topicsEl = document.getElementById("topics");
+const topicSel = document.getElementById("topic");
+const formatSel = document.getElementById("format");
+
+Object.entries(TOPICS).forEach(([id,t])=>{
+  const b=document.createElement("button");
+  b.className="tcard s-"+t.status; b.dataset.id=id; b.setAttribute("aria-pressed","false");
+  b.innerHTML='<span class="tn">'+t.name+'</span><span class="tm"><i class="dot"></i>'+t.meta+'</span>';
+  b.addEventListener("click",()=>{topicSel.value=id; render(); document.getElementById("out").scrollIntoView({behavior:"smooth",block:"center"});});
+  topicsEl.appendChild(b);
+  topicSel.appendChild(Object.assign(document.createElement("option"),{value:id,textContent:t.name+"  ·  "+t.meta}));
+});
+Object.entries(FORMATS).forEach(([id,f])=>{
+  formatSel.appendChild(Object.assign(document.createElement("option"),{value:id,textContent:f.name}));
+});
+
+/* ---------------- format table ---------------- */
+document.getElementById("ftable").innerHTML = Object.values(FORMATS).map(f=>
+  "<tr><td><strong>"+f.name+"</strong></td><td style='font-family:var(--mono);font-size:12.5px'>"+
+  f.order.map(s=>s==="mech*"?"mechanism ×n":(SLOT_LABEL[s]||s).toLowerCase()).join(" → ")+
+  "</td><td>"+f.why+"</td></tr>").join("");
+
+/* ---------------- the builder ---------------- */
+function render(){
+  const t=TOPICS[topicSel.value], f=FORMATS[formatSel.value], out=document.getElementById("out");
+  document.querySelectorAll(".tcard").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.id===topicSel.value)));
+
+  // expand mech* into individual beats, resolve special slots
+  let items=[];
+  f.order.forEach(slot=>{
+    if(slot==="mech*"){
+      if(!t.mech.length) items.push({slot:"Mechanism",text:"",n:0});
+      else t.mech.forEach((m,i)=>items.push({slot:"Mechanism "+(i+1),text:m}));
+    } else if(slot==="mech1"){
+      items.push({slot:"Mechanism",text:t.mech[0]||""});
+    } else if(slot==="single"){
+      items.push({slot:"Strongest single slot",text:t.myth||t.limit||t.hook||""});
+    } else if(slot==="disclose"){
+      items.push({slot:"Disclosure",text:t.status==="gap"?"":"Fair question — I practise at Ekam in Dehradun, so treat me as an interested party. I didn't put it in the post because the information stands on its own. If you're not in Dehradun, any gynaecologist can do all of the above."});
+    } else {
+      items.push({slot:SLOT_LABEL[slot],text:t[slot]||""});
+    }
+  });
+  if(f.prefix && items[0] && items[0].text) items[0].text = f.prefix + items[0].text;
+
+  const missing=items.filter(i=>!i.text).length;
+  let html='<div class="outhead"><h3>'+t.name+" · "+f.name+'</h3><span class="cc">source: '+t.src+"</span></div>";
+  html+='<p class="fnote">'+f.note+"</p>";
+  if(t.status==="gap"){
+    html+='<div class="warnbox"><b>Spine empty — cannot generate</b>This topic has no source material, so there is nothing to arrange. '+
+      (t.qs.length?"The patient questions already mapped to it are listed below — they are the brief for filling the spine, not a substitute for it.":"Nothing mapped to it yet.")+
+      " Fill the six slots once and every format on this page becomes available for it.</div>";
+  } else if(t.status==="draft"){
+    html+='<div class="warnbox draft"><b>Drafted, not cleared — do not publish</b>All six slots are filled, but this spine was <strong>written for Dr. Richa, not by her.</strong> The clinical framing and every legal claim are researched and sourced, not clinically authored. Treat the text below as a draft she corrects, not as content awaiting a schedule.'+
+      "<ul class='verify'>"+t.verify.map(v=>"<li>"+v+"</li>").join("")+"</ul></div>";
+  } else if(missing){
+    html+='<div class="warnbox"><b>'+missing+" slot"+(missing>1?"s":"")+' unfilled</b>The scaffold below is usable, but the empty slots are load-bearing — a piece missing its limit or its next reads like marketing. Fill them before shipping.</div>';
+  }
+
+  html+='<ol class="built">'+items.map(i=>{
+    const n=i.text.length, over=f.limitChars&&n>f.limitChars;
+    return "<li><div><span class='bslot'>"+i.slot+"</span>"+
+      (i.text?"<div class='btext"+(f.serif?" serif":"")+"'>"+i.text+"</div>":"<div class='btext empty'>— empty; needs clinical input</div>")+
+      (f.limitChars&&i.text?"<span class='cc"+(over?" over":"")+"'>"+n+"/"+f.limitChars+(over?" — split this beat in two":"")+"</span>":"")+
+      "</div></li>";
+  }).join("")+"</ol>";
+
+  if(t.qs.length) html+='<p class="fnote" style="margin:22px 0 0">Patient questions mapped here: '+t.qs.join(" · ")+"</p>";
+  out.innerHTML=html;
+}
+topicSel.addEventListener("change",render);
+formatSel.addEventListener("change",render);
+render();
+
+document.getElementById("copyBtn").addEventListener("click",async e=>{
+  const btn=e.currentTarget;
+  const text=document.getElementById("out").innerText.trim();
+  try{ await navigator.clipboard.writeText(text); btn.textContent="Copied";
+       setTimeout(()=>btn.textContent="Copy scaffold",1400); }
+  catch(err){ btn.textContent="Copy failed — select manually"; }
+});
+</script>
+</body>
+</html>
