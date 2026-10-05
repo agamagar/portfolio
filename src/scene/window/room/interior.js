@@ -170,11 +170,13 @@ export function buildInterior(P, ctx, mats, root, win) {
   }
 
   let portraitCursor = null;
+  let portrait = null; // its group, so a toy can be carried onto its top edge (room.js)
   // --- the portrait monitor, a white cloth strip under it (its screen runs a code editor) ---
   {
     const PM = R.portrait;
     const g = new THREE.Group();
     g.name = "portraitMonitor";
+    portrait = g;
     const wdt = PM.width, hgt = PM.height;
     const base = PM.base ?? 0;
     g.position.set(k(PM.right) - (wdt / 2) * Math.cos(PM.yawDeg * D2R), k(DK.y) + base + 0.004, k(PM.z) + (wdt / 2) * Math.sin(PM.yawDeg * D2R));
@@ -314,5 +316,5 @@ export function buildInterior(P, ctx, mats, root, win) {
   }
 
   S.build(root);
-  return { beadChain, chain, monitorScreen: screen, monitor: mon, car, bike, portraitCursor };
+  return { beadChain, chain, monitorScreen: screen, monitor: mon, car, bike, portrait, portraitCursor };
 }

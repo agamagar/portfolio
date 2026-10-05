@@ -24,13 +24,14 @@ export function lampAimFor(P, look) {
 }
 
 // The shade axis (unit vector, world) for a tilt direction.
-export function lampAxis(P, pos, chairPos, tiltDirDeg) {
+export function lampAxis(P, pos, chairPos, tiltDirDeg, tiltDeg = P.room.lamp.tiltDeg) {
   const L = P.room.lamp;
   const los = pos.clone().sub(chairPos).normalize();
   const imgRight = new THREE.Vector3().crossVectors(los, new THREE.Vector3(0, 1, 0)).normalize();
   const imgUp = new THREE.Vector3().crossVectors(imgRight, los).normalize();
   const dir = imgRight.clone().multiplyScalar(Math.cos(tiltDirDeg * D2R)).addScaledVector(imgUp, Math.sin(tiltDirDeg * D2R));
-  return los.clone().multiplyScalar(Math.cos(L.tiltDeg * D2R)).addScaledVector(dir, Math.sin(L.tiltDeg * D2R)).normalize();
+  void L;
+  return los.clone().multiplyScalar(Math.cos(tiltDeg * D2R)).addScaledVector(dir, Math.sin(tiltDeg * D2R)).normalize();
 }
 
 export function buildLamp(P, ctx, mats, root, look) {
@@ -116,8 +117,12 @@ export function buildLamp(P, ctx, mats, root, look) {
   HB.add(m.bulb, bulbG, M.T(0, 0, 0.004), { cast: false, receive: false });
   HB.build(head);
 
-  function setAim(tiltDirDeg) {
-    const axis = lampAxis(P, pos, chairPos, tiltDirDeg);
+  // the live aim, so a drag (room.js) starts from wherever the head points now
+  const aimNow = { dir: 0, tilt: L.tiltDeg };
+  function setAim(tiltDirDeg, tiltDeg = L.tiltDeg) {
+    aimNow.dir = tiltDirDeg;
+    aimNow.tilt = tiltDeg;
+    const axis = lampAxis(P, pos, chairPos, tiltDirDeg, tiltDeg);
     lampHead.lookAt(pos.clone().sub(axis)); // +z toward -axis, so -z is the beam
     lampHead.updateMatrixWorld(true);
   }
@@ -199,6 +204,15 @@ export function buildLamp(P, ctx, mats, root, look) {
     pos,
     setLook(lk) {
       useAim(lk);
+    },
+    // the shade, for the cursor test; and a live re-aim from a drag (Agam,
+    // 2026-10-05: "make the lamp movable too"). The head swivels on its knuckle
+    // like the real lamp: dirDeg swings it around, tiltDeg tips it (clamped 15 to
+    // 65 degrees); the SpotLight, its spill and the glow follow lampHead each frame
+    shade: head,
+    getAim: () => ({ ...aimNow }),
+    aim(dirDeg, tiltDeg) {
+      setAim(dirDeg, Math.max(15, Math.min(65, tiltDeg)));
     },
     dispose() {},
   };
