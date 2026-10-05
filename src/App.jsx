@@ -10759,6 +10759,19 @@ function ResumeViewer() {
   );
 }
 
+// 5 Oct (going live): the public build strips every "[Confirm ...]" writing
+// note from every case and drops the fill-in boxes, the same clean-up the
+// presenting cut gets. Dev still shows them, so they stay visible to fix.
+if (import.meta.env.VITE_PUBLIC_SITE === "1") {
+  const stripNotes = (v) => {
+    if (typeof v === "string") return v.replace(/\s*\[Confirm[^\]]*\]/gi, "");
+    if (Array.isArray(v)) return v.map(stripNotes);
+    if (v && typeof v === "object" && !v.$$typeof) { for (const k of Object.keys(v)) v[k] = stripNotes(v[k]); return v; }
+    return v;
+  };
+  for (const cs of Object.values(caseStudies)) { delete cs.todo; stripNotes(cs); }
+}
+
 export default function App() {
   const [rawPath, navigate] = useRoute();
   // 5 Oct (going live): the public build (VITE_PUBLIC_SITE=1, set in amplify.yml)
