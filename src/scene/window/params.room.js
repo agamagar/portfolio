@@ -296,8 +296,11 @@ export const ROOM_PARAMS = {
   monitor: {
     width: 0.597, // m
     height: 0.336, // m
-    bezel: 0.0075, // m, top and sides
-    chin: 0.021, // m
+    bezel: 0.0075, // m, all four sides, and the portrait monitor's too (2026-10-05)
+    bezelRadius: 0.006, // m, the frame's outer corner radius (both monitors)
+    bezelInnerRadius: 0.002, // m, the screen hole's corner radius
+    bezelChamfer: 0.0012, // m, the chamfer on the frame's edges
+    chin: 0.021, // m, NO LONGER DRAWN (the bezel is equal all round since 2026-10-05)
     depth: 0.026, // m, the panel's thin edge (0.018 before the car and the tile moved onto its top, 2026-09-27)
     back: 0.045, // m, the rear bulge
     x: -0.842,

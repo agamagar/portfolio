@@ -242,8 +242,9 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   const posterCache = new WeakMap(); // live poster canvases -> their textures (setPoster)
   // the cursor over the canvas (CSS px, velocity px/s), for things in the room that
   // react to it (the bead chain); the page feeds it (useWindowScene), capture never
-  const pointer = { x: -1e4, y: -1e4, vx: 0, vy: 0, t: 0, active: false };
+  const pointer = { x: -1e4, y: -1e4, vx: 0, vy: 0, t: 0, active: false, down: false };
   let chainHover = false;
+  let toyDrag = false; // a toy on the monitor is being dragged (room.js): grabbing hand
   const posters = {};
   const posterMean = { light: 0.6, dark: 0.08 };
   let random = seededRandom(opts.seed ?? 1741);
@@ -745,6 +746,10 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
       chainHover = !!state.chainHover;
       canvas.dispatchEvent(new CustomEvent("wscene:chainhover", { detail: chainHover }));
     }
+    if (!!state.toyDrag !== toyDrag) {
+      toyDrag = !!state.toyDrag;
+      canvas.dispatchEvent(new CustomEvent("wscene:toydrag", { detail: toyDrag }));
+    }
     // the pointer's velocity decays between events, so a resting cursor stops pushing
     pointer.vx *= 0.8;
     pointer.vy *= 0.8;
@@ -1089,6 +1094,11 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
       pointer.y = y;
       pointer.t = tMs;
       pointer.active = true;
+    },
+    // The primary button over the page (mouse and pen): a toy under the cursor
+    // follows it while it is held (room.js)
+    setPointerDown(down) {
+      pointer.down = !!down;
     },
     // The page's scroll progress (ignored while the URL pins p or p2).
     setScroll(p, p2 = 0) {

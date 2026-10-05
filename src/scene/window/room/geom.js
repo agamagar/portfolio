@@ -279,3 +279,40 @@ export const M = {
   RZ: (a) => new THREE.Matrix4().makeRotationZ(a),
   mul: (...ms) => ms.reduce((acc, m) => acc.multiply(m), new THREE.Matrix4()),
 };
+
+// A monitor bezel: one frame, a rounded-rectangle outline with a screen-sized hole,
+// extruded from z0 to z1 (metres) with a small chamfer on its edges (Agam,
+// 2026-10-05: "make both bezels of the monitors equal and same properties and add a
+// slight corner radius and chamfering"). Centred on (cx, cy). ow/oh the outer size,
+// iw/ih the hole; r the outer corner radius, ri the hole's; ch the chamfer.
+// ExtrudeGeometry grows a bevel OUTWARD by `ch` and adds `ch` to each face, so the
+// outline is shrunk, the hole grown and the depth cut by the same amounts: the frame
+// lands on exactly the box the square bars used to fill.
+function roundRectPath(path, w, h, r) {
+  const x = -w / 2, y = -h / 2;
+  r = Math.min(r, w / 2, h / 2);
+  path.moveTo(x + r, y);
+  path.lineTo(x + w - r, y);
+  path.quadraticCurveTo(x + w, y, x + w, y + r);
+  path.lineTo(x + w, y + h - r);
+  path.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  path.lineTo(x + r, y + h);
+  path.quadraticCurveTo(x, y + h, x, y + h - r);
+  path.lineTo(x, y + r);
+  path.quadraticCurveTo(x, y, x + r, y);
+  return path;
+}
+export function bezelFrameGeo({ ow, oh, iw, ih, z0, z1, r = 0.006, ri = 0.002, ch = 0.0012, cx = 0, cy = 0 }) {
+  const shape = roundRectPath(new THREE.Shape(), ow - 2 * ch, oh - 2 * ch, Math.max(0, r - ch));
+  shape.holes.push(roundRectPath(new THREE.Path(), iw + 2 * ch, ih + 2 * ch, ri + ch));
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: Math.max(0.0001, z1 - z0 - 2 * ch),
+    bevelEnabled: true,
+    bevelThickness: ch,
+    bevelSize: ch,
+    bevelSegments: 1, // one segment: a flat chamfer, not a round
+    curveSegments: 6,
+  });
+  g.translate(cx, cy, z0 + ch);
+  return g;
+}

@@ -57,6 +57,25 @@
 import * as THREE from "three/webgpu";
 // scratch for the toy hover test (no per-frame allocation)
 const _ray = new THREE.Raycaster(), _ndc = new THREE.Vector2(), _box = new THREE.Box3();
+const _inv = new THREE.Matrix4(), _o = new THREE.Vector3(), _d = new THREE.Vector3();
+// the drag: which toy, and where on it the cursor took hold (x in the monitor's frame)
+let drag = null, wasDown = false;
+// the monitor's top edge half-length (screen 0.597 + 2 x 7.5 mm bezel), a toy's
+// half-length (7 cm models) and the closest two toys may sit, centre to centre (m)
+const MON_HALF = 0.597 / 2 + 0.0075, TOY_HALF = 0.036, TOY_GAP = 0.074;
+// where the cursor's ray meets the plane of the monitor's top edge, as x in the
+// monitor's own frame (null when the ray runs parallel to it)
+function edgeX(mon) {
+  if (!mon) return null;
+  mon.updateMatrixWorld();
+  _inv.copy(mon.matrixWorld).invert();
+  _o.copy(_ray.ray.origin).applyMatrix4(_inv);
+  _d.copy(_ray.ray.direction).transformDirection(_inv);
+  const topY = drag?.toy?.position.y ?? 0.0075 + 0.336 / 2;
+  if (Math.abs(_d.y) < 1e-6) return null;
+  const t = (topY - _o.y) / _d.y;
+  return t > 0 ? _o.x + _d.x * t : null;
+}
 import { createRoomMaterials } from "./materials.js";
 import { buildWindow } from "./room/window.js";
 import { buildInterior } from "./room/interior.js";
@@ -137,16 +156,46 @@ export function buildRoom(P, ctx) {
     // the cursor over the bike or the car on the monitor (Agam, 2026-10-05: "change
     // the cursor when I hover over the bike, car or the beaded rope"): a ray from the
     // cursor against each toy's world box, slightly padded so a 7 cm model is not a
-    // pixel hunt. It rides the chain's flag, so all three show the same grab hand
-    if (!state.chainHover && state.pointer?.active && state.camera && state.view?.w) {
-      _ndc.set((state.pointer.x / state.view.w) * 2 - 1, -(state.pointer.y / state.view.h) * 2 + 1);
+    // pixel hunt. It rides the chain's flag, so all three show the same grab hand.
+    // "make the bike movable", "make the car also movable": press on one and it slides
+    // along the monitor's top edge under the cursor, clamped to the edge and stopped
+    // by the other toy, like pushing a die-cast model along a shelf
+    let overToy = null;
+    const ptr = state.pointer;
+    if (ptr?.active && state.camera && state.view?.w) {
+      _ndc.set((ptr.x / state.view.w) * 2 - 1, -(ptr.y / state.view.h) * 2 + 1);
       _ray.setFromCamera(_ndc, state.camera);
-      for (const toy of [inside.car, inside.bike]) {
-        if (!toy) continue;
-        _box.setFromObject(toy).expandByScalar(0.006);
-        if (_ray.ray.intersectsBox(_box)) { state.chainHover = true; break; }
+      if (!state.chainHover) {
+        for (const toy of [inside.car, inside.bike]) {
+          if (!toy) continue;
+          _box.setFromObject(toy).expandByScalar(0.006);
+          if (_ray.ray.intersectsBox(_box)) { overToy = toy; break; }
+        }
       }
     }
+    if (!ptr?.down || !ptr?.active) drag = null;
+    else if (!drag && overToy && !wasDown) {
+      const x = edgeX(overToy.parent);
+      if (x !== null) drag = { toy: overToy, off: overToy.position.x - x };
+    }
+    wasDown = !!ptr?.down;
+    if (drag) {
+      const x = edgeX(drag.toy.parent);
+      if (x !== null) {
+        const other = drag.toy === inside.car ? inside.bike : inside.car;
+        const lim = MON_HALF - TOY_HALF;
+        let nx = Math.max(-lim, Math.min(lim, x + drag.off));
+        // stop against the other toy instead of passing through it
+        if (other && other.parent === drag.toy.parent) {
+          const ox = other.position.x;
+          if (drag.toy.position.x <= ox) nx = Math.min(nx, ox - TOY_GAP);
+          else nx = Math.max(nx, ox + TOY_GAP);
+        }
+        drag.toy.position.x = nx;
+      }
+    }
+    state.toyDrag = !!drag;
+    if (overToy || drag) state.chainHover = true;
 
     motes.visible = !!P.room.motes.enabled;
     if (motes.visible) {

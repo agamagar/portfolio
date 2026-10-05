@@ -6,7 +6,7 @@
 
 import * as THREE from "three/webgpu";
 import { mrt, texture as tslTexture } from "three/tsl";
-import { Batch, boxGeo, prismGeo, barGeo, clean, M } from "./geom.js";
+import { bezelFrameGeo, Batch, boxGeo, prismGeo, barGeo, clean, M } from "./geom.js";
 import { buildCar } from "./car.js";
 import { buildBike } from "./bike.js";
 import { makeCodeScreen } from "./codeScreen.js";
@@ -117,6 +117,8 @@ export function buildInterior(P, ctx, mats, root, win) {
 
   // --- the BenQ MA270UP: screen (anchor), bezel, body, rear, pole arm ---
   const MN = R.monitor;
+  // one bezel style for both monitors: corner radius, the hole's radius, chamfer (m)
+  const BEZEL = { r: MN.bezelRadius ?? 0.006, ri: MN.bezelInnerRadius ?? 0.002, ch: MN.bezelChamfer ?? 0.0012 };
   const mon = new THREE.Group();
   mon.name = "monitor";
   mon.position.set(k(MN.x), k(MN.y), P.dims.gap + MN.dz);
@@ -124,11 +126,12 @@ export function buildInterior(P, ctx, mats, root, win) {
   root.add(mon);
   const MB = new Batch("monitor");
   const sw = MN.width, sh = MN.height, bz = MN.bezel, ch = MN.chin;
-  // bezel frame on the front, the thin panel body behind it
-  MB.add(m.monBezel, boxGeo(-sw / 2 - bz, sw / 2 + bz, sh / 2, sh / 2 + bz, -MN.depth, 0.0012, "x"));
-  MB.add(m.monBezel, boxGeo(-sw / 2 - bz, sw / 2 + bz, -sh / 2 - ch, -sh / 2, -MN.depth, 0.0012, "x"));
-  MB.add(m.monBezel, boxGeo(-sw / 2 - bz, -sw / 2, -sh / 2, sh / 2, -MN.depth, 0.0012, "y"));
-  MB.add(m.monBezel, boxGeo(sw / 2, sw / 2 + bz, -sh / 2, sh / 2, -MN.depth, 0.0012, "y"));
+  // bezel frame on the front, the thin panel body behind it. 2026-10-05 (Agam: "make
+  // both bezels of the monitors equal and same properties and add a slight corner
+  // radius and chamfering"): one rounded, chamfered frame, the same bezel width on
+  // all four sides (the 21 mm chin is gone), shared with the portrait monitor below
+  void ch;
+  MB.add(m.monBezel, bezelFrameGeo({ ow: sw + 2 * bz, oh: sh + 2 * bz, iw: sw, ih: sh, z0: -MN.depth, z1: 0.0012, ...BEZEL }));
   MB.add(m.monBlack, boxGeo(-sw / 2, sw / 2, -sh / 2, sh / 2, -MN.depth, -0.001, "x"));
   MB.add(m.monBlack, boxGeo(-0.2, 0.2, -0.15, 0.1, -MN.back, -MN.depth, "x"));
   // the arm's VESA head and a black pole down to the desk clamp
@@ -178,7 +181,11 @@ export function buildInterior(P, ctx, mats, root, win) {
     g.rotation.y = PM.yawDeg * D2R;
     root.add(g);
     const PB = new Batch("portrait");
-    PB.add(m.portraitFace, boxGeo(-wdt / 2 + 0.006, wdt / 2 - 0.006, 0.006, hgt - 0.006, -0.002, 0.0015, "y"));
+    // the SAME bezel as the BenQ (2026-10-05): its width, black, rounded and chamfered;
+    // the dark panel face sits inside the hole, behind the screen
+    const pbz = MN.bezel;
+    PB.add(m.monBezel, bezelFrameGeo({ ow: wdt, oh: hgt, iw: wdt - 2 * pbz, ih: hgt - 2 * pbz, z0: -0.002, z1: 0.0015, cy: hgt / 2, ...BEZEL }));
+    PB.add(m.portraitFace, boxGeo(-wdt / 2 + pbz, wdt / 2 - pbz, pbz, hgt - pbz, -0.002, 0.0009, "y"));
     PB.add(m.champagne, boxGeo(-wdt / 2, wdt / 2, 0, hgt, -0.032, 0, "y"));
     PB.add(m.monBlack, boxGeo(-wdt / 2 + 0.02, wdt / 2 - 0.02, 0.05, hgt - 0.05, -0.05, -0.032, "y"));
     // (the clip-on bracket on its right edge is gone: it read as a stray black block
@@ -199,7 +206,7 @@ export function buildInterior(P, ctx, mats, root, win) {
     const SC = PM.screen || {};
     if (SC.enabled !== false) {
       const cs = makeCodeScreen();
-      const sw = wdt - 0.012, sh = hgt - 0.012;
+      const sw = wdt - 2 * MN.bezel, sh = hgt - 2 * MN.bezel; // fills the shared bezel's hole
       const scrMat = new THREE.MeshStandardNodeMaterial({ color: 0x000000, roughness: 0.3, metalness: 0, emissive: 0xffffff, emissiveMap: cs.texture, emissiveIntensity: SC.intensity ?? 0.35 });
       // only a trace of it reaches the bloom (like the main screen's params.screen.bloom):
       // at full strength the Dreamlike bloom haloed the whole panel and softened the code

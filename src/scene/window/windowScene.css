@@ -322,3 +322,8 @@ html[data-wscene-ready] .wscene-nudge__loading {
 @media (prefers-reduced-motion: reduce) {
   .wscene-nudge__dots i { animation: none; opacity: 0.6; }
 }
+/* dragging the bike or the car along the monitor's top (2026-10-05): a closed hand */
+html.wscene-grabbing,
+html.wscene-grabbing body {
+  cursor: grabbing;
+}

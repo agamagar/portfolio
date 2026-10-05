@@ -196,8 +196,22 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
       const c = canvas.getBoundingClientRect();
       engine.setPointer(e.clientX - c.left, e.clientY - c.top, e.timeStamp);
     };
-    const onPointerOut = () => engine.setPointer(null);
+    const onPointerOut = () => { engine.setPointer(null); engine.setPointerDown(false); };
     const onChainHover = (e) => root.classList.toggle("wscene-grab", !!e.detail);
+    // dragging the bike or the car along the monitor's top (2026-10-05): the button
+    // state goes to the engine; a press that lands on a toy (the grab hand is showing)
+    // must not start a text selection or a scroll-drag on the page
+    const onDown = (e) => {
+      if (opts.capture || e.pointerType === "touch" || e.button !== 0) return;
+      engine.setPointerDown(true);
+      if (root.classList.contains("wscene-grab")) e.preventDefault();
+    };
+    const onUp = () => engine.setPointerDown(false);
+    const onToyDrag = (e) => root.classList.toggle("wscene-grabbing", !!e.detail);
+    window.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    canvas.addEventListener("wscene:toydrag", onToyDrag);
     window.addEventListener("pointermove", onPointer, { passive: true });
     document.documentElement.addEventListener("pointerleave", onPointerOut);
     window.addEventListener("blur", onPointerOut);
@@ -374,6 +388,11 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
       window.removeEventListener("blur", onPointerOut);
       canvas.removeEventListener("wscene:chainhover", onChainHover);
       root.classList.remove("wscene-grab");
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      canvas.removeEventListener("wscene:toydrag", onToyDrag);
+      root.classList.remove("wscene-grabbing");
       document.removeEventListener("visibilitychange", onVis);
       clearTimeout(posterTimer);
       clearInterval(readyTimer);
