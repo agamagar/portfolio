@@ -37,8 +37,21 @@ import {
   output,
   vec4,
   dot,
+  positionGeometry,
+  normalGeometry,
+  positionView,
+  normalView,
+  positionViewDirection,
+  transformNormalToView,
+  faceDirection,
+  TBNViewMatrix,
+  anisotropyT,
+  anisotropyB,
+  cameraPosition,
+  normalize,
 } from "three/tsl";
 import { skyGradeUniforms } from "./light/grade.js";
+import { NEON } from "./outside/common.js";
 
 // --- how much of the window a surface really sees -----------------------------------------
 // The window fill (lights.js, the RectAreaLight named "windowFill") is one
@@ -60,9 +73,11 @@ import { skyGradeUniforms } from "./light/grade.js";
 // it. With a clear coat the coat is the sharp lobe and the base keeps `share`;
 // without one the single lobe is the sharp one. Loop 2's first cut gave the dome's
 // 0.4 base the sharp share too: a grey sheen over the whole dome (+0.23 stops).
+// The anisotropy flag is passed on to the physical model (the brass below uses it):
+// the r186 constructor takes it fourth, after sheen and iridescence.
 class WindowShareLighting extends THREE.PhysicalLightingModel {
-  constructor(share, specShare = share, clearcoat = false) {
-    super(clearcoat);
+  constructor(share, specShare = share, clearcoat = false, anisotropy = false) {
+    super(clearcoat, false, false, anisotropy);
     this.share = share;
     this.specShare = specShare;
     this.baseSpecShare = clearcoat ? share : specShare;
@@ -115,10 +130,98 @@ class RoomPhysicalMaterial extends THREE.MeshPhysicalNodeMaterial {
     this.windowSpecShare = specShare;
   }
   setupLightingModel() {
-    return new WindowShareLighting(this.windowShare, this.windowSpecShare, this.useClearcoat);
+    return new WindowShareLighting(this.windowShare, this.windowSpecShare, this.useClearcoat, this.useAnisotropy);
   }
   customProgramCacheKey() {
     return super.customProgramCacheKey() + ":ws" + this.windowShare + ":" + this.windowSpecShare;
+  }
+}
+
+// --- brass: what the metal mirrors ------------------------------------------------------
+// The scene has no environment map, so a metal shows only the lights' own lobes and is
+// black between its glints (5482: the bow read dark brown, L* 46 with bloom and glare
+// off, where the photo's grip is a satin khaki, L* 67). The photo's satin comes from
+// what the handle mirrors, and that is mostly the door: the lamp-lit stile 2 cm behind
+// the bar. So every punctual light also adds the light it puts on the leaf's face
+// (lightColor x the face's cosine: faceE), and indirect() gives the metal that face as
+// radiance, a Lambertian of the paint's albedo: whole where the reflection runs back
+// into the face, roomShare of it where it turns out into the room. U.surround scales
+// it (0 turns it off); U.sat keeps a share of the paint's chroma (at 1 the maroon
+// enamel turned the brass copper). One bounce, punctual lights only: the window fill
+// and the monitor are rect lights, which the LTC lobe already mirrors. It stands in for
+// an environment map, so it switches itself off when the material gets one (an envMap,
+// an envNode or scene.environment: BrassMaterial.setupEnvironment), or the door would
+// count twice.
+const LUMA = vec3(0.2126, 0.7152, 0.0722);
+class BrassLighting extends WindowShareLighting {
+  constructor(share, anisotropy, U, hasEnv = false) {
+    super(share, share, false, anisotropy);
+    this.U = U;
+    this.hasEnv = hasEnv;
+  }
+  start(builder) {
+    this.faceE = vec3(0).toVar("brassFaceE");
+    super.start(builder);
+  }
+  direct(input, builder) {
+    super.direct(input, builder);
+    this.faceE.addAssign(input.lightColor.mul(this.U.nFace.dot(input.lightDirection).clamp()));
+  }
+  indirect(builder) {
+    if (this.hasEnv) return super.indirect(builder);
+    const U = this.U;
+    const rv = positionViewDirection.negate().reflect(normalView);
+    // 1 while the reflection points back into the face, roomShare once it points out
+    // past 0.35 of the face's normal (written as 1 - smoothstep: reversed edges are
+    // undefined in GLSL)
+    const w = float(1).sub(smoothstep(-0.25, 0.35, rv.dot(U.nFace))).mul(float(1).sub(U.roomShare)).add(U.roomShare);
+    const alb = vec3(U.albedo);
+    const tint = mix(vec3(dot(alb, LUMA)), alb, U.sat);
+    builder.context.radiance.addAssign(this.faceE.mul(tint).mul(w).mul(U.surround).mul(1 / Math.PI));
+    super.indirect(builder);
+  }
+}
+// The brass itself: RoomPhysicalMaterial (window share) with BrassLighting, and the
+// anisotropic lobe's frame fixed. r186 builds the tangent frame from the uv
+// derivatives when a geometry has no tangent attribute (TangentUtils.js) and scales T
+// and B by the longer of the two, not each to unit length. On the handle's tube (uv.x
+// runs 0.11 m along the bow, uv.y 0.023 m round it) T comes out about 0.2 long, which
+// stretched the along-grip roughness about five times: a white-hot streak down the
+// whole bow (hero dL +12.65, planning probe d). setupVariants re-orthonormalises T
+// against the shading normal; the material's anisotropy runs along +T only (its
+// direction is vec2(a, 0)), so B is N x T. Pinned to three 0.186.1: re-check it on
+// an upgrade (it relies on TBNViewMatrix, anisotropyT and anisotropyB).
+class BrassMaterial extends RoomPhysicalMaterial {
+  static get type() {
+    return "BrassNodeMaterial";
+  }
+  constructor(parameters, share, U) {
+    super(parameters, share, share);
+    this.brassU = U;
+  }
+  // runs before setupLightingModel (NodeMaterial.setupLighting: the material's
+  // lightings, then the model), so the model knows whether an environment map is there
+  setupEnvironment(builder) {
+    const env = super.setupEnvironment(builder);
+    this.brassHasEnv = env !== null;
+    return env;
+  }
+  setupLightingModel() {
+    return new BrassLighting(this.windowShare, this.useAnisotropy, this.brassU, this.brassHasEnv === true);
+  }
+  setupVariants(builder) {
+    super.setupVariants(builder);
+    if (this.useAnisotropy) {
+      const N = normalView;
+      const t0 = TBNViewMatrix[0];
+      const t1 = t0.sub(N.mul(N.dot(t0)));
+      const t = t1.div(t1.length().max(1e-6));
+      anisotropyT.assign(t);
+      anisotropyB.assign(N.cross(t));
+    }
+  }
+  customProgramCacheKey() {
+    return super.customProgramCacheKey() + ":brass";
   }
 }
 
@@ -614,6 +717,24 @@ export function createRoomMaterials(P, ctx = {}) {
     haze: uniform(0.2), // the dust's low-frequency haze
     speck: uniform(0.62), // the dust's fine grain
     rebateSky: uniform(0.3), // the glazing rebate's share of the sky's light (seen through the glass)
+    neon: uniform(0), // the neon signs in the drops (room.window.glass.neon; 0 = none)
+    // the brass (params.room.brass; set in apply(), so the GUI and the looks move them
+    // live). Colours as uniform(Color) set with setRGB: vec3(aTHREE.Color) compiles to black
+    brassF0: uniform(new THREE.Color(0.19, 0.17, 0.12)),
+    brassTarnish: uniform(new THREE.Color(0.1, 0.09, 0.066)),
+    brassRough: uniform(0.3),
+    brassPatinaRough: uniform(0.6),
+    brassAniso: uniform(0.5),
+    brassBend0: uniform(0.008),
+    brassBend1: uniform(0.017),
+    brassBendWeight: uniform(0.4),
+    brassInnerWeight: uniform(0.55),
+    brassGrain: uniform(0.3),
+    brassSurround: uniform(1.0),
+    brassSurroundSat: uniform(0.2),
+    brassRoomShare: uniform(0.12),
+    brassSlotDepth: uniform(0.0003),
+    brassIsoGain: uniform(0.75),
   };
   const skyAvg = ctx.uniforms?.skyAvg ?? uniform(new THREE.Color(0.3, 0.35, 0.45));
   // the sky's mean light in the dome's graded colour (light/grade.js): the raw
@@ -753,14 +874,88 @@ export function createRoomMaterials(P, ctx = {}) {
     iron.specularIntensityNode = u.ironBaseSpec.add(ironDustLook.mul(0.5)).clamp(0, 1);
   } else iron.roughnessNode = u.ironCoatRough.mul(2.5).add(ironDustLook.mul(0.5)).clamp(0.1, 1);
 
-  // --- tarnished brass (13-photo 4.5: median #a77960 as photographed, lamp-lit
-  // highlight #dbaf94). The metal's F0 is #a77960 in linear (0.39, 0.19, 0.12),
-  // darkened where tarnished; round 1's (0.56, 0.36, 0.2) at roughness 0.3 to 0.8
-  // spread the lamp into a pale sheen over the whole bow (a towel bar), where the
-  // photos show a dark bow with a couple of crisp glints
-  const brass = own(new THREE.MeshStandardNodeMaterial({ metalness: 1 }), "brass");
-  brass.colorNode = mix(vec3(0.39, 0.19, 0.12), vec3(0.16, 0.1, 0.06), pd.r.mul(0.9).clamp(0, 1));
-  brass.roughnessNode = float(0.24).add(pd.g.mul(0.1)).add(pd.r.mul(0.25));
+  // --- oxidised brass: the D-handle and the hinges (13-photo 4.5; params.room.brass) ---
+  // Why not the photographed colour: 13-photo 4.5's median #a77960 is the handle as
+  // LIT (by the 3000 K lamp), not the metal's F0. In linear, (0.39, 0.19, 0.12) has G/R
+  // 0.49 and B/R 0.31, redder than copper (G/R about 0.67; brass is about 0.86 and
+  // 0.46), and the lamp warmed it a second time: pale salmon plastic (hue 53 at the
+  // hero, 62 in 5482 against the photo's 73), and with L* +11 over the enamel round it
+  // the most legible object at p = 0. The F0 is now a worn, tarnished brass: brass's
+  // ratios, desaturated and darker (brass.f0), so its glints sit under the stile's.
+  // Why windowShare: as a plain metal it took the whole unshadowed window fill, about
+  // 39 percent of its light (fill off: L* 42.3 to 33.4, the enamel ring round it 35.3
+  // to 33.9); the bar stands 2 cm off a frame that hides most of the opening from it,
+  // so it takes the enamel's share (0.3).
+  // Why not the UVs: the tube's, the lathe's and the cylinder's UVs run 0 to 1 per
+  // part, not in metres, so the paint's 0.25 m tile was squeezed onto 11 cm of bow and
+  // 2.3 cm round it (random mottling, lilac bolsters). The patina is placed in object
+  // space instead: each batch's glass plane is z = 0, so positionGeometry.z minus the
+  // leaf's face is the height off the door (m). The legs, the bends and the turned feet
+  // sit within brass.bend of the face, where no hand polishes it and the cloth misses:
+  // they darken. The bow's inside faces the door (normalGeometry.z < 0) and darkens
+  // less; a grain breaks the edge, faded by the pixel's footprint (as the iron's
+  // speck) so it cannot sparkle under the TAA jitter. The hinges sit in the rebate,
+  // behind the face: all patina, and hidden.
+  // Anisotropy runs along the grip (the tube's uv.x runs along the bow), on the high
+  // tier only (as the clear coats); it shapes the punctual lights' glints only (the
+  // rect lights' LTC lobe is isotropic). Why its frame is renormalised: BrassMaterial.
+  // The screws' slots are a detail on the caps only (no geometry): a band across each
+  // cap's disc UV, as a bump and filled with patina, faded out below a pixel.
+  const BR = R.brass || {};
+  const hFace = positionGeometry.z.sub((R.window.leaf.depth - R.window.leaf.glassFromBack) * P.dims.W);
+  // the pixel's footprint on the surface (m): about 1.4 times the pixel's size on a face
+  // seen square on (fwidth is |d/dx| + |d/dy| per axis)
+  const footG = length(fwidth(positionGeometry));
+  const nearFace = float(1).sub(smoothstep(u.brassBend0, u.brassBend1, hFace));
+  const inner = float(1).sub(smoothstep(-0.6, 0.1, normalGeometry.z));
+  const gSize = BR.grainSize ?? 0.0004;
+  const [gF0, gF1] = BR.grainFade ?? [0.0002, 0.0005];
+  // two hashed cell sizes (0.4 and 1.1 mm), each faded once its cell nears a pixel
+  const grainCell = (k) => {
+    const q = floor(positionGeometry.div(gSize * k));
+    return hash(q.x.add(q.y.mul(57)).add(q.z.mul(131)).add(4099)).sub(0.5).mul(float(1).sub(smoothstep(gF0 * k, gF1 * k, footG)));
+  };
+  const grain = grainCell(1).add(grainCell(2.7)).mul(0.5);
+  const SL = BR.slot || {};
+  const capMask = smoothstep(0.0007, 0.0009, hFace).mul(float(1).sub(smoothstep(0.0013, 0.0015, hFace))).mul(smoothstep(0.85, 0.95, normalGeometry.z));
+  const sa = ((SL.angleDeg ?? 15) * Math.PI) / 180;
+  const suv = uv().sub(0.5);
+  const sd = abs(suv.x.mul(Math.cos(sa)).add(suv.y.mul(Math.sin(sa)))); // across the slot, in the cap's disc UV (radius 0.5)
+  const se = max(fwidth(sd), 0.015);
+  const sw = (SL.width ?? 0.16) / 2;
+  const [sF0, sF1] = SL.fade ?? [0.0005, 0.001];
+  const slot = float(1).sub(smoothstep(float(sw).sub(se), float(sw).add(se), sd)).mul(capMask).mul(float(1).sub(smoothstep(sF0, sF1, footG)));
+  const patina = max(nearFace.mul(u.brassBendWeight).add(inner.mul(u.brassInnerWeight)).add(grain.mul(u.brassGrain)), slot).clamp(0, 1);
+  const brass = own(
+    new BrassMaterial({ metalness: 1 }, BR.windowShare ?? 0.3, {
+      nFace: transformNormalToView(vec3(0, 0, 1)).normalize(), // the leaf's face (+z in each batch), in view space
+      albedo: u.paintAlbedo,
+      sat: u.brassSurroundSat,
+      surround: u.brassSurround,
+      roomShare: u.brassRoomShare,
+    }),
+    "brass",
+  );
+  // the tiers without anisotropy (mid, low): the isotropic lobe keeps the lamp's glint
+  // where the bow's curve samples it, where the stretched one spreads it along the grip
+  // into directions the tube never shows, so the same F0 reads lighter; brass.isoGain
+  // scales the F0 there (fit on the mid and low hero probes: params.room.js)
+  const brassF0 = mix(vec3(u.brassF0), vec3(u.brassTarnish), patina);
+  brass.colorNode = coated ? brassF0 : brassF0.mul(u.brassIsoGain);
+  brass.roughnessNode = mix(u.brassRough, u.brassPatinaRough, patina);
+  if (coated) brass.anisotropyNode = vec2(u.brassAniso.mul(float(1).sub(patina.mul(0.7))), 0);
+  // the slot as a height (m, down into the cap) and Mikkelsen's surface-gradient bump
+  // with the true screen derivatives (unnormalised, so the height is in metres); off
+  // the slots the shading normal is the geometry's
+  {
+    const H = slot.mul(u.brassSlotDepth).negate();
+    const sx = positionView.dFdx(), sy = positionView.dFdy();
+    const N0 = normalView;
+    const r1 = sy.cross(N0), r2 = N0.cross(sx);
+    const det = sx.dot(r1).mul(faceDirection);
+    const grad = det.sign().mul(H.dFdx().mul(r1).add(H.dFdy().mul(r2)));
+    brass.normalNode = slot.greaterThan(0.001).select(det.abs().mul(N0).sub(grad).normalize(), N0);
+  }
 
   // --- cream plaster wall: emulsion over smooth plaster. Only a very low-frequency
   // albedo drift (under 1 percent) and a faint fine peel (normal scale 0.08, about a
@@ -970,7 +1165,22 @@ export function createRoomMaterials(P, ctx = {}) {
   const tint = lin(R.window.glass.tint);
   // each drop inverts what is behind it: the dark ground shows in its upper half,
   // the bright sky in its lower half (n.y > 0 is the drop's upper side)
-  const lensSky = skyCol.mul(mix(float(1.3), float(0.22), rn.n.y.mul(0.5).add(0.5).clamp(0, 1))).mul(float(1).sub(rn.rim.mul(0.6))).mul(float(1).sub(rn.trail.mul(0.3)));
+  // (Cyberpunk) the neon signs, above the horizon, land in each drop's lower half
+  // (outside/neon.js writes NEON; 0 in every other look, so this adds exactly 0).
+  // Each drop shows ONE sign colour, picked per 12 mm cell of the pane (a drop is a
+  // few mm): the two colours' average was a lavender that read as magenta, and the
+  // teal sign never showed on the glass (2026-10-05, F7 on/off: 88 to 94 % magenta)
+  // (2026-10-06) and only where the drop looks toward that colour's signs: a drop's
+  // lower half shows a wide cone of what is above its line of sight, so the weight is
+  // a broad one (NEON.spread.y) round the signs' direction (NEON.dirA / dirB), the
+  // line of sight raised a little; elsewhere the drops keep the sky's colour
+  const dropCell = floor(guv.div(0.012));
+  const vGlass = normalize(positionWorld.sub(cameraPosition).add(vec3(0, positionWorld.sub(cameraPosition).length().mul(0.2), 0)));
+  const nearGA = vec3(NEON.a).mul(dot(vGlass, NEON.dirA).sub(1).mul(NEON.spread.y).exp());
+  const nearGB = vec3(NEON.b).mul(dot(vGlass, NEON.dirB).sub(1).mul(NEON.spread.y).exp());
+  const neonPick = mix(nearGA, nearGB, step(0.5, hash(dropCell.x.mul(7.13).add(dropCell.y.mul(157.31)))));
+  const neonDrop = neonPick.mul(float(1).sub(smoothstep(-0.25, 0.05, rn.n.y))).mul(u.neon);
+  const lensSky = skyCol.mul(mix(float(1.3), float(0.22), rn.n.y.mul(0.5).add(0.5).clamp(0, 1))).mul(float(1).sub(rn.rim.mul(0.6))).mul(float(1).sub(rn.trail.mul(0.3))).add(neonDrop);
   // the film scatters light from a wide cone (sky, cloud, trees, the building),
   // so its colour is the sky's, mostly greyed: the photo's R2 stipple is a cool
   // grey (C* 2.8), and the sky grade's zenith colour made it blue (C* 7.7)
@@ -1114,11 +1324,29 @@ export function createRoomMaterials(P, ctx = {}) {
     u.ironBaseSpec.value = Ir.baseSpec ?? 0.5;
     u.paintAlbedo.value.setRGB(Pp.albedo[0], Pp.albedo[1], Pp.albedo[2]);
     u.ironDust.value = P2.room.iron.dust;
+    const Bz = P2.room.brass || {};
+    const f0 = Bz.f0 ?? [0.19, 0.17, 0.12], tn = Bz.tarnish ?? [0.1, 0.09, 0.066], bend = Bz.bend ?? [0.008, 0.017];
+    u.brassF0.value.setRGB(f0[0], f0[1], f0[2]);
+    u.brassTarnish.value.setRGB(tn[0], tn[1], tn[2]);
+    u.brassRough.value = Bz.roughness ?? 0.3;
+    u.brassPatinaRough.value = Bz.patinaRoughness ?? 0.6;
+    u.brassAniso.value = Bz.anisotropy ?? 0.5;
+    u.brassBend0.value = bend[0];
+    u.brassBend1.value = bend[1];
+    u.brassBendWeight.value = Bz.bendWeight ?? 0.4;
+    u.brassInnerWeight.value = Bz.innerWeight ?? 0.55;
+    u.brassGrain.value = Bz.grain ?? 0.3;
+    u.brassSurround.value = Bz.surround ?? 1.0;
+    u.brassSurroundSat.value = Bz.surroundSat ?? 0.2;
+    u.brassRoomShare.value = Bz.roomShare ?? 0.12;
+    u.brassSlotDepth.value = Bz.slot?.depth ?? 0.0003;
+    u.brassIsoGain.value = Bz.isoGain ?? 0.75;
   }
   apply(P);
 
   function update(state) {
     u.rainT.value = state.time;
+    u.neon.value = P.room.window.glass.neon ?? 0;
     const wx = state.weather;
     u.wet.value = Math.max(0, Math.min(1, wx?.rain?.wetness ?? 0));
     // the wind's component along the glass slants the running drops (a 30 km/h

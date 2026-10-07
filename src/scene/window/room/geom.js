@@ -8,6 +8,7 @@
 
 import * as THREE from "three/webgpu";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 const AX = { x: 0, y: 1, z: 2 };
 
@@ -314,5 +315,15 @@ export function bezelFrameGeo({ ow, oh, iw, ih, z0, z1, r = 0.006, ri = 0.002, c
     curveSegments: 6,
   });
   g.translate(cx, cy, z0 + ch);
+  return g;
+}
+
+// A box from (x0, y0, z0) to (x1, y1, z1) with every edge rounded by r (metres), for
+// manufactured things that should not read as cut with a knife (2026-10-05 shape QA:
+// "still see a sharp edge in the monitor on the left").
+export function rboxGeo(x0, x1, y0, y1, z0, z1, r = 0.003, seg = 3) {
+  const w = x1 - x0, h = y1 - y0, d = z1 - z0;
+  const g = new RoundedBoxGeometry(w, h, d, seg, Math.min(r, w / 2 - 1e-5, h / 2 - 1e-5, d / 2 - 1e-5));
+  g.translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
   return g;
 }

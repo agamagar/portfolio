@@ -139,6 +139,9 @@ export const ROOM_PARAMS = {
       // over a dark plane reads 0.38 of monitor white against a 1.7 sky)
       scatter: 0.9,
       tint: "#d0d4d2", // dust colour (display hex): the photo's R2 stipple is a cool grey (#888e8b)
+      // the neon signs (outside/neon.js) in the lower half of each drop on the wet glass
+      // (materials.js lensSky); 0 = none (the term is exactly 0)
+      neon: 0,
       rain: { dropScale: 1.0, streaks: 1.0 },
       // loop 2: the speck grain fades out below heavy dust, from grainFrom to grainTo
       // (Photo-true 1.0 keeps all of it; Heightened 0.4 and Dreamlike 0.3 none), and
@@ -234,8 +237,65 @@ export const ROOM_PARAMS = {
   // black gloss paint on iron (loop 2: a clear coat over a 0.3 base; the dust a
   // sparse grey on the tops that mattes the coat)
   iron: { albedo: [0.012, 0.0105, 0.009], roughness: 0.3, baseSpec: 0.5, coat: 1, coatRoughness: 0.08, dust: 1.0, windowShare: 0.6, specShare: 0.9 },
+  // oxidised brass: the D-handle and the hinges (materials.js, BrassMaterial; 2026-10-05,
+  // NEXT.md item 4). Fitted on handle-on probes (build-01-brass-handle in the archive):
+  // the hero at p = 0, 17:41, and 5482 with bloom and glare off, against the photo's grip.
+  // f0: linear F0 of the worn grip (each channel 0.12 to 0.45; brass's ratios, desaturated:
+  //   the photographed #a77960 is a lamp-lit colour, redder than copper). Y 0.171. Scaled
+  //   by 1.2 (Y 0.205) the hero's brass rose to +2.0 to +2.3 L* over the enamel ring round
+  //   it in Photo-true and Heightened (gate: +2 or less); at 1.0 it sits at -0.1 to +0.6.
+  // tarnish: linear F0 of the patina in the bends (0.02 to 0.12), scaled with f0. roughness:
+  //   the grip (0.2 to 0.45); patinaRoughness: the patina (0.4 to 0.8).
+  // anisotropy: along the grip (0 to 0.8), high tier only. isoGain: the F0's scale on the
+  //   tiers without it (0.5 to 1). Round 1: at 1 the mid and low heroes' brass sat +3.8 and
+  //   +4.9 L* over the ring (Dreamlike; Photo-true +4.3, +4.8); 0.75 puts it at +0.8 and
+  //   +1.8 (+1.3, +1.9), beside the high tier's +1.1 (+1.5). Low still draws no lamp
+  //   shadow under the bar (no spill shadow on that tier), so its whole handle mask, bar
+  //   and shadow, stays at +1.6: that is the tier's shadow, not the brass.
+  // bend: m off the leaf's face where the patina fades out (0.004 to 0.024); bendWeight,
+  //   innerWeight: how dark the bends and the bow's door side go (0 to 1). Round 1: in the
+  //   photos the bolsters read in the grip's own tone (5482 and 5484, the lower bolster's
+  //   median L* +2.4 and +1.4 over the grip's; the upper box, crevice and cast shadow in,
+  //   -15.7 and -8.1), where bendWeight 0.85 with a tarnish of 0.26 of f0 put the ends'
+  //   median 3.6 L* under the grip's at 17:41 and 11.6 under at 18:40. 0.4 with a tarnish
+  //   of 0.53 of f0: -0.6 and -9.3 (the dusk gap is the lamp: the glint sits on the grip).
+  //   innerWeight changes no probe by more than 0.5 L* (the bow's door side is out of view).
+  // grain: the patina's speck (0 to 0.5); grainSize m (0.0002 to 0.002); grainFade: m of
+  //   pixel footprint (length of fwidth of the position, about 1.4 pixels) to fade it over.
+  // windowShare: of the window fill, as the paint's (0 to 1).
+  // surround: the mirrored door face (0 to 1.5; it stands in for an environment map and
+  //   switches itself off when the material has one: BrassMaterial); surroundSat: how much of the paint's chroma it keeps (0 to 1); roomShare: what
+  //   it keeps where the reflection points into the room (0 to 0.3). Swept surround 0.5 to
+  //   1.1 and surroundSat 0 to 0.4: 1.0 and 0.2 put 5482's brass at dE76 4.8 from the
+  //   photo's grip (d_ab 4.4, dL -1.7, hue +0.4 deg); 0.8 and 0.4 gave 5.5 (L* 3.3 low,
+  //   hue -1.6), 0.5 and 0.4 gave the lowest d_ab (1.1) but 6.9 L* too dark
+  // slot: the screw caps' slots, width a share of the cap's diameter (0.08 to 0.3), depth m
+  //   (0 to 0.0006), angleDeg, fade m of pixel footprint (a 0.7 mm slot fades out as it
+  //   nears a pixel). A room change (setParams, the GUI) rebuilds the scene; a look switch
+  //   re-applies the uniforms (materials.js apply)
+  brass: {
+    f0: [0.19, 0.17, 0.12],
+    tarnish: [0.1, 0.09, 0.066],
+    roughness: 0.3,
+    patinaRoughness: 0.6,
+    anisotropy: 0.5,
+    isoGain: 0.75,
+    bend: [0.008, 0.017],
+    bendWeight: 0.4,
+    innerWeight: 0.55,
+    grain: 0.3,
+    grainSize: 0.0004,
+    grainFade: [0.0002, 0.0005],
+    windowShare: 0.3,
+    surround: 1.0,
+    surroundSat: 0.2,
+    roomShare: 0.12,
+    slot: { width: 0.16, depth: 0.0003, angleDeg: 15, fade: [0.0005, 0.001] },
+  },
   // fabric Roman blind raised into soft folds, sagging lower on the left (13-photo 7)
-  blind: { bottom: 7.55, top: 9.6, left: -3.6, folds: 5, sag: 0.35, depth: 0.9 },
+  // lowBottom: the hem when fully lowered (W); -0.12 tucks it past the sill top (y 0) to
+  // where the glass ends, so no bright strip shows under it (2026-10-05: "all the way down")
+  blind: { bottom: 7.55, top: 9.6, left: -3.6, folds: 5, sag: 0.35, depth: 0.9, lowBottom: -0.12, defaultDrop: 0 }, // defaultDrop: where the blind starts, 0 raised .. 1 lowered (in dev, __blindDrop() reads the live one)
   // spreadTop / spreadBottom: half the two strands' spacing at the top and the
   // bottom (m; fit to the 17:41 photo: 1.3 cm apart at 5 W, 4.7 cm at 0.6 W).
   // x: the pair's centre, moved 0.1 W left in round 2 (the render's pair sat 11 to
@@ -313,6 +373,9 @@ export const ROOM_PARAMS = {
   // base: its low dark steel stand (m). The desk sits 5 cm lower than round 1 had it
   // (5480: the BenQ's chin clears the desk by about a hand, and its pole and clamp
   // show under it), and the stand keeps the portrait's fitted top where it was
+  // the framed napkin sketch on the wall above the portrait monitor (2026-10-05):
+  // x, y its centre in W (y 0 is the sill top), size the frame's outer width in m
+  tissueFrame: { x: -6.2, y: 5.2, size: 0.22, tiltDeg: -0.6 }, // 22 cm (2026-10-05: "make the frame smaller", was 30)
   portrait: { width: 0.285, height: 0.495, right: -4.53, z: 1.2, yawDeg: 8, base: 0.05, screen: { enabled: true, intensity: 0.35, bloom: 0.04 } }, // m, m, W, W, deg, m; screen: the AI code editor (room/codeScreen.js), emissive x
   // albedo: a dark walnut (5480 photographs it #21150a to #221a18 under the room
   // light); the grain in materials.js swings it 0.55x to 1.45x
@@ -325,6 +388,18 @@ export const ROOM_PARAMS = {
   car: { on: "monitor", mx: 0.095, mz: -0.013, myawDeg: 2, x: 1.09, z: 1.05, yawDeg: -4 },
   // the Meteor 350 miniature took the souvenir tile's place (2026-09-27)
   bike: { on: "monitor", mx: -0.02, mz: -0.013, myawDeg: -6 },
+  // 2026-10-05 (Agam: "build the zepto scooter and a bobble head of a golden
+  // retriever, a vr headset"): the scooter (1:30, like the Meteor) left of the bike,
+  // the bobblehead at the BenQ's right end, the headset parked on the portrait.
+  // on "portrait": mx is m along its top from the centre, mz from its front face
+  scooter: { hidden: true, on: "monitor", mx: -0.279, mz: -0.013, myawDeg: 5 }, // hidden: true parks it (Agam, 2026-10-05: "hide the scooter for now")
+  bobblehead: { on: "portrait", mx: 0.063, mz: -0.016, myawDeg: 0 }, // moved to the left monitor (2026-10-05)
+  vr: { on: "portrait", mx: -0.013, mz: -0.016, myawDeg: 0 },
+  // the grey tabby bobblehead, beside the dog on the portrait (2026-10-05)
+  // DEFAULTS (2026-10-05, Agam: "make these the default positions", from his
+  // arranged screenshot): headset, dog, cat on the portrait; the scooter at the
+  // BenQ's left end stop. In dev, window.__toyPositions() prints the exact values
+  cat: { on: "portrait", mx: 0.097, mz: -0.016, myawDeg: 0 },
   tile: { on: "monitor", mx: 0.0, mz: -0.012, myawDeg: -3, x: -0.44, z: 0.95, length: 0.038, width: 0.024, yawDeg: 3 },
   // desk things that enter the closing shot (13-photo 6): x, z in W
   bottle: { x: -9.2, z: 5.2, height: 0.26, radius: 0.036 },

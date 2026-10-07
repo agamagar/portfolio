@@ -1,6 +1,6 @@
 // The black dome desk lamp (13-photo 5): a semi-matte black bell shade about 15 cm
 // across with a white reflector inside, a cylindrical socket cup with a ring of
-// ventilation holes, a cream swivel knuckle, a flat steel spring swing-arm running
+// ventilation holes (the cream swivel knuckle was removed 2026-10-05), a flat steel spring swing-arm running
 // down behind the monitor, the cable along it. Its bulb is the lampHead anchor
 // (lights.js hangs the SpotLight there and aims it down the anchor's local -z).
 //
@@ -108,11 +108,9 @@ export function buildLamp(P, ctx, mats, root, look) {
     // one hole catches a faint glint of the lit socket; the rest are dark wells
     if (i === 0) HB.add(m.lampVent, new THREE.CircleGeometry(cr * 0.07, 10), new THREE.Matrix4().compose(at(cr + 0.00035), q, one), { cast: false, receive: false });
   }
-  // the cream swivel knuckle under the cup (5484: a cream plastic block with a
-  // steel pivot screw), and the bulb
-  HB.add(m.cream, new THREE.CylinderGeometry(0.008, 0.009, 0.016, 16), M.T(0, -L.cupRadius - 0.006, zBack + 0.028), { cast: false });
-  HB.add(m.cream, new THREE.CylinderGeometry(0.0062, 0.0062, 0.026, 14), M.mul(M.T(0, -L.cupRadius - 0.012, zBack + 0.028), M.RZ(Math.PI / 2)), { cast: false });
-  for (const sx of [-1, 1]) HB.add(m.screwSteel, new THREE.CylinderGeometry(0.0034, 0.0034, 0.0016, 12), M.mul(M.T(sx * 0.0135, -L.cupRadius - 0.012, zBack + 0.028), M.RZ(Math.PI / 2)), { cast: false });
+  // (2026-10-05, Agam: "remove this white grey component": the cream swivel knuckle
+  // under the cup, a T of two cream cylinders with a steel pivot screw at each end,
+  // is gone, screws with it). The bulb:
   const bulbG = new THREE.SphereGeometry(0.017, 20, 14);
   HB.add(m.bulb, bulbG, M.T(0, 0, 0.004), { cast: false, receive: false });
   HB.build(head);

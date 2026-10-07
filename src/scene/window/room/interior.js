@@ -6,9 +6,13 @@
 
 import * as THREE from "three/webgpu";
 import { mrt, texture as tslTexture } from "three/tsl";
-import { bezelFrameGeo, Batch, boxGeo, prismGeo, barGeo, clean, M } from "./geom.js";
+import { bezelFrameGeo, rboxGeo, Batch, boxGeo, prismGeo, barGeo, clean, M } from "./geom.js";
 import { buildCar } from "./car.js";
 import { buildBike } from "./bike.js";
+import { buildScooter } from "./scooter.js";
+import { buildBobblehead } from "./bobblehead.js";
+import { buildVrHeadset } from "./vrHeadset.js";
+import { buildTissueFrame } from "./tissueFrame.js";
 import { makeCodeScreen } from "./codeScreen.js";
 import { buildBeadChain } from "./beadChain.js";
 
@@ -54,33 +58,50 @@ export function buildInterior(P, ctx, mats, root, win) {
   S.add(m.desk, boxGeo(k(xL), k(Math.max(xR, endW[0])), k(yF - t), k(yF), k(f), k(zB), "z"));
 
   // --- the Roman blind at the head: soft cascading folds, sagging lower on the left ---
+  // 2026-10-05 (Agam: "make the beaded rope actually work and pull the shades up and
+  // down"): the blind has a DROP, 0 raised (its photographed folds, the default) to 1
+  // lowered (the hem just above the sill). Lowering it releases the folds from the
+  // bottom up: the fold depth and the left-hand sag fall away as the fabric comes
+  // down, so a lowered blind hangs flat; raising it gathers them back. setDrop(d)
+  // rewrites the vertices in place (29 x 91 per blind, cheap enough per frame)
   function romanBlind(x0, x1, zFace, parent) {
     const Bl = R.blind;
     const nx = 28, nt = 90;
-    const pos = [], uvs = [], idx = [];
-    const Hh = Bl.top - Bl.bottom;
-    for (let j = 0; j <= nt; j++) {
-      const tt = j / nt; // 0 at the bottom hem, 1 at the head rail
-      for (let i = 0; i <= nx; i++) {
-        const s = i / nx;
-        const x = x0 + (x1 - x0) * s;
-        const sag = 1 + Bl.sag * (1 - s) * (1 - s); // lower on the left
-        // folds: each a soft forward bulge; the stack is compressed toward the head
-        const fp = tt * Bl.folds;
-        const fold = Math.sin(Math.PI * (fp % 1));
-        const z = zFace + 0.12 + Bl.depth * 0.55 * fold * (0.7 + 0.3 * (1 - tt));
-        const y = Bl.bottom + Hh * tt - (1 - tt) * (sag - 1) * 0.9 - 0.12 * fold * (1 - tt);
-        pos.push(k(x), k(y), k(z));
-        uvs.push(k(x), k(y + fold * 0.2));
+    const pos = new Float32Array((nt + 1) * (nx + 1) * 3), uvs = [], idx = [];
+    const lowBottom = Bl.lowBottom ?? 0.3; // W: the lowered hem, just above the sill top (y 0)
+    function fill(d) {
+      const bottom = Bl.bottom + (lowBottom - Bl.bottom) * d;
+      const Hh = Bl.top - bottom;
+      const amp = Math.pow(1 - d, 0.8); // the folds flatten as it drops
+      let o = 0;
+      for (let j = 0; j <= nt; j++) {
+        const tt = j / nt; // 0 at the bottom hem, 1 at the head rail
+        for (let i = 0; i <= nx; i++) {
+          const sN = i / nx;
+          const x = x0 + (x1 - x0) * sN;
+          const sag = 1 + Bl.sag * amp * (1 - sN) * (1 - sN); // lower on the left
+          // folds: each a soft forward bulge; the stack is compressed toward the head
+          const fp = tt * Bl.folds;
+          const fold = Math.sin(Math.PI * (fp % 1)) * amp;
+          const z = zFace + 0.12 + Bl.depth * 0.55 * fold * (0.7 + 0.3 * (1 - tt));
+          const y = bottom + Hh * tt - (1 - tt) * (sag - 1) * 0.9 - 0.12 * fold * (1 - tt);
+          pos[o++] = k(x);
+          pos[o++] = k(y);
+          pos[o++] = k(z);
+          // the texture is pinned to the fabric at the raised pose (exactly the old blind's
+          // mapping, so the default look is unchanged); lowering it carries the stripes down
+          if (uvs.length < (nt + 1) * (nx + 1) * 2) uvs.push(k(x), k(y + fold * 0.2));
+        }
       }
     }
+    fill(0);
     for (let j = 0; j < nt; j++)
       for (let i = 0; i < nx; i++) {
         const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
         idx.push(a, b, d, a, d, c);
       }
     const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     g.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     g.setIndex(idx);
     g.computeVertexNormals();
@@ -89,15 +110,25 @@ export function buildInterior(P, ctx, mats, root, win) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     parent.add(mesh);
+    mesh.userData.setDrop = (d) => {
+      fill(Math.max(0, Math.min(1, d)));
+      g.attributes.position.needsUpdate = true;
+      g.computeVertexNormals();
+      g.computeBoundingSphere();
+      g.computeBoundingBox();
+    };
     return mesh;
   }
   // one blind across the whole head when the right pair is flat (two, one per frame,
   // read as two windows with different sags); the angled fit keeps its two
-  if (R.window.right.flat) romanBlind(R.blind.left, win.right.position.x / W + e.casR_o + 0.4, f, root);
+  const blinds = [];
+  if (R.window.right.flat) blinds.push(romanBlind(R.blind.left, win.right.position.x / W + e.casR_o + 0.4, f, root));
   else {
-    romanBlind(R.blind.left, postX, f, root);
-    romanBlind(-0.6, e.casR_o + 0.4, f, win.right);
+    blinds.push(romanBlind(R.blind.left, postX, f, root));
+    blinds.push(romanBlind(-0.6, e.casR_o + 0.4, f, win.right));
   }
+  // one chain works them all
+  const setBlindDrop = (d) => blinds.forEach((b) => b.userData.setDrop(d));
 
   // --- the bead chain: a closed two-strand loop of ivory beads from the blind's left
   // end to about sill level, in front of the wall, simulated bead by bead (beadChain.js;
@@ -110,6 +141,13 @@ export function buildInterior(P, ctx, mats, root, win) {
     zMin: -k(0.45) + BC.bead, // the wall face, less a bead
   });
   const beadChain = chain.group;
+
+  // --- the framed napkin sketch, hung on the window wall above the portrait monitor ---
+  if (R.tissueFrame) {
+    const TF = R.tissueFrame;
+    const fr = buildTissueFrame(mats, root, { size: TF.size, tiltDeg: TF.tiltDeg });
+    fr.position.set(k(TF.x), k(TF.y), k(f));
+  }
 
   // --- the desk ---
   const DK = R.desk;
@@ -133,9 +171,9 @@ export function buildInterior(P, ctx, mats, root, win) {
   void ch;
   MB.add(m.monBezel, bezelFrameGeo({ ow: sw + 2 * bz, oh: sh + 2 * bz, iw: sw, ih: sh, z0: -MN.depth, z1: 0.0012, ...BEZEL }));
   MB.add(m.monBlack, boxGeo(-sw / 2, sw / 2, -sh / 2, sh / 2, -MN.depth, -0.001, "x"));
-  MB.add(m.monBlack, boxGeo(-0.2, 0.2, -0.15, 0.1, -MN.back, -MN.depth, "x"));
+  MB.add(m.monBlack, rboxGeo(-0.2, 0.2, -0.15, 0.1, -MN.back, -MN.depth, 0.008)); // the rear body, edges eased (shape QA)
   // the arm's VESA head and a black pole down to the desk clamp
-  MB.add(m.monBlack, boxGeo(-0.05, 0.05, -0.08, 0.02, -MN.back - 0.03, -MN.back, "x"));
+  MB.add(m.monBlack, rboxGeo(-0.05, 0.05, -0.08, 0.02, -MN.back - 0.03, -MN.back, 0.006));
   MB.build(mon);
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), new THREE.MeshBasicNodeMaterial({ color: 0xffffff }));
   screen.name = "monitorScreen";
@@ -165,7 +203,7 @@ export function buildInterior(P, ctx, mats, root, win) {
     S.add(m.monBlack, barGeo(elbow.toArray(), [back.x, back.y, back.z], 0.026, 0.02));
     S.add(m.monBlack, new THREE.CylinderGeometry(0.016, 0.016, 0.03, 16), M.T(elbow.x, elbow.y, elbow.z));
     // the desk clamp: a base plate on the desk and its screw knob hanging below
-    S.add(m.monBlack, boxGeo(poleX - 0.032, poleX + 0.032, deskY, deskY + 0.012, poleZ - 0.035, poleZ + 0.04, "y"));
+    S.add(m.monBlack, rboxGeo(poleX - 0.032, poleX + 0.032, deskY, deskY + 0.012, poleZ - 0.035, poleZ + 0.04, 0.005)); // eased edges (shape QA: it read as a cut-out square)
     S.add(m.steelDark, new THREE.CylinderGeometry(0.02, 0.02, 0.006, 20), M.T(poleX, deskY + 0.015, poleZ));
   }
 
@@ -188,19 +226,23 @@ export function buildInterior(P, ctx, mats, root, win) {
     const pbz = MN.bezel;
     PB.add(m.monBezel, bezelFrameGeo({ ow: wdt, oh: hgt, iw: wdt - 2 * pbz, ih: hgt - 2 * pbz, z0: -0.002, z1: 0.0015, cy: hgt / 2, ...BEZEL }));
     PB.add(m.portraitFace, boxGeo(-wdt / 2 + pbz, wdt / 2 - pbz, pbz, hgt - pbz, -0.002, 0.0009, "y"));
-    PB.add(m.champagne, boxGeo(-wdt / 2, wdt / 2, 0, hgt, -0.032, 0, "y"));
-    PB.add(m.monBlack, boxGeo(-wdt / 2 + 0.02, wdt / 2 - 0.02, 0.05, hgt - 0.05, -0.05, -0.032, "y"));
+    // shape QA (2026-10-05): the housing was a square box whose corners stuck out past
+    // the rounded bezel, the hard step at its corners; now it carries the same radius
+    PB.add(m.champagne, rboxGeo(-wdt / 2, wdt / 2, 0, hgt, -0.032, 0, BEZEL.r, 4));
+    PB.add(m.monBlack, rboxGeo(-wdt / 2 + 0.02, wdt / 2 - 0.02, 0.05, hgt - 0.05, -0.05, -0.032, 0.008));
     // (the clip-on bracket on its right edge is gone: it read as a stray black block
     // between the two monitors, Agam 2026-09-28)
     // the white cloth strip it stands on (5480): only a sliver shows at its foot.
     // Round 1's 12 cm card read as a flat unlit white board in the closing shot
-    PB.add(m.cloth, boxGeo(-wdt / 2 - 0.006, wdt / 2 + 0.006, -0.0035, -0.0003, -0.056, 0.01, "x"), null, { cast: false });
+    // shape QA: a crisp slab wider than the monitor read as a white plastic tray; now a
+    // thin soft pad with rounded edges, tucked inside the monitor's width
+    PB.add(m.cloth, rboxGeo(-wdt / 2 + 0.008, wdt / 2 - 0.008, -0.003, -0.0004, -0.054, 0.007, 0.0012), null, { cast: false });
     // its low dark steel stand: a cradle rail under the panel, a plate on the desk
     // and a short web between them, set back under the panel's rear
     if (base > 0) {
-      PB.add(m.steelDark, boxGeo(-wdt / 2 + 0.01, wdt / 2 - 0.01, -base - 0.004, -base + 0.006, -0.1, 0.03, "x")); // plate
-      PB.add(m.steelDark, boxGeo(-0.05, 0.05, -base + 0.006, -0.012, -0.048, -0.028, "x")); // web
-      PB.add(m.steelDark, boxGeo(-wdt / 2 + 0.004, wdt / 2 - 0.004, -0.012, -0.004, -0.056, 0.012, "x")); // cradle
+      PB.add(m.steelDark, rboxGeo(-wdt / 2 + 0.01, wdt / 2 - 0.01, -base - 0.004, -base + 0.006, -0.1, 0.03, 0.004)); // plate
+      PB.add(m.steelDark, rboxGeo(-0.05, 0.05, -base + 0.006, -0.012, -0.048, -0.028, 0.004)); // web
+      PB.add(m.steelDark, rboxGeo(-wdt / 2 + 0.004, wdt / 2 - 0.004, -0.012, -0.004, -0.056, 0.012, 0.003)); // cradle
     }
     PB.build(g);
     // its screen: an AI code editor open (2026-09-27, Agam), codeScreen.js; the cursor
@@ -230,7 +272,12 @@ export function buildInterior(P, ctx, mats, root, win) {
   // on the monitor's top edge (R.car.on "monitor", the default) or on the sill
   const topOfMonitor = MN.height / 2 + MN.bezel;
   const place = (grp, C) => {
-    if (C.on === "monitor") {
+    if (C.on === "portrait" && portrait) {
+      // on the portrait monitor's top (2026-10-05): mx along it, mz from its face
+      grp.position.set(C.mx ?? 0, R.portrait.height, C.mz ?? -0.016);
+      grp.rotation.y = (C.myawDeg ?? 0) * D2R;
+      portrait.add(grp);
+    } else if (C.on === "monitor") {
       grp.position.set(C.mx ?? 0, topOfMonitor, C.mz ?? -MN.depth / 2);
       grp.rotation.y = (C.myawDeg ?? 0) * D2R;
       mon.add(grp);
@@ -250,6 +297,22 @@ export function buildInterior(P, ctx, mats, root, win) {
   bike.name = "bike";
   place(bike, R.bike);
   buildBike(mats, bike);
+  // the Zepto scooter, the golden retriever bobblehead and the VR headset (2026-10-05)
+  const mk = (name, C, build) => {
+    if (!C || C.hidden) return null; // hidden: not built at all, so it cannot be hovered or dragged
+    const grp = new THREE.Group();
+    grp.name = name;
+    place(grp, C);
+    const api = build(grp);
+    if (api?.update) grp.userData.bobble = api; // the bobblehead's head spring
+    return grp;
+  };
+  const scooter = mk("scooter", R.scooter, (g) => buildScooter(mats, g));
+  const bobblehead = mk("bobblehead", R.bobblehead, (g) => buildBobblehead(mats, g));
+  const vr = mk("vr", R.vr, (g) => buildVrHeadset(mats, g));
+  const catBobble = mk("catBobblehead", R.cat, (g) => buildBobblehead(mats, g, "cat"));
+  // everything that can be picked up and carried between the monitors (room.js)
+  const toys = [car, bike, scooter, bobblehead, vr, catBobble].filter(Boolean);
 
   // --- the Borosil bottle and the charging dock (they enter the closing shot) ---
   {
@@ -316,5 +379,5 @@ export function buildInterior(P, ctx, mats, root, win) {
   }
 
   S.build(root);
-  return { beadChain, chain, monitorScreen: screen, monitor: mon, car, bike, portrait, portraitCursor };
+  return { beadChain, chain, setBlindDrop, monitorScreen: screen, monitor: mon, car, bike, scooter, bobblehead, vr, toys, portrait, portraitCursor };
 }
