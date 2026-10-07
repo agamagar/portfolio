@@ -1791,3 +1791,100 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --ch
 @media (prefers-reduced-motion: reduce) {
   .hello[data-page="3"] .ap__cap { transition: none; }
 }
+
+/* ---- the room's loader and the hand-over (2026-10-05; Hello.jsx, scene/window/sceneWarm.js)
+   The page opens as the plain portfolio; this pill sits at the bottom while the scene warms
+   behind it, in the same look as the scene's own scroll nudge (windowScene.css), whose
+   stylesheet is not loaded yet. Ink is --fg on a 78 % --bg glass pill, as the nudge. */
+.wscene-warm-pill {
+  position: fixed;
+  left: 50%;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 3;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 13px 16px; /* 12 px taller than the first cut (7 px), Agam 2026-10-05 */
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--fg) 10%, transparent);
+  color: var(--fg);
+  font: 500 12px/1 "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.04em;
+  animation: wscene-pill-in 360ms ease both;
+}
+.wscene-warm-pill button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.wscene-warm-pill button:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 6px;
+  border-radius: 999px;
+}
+.wscene-warm-pill .wscene-nudge__dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.wscene-warm-pill .wscene-nudge__dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: currentColor;
+  animation: wscene-warm-dot 1.2s ease-in-out infinite;
+}
+.wscene-warm-pill .wscene-nudge__dots i:nth-child(2) { animation-delay: 0.15s; }
+.wscene-warm-pill .wscene-nudge__dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes wscene-warm-dot {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+@keyframes wscene-pill-in {
+  from { opacity: 0; translate: -50% 8px; }
+}
+/* the countdown's Cancel: set apart by a hairline, a touch quieter than the count */
+.wscene-warm-pill__cancel {
+  margin-left: 4px;
+  padding-left: 10px !important;
+  border-left: 1px solid color-mix(in oklab, var(--fg) 22%, transparent) !important;
+  opacity: 0.72;
+}
+.wscene-warm-pill__cancel:hover,
+.wscene-warm-pill__cancel:focus-visible {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wscene-warm-pill { animation: none; }
+  .wscene-warm-pill .wscene-nudge__dots i { animation: none; opacity: 0.6; }
+}
+/* the hand-over: the sky band fades before the page switches into the room's layout
+   (which has no sky), then the page scrolls itself up into the room (Hello.jsx) */
+html.wscene-sky-out .hello[data-page="3"] .hello-sky,
+html.wscene-sky-out .hello[data-page="3"] .sky-tip {
+  opacity: 0;
+  transition: opacity 440ms ease;
+}
+/* ...and the header's buttons hold still through it */
+html.wscene-handover .top-controls[data-scrolled] > * {
+  translate: 0 0;
+  opacity: 1;
+  pointer-events: auto;
+  transition: none;
+}
+/* ...and the room's "scroll" nudge stays out of it: mounted at the runway's end, it
+   showed at full strength for a few frames over the page before the scene placed
+   itself there, then faded (a pill flashing at the switch, 2026-10-05); it fades in
+   once the room is reached */
+html.wscene-handover .hello[data-scene="window"] .wscene-nudge {
+  opacity: 0;
+  transition: none;
+}

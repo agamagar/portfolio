@@ -98,7 +98,7 @@ async function mediaReady(root, top, bottom, cap = 4000) {
   if (jobs.length) await Promise.race([Promise.all(jobs), wait(cap)]);
 }
 
-export async function captureLanding({ root, runway, rect, bg, dpr = 1 }) {
+export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: extraSkip = [] }) {
   if (!root || !runway || !rect) return null;
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;
@@ -107,13 +107,31 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1 }) {
   // fixed canvas), so in the clone the hero starts at the top, as it does on screen
   const landTop = runway.getBoundingClientRect().bottom + window.scrollY;
   await mediaReady(root, landTop, landTop + vh);
-  const skip = (el) => el.nodeType === 1 && SKIP.some((c) => el.classList?.contains(c));
+  // extraSkip (sceneWarm.js): the plain page's own sky band, its tooltip and the loader
+  // pill, when the landing is captured from the plain page before the hand-over
+  const skip = (el) => el.nodeType === 1 && [...SKIP, ...extraSkip].some((c) => el.classList?.contains(c));
   const below = (el) => {
     if (el.nodeType !== 1 || el === root) return false;
     const r = el.getBoundingClientRect();
     return r.top + window.scrollY > landTop + vh + 40; // starts below the landing viewport
   };
   const cssText = await pageFontCss();
+  // the root's sections as laid out on the page: where each box actually starts and
+  // ends inside the root, measured, beside the margins its computed style reports
+  const rb = root.getBoundingClientRect();
+  const rcs = getComputedStyle(root);
+  const live = [...root.children].map((el) => {
+    const cs = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    const plain = (cs.position === "static" || cs.position === "relative") && cs.transform === "none" && cs.translate === "none" && (cs.left === "auto" || cs.left === "0px");
+    return {
+      cls: el.classList[0],
+      plain,
+      ml: parseFloat(cs.marginLeft) || 0,
+      left: r.left - rb.left - (parseFloat(rcs.paddingLeft) || 0) - (parseFloat(rcs.borderLeftWidth) || 0),
+      right: rb.right - r.right - (parseFloat(rcs.paddingRight) || 0) - (parseFloat(rcs.borderRightWidth) || 0),
+    };
+  });
   const shot = await domToCanvas(root, {
     font: cssText ? { cssText } : undefined,
     width: vw,
@@ -125,6 +143,19 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1 }) {
       for (const c of clone.children || []) {
         if (SKIP.some((k) => c.classList?.contains(k))) continue;
         c.style.opacity = "1";
+        // a centred section (margin: 0 auto) came out at the left edge of the capture:
+        // the work grid (max-width 1512) sat 116 px left of the page's own on a 1744 px
+        // window, a sideways jump of the cards at the hand-over (2026-10-05). Chrome can
+        // report such a margin as 0px (a fresh load did, a long-open tab gave 116px), and
+        // the capture copies what is reported, so the box's measured place is set in px
+        const twin = live.find((l) => l.cls && c.classList?.contains(l.cls));
+        // (the logical margins too: the clone carries margin-inline-start/end after the
+        // physical ones, and those won)
+        if (twin?.plain && Math.abs(twin.left - twin.ml) > 0.5) {
+          const l = `${twin.left}px`, r = `${Math.max(0, twin.right)}px`;
+          c.style.marginLeft = c.style.marginInlineStart = l;
+          c.style.marginRight = c.style.marginInlineEnd = r;
+        }
       }
       // the hero at rest, as it is at the landing: its scroll fade (--hero-fade, an
       // opacity and a small rise) is baked into the clone at whatever it was

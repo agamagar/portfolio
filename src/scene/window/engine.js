@@ -477,6 +477,11 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     if (disposed) return false;
     mark("weather");
 
+    // opts.gate (sceneWarm.js, the warm-up behind the plain page): an async "wait for a
+    // quiet moment" before each heavy step, so the build and the compile batches never
+    // land while the reader is scrolling. Absent on every other path
+    if (opts.gate) await opts.gate();
+    if (disposed) return false;
     buildModules();
     post = createPost(renderer, scene, camera, P);
     calm = createCalm();
@@ -534,6 +539,8 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     meshes.forEach((o) => (o.visible = false));
     let batch = 2;
     for (let i = 0; i < groups.length && !disposed; ) {
+      if (opts.gate) await opts.gate();
+      if (disposed) break;
       const now = groups.slice(i, i + batch);
       now.forEach((g) => g.forEach((o) => (o.visible = true)));
       const t0 = performance.now();

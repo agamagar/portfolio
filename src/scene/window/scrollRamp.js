@@ -134,7 +134,10 @@ export function installScrollRamp({ measure }) {
     if (latch && t - latch.t > LATCH_GAP) latch = null;
     const m = measure();
     const inZone = !!m && m.raw > 0.0015 && m.raw < 0.999;
-    if (inZone && !ramp && !touching && !document.hidden && !L?.isStopped && shouldGo(t, L)) start(m, y, L);
+    // never during the folio's automatic hand-over into the room (Hello.jsx): it owns the
+    // scroll then, and a ramp taking it over stopped it halfway (2026-10-05)
+    const handover = document.documentElement.classList.contains("wscene-handover");
+    if (inZone && !ramp && !touching && !document.hidden && !L?.isStopped && !handover && shouldGo(t, L)) start(m, y, L);
     if (inZone || ramp || latch) kick();
   }
 

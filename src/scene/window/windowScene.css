@@ -184,6 +184,20 @@ html[data-wscene-landed="false"] .hello[data-scene="window"] > :not(.wscene__hos
 .hello[data-scene="window"] > :not(.wscene__host):not(.hello-scene-run):not(.wscene-nudge) {
   transition-property: none;
 }
+/* ...except during the hand-over INTO the room (2026-10-07, Agam: "the page glitches back
+   to the before-animation state"). The monitor's copy of the page is captured during
+   the warm-up, so its animated cards are frozen at that moment while the live cards
+   kept looping: hiding the page in one frame snapped every card back to its captured
+   state. Fading the live page out over the aligned copy dissolves the difference
+   instead; Hello.jsx holds the pull-out until the fade is done (HANDOVER_FADE_MS) */
+html.wscene-handover .hello[data-scene="window"] > :not(.wscene__host):not(.hello-scene-run):not(.wscene-nudge) {
+  transition: opacity 360ms cubic-bezier(0.33, 0, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.wscene-handover .hello[data-scene="window"] > :not(.wscene__host):not(.hello-scene-run):not(.wscene-nudge) {
+    transition: none;
+  }
+}
 /* the contact section is the page's last screen: it fills the viewport (its content
    centred), so the monitor is left showing only it as the camera pulls back out */
 .hello[data-scene="window"]:has(.hello-scene-end:not(.hello-scene-end--off)) .hello-foot {

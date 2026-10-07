@@ -14,6 +14,7 @@ import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
 import { useIntroStage } from "./useStage";
 import { useFlight } from "./useFlight";
+import { getLenis } from "../ui/smoothScroll";
 import { ALSO, BRAND_SHINE, CREDENTIALS, GREETING, ROLES } from "./helloData";
 import RoleTooltip from "./RoleTooltip";
 import GreetingMark from "./GreetingMark";
@@ -50,6 +51,9 @@ import "./hello3.css";
 // The window scene (three r186), behind ?scene=window until approved: see
 // src/scene/window/WindowSceneFolio.jsx and tools/window-light/spec/30-locked-brief.md.
 const WindowSceneFolio = lazy(() => import("../scene/window/WindowSceneFolio"));
+
+// the hand-over's page fade (windowScene.css, html.wscene-handover): 360 ms plus a frame
+const HANDOVER_FADE_MS = 380;
 
 // An empty copy of the timeline section's shell (heading + horizontal axis),
 // left blank as a template to fill later. Rendered N times below the timeline.
@@ -168,7 +172,230 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // grid on the page ground), and a bookend runway before the footer pulls it back
   // out into the room. Off by default: without the flag nothing here changes.
   // the default since 2026-09-30; ?scene=off shows the classic hero (lib/sceneFlag.js)
-  const sceneWindow = useMemo(() => typeof window !== "undefined" && windowSceneOn(), []);
+  // OPEN ON THE PORTFOLIO, THEN THE ROOM (2026-10-05, Agam: "always open the main
+  // portfolio screen, not the three.js version, then show a loader at the bottom and
+  // transition to the scene only when ready, optimised for scrolling"). Where the scene
+  // is allowed (desktop; phones get the classic page, lib/sceneFlag.js), the page
+  // opens as the plain portfolio and the engine warms on a tiny hidden canvas once
+  // the page is idle and not being scrolled (scene/window/sceneWarm.js). When it is
+  // ready AND the reader is at the top, not mid-scroll, the page fades and the scene
+  // takes over with that same warmed engine. ?scene=window and capture runs still go
+  // straight into the scene, as before (the QA tools rely on it).
+  const sceneAllowed = useMemo(() => typeof window !== "undefined" && windowSceneOn(), []);
+  const sceneDirect = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const q = new URLSearchParams(window.location.search);
+    return q.get("scene") === "window" || q.has("capture");
+  }, []);
+  const [sceneLive, setSceneLive] = useState(sceneDirect);
+  const sceneWindow = sceneAllowed && sceneLive;
+  // the warm-up: idle | loading | ready | failed; drives the loader pill
+  const [warmState, setWarmState] = useState("idle");
+  const [atTop, setAtTop] = useState(true);
+  useEffect(() => {
+    if (!sceneAllowed || sceneLive) return undefined;
+    let alive = true, lastScroll = 0, idleId = 0, timer = 0;
+    const onScroll = () => {
+      lastScroll = performance.now();
+      setAtTop(window.scrollY < 8);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // start only when the page has settled and nobody is scrolling it
+    const startWhenStill = () => {
+      if (!alive) return;
+      if (performance.now() - lastScroll < 500) {
+        timer = setTimeout(startWhenStill, 400);
+        return;
+      }
+      setWarmState("loading");
+      Promise.all([import("../scene/window/sceneWarm.js"), import("../scene/window/capture.js"), import("../scene/window/WindowSceneFolio")])
+        .then(async ([{ warmScene, prepareWarmScene }, { parseCaptureParams }]) => {
+          if (!alive) return false;
+          const opts = parseCaptureParams(window.location.search);
+          const ok = await warmScene({ opts, theme: document.documentElement.classList.contains("dark") ? "dark" : "light" });
+          // the room is only "ready" once the monitor carries the live page too, so the
+          // hand-over has nothing left to wait for (sceneWarm.js prepareWarmScene); a
+          // failed capture still hands over (the page captures it the old way)
+          if (ok && alive) await prepareWarmScene().catch(() => false);
+          return ok;
+        })
+        .then((ok) => alive && setWarmState(ok ? "ready" : "failed"))
+        .catch(() => alive && setWarmState("failed"));
+    };
+    const kick = () => (timer = setTimeout(startWhenStill, 600));
+    if (document.readyState === "complete") idleId = window.requestIdleCallback ? window.requestIdleCallback(kick, { timeout: 2000 }) : setTimeout(kick, 800);
+    else window.addEventListener("load", kick, { once: true });
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("load", kick);
+    };
+  }, [sceneAllowed, sceneLive]);
+  // The pill comes up 3 s after the page has loaded (Agam, 2026-10-07: "setting up the
+  // pill should appear 3 seconds after page has loaded"), not with the first paint. On
+  // a visit to another page first, it counts from when this page appears
+  const [pillDue, setPillDue] = useState(false);
+  useEffect(() => {
+    if (!sceneAllowed || sceneLive) return undefined;
+    let timer = 0;
+    const arm = () => {
+      // from the load event itself (this page can mount a little after it), or from now
+      // when the load was long before
+      const nav = performance.getEntriesByType?.("navigation")?.[0];
+      const now = performance.now();
+      const loadedAt = nav?.loadEventEnd > 0 ? nav.loadEventEnd : now;
+      const wait = now - loadedAt > 3000 ? 3000 : loadedAt + 3000 - now;
+      timer = setTimeout(() => setPillDue(true), Math.max(0, wait));
+    };
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm, { once: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("load", arm);
+    };
+  }, [sceneAllowed, sceneLive]);
+  // THE CUE (2026-10-05, Agam: "when the room is set up give a cue that the page will
+  // transition in 5 sec, with an option to cancel, and do a seamless transition"): once
+  // the room is ready the pill counts down from 5 with a Cancel button. The count only
+  // runs while the reader is at the top (it holds if they scroll away, and resumes when
+  // they come back). Cancel leaves the page as it is, with an "Enter the room" button.
+  // It waits for the pill to be up, so the room never takes over unannounced.
+  const [countdown, setCountdown] = useState(null);
+  const [cancelled, setCancelled] = useState(false);
+  const [entering, setEntering] = useState(false);
+  useEffect(() => {
+    if (!sceneAllowed || sceneLive || cancelled || !pillDue || warmState !== "ready") return undefined;
+    setCountdown((c) => (c == null ? 5 : c));
+    const t = setInterval(() => {
+      if (window.scrollY >= 8) return; // hold while they are reading further down
+      setCountdown((c) => (c == null ? 5 : Math.max(0, c - 1)));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [sceneAllowed, sceneLive, cancelled, pillDue, warmState]);
+  // THE HAND-OVER IS A SCROLL (2026-10-05, Agam: "the transition should be a scroll
+  // once the room is ready"). In the room's layout the plain portfolio is exactly what
+  // the screen shows at the END of the runway (p = 1, the camera inside the monitor).
+  // So the layout switches with the page already scrolled to that end (nothing on
+  // screen changes) and the page scrolls itself back up: the camera pulls out of the
+  // screen into the room.
+  //
+  // Round 3 ("the scroll transition is still breaking"), every step guarded:
+  //  - it starts only at a quiet moment at the top (no scroll, wheel, touch or key for
+  //    0.7 s), never mid-gesture;
+  //  - Lenis is STOPPED for the whole hand-over: stray wheel input and a trackpad's
+  //    momentum are swallowed, and the speed ramp (scrollRamp.js) cannot arm. Before,
+  //    a wheel within 1.2 s let the ramp take the move over, and its cancel reset Lenis
+  //    mid-animation: the pull-out stopped halfway down the runway, or went back;
+  //  - Lenis re-measures before the jump (it clamps jumps to a page height cached
+  //    before the runway was inserted);
+  //  - the room takes the screen WITHOUT moving first (2 px off the page's top: the
+  //    canvas shows the page's own pixels) and the pull-out waits for a run of steady
+  //    frames, so the first full-size frames' cost (an 83 ms hitch measured at the very
+  //    start of the motion) lands while nothing moves;
+  //  - the pull-out is locked, with a safety net, and every exit restarts Lenis.
+  // Reduced motion: a cut to the room.
+  const enteringRef = useRef(false);
+  const enterPending = useRef(false);
+  const enterScene = useCallback(async () => {
+    if (enteringRef.current || enterPending.current) return;
+    enterPending.current = true;
+    try {
+      const { quietMoment } = await import("../scene/window/sceneWarm.js");
+      await quietMoment();
+    } finally {
+      enterPending.current = false;
+    }
+    // scrolled away while it waited: the count holds until they are back at the top
+    if (enteringRef.current || window.scrollY >= 8) return;
+    enteringRef.current = true;
+    setEntering(true);
+    const reduceNow = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    document.documentElement.classList.add("wscene-sky-out", "wscene-handover");
+    getLenis()?.stop(); // from here to the room, wheel input is swallowed
+    setTimeout(() => setSceneLive(true), reduceNow ? 0 : 460);
+  }, []);
+  useLayoutEffect(() => {
+    if (!sceneLive || !enteringRef.current) return undefined;
+    const root = document.documentElement;
+    const run = sceneRun1.current;
+    if (!run) return undefined;
+    // the runway's bottom is where the page starts: be there before this frame paints
+    const lenis = getLenis();
+    lenis?.resize?.();
+    const y = run.getBoundingClientRect().bottom + window.scrollY;
+    if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+    else window.scrollTo(0, y);
+    root.classList.remove("wscene-sky-out");
+    let alive = true, finished = false;
+    const reduceNow = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      enteringRef.current = false; // a later re-run (a hot reload) must not replay it
+      root.classList.remove("wscene-handover");
+      getLenis()?.start();
+    };
+    const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
+    // a run of steady frames (or the time limit): the moment the motion may start
+    const steady = async (maxMs) => {
+      const t0 = performance.now();
+      let last = t0, good = 0;
+      while (alive && performance.now() - t0 < maxMs) {
+        await nextFrame();
+        const t = performance.now();
+        good = t - last < 40 ? good + 1 : 0;
+        last = t;
+        if (good >= 6) return;
+      }
+    };
+    (async () => {
+      // 1. the room is adopted, its monitor carries the live page, and its canvas has
+      //    drawn a frame in its new place (data-wscene-drawn, useWindowScene): revealed
+      //    before that, it was blank for a few frames after the page had gone (rec21)
+      const t0 = performance.now();
+      while (alive && !(root.dataset.wsceneReady && root.dataset.wscenePoster && root.dataset.wsceneDrawn) && performance.now() - t0 < 6000) await nextFrame();
+      if (!alive) return;
+      const L = getLenis();
+      if (reduceNow || !L) {
+        window.scrollTo(0, 0);
+        finish();
+        return;
+      }
+      // 2. the room takes the screen without moving: the page's own pixels, now drawn
+      //    by the canvas; its first full-size frames are paid for here
+      L.scrollTo(y - 2, { immediate: true, force: true });
+      // the live page fades out over the canvas's copy of it (windowScene.css, the
+      // hand-over transition): the motion waits for the fade as well as the steady frames
+      const tFade = performance.now();
+      await steady(1500);
+      const fadeLeft = HANDOVER_FADE_MS - (performance.now() - tFade);
+      if (alive && fadeLeft > 0) await new Promise((r) => setTimeout(r, fadeLeft));
+      if (!alive) return;
+      // 3. the pull-out, locked against stray input, with a safety net
+      const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const DUR = 1.9;
+      L.scrollTo(0, { duration: DUR, easing: ease, force: true, lock: true, onComplete: finish });
+      setTimeout(finish, DUR * 1000 + 1500);
+    })();
+    return () => {
+      alive = false;
+      if (!finished) finish(); // never leave Lenis stopped or the header pinned
+    };
+  }, [sceneLive]);
+  useEffect(() => {
+    if (countdown === 0 && atTop && !entering && !sceneLive && !cancelled) enterScene();
+  }, [countdown, atTop, entering, sceneLive, cancelled, enterScene]);
+  // a page that leaves before the hand-over drops its warm engine
+  useEffect(
+    () => () => {
+      if (!sceneLiveRef.current) import("../scene/window/sceneWarm.js").then(({ dropWarmScene }) => dropWarmScene());
+    },
+    []
+  );
+  const sceneLiveRef = useRef(sceneLive);
+  sceneLiveRef.current = sceneLive;
   const sceneRun1 = useRef(null);
   const sceneRun2 = useRef(null);
   const heroRef = useRef(null);
@@ -329,6 +556,36 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       {/* the weather tooltip over the bare sky, as on /hello (was the
           mtqt7wsl/mtqtcc6f status bar in the top controls until 07 Sep 2026) */}
       {!sceneWindow && <SkyTip />}
+      {/* the room's loader (2026-10-05): a quiet pill at the bottom while the scene warms
+          behind the page; once it is ready, if the reader is further down, it offers the
+          way back up (at the top the hand-over is automatic) */}
+      {/* shown 3 s after the page has loaded (pillDue; was from the load itself, 2026-10-05);
+          the warm-up itself still waits for an idle page */}
+      {sceneAllowed && pillDue && !sceneLive && !entering && warmState !== "failed" && (
+        <div className="wscene-warm-pill" role="status" aria-live="polite">
+          {warmState === "idle" || warmState === "loading" ? (
+            <>
+              Setting up the room
+              <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
+            </>
+          ) : cancelled ? (
+            <button type="button" onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setCancelled(false); setCountdown(0); }}>
+              Enter the room
+            </button>
+          ) : !atTop ? (
+            <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+              The room is ready, back to the top
+            </button>
+          ) : (
+            <>
+              <span>Entering the room in {countdown ?? 5}</span>
+              <button type="button" className="wscene-warm-pill__cancel" onClick={() => { setCancelled(true); setCountdown(null); }}>
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* the scene's main runway (2026-09-27, Agam): a spacer ABOVE the page. The
           first frame is the room with the portfolio's top on the monitor; scrolling

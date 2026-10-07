@@ -16,6 +16,7 @@
 
 import { useEffect } from "react";
 import { createWindowEngine } from "./engine.js";
+import { takeWarmScene, returnWarmScene } from "./sceneWarm.js";
 import { installHook } from "./capture.js";
 import { getLook, subscribeLook } from "./lookStore.js";
 import { installScrollRamp } from "./scrollRamp.js";
@@ -54,16 +55,35 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
     const run2 = run2Ref.current;
     if (!host || !run1 || !run2) return undefined;
 
-    // a fresh canvas per mount, so a StrictMode remount never shares a context
-    const canvas = document.createElement("canvas");
-    canvas.className = "wscene__canvas";
-    canvas.setAttribute("aria-hidden", "true");
-    host.appendChild(canvas);
     const root = document.documentElement;
     if (opts.capture) root.classList.add("wscene-capture");
-
     const themeNow = () => opts.theme || (root.classList.contains("dark") ? "dark" : "light");
-    const engine = createWindowEngine({ canvas, opts, theme: themeNow() });
+    // the engine warmed behind the plain page (sceneWarm.js, 2026-10-05) is adopted
+    // as it is: its canvas moves into this host and is resized to the viewport, and
+    // its ready has already resolved, so nothing compiles twice. Otherwise a fresh
+    // canvas per mount, so a StrictMode remount never shares a context
+    const warm = opts.capture ? null : takeWarmScene();
+    const canvas = warm ? warm.canvas : document.createElement("canvas");
+    if (!warm) {
+      canvas.className = "wscene__canvas";
+      canvas.setAttribute("aria-hidden", "true");
+    }
+    host.appendChild(canvas);
+    const engine = warm ? warm.engine : createWindowEngine({ canvas, opts, theme: themeNow() });
+    // the size the engine was last set to (the ResizeObserver below skips the same size)
+    let sized = null;
+    if (warm) {
+      engine.setTheme?.(themeNow());
+      // already at this size (primed in sceneWarm.js): a resize reallocates every target
+      if (warm.posterSize !== `${window.innerWidth}x${window.innerHeight}`) engine.resize(window.innerWidth, window.innerHeight);
+      sized = `${window.innerWidth}x${window.innerHeight}`;
+      // shown from the start, as a canvas that ran its own ready is: the landing then
+      // only toggles its visibility, on the very frame the page swaps, against the page's
+      // own pixels on the monitor. Unmarked, it faded in over 900 ms as the hand-over
+      // scroll began while the page had already gone: a blank flash (rec2, 2026-10-05)
+      canvas.dataset.shown = "true";
+      canvas.dataset.hidden = "true";
+    }
     const unhook = installHook(engine);
     let alive = true;
     let ready = false;
@@ -80,6 +100,9 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
     let rawP = 0; // the main runway's own 0..1, for the page's scroll nudge
     const livePosters = { top: null, end: null }; // livePoster: the page's top and last screen
     let posterShown = null;
+    // a warm hand-over brings the landing already captured (sceneWarm prepareWarmScene)
+    if (warm?.poster) livePosters.top = warm.poster;
+    let posterSize = warm?.posterSize || null;
     let shown = null;
     let stillKey = "";
     // set once the scene has given the page back: from then on it is a plain page, and
@@ -225,7 +248,14 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
     };
     document.addEventListener("visibilitychange", onVis);
     const ro = new ResizeObserver(() => {
-      engine.resize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
+      // a real change of size only: the hero is observed too (for its boxes), and a
+      // resize to the same size still reallocated every target and cleared the canvas
+      // (a canvas is blanked whenever its size is set, even to the same value)
+      const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
+      if (`${w}x${h}` !== sized) {
+        sized = `${w}x${h}`;
+        engine.resize(w, h);
+      }
       sendBoxes();
       capturePoster();
       decide();
@@ -242,8 +272,12 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
     // width, so its grid sat elsewhere than the page's (2026-09-27): it now retries
     // with a backoff, and again when the tab comes back
     let posterTries = 0, posterPending = false;
-    const capturePoster = (delay = 350) => {
+    const capturePoster = (delay = 350, force = false) => {
       if (!livePoster || opts.capture) return;
+      // nothing to redo: the landing on the monitor was made at this very size (the
+      // warm hand-over's, or an earlier capture). Re-capturing is a DOM-to-image render
+      // of the whole page on the main thread, which stuttered the hand-over scroll
+      if (!force && livePosters.top && posterSize === `${window.innerWidth}x${window.innerHeight}`) return;
       clearTimeout(posterTimer);
       posterPending = true;
       posterTimer = setTimeout(async () => {
@@ -264,6 +298,8 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
           if (!alive) return;
           if (!top) return retry();
           livePosters.top = top;
+          posterSize = `${window.innerWidth}x${window.innerHeight}`;
+          root.dataset.wscenePoster = "true"; // the monitor shows the live page: the hand-over scroll may start (Hello.jsx)
           livePosters.end = end || livePosters.end;
           posterTries = 0;
           posterPending = false;
@@ -286,7 +322,7 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
           if (th === lastTheme) return;
           lastTheme = th;
           engine.setTheme(th);
-          capturePoster(120);
+          capturePoster(120, true); // a theme change repaints the page: always re-capture
         });
     mo?.observe(root, { attributes: true, attributeFilter: ["class"] });
 
@@ -327,6 +363,7 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
         clearInterval(readyTimer);
         ready = true;
         root.dataset.wsceneReady = "true"; // the folio loader and poster crossfade (windowScene.css)
+        if (livePosters.top) root.dataset.wscenePoster = "true"; // adopted with the engine: the hand-over scroll may start
         // the header's look (lookStore.js), unless the URL pins one
         if (!new URLSearchParams(window.location.search).has("look")) {
           if (getLook() !== engine.getLook?.()) engine.setLook(getLook());
@@ -341,14 +378,17 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
             unoutside = subscribeOutside((v) => engine.setOutside(v));
           }
         }
-        if (sweepDeg) engine.setParams({ camera: { sweep: { deg: sweepDeg, from: pFrom, to: 1 } } });
+        // a warm engine primed with these very settings (sceneWarm.js prepareWarmScene)
+        // keeps them: re-applying each re-renders the sky, right at the hand-over
+        const primed = !!warm?.folio && warm.folio.pFrom === pFrom && warm.folio.sweepDeg === sweepDeg;
+        if (sweepDeg && !primed) engine.setParams({ camera: { sweep: { deg: sweepDeg, from: pFrom, to: 1 } } });
         // the folio page's screens stay sharp: focus on the monitor, a gentler blur
-        if (livePoster && !opts.capture) engine.setParams({ camera: { folio: { focusScreen: true, bokeh: 0.5 } } });
+        if (livePoster && !opts.capture && !primed) engine.setParams({ camera: { folio: { focusScreen: true, bokeh: 0.5 } } });
         if (livePoster && !opts.capture) {
           // the monitor shows the page 1:1 from the first frame: the folio starts at p =
           // 0.5, where handoff.page (from 0.5) had not begun, so the room's look lifted the
           // screen's blacks (Agam, 2026-09-27: "washed out black" in dark mode)
-          engine.setParams({ post: { handoff: { toPage: true, page: { from: 0, to: 0.001 } } } });
+          if (!primed) engine.setParams({ post: { handoff: { toPage: true, page: { from: 0, to: 0.001 } } } });
           (document.fonts?.ready || Promise.resolve()).then(() => capturePoster(600));
         }
         if (opts.capture) {
@@ -357,6 +397,26 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
         }
         shown = null;
         decide();
+        // an adopted canvas has no frame of its own yet: the move into this host left it
+        // blank until it draws again. One frame at the current progress, drawn while it
+        // is still hidden, after the ResizeObserver's first pass (two frames on), and
+        // only then data-wscene-drawn, which the hand-over waits for (Hello.jsx) before it
+        // reveals the canvas. Revealed blank, it showed nothing for about 150 ms after
+        // the page had already gone: the dark flash at the switch (rec21, 2026-10-05)
+        if (warm) {
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              if (!alive) return;
+              Promise.resolve(engine.renderOnce())
+                .catch(() => {})
+                .then(() =>
+                  requestAnimationFrame(() => {
+                    if (alive) root.dataset.wsceneDrawn = "true";
+                  })
+                );
+            })
+          );
+        } else root.dataset.wsceneDrawn = "true"; // its own canvas fades in on ready
         if (ramp && !reduced && !endRun && !opts.capture && new URLSearchParams(window.location.search).get("ramp") !== "0") {
           unramp = installScrollRamp({
             measure: () => {
@@ -401,12 +461,19 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
       unoutside?.();
       gui?.destroy();
       unhook();
-      engine.dispose();
-      canvas.remove();
+      // an adopted warm engine goes back to the warm slot (a StrictMode remount, or a
+      // quick remount, takes it again at once; nobody does in 3 s: it is disposed)
+      if (warm && !gaveUp) returnWarmScene({ canvas, engine, poster: livePosters.top, posterSize, folio: warm.folio || null }); // adopted: already warmed (its ready resolved in sceneWarm)
+      else {
+        engine.dispose();
+        canvas.remove();
+      }
       root.classList.remove("wscene-capture");
       delete root.dataset.wsceneLanded;
       delete root.dataset.wsceneOff;
       delete root.dataset.wsceneReady;
+      delete root.dataset.wscenePoster;
+      delete root.dataset.wsceneDrawn;
       root.style.removeProperty("--wscene-run");
     };
   }, [opts, reduced, enabled, fadeHero]); // eslint-disable-line react-hooks/exhaustive-deps -- refs are stable
