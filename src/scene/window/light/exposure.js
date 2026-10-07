@@ -237,7 +237,12 @@ export function cameraExposure(P, bus, camera) {
   // brighter at dusk; 1 = none), applied after the highlight rule as before
   const dbSet = A.duskBoost ?? 1;
   const db = dbSet !== 1 ? 1 + (dbSet - 1) * smooth(A.duskFrom ?? 1, A.duskTo ?? -6, bus.sunAlt ?? 10) : 1;
-  const hiCap = (hiL > 1e-4 ? A.hi / hiL : Infinity) * db;
+  // a look's own highlight rule after dark (nightHi, eased in with the dusk boost's
+  // ramp; null = A.hi always): Cyberpunk lets the runway's room keep its light when
+  // the screen fills the frame, where the rule had pinned the physical lights 10x
+  // under the hero's (the authored screen, at E_render, is not moved)
+  const hiSet = Number.isFinite(A.nightHi) ? A.hi + (A.nightHi - A.hi) * smooth(A.duskFrom ?? 1, A.duskTo ?? -6, bus.sunAlt ?? 10) : A.hi;
+  const hiCap = (hiL > 1e-4 ? hiSet / hiL : Infinity) * db;
   const evCal = Cm.evCal ?? 9.6;
   const shotEV = bus.shot && Cm.shots ? Cm.shots[bus.shot] : undefined;
   const k0 = A.key0, kn = Cm.keyNight ?? 0.02;

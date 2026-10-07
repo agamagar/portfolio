@@ -9,11 +9,15 @@ const KEY = "wscene-look";
 const subs = new Set();
 let current = null;
 
+// unfinished: left out of the public build's menu (VITE_PUBLIC_SITE, amplify.yml) until it
+// is done; dev and ?look= still reach it. Cyberpunk's build stopped part way (6 Oct)
+const PUBLIC_SITE = import.meta.env.VITE_PUBLIC_SITE === "1";
 export const LOOKS = [
   { id: "dreamlike", label: "Dreamlike", hint: "The moon in the window, glowing motes" },
   { id: "heightened", label: "Heightened", hint: "True to the room, light and air pushed" },
   { id: "photo", label: "Photo-true", hint: "As the phone saw it" },
-].filter((l) => LOOK_NAMES.includes(l.id));
+  { id: "cyberpunk", label: "Cyberpunk", hint: "Neon past the bamboo, a pink lamp in the dark", unfinished: true },
+].filter((l) => LOOK_NAMES.includes(l.id) && !(PUBLIC_SITE && l.unfinished));
 
 export function getLook() {
   if (current) return current;

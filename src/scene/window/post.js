@@ -14,12 +14,13 @@
 //     -> veiling glare (light/lens.js): a linear PSF, tight core + mid halo + long
 //        faint tail, from a box-filtered copy of fixed height (DPR independent)
 //     -> the grade in scene-linear light (light/grade.js): white balance, the auto
-//        exposure (light/exposure.js), saturation, contrast
+//        exposure (light/exposure.js), a hue band (Cyberpunk), saturation, contrast
 //     -> the local tone map (light/lens.js): an edge-aware shadow lift, the phone's
 //        own processing (Photo-true), a touch of it in the other looks
 //     -> tone mapping + sRGB, ONCE: the renderer's tone mapper (AgX) or the phone's
 //        per-channel hard-shoulder curve (params.post.tone.curve)
-//     -> the display grade: lift, gamma, vignette; then grain: a denoised sensor's
+//     -> the display grade: lift, gamma, a split tone (Cyberpunk), vignette; then
+//        grain: a denoised sensor's
 //        (a 3 x 3 tent of a per-pixel hash, about 0.7 px, shaped by luminance:
 //        a little more in the shadows, almost none in the highlights)
 //     -> the page on the screen: over the runway's last half (and the bookend's
@@ -77,6 +78,11 @@ import { createLensUniforms, buildLens, phoneCurve } from "./light/lens.js";
 const _size = new THREE.Vector2();
 const glareOn = (E) => !!E.glare.enabled && (E.glare.core > 0 || E.glare.mid > 0 || E.glare.tail > 0);
 const localToneOn = (E) => !!E.localTone?.enabled && (E.localTone.lift > 0 || E.localTone.pull > 0);
+// the grade's optional stages (grade.hueBand, grade.split): built only when a look
+// asks for them, so the other looks keep their exact graph
+const hueBandOn = (Gp) => (Gp?.hueBand?.amount ?? 0) > 0;
+const splitOn = (Gp) => (Gp?.split?.shadowAmount ?? 0) > 0 || (Gp?.split?.highAmount ?? 0) > 0;
+const D2R = Math.PI / 180;
 
 // Hoskins' hash (sin-free: a sin hash of large pixel coordinates loses its low
 // bits in fp32 on some GPUs), 0..1
@@ -273,14 +279,16 @@ export function createPost(renderer, scene, camera, P) {
     // before the air's pass samples its depth
     else if (view === "volume") out = renderOutput(vec4((volSample ?? vec3(0)).mul(g.exposure).mul(8).add(colT.rgb.mul(0)), 1));
     // the local tone map's lift, 0 (black) to 3 stops (white)
-    else if (view === "lift") out = vec4(vec3(lens ? lens.lift(gradeSceneLinear(hdr, g)).div(3) : float(0)), 1);
+    else if (view === "lift") out = vec4(vec3(lens ? lens.lift(gradeSceneLinear(hdr, g, { hueBand: on.hueBand })).div(3) : float(0)), 1);
     else {
-      let lin = gradeSceneLinear(hdr, g);
+      let lin = gradeSceneLinear(hdr, g, { hueBand: on.hueBand });
       if (lens && on.localTone) lin = lens.localTone(lin);
       const disp = on.phone
         ? renderOutput(vec4(phoneCurve(lin.mul(toneMappingExposure), lu), 1), THREE.NoToneMapping)
         : renderOutput(vec4(lin, 1));
-      const ldr = gradeDisplay(disp.rgb, g);
+      // (the split tone runs here, before the grain, the page on the screen and the
+      // final mix to the page ground: the hand-off never sees it)
+      const ldr = gradeDisplay(disp.rgb, g, { split: on.split });
       // grain: a denoised sensor, not a hash. A per-pixel hash (re-seeded per
       // frame, fixed in capture mode) averaged over a 2 x 2 block (the grain is
       // correlated over about a pixel: soft, not static), renormalised to the
@@ -442,8 +450,10 @@ export function createPost(renderer, scene, camera, P) {
         glare: glareOn(E),
         localTone: localToneOn(E),
         phone: E.tone?.curve === "phone",
+        hueBand: hueBandOn(P.grade),
+        split: splitOn(P.grade),
       };
-      const sig = [on.ao, E.traa.enabled, on.dof, on.bloom, on.glare, E.glare.midSigma, E.glare.tailSigma, on.volume, on.localTone, on.phone, view, scale].join("|");
+      const sig = [on.ao, E.traa.enabled, on.dof, on.bloom, on.glare, E.glare.midSigma, E.glare.tailSigma, on.volume, on.localTone, on.phone, view, scale, on.hueBand, on.split].join("|");
       if (sig !== signature) {
         signature = sig;
         build(view, scaled, scale, on);
@@ -601,6 +611,31 @@ export function createPost(renderer, scene, camera, P) {
       g.gamma.value = Gp.gamma;
       g.vignette.value = Gp.vignette;
       g.vignetteRound.value = Gp.vignetteRound;
+      // the hue band and the split tone (read only where built)
+      const HB = Gp.hueBand || {};
+      g.hbAmt.value = HB.amount ?? 0;
+      g.hbCentre.value = (HB.centre ?? 128) * D2R;
+      g.hbHalf.value = (HB.half ?? 22) * D2R;
+      g.hbFeather.value = Math.max(1e-3, (HB.feather ?? 20) * D2R);
+      g.hbAngle.value = (HB.angle ?? 0) * D2R;
+      g.hbSatLo.value = HB.satLo ?? 0;
+      g.hbSatHi.value = Math.max(g.hbSatLo.value + 1e-4, HB.satHi ?? 0);
+      const SP = Gp.split || {};
+      const unitTint = (t, out) => {
+        const r = t?.[0] ?? 1, gg = t?.[1] ?? 1, b = t?.[2] ?? 1;
+        const l = Math.max(1e-5, 0.2126 * r + 0.7152 * gg + 0.0722 * b);
+        out.set(r / l, gg / l, b / l);
+      };
+      unitTint(SP.shadow, g.spShadow.value);
+      unitTint(SP.high, g.spHigh.value);
+      g.spShadowAmt.value = SP.shadowAmount ?? 0;
+      g.spHighAmt.value = SP.highAmount ?? 0;
+      g.spLo.value = SP.lo ?? 0.02;
+      g.spLoTo.value = Math.max((SP.lo ?? 0.02) + 1e-4, SP.loTo ?? 0.2);
+      g.spHi.value = SP.hi ?? 0.45;
+      g.spHiTo.value = Math.max((SP.hi ?? 0.45) + 1e-4, SP.hiTo ?? 0.9);
+      g.spSatLo.value = SP.keepSat?.[0] ?? 10;
+      g.spSatHi.value = Math.max(g.spSatLo.value + 1e-4, SP.keepSat?.[1] ?? 11);
       // the tone map's statistics are taken in exposed units, before the grade's
       // saturation and contrast (which move luminance little)
       const wbL = 0.2126 * Gp.whiteBalance[0] + 0.7152 * Gp.whiteBalance[1] + 0.0722 * Gp.whiteBalance[2];

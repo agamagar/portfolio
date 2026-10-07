@@ -91,9 +91,20 @@ the 17:41 reference within 1.5 points of 78.7.
    gate 'clears every bar' is not reachable at this framing. Result, 1440x900: 19:00 x 378 (clear 0.67),
    21:00 x 348 (0.48), 00:00 x 301 (0.71, its top), 03:00 x 253 (0.52); phone 189 -> 92 px (0.29 to 0.76).
    Sheet: `/Users/agamagarwal/window-light-runs-archive/moon/moon-by-hour.png`.
-4. **room** The brass D-handle reads as pale salmon plastic and is the most legible object at p=0:
-   oxidised brass (metalness 1, roughness about 0.3, anisotropy along the grip, patina in the bends),
-   slotted screws.
+4. **DONE 2026-10-05 (look pass, build-01, not committed): oxidised brass.** `materials.js` BrassMaterial and
+   BrassLighting, `params.room.brass`; no geometry touched. The old F0 was the photographed, lamp-lit #a77960
+   (redder than copper) and the bar took the whole unshadowed window fill. Now: a worn, tarnished brass F0
+   (0.19, 0.17, 0.12), the enamel's window share (0.3), patina placed in object space (bends, feet, the bow's door
+   side; the per-part UVs had squeezed the paint's 0.25 m tile onto 11 cm), anisotropy along the grip (high tier),
+   a one-bounce mirror of the lamp-lit door face (surround 1.0, surroundSat 0.2) and slotted screw caps as a bump
+   faded out below a pixel. Handle-on probes, before -> after: hero dL vs the enamel ring Dreamlike +6.95 -> -3.12,
+   Heightened +7.91 -> -3.10, Photo-true +5.92 -> -2.01 (brass alone +11.3 -> -0.3, +12.5 -> +0.2, +9.5 -> +0.5;
+   hue 53 -> 68); 5482 through the veil dh -11.2 -> -6.7, dC +8.81 -> +8.10, d_ab 12.86 -> 9.86; 5482 with bloom and
+   glare off, brass alone: dh -10.0 -> -0.4, dE76 13.7 -> 4.9. 0 console errors (WebGPU and WebGL2); shipped
+   frames pixel-identical (the handle is still OFF: `params.room.window.handle.enabled` false is Agam's call).
+   Residuals: mid and low tiers (no anisotropy) sit at brass +2.6 and +3.6 over the ring; through the dusk veil the
+   5482 brass is 10 L* lighter than the photo's grip (the veil is item 6); the 5482 solve shows only the bolsters
+   and a sliver of the bow (item 14). Sheet: `/Users/agamagarwal/window-light-runs-archive/close/build-01-brass-handle/before-after.png`.
 5. **room** Lamp dome and cup still clay: coat reflecting the window as broad soft highlights, the
    bracket, screws and cable modelled. Gate: hero lamp region within 0.3 stops, C* under 1.5 (fails
    today at +1.15 st, C* 3.7; part of it is post glare, a light-lane lever).
@@ -308,5 +319,12 @@ Follow-ups before flipping the flag's default:
   `renderer.info` resets every frame; vertex motion must feed `positionPrevious`; the TAA node must
   register its view-offset hook before the MRT materials compile or every material bakes the jitter
   into its velocity.
+- More r186 gotchas (2026-10-05, the brass): without a tangent attribute the tangent frame comes from the uv
+  derivatives (TangentUtils.js) and T and B are scaled by the longer of the two, not each to unit length, so
+  anisotropy on a part whose UVs are not square in metres (a tube: 0.11 m along, 0.023 m round) stretches the
+  lobe several times (a white-hot streak); BrassMaterial.setupVariants re-orthonormalises anisotropyT and
+  anisotropyB. WindowShareLighting used to drop the anisotropy flag (PhysicalLightingModel takes it fourth);
+  it now passes it on. Anisotropy shapes only the punctual lights (the rect lights' LTC lobe is isotropic).
+  TSL smoothstep with reversed edges is undefined in GLSL: write 1 - smoothstep(lo, hi, x).
 - The Living Sky's window uniforms sit behind `#define SKY_WINDOW`; even default-zero uniforms moved
   pixels by 1/255 on the M3, so existing pages compile the untouched program.

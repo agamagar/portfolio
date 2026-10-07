@@ -36,7 +36,7 @@
 // (outside/horizon.js), not the bare sky.
 
 import * as THREE from "three/webgpu";
-import { uv, vec2, vec3, float, mix, smoothstep, length, vertexColor, mx_worley_noise_float, mx_noise_float, attribute, positionWorld, cameraPosition, max, min, sin, fract, floor } from "three/tsl";
+import { uv, vec2, vec3, float, mix, smoothstep, length, vertexColor, mx_worley_noise_float, mx_noise_float, attribute, positionWorld, cameraPosition, max, min, sin, fract, floor, uniform } from "three/tsl";
 import { GeoBuilder, tube, outdoorMaterial, outdoorLensBlur, windPositionNode, windGustNode, lin, linv, D2R } from "./common.js";
 
 const V3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
@@ -358,9 +358,19 @@ export function buildFarTrees(P, U, rnd, { chair } = {}) {
   const stain = smoothstep(0.55, 0.85, stainN).mul(0.3);
   const parapet = smoothstep(bh - 1.05, bh - 1.0, fy).mul(float(1).sub(smoothstep(bh - 0.9, bh - 0.85, fy))).mul(0.25);
   const plaster = mx_noise_float(vec3(fx.mul(6), fy.mul(6), 1.7)).mul(0.06);
-  let bAlb = linv(Bd.color).mul(float(1).add(plaster)).mul(float(1).sub(stain));
+  // (2026-10-06) a look can repaint the plaster and the chajjas live (building.paint:
+  // colour and amount; amount 0 = the house's own cream, exactly): Cyberpunk's cool
+  // concrete, where the cream read ochre at dusk, off its palette
+  const PU = { color: uniform(new THREE.Color(1, 1, 1)), amount: uniform(0) };
+  const setPaint = () => {
+    const Pt = P.outside.building?.paint;
+    PU.color.value.setStyle(Pt?.color || "#ffffff", THREE.SRGBColorSpace);
+    PU.amount.value = Pt?.amount ?? 0;
+  };
+  setPaint();
+  let bAlb = mix(linv(Bd.color), vec3(PU.color), PU.amount).mul(float(1).add(plaster)).mul(float(1).sub(stain));
   bAlb = bAlb.mul(float(1).sub(shade.mul(win.oneMinus())));
-  bAlb = mix(bAlb, linv(Bd.chajja), chajja);
+  bAlb = mix(bAlb, mix(linv(Bd.chajja), vec3(PU.color).mul(0.9), PU.amount), chajja);
   bAlb = bAlb.mul(float(1).sub(parapet));
   const openAlb = mix(vec3(0.012, 0.012, 0.014), linv(Bd.grille), grille);
   bAlb = mix(bAlb, openAlb, win);
@@ -370,18 +380,31 @@ export function buildFarTrees(P, U, rnd, { chair } = {}) {
   // lit as the share falls and they go dark one by one), warm filament-white or the
   // cool white of an LED tube light, a curtain drawn across part of it, the grille's
   // bars dark against the light. Through the depth of field they are soft bokeh.
+  // (2026-10-05) the colours, the level and the cool share are uniforms set every
+  // frame (update below), so a look switch changes them without a rebuild; whether
+  // the windows are built at all (level > 0 in the base) stays build-time
   let bGlow = null;
   const Lw = Bd.lit;
+  const LU = { warm: uniform(new THREE.Color()), cool: uniform(new THREE.Color()), level: uniform(0), coolShare: uniform(0.5) };
+  const setLit = () => {
+    const L2 = P.outside.building?.lit;
+    if (!L2) return;
+    LU.warm.value.setStyle(L2.warm, THREE.SRGBColorSpace);
+    LU.cool.value.setStyle(L2.cool, THREE.SRGBColorSpace);
+    LU.level.value = L2.level ?? 0;
+    LU.coolShare.value = L2.coolShare ?? 0.5;
+  };
+  setLit();
   if (Lw && Lw.level > 0) {
     const col = fx.sub(Bd.bayOffset).div(bayW).floor();
     const rowI = fy.div(storey).floor();
     const h1 = fract(sin(col.mul(12.9898).add(rowI.mul(78.233)).add(Lw.seed ?? 3.7)).mul(43758.5453));
     const h2 = fract(h1.mul(7.31).add(0.173));
     const on = smoothstep(h1.sub(0.015), h1.add(0.015), U.city.x);
-    const tone = mix(linv(Lw.warm), linv(Lw.cool), smoothstep(Lw.coolShare - 0.02, Lw.coolShare + 0.02, float(1).sub(h2)));
+    const tone = mix(vec3(LU.warm), vec3(LU.cool), smoothstep(LU.coolShare.sub(0.02), LU.coolShare.add(0.02), float(1).sub(h2)));
     const wx = inBayX.sub(bayW.mul(0.5).sub(Bd.window[0] / 2)).div(Bd.window[0]); // 0..1 across the opening
     const curtain = mix(float(0.3), float(1), smoothstep(h2.mul(0.5).add(0.15), h2.mul(0.5).add(0.3), wx));
-    bGlow = tone.mul(U.lightGain.mul(Lw.level)).mul(on).mul(curtain).mul(float(1).sub(grille.mul(1.6))).mul(win).mul(U.city.w).mul(float(0.7).add(h2.mul(0.6)));
+    bGlow = tone.mul(U.lightGain.mul(LU.level)).mul(on).mul(curtain).mul(float(1).sub(grille.mul(1.6))).mul(win).mul(U.city.w).mul(float(0.7).add(h2.mul(0.6)));
   }
   const bMat = outdoorMaterial(U, { albedo: bAlb, roughness: 0.92, ambient: Bd.ambient, wetDarken: 0.25, sun: 1, glow: bGlow, street: Bd.street ?? 0, name: "building" });
   const bMesh = new THREE.Mesh(bGeo, bMat);
@@ -442,6 +465,10 @@ export function buildFarTrees(P, U, rnd, { chair } = {}) {
 
   return {
     group,
+    update() {
+      setLit();
+      setPaint();
+    },
     stats: { trees: trees.length, cards: cardGB.idx.length / 6, coreTris: coreGB.idx.length / 3 },
     dispose() {
       for (const d of disposables) d.dispose();

@@ -85,6 +85,8 @@ export const LIGHTS_PARAMS = {
       // glass that passes most of it outside; at 1 the room's return rose 5x at
       // dusk and lifted every dark frame member (5482: grid RMSE 1.33 stops)
       roomShare: 0.15,
+      // x the spill once the sun is up (lights.js: eased from -4 to 10 deg); 1 = none
+      dayGain: 1,
       // the lateral ramp (rampAz 180: the lobe falls toward L2): in this map L2's
       // hinge stile spans u -0.046 to 0.033 and R1's free stile sits at u 0.13
       // (projected from the room's geometry, checked with half-map probes). The
@@ -121,6 +123,9 @@ export const LIGHTS_PARAMS = {
     // light (x G at night): 0.02 at the old night exposure is 0.003 at the camera's
     intensity: 0.003,
     color: "#b7c6e6", // moonlight reads cool to a dark-adapted eye
+    // [az, alt] deg: a night key from this fixed direction instead of the moon's own
+    // (lights.js; null = the moon). Never with sky.moon.mode "placed"
+    keyDir: null,
   },
 
   // Skylight through the window: a RectAreaLight over the opening, facing into the
@@ -142,7 +147,9 @@ export const LIGHTS_PARAMS = {
   // day: the daylight room fill's gain (lights.js; 0 = the dark-room balance
   // only, Photo-true), dayTint its colour by the hour and the altitudes it rises
   // between
-  bounce: { enabled: true, albedo: 0.5, roomArea: 50, lift: 0, ground: "#221a18", sky: "#d8cebf", day: 0, dayTint: { from: 8, full: 30, morning: "#c4d4ec", noon: "#e8e6e0", afternoon: "#f2d6b0" } },
+  // runwayLift: a look's extra room floor on the runways (lights.js: added to lift,
+  // eased in from p = runwayFrom to runwayTo, p or p2; 0 = none)
+  bounce: { enabled: true, albedo: 0.5, roomArea: 50, lift: 0, runwayLift: 0, runwayFrom: 0.04, runwayTo: 0.3, ground: "#221a18", sky: "#d8cebf", day: 0, dayTint: { from: 8, full: 30, morning: "#c4d4ec", noon: "#e8e6e0", afternoon: "#f2d6b0" } },
   // The room's ceiling light: ON in every dusk photo (5480 to 5484), OFF for the
   // visitor (20-question Q10). lights.js builds it only for a shot whose params
   // say ceilingLight (or `always`, for experiments). pos and target in W: just
@@ -242,6 +249,7 @@ export const EXPOSURE_PARAMS = {
     min: 0.55,
     max: 3.2, // the 18:40 photos: the lamp-lit stile displays at about 3x its 17:41 exposure
     hi: 1.6, // the mean of the brightest large area in frame stays under this after exposure
+    nightHi: null, // a look's `hi` after dark (eased in from duskFrom to duskTo); null = hi
     screenKey: 0.75, // the screen counts as at least this share of its white (the light page's mean)
     roomLum: 0.02, // what the dark room returns, scene units
     frameCover: 0.35, // share of the opening that is frame and bars
@@ -449,6 +457,22 @@ export const GRADE_PARAMS = {
   // noonDesat and noonFlat paler and flatter as the sun climbs from noonFrom to
   // noonTo deg; amSat and amContrast the clear morning's crispness
   hour: null,
+  // A hue band turned about the grey axis (light/grade.js hueBand; Cyberpunk turns
+  // the green foliage teal). Scene-linear, after white balance and exposure, before
+  // saturation. Hues are angles about the grey axis (red 30, yellow 90, green 150,
+  // cyan 210, blue 270 deg); pixels within `half` deg of `centre` turn by `angle` deg,
+  // fading out over `feather`. Neutral pixels never move. amount 0 = the stage is not
+  // built (post.js), so the other looks keep their exact graph.
+  // satLo / satHi: the turn is weighted by the colour's chroma against its grey (a
+  // pure primary about 1.4, a cream about 0.2): none below satLo, full from satHi
+  hueBand: { amount: 0, centre: 128, half: 22, feather: 20, angle: 55, satLo: 0, satHi: 0 },
+  // A split tone in display space (light/grade.js splitTone), after lift and gamma,
+  // before the vignette: the shadows (below lo, gone by loTo, display luminance)
+  // lean to `shadow` and the highlights (from hi, full by hiTo) to `high`, both
+  // normalised to unit luminance (post.js). Both amounts 0 = the stage is not built.
+  // keepSat [lo, hi]: the shadow tint fades out on saturated colours (display
+  // saturation, max-min over max), gone from hi; null = none
+  split: { shadow: [1, 1, 1], shadowAmount: 0, lo: 0.02, loTo: 0.2, high: [1, 1, 1], highAmount: 0, hi: 0.45, hiTo: 0.9, keepSat: null },
   // display space
   displaySaturation: 1, // after the tone mapper (AgX greys bright colours)
   lift: 0, // added to the blacks, 0..0.05

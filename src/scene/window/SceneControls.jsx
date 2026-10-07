@@ -1,20 +1,20 @@
 // The window scene's two header controls, beside the theme toggle (30-locked-brief:
 // "Controls beside the theme toggle"): whose sky the window shows (Agam's Bangalore
 // sky, or the visitor's own city and clock) and the look (Dreamlike, Heightened,
-// Photo-true). Shown only while the scene is on the page. They share the theme
+// Photo-true, Cyberpunk). Shown only while the scene is on the page. They share the theme
 // toggle's button (.theme-toggle), so size, colour and hover match.
 //
 // Sky: lib/weather.js setSkyMode (persisted, subscribable); the scene's weather
 // bridge follows it. Look: lookStore.js; useWindowScene follows it.
 
 import { useEffect, useRef, useState } from "react";
-import { HomeSimple, Globe, Sparks, SunLight, Camera, Check, Antenna, CloudSunny, Cloud, Rain, Thunderstorm, Clock, HalfMoon } from "iconoir-react";
+import { HomeSimple, Globe, Sparks, SunLight, Camera, City, Check, Antenna, CloudSunny, Cloud, Rain, Thunderstorm, Clock, HalfMoon } from "iconoir-react";
 import { getSkyMode, setSkyMode, subscribeSkyMode } from "../../lib/weather";
 import { LOOKS, getLook, setLook, subscribeLook } from "./lookStore.js";
 import { WEATHERS, TIMES, getOutside, setOutside, subscribeOutside } from "./outsideStore.js";
 import "./sceneControls.css";
 
-const LOOK_ICON = { dreamlike: Sparks, heightened: SunLight, photo: Camera };
+const LOOK_ICON = { dreamlike: Sparks, heightened: SunLight, photo: Camera, cyberpunk: City };
 const WX_ICON = { live: Antenna, clear: SunLight, partly: CloudSunny, overcast: Cloud, rain: Rain, storm: Thunderstorm };
 const TIME_ICON = { now: Clock, morning: SunLight, golden: SunLight, dusk: CloudSunny, night: HalfMoon };
 

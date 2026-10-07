@@ -63,6 +63,24 @@ export function linv(hex) {
   return vec3(c.r, c.g, c.b);
 }
 
+// THE NEON SIGNS' LIGHT (outside/neon.js writes it every frame; all zero while no sign
+// is on, so what reads it adds exactly 0 in the other looks): mean, the signs' summed
+// illuminance at the window (linear, scene units: their light in the outdoor air and
+// the room's window fill); a and b, the first two palette colours at the signs'
+// radiance (each rain streak and each drop on the wet glass picks one of them);
+// dirA and dirB, where those two colours' signs stand (xyz: the mean unit direction
+// from the window, world), and spread, how close to it a drop must look to catch
+// one (x for the falling streaks, y for the drops on the glass: 1 / sigma^2 in
+// radians; a drop's weight is exp((dot(view, dir) - 1) x spread), so 0 = everywhere).
+export const NEON = {
+  mean: new THREE.Color(0, 0, 0),
+  a: uniform(new THREE.Vector3()),
+  b: uniform(new THREE.Vector3()),
+  dirA: uniform(new THREE.Vector3(0, 0, -1)),
+  dirB: uniform(new THREE.Vector3(0, 0, -1)),
+  spread: uniform(new THREE.Vector2(0, 0)),
+};
+
 // --- per-frame uniforms, one set for the whole outside -------------------------------
 export function createOutsideUniforms() {
   return {
@@ -102,6 +120,10 @@ export function createOutsideUniforms() {
     // 1 from about -6 deg: when a lit window shows at all)
     city: uniform(new THREE.Vector4(0, 0, 0, 0)),
     glowCol: uniform(new THREE.Color(0, 0, 0)), // the skyglow's colour x its level, linear
+    // THE MURK (Cyberpunk, outside.horizon.murk): x how thick the weather's lit murk is
+    // this frame (0 clear; 0 in every other look), y its base and z its depth (deg:
+    // the towers fade into it above the base), w x the city's glow it carries
+    murk: uniform(new THREE.Vector4(0, 16, 4, 1)),
     // the light lane's G (light/exposure.js lightGain: E_true / E_render), which every
     // physical light carries; the lit windows take it (outside.js)
     lightGain: uniform(1),

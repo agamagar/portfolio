@@ -299,3 +299,38 @@ done
 python3 tools/window-light/compare.py $F/ref/ref-photo.png tools/window-light/ref/ref_1600.png --draw-regions
 cd $F/perf && DPR=2 RUNS=3 node perf.mjs "$(cat variants.json)"
 ```
+
+## 10 · Look pass, build-01: the brass D-handle (2026-10-05)
+
+Branch `window-look-pass`, not committed. Renders and tools:
+`/Users/agamagarwal/window-light-runs-archive/close/build-01-brass-handle/` (before, after, iter/sweep,
+tools/bmeas.py, masks/, before-after.png). The tree also held another session's uncommitted prop edits
+(bobblehead, scooter, VR headset, tissue frame); before and after were rendered on that same tree
+(checksums in before/tree-start.md5), so they differ only by the brass.
+
+Fit (handle-on probes; hero p=0 17:41 in three looks, 5482 with bloom and glare off; brass-only masks):
+
+| f0 and tarnish scale | surround | surroundSat | hero brass dL D / H / P | 5482 brass d_ab | dL | dE76 |
+|---|---|---|---|---|---|---|
+| 0.8 | 0.5 to 1.1 | 0.4 | -2.4 to -1.3 | 1.0 to 5.5 | -10.4 to -4.0 | 6.8 to 10.4 |
+| 1.0 | 0.5 | 0.4 | -0.4 / 0.0 / +0.2 | 1.11 | -6.90 | 6.99 |
+| 1.0 | 0.8 | 0.4 | -0.2 / +0.2 / +0.4 | 4.41 | -3.31 | 5.51 |
+| 1.0 | 1.0 | 0.2 (chosen) | -0.1 / +0.2 / +0.6 | 4.45 | -1.69 | 4.76 |
+| 1.0 | 1.1 | 0.0 | 0.0 / +0.4 / +0.5 | 4.41 | -0.75 | 4.47 |
+| 1.2 | 0.5 to 1.1 | 0.4 | +1.4 to +2.3 | 2.4 to 7.9 | -4.0 to +2.7 | 4.7 to 8.3 |
+
+Scale 1.2 breaks the hero gate (+2 or less) in Photo-true and Heightened and drops the room pixels brighter
+than the handle's p95 under 0.01. The plan's objective (lowest 5482 d_ab) would pick surround 0.5, but that
+handle is 6.9 L* darker than the photo's grip, so the choice was made on dE76 (d_ab and L* together) among
+the feasible rows. The chosen row keeps a fifth of the paint's chroma in the mirrored face; surroundSat 0
+(a grey face) scores within 0.3 of it.
+
+Result (before -> after, this tree): measure.py brass_handle dreamlike dL +6.95 -> -3.12, room pixels
+brighter than its p95 0.0034 -> 0.011; photo dL +5.92 -> -2.01; 5482 dh -11.2 -> -6.7, dC +8.81 -> +8.10,
+d_ab 12.86 -> 9.86. New measure.py key brass_only (brass masks): hero +11.3 / +12.5 / +9.5 -> -0.3 / +0.2 /
++0.5; night 21:00 -6.5 -> -8.1, dusk 18:40 -6.6 -> -8.5, noon +10.2 -> -2.4; 5482 veil-free dh -10.0 -> -0.4,
+dE76 13.7 -> 4.9; through the veil dh -7.9 -> -1.0 but dE76 13.1 -> 14.2 (the veil adds about +20 L*).
+ref1741 composite 48.95 -> 48.98 (WebGPU), 48.84 -> 48.83 (WebGL2); the 18 standard shots are pixel-identical
+(the handle is off; the hinges share the material and show nowhere). Frame time at the 1440x900 DPR 2 hero,
+WebGPU high: handle off 18.0 / 17.9 ms, on 17.95 / 18.0 (delta under 0.1 ms; load average 4.5 to 5.7).
+0 console errors and 0 warnings in 34 captures, both backends, all three tiers.

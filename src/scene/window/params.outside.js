@@ -256,6 +256,8 @@ export const OUTSIDE_PARAMS = {
     // 0.1: it clips and blooms; the DOF makes it a soft bokeh); warm filament and CFL
     // white or the cool white of an LED tube light (coolShare of them)
     lit: { level: 0.09, warm: "#ffc58a", cool: "#eaf1ff", coolShare: 0.45, seed: 3.7 },
+    // a look's repaint of the plaster and the chajjas (live; amount 0 = none)
+    paint: { color: "#ffffff", amount: 0 },
     street: 1,
   },
   wall: { x: 0, z: -3.9, length: 16, height: 1.7, color: "#d8cdb4", ambient: 1.0, street: 1 }, // the compound wall
@@ -280,6 +282,7 @@ export const OUTSIDE_PARAMS = {
     blockDeg: 4.5,
     blocks: 0.3,
     blockTop: [4.2, 6.6], // deg: a 6 to 10 storey block 250 to 400 m away
+    blockWide: 0, // added to each block's share of its segment (0.35 to 0.8; at most 0.98)
     storeyDeg: 0.55,
     treeColor: "#6f8752",
     blockColor: "#cfc7b6",
@@ -298,6 +301,16 @@ export const OUTSIDE_PARAMS = {
     // size: a lit window's own size (deg: 1.2 x 1 m at 250 to 300 m); at the hero it
     // is drawn as the lens's bokeh disc (horizon.js), so cells leave room for it
     windows: { cellDeg: [0.6, 0.46], size: [0.2, 0.16], density: 1.0, amongTrees: 0.16, level: 0.08, warm: "#ffb46b", cool: "#e6efff", bloom: 1.5 },
+    // neon trims (Cyberpunk): a tube along a share of the blocks' rooflines, inset deg
+    // under the roof, and down a corner on some, in one of two colours, at night
+    // (level x the light gain, like the windows; bloom x it into the bloom). level 0
+    // = none (horizon.js: the term is exactly 0)
+    trim: { level: 0, share: 0.5, inset: 0.3, colors: ["#ffffff", "#ffffff"], bloom: 0 },
+    // the murk (Cyberpunk; absent here = none): the weather's cloud deck and rain lit
+    // from below by the city (outside.js U.murk): cloud x the deck's cover (0.45 to
+    // 0.95) plus rain x the wetness (x storm in a storm), at most 1; the towers fade
+    // into it above base deg (over depth deg); glow x the city's glow in its colour
+    murk: null,
   },
 
   // THE CITY AT NIGHT (loop 2, outside.js): the local hour of the sky shown drives it.
@@ -396,6 +409,58 @@ export const OUTSIDE_PARAMS = {
     lampGlint: 0.02,
     drips: 90, // drops under the grille while it is wet
     bead: 0.0018, // m, radius of a hanging drop when it lets go
+    // the neon signs caught by the streaks (outside/neon.js, Cyberpunk): this share of
+    // the drops shows one sign colour each (never their average), at gain x the
+    // signs' colour (0 = none: the term is exactly 0)
+    neon: { share: 0, gain: 1 },
+  },
+
+  // NEON SIGNS (outside/neon.js; Cyberpunk only, off here): flat emissive cards far
+  // beyond the bamboo, 18 to 26 m out and 8 to 11 deg up, so the street crowns hide
+  // their lower edges. Built on the first frame `enabled` is true (nothing exists for
+  // the other looks). Each sign: bearing (deg, 0 = north, + east), dist (m from the
+  // window), elev (deg above the sill's horizon), w and h (m), kind (frame, blade,
+  // strip, screen), color (a palette index) or colors [a, b],
+  // flicker (true: it stutters, at most 2 changes a second, never under
+  // prefers-reduced-motion). level: scene units x the light gain at night; dayLevel
+  // by day, x the sky light the outdoor surfaces receive (per unit of lumCap: a
+  // tube's flat colour is about 0.3 of it, the lens's blur spreading the rest);
+  // bloom: x the colour into the bloom; air: x the signs' light
+  // added to the outdoor haze and sky ambient and the window's fill (F8); tube: the
+  // tube's half width (m); flicker 0 stops every flicker; debugFlat: whole cards in
+  // flat colours (the placement sweep).
+  neon: {
+    enabled: false,
+    level: 0.6,
+    dayLevel: 1,
+    bloom: 2.5,
+    dayBloom: 2.5, // the bloom by day (eased to `bloom` by U.night)
+    wetBloom: 1, // x the bloom while it rains (the wet air spreads each sign's light)
+    wetNight: 0, // in rain by day, this share of the way to the signs' night level (x wetness)
+    flicker: 1,
+    air: 1,
+    tube: 0.03,
+    hot: 1, // a tube's near-white core, x its colour's peak
+    panel: 0.4, // a lightbox's panel, x a tube's level
+    boxTubes: 1, // x a lightbox's two side tubes (0: none, the box lit from its middle)
+    boxHot: 0, // a lightbox's hot, near-white middle, x a tube's level (0 = none)
+    dayHot: 1, // by day, this share of boxHot (eased to all of it with the switch-on)
+    onAlt: null, // the signs' switch-on, [full day, full night] sun altitude (deg); null = U.night
+    haze: 1, // x the distance haze's mix (a lit sign burns through the air)
+    rim: 0, // the signs' colour on the bamboo's edges at night (palette[rimColor]), x the light gain
+    rimColor: 0,
+    lumCap: 0.3, // each palette colour's luminance held to at most this (linear)
+    // sigma (deg) round the first two colours' signs within which a falling streak
+    // ([0]) or a drop on the glass ([1]) catches them (outside/rain.js, materials.js)
+    dropSpread: [12, 30],
+    palette: ["#ff3c9c", "#30e8e8", "#ffb03c", "#8a4dff"],
+    signs: [],
+    // the towers the signs hang on (outside/neon.js buildSkyline; none here). spill:
+    // the first 8 signs' light on the walls round them, level x the signs' radiance,
+    // falling off over reach deg (0 = none), bloom x it into the bloom
+    // windows.gap: the share of a lit floor's bays left dark (0 = an unbroken band)
+    skyline: { towers: [], spill: { level: 0, reach: 0.8, bloom: 0 } },
+    debugFlat: false,
   },
 
   // DREAMLIKE ONLY (looks.js turns sky.moon.mode to placed): the halo and the rim
@@ -474,6 +539,7 @@ export const OUTSIDE_PARAMS = {
     photo: { sat: 1.0, ambient: 1.0, spray: false },
     heightened: { sat: 1.1, ambient: 1.05, spray: false },
     dreamlike: { sat: 1.12, ambient: 1.08, spray: true },
+    cyberpunk: { sat: 1.1, ambient: 1.05, spray: true },
   },
 
   // wind response (common.js windOffset). The plants feel the reading's mean speed

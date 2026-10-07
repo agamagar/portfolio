@@ -4,13 +4,15 @@
 //   scene-linear (before the tone mapper, post.js):
 //     + veiling glare (a share of the frame's mean light everywhere: the phone's
 //       lifted blacks), x white balance, x exposure (light/exposure.js),
+//       a hue band turned about the grey axis (grade.hueBand, Cyberpunk only),
 //       saturation around luminance, contrast around mid grey in log2
-//   display (after the tone mapper): lift, gamma, vignette
+//   display (after the tone mapper): lift, gamma, a split tone (grade.split,
+//     Cyberpunk only), vignette
 //   the sky (the dome's material, engine.js): the colour of the hour and the
 //     weather on the Living Sky plate's luminance (gradeSky, updateSkyGrade).
 
 import * as THREE from "three/webgpu";
-import { uniform, vec3, float, mix, max, min, pow, log2, exp2, dot, smoothstep, screenUV, length, uv } from "three/tsl";
+import { uniform, vec3, float, mix, max, min, pow, log2, exp2, dot, smoothstep, screenUV, length, uv, atan, abs, mod, cos, sin, cross, sqrt } from "three/tsl";
 
 const LUMA = vec3(0.2126, 0.7152, 0.0722);
 
@@ -27,11 +29,68 @@ export function createGradeUniforms() {
     gamma: uniform(1),
     vignette: uniform(0),
     vignetteRound: uniform(0.65),
+    // the hue band (grade.hueBand): amount, and the angles in radians
+    hbAmt: uniform(0),
+    hbCentre: uniform(0),
+    hbHalf: uniform(0),
+    hbFeather: uniform(1),
+    hbAngle: uniform(0),
+    // ... weighted by the colour's chroma against its grey (0 at satLo, full at satHi):
+    // a low-chroma cream or olive near the band's edge never splits into blotches
+    hbSatLo: uniform(0),
+    hbSatHi: uniform(1e-4),
+    // the split tone (grade.split): unit-luminance tints, amounts and ranges
+    spShadow: uniform(new THREE.Vector3(1, 1, 1)),
+    spShadowAmt: uniform(0),
+    spLo: uniform(0.02),
+    spLoTo: uniform(0.2),
+    spHigh: uniform(new THREE.Vector3(1, 1, 1)),
+    spHighAmt: uniform(0),
+    spHi: uniform(0.45),
+    spHiTo: uniform(0.9),
+    // ... the shadow tint held off saturated colours (display saturation, max-min over
+    // max: none from keepSat[1], all below keepSat[0]): a neon sign or a lit stile
+    // keeps its own colour, the near-neutral room takes the tint
+    spSatLo: uniform(10),
+    spSatHi: uniform(11),
   };
 }
 
-export function gradeSceneLinear(hdr, g) {
+// The grey axis and two unit vectors across it (U1 x U2 = K): a hue is the angle
+// of a colour's projection on the plane they span (red 30, green 150, blue 270 deg)
+const GREY_K = vec3(1 / Math.sqrt(3), 1 / Math.sqrt(3), 1 / Math.sqrt(3));
+const GREY_U1 = vec3(1 / Math.SQRT2, -1 / Math.SQRT2, 0);
+const GREY_U2 = vec3(1 / Math.sqrt(6), 1 / Math.sqrt(6), -2 / Math.sqrt(6));
+
+// Turn the hues within a band about the grey axis (Rodrigues' rotation about K):
+// a positive angle moves green toward cyan. Neutral pixels are fixed points.
+export function hueBand(c, g) {
+  const x = dot(c, GREY_U1), y = dot(c, GREY_U2);
+  const h = atan(y, x);
+  const d = abs(mod(h.sub(g.hbCentre).add(Math.PI), 2 * Math.PI).sub(Math.PI));
+  // chroma relative to the grey component (a pure primary about 1.4, a cream 0.2)
+  const sat = sqrt(x.mul(x).add(y.mul(y))).div(max(dot(c, GREY_K), 1e-6));
+  const w = float(1).sub(smoothstep(g.hbHalf, g.hbHalf.add(g.hbFeather), d)).mul(smoothstep(g.hbSatLo, g.hbSatHi, sat));
+  const a = g.hbAngle.mul(g.hbAmt).mul(w);
+  const ca = cos(a);
+  return c.mul(ca).add(cross(GREY_K, c).mul(sin(a))).add(GREY_K.mul(dot(GREY_K, c)).mul(float(1).sub(ca)));
+}
+
+// The split tone in display space: the shadows lean to one unit-luminance tint and
+// the highlights to another, luminance kept
+export function splitTone(c, g) {
+  const L = dot(c, LUMA);
+  const cMax = max(max(c.x, c.y), c.z), cMin = min(min(c.x, c.y), c.z);
+  const sat = cMax.sub(cMin).div(max(cMax, 1e-5));
+  const ws = float(1).sub(smoothstep(g.spLo, g.spLoTo, L)).mul(g.spShadowAmt).mul(float(1).sub(smoothstep(g.spSatLo, g.spSatHi, sat)));
+  const wh = pow(smoothstep(g.spHi, g.spHiTo, L), float(1.5)).mul(g.spHighAmt);
+  return c.mul(float(1).sub(ws).sub(wh)).add(vec3(g.spShadow).mul(L).mul(ws)).add(vec3(g.spHigh).mul(L).mul(wh));
+}
+
+// opts.hueBand: build the hue band (post.js decides; off, the graph is unchanged)
+export function gradeSceneLinear(hdr, g, opts = {}) {
   let c = hdr.add(vec3(g.flare)).mul(g.wb).mul(g.exposure);
+  if (opts.hueBand) c = hueBand(c, g);
   const l = max(dot(c, LUMA), 1e-6);
   c = mix(vec3(l), c, g.saturation);
   // contrast in log2 around the pivot, applied to luminance (hue kept)
@@ -40,7 +99,8 @@ export function gradeSceneLinear(hdr, g) {
   return max(c.mul(lc.div(l2)), vec3(0));
 }
 
-export function gradeDisplay(ldr, g) {
+// opts.split: build the split tone (post.js decides; off, the graph is unchanged)
+export function gradeDisplay(ldr, g, opts = {}) {
   // saturation after the tone mapper: AgX greys the brights (a sky at 1.5x the
   // screen's white comes out almost white), a phone keeps them pale blue
   const dl = dot(ldr, LUMA);
@@ -48,6 +108,7 @@ export function gradeDisplay(ldr, g) {
   // lift (blacks up, whites held), then gamma
   c = c.mul(float(1).sub(g.lift)).add(g.lift);
   c = pow(max(c, vec3(0)), vec3(float(1).div(g.gamma)));
+  if (opts.split) c = splitTone(c, g);
   // vignette: cos^4-ish falloff toward the corners, round or rectangular
   const p = screenUV.sub(0.5).mul(2);
   const rRound = length(p).mul(1 / Math.SQRT2);

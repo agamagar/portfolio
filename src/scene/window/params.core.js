@@ -113,6 +113,11 @@ export const CORE_PARAMS = {
     looks: {
       heightened: { contrast: 0.36 },
       photo: { contrast: 0.25 }, // 0.3 left the light theme at 71 and 72 at 09:00 and 12:00
+      // 0.36 (the spec's start) held the noon desktop timeline at 4.18:1 for #ededed on
+      // the dark theme, 0.25 at 4.74:1; the greeting (3.1 to 3.4:1 at noon) and the
+      // phone's noon timeline (1.26:1) do not move with it: the scene alone cannot
+      // carry them, as in Dreamlike (2.6 and 1.27:1); the page's scrim does
+      cyberpunk: { contrast: 0.25 },
     },
     lift: 0, // display-space pull of the field's mean toward `level` (0 = the scene's own)
     level: 0.5,

@@ -9,6 +9,8 @@
  *   outside/moon.js      Dreamlike: the moon's own crisp disc (maria, true phase and limb)
  *                        over the plate's, its corona and halo, silver cloud rims, its light on the edges
  *   outside/motes.js     Dreamlike: pollen and fireflies outside, dust in the lamp beam
+ *   outside/neon.js      Cyberpunk: neon signs 18 to 26 m out, flat emissive cards over
+ *                        the street crowns (built on the first frame a look enables them)
  *   outside/horizon.js   the far edge: a hazy treeline with a few blocks over it, the
  *                        haze above it, and at night the city (skyglow, lit windows,
  *                        the white-LED street lights' heads); what a gap in the
@@ -47,7 +49,7 @@
 
 import * as THREE from "three/webgpu";
 import { lights as lightsNode } from "three/tsl";
-import { createOutsideUniforms, outdoorMaterial, linv, smooth, D2R } from "./outside/common.js";
+import { createOutsideUniforms, outdoorMaterial, linv, smooth, D2R, NEON } from "./outside/common.js";
 import { setKelvin } from "three/addons/utils/ColorUtils.js";
 import { buildGrid } from "./outside/grid.js";
 import { buildBamboo } from "./outside/bamboo.js";
@@ -56,6 +58,7 @@ import { buildRain } from "./outside/rain.js";
 import { buildMoon } from "./outside/moon.js";
 import { buildMotes } from "./outside/motes.js";
 import { buildHorizon } from "./outside/horizon.js";
+import { buildNeon } from "./outside/neon.js";
 import { lightningAt } from "./skyPlate.js";
 // read only, and as a namespace: light/exposure.js lightGain (loop 2, the light
 // lane's "two exposures") may not exist in every build; without it G is 1
@@ -143,6 +146,8 @@ export function buildOutside(P, ctx) {
   const motes = buildMotes(P, U, rnd, { lampHead: anchors.lampHead || null, roomHasMotes });
   group.add(motes.group);
   parts.push(motes);
+  // the neon signs: nothing until a look enables them (update, below)
+  let neon = null;
 
   // --- the camera, for the lens (U.lens) --------------------------------------------------------
   // The engine hands no camera to the modules; the canopy's own draw call does. The
@@ -318,13 +323,53 @@ export function buildOutside(P, ctx) {
       const [bearing, dist, y, w = 1] = pl;
       U.poles[i].value.set(Math.sin(bearing * D2R) * dist, y, -Math.cos(bearing * D2R) * dist, w);
     }
+    // THE NEON SIGNS (Cyberpunk, outside/neon.js): built on the first frame a look
+    // enables them; their light (NEON.mean) joins the outdoor air and the sky light
+    // the outdoor surfaces receive (outside.neon.air); 0 while no sign is on
+    if (!neon && P.outside.neon?.enabled) {
+      neon = buildNeon(P, U);
+      group.add(neon.group);
+      parts.push(neon);
+    }
+    if (neon) neon.update(state);
+    else {
+      NEON.mean.setRGB(0, 0, 0);
+      NEON.a.value.set(0, 0, 0);
+      NEON.b.value.set(0, 0, 0);
+    }
+    const nAir = P.outside.neon?.enabled ? P.outside.neon.air ?? 1 : 0;
+    if (nAir > 0) {
+      const m = NEON.mean;
+      U.hazeCol.value.r += m.r * nAir;
+      U.hazeCol.value.g += m.g * nAir;
+      U.hazeCol.value.b += m.b * nAir;
+      U.skyAmb.value.r += m.r * nAir;
+      U.skyAmb.value.g += m.g * nAir;
+      U.skyAmb.value.b += m.b * nAir;
+    }
+    // THE MURK (Cyberpunk; outside.horizon.murk, absent elsewhere: 0): a cloud deck
+    // and rain lit from below by the city, the towers' tops and their lights fading
+    // into it, the sky between them a lit violet murk (horizon.js, neon.js)
+    const Mk = P.outside.horizon?.murk;
+    let murk = 0;
+    if (Mk) {
+      const deck = smooth(0.45, 0.95, cloud);
+      const wetM = sw.rain?.active ? Math.max(0.5, U.wet.value) * (sw.storm?.active ? Mk.storm ?? 1 : 1) : 0;
+      murk = Math.min(1, (Mk.cloud ?? 0) * deck + (Mk.rain ?? 0) * wetM);
+    }
+    U.murk.value.set(murk, Mk?.base ?? 16, Math.max(0.1, Mk?.depth ?? 4), Mk?.glow ?? 1);
     horizon.update(state);
+    far.update?.(state);
 
     rain.update(state, { lampHead: anchors.lampHead, wind: w });
     moon.update(state);
     motes.update(state, { wind: w });
-    // night: the moon rim is the only moonlight here (Dreamlike); others stay at 0
-    if (!(P.sky.moon?.mode === "placed")) U.moonRim.value.setRGB(0, 0, 0);
+    // night: the moon rim is the only moonlight here (Dreamlike); others stay at 0,
+    // but for the neon signs' own rim on the bamboo (Cyberpunk, outside.neon.rim:
+    // the signs stand behind the clump, so its edges catch their colour)
+    if (!(P.sky.moon?.mode === "placed")) {
+      if (!(neon && neon.rim(U))) U.moonRim.value.setRGB(0, 0, 0);
+    }
   }
 
   const api = {
@@ -338,7 +383,7 @@ export function buildOutside(P, ctx) {
     // dev only: what the outside is being lit with this frame (tools read it)
     debug() {
       const c = (u) => [u.value.r, u.value.g, u.value.b].map((v) => +v.toFixed(4));
-      return { city: U.city.value.toArray().map((v) => +v.toFixed(5)), glowCol: c(U.glowCol), streetCol: c(U.streetCol), farSun: c(U.farSun), skyAmb: c(U.skyAmb), groundAmb: c(U.groundAmb), hazeCol: c(U.hazeCol), hazeDist: U.hazeDist.value, wet: U.wet.value, W: U.W.value.toArray(), K: U.K.value.toArray(), moonRim: c(U.moonRim), night: +U.night.value.toFixed(3), skyGain: ctx.uniforms?.skyGain ? c(ctx.uniforms.skyGain) : null, lens: U.lens.value.toArray().map((v) => +v.toFixed(5)), stats: api.stats };
+      return { neon: neon ? neon.debug() : null, city: U.city.value.toArray().map((v) => +v.toFixed(5)), glowCol: c(U.glowCol), streetCol: c(U.streetCol), farSun: c(U.farSun), skyAmb: c(U.skyAmb), groundAmb: c(U.groundAmb), hazeCol: c(U.hazeCol), hazeDist: U.hazeDist.value, wet: U.wet.value, W: U.W.value.toArray(), K: U.K.value.toArray(), moonRim: c(U.moonRim), night: +U.night.value.toFixed(3), skyGain: ctx.uniforms?.skyGain ? c(ctx.uniforms.skyGain) : null, lens: U.lens.value.toArray().map((v) => +v.toFixed(5)), stats: api.stats };
     },
     dispose() {
       for (const p of parts) p.dispose();

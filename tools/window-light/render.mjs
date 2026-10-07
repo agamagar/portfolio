@@ -55,7 +55,7 @@ const BASE_FLAGS = [
   "--use-mock-keychain",
 ];
 
-const BOOL = new Set(["console", "strict", "probe", "help", "static", "quiet"]);
+const BOOL = new Set(["console", "strict", "probe", "help", "static", "quiet", "reduced-motion"]);
 
 function parseArgs(argv) {
   const o = {};
@@ -81,7 +81,7 @@ const USAGE = `window-light render.mjs
   node tools/window-light/render.mjs --probe
 
 Options (a batch entry may carry any per-shot key: name url w h dpr frames settle scheme eval
-timeout scene sceneWait waitFor out):
+timeout scene sceneWait waitFor out reducedMotion expect):
   --base URL        server to render from (default ${DEFAULT_BASE}; if unreachable, a Vite dev
                     server is started on :${FALLBACK_PORT} with the local binary and stopped after)
   --static          serve the project root as static files on a free 127.0.0.1 port instead
@@ -99,7 +99,12 @@ timeout scene sceneWait waitFor out):
                     (for example canvas: a cold Vite load of a lazy three chunk can take
                     longer than the settle)
   --scheme S        emulate prefers-color-scheme: light | dark
-  --eval JS         expression evaluated (and awaited) after ready or settle, before frames
+  --reduced-motion  emulate prefers-reduced-motion: reduce
+  --eval JS         expression evaluated (and awaited) after ready or settle, before frames;
+                    its result (when JSON, under 50 KB) goes in the sidecar as evalResult
+  --expect "P=V;Q"  after the shot, assert each params path P is in the sidecar's params
+                    (and equals V, JSON or a string, when given); a miss fails the shot,
+                    exit 1 (an HMR reload mid-batch can silently drop a look's patch)
   --timeout MS      per shot (default 90000); on timeout the page is still captured
   --console         write console errors, warnings and exceptions to NAME.log
   --strict          exit 1 if any shot logged a console error
@@ -422,7 +427,7 @@ async function runShot(b, shot, ctx) {
   const rec = {
     tool: "window-light/render.mjs", toolVersion: TOOL_VERSION,
     name: shot.name, url, base: ctx.base, baseSource: ctx.baseSource,
-    requested: { w: shot.w, h: shot.h, dpr: shot.dpr, frames: shot.frames, settle: shot.settle, scheme: shot.scheme || null, eval: shot.eval || null, scene: shot.scene, sceneWait: shot.sceneWait, waitFor: shot.waitFor },
+    requested: { w: shot.w, h: shot.h, dpr: shot.dpr, frames: shot.frames, settle: shot.settle, scheme: shot.scheme || null, reducedMotion: !!shot.reducedMotion, eval: shot.eval || null, expect: shot.expect || null, scene: shot.scene, sceneWait: shot.sceneWait, waitFor: shot.waitFor },
     png: null, image: null, canvas: null,
     timing: { startedAt: new Date(t0).toISOString() },
     scene: { present: false },
@@ -474,7 +479,7 @@ async function runShot(b, shot, ctx) {
   try {
     const { w, h, dpr } = shot;
     await b.cdp.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: dpr, mobile: false, screenWidth: w, screenHeight: h });
-    await b.cdp.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: shot.scheme || "" }] });
+    await b.cdp.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: shot.scheme || "" }, { name: "prefers-reduced-motion", value: shot.reducedMotion ? "reduce" : "" }] });
 
     // A full load every time: about:blank first, so even a same-path URL is never a same-document jump.
     const blank = b.cdp.once("Page.loadEventFired", 10000);
@@ -499,7 +504,16 @@ async function runShot(b, shot, ctx) {
     if (shot.scene !== "skip") {
       const tEnd = Date.now() + Math.min(sceneWait, left());
       while (Date.now() < tEnd) {
-        if (await evaluate(b.cdp, "!!window.__windowScene", 5000, "scene check")) { hasScene = true; break; }
+        // a page busy past 5 s (a cold module graph on a throttled machine: on battery
+        // the first evaluate waited 20 s) is not yet a failure: keep looking until
+        // sceneWait runs out
+        let seen = false;
+        try {
+          seen = await evaluate(b.cdp, "!!window.__windowScene", 5000, "scene check");
+        } catch (e) {
+          if (!/timed out/.test(String(e?.message))) throw e;
+        }
+        if (seen) { hasScene = true; break; }
         await sleep(100);
       }
     }
@@ -511,7 +525,7 @@ async function runShot(b, shot, ctx) {
       await evaluate(b.cdp, `(async () => { const s = window.__windowScene; await (typeof s.ready === "function" ? s.ready() : s.ready); return true; })()`, left(), "__windowScene.ready");
       rec.timing.readyMs = Date.now() - t0;
       rec.scene.version = await evaluate(b.cdp, "String(window.__windowScene.version ?? '')", 5000);
-      if (shot.eval) await evaluate(b.cdp, shot.eval, left(), "--eval");
+      if (shot.eval) rec.evalResult = keepResult(await evaluate(b.cdp, shot.eval, left(), "--eval"));
       const tf = Date.now();
       await evaluate(b.cdp, `Promise.resolve(window.__windowScene.renderFrames(${Number(shot.frames)})).then(() => true)`, left(), `renderFrames(${shot.frames})`);
       rec.timing.framesMs = Date.now() - tf;
@@ -527,7 +541,7 @@ async function runShot(b, shot, ctx) {
         rec.timing.waitForMs = Date.now() - tw;
       }
       await evaluate(b.cdp, "document.fonts ? document.fonts.ready.then(() => true) : true", Math.min(10000, left()), "document.fonts.ready").catch((e) => rec.warnings.push(e.message));
-      if (shot.eval) await evaluate(b.cdp, shot.eval, left(), "--eval");
+      if (shot.eval) rec.evalResult = keepResult(await evaluate(b.cdp, shot.eval, left(), "--eval"));
       await sleep(Math.min(shot.settle, left()));
     }
     await evaluate(b.cdp, TWO_RAF, Math.min(5000, left()), "two animation frames").catch((e) => rec.warnings.push(e.message));
@@ -546,6 +560,15 @@ async function runShot(b, shot, ctx) {
       rec.scene.params = await evaluate(b.cdp, `(() => { try { const s = JSON.stringify(window.__windowScene.params); return s && s.length < 200000 ? JSON.parse(s) : "(too large)"; } catch (e) { return "(not serialisable: " + e.message + ")"; } })()`, 5000, "params");
     }
   } catch (e) { rec.warnings.push(`scene stats: ${e.message}`); }
+  // --expect: the params the shot must have carried (a silent HMR reload drops a patch)
+  if (shot.expect) {
+    const misses = checkExpect(rec.scene.params, shot.expect);
+    rec.expect = { spec: shot.expect, misses };
+    if (misses.length) {
+      rec.status = "error";
+      rec.error = (rec.error ? rec.error + "; " : "") + `--expect failed: ${misses.join("; ")}`;
+    }
+  }
   try {
     const canvases = await evaluate(b.cdp, CANVASES, 5000, "canvas list");
     rec.canvas = { count: canvases.length, list: canvases.slice(0, 12) };
@@ -588,6 +611,35 @@ async function runShot(b, shot, ctx) {
   return rec;
 }
 
+// ---------------------------------------------------------------- --eval results, --expect
+
+function keepResult(v) {
+  try {
+    const s = JSON.stringify(v);
+    return s === undefined ? null : s.length < 50000 ? v : "(over 50 KB)";
+  } catch { return "(not serialisable)"; }
+}
+
+// "a.b.c=value;d.e" -> the misses against a params snapshot (empty: all present)
+function checkExpect(params, spec) {
+  const items = (Array.isArray(spec) ? spec : String(spec).split(";")).map((x) => String(x).trim()).filter(Boolean);
+  const misses = [];
+  if (!params || typeof params !== "object") return items.map((it) => `${it} (no params in the sidecar)`);
+  for (const it of items) {
+    const eq = it.indexOf("=");
+    const p = (eq > -1 ? it.slice(0, eq) : it).trim();
+    const got = p.split(".").reduce((o, k) => (o == null ? undefined : o[k]), params);
+    if (got === undefined) { misses.push(`${p} is missing`); continue; }
+    if (eq > -1) {
+      const raw = it.slice(eq + 1).trim();
+      let want = raw;
+      try { want = JSON.parse(raw); } catch { /* a bare string */ }
+      if (JSON.stringify(got) !== JSON.stringify(want)) misses.push(`${p} is ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+    }
+  }
+  return misses;
+}
+
 // ---------------------------------------------------------------- main
 
 function num(v, d) { if (v === undefined || v === null || v === "") return d; const n = Number(v); if (!Number.isFinite(n)) throw new Usage(`not a number: ${v}`); return n; }
@@ -595,7 +647,8 @@ function num(v, d) { if (v === undefined || v === null || v === "") return d; co
 // Precedence for every per-shot key: the shot itself, then the command line, then the batch
 // file's "defaults", then the built-in defaults.
 const CLI_KEYS = { url: "url", w: "w", h: "h", dpr: "dpr", frames: "frames", settle: "settle", timeout: "timeout",
-  scheme: "scheme", eval: "eval", scene: "scene", "scene-wait": "sceneWait", "wait-for": "waitFor" };
+  scheme: "scheme", eval: "eval", scene: "scene", "scene-wait": "sceneWait", "wait-for": "waitFor",
+  "reduced-motion": "reducedMotion", expect: "expect" };
 
 function cliShotKeys(a) {
   const o = {};
@@ -611,6 +664,7 @@ function normaliseShot(s, a, i, outdir) {
     frames: num(s.frames, 24), settle: num(s.settle, 1500),
     timeout: num(s.timeout, 90000),
     scheme: s.scheme ?? null, eval: s.eval ?? null,
+    reducedMotion: !!s.reducedMotion, expect: s.expect ?? null,
     scene: s.scene ?? "auto",
     waitFor: s.waitFor ?? null,
     sceneWait: s.sceneWait !== undefined ? num(s.sceneWait) : undefined,

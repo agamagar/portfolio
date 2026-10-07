@@ -13,6 +13,7 @@ The built-in browser pane cannot show WebGL. Use `render.mjs`, then look at the 
 | `render.mjs` | Headless GPU renders over CDP (system Chrome, Node's built-in WebSocket, no dependencies). One shot or a batch in one browser session. Writes PNG + sidecar JSON (+ console log). |
 | `compare.py` | Scores a render against a reference photo: SSIM, edge IoU, 8 x 6 grid log-luminance and CIEDE2000, histogram EMD, per-region stats, one composite. Writes metrics JSON + a labelled side-by-side PNG. |
 | `sheet.py` | Tiles N renders into a labelled contact sheet (sweeps). |
+| `lookkeys.mjs` | Fails (exit 1) when a look's patch in `looks.js` names a build-time params path, one a live menu switch (`setLook`) would ignore: the bamboo, canopy and far-tree palettes, the street heads, the horizon band's and the building's shape keys, the rain's counts. Strict for `cyberpunk`; `node tools/window-light/lookkeys.mjs [look]` checks any look. |
 | `regions.py` | Shared: load, rasterise and draw region polygons. |
 | `derive_regions_1741.py` | Rebuilds `ref/regions_1741.json` and `ref/regions_1741_overlay.png` from measurements on `ref_1600.png`. |
 | `ref/regions_1741.json` | Named region polygons for the 17:41 reference (normalised coordinates; serves `ref_1600.png` and `ref_800.png`). |
@@ -65,7 +66,9 @@ node tools/window-light/render.mjs --help
 | `--scene MODE` | `auto` | `auto` looks for `window.__windowScene`; `require` fails the shot without it; `skip` never looks. |
 | `--scene-wait MS` | 15000 on `/window...` or `scene=window`, else 2500 | How long to look for `window.__windowScene` after load. |
 | `--scheme S` | none | Emulate `prefers-color-scheme: light` or `dark`. (The scene's own `theme=` URL param is separate.) |
-| `--eval JS` | none | Expression evaluated and awaited after `ready` (or after settle), before the frames. Example: `--eval "window.__windowScene.setParams({lamp:{intensity:20}})"`. |
+| `--reduced-motion` | off | Emulate `prefers-reduced-motion: reduce` (batch key `reducedMotion: true`). |
+| `--expect "P=V;Q"` | none | After the shot, assert each params path `P` is in the sidecar's `params` (and equals `V`, JSON or a bare string, when given); a miss fails the shot and the run exits 1. Batch key `expect` (a string or an array). Guards against a silent HMR reload dropping a look's patch mid-batch. |
+| `--eval JS` | none | Expression evaluated and awaited after `ready` (or after settle), before the frames. Example: `--eval "window.__windowScene.setParams({lamp:{intensity:20}})"`. Its result, when JSON-serialisable and under 50 KB, is kept in the sidecar as `evalResult` (for example a `setLook` timing, or `window.__windowOutside.debug()`). |
 | `--timeout MS` | `90000` | Per shot. On timeout or error the page is still captured and the shot is marked. |
 | `--console` | off | Write console errors, warnings and uncaught exceptions to `NAME.log`. (They are always counted in the sidecar.) |
 | `--strict` | off | Exit 1 if any shot logged a console error. |
@@ -149,6 +152,13 @@ The contract is in `spec/30-locked-brief.md`. What `render.mjs` relies on in pra
 
 ### Timing and pitfalls
 
+* **On battery** (2026-10-06, 19 %): Chrome's energy saver held the headless page to about one
+  frame a second and its first scripts to 20 to 30 s, so every `/window` shot timed out at the
+  scene check (`renderFrames(24)` on the stub took 21 s). Pass
+  `--flags "--disable-features=BatterySaverModeAvailable,HighEfficiencyModeAvailable --disable-background-timer-throttling --disable-backgrounding-occluded-windows"`
+  with `--scene-wait 90000`; the scene check now keeps looking while the page is busy (a
+  5 s evaluate that times out is not a failure until `--scene-wait` runs out). Renders match
+  the plugged-in ones within the usual noise.
 * The stub renders in about 0.5 to 1 s per shot; `/sky` and `/dj` in 5 to 9 s (mostly the settle).
 * **Cold Vite loads**: the first `/dj` after the three r186 upgrade was still compiling when a
   3 s settle ended and came back blank white. The blank check flagged it. Use `--wait-for canvas`

@@ -23,8 +23,8 @@
 // go. Gusts slant the rain harder and thicken it (rain.gustDensity).
 
 import * as THREE from "three/webgpu";
-import { Fn, attribute, vec3, float, fract, normalize, cross, length, smoothstep, max, abs, positionPrevious, cameraPosition, uniform, dot, mix, mrt } from "three/tsl";
-import { GeoBuilder, GUST, windGustAt } from "./common.js";
+import { Fn, attribute, vec3, float, fract, normalize, cross, length, smoothstep, max, abs, positionPrevious, cameraPosition, uniform, dot, mix, mrt, step } from "three/tsl";
+import { GeoBuilder, GUST, windGustAt, NEON } from "./common.js";
 
 const G = 9.81;
 
@@ -92,6 +92,10 @@ export function buildRain(P, U, rnd, { dripBars = [] } = {}) {
     lampCol: uniform(new THREE.Color(0, 0, 0)),
     wet: uniform(0),
     bar: uniform(new THREE.Color(0.02, 0.015, 0.01)), // a wet bar, lit: what a bead's rim shows
+    // the neon signs (outside/neon.js, Cyberpunk): the share of the drops that catch
+    // one, and how much of a sign's colour they show (0: the term below is exactly 0)
+    neonShare: uniform(0),
+    neonGain: uniform(0),
   };
 
   // --- falling rain -----------------------------------------------------------------------
@@ -145,7 +149,17 @@ export function buildRain(P, U, rnd, { dripBars = [] } = {}) {
   const dl = length(toDrop);
   const inCone = smoothstep(u.lampCos, u.lampCos.add(0.08), dot(normalize(toDrop), u.lampDir));
   const lampLit = vec3(u.lampCol).mul(inCone).div(dl.mul(dl).add(0.04));
-  const col = vec3(u.sky).add(lampLit);
+  // a share of the drops catch a neon sign: each picks ONE of the two sign colours (so
+  // magenta and cyan never average to grey), from its own seed, and shows it only
+  // while it falls in front of that colour's signs (the view toward the drop near
+  // where they stand, NEON.dirA / dirB; 2026-10-06: every drop in every pane wore a
+  // colour, confetti over the garden)
+  const vDrop = normalize(cNow.sub(cameraPosition));
+  const nearA = vec3(NEON.a).mul(dot(vDrop, NEON.dirA).sub(1).mul(NEON.spread.x).exp());
+  const nearB = vec3(NEON.b).mul(dot(vDrop, NEON.dirB).sub(1).mul(NEON.spread.x).exp());
+  const neonPick = mix(nearA, nearB, step(0.5, fract(aS.x.mul(7.3))));
+  const neonLit = neonPick.mul(step(float(1).sub(u.neonShare), aS.z)).mul(u.neonGain);
+  const col = vec3(u.sky).add(lampLit).add(neonLit);
   // coverage: thin across, soft ends, a little per-drop variety; thinned in front of
   // the bamboo (the drops between the glass and the canes)
   const across = float(1).sub(abs(aC.x));
@@ -284,6 +298,9 @@ export function buildRain(P, U, rnd, { dripBars = [] } = {}) {
       lampCol.set(P.lights.lamp.color).multiplyScalar(P.lights.lamp.enabled ? P.lights.lamp.intensity * R.lampGlint : 0);
       u.lampCol.value.copy(lampCol);
     }
+    const RN = P.outside.rain.neon || {};
+    u.neonShare.value = Math.max(0, Math.min(1, RN.share ?? 0));
+    u.neonGain.value = u.neonShare.value > 0 ? RN.gain ?? 1 : 0;
     u.wet.value = P.outside.rain.enabled ? r.wetness ?? 0 : 0;
     drips.visible = u.wet.value > 0.01 && dripBars.length > 0;
   }

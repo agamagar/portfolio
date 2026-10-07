@@ -16,14 +16,16 @@ default for everything this file does not override.
 | Bamboo in view | Canes and leaves | Green canes cross the right-hand panes with leafy tops above; whole canes bend in gusts and leaves flutter. Plain green canes (not golden striped) unless a photo says otherwise. |
 | Right leaves (Q11) | Angled, handle leaf ajar | The right section is built at about 31 degrees as photographed; the handle leaf stands slightly open and rocks a degree or two in real gusts, so the bead chain stirs and rain can reach the sill. |
 | 37 degrees (Q03) | Tilt of the shade | The shade axis is tipped about 37 degrees off the chair's line of sight; the cone (about 40 degree half-angle, 0.70 rad, penumbra soft) is fitted to the glow in the 18:40 photos; 3000 K, duv +0.003, `#ffbe6c`. |
-| Dreamlike touches | Moon in the window, glowing motes, blocked panes opened | See "The three looks". No Milky Way. |
+| Dreamlike touches | Moon in the window, glowing motes, blocked panes opened | See "The looks". No Milky Way. |
+| More modes (2026-10-05) | "just like dreamlike can we create more mode like, maybe one is cyber punk" | A fourth look, **Cyberpunk**, in the same menu. See "The looks", 4. |
 | Controls | Beside the theme toggle | The sky toggle (mine or yours) and the look dropdown sit in the header next to the existing `ThemeToggle` (`src/App.jsx` around line 9996). |
 | "The ones" (Q02) | Winds | Real wind speed, direction and gusts drive the bamboo, the far trees, the clouds, the rain slant, the ajar leaf and the bead chain. No sound in v1. |
 | Real size (Q18) | Agam will send three numbers | Pane clear-glass width, monitor screen to glass, sill depth. Until they land, build from the photo estimates. Every dimension is derived from ONE pane-width constant `W` plus the gap and the sill depth in `params.js`, so the numbers change three values and nothing else. When they arrive they go in `31-measurements.md`. |
 
-## The three looks
+## The looks
 
-One scene, one geometry, three parameter presets in `looks.js`. Switching is live (no reload).
+One scene, one geometry, four parameter presets in `looks.js`. Switching is live (no reload). (Three
+looks were locked on 2026-09-26; Agam asked for more on 2026-10-05, and Cyberpunk is the fourth.)
 
 1. **Dreamlike (default).** Heightened realism as the base, plus:
    - **The moon in the window.** The real moon with its true phase and illuminated-limb angle from the data, moved into the view (a north-facing window could never see it). Placed in the upper left pair of panes, visible whenever it is above the horizon in reality, and at night shown even when it is not (it is a dream). It lights the clouds and the bamboo edges softly.
@@ -31,6 +33,11 @@ One scene, one geometry, three parameter presets in `looks.js`. Switching is liv
    - **Blocked panes opened.** The grey far-right column clears to show bamboo and sky, so the whole window becomes a view.
 2. **Heightened realism.** Geometry and materials true to the photos; light and air pushed: dust motes in the lamp beam, a richer golden hour, crisper clouds, slightly cleaner glass. Believable as a photograph, not a pixel match.
 3. **Photo-true.** Indistinguishable from the photos, heavy glass dust and true exposure included, judged side by side against the reference renders by the loop.
+4. **Cyberpunk** (2026-10-05, built from the Neon Noir direction). Neon past the bamboo, a pink lamp in the dark room. Menu hint: "Neon past the bamboo, a pink lamp in the dark".
+   - **The sky and the garden.** A teal zenith over a violet city haze at night, pink cumulus on teal at dusk, a cold teal smog by day; the green foliage turned teal by a grade hue band (`grade.hueBand`), the shadows leaning teal-blue (`grade.split`).
+   - **The city never sleeps.** Its glow and lit windows hold all night; a skyline of dark blocks with magenta and teal windows; cyan street light on the canes; a cyan night key from a fixed direction (no moon disc, no placed moon, no motes).
+   - **Neon signs** (`outside.neon`): flat emissive cards 20 to 26 m out, over the street crowns, far beyond the bamboo; no text, glyphs or logos; at most one flickering sign, never under prefers-reduced-motion. Rain streaks and drops on the wet glass catch them, one colour per drop.
+   - **The room** is lit only by the pink lamp and what comes through the window. Every key the look sets is live, so a menu switch shows the whole look without a rebuild (`tools/window-light/lookkeys.mjs` checks it). The hand-off is untouched.
 
 ## Build order (sandbox first)
 
@@ -43,7 +50,7 @@ URL parameters on `/window` (and later on the folio page when the flag is on):
 
 | Param | Values | Meaning |
 |---|---|---|
-| `look` | `dreamlike`, `heightened`, `photo` | the look preset (default `dreamlike`) |
+| `look` | `dreamlike`, `heightened`, `photo`, `cyberpunk` | the look preset (default `dreamlike`) |
 | `tod` | decimal hours in IST, for example `17.68` | freeze the clock at that time of day (default: live) |
 | `wx` | `live`, `clear`, `partly`, `overcast`, `rain`, `storm` | weather override (default `live`) |
 | `sky` | `mine`, `yours` | whose sky (default `mine`) |

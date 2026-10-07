@@ -36,6 +36,7 @@ import { makeGobo, goboKey, goboProfile, makeSpillGobo, spillKey } from "./light
 import { skyGain, goldenFactor, sunColor, sunIlluminance, weatherDim, lightGain } from "./light/exposure.js";
 import { skyGradeUniforms, updateSkyGrade } from "./light/grade.js";
 import { setKelvin } from "three/addons/utils/ColorUtils.js";
+import { NEON } from "./outside/common.js";
 
 let ltcReady = false;
 const smooth = (a, b, x) => {
@@ -442,7 +443,10 @@ export function createLights(scene, anchors, P, extra = {}) {
       }
       spill.angle = sAngle;
       spill.penumbra = S.penumbra ?? 0.02;
-      spill.intensity = (S.intensity ?? 1) * gL;
+      // dayGain (a look's; 1 = none): the spill held up through the day, eased in
+      // from the sun at -4 deg to full at 10 deg (Cyberpunk keeps its pink stile at
+      // noon). The spill only: the core lights the wall
+      spill.intensity = (S.intensity ?? 1) * gL * (1 + ((S.dayGain ?? 1) - 1) * smooth(-4, 10, alt));
       spill.color.set(Lp.lamp.color);
     } else spill.intensity = 0;
     const tier = P.quality && P.post.tiers?.[P.quality];
@@ -485,6 +489,11 @@ export function createLights(scene, anchors, P, extra = {}) {
         mdir = worldDir(mp.az, mp.alt, 0);
         const illum = sw?.moon?.illum ?? 0.5;
         Emoon = Lp.moon.intensity * (0.25 + 0.75 * illum);
+      } else if (Array.isArray(Lp.moon.keyDir) && Lp.moon.keyDir.length >= 2) {
+        // a night key from a fixed direction [az, alt] (deg), no disc and no phase
+        // (Cyberpunk's cyan key; null in the other looks)
+        mdir = worldDir(Lp.moon.keyDir[0], Lp.moon.keyDir[1], 0);
+        Emoon = Lp.moon.intensity;
       } else if (sw?.moon && sw.moon.alt > -1) {
         mdir = sw.moon.dir;
         Emoon = Lp.moon.intensity * (sw.moon.illum ?? 0.5) * smooth(-1, 10, sw.moon.alt);
@@ -523,6 +532,19 @@ export function createLights(scene, anchors, P, extra = {}) {
     fill.color.copy(tmpC).lerp(flashLin, Math.min(1, flash * 2));
     const winLum = Lp.window.enabled ? lum * Lp.window.intensity : 0;
     fill.intensity = winLum + flash * F.window * gL;
+    // (Cyberpunk) the neon signs' light through the glass (outside/neon.js NEON.mean,
+    // x outside.neon.air): the only light they give the room; 0 in the other looks
+    const nm = NEON.mean;
+    const nAir = Lp.window.enabled && P.outside.neon?.enabled ? P.outside.neon.air ?? 1 : 0;
+    if (nAir > 0 && nm.r + nm.g + nm.b > 0) {
+      const T = Lp.window.intensity * nAir;
+      const r = fill.color.r * fill.intensity + nm.r * T;
+      const g2 = fill.color.g * fill.intensity + nm.g * T;
+      const b = fill.color.b * fill.intensity + nm.b * T;
+      const m = Math.max(r, g2, b, 1e-9);
+      fill.color.setRGB(r / m, g2 / m, b / m);
+      fill.intensity = m;
+    }
 
     // --- the ceiling light (dusk photo shots only)
     let phiCeil = 0;
@@ -574,6 +596,12 @@ export function createLights(scene, anchors, P, extra = {}) {
       // peaks at noon, and takes the hour's colour: cool in the morning (the sun
       // is behind the house, the room sees blue sky), neutral at noon, warm in
       // the afternoon (sunlit walls and ground to the west throw it in).
+      // a look's room floor on the runways after dark (runwayLift, eased in as the
+      // camera leaves the hero, and out as the sun rises past -4 to 6 deg: the eye on
+      // the dark room as it nears the desk; 0 = none). Like `lift`, authored (not x G):
+      // the runway's camera exposes for the screen, which leaves the room's physical
+      // lights 10x under the hero's
+      const lift = Bn.lift + ((Bn.runwayLift ?? 0) > 0 ? Bn.runwayLift * smooth(Bn.runwayFrom ?? 0.04, Bn.runwayTo ?? 0.3, Math.max(bus.p ?? 0, bus.p2 ?? 0)) * (1 - smooth(-4, 6, alt)) : 0);
       let Lday = 0;
       if ((Bn.day ?? 0) > 0) {
         const D = Bn.dayTint || {};
@@ -587,10 +615,10 @@ export function createLights(scene, anchors, P, extra = {}) {
         if (am > 0) dayC.add(dayC2.set(D.morning ?? "#c8d6ea").multiplyScalar(am));
         if (pm > 0) dayC.add(dayC2.set(D.afternoon ?? "#f0d8b4").multiplyScalar(pm));
         // weight the two fills by their light
-        const wR = Lroom + Bn.lift, wD = Lday, wt = Math.max(1e-6, wR + wD);
+        const wR = Lroom + lift, wD = Lday, wt = Math.max(1e-6, wR + wD);
         hemi.color.multiplyScalar(wR / wt).add(dayC.multiplyScalar(wD / wt));
       }
-      hemi.intensity = Math.PI * (Lroom + Bn.lift + Lday) + flash * F.ambient * gL;
+      hemi.intensity = Math.PI * (Lroom + lift + Lday) + flash * F.ambient * gL;
       bus.debug.roomLum = +Lroom.toFixed(5);
       bus.debug.dayLum = +Lday.toFixed(5);
     } else hemi.intensity = 0;
