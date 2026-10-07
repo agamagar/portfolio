@@ -10873,17 +10873,18 @@ export default function App() {
     // so PDF exports always render the light tokens regardless of the machine.
     const forced = new URLSearchParams(window.location.search).get("theme");
     if (forced === "dark" || forced === "light") return forced;
-    // 5 Oct: the deployed site opens in DARK (a visitor's own toggle still wins);
-    // dev keeps the time-of-day theme
-    if (import.meta.env.VITE_PUBLIC_SITE === "1") return manualTheme() ?? "dark";
-    // a theme the visitor picked recently, else the time of day (lib/autoTheme.js)
-    return manualTheme() ?? themeForTime();
+    // 7 Oct (Agam: "default mode is still light mode"): DARK is the default
+    // everywhere, dev included, whatever the hour; a theme the visitor picked with
+    // the toggle still wins until the next dusk or dawn (lib/autoTheme.js). The
+    // time-of-day theme (27 Sep) is retired; themeForTime still drives the pick's expiry
+    return manualTheme() ?? "dark";
   });
   // while the clock drives it, re-check each minute, so the page turns at dusk
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).get("theme");
     if (forced === "dark" || forced === "light") return undefined;
-    if (import.meta.env.VITE_PUBLIC_SITE === "1") return undefined; // deployed: stays dark, no dusk/dawn flip
+    return undefined; // 7 Oct: dark by default everywhere, no dusk/dawn flip (the clock code is kept below, unused)
+    // eslint-disable-next-line no-unreachable
     const id = setInterval(() => {
       if (manualTheme()) return;
       const t = themeForTime();
