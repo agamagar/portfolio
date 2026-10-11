@@ -684,7 +684,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // in page pixels; the element is revealed through a soft-edged circular mask as the front crosses it,
     // so big elements print in progressively across their area. Static geometry, recomputed with the layout.
     const FRONT_SOFT = 140; // px: the width of the front's soft edge
-    let fx = 0, fy = 0, RMAX = 1;
+    let fx = 0, fy = 0, RMAX = 1, RTOT = 1;
     function wavefront() {
       if (!lines.length) return;
       const fr = root.querySelector(".hello-hero__flyer")?.getBoundingClientRect();
@@ -701,8 +701,37 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       }
       RMAX = 1;
       for (const L of lines) { const o = per.get(L.el); L.dmin = o.dmin; L.dmax = o.dmax; RMAX = Math.max(RMAX, o.dmax); const b = L.el.getBoundingClientRect(); L.ex = b.left + window.scrollX; L.ey = b.top + window.scrollY; }
+      // the front runs on past the farthest element to the viewport's farthest corner, so the ring sweeps
+      // fully off the page (Agam: "it should go all the way through"), at any width
+      const vx0 = window.scrollX, vy0 = window.scrollY, vx1 = vx0 + document.documentElement.clientWidth, vy1 = vy0 + window.innerHeight;
+      const RCORN = Math.max(Math.hypot(fx - vx0, fy - vy0), Math.hypot(vx1 - fx, fy - vy0), Math.hypot(fx - vx0, vy1 - fy), Math.hypot(vx1 - fx, vy1 - fy));
+      RTOT = Math.max(RMAX, RCORN) + 40;
+      waveRamp = buildRamp(Math.min(1, RMAX / RTOT));
       if (front) { front.setAttribute("cx", fx.toFixed(1)); front.setAttribute("cy", fy.toFixed(1)); }
     }
+    // THE WAVE'S OWN SPEED RAMP (Agam: "also add a speed ramp to it"): same construction as the face morph's RAMP
+    // in HeroMorph.jsx (a Fritsch-Carlson monotone cubic through keys, so it never runs backwards or overshoots;
+    // its slope is the playback speed), keys = [share of the wave's time, share of its travel]:
+    // a fast launch out of the face (slope ~1.2), a slow-motion stretch as the front crosses the heading and
+    // the links (~0.55), a fast sweep through the list and cards (~1.6), easing to a stop (slope 0) at the end.
+    // The ramp is built for a given k = (farthest element) / (total travel). The keys that govern the heading, links
+    // and list are scaled by k so they stay where they were in pixels; the extra travel out to the viewport's far
+    // corner is covered inside the fast stretch (0.4 -> 0.78), at speed.
+    const buildRamp = (k) => {
+      const K = [[0, 0], [0.12, 0.14 * k], [0.4, 0.3 * k], [0.78, 0.92], [1, 1]];
+      const x = K.map((q) => q[0]), y = K.map((q) => q[1]);
+      const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
+      const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
+      return (u) => {
+        if (u <= 0) return 0;
+        if (u >= 1) return 1;
+        let i = 0;
+        while (u > x[i + 1]) i++;
+        const h = x[i + 1] - x[i], t = (u - x[i]) / h, t2 = t * t, t3 = t2 * t;
+        return (2 * t3 - 3 * t2 + 1) * y[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * y[i + 1] + (t3 - t2) * h * m[i + 1];
+      };
+    };
+    let waveRamp = buildRamp(1);
     place();
     if (import.meta.env.DEV) window.__skel = lines; // dev only: the load QA diffs each block against its element
     window.addEventListener("resize", place);
@@ -768,26 +797,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // the front's radius on the morph's clock: it starts inside the face (so the nearest elements still get their
     // shimmer's exit) and has passed the farthest element's edge by t = 0.56 (Agam: "the wave can be faster": ~60% of the time it took, done before the clay settles)
     const PRE = 260;
-    // THE WAVE'S OWN SPEED RAMP (Agam: "also add a speed ramp to it"): same construction as the face morph's RAMP
-    // in HeroMorph.jsx (a Fritsch-Carlson monotone cubic through keys, so it never runs backwards or overshoots;
-    // its slope is the playback speed), keys = [share of the wave's time, share of its travel]:
-    // a fast launch out of the face (slope ~1.2), a slow-motion stretch as the front crosses the heading and
-    // the links (~0.55), a fast sweep through the list and cards (~1.6), easing to a stop (slope 0) at the end.
-    const WAVE_RAMP = [[0, 0], [0.12, 0.14], [0.4, 0.3], [0.78, 0.92], [1, 1]];
-    const waveRamp = (() => {
-      const x = WAVE_RAMP.map((k) => k[0]), y = WAVE_RAMP.map((k) => k[1]), n = x.length;
-      const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
-      const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
-      return (u) => {
-        if (u <= 0) return 0;
-        if (u >= 1) return 1;
-        let i = 0;
-        while (u > x[i + 1]) i++;
-        const h = x[i + 1] - x[i], t = (u - x[i]) / h, t2 = t * t, t3 = t2 * t;
-        return (2 * t3 - 3 * t2 + 1) * y[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * y[i + 1] + (t3 - t2) * h * m[i + 1];
-      };
-    })();
-    const frontR = () => -PRE + (RMAX + FRONT_SOFT + PRE) * waveRamp(Math.min(1, Math.max(0, (T - 0.04) / 0.52)));
+    const frontR = () => -PRE + (RTOT + FRONT_SOFT + PRE) * waveRamp(Math.min(1, Math.max(0, (T - 0.04) / 0.52)));
     const light = () => {
       const W = document.documentElement.clientWidth, fadeIn = ss(0, 900, performance.now() - born);
       const bt = still ? -1 : beat();
