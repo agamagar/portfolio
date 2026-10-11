@@ -13,6 +13,10 @@ startSmoothScroll();
 // build. `endpoint` points at the local agentation-mcp server (`npm run dev:all`),
 // which now persists annotations to ~/.agentation/store.db. Click the toolbar
 // (bottom-right) to annotate any element; annotations sync to :4747 for the agent.
+// QA notes layer (10 Oct): numbered tooltip pins from the full-page QA pass,
+// dev-only like the toolbar below (src/ui/QaNotes.jsx, notes in qaNotesData.js; not qaNotes.js, which a case-insensitive disk resolves for "./ui/QaNotes")
+const QaNotes = import.meta.env.DEV ? React.lazy(() => import("./ui/QaNotes.jsx")) : null;
+
 const Agentation = import.meta.env.DEV
   ? React.lazy(() =>
       import("agentation").then((m) => ({ default: m.Agentation }))
@@ -28,6 +32,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
+    {QaNotes && (
+      <React.Suspense fallback={null}>
+        <QaNotes />
+      </React.Suspense>
+    )}
     {Agentation && (
       <React.Suspense fallback={null}>
         <Agentation endpoint="http://localhost:4747" />

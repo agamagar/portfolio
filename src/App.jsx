@@ -378,7 +378,7 @@ import { LoadRevealContext } from "./ui/loadReveal"; // muzdylub (8 Oct)
 import SchedInsight from "./figures/scheduled/SchedInsight";
 import { Compass, Buildings, Handshake } from "@phosphor-icons/react";
 import SchedUseCases from "./figures/scheduled/SchedUseCases";
-import SchedRoleWireframes from "./figures/scheduled/SchedRoleWireframes";
+import SchedRoleWireframes, { ROLE_STATS, STAT_ICON } from "./figures/scheduled/SchedRoleWireframes";
 import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
 import { windowSceneOn } from "./lib/sceneFlag";
 // Art mode (src/art/ArtMode.jsx) is no longer mounted: removed with read mode (mtqpu3f2 + the 07 Sep ask); the file stays.
@@ -1013,6 +1013,14 @@ function RoleFrame({ s, i }) {
         {/* mujvkmg7 (27 Sep): the "Lead designer" line removed; icons replace the rules above the three points (placeholders, to be replaced later) */}
         {s.roleFrame.leadership && (
           <ul className="role-frame__leadership" data-rise>{s.roleFrame.leadership.map((l, k) => { const I = [Compass, Buildings, Handshake][k]; return <li key={l}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}{l}</li>; })}</ul>
+        )}
+        {/* mv2lfboc (10 Oct): the numbers moved here from Who I worked with */}
+        {s.roleFrame.stats && (
+          <dl className="role-frame__stats" data-rise>
+            {ROLE_STATS.map(([big, small]) => { const I = STAT_ICON[big]; return (
+              <div key={big}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}<dt>{big}</dt><dd>{small}</dd></div>
+            ); })}
+          </dl>
         )}
       </div>
     </div>
@@ -2024,6 +2032,34 @@ export const caseStudies = {
         h: "Context and objective",
         noHeading: true,
         figBare: true,
+        // mv2lnssw (10 Oct): "move this one section down", from under the parallax to here.
+        // mv2l6ub3 (10 Oct): "below this there were 2 other container like this", the
+        // row is back: the banner phone (mukx11r8 had moved it to The go-to-market,
+        // where it also stays) and the live prototype (mukx078o / muky1muk had parked it).
+        platesStack: false,
+        platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+        plates: [
+          {
+            fig: "schedGtmRealOne",
+            figBare: true,
+            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+            alt: "The go-to-market banner animation, on the phone: a sweeping clock and slot chips popping in.",
+          },
+          {
+            auto: false,
+            embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
+            embedClickNode: "40000084:180821",
+            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+            cueBox: [48.5, 30.6, 45, 7.8],
+            cueLabel: "Click here",
+            cueNoPointer: true,
+            cueNoBox: true,
+            cueClick: true,
+            alt: "The scheduled order prototype, live from Figma",
+            // mv2mmvt6: the file is private (see PROTO_EMBED), so a visitor without access meets Figma's sign-in
+            figmaLink: "https://www.figma.com/proto/71cZSn6pTNf4zFzO07O2uv/?node-id=40000084-123917&starting-point-node-id=40000084%3A123917",
+          },
+        ],
         scene: {
           aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
           bg: "transparent", // mtpeowii: no box fill, no stroke
@@ -2067,8 +2103,9 @@ export const caseStudies = {
         p: [
           // mujk799p (27 Sep): re-voiced with the writing harness (Sauer register,
           // gate 0/0), same facts; was one dense paragraph, now claim then turn
-          "Zepto's whole promise is speed: groceries at your door in ten minutes. But not every need is urgent. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had nowhere to put them.",
-          "Scheduled Delivery let people order anything on Zepto for a one-hour slot of their choosing, without spending the trust that ten minutes had earned.",
+          // mv2lud20 (10 Oct): ==…== marks the skim path (squiggle())
+          "Zepto's whole promise is ==speed==: groceries at your door in ten minutes. But ==not every need is urgent==. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had ==nowhere to put them==.",
+          "Scheduled Delivery let people order anything on Zepto for ==a one-hour slot of their choosing==, ==without spending the trust== that ten minutes had earned.",
         ],
         _pBefore27Sep: [
           "Zepto's moat is instant: groceries in ten minutes. But not every need is instant, and forcing every order to be immediate left real demand on the table. Scheduled Delivery gave users a way to order anything on Zepto for a future one-hour slot, without spending the trust that makes the platform work.",
@@ -2163,7 +2200,11 @@ export const caseStudies = {
         // screenshot): label left, the statement large, the role paragraph
         // flowing through three columns, at case study frame default size.
         roleWireframes: true, // draft run after the role frame (SchedRoleWireframes)
+        // mv2legbw (10 Oct): "move this one section up", Who I worked with sits above the role frame
+        roleWireframesFirst: ["Who I worked with"],
         roleFrame: {
+          stats: true, // mv2lfboc: ROLE_STATS under the leadership points
+          options: true, // mv2mooey: three reimagined copies under the original (RoleEditorial, RoleScopeMap, RoleCard)
           // mujvc9e0: merged from the Role at a glance slide (Agam, 27 Sep)
           lead: "Lead designer on the project.",
           leadership: [
@@ -2416,6 +2457,7 @@ export const caseStudies = {
       {
         h: "The go-to-market",
         group: "Solution",
+        whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
@@ -2701,6 +2743,7 @@ export const caseStudies = {
       // },
       {
         h: "Reflection",
+        whiteboardNext: SD_BOARDS.reflection, // 11 Oct: what held, what I would revisit, drop 10-minute delivery?
         tldr: "The real challenge was perception: keeping a scheduled option from diluting the instant promise.",
         p: [
           "The subtlest problem was not UX at all. It was perception. Zepto means instant, so a scheduled option can feel counter to the whole brand. The answer was restraint: surface it only when it genuinely serves the user, and never let it dilute the 10-minute promise.",
@@ -9468,6 +9511,12 @@ export function CaseStudyBody({ cs }) {
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
                     <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                      {/* mv2mmvt6 (10 Oct): a glass link to where the prototype lives in Figma */}
+                      {pl.figmaLink && (
+                        <a className="article__hero-replay article__plate-link" href={pl.figmaLink} target="_blank" rel="noopener noreferrer" aria-label="Open the prototype in Figma" title="Open in Figma">
+                          <IconLink width={16} height={16} strokeWidth={1.6} aria-hidden="true" />
+                        </a>
+                      )}
                       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
                           notification scene) over a screen cutout that holds the prototype */}
                       <div className="article__plate-phone">
@@ -9573,6 +9622,7 @@ export function CaseStudyBody({ cs }) {
             </p>
           )}
           {s.split && <SplitSection s={s} i={i} />}
+          {s.roleWireframes && s.roleWireframesFirst && !s.roleWireframesOnly && <SchedRoleWireframes only={s.roleWireframesFirst} />}
           {s.roleFrame && <RoleFrame s={s} i={i} />}
           {s.roleFrame?.options && (<><RoleEditorial s={s} /><RoleScopeMap s={s} /><RoleCard s={s} /></>)}
           {/* 27 Sep: go-broad wireframes expanding My role, draft only */}
@@ -9732,6 +9782,13 @@ export function CaseStudyBody({ cs }) {
           {s.figNext && (
             <figure className="article__figure">
               <SectionFigure fig={s.figNext} variant="article" bare />
+            </figure>
+          )}
+          {/* 11 Oct: a whiteboard (src/figures/board) after the main figure, so it never replaces one:
+              whiteboardNext: { board, alt, caption }. SectionFigure renders the easel, the lightbox writes it live. */}
+          {s.whiteboardNext && (
+            <figure className="article__figure">
+              <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
             </figure>
           )}
           {/* mukub9lc (28 Sep): a second scroll scene right after the main one */}

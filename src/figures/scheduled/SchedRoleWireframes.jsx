@@ -22,12 +22,21 @@ import { MONTHLY, SLOT_BANDS, SLOT_MIX, VS_INSTANT, SOURCE_NOTE, ROLLOUT } from 
 // small Stack Sans body in the purple ink. Placeholders became content built
 // only from facts already on these slides.
 
+// the role numbers, shown in the My role frame (mv2lfboc)
+export const ROLE_STATS = [
+  ["2 releases", "A narrow M1 (late Oct 2025), the full multi-shipment M2 (mid-Nov 2025)"],
+  ["6 months", "August to February, from the first canvas notes to engineering hardening"],
+  ["5 functions", "Design, product, content, engineering and QA, operations"],
+];
+
 const SLIDES = [
   // mujvc9e0 (27 Sep): "Role at a glance" merged into the My role frame above (App.jsx roleFrame.lead / leadership)
   // muk0nxkb (27 Sep): Wins merged into Who I worked with (the numbers sit above the diorama)
   {
     tag: "Who I worked with",
-    stats: [
+    // mv2lfboc (10 Oct): "remove from here and add to the my role section", the
+    // numbers now render in the My role frame (App.jsx RoleFrame, ROLE_STATS)
+    _stats: [
       ["2 releases", "A narrow M1 (late Oct 2025), the full multi-shipment M2 (mid-Nov 2025)"],
       ["6 months", "August to February, from the first canvas notes to engineering hardening"],
       // mukposjs (28 Sep): commented out at Agam's request; uncomment to bring back
@@ -505,7 +514,7 @@ const PHASE_DATES = [["2025-08-19", "2025-08-28"], ["2025-08-25", "2025-08-31"],
 const wk = (d) => Math.max(0, Math.floor((new Date(d) - WK0) / (7 * 864e5)));
 // mukp8kvi (28 Sep): an emoji before each card label, one per step
 // mukqhh5r (28 Sep): an icon for each number box, in the leadership icons' style
-const STAT_ICON = { "2 releases": RocketLaunch, "6 months": CalendarBlank, "5 functions": UsersThree, "506 comments": ChatCircleText };
+export const STAT_ICON = { "2 releases": RocketLaunch, "6 months": CalendarBlank, "5 functions": UsersThree, "506 comments": ChatCircleText };
 const PHASE_EMOJI = {
   "Problem on the canvas": "🗺️", "First review": "👀", "M1 build and handoff": "🛠️", "Content pass": "✍️",
   "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Hardening": "🛡️",
@@ -540,6 +549,7 @@ function phaseRailModel(phases) {
     const field = on[on.length - 1];
     return {
       m: d.getFullYear() * 12 + d.getMonth(),
+      key: `w${i}`, // QA 10 Oct: rows are WEEKS, so m repeats; Rail keys on this when given
       label: d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
       field: field ? { org: field.what, role: null, kind: "work" } : null,
       fieldId: field ? `p${field.k}` : null,
@@ -829,8 +839,9 @@ function LeadingWithDesign() {
   );
 }
 
-export default function SchedRoleWireframes({ only }) {
-  const list = only ? only.map((t) => SLIDES.find((x) => x.tag === t)).filter(Boolean) : SLIDES;
+// `exclude` (10 Oct, mv2legbw): drop slides that App.jsx renders elsewhere
+export default function SchedRoleWireframes({ only, exclude }) {
+  const list = (only ? only.map((t) => SLIDES.find((x) => x.tag === t)).filter(Boolean) : SLIDES).filter((s) => !exclude?.includes(s.tag));
   const grouped = new Set(LEAD_GROUP.map(([, t]) => t));
   return (
     <div className="rwf-run">

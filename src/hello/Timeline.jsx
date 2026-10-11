@@ -741,7 +741,7 @@ function Scrub({ model, details, reduce }) {
             const h = DASH_MIN + (DASH_MAX - DASH_MIN) * f;
             return (
               <span
-                key={mo.m}
+                key={mo.key ?? mo.m} /* QA 10 Oct: a weekly model (Scheduled Delivery phases) repeats m four times a month, so it passes its own key */
                 className="tlx__dash"
                 data-active={i === active ? "true" : undefined}
                 style={{ "--h": `${h.toFixed(1)}px` }}
@@ -2005,7 +2005,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
       >
         {model.months.map((mo, i) => (
           <RailRow
-            key={mo.m}
+            key={mo.key ?? mo.m}
             mo={mo}
             index={i}
             last={last}

@@ -1970,6 +1970,12 @@ html.dark .top-controls .page-control {
     inset 0 0 0 1px rgba(255, 255, 255, 0.07),
     0 4px 14px -6px rgba(0, 0, 0, 0.5);
 }
+/* DARK CONTRAST (10 Oct, "glass button have poor contrast in dark mode"): the
+   45% dark film was gated against the hero's deepest purple (#9674db), but the
+   buttons actually sit over the PALE lavender at the top of the heart, where
+   45% film + #b5b5b5 ink measured about 1.6:1. The dark core is now 72% and the
+   ink #e0e0e0: worst case over pure white is 5.1:1 (3:1 non-text bar), and
+   the rim still fades to 20% so the refraction stays visible. */
 /* the refracting lens (src/ui/GlassLens.jsx), Chromium only: the rim bends the
    live backdrop. "make the refraction stronger, I can barely see it": the film
    was the thing hiding it, so it is now RADIAL, 45% where the icon sits (the
@@ -1988,11 +1994,18 @@ html.dark.glass-lens .top-controls .theme-toggle,
 html.dark.glass-lens .top-controls .sound-toggle,
 html.dark.glass-lens .top-controls__back,
 html.dark.glass-lens .top-controls .page-control {
-  background: radial-gradient(circle closest-side, rgba(28, 28, 32, 0.45) 45%, rgba(28, 28, 32, 0.08) 100%);
+  background: radial-gradient(circle closest-side, rgba(28, 28, 32, 0.72) 45%, rgba(28, 28, 32, 0.2) 100%);
+  color: #e0e0e0;
 }
 .top-controls .theme-toggle:hover,
 .top-controls .sound-toggle:hover,
 .top-controls__back:hover { color: var(--fg); }
+html.dark.glass-lens .top-controls .page-control__play button { color: #e0e0e0; }
+html.dark.glass-lens .top-controls .theme-toggle:hover,
+html.dark.glass-lens .top-controls .sound-toggle:hover,
+html.dark.glass-lens .top-controls__back:hover,
+html.dark.glass-lens .top-controls .page-control__play button:hover,
+html.dark.glass-lens .article__hero-replay:hover { color: var(--fg); }
 
 /* the arrow alone, in the same circle, and the first item of the bar. It needs
    its own pointer-events because .top-controls sets none on the container so a
@@ -7604,7 +7617,7 @@ html.dark.glass-lens .cs-tabs.article__index-tabs {
    that across the Scheduled Delivery case's prose (one font per case, not per
    section) with Google Sans Flex, the web-available cut. TL;DR, the serif
    question and headings are untouched, as in the frame. Weight 400 as in Figma. */
-.page--article[data-case="scheduled-delivery"] .article__body p:not(.article__serif):not(.article__tldr):not(.article__divider):not(.article__figtop):not(.smo__title):not(.sscene__title):not(.sin__label):not(.sin__line):not(.iq__label):not(.iq__question):not(.suc__label):not(.suc__lead):not(.suc__persona):not(.role-frame__statement):not(.role-frame__body):not(.cpts__n):not(.cpts__label):not(.article__term-t):not(.cs-sowhat):not(.role-frame__lead):not(.rwf__tag):not(.rwf__small):not(.rwf__gname):not(.rwf__note):not(.rwf-run__banner):not(.rwf__lead):not(.rwf__source):not(.rwf-chart__key):not(.rwf-thread__head):not(.rwf-thread__meta):not(.rwf-thread__text):not(.rwf-thread__led), /* muidtlv6 + muidtvae: those two carry the Context and Objective face */
+.page--article[data-case="scheduled-delivery"] .article__body p:not(.article__serif):not(.article__tldr):not(.article__divider):not(.article__figtop):not(.smo__title):not(.sscene__title):not(.sin__label):not(.sin__line):not(.iq__label):not(.iq__question):not(.suc__label):not(.suc__lead):not(.suc__persona):not(.role-frame__statement):not(.role-frame__body):not(.cpts__n):not(.cpts__label):not(.article__term-t):not(.cs-sowhat):not(.role-frame__lead):not(.rwf__tag):not(.rwf__small):not(.rwf__gname):not(.rwf__note):not(.rwf-run__banner):not(.rwf__lead):not(.rwf__source):not(.rwf-chart__key):not(.rwf-thread__head):not(.rwf-thread__meta):not(.rwf-thread__text):not(.rwf-thread__led):not(.rex__big):not(.rsty__stat-v):not([class^="rv"]), /* mv2mooey: the My role options set their own type; mv2mmpac: display numbers take the headline face; muidtlv6 + muidtvae: those two carry the Context and Objective face */
 .page--article[data-case="scheduled-delivery"] .article__body ul,
 .page--article[data-case="scheduled-delivery"] .article__body li {
   font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
@@ -7703,6 +7716,8 @@ figcaption.article__figcap-heading {
 .article__body .article__split-side h2 { /* .article__body: outranks the page h2 rule */
   /* muiecfee: the size of the BIG lines on the right of Context and Objective
      (measured: 29px per line on the 816 column, so ~24px type), not the label */
+  /* mv2lskx4 (10 Oct): "make this the default size for this use case": this
+     label SETS the standard, every section label copies it (block at file end) */
   font: 400 1.5rem/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
   letter-spacing: 0;
   color: #33095e;
@@ -7974,7 +7989,8 @@ html.glass-lens .article__hero-replay {
   background: radial-gradient(circle closest-side, rgba(255, 255, 255, 0.45) 45%, rgba(255, 255, 255, 0.08) 100%);
 }
 html.dark.glass-lens .article__hero-replay {
-  background: radial-gradient(circle closest-side, rgba(28, 28, 32, 0.45) 45%, rgba(28, 28, 32, 0.08) 100%);
+  background: radial-gradient(circle closest-side, rgba(28, 28, 32, 0.72) 45%, rgba(28, 28, 32, 0.2) 100%);
+  color: #e0e0e0;
 }
 
 /* muim39ah: "My role", Figma 944-65104 (1512 x 982, the case study frame
@@ -8052,6 +8068,14 @@ html.dark.glass-lens .article__hero-replay {
 :root.dark .page--article .article__body .role-frame ul.role-frame__leadership li { color: rgba(255, 255, 255, 0.82); }
 :root.dark .page--article .article__body .role-frame ul.role-frame__leadership li { border-top-color: rgba(255, 255, 255, 0.12); }
 @media (max-width: 700px) { .article__body .role-frame ul.role-frame__leadership { grid-template-columns: 1fr; } }
+/* mv2lfboc (10 Oct): the role numbers, moved in from Who I worked with. Same
+   three-column grid and ink as the leadership row above, the figure set larger. */
+.article__body .role-frame dl.role-frame__stats { margin: 1.75rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.article__body .role-frame dl.role-frame__stats > div { display: flex; flex-direction: column; gap: 0.35rem; }
+.page--article .article__body .role-frame dl.role-frame__stats dt { margin: 0; font: 400 1.5rem/1.1 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: #33095e; white-space: nowrap; }
+.page--article .article__body .role-frame dl.role-frame__stats dd { margin: 0; font-size: 0.8125rem; line-height: 1.45; color: var(--muted); }
+:root.dark .page--article .article__body .role-frame dl.role-frame__stats dt { color: rgba(255, 255, 255, 0.92); }
+@media (max-width: 700px) { .article__body .role-frame dl.role-frame__stats { grid-template-columns: 1fr; } }
 
 /* mujvkmg7: an icon above each leadership point instead of the rule (same
    disc pairing as the role slides: #5b3fd1 on #ece5fc 5.9:1, dark 6.1:1) */
@@ -8212,3 +8236,284 @@ html.dark.glass-lens .article__hero-replay {
 .cs-sec--side > .cs-sec__side { grid-column: 2; grid-row: 1 / span 3; width: 100%; height: auto; border-radius: 16px; display: block; }
 @media (max-width: 700px) { .cs-sec.cs-sec--side { grid-template-columns: 1fr; } .cs-sec--side > .cs-sec__side { grid-column: 1; grid-row: auto; } }
 .cs-sec--side > .cs-sec__side { align-self: start; }
+
+/* mv2lskx4 + mv2lta18 (10 Oct): "make this the default / standard size for this
+   use case" - the element clicked SETS the standard and the rest copy it.
+   SECTION LABELS take "Context & problem": 400 1.5rem/1.2 (was 300 1.2rem/1.3).
+   BIG STATEMENT LINES take the intro question: 1.625rem/1.25 (several sat at
+   1.5rem). Phone sizes below 700px are left to each component's own rule. */
+html .page--article[data-case="scheduled-delivery"] .article__body :is(
+  p.iq__label, p.suc__label, p.sin__label, p.rwf__tag, h2.role-frame__label,
+  .cs-sec:not(.cs-sec--stack) > h2
+) {
+  font-size: 1.5rem; font-weight: 400; line-height: 1.2;
+}
+@media (min-width: 701px) {
+  html .page--article[data-case="scheduled-delivery"] .article__body :is(
+    p.sscene__title, p.smo__title, .rwf__title, p.role-frame__statement, p.article__tldr
+  ) {
+    font-size: 1.625rem; line-height: 1.25;
+  }
+}
+
+/* mv2lud20 (10 Oct): the skim highlight. A faint purple wash behind the phrase
+   and a wavy underline in the label ink, so the marked words read first.
+   Ink is unchanged, so body contrast is untouched. */
+.article__body mark.squiggle {
+  background: rgba(150, 116, 219, 0.14);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 3px;
+  text-decoration: underline wavy #9674db;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: none;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+:root.dark .article__body mark.squiggle {
+  background: rgba(182, 156, 234, 0.16);
+  text-decoration-color: #b69cea;
+}
+
+/* mv2mmpac (10 Oct): "apply this font consistency everywhere on the page", the
+   face of "Context & problem" (Stack Sans Headline, 400) on every piece of
+   DISPLAY text (18px and up) that still ran another face or weight: the use-case
+   lead and personas (were Google Sans Flex / 460), the term line, the stat
+   numbers (Google Sans Flex, and one Inter 700), the light-weight quote and the
+   stacked section headline (were 300). Sizes are untouched; body copy is not
+   display text and keeps its own face. Bold inside a line stays the emphasis. */
+html .page--article[data-case="scheduled-delivery"] .article__body :is(
+  .suc p.suc__lead, .suc p.suc__persona, .article__term-t, .rex__big,
+  .sd-metric__big, .rsty__stat-v, .rsty__quote, .cs-sec--stack > h2, .rwf__n
+) {
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  font-weight: 400;
+}
+html .page--article[data-case="scheduled-delivery"] .article__body .suc__persona strong { font-weight: 600; }
+
+/* mv2mmvt6 (10 Oct): the Figma link on the prototype plate, the hero replay's
+   glass (same class) moved to the top right corner of the plate */
+.article__plate-embed .article__plate-link { position: absolute; top: 12px; right: 12px; bottom: auto; z-index: 4; text-decoration: none; }
+
+/* mv2mnnxw (10 Oct): "this should be the same size as inside the box right to
+   this". The banner phone is a % of .gtmr-one (83.5% of the plate) and the
+   prototype phone 58% of the plate's ground, so 62% came out 207px against
+   231px. 58% x 398 / 334 = 69.1% lands them on the same width at any size. */
+.article__plates:not(.article__plates--stack):has(.article__plate-embed) .article__plate:not(.article__plate--wide) .gtmr-one .gtmr-one__phone { width: 69.1%; }
+
+/* mv2mocrn (10 Oct): "reduce the font by 1 font weight" on the use-cases lead, 400 -> 300 */
+html .page--article[data-case="scheduled-delivery"] .article__body .suc p.suc__lead { font-weight: 300; }
+/* mv2mmpac: the step numbers ("01") join the headline face at 400 (were 200) */
+html .page--article[data-case="scheduled-delivery"] .article__body .rwf-run .rwf .rwf__n { font-weight: 400; }
+
+/* ---------- mv2mooey (10 Oct): My role, three reimagined copies ----------
+   Same palette and face as the frame above: Stack Sans Headline, ink #33095e
+   light / white 82% dark, accent #9674db / #b69cea. Each sits in the case
+   study frame default box so they compare like for like. */
+.article__body .rv {
+  --rv-ink: #33095e; --rv-soft: rgba(51, 9, 94, 0.62); --rv-rule: rgba(51, 9, 94, 0.14); --rv-accent: #9674db;
+  position: relative; margin: 4rem 0 0; padding: var(--case-study-frame-default-padding);
+  border: 1px dashed var(--rv-rule); border-radius: 16px;
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  color: var(--rv-ink);
+}
+:root.dark .article__body .rv { --rv-ink: rgba(255, 255, 255, 0.86); --rv-soft: rgba(255, 255, 255, 0.58); --rv-rule: rgba(255, 255, 255, 0.12); --rv-accent: #b69cea; }
+html .page--article .article__body .rv p, html .page--article .article__body .rv li, html .page--article .article__body .rv dt, html .page--article .article__body .rv dd {
+  margin: 0; font-family: inherit; letter-spacing: 0; color: var(--rv-ink);
+}
+html .page--article .article__body .rv ul, html .page--article .article__body .rv dl { list-style: none; margin: 0; padding: 0; }
+html .page--article .article__body .rv p.rv__tag {
+  position: absolute; top: -0.75rem; left: 1.25rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+  font: 500 0.75rem/1.4 "Google Sans Flex", Inter, sans-serif; letter-spacing: 0.02em;
+  background: var(--bg); color: var(--rv-accent); border: 1px solid var(--rv-rule);
+}
+html .page--article .article__body .rv p.rv__label { font-size: 1.5rem; font-weight: 400; line-height: 1.2; color: var(--rv-accent); margin-bottom: 1.25rem; }
+html .page--article .article__body .rv p.rv__statement { font-size: 1.625rem; line-height: 1.25; font-weight: 400; text-wrap: pretty; max-width: 34ch; }
+
+/* Option 1: editorial spread */
+.rv-ed__grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 0 var(--case-study-frame-default-padding); margin-top: 2.5rem; border-top: 1px solid var(--rv-rule); }
+.rv-ed__stats > div, .rv-ed__partners > li { padding: 1rem 0; border-bottom: 1px solid var(--rv-rule); }
+html .page--article .article__body .rv-ed__stats dt { font-size: 2.25rem; font-weight: 300; line-height: 1; }
+html .page--article .article__body .rv-ed__stats dd { margin-top: 0.4rem; font-size: 0.8125rem; line-height: 1.45; color: var(--rv-soft); }
+.rv-ed__partners { display: flex; flex-direction: column; justify-content: space-between; }
+.rv-ed__partners > li { flex: 1; display: flex; align-items: center; }
+html .page--article .article__body .rv-ed__partners li { font-size: 1.125rem; line-height: 1.35; }
+
+/* Option 3: scope map */
+.rv-map__grid {
+  display: grid; align-items: center; justify-items: center; margin: 1rem auto 0; max-width: 40rem;
+  grid-template-columns: 1fr 2.5rem auto 2.5rem 1fr;
+  grid-template-rows: auto 2rem auto 2rem auto;
+  grid-template-areas: ". . top . ." ". . v . ." "left hl me hr right" ". . v2 . ." "fns fns fns fns fns";
+}
+.rv-map__node--top { grid-area: top; } .rv-map__node--left { grid-area: left; } .rv-map__node--right { grid-area: right; }
+.rv-map__me { grid-area: me; } .rv-map__fns { grid-area: fns; }
+.rv-map__wire--v { grid-area: v; } .rv-map__wire--v2 { grid-area: v2; } .rv-map__wire--hl { grid-area: hl; } .rv-map__wire--hr { grid-area: hr; }
+.rv-map__wire--v, .rv-map__wire--v2 { width: 1px; height: 100%; background: var(--rv-accent); opacity: 0.6; }
+.rv-map__wire--hl, .rv-map__wire--hr { height: 1px; width: 100%; background: var(--rv-accent); opacity: 0.6; }
+.rv-map__node { padding: 0.55rem 0.9rem; border-radius: 12px; border: 1px solid var(--rv-rule); font-size: 0.9375rem; line-height: 1.3; text-align: center; max-width: 13rem; }
+.rv-map__me { display: grid; place-items: center; gap: 0.15rem; padding: 1.1rem 1.4rem; border-radius: 999px; background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
+.rv-map__me b { font-weight: 500; font-size: 1.125rem; } .rv-map__me small { font-size: 0.75rem; opacity: 0.85; }
+:root.dark .rv-map__me { color: #1a1030; }
+.rv-map__fns { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+html .page--article .article__body .rv-map__fns li { padding: 0.35rem 0.8rem; border-radius: 999px; background: color-mix(in srgb, var(--rv-accent) 14%, transparent); font-size: 0.875rem; }
+.rv-map__stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--rv-rule); }
+html .page--article .article__body .rv-map__stats dt { font-size: 1.5rem; font-weight: 300; }
+
+/* Option 2: role card */
+.rv-card {
+  position: relative; overflow: hidden; border-radius: 24px; corner-shape: round; padding: 2.25rem 2.25rem 0;
+  background: linear-gradient(135deg, #f2e8ff 0%, #c9b3f5 60%, #9674db 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 24px 60px -30px rgba(60, 20, 120, 0.55);
+}
+:root.dark .rv-card { background: linear-gradient(135deg, #2c2344 0%, #3b2a66 55%, #5b3fd1 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 60px -30px rgba(0, 0, 0, 0.8); }
+html .page--article .article__body .rv-card p.rv-card__kicker { font: 500 0.8125rem/1.4 "Google Sans Flex", Inter, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #5b3fd1; }
+:root.dark .page--article .article__body .rv-card p.rv-card__kicker { color: #d9c9ff; }
+html .page--article .article__body .rv-card p.rv-card__statement { margin-top: 0.9rem; font-size: 1.625rem; line-height: 1.25; max-width: 30ch; color: #33095e; }
+:root.dark .page--article .article__body .rv-card p.rv-card__statement { color: #fff; }
+.rv-card__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+html .page--article .article__body .rv-card__chips li { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; border-radius: 999px; background: rgba(255, 255, 255, 0.55); font-size: 0.875rem; color: #33095e; backdrop-filter: blur(8px); }
+:root.dark .page--article .article__body .rv-card__chips li { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.rv-card__chips svg { width: 16px; height: 16px; color: #5b3fd1; }
+:root.dark .rv-card__chips svg { color: #d9c9ff; }
+.rv-card__foot { display: grid; grid-template-columns: repeat(3, 1fr); margin: 2rem -2.25rem 0; border-top: 1px solid rgba(51, 9, 94, 0.12); background: rgba(255, 255, 255, 0.35); }
+:root.dark .rv-card__foot { border-top-color: rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.18); }
+.rv-card__foot > div { padding: 1rem 1.25rem 1.25rem; }
+.rv-card__foot > div + div { border-left: 1px solid rgba(51, 9, 94, 0.12); }
+:root.dark .rv-card__foot > div + div { border-left-color: rgba(255, 255, 255, 0.1); }
+html .page--article .article__body .rv-card__foot dt { font-size: 1.375rem; font-weight: 400; color: #33095e; }
+html .page--article .article__body .rv-card__foot dd { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.4; color: rgba(51, 9, 94, 0.7); }
+:root.dark .page--article .article__body .rv-card__foot dt { color: #fff; }
+:root.dark .page--article .article__body .rv-card__foot dd { color: rgba(255, 255, 255, 0.66); }
+
+@media (max-width: 700px) {
+  .rv-ed__grid { grid-template-columns: 1fr; }
+  .rv-map__grid { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "top" "v" "me" "v2" "left" "right" "fns"; gap: 0.5rem; }
+  .rv-map__wire--hl, .rv-map__wire--hr { display: none; }
+  .rv-map__wire--v, .rv-map__wire--v2 { height: 1.25rem; }
+  .rv-card__foot { grid-template-columns: 1fr; }
+  .rv-card__foot > div + div { border-left: 0; border-top: 1px solid rgba(51, 9, 94, 0.12); }
+}
+html .page--article .article__body .rv dl.rv-map__stats { margin-top: 2.25rem; }
+html .page--article .article__body .rv ul.rv-map__fns { margin-top: 0; }
+html .page--article .article__body .rv dl.rv-card__foot { margin: 2rem -2.25rem 0; }
+html .page--article .article__body .rv ul.rv-card__chips { margin-top: 1.5rem; }
+html .page--article .article__body .rv div.rv-ed__grid { margin-top: 2.5rem; }
+
+/* mv2mqfwe (10 Oct): "apply this consistency across the page", every big
+   statement line takes the use-cases lead: 26px, weight 300, line-height 1.3.
+   Bold inside a line (the persona emphasis) stays the emphasis. */
+@media (min-width: 701px) {
+  html .page--article[data-case="scheduled-delivery"] .article__body :is(
+    p.iq__question, p.sscene__title, p.smo__title, p.sin__line, .rwf__title,
+    p.role-frame__statement, p.article__tldr, .suc p.suc__lead, .suc p.suc__persona,
+    .rv p.rv__statement, .rv-card p.rv-card__statement
+  ) { font-size: 1.625rem; line-height: 1.3; }
+}
+html .page--article[data-case="scheduled-delivery"] .article__body :is(
+  p.iq__question, p.sscene__title, p.smo__title, p.sin__line, .rwf__title,
+  p.role-frame__statement, p.article__tldr, .suc p.suc__lead, .suc p.suc__persona,
+  .rv p.rv__statement, .rv-card p.rv-card__statement
+) { font-weight: 300; }
+
+/* QA (10 Oct): writer's check-notes are hidden from readers; the dev QA layer
+   shows them in amber so they can still be found and answered */
+.qa-confirm { display: none; }
+html.qa-on .qa-confirm { display: inline; background: rgba(255, 176, 32, 0.22); color: #b26a00; border-radius: 3px; padding: 0 0.15em; }
+html.dark.qa-on .qa-confirm { color: #ffc970; }
+/* QA: "3 PEOPLE" on the purple pin measured 4.20:1 at white 70%; 85% is 5.6:1 */
+.page--article .article__body .rwf-run .rwf .dio span.dio__count { color: rgba(255, 255, 255, 0.85); }
+/* QA: Option 1's partner lines were losing to the case's body-font rule */
+.page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-ed__partners li,
+.page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-map__fns li,
+.page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-card__chips li { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); }
+
+/* QA (10 Oct), light mode contrast, measured on the page:
+   - the option tags were #9674db on white, 3.61:1 -> #5b3fd1, 6.6:1
+   - the scope map's centre node, white on #9674db 3.61:1 -> on #5b3fd1, 6.6:1
+   - "Rejected" / "Shipped" tags, 11px bold: #ef4444 3.76:1 and #039855 3.73:1
+     on their tints -> #c81e1e 5.9:1 and #027a48 5.4:1 (dark mode untouched) */
+html:not(.dark) .page--article .article__body .rv p.rv__tag { color: #5b3fd1; }
+html:not(.dark) .rv-map__me { background: #5b3fd1; box-shadow: 0 10px 30px -12px rgba(91, 63, 209, 0.6); }
+html:not(.dark) .sdcmp__tag[data-kind="killed"] { color: #c81e1e; }
+html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
+/* QA (10 Oct): the metric chart's 30d / 90d / All range buttons come from the
+   chart library with inline colours and no classes. The INACTIVE ones were
+   black 22% on white (1.69:1) and white 25% on the dark page (2.19:1). Matched
+   on their inline colour so the active one keeps the library's own style. */
+.article__figure-live button[style*="color: rgba(0, 0, 0, 0.22)"] { color: rgba(0, 0, 0, 0.6) !important; }
+.article__figure-live button[style*="color: rgba(255, 255, 255, 0.25)"] { color: rgba(255, 255, 255, 0.62) !important; }
+/* QA (10 Oct): at phone width the scope map's three numbers ran past the box */
+@media (max-width: 700px) {
+  .rv-map__stats { gap: 1rem; justify-content: space-between; }
+  html .page--article .article__body .rv-map__stats dt { font-size: 1.125rem; white-space: nowrap; }
+  html .page--article .article__body .rv p.rv__statement { font-size: 1.375rem; }
+}
+
+/* ---------- dev QA layer (src/ui/QaNotes.jsx), 10 Oct ---------- */
+.qa-layer { position: absolute; top: 0; left: 0; width: 0; height: 0; z-index: 2147482000; }
+.qa-pin { position: absolute; }
+.qa-pin__dot {
+  --c: #e8930c;
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; padding: 0;
+  display: grid; place-items: center; cursor: pointer;
+  font: 700 11px/1 "Google Sans Flex", Inter, sans-serif; color: #fff; background: var(--c);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 28%, transparent), 0 4px 12px rgba(0, 0, 0, 0.35);
+  animation: qa-pulse 2.4s ease-in-out infinite;
+}
+.qa-pin--fixed .qa-pin__dot { --c: #1f9d61; animation: none; }
+.qa-pin--note .qa-pin__dot { --c: #5b6cff; animation: none; }
+@keyframes qa-pulse { 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--c) 10%, transparent), 0 4px 12px rgba(0, 0, 0, 0.35); } }
+@media (prefers-reduced-motion: reduce) { .qa-pin__dot { animation: none; } }
+.qa-pin__card {
+  position: absolute; top: 30px; left: 0; width: 300px; padding: 12px 14px; border-radius: 12px;
+  background: rgba(22, 20, 28, 0.94); color: #f2f0f7; backdrop-filter: blur(12px);
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font: 400 13px/1.45 "Google Sans Flex", Inter, sans-serif; text-align: left;
+  opacity: 0; translate: 0 -4px; pointer-events: none; transition: opacity 150ms ease, translate 150ms ease;
+}
+.qa-pin[data-flip] .qa-pin__card { left: auto; right: 0; }
+.qa-pin.is-open .qa-pin__card { opacity: 1; translate: 0 0; pointer-events: auto; }
+.qa-pin.is-open { z-index: 2; }
+.qa-pin__card strong { display: block; margin: 4px 0 4px; font-weight: 600; font-size: 14px; color: #fff; }
+.qa-pin__card p { margin: 0; color: rgba(242, 240, 247, 0.82); }
+.qa-pin__status { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #e8930c; color: #1a1205; }
+.qa-pin--fixed .qa-pin__status { background: #1f9d61; color: #04170d; }
+.qa-pin--note .qa-pin__status { background: #5b6cff; color: #fff; }
+.qa-pill {
+  position: fixed; left: 50%; bottom: 16px; translate: -50% 0; z-index: 2147482001;
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 8px 7px 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: rgba(22, 20, 28, 0.92); color: #f2f0f7; backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font: 500 12px/1 "Google Sans Flex", Inter, sans-serif;
+}
+.qa-pill b { font-weight: 700; letter-spacing: 0.06em; }
+.qa-pill__n { padding: 4px 8px; border-radius: 999px; }
+.qa-pill__n--open { background: rgba(232, 147, 12, 0.22); color: #ffc46b; }
+.qa-pill__n--fixed { background: rgba(31, 157, 97, 0.22); color: #7fe0ae; }
+.qa-pill__n--note { background: rgba(91, 108, 255, 0.24); color: #b6bdff; }
+.qa-pill__state { padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
+@media (max-width: 700px) { .qa-pill__n--note { display: none; } .qa-pill { bottom: 70px; } .qa-pin__card { width: min(280px, 80vw); } }
+/* 11 Oct: the reply field on each QA card */
+.qa-pin__card { pointer-events: none; }
+.qa-pin.is-open .qa-pin__card { pointer-events: auto; }
+.qa-pin__card::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; } /* hover bridge from the dot */
+.qa-pin__close { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border: 0; border-radius: 6px; background: rgba(255, 255, 255, 0.08); color: #f2f0f7; font-size: 16px; line-height: 1; cursor: pointer; }
+.qa-pin.has-reply .qa-pin__dot::after { content: ""; position: absolute; right: -3px; top: -3px; width: 9px; height: 9px; border-radius: 50%; background: #7fe0ae; border: 2px solid #16141c; }
+.qa-pin__dot { position: relative; }
+.qa-reply { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: grid; gap: 6px; }
+.qa-reply__label { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(242, 240, 247, 0.6); }
+.qa-reply textarea {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 52px; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06); color: #f2f0f7;
+  font: 400 13px/1.4 "Google Sans Flex", Inter, sans-serif;
+}
+.qa-reply textarea::placeholder { color: rgba(242, 240, 247, 0.45); }
+.qa-reply textarea:focus-visible { outline: 2px solid #b6bdff; outline-offset: 1px; }
+.qa-reply__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.qa-reply__hint { font-size: 11px; color: rgba(242, 240, 247, 0.55); }
+.qa-reply button[type="submit"] { padding: 6px 14px; border: 0; border-radius: 999px; background: #f2f0f7; color: #16141c; font: 600 12px/1 "Google Sans Flex", Inter, sans-serif; cursor: pointer; }
+.qa-reply button[type="submit"]:disabled { opacity: 0.4; cursor: default; }
+.qa-reply__sent { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.qa-reply__sent li { margin: 0; padding: 6px 8px; border-radius: 8px; background: rgba(127, 224, 174, 0.12); color: #c9f2dc; font-size: 12px; }
+.qa-reply__sent li::before { content: "Sent · "; color: #7fe0ae; font-weight: 600; }
