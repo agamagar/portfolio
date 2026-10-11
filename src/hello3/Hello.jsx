@@ -48,6 +48,7 @@ import DjBooth from "./DjBooth";
 // the fallback when WebGL is unavailable or the chunk has not landed yet.
 const ShaderCanvas = lazyRetry(() => import("../ShaderCanvas"));
 import { LIVING_SKY_DEFAULTS } from "../shaders/washes";
+import HelloNote from "../hello/HelloNote"; // the footnote on the sign-off (mv4fzaqd-ys0o8w)
 import "../hello/hello.css";
 // NOT importing ../figures/ds/tokens.css here (mttji8hf): it carries an
 // @import of the Anek Gujarati variable font for the DS figures, which the
@@ -1272,7 +1273,23 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           <h2 className="hello-foot__title">
             You&rsquo;re welcome to say
             <br />
-            a firm and cheery &lsquo;hello&rsquo;
+            {/* RESTORED (12 Oct 2026, Agam: "'hello' used to have an underline and a
+                tooltip that opened up and showed the references"). This is the /hello
+                page's own sign-off, never ported when this page became the root: the
+                whole phrase is the hover / focus trigger (Escape closes, bottom sheet
+                on phones), the dotted underline sits on "firm and cheery" (annotation
+                msg4imvc narrowed it to the marked words), and the note says where the
+                phrase comes from. COPY AS IT SHIPPED THERE, with its standing flag:
+                the 1878 New Haven directory and the Edison / Bell dispute are well
+                documented, but the exact wording is repeated more often than it is
+                sourced, so Agam should check it before it goes further. */}
+            <HelloNote
+              title="Where the phrase comes from"
+              body="The first telephone directory, New Haven 1878, told subscribers how to open a call, and what it recommended was a firm and cheery “hulloa”. Edison had pushed for “hello”; Bell wanted “ahoy”. Hello won."
+            >
+              a <span className="hnote__mark">firm and cheery</span>{" "}
+              &lsquo;hello&rsquo;
+            </HelloNote>
           </h2>
           {/* mtr6hqln (07 Sep 2026): the email and phone are two chat bubbles on
               the figure, either side of the head, above the heading. They are

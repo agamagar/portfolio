@@ -6331,3 +6331,10 @@ to { stroke-dashoffset: 0; }
 
 /* (the grid "landing" mark built for msugwd5i was removed the same day: a
    click now scrolls the SLIDER to that screen instead of opening the grid) */
+
+/* THE HIGHEST LAYER (mv4g2qbo-17p8xw): one token for things that must sit above
+   every other layer in the site (the footnote tooltip, portalled to <body>). The
+   biggest z-index anywhere else is 2147483100. */
+:root { --z-tooltip: 2147483600; }
+.hnote__portal > * { pointer-events: auto; }
+.hnote__portal > .hnote__panel:not([data-open]) { pointer-events: none; }

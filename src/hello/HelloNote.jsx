@@ -16,6 +16,7 @@
 // because a footnote only a mouse can read is a footnote most people cannot.
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSheetMode } from "./useSheet";
 
 const OPEN_DELAY = 280;
@@ -51,6 +52,20 @@ export default function HelloNote({ children, title, body }) {
   // in a centred heading, so which edge it runs past depends on the viewport.
   // Skipped entirely in sheet mode — the sheet spans the viewport, so there is
   // no edge to run past and a stale `--nudge` would only shove it sideways.
+  // THE NOTE LIVES IN <body>, NOT IN THE HEADING (mv4g2qbo-17p8xw, 12 Oct 2026:
+  // "this overlay should have the highest z-index; it should come on top of all
+  // elements"). Inside the heading it was capped by every ancestor stacking
+  // context (a reveal transform, a filter) and by whatever painted later: the
+  // contact bubbles, the Inspect pill, the cursor. Portalled, it sits in the
+  // root at --z-tooltip (above every other layer in the site). The panel keeps
+  // its own CSS: a zero-height fixed ANCHOR is laid over the trigger and the
+  // panel is positioned from it exactly as it was from the inline span. React
+  // events still bubble through the portal, so hovering the panel keeps it open.
+  const [anchor, setAnchor] = useState(null);
+  const measure = useCallback(() => {
+    const r = wrapRef.current?.querySelector(".hnote__word")?.getBoundingClientRect();
+    if (r) setAnchor({ left: r.left, top: r.top, width: r.width, height: r.height });
+  }, []);
   const place = useCallback(() => {
     const panel = panelRef.current;
     if (!panel || sheet) return;
@@ -64,8 +79,11 @@ export default function HelloNote({ children, title, body }) {
   }, [sheet]);
 
   useEffect(() => {
+    if (open) measure();
+  }, [open, measure]);
+  useEffect(() => {
     if (open) place();
-  }, [open, place]);
+  }, [open, place, anchor]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -76,14 +94,24 @@ export default function HelloNote({ children, title, body }) {
       }
     };
     window.addEventListener("keydown", onKey);
-    window.addEventListener("scroll", place, { passive: true });
-    window.addEventListener("resize", place);
+    // re-measure now, on the next frame, and once scrolling has settled: the
+    // site's smooth scroll keeps moving the page after the last scroll event
+    let settle = 0;
+    const follow = () => {
+      measure(); place();
+      requestAnimationFrame(measure);
+      clearTimeout(settle);
+      settle = setTimeout(() => { measure(); place(); }, 160);
+    };
+    window.addEventListener("scroll", follow, { passive: true });
+    window.addEventListener("resize", follow);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("scroll", place);
-      window.removeEventListener("resize", place);
+      clearTimeout(settle);
+      window.removeEventListener("scroll", follow);
+      window.removeEventListener("resize", follow);
     };
-  }, [open, place]);
+  }, [open, place, measure]);
 
   return (
     <span
@@ -123,29 +151,46 @@ export default function HelloNote({ children, title, body }) {
           few words of a heading now sitting behind the sheet, and tapping it
           again is a target the reader has to find. It is aria-hidden because it
           is a dismissal surface, not content; Escape still does the same job. */}
-      {sheet && open && (
+      {typeof document !== "undefined" &&
+        createPortal(
+          <span
+            className="hnote__portal"
+            style={{
+              position: "fixed",
+              left: anchor?.left ?? 0,
+              top: anchor?.top ?? 0,
+              width: anchor?.width ?? 0,
+              height: anchor?.height ?? 0,
+              zIndex: "var(--z-tooltip, 2147483600)",
+              pointerEvents: "none",
+            }}
+          >
+        {sheet && open && (
+          <span
+            className="hnote__scrim"
+            aria-hidden="true"
+            onClick={() => {
+              clear();
+              setOpen(false);
+            }}
+          />
+        )}
         <span
-          className="hnote__scrim"
-          aria-hidden="true"
-          onClick={() => {
-            clear();
-            setOpen(false);
-          }}
-        />
-      )}
-      <span
-        className="hnote__panel"
-        id={id}
-        ref={panelRef}
-        role="note"
-        aria-hidden={open ? undefined : "true"}
-        data-open={open ? "true" : undefined}
-        data-sheet={sheet ? "true" : undefined}
-      >
-        {sheet && <span className="hnote__grip" aria-hidden="true" />}
-        <span className="hnote__title">{title}</span>
-        <span className="hnote__body">{body}</span>
-      </span>
+          className="hnote__panel"
+          id={id}
+          ref={panelRef}
+          role="note"
+          aria-hidden={open ? undefined : "true"}
+          data-open={open ? "true" : undefined}
+          data-sheet={sheet ? "true" : undefined}
+        >
+          {sheet && <span className="hnote__grip" aria-hidden="true" />}
+          <span className="hnote__title">{title}</span>
+          <span className="hnote__body">{body}</span>
+        </span>
+          </span>,
+          document.body,
+        )}
     </span>
   );
 }

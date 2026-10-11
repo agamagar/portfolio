@@ -2324,3 +2324,7 @@ html:has(div[data-inspect-ui]) .wscene-back-pill { display: none; }
   .wscene-back-pill, .wscene-back-pill[data-on] { translate: -50% 0; transition: opacity 200ms ease, visibility 0s linear 200ms !important; }
   .wscene-back-pill[data-on] { transition: opacity 200ms ease !important; }
 }
+
+/* mv4g15l9 (Agam 2026-10-12): a little more room under the work cards, 60 -> 96px */
+.hello[data-page="3"] .wg { padding-bottom: 96px; }
+
