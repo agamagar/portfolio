@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Cursor from "../figures/ds/Cursor";
 import { useInViewLoop, useReducedMotion } from "../figures/ds/hooks";
 import HelloLink from "./HelloLink";
+import useLinkedSpotlight from "./useLinkedSpotlight";
 import FigmaPhone from "./FigmaPhone";
 import ClipVideo from "../hello/ClipVideo";
 import ScrollBand from "../hello/ScrollBand";
@@ -70,89 +71,224 @@ const CARDS = [
 // keeps the colour and carries a dark ink instead (#3b2b00, about 9:1). The
 // ARROWS keep the frame's exact fills; they carry no text.
 // HUMAN MOTION (pin mtrwwb8c, "make the cursors move more like humans are
-// moving them"). The first pass was CSS keyframes: straight lines, one
-// easing, identical holds, which is how a robot moves a mouse. A hand does
-// four things a keyframe does not: it picks a target and moves fast then
-// slows (Fitts: the time grows with the distance), it travels a slight ARC
-// rather than a line, it OVERSHOOTS a little and corrects, and while it
-// "rests" it never quite holds still. So each tag runs its own loop: choose a
-// point within its wander radius, fly there on an ease-out along a quadratic
-// bezier whose control point is pushed sideways at random, land a few px past
-// and settle back, then idle with a low drift for a random beat before the
-// next move. Timings are drawn from ranges, so the three never fall into
-// step. The arrow tilts a few degrees into the direction of travel.
-// Reduced motion: the tags sit at their home points.
-function useHumanCursor(ref, seed) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return undefined;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
-    let rand = seed * 9301 + 49297; // a small deterministic PRNG per tag, so reloads look the same
-    const rnd = () => ((rand = (rand * 9301 + 49297) % 233280) / 233280);
-    const R = { x: 26, y: 18 }; // wander radius from home
-    let raf = 0; let alive = true;
-    let pos = { x: 0, y: 0 }; let tilt = 0;
-    const draw = (x, y, t) => { el.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) rotate(${t.toFixed(2)}deg)`; };
-    const sleep = (ms) => new Promise((r) => { const t0 = performance.now(); const tick = (now) => { if (!alive) return; if (now - t0 >= ms) r(); else raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick); });
-    const fly = (to) => new Promise((done) => {
-      const from = { ...pos };
-      const dx = to.x - from.x, dy = to.y - from.y; const dist = Math.hypot(dx, dy);
-      const dur = 260 + dist * 9 + rnd() * 160; // Fitts-ish: farther takes longer
-      const side = (rnd() < 0.5 ? -1 : 1) * (0.18 + rnd() * 0.22) * dist; // the arc's bulge
-      const ctrl = { x: from.x + dx / 2 - dy / dist * side, y: from.y + dy / 2 + dx / dist * side };
-      const over = 0.06 + rnd() * 0.08; // overshoot, as a share of the trip
-      const t0 = performance.now();
-      const step = (now) => {
-        if (!alive) return;
-        const u = Math.min(1, (now - t0) / dur);
-        const e = 1 - Math.pow(1 - u, 3); // ease-out cubic
-        const p = e * (1 + over) - (u > 0.7 ? (e - 1) * 0 : 0);
-        const q = Math.min(p, 1 + over * (1 - Math.max(0, (u - 0.75) / 0.25))); // past the mark, then back
-        const k = q; const k1 = 1 - k;
-        const x = k1 * k1 * from.x + 2 * k1 * k * ctrl.x + k * k * to.x;
-        const y = k1 * k1 * from.y + 2 * k1 * k * ctrl.y + k * k * to.y;
-        const vx = 2 * k1 * (ctrl.x - from.x) + 2 * k * (to.x - ctrl.x);
-        tilt = Math.max(-10, Math.min(10, vx * 0.12 * (1 - u)));
-        pos = { x, y }; draw(x, y, tilt);
-        if (u < 1) raf = requestAnimationFrame(step); else done();
-      };
-      raf = requestAnimationFrame(step);
+// moving them"): a hand picks a target and moves fast then slows (Fitts), on
+// a slight ARC rather than a line, OVERSHOOTS a little and settles, and never
+// quite holds still at rest; the arrow tilts into the direction of travel.
+// A STORY (mv3mdlaf, 11 Oct 2026: "make the cursors more dynamic, popping into
+// the frame; they move erratically first, then the bubble pops with the text
+// and they start moving a little slower; stitch it into a story"). One script
+// drives all three, looping:
+//   1 ARRIVE   each cursor pops in from outside the frame (coral from the
+//              right, yellow from the left, green from below), 380ms apart,
+//              scaling up on a spring as it lands
+//   2 SCRAMBLE quick, wide, jittery darts with barely a pause: three people
+//              arriving in a file, looking around
+//   3 SPEAK    one at a time (coral proposes "Let's implement it", yellow and
+//              green answer) each settles near its spot, its bubble springs
+//              out of the arrow and the arrow gives a small bump
+//   4 CALM     having spoken, it drifts: slow, short, soft moves, long rests
+//   5 LEAVE    the bubbles fold, the cursors slip out of the frame, a beat of
+//              empty card, and it begins again
+// THE PHONE JOINS IT (mv3t0j1r, 11 Oct 2026: "just like the cursors, the phone
+// also comes in from the bottom, and then to complete the loop it all goes
+// away"). The phone layer is on the same clock: it rises from below the
+// card's bottom edge on a smooth ease-out (no overshoot, mv3yf1yx) and the cursors start arriving PHONE_LEAD into that rise; at LEAVE
+// it slides back down with them on an ease-in, so the card empties as one.
+// Transform only (translateY on .wg__live--over), nothing that lays out.
+// All timing runs on requestAnimationFrame, so a hidden tab freezes it; off
+// screen the script stops and resets (IntersectionObserver), and starts from
+// ARRIVE when the card comes back. Reduced motion: the end state, each cursor
+// at its spot with its bubble out, still.
+const STORY = [
+  { tone: "coral", side: "left", label: "Let’s implement it", x: "70.27%", y: "34.03%", from: "right", says: 2300 },
+  { tone: "yellow", side: "right", label: "Looks Sick!", x: "12.31%", y: "39.12%", from: "left", says: 3300 },
+  { tone: "green", side: "left", label: "Cool Stuff!", x: "71.62%", y: "52.08%", from: "bottom", says: 4100 },
+];
+const STORY_END = 10600; // the cursors leave here (ms from the loop's start)
+const STAGGER = 380;
+const PHONE_LEAD = 650; // the phone is mostly up before the first cursor pops in
+
+// one cursor's body: position, tilt and scale, drawn as a single transform
+function cursorActor(el, rnd, isAlive) {
+  const st = { x: 0, y: 0, tilt: 0, s: 1 };
+  const draw = () => { el.style.transform = `translate(${st.x.toFixed(2)}px, ${st.y.toFixed(2)}px) rotate(${st.tilt.toFixed(2)}deg) scale(${st.s.toFixed(3)})`; };
+  const frames = (ms, fn) => new Promise((done) => {
+    const t0 = performance.now();
+    const step = (now) => {
+      if (!isAlive()) return;
+      const u = Math.min(1, (now - t0) / ms);
+      fn(u, now - t0); draw();
+      if (u < 1) requestAnimationFrame(step); else done();
+    };
+    requestAnimationFrame(step);
+  });
+  // an underdamped spring from `from` to 1: the pop on arrival and the bump
+  // when the bubble comes out
+  const spring = (from, ms = 520) => frames(ms, (u, t) => { st.s = 1 - (1 - from) * Math.exp(-t / 95) * Math.cos(t / 48); if (u === 1) st.s = 1; });
+  // a flight on a quadratic bezier, the control point pushed sideways at
+  // random; `back` is the overshoot (0 = none, the calm moves), `ease` "in" for
+  // leaving the frame
+  const fly = (to, { dur, back = 0.9, bulge = 0.3, ease = "out" }) => {
+    const from = { x: st.x, y: st.y };
+    const dx = to.x - from.x, dy = to.y - from.y; const dist = Math.hypot(dx, dy) || 1;
+    const side = (rnd() < 0.5 ? -1 : 1) * (bulge * (0.5 + rnd() * 0.5)) * dist;
+    const c = { x: from.x + dx / 2 - (dy / dist) * side, y: from.y + dy / 2 + (dx / dist) * side };
+    let px = from.x;
+    return frames(dur, (u) => {
+      const v = u - 1;
+      const k = ease === "in" ? u * u * u : 1 + (back + 1) * v * v * v + back * v * v; // ease-out-back
+      const k1 = 1 - k;
+      st.x = k1 * k1 * from.x + 2 * k1 * k * c.x + k * k * to.x;
+      st.y = k1 * k1 * from.y + 2 * k1 * k * c.y + k * k * to.y;
+      st.tilt = Math.max(-12, Math.min(12, (st.x - px) * 1.1)) * (1 - u * 0.6);
+      px = st.x;
     });
-    const idle = (ms) => new Promise((done) => {
-      const t0 = performance.now(); const base = { ...pos };
-      const ax = 0.6 + rnd() * 1.2, ay = 0.4 + rnd() * 0.9, f = 0.6 + rnd() * 0.8;
-      const step = (now) => {
-        if (!alive) return;
-        const t = (now - t0) / 1000;
-        const x = base.x + Math.sin(t * f * 2.1) * ax, y = base.y + Math.cos(t * f * 1.7) * ay;
-        pos = { x, y }; draw(x, y, tilt * Math.max(0, 1 - t));
-        if (now - t0 < ms) raf = requestAnimationFrame(step); else done();
-      };
-      raf = requestAnimationFrame(step);
+  };
+  // at rest a hand still breathes: a small lissajous drift, tilt fading out
+  const idle = (ms, amp = 1) => {
+    const base = { x: st.x, y: st.y }; const t0 = st.tilt;
+    const f = 0.6 + rnd() * 0.8, ax = (0.6 + rnd() * 1.2) * amp, ay = (0.4 + rnd() * 0.9) * amp;
+    return frames(ms, (u, t) => {
+      st.x = base.x + Math.sin((t / 1000) * f * 2.1) * ax;
+      st.y = base.y + (Math.cos((t / 1000) * f * 1.7) - 1) * ay;
+      st.tilt = t0 * Math.max(0, 1 - t / 400);
     });
-    (async () => {
-      await sleep(400 + rnd() * 1800);
-      while (alive) {
-        await fly({ x: (rnd() * 2 - 1) * R.x, y: (rnd() * 2 - 1) * R.y });
-        if (rnd() < 0.35) await fly({ x: pos.x + (rnd() * 2 - 1) * 6, y: pos.y + (rnd() * 2 - 1) * 4 }); // a small correction
-        await idle(700 + rnd() * 2200);
-      }
-    })();
-    return () => { alive = false; cancelAnimationFrame(raf); };
-  }, [ref, seed]);
+  };
+  const place = (x, y, s = 1) => { Object.assign(st, { x, y, s, tilt: 0 }); draw(); };
+  return { st, fly, idle, spring, place };
 }
 
-function CursorTag({ tone, side, label, style, seed = 1 }) {
-  const ref = useRef(null);
-  useHumanCursor(ref, seed);
-  return (
-    <span className={`wg__cur wg__cur--${tone} wg__cur--${side}`} style={style} ref={ref} aria-hidden>
+function CursorStory() {
+  const reduce = useReducedMotion();
+  const refs = useRef([]);
+  useEffect(() => {
+    const els = refs.current;
+    const card = els[0]?.closest(".wg__card");
+    if (reduce || !card || els.some((e) => !e)) return undefined;
+    let seedState = 7;
+    const rnd = () => ((seedState = (seedState * 9301 + 49297) % 233280) / 233280);
+    let run = 0; // bumps on every stop, so a stale script dies
+    // the point just outside the frame on the cursor's entry side, in its own
+    // translate space (its home is 0,0)
+    const outside = (el, from) => {
+      const W = card.clientWidth, H = card.clientHeight, m = 18;
+      if (from === "left") return { x: -(el.offsetLeft + el.offsetWidth + m), y: 20 };
+      if (from === "right") return { x: W - el.offsetLeft + m, y: -24 };
+      return { x: -30, y: H - el.offsetTop + m };
+    };
+    // mv3owgcx ("I don't see the cursors"): the resting state used to be
+    // OFF-FRAME, set synchronously, with the story's first frame bringing them
+    // in. Anything that holds requestAnimationFrame back left the card empty
+    // for good, and Agentation does exactly that: its "freeze animations"
+    // queues every rAF and timeout while Agam is annotating. So the rest
+    // state is now the end state (home, bubbles out), the story hides them
+    // only inside its own first frame, and a freeze puts them back at rest.
+    const phone = card.querySelector(".wg__live--over");
+    const rest = () => {
+      els.forEach((el) => {
+        el.setAttribute("data-said", "");
+        el.style.transform = "";
+      });
+      if (phone) phone.style.transform = "";
+    };
+    // the phone's own tween, on rAF like the cursors (so a freeze holds it too)
+    const tween = (ms, fn, alive) => new Promise((done) => {
+      const s0 = performance.now();
+      const step = (now) => {
+        if (!alive()) return;
+        const t = Math.min(ms, now - s0); fn(t / ms, t);
+        if (t < ms) requestAnimationFrame(step); else done();
+      };
+      requestAnimationFrame(step);
+    });
+    const phoneTo = (y) => { if (phone) phone.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`; };
+    rest();
+    const story = async (id) => {
+      const alive = () => run === id;
+      await new Promise((r) => requestAnimationFrame(r)); if (!alive()) return;
+      const pause = (a, ms) => a.idle(ms, 0.4);
+      const t0 = performance.now() + PHONE_LEAD; // the cursors' clock starts once the phone is mostly up
+      const at = (ms) => t0 + ms;
+      const below = card.clientHeight + 8;
+      // 0 RISE: from below the bottom edge, an underdamped spring into place;
+      // then hold until LEAVE and slide back down with the cursors
+      const phoneRun = phone ? (async () => {
+        phoneTo(below);
+        await tween(1000, (u) => phoneTo(below * Math.pow(1 - u, 4)), alive); // ease-out quart: decelerates into rest, no overshoot (mv3yf1yx) if (!alive()) return;
+        phoneTo(0); phone.style.transform = "";
+        while (alive() && performance.now() < at(STORY_END + 120)) await tween(120, () => {}, alive);
+        if (!alive()) return;
+        await tween(640, (u) => phoneTo(below * u * u * u), alive);
+      })() : Promise.resolve();
+      const actors = els.map((el) => cursorActor(el, rnd, alive));
+      await Promise.all(actors.map(async (a, i) => {
+        const el = els[i]; const beat = STORY[i];
+        const o = outside(el, beat.from);
+        el.removeAttribute("data-said");
+        a.place(o.x, o.y, 0.55);
+        await pause(a, PHONE_LEAD + i * STAGGER); if (!alive()) return;
+        // 1 ARRIVE: in fast, past the mark, the spring pop as it lands
+        const land = { x: (rnd() * 2 - 1) * 30, y: (rnd() * 2 - 1) * 20 };
+        a.spring(0.55, 620);
+        await a.fly(land, { dur: 420 + rnd() * 120, back: 1.4, bulge: 0.18 }); if (!alive()) return;
+        // 2 SCRAMBLE: quick wide darts until it is this one's turn to speak
+        while (alive() && performance.now() < at(beat.says - 380)) {
+          await a.fly({ x: (rnd() * 2 - 1) * 46, y: (rnd() * 2 - 1) * 30 }, { dur: 140 + rnd() * 140, back: 1.1, bulge: 0.45 });
+          if (rnd() < 0.4) await a.fly({ x: a.st.x + (rnd() * 2 - 1) * 9, y: a.st.y + (rnd() * 2 - 1) * 7 }, { dur: 90, back: 0.4 });
+          await pause(a, rnd() * 140);
+        }
+        if (!alive()) return;
+        // 3 SPEAK: settle by the spot, the bubble springs out, the arrow bumps
+        await a.fly({ x: (rnd() * 2 - 1) * 6, y: (rnd() * 2 - 1) * 4 }, { dur: 380, back: 0.8, bulge: 0.2 }); if (!alive()) return;
+        el.setAttribute("data-said", "");
+        a.spring(0.86, 560);
+        await pause(a, 700 + rnd() * 300); if (!alive()) return;
+        // 4 CALM: slow, short, soft, with long rests
+        while (alive() && performance.now() < at(STORY_END - 1500)) {
+          await a.fly({ x: (rnd() * 2 - 1) * 16, y: (rnd() * 2 - 1) * 10 }, { dur: 1100 + rnd() * 600, back: 0, bulge: 0.25 });
+          await a.idle(700 + rnd() * 1100);
+        }
+        while (alive() && performance.now() < at(STORY_END + i * 160)) await a.idle(60);
+        if (!alive()) return;
+        // 5 LEAVE: the bubble folds, then out of the frame
+        el.removeAttribute("data-said");
+        await pause(a, 260); if (!alive()) return;
+        await a.fly(outside(el, beat.from), { dur: 520, ease: "in", bulge: 0.15 });
+      }).concat(phoneRun));
+      if (!alive()) return;
+      await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 900)));
+      if (alive()) story(id);
+    };
+    let inView = false;
+    // Agentation's freeze state (window.__agentation_freeze). The toolbar can
+    // load after this mounts, so it is read on every tick, not once.
+    const isFrozen = () => !!window.__agentation_freeze?.frozen;
+    let frozen = isFrozen();
+    const restart = () => { run += 1; rest(); if (inView && !frozen) story(run); };
+    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; restart(); }, { threshold: 0.35 });
+    io.observe(card);
+    // Agentation mutes the page's setInterval while frozen, so the watch runs
+    // on the original timer: the one it keeps, or, if it has not loaded yet,
+    // the native one as it is now (before any patch)
+    const tick = window.__agentation_freeze?.origSetInterval || window.setInterval.bind(window);
+    const poll = tick(() => { if (isFrozen() !== frozen) { frozen = isFrozen(); restart(); } }, 250);
+    return () => { run += 1; io.disconnect(); clearInterval(poll); };
+  }, [reduce]);
+  return STORY.map((b, i) => (
+    <span
+      key={b.tone}
+      className={`wg__cur wg__cur--${b.tone} wg__cur--${b.side}`}
+      style={{ "--x": b.x, "--y": b.y }}
+      ref={(n) => { refs.current[i] = n; }}
+      data-said={reduce ? "" : undefined}
+      aria-hidden
+    >
       <svg className="wg__cur-arrow" viewBox="0 0 16 16" width="15" height="15">
         <path d="M2 1.5 L2 14.2 L5.6 10.8 L8.1 15 L10.3 13.9 L7.9 9.8 L12.8 9.8 Z" />
       </svg>
-      <span className="wg__cur-pill">{label}</span>
+      <span className="wg__cur-pill">{b.label}</span>
     </span>
-  );
+  ));
 }
 
 // The Away right phone's reveal, LOCKED TO THE LEFT PHONE'S CLIP (pin
@@ -306,11 +442,13 @@ function SlotTour() {
 }
 
 export default function WorkGrid({ onNavigate }) {
+  const sectionRef = useRef(null);
+  useLinkedSpotlight(sectionRef); // mv3mbvr7: the cards and the timeline rows dim together
   return (
-    <section className="wg" aria-label="Selected work">
+    <section className="wg" aria-label="Selected work" ref={sectionRef}>
       <div className="wg__grid">
         {CARDS.filter((c) => !c.hidden).map((c, i) => (
-          <HelloLink key={c.src} to={c.href} onNavigate={onNavigate} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} aria-label={c.live ? c.alt : undefined}>
+          <HelloLink key={c.src} to={c.href} onNavigate={onNavigate} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? c.alt : undefined}>
             {c.live === "caratlane" ? (
               <span className="wg__live" aria-hidden>
                 <FigmaPhone plate="pro17" className="wg__phone" screen={<ClipVideo clip={CARAT_CLIP} playing />} alt="" />
@@ -366,9 +504,7 @@ export default function WorkGrid({ onNavigate }) {
                     and each one wanders its own short path in bursts with
                     holds, the way a live cursor does. The PNG exports stay in
                     public/hello3/cards as the record of the frame. */}
-                <CursorTag tone="coral" side="left" seed={3} style={{ "--x": "70.27%", "--y": "34.03%" }} label="Let’s implement it" />
-                <CursorTag tone="green" side="left" seed={7} style={{ "--x": "71.62%", "--y": "52.08%" }} label="Cool Stuff!" />
-                <CursorTag tone="yellow" side="right" seed={11} style={{ "--x": "12.31%", "--y": "39.12%" }} label="Looks Sick!" />
+                <CursorStory />
                 <span className="wg__live wg__live--over" aria-hidden>
                   <FigmaPhone
                     plate="pro17"

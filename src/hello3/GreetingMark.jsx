@@ -11,7 +11,21 @@
 // in a visually hidden heading and marks this aria-hidden. Nothing on the page
 // says "Hello! I’m Agam" in a way a machine can read except that heading, so do
 // not delete it.
-export default function GreetingMark({ className = "", ...rest }) {
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { fitHero, getHero, subscribeHero } from "../lib/serifFont";
+
+export default function GreetingMark({ className = "", helloLayer = null, ...rest }) {
+  // the heading font picked in the nav's Aa menu: "default" keeps the drawn outlines below
+  const hero = useSyncExternalStore(subscribeHero, getHero, () => "default");
+  const [fit, setFit] = useState(null);
+  useEffect(() => {
+    let live = true;
+    setFit(null);
+    if (hero !== "default") fitHero(hero).then((f) => live && setFit(f));
+    return () => { live = false; };
+  }, [hero]);
+  const liveText = hero !== "default" && fit;
+  const tx = (len) => (len ? { textLength: len, lengthAdjust: "spacingAndGlyphs" } : null);
   return (
     <svg
       className={className}
@@ -20,6 +34,7 @@ export default function GreetingMark({ className = "", ...rest }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
       focusable="false"
+      data-hero-live={liveText ? "" : undefined}
       {...rest}
     >
       {/* mttiw5u0 (09 Sep 2026): the seven "I'm Agam" glyphs are one group so
@@ -33,6 +48,7 @@ export default function GreetingMark({ className = "", ...rest }) {
       <path d="M21.7759 77.3925V62.2303V50.0695H28.8654V61.1954H29.2793C29.5208 58.2975 29.9866 55.9861 30.6765 54.2611C31.401 52.5362 32.3497 51.2942 33.5227 50.5353C34.7301 49.7418 36.1618 49.345 37.8178 49.345C39.5427 49.345 40.9399 49.7763 42.0094 50.6388C43.0788 51.4667 43.8723 52.7604 44.3898 54.5199C44.9073 56.2448 45.1488 58.47 45.1143 61.1954H45.5283C45.7697 58.332 46.27 56.0378 47.029 54.3129C47.7879 52.5879 48.7884 51.3287 50.0303 50.5353C51.2723 49.7418 52.7385 49.345 54.4289 49.345C55.8434 49.345 57.0681 49.6038 58.103 50.1213C59.138 50.6388 60.0005 51.415 60.6905 52.4499C61.4149 53.4849 61.9497 54.7959 62.2946 56.3828C62.6396 57.9352 62.8121 59.7637 62.8121 61.8681V77.3925H54.4289V62.5926C54.4289 61.2816 54.3082 60.1949 54.0667 59.3324C53.8597 58.4355 53.532 57.78 53.0835 57.366C52.635 56.9175 52.0658 56.6933 51.3758 56.6933C50.4788 56.6933 49.6509 57.1073 48.8919 57.9352C48.1329 58.7287 47.5119 59.9362 47.029 61.5576C46.5805 63.179 46.3562 65.2317 46.3562 67.7156V77.3925H38.18V62.3856C38.18 61.0746 38.0593 60.0052 37.8178 59.1772C37.6108 58.3492 37.2658 57.7282 36.7828 57.3143C36.3343 56.9003 35.7651 56.6933 35.0751 56.6933C34.2127 56.6933 33.4019 57.0555 32.643 57.78C31.9185 58.47 31.3148 59.6257 30.8318 61.2471C30.3833 62.8686 30.1591 65.0247 30.1591 67.7156V77.3925H21.7759Z" />
       <path d="M10.6169 54.5716C11.2378 52.8122 11.6691 51.2253 11.9106 49.8108C12.1865 48.3619 12.3418 46.9474 12.3763 45.5675C12.4453 44.1875 12.4798 42.7213 12.4798 41.1689H20.035C20.035 43.4113 19.8798 45.3605 19.5693 47.0164C19.2933 48.6724 18.9138 50.104 18.4308 51.3115C17.9478 52.519 17.4476 53.6057 16.9301 54.5716H10.6169Z" />
       <path d="M0 77.3925V43.2388H8.43495V77.3925H0Z" />
+      {liveText && <text className="gm__live" x={fit.nx} y="77.3925" fontSize={fit.fs} {...tx(fit.name)}>I{"\u2019"}m Agam</text>}
       </g>
       {/* mtr7ek2q (07 Sep 2026): the six "Hello!" glyphs are one group so the
           word can step right while the intro plays and settle back as the
@@ -44,6 +60,10 @@ export default function GreetingMark({ className = "", ...rest }) {
       <path d="M123.554 36.2237V0H131.937V36.2237H123.554Z" />
       <path d="M108.647 36.9481C106.06 36.9481 103.886 36.5859 102.127 35.8614C100.402 35.1025 99.0049 34.0847 97.9354 32.8083C96.8659 31.4973 96.0897 30.0139 95.6067 28.358C95.1582 26.702 94.934 24.9598 94.934 23.1314C94.934 21.165 95.1755 19.2848 95.6585 17.4908C96.176 15.6969 96.9522 14.11 97.9871 12.73C99.0566 11.3156 100.419 10.2116 102.075 9.41813C103.766 8.59016 105.784 8.17618 108.13 8.17618C110.476 8.17618 112.477 8.59016 114.133 9.41813C115.823 10.2116 117.168 11.3328 118.169 12.7818C119.169 14.2307 119.808 15.9039 120.084 17.8013C120.394 19.6988 120.36 21.7514 119.98 23.9594L100.161 24.2698V19.716L113.563 19.4573L112.477 22.0964C112.684 20.5095 112.649 19.1813 112.373 18.1118C112.132 17.0079 111.666 16.1799 110.976 15.6279C110.286 15.0414 109.337 14.7482 108.13 14.7482C106.853 14.7482 105.836 15.0759 105.077 15.7314C104.318 16.3869 103.783 17.3183 103.472 18.5258C103.162 19.6988 103.007 21.096 103.007 22.7174C103.007 25.5118 103.472 27.5472 104.404 28.8237C105.335 30.1001 106.767 30.7384 108.699 30.7384C109.527 30.7384 110.217 30.6349 110.769 30.4279C111.321 30.2209 111.769 29.9276 112.114 29.5482C112.459 29.1342 112.701 28.6512 112.839 28.0992C112.977 27.5127 113.029 26.8573 112.994 26.1328L120.653 26.5468C120.756 27.6852 120.636 28.8582 120.291 30.0656C119.98 31.2731 119.376 32.3943 118.479 33.4293C117.582 34.4642 116.323 35.3094 114.702 35.9649C113.115 36.6204 111.097 36.9481 108.647 36.9481Z" />
       <path d="M83.357 36.2237V2.06989H91.7402V36.2237H83.357ZM62.9164 36.2237V2.06989H71.2996V36.2237H62.9164ZM69.178 22.5622V15.5244H87.7555V22.5622H69.178Z" />
+      {/* the stretchy Hello (HelloFlip.jsx, 2026-10-11): draws over these
+          paths in the same units and hides them only while the word differs */}
+      {liveText && <text className="gm__live gm__live--hello" x={fit.hx} y="36.2237" fontSize={fit.fs} letterSpacing={fit.hello.ls || undefined} {...tx(fit.hello.len)}>Hello!</text>}
+      {helloLayer}
       </g>
     </svg>
   );

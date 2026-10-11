@@ -1252,7 +1252,7 @@
 }
 .xi__head { display: flex; justify-content: center; align-items: center; padding: calc(60 * var(--px)); }
 .xi__title {
-  font-family: "Playwrite US Trad", "Newsreader", cursive; font-weight: 400;
+  font-family: "Playwrite US Trad", var(--font-serif), cursive; font-weight: 400;
   font-size: max(calc(36 * var(--px)), 1.125rem); line-height: calc(70 / 36); text-align: center; color: #34695a;
 }
 .xi__row {
@@ -1273,7 +1273,7 @@
 .xi__card-h { display: flex; align-items: center; justify-content: center; gap: calc(8 * var(--px)); }
 .xi__icon { width: calc(64 * var(--px)); height: calc(64 * var(--px)); display: grid; place-items: center; }
 .xi__icon svg { width: calc(44 * var(--px)); height: calc(44 * var(--px)); }
-.xi__card-t { font-family: "Playwrite US Trad", "Newsreader", cursive; font-weight: 400; font-size: max(calc(28 * var(--px)), 0.9375rem); line-height: calc(54 / 28); color: #34695a; }
+.xi__card-t { font-family: "Playwrite US Trad", var(--font-serif), cursive; font-weight: 400; font-size: max(calc(28 * var(--px)), 0.9375rem); line-height: calc(54 / 28); color: #34695a; }
 .xi__claim-w { padding: calc(8 * var(--px)) calc(8 * var(--px)) calc(16 * var(--px)); display: flex; justify-content: center; }
 .xi__claim {
   margin: 0; font-family: "Zepto Norms", "Google Sans Flex", "Inter", -apple-system, sans-serif; font-weight: 500;

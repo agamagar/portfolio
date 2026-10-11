@@ -9,20 +9,28 @@
 import { windowSceneOn } from "../lib/sceneFlag";
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MorphFace from "../MorphFace";
+// the line drawing turns into the 3D clay head after the reveal (2026-10-11), and the
+// room's page capture waits for it (heroMorphGate.js)
+import HeroMorph from "./HeroMorph";
+import { heroMorphSettledOrTimeout } from "./heroMorphGate";
+import { warmIsReady } from "../scene/window/warmFlag";
 import { Check, Copy, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
-import { useIntroStage } from "./useStage";
+import { markIntroDone, useIntroStage } from "./useStage";
 import { useFlight } from "./useFlight";
 import { getLenis } from "../ui/smoothScroll";
 import { ALSO, BRAND_SHINE, CREDENTIALS, GREETING, ROLES } from "./helloData";
 import RoleTooltip from "./RoleTooltip";
 import GreetingMark from "./GreetingMark";
+import { HelloFlipControl, HelloFlipLayer, HelloFlipSr, useHelloFlipStore } from "./HelloFlip";
 import HelloLink from "./HelloLink";
 import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
 import WorkGrid from "./WorkGrid";
+import SiteCursor from "./SiteCursor";
+import { Guard, lazyRetry } from "../ui/Guard"; // blank-page guards: a failing piece hides itself, never the page
 // The REBUILT timeline, shared with /hello rather than forked (2026-08-07).
 // hello3 had its own copy of the old axis AND its own TIMELINE/GAP data, whose
 // gap label still read "Masters, research, and the move into VR" — a claim the
@@ -34,12 +42,11 @@ import FootIllus from "../hello/FootIllus";
 // over the bare sky (07 Sep 2026, "go back to the weather on hover, remove
 // from nav"). Shared with /hello, not forked. StatusBar.jsx stays on disk,
 // unmounted.
-import SkyTip from "../hello/SkyTip";
 import AlongPath from "./AlongPath";
 import DjBooth from "./DjBooth";
 // WebGL, so it is lazy and never blocks first paint. The CSS band underneath is
 // the fallback when WebGL is unavailable or the chunk has not landed yet.
-const ShaderCanvas = lazy(() => import("../ShaderCanvas"));
+const ShaderCanvas = lazyRetry(() => import("../ShaderCanvas"));
 import { LIVING_SKY_DEFAULTS } from "../shaders/washes";
 import "../hello/hello.css";
 // NOT importing ../figures/ds/tokens.css here (mttji8hf): it carries an
@@ -48,9 +55,11 @@ import "../hello/hello.css";
 // each token's literal as its fallback, so it renders the system's values
 // (popup #1f1f22, popup text #f3f3f3, focus ring, state duration) unchanged.
 import "./hello3.css";
+import "./scrollAssemble.css"; // scroll-driven assemble of the sections below the hero
+import "./scrollAssemble"; // fallback driver (no-op where view() timelines exist)
 // The window scene (three r186), behind ?scene=window until approved: see
 // src/scene/window/WindowSceneFolio.jsx and tools/window-light/spec/30-locked-brief.md.
-const WindowSceneFolio = lazy(() => import("../scene/window/WindowSceneFolio"));
+const WindowSceneFolio = lazyRetry(() => import("../scene/window/WindowSceneFolio"));
 
 // the hand-over's page fade (windowScene.css, html.wscene-handover): 360 ms plus a frame
 const HANDOVER_FADE_MS = 380;
@@ -181,6 +190,14 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // ready AND the reader is at the top, not mid-scroll, the page fades and the scene
   // takes over with that same warmed engine. ?scene=window and capture runs still go
   // straight into the scene, as before (the QA tools rely on it).
+  // THE ROOM IS OPT-IN (2026-10-11, Agam: "setting up the room should not be
+  // automatic", then "room should be set up on every run, ready to be gone to"): the
+  // room still warms on every load, in the background, once the page has loaded, the
+  // hero's morph has settled and the browser is idle; but it is never entered on its
+  // own (no countdown, no auto hand-over). A glass button at the top reads "Setting up
+  // the room" while it warms and "Enter the room" once it is ready; a click enters
+  // straight away, or, before it is ready, shows the setting-up state with a Cancel and
+  // enters as soon as it is. Hover or focus also starts the warm-up if it has not yet.
   const sceneAllowed = useMemo(() => typeof window !== "undefined" && windowSceneOn(), []);
   const sceneDirect = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -189,91 +206,131 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   }, []);
   const [sceneLive, setSceneLive] = useState(sceneDirect);
   const sceneWindow = sceneAllowed && sceneLive;
-  // the warm-up: idle | loading | ready | failed; drives the loader pill
-  const [warmState, setWarmState] = useState("idle");
-  const [atTop, setAtTop] = useState(true);
+  // the warm-up: idle | loading | ready | failed; drives the button
+  // a visitor coming back to this page in the same visit finds the room still warmed in
+  // memory (sceneWarm.js keeps it), so it starts ready: no loader (warmFlag.js)
+  const [warmState, setWarmState] = useState(() => (sceneAllowed && !sceneDirect && warmIsReady() ? "ready" : "idle"));
+  // asked for: by hovering or focusing the button (warm only) or clicking it (warm, then enter)
+  const [warmWanted, setWarmWanted] = useState(false);
+  const [enterWanted, setEnterWanted] = useState(false);
+  // the room button morphs between two widths (glass loader -> white "Enter the room"),
+  // and CSS cannot animate to `auto`: measure both labels and publish their widths
+  const roomBtnRef = useRef(null);
+  // the background warm-up on every load: after the load event, the hero's morph
+  // (heroMorphGate.js, which also has its own time limit) and an idle moment, so it
+  // never competes with the first paint, the morph or the reveal
   useEffect(() => {
     if (!sceneAllowed || sceneLive) return undefined;
-    let alive = true, lastScroll = 0, idleId = 0, timer = 0;
-    const onScroll = () => {
-      lastScroll = performance.now();
-      setAtTop(window.scrollY < 8);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    // start only when the page has settled and nobody is scrolling it
-    const startWhenStill = () => {
+    let alive = true, idleId = 0, timer = 0;
+    // a few seconds of grace after the morph, so the first moments of the page (and a
+    // first look or screenshot of it) are not competing with the engine's build; a click
+    // or hover on the button starts it sooner
+    const WARM_GRACE_MS = 4000;
+    const start = () => {
       if (!alive) return;
-      if (performance.now() - lastScroll < 500) {
-        timer = setTimeout(startWhenStill, 400);
-        return;
-      }
-      setWarmState("loading");
-      Promise.all([import("../scene/window/sceneWarm.js"), import("../scene/window/capture.js"), import("../scene/window/WindowSceneFolio")])
-        .then(async ([{ warmScene, prepareWarmScene }, { parseCaptureParams }]) => {
-          if (!alive) return false;
-          const opts = parseCaptureParams(window.location.search);
-          const ok = await warmScene({ opts, theme: document.documentElement.classList.contains("dark") ? "dark" : "light" });
-          // the room is only "ready" once the monitor carries the live page too, so the
-          // hand-over has nothing left to wait for (sceneWarm.js prepareWarmScene); a
-          // failed capture still hands over (the page captures it the old way)
-          if (ok && alive) await prepareWarmScene().catch(() => false);
-          return ok;
-        })
-        .then((ok) => alive && setWarmState(ok ? "ready" : "failed"))
-        .catch(() => alive && setWarmState("failed"));
+      timer = setTimeout(() => {
+        if (!alive) return;
+        if (window.requestIdleCallback) idleId = window.requestIdleCallback(() => alive && setWarmWanted(true), { timeout: 3000 });
+        else setWarmWanted(true);
+      }, WARM_GRACE_MS);
     };
-    const kick = () => (timer = setTimeout(startWhenStill, 600));
-    if (document.readyState === "complete") idleId = window.requestIdleCallback ? window.requestIdleCallback(kick, { timeout: 2000 }) : setTimeout(kick, 800);
-    else window.addEventListener("load", kick, { once: true });
+    const afterLoad = () => heroMorphSettledOrTimeout().then(start);
+    if (document.readyState === "complete") afterLoad();
+    else window.addEventListener("load", afterLoad, { once: true });
     return () => {
       alive = false;
       clearTimeout(timer);
       if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("load", kick);
+      window.removeEventListener("load", afterLoad);
     };
   }, [sceneAllowed, sceneLive]);
-  // The pill comes up 3 s after the page has loaded (Agam, 2026-10-07: "setting up the
-  // pill should appear 3 seconds after page has loaded"), not with the first paint. On
-  // a visit to another page first, it counts from when this page appears
-  const [pillDue, setPillDue] = useState(false);
   useEffect(() => {
-    if (!sceneAllowed || sceneLive) return undefined;
-    let timer = 0;
-    const arm = () => {
-      // from the load event itself (this page can mount a little after it), or from now
-      // when the load was long before
-      const nav = performance.getEntriesByType?.("navigation")?.[0];
-      const now = performance.now();
-      const loadedAt = nav?.loadEventEnd > 0 ? nav.loadEventEnd : now;
-      const wait = now - loadedAt > 3000 ? 3000 : loadedAt + 3000 - now;
-      timer = setTimeout(() => setPillDue(true), Math.max(0, wait));
-    };
-    if (document.readyState === "complete") arm();
-    else window.addEventListener("load", arm, { once: true });
+    if (!sceneAllowed || sceneLive || !warmWanted) return undefined;
+    // already warmed and prepared in this tab (a return visit to this page): nothing to do
+    if (warmIsReady()) {
+      setWarmState("ready");
+      return undefined;
+    }
+    let alive = true;
+    setWarmState("loading");
+    Promise.all([import("../scene/window/sceneWarm.js"), import("../scene/window/capture.js"), import("../scene/window/WindowSceneFolio")])
+      .then(async ([{ warmScene, prepareWarmScene }, { parseCaptureParams }]) => {
+        if (!alive) return false;
+        const opts = parseCaptureParams(window.location.search);
+        const ok = await warmScene({ opts, theme: document.documentElement.classList.contains("dark") ? "dark" : "light" });
+        // the room is only "ready" once the monitor carries the live page too, so the
+        // hand-over has nothing left to wait for (sceneWarm.js prepareWarmScene); a
+        // failed capture still hands over (the page captures it the old way)
+        // the capture waits for the hero's morph, so the monitor shows the clay head too
+        if (ok && alive) await heroMorphSettledOrTimeout();
+        if (ok && alive) await prepareWarmScene().catch(() => false);
+        return ok;
+      })
+      .then((ok) => alive && setWarmState(ok ? "ready" : "failed"))
+      .catch(() => alive && setWarmState("failed"));
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("load", arm);
+      alive = false;
     };
-  }, [sceneAllowed, sceneLive]);
-  // THE CUE (2026-10-05, Agam: "when the room is set up give a cue that the page will
-  // transition in 5 sec, with an option to cancel, and do a seamless transition"): once
-  // the room is ready the pill counts down from 5 with a Cancel button. The count only
-  // runs while the reader is at the top (it holds if they scroll away, and resumes when
-  // they come back). Cancel leaves the page as it is, with an "Enter the room" button.
-  // It waits for the pill to be up, so the room never takes over unannounced.
-  const [countdown, setCountdown] = useState(null);
-  const [cancelled, setCancelled] = useState(false);
+  }, [sceneAllowed, sceneLive, warmWanted]);
   const [entering, setEntering] = useState(false);
-  useEffect(() => {
-    if (!sceneAllowed || sceneLive || cancelled || !pillDue || warmState !== "ready") return undefined;
-    setCountdown((c) => (c == null ? 5 : c));
-    const t = setInterval(() => {
-      if (window.scrollY >= 8) return; // hold while they are reading further down
-      setCountdown((c) => (c == null ? 5 : Math.max(0, c - 1)));
-    }, 1000);
-    return () => clearInterval(t);
-  }, [sceneAllowed, sceneLive, cancelled, pillDue, warmState]);
+  // THE JOURNEY (annotation, Agam: "after clicking View ... use the load to transition into
+  // the scroll button that lives in the three.js view"): ONE fixed pill is kept alive from
+  // the click to the room. idle -> (click) loader in a small pill, text slid out -> (the
+  // hand-over runs) -> landing: it flies to the room's "scroll" floater's spot and turns
+  // into it -> handoff: the real floater (.wscene-nudge) fades in under it and it fades
+  // out -> done. The page layers swap under it, so it never blinks (windowScene.css
+  // exempts it from the page-hiding rules)
+  const [journey, setJourney] = useState("idle");
+  const going = journey === "idle" && (entering || (enterWanted && warmState === "ready"));
+  const roomBtnShown = sceneAllowed && warmState !== "failed" && journey !== "done" && (!sceneLive || entering);
+  useLayoutEffect(() => {
+    const b = roomBtnRef.current;
+    if (!b) return undefined;
+    const [busy, ready, scroll] = b.querySelectorAll(".wscene-warm-pill__label");
+    const btn = b.querySelector(".wscene-warm-pill__btn-label");
+    const dots = b.querySelector(".wscene-warm-pill__btn-dots");
+    const measure = () => {
+      b.style.setProperty("--lw-busy", `${busy.offsetWidth}px`);
+      b.style.setProperty("--lw-ready", `${ready.offsetWidth}px`);
+      b.style.setProperty("--lw-scroll", `${scroll.offsetWidth}px`);
+      b.style.setProperty("--lw-btn", `${btn.offsetWidth}px`);
+      b.style.setProperty("--lw-dots", `${dots.offsetWidth}px`);
+    };
+    measure();
+    document.fonts?.ready.then(measure); // the labels' fonts may land after the first measure
+    const ro = new ResizeObserver(measure);
+    ro.observe(busy);
+    ro.observe(ready);
+    ro.observe(btn);
+    ro.observe(scroll);
+    ro.observe(dots);
+    return () => ro.disconnect();
+  }, [roomBtnShown]);
+  // the pill's landing: fly to where the room's "scroll" floater sits (a translate, FLIP-like:
+  // the pill is fixed, so only the distance is measured), then hand over to the real floater
+  useLayoutEffect(() => {
+    const b = roomBtnRef.current;
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (journey === "landing") {
+      if (!b || still) {
+        setJourney("handoff"); // reduced motion: no flight, a crossfade
+        return undefined;
+      }
+      const nudge = document.querySelector(".wscene-nudge");
+      const here = b.getBoundingClientRect();
+      const target = nudge ? nudge.getBoundingClientRect().top : window.innerHeight - 20 - here.height;
+      b.style.setProperty("--fly-y", `${Math.round(target - here.top)}px`);
+      const t = setTimeout(() => setJourney("handoff"), 680);
+      return () => clearTimeout(t);
+    }
+    if (journey === "handoff") {
+      document.documentElement.classList.remove("wscene-pill-flying"); // the real floater fades in under the pill
+      const t = setTimeout(() => setJourney("done"), still ? 220 : 260);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  }, [journey]);
+  useEffect(() => () => document.documentElement.classList.remove("wscene-pill-flying"), []);
   // THE HAND-OVER IS A SCROLL (2026-10-05, Agam: "the transition should be a scroll
   // once the room is ready"). In the room's layout the plain portfolio is exactly what
   // the screen shows at the END of the runway (p = 1, the camera inside the monitor).
@@ -307,12 +364,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     } finally {
       enterPending.current = false;
     }
-    // scrolled away while it waited: the count holds until they are back at the top
+    // scrolled away while it waited: it waits until they are back at the top
     if (enteringRef.current || window.scrollY >= 8) return;
     enteringRef.current = true;
     setEntering(true);
     const reduceNow = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    document.documentElement.classList.add("wscene-sky-out", "wscene-handover");
+    document.documentElement.classList.add("wscene-sky-out", "wscene-handover", "wscene-pill-flying"); // the room's own floater waits for the pill to land (windowScene.css)
     getLenis()?.stop(); // from here to the room, wheel input is swallowed
     setTimeout(() => setSceneLive(true), reduceNow ? 0 : 460);
   }, []);
@@ -336,6 +393,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       enteringRef.current = false; // a later re-run (a hot reload) must not replay it
       root.classList.remove("wscene-handover");
       getLenis()?.start();
+      setJourney((j) => (j === "idle" ? "landing" : j)); // the pill flies to the floater's spot
     };
     const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
     // a run of steady frames (or the time limit): the moment the motion may start
@@ -384,23 +442,458 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       if (!finished) finish(); // never leave Lenis stopped or the header pinned
     };
   }, [sceneLive]);
+  // the click asked for the room: hand over once it is ready, from the top of the page
+  // (a click further down scrolls up first; the hand-over starts from the page's top).
+  // At the top, the monitor's copy of the page is RETAKEN from the page as it is now
+  // (refreshWarmPoster: the warm-up's copy can be stale), then the hand-over starts
   useEffect(() => {
-    if (countdown === 0 && atTop && !entering && !sceneLive && !cancelled) enterScene();
-  }, [countdown, atTop, entering, sceneLive, cancelled, enterScene]);
-  // a page that leaves before the hand-over drops its warm engine
-  useEffect(
-    () => () => {
-      if (!sceneLiveRef.current) import("../scene/window/sceneWarm.js").then(({ dropWarmScene }) => dropWarmScene());
-    },
-    []
-  );
-  const sceneLiveRef = useRef(sceneLive);
-  sceneLiveRef.current = sceneLive;
+    if (!enterWanted || warmState !== "ready" || entering || sceneLive) return undefined;
+    let alive = true, t = 0;
+    if (window.scrollY >= 8) {
+      const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      const L = getLenis();
+      if (L) L.scrollTo(0, still ? { immediate: true } : { duration: 0.9 });
+      else window.scrollTo({ top: 0, behavior: still ? "auto" : "smooth" });
+    }
+    const go = async () => {
+      if (!alive) return;
+      if (window.scrollY >= 8) {
+        t = setTimeout(go, 150);
+        return;
+      }
+      try {
+        const { refreshWarmPoster } = await import("../scene/window/sceneWarm.js");
+        await refreshWarmPoster();
+      } catch {
+        /* the warm-up's own copy stands */
+      }
+      if (!alive) return;
+      if (window.scrollY >= 8) return go();
+      enterScene();
+    };
+    go();
+    return () => {
+      alive = false;
+      clearTimeout(t);
+    };
+  }, [enterWanted, warmState, entering, sceneLive, enterScene]);
+  // a page that leaves before the hand-over KEEPS its warm engine (a module singleton in
+  // sceneWarm.js): coming back finds it ready, with no loader and no rebuild
+  // (annotation mv3v3k00-o9in87)
   const sceneRun1 = useRef(null);
   const sceneRun2 = useRef(null);
   const heroRef = useRef(null);
   const reduce = useReducedMotion();
+  const helloFlip = useHelloFlipStore(); // the stretchy "Hello" (HelloFlip.jsx)
   const { stage, skip } = useIntroStage(rootRef, { off: sceneWindow });
+  // BACK TO THE ROOM (Agam: "give me a floater for scrolling up once I've already visited the
+  // three.js view and am on the main landing page"): in the room's layout the plain page is
+  // what the camera has landed on (html[data-wscene-landed], useWindowScene), with the room
+  // above it as the runway. Once there, a glass floater at the top (where the room pill was)
+  // scrolls back up the runway: the same pull-out as the hand-over, in reverse, no loader (the
+  // room is live). It shows only while landed and the hero has revealed; the Inspect overlay
+  // hides it by CSS (html:has([data-inspect-ui]))
+  const [landed, setLanded] = useState(false);
+  useEffect(() => {
+    if (!sceneWindow) {
+      setLanded(false);
+      return undefined;
+    }
+    const root = document.documentElement;
+    const read = () => setLanded(root.dataset.wsceneLanded === "true");
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(root, { attributes: true, attributeFilter: ["data-wscene-landed"] });
+    return () => mo.disconnect();
+  }, [sceneWindow]);
+  const backShown = sceneWindow && landed && stage === "reveal" && !entering;
+  const backToRoom = useCallback(() => {
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const L = getLenis();
+    if (still) {
+      if (L) L.scrollTo(0, { immediate: true, force: true });
+      else window.scrollTo(0, 0);
+      return;
+    }
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    if (L) L.scrollTo(0, { duration: 2.2, easing: ease, force: true });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+  // THE PAGE REVEALS ON THE MORPH'S CLOCK (Agam, 11 Oct: "delay the reveal of all the elements so that
+  // when the wave animation is finished, the face morph to 3D is in sync with the elements appearing
+  // one after the other"). The face waves alone; the moment the wave ends the morph starts and
+  // HeroMorph reports its timeline t (0..1, speed ramp included) as "heromorph:t". Each element gets
+  // data-in when t passes its mark, so a slower morph slows the page with it and the last card lands
+  // as the clay settles. data-seq on the root is the gate (hello3.css); it lifts when all are in.
+  // No morph (phones, no WebGL, reduced motion, a repeat visit) falls back to a plain clock.
+  const armRef = useRef(null);
+  const [seq, setSeq] = useState(() => stage === "center");
+  // the glow-in (the face's flood, driven from the effect below): a flag, or ?glow=0 for the plain rise
+  const GLOW_IN = typeof window === "undefined" || new URLSearchParams(window.location.search).get("glow") !== "0";
+  // and the skeleton outlines the glow resolves out of: a flag, or ?skel=0
+  const SKELETON = typeof window === "undefined" || new URLSearchParams(window.location.search).get("skel") !== "0";
+  useEffect(() => {
+    if (!seq) return undefined;
+    const root = rootRef.current;
+    const q = (sel) => [...root.querySelectorAll(sel)];
+    const marks = [];
+    // [mark, element, glow width in t]: at the mark the element's content starts to resolve out of its light
+    const add = (els, from, step, w = 0) => els.forEach((el, i) => marks.push([from + i * step, el, w]));
+    add(q(".hello-hero__mark-art"), 0.0001, 0, 0.3);
+    add(q(".hello-hero__link"), 0.0001, 0, 0.25);
+    add(q(".hello-hero__table .work__item"), 0.0001, 0, 0.25);
+    const cards = q(".wg__card");
+    // the last card's light has to finish by t = 1 (its window ends at m + 0.7 D, D = w + 0.08)
+    add(cards, 0.0001, 0, 0.18);
+    add(q(".ap, .tlx, .hello-foot"), 0.9, 0);
+    const glow = root.hasAttribute("data-glow");
+    const still = reduce; // reduced motion: static blocks, no sweep, no bloom; each block cross-fades to its content
+    // ONE LIGHT PER ELEMENT (shimmer-glow, 11 Oct; Agam: "can we make the glow and shimmer work together").
+    // One SVG overlay holds a square skeleton block at each element's final box (measured from the real
+    // hidden layout, so no shift). Each block has its OWN gradient: a highlight band (centre cx, half
+    // width hw, colour) over a base colour. While the face waves, every band follows one diagonal sweep
+    // across the page on a wall clock (never reset, so it never jumps). On the morph's t, an element's
+    // window p (0..1) runs: the band leaves the sweep and settles on the block's centre, widens past its
+    // edges and warms to the face's pale flood (p 0-0.4), so the grey block BECOMES the bloom; the content
+    // starts at the peak (p 0.3, = its mark) and resolves out of it (opacity up by 0.6, brightness, blur
+    // and desaturation down by 1); the bloom fades under it (p 0.45-0.95). The skeleton and the content
+    // are never both at strength: the hand-off happens inside the bright peak. Removed at the end.
+    let svg = null, front = null, frontStops = null, frontRect = null;
+    const lines = [];
+    const dark = document.documentElement.classList.contains("dark");
+    // rgba as arrays so the shimmer colours can run continuously into the bloom
+    // the waiting skeleton whispers (Agam: "make the shimmer lighter, they are taking a lot of attention"):
+    // half the block contrast, a dimmer, wider, slower band; the face and the glow draw the eye
+    const BASE = dark ? [255, 255, 255, 0.035] : [0, 0, 0, 0.032];
+    const LIT = dark ? [255, 255, 255, 0.09] : [255, 255, 255, 0.5];
+    const BLOOM = dark ? [255, 238, 218, 0.5] : [255, 246, 236, 0.95];
+    const BLOOM_BIG = dark ? [255, 238, 218, 0.24] : [255, 246, 236, 0.8];
+    const mix = (c0, c1, k) => c0.map((v, i) => v + (c1[i] - v) * k);
+    const rgba = (c) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${c[3].toFixed(3)})`;
+    const ss = (e0, e1, x) => { const u = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return u * u * (3 - 2 * u); };
+    const TAN = Math.tan((20 * Math.PI) / 180);
+    if (glow && SKELETON) {
+      const NS = "http://www.w3.org/2000/svg";
+      svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("aria-hidden", "true");
+      svg.style.cssText = "position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none;z-index:0";
+      const defs = document.createElementNS(NS, "defs");
+      svg.appendChild(defs);
+      const mk = (el, part, m, w) => {
+        const id = `hello-shim-${lines.length}`;
+        const g = document.createElementNS(NS, "linearGradient");
+        g.setAttribute("id", id); g.setAttribute("gradientUnits", "userSpaceOnUse");
+        g.innerHTML = `<stop offset="0"/><stop offset="0.5"/><stop offset="1"/>`;
+        defs.appendChild(g);
+        // one group per element: its shapes (one bar per real text line, or the card's own rounded box)
+        // share the element's gradient, so its light is one light
+        const r = document.createElementNS(NS, "g");
+        r.setAttribute("fill", `url(#${id})`); r.style.opacity = "0";
+        svg.appendChild(r);
+        const D = w + 0.08;
+        lines.push({ r, rects: [], g, s: [...g.children], el, part, m, D, p0: m - 0.3 * D, box: [0, 0, 0, 0], big: false, ax: "x" });
+      };
+      marks.forEach(([m, el, w]) => {
+        if (!w) return;
+        mk(el, 0, m, w);
+        if (el.matches(".hello-hero__mark-art")) mk(el, 1, m, w);
+      });
+      // the front's light: ONE radial gradient ring on ONE rect over the hero's area (dev and prod), centred on the face
+      front = document.createElementNS(NS, "radialGradient");
+      front.setAttribute("id", "hello-front"); front.setAttribute("gradientUnits", "userSpaceOnUse"); front.setAttribute("r", "2");
+      const fl = dark ? BLOOM : BLOOM_BIG.map((v, i) => (i < 3 ? v : 0.6));
+      const lo = rgba([fl[0], fl[1], fl[2], 0]);
+      front.innerHTML = `<stop offset="0" stop-color="${lo}"/><stop offset="0" stop-color="${lo}"/><stop offset="0" stop-color="${rgba([fl[0], fl[1], fl[2], Math.min(0.34, fl[3])])}"/><stop offset="1" stop-color="${lo}"/>`;
+      frontStops = [...front.children];
+      defs.appendChild(front);
+      frontRect = document.createElementNS(NS, "rect");
+      frontRect.setAttribute("x", "0"); frontRect.setAttribute("y", "0"); frontRect.setAttribute("width", String(Math.max(document.documentElement.clientWidth, 600))); frontRect.setAttribute("height", "2600");
+      frontRect.setAttribute("fill", "url(#hello-front)"); frontRect.style.opacity = "0";
+      svg.appendChild(frontRect);
+      document.body.appendChild(svg);
+    }
+    let T = 0; // the morph's latest t (0 while the face waves)
+    // SKELETONS SHAPED LIKE THE CONTENT (idea 3): text gets one bar per real line fragment, at its real
+    // length (year, name and line of a work row are three bars; a wrapped line is two), measured with a
+    // Range over the hidden but laid-out text; cards get their own corner radius. Each block becomes
+    // exactly the thing it stood for. Re-measured when the wave ends (fonts have landed) and on resize.
+    const range = document.createRange();
+    const textShapes = (el, ox, oy) => {
+      const frags = [];
+      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (/\S/.test(n.data) ? 1 : 3) });
+      for (let n = tw.nextNode(); n; n = tw.nextNode()) {
+        range.selectNodeContents(n);
+        for (const r of range.getClientRects()) if (r.width > 1 && r.height > 1) frags.push([r.left, r.top, r.right, r.height]);
+      }
+      frags.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+      const out = [];
+      for (const f of frags) {
+        const c = out[out.length - 1];
+        if (c && Math.abs(f[1] - c[1]) < 4 && f[0] - c[2] < 10) { c[2] = Math.max(c[2], f[2]); c[3] = Math.max(c[3], f[3]); }
+        else out.push([...f]);
+      }
+      // a bar is the line's x-height band, not its full line box
+      return out.map(([l, t, r, h]) => { const bh = Math.max(6, Math.round(h * 0.56)); return [l + ox, t + oy + (h - bh) / 2, r - l, bh, 2]; });
+    };
+    const place = () => {
+      const ox = window.scrollX, oy = window.scrollY;
+      for (const L of lines) {
+        const b = L.el.getBoundingClientRect();
+        let shapes = null;
+        if (L.el.matches(".hello-hero__mark-art")) {
+          // the glyph groups' own boxes ("Hello!" and "I'm Agam"), not the lockup's, which also spans the badge
+          // where the face and its hand sit: the "Hello!" block starts 8px right of the face, never under it
+          const gb = L.el.querySelector(L.part ? ".gm__name" : ".gm__hello")?.getBoundingClientRect();
+          if (gb && gb.width) {
+            const fr = root.querySelector(".hello-hero__flyer")?.getBoundingClientRect();
+            const left = Math.max(gb.left + 6, !L.part && fr ? fr.right + 8 : 0);
+            shapes = [[left + ox, gb.top + oy + gb.height * 0.14, Math.max(0, gb.right - left), gb.height * 0.72, 4]];
+          }
+          else shapes = [[b.left + ox, b.top + oy + (L.part ? b.height * 0.56 : b.height * 0.1), L.part ? b.width : b.width * 0.62, b.height * 0.36, 4]];
+        }
+        else if (L.el.matches(".wg__card")) shapes = [[b.left + ox, b.top + oy, b.width, b.height, parseFloat(getComputedStyle(L.el).borderTopLeftRadius) || 0]];
+        else {
+          shapes = textShapes(L.el, ox, oy);
+          if (!shapes.length) shapes = [[b.left + ox, b.top + oy + b.height / 2 - 7, b.width, 14, 2]];
+        }
+        // measured at the element's REST place: its own entrance transform (a few px, easing out) is taken out
+        { const cs = getComputedStyle(L.el); const m = cs.transform && cs.transform !== "none" ? new DOMMatrix(cs.transform) : null;
+          const tr = (cs.translate && cs.translate !== "none" ? cs.translate.split(" ").map(parseFloat) : [0, 0]);
+          const tx = (m ? m.e : 0) + (tr[0] || 0), ty = (m ? m.f : 0) + (tr[1] || 0);
+          if (tx || ty) shapes = shapes.map(([sx, sy, sw, sh, rx]) => [sx - tx, sy - ty, sw, sh, rx]); }
+        // the shapes' union is the element's box for the light, the wavefront and the wipe
+        const x = Math.min(...shapes.map((q) => q[0])), y = Math.min(...shapes.map((q) => q[1]));
+        const w = Math.max(...shapes.map((q) => q[0] + q[2])) - x, h = Math.max(...shapes.map((q) => q[1] + q[3])) - y;
+        L.big = h > 60;
+        L.box = [x, y, Math.max(0, w), Math.max(0, h)];
+        const yc = (y + h / 2).toFixed(1);
+        L.g.setAttribute("gradientTransform", `translate(0 ${yc}) skewX(-20) translate(0 ${-yc})`);
+        while (L.rects.length < shapes.length) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); L.r.appendChild(r); L.rects.push(r); }
+        while (L.rects.length > shapes.length) L.rects.pop().remove();
+        shapes.forEach(([sx, sy, sw, sh, rx], i) => {
+          const r = L.rects[i];
+          r.setAttribute("x", sx.toFixed(1)); r.setAttribute("y", sy.toFixed(1)); r.setAttribute("width", Math.max(0, sw).toFixed(1)); r.setAttribute("height", Math.max(0, sh).toFixed(1)); r.setAttribute("rx", rx);
+        });
+      }
+      wavefront();
+    };
+    // ONE WAVE FROM THE FACE (Agam, 11 Oct: "a single wave revealing all elements"): a single circular front
+    // expands from the face's centre on the morph's clock. For each element this stores where the front
+    // first touches it (dmin, its nearest point) and where it has fully passed (dmax, its farthest point),
+    // in page pixels; the element is revealed through a soft-edged circular mask as the front crosses it,
+    // so big elements print in progressively across their area. Static geometry, recomputed with the layout.
+    const FRONT_SOFT = 140; // px: the width of the front's soft edge
+    let fx = 0, fy = 0, RMAX = 1;
+    function wavefront() {
+      if (!lines.length) return;
+      const fr = root.querySelector(".hello-hero__flyer")?.getBoundingClientRect();
+      if (!fr || !fr.width) return;
+      fx = fr.left + fr.width / 2 + window.scrollX; fy = fr.top + fr.height / 2 + window.scrollY;
+      const per = new Map();
+      for (const L of lines) {
+        const [x, y, w, h] = L.box;
+        const dx = Math.max(x - fx, 0, fx - (x + w)), dy = Math.max(y - fy, 0, fy - (y + h));
+        const fxm = Math.max(Math.abs(x - fx), Math.abs(x + w - fx)), fym = Math.max(Math.abs(y - fy), Math.abs(y + h - fy));
+        const o = per.get(L.el) || { dmin: Infinity, dmax: 0 };
+        o.dmin = Math.min(o.dmin, Math.hypot(dx, dy)); o.dmax = Math.max(o.dmax, Math.hypot(fxm, fym));
+        per.set(L.el, o);
+      }
+      RMAX = 1;
+      for (const L of lines) { const o = per.get(L.el); L.dmin = o.dmin; L.dmax = o.dmax; RMAX = Math.max(RMAX, o.dmax); const b = L.el.getBoundingClientRect(); L.ex = b.left + window.scrollX; L.ey = b.top + window.scrollY; }
+      if (front) { front.setAttribute("cx", fx.toFixed(1)); front.setAttribute("cy", fy.toFixed(1)); }
+    }
+    place();
+    if (import.meta.env.DEV) window.__skel = lines; // dev only: the load QA diffs each block against its element
+    window.addEventListener("resize", place);
+    let born = performance.now();
+    // NO DRIFT (Agam: "the shimmer for the project list is shifting"): the blocks were measured at mount,
+    // before the web fonts landed, so the real rows then moved under them (up to 13px) and the blocks
+    // snapped at the reveal. Now the overlay stays hidden until the fonts are in and the layout has held
+    // for two frames, is measured then, and is re-measured whenever the layout changes (ResizeObserver on
+    // the page, a late font). Absolute document coordinates, so scroll carries it with the rows.
+    let placeQueued = 0;
+    const replace = () => { if (placeQueued || over) return; placeQueued = requestAnimationFrame(() => { placeQueued = 0; if (!over) place(); }); };
+    if (svg) {
+      svg.style.visibility = "hidden";
+      Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 2500))]).then(() =>
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (over) return;
+          place(); svg.style.visibility = ""; born = performance.now();
+          setTimeout(replace, 1600); // after the entrance transforms (a 10px settle on the rows) have run out
+        })));
+    }
+    const ro = new ResizeObserver(replace);
+    ro.observe(root);
+    document.fonts?.addEventListener?.("loadingdone", replace);
+    // the sweep: one diagonal band crossing the page every 3.6 s on the wall clock
+    const sweepX = (yc) => { const W = document.documentElement.clientWidth; return (((performance.now() - born) / 3600) % 1 * 1.8 - 0.45) * W + yc * TAN; };
+    // THE CARD'S OWN COLOUR (idea 4): a card blooms in a pale version of its own image, so it resolves
+    // into its colour instead of passing through the same beige as the text. Sampled once from the first
+    // loaded <img> or <video> frame (same-origin), averaged on an 8x8 canvas, mixed 40% toward white.
+    let cvs = null;
+    const tint = (L) => {
+      if (L.tint !== undefined) return L.tint;
+      const src = [...L.el.querySelectorAll("img, video")].find((m) => (m.tagName === "IMG" ? m.complete && m.naturalWidth : m.readyState >= 2));
+      if (!src) return null; // not loaded yet: try again next frame
+      try {
+        cvs ||= Object.assign(document.createElement("canvas"), { width: 8, height: 8 });
+        const c = cvs.getContext("2d", { willReadFrequently: true });
+        c.clearRect(0, 0, 8, 8); c.drawImage(src, 0, 0, 8, 8);
+        const d = c.getImageData(0, 0, 8, 8).data;
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+        L.tint = n ? [r / n, g / n, b / n].map((v) => v + (255 - v) * 0.4) : false;
+      } catch { L.tint = false; }
+      return L.tint;
+    };
+    // THE SHIMMER BREATHES WITH THE WAVE (idea 5): while the face waves, the band's brightness and width
+    // follow the hand's own rotation (read from its running animation, so it is the real beat at any
+    // speed): each flick of the wrist sends a brighter, wider pulse through every block. No hand, or once
+    // it rests: the plain sweep.
+    const hand = () => root.querySelector('.hello-hero__flyer .header__wave[data-kind="wave"]') || root.querySelector('.header__wave[data-kind="wave"]');
+    let handEl = null;
+    const beat = () => {
+      if (T > 0) return -1;
+      if (!handEl?.isConnected) handEl = hand();
+      if (!handEl) return -1;
+      const an = handEl.getAnimations?.()[0];
+      if (!an || an.playState === "finished") return -1; // the wave is over: back to the plain sweep
+      const m = getComputedStyle(handEl).transform;
+      if (!m || m === "none") return 0;
+      const v = m.slice(m.indexOf("(") + 1, -1).split(",").map(Number);
+      const deg = (Math.atan2(v[1], v[0]) * 180) / Math.PI;
+      return Math.min(1, Math.max(0, deg / 30));
+    };
+    // the front's radius on the morph's clock: it starts inside the face (so the nearest elements still get their
+    // shimmer's exit) and has passed the farthest element's edge by t = 0.56 (Agam: "the wave can be faster": ~60% of the time it took, done before the clay settles)
+    const PRE = 260;
+    // THE WAVE'S OWN SPEED RAMP (Agam: "also add a speed ramp to it"): same construction as the face morph's RAMP
+    // in HeroMorph.jsx (a Fritsch-Carlson monotone cubic through keys, so it never runs backwards or overshoots;
+    // its slope is the playback speed), keys = [share of the wave's time, share of its travel]:
+    // a fast launch out of the face (slope ~1.2), a slow-motion stretch as the front crosses the heading and
+    // the links (~0.55), a fast sweep through the list and cards (~1.6), easing to a stop (slope 0) at the end.
+    const WAVE_RAMP = [[0, 0], [0.12, 0.14], [0.4, 0.3], [0.78, 0.92], [1, 1]];
+    const waveRamp = (() => {
+      const x = WAVE_RAMP.map((k) => k[0]), y = WAVE_RAMP.map((k) => k[1]), n = x.length;
+      const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
+      const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
+      return (u) => {
+        if (u <= 0) return 0;
+        if (u >= 1) return 1;
+        let i = 0;
+        while (u > x[i + 1]) i++;
+        const h = x[i + 1] - x[i], t = (u - x[i]) / h, t2 = t * t, t3 = t2 * t;
+        return (2 * t3 - 3 * t2 + 1) * y[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * y[i + 1] + (t3 - t2) * h * m[i + 1];
+      };
+    })();
+    const frontR = () => -PRE + (RMAX + FRONT_SOFT + PRE) * waveRamp(Math.min(1, Math.max(0, (T - 0.04) / 0.52)));
+    const light = () => {
+      const W = document.documentElement.clientWidth, fadeIn = ss(0, 900, performance.now() - born);
+      const bt = still ? -1 : beat();
+      const pulse = bt < 0 ? 1 : 0.6 + 0.8 * bt, widen = bt < 0 ? 1 : 1 + 0.35 * bt;
+      const R = still ? 0 : frontR();
+      for (const L of lines) {
+        if (L.dead) continue;
+        const [x, y, w, h] = L.box, yc = y + h / 2;
+        let cx, hw, cBase, cLit, op;
+        if (still) {
+          // reduced motion: a still block that cross-fades to the content
+          const p = (T - L.p0) / L.D;
+          if (p >= 1) { L.r.remove(); L.dead = true; continue; }
+          cx = x + w / 2; hw = W; cBase = cLit = BASE; op = fadeIn * (1 - ss(0.25, 0.6, p));
+        } else {
+          // STRICTLY SEQUENTIAL: the block and its sweep are gone (within ~140 ms of the front's travel) 60px
+          // before the front touches the element; the front's light only ever meets the real content
+          if (R >= L.dmax + FRONT_SOFT) { L.r.remove(); L.dead = true; continue; }
+          const sh = 1 - ss(L.dmin - 200, L.dmin - 60, R);
+          cx = sweepX(yc); hw = W * 0.36 * widen;
+          cBase = [BASE[0], BASE[1], BASE[2], BASE[3] * sh];
+          cLit = [LIT[0], LIT[1], LIT[2], Math.min(1, LIT[3] * pulse) * sh];
+          op = sh > 0.004 ? fadeIn : 0;
+        }
+        L.g.setAttribute("x1", (cx - hw).toFixed(1)); L.g.setAttribute("x2", (cx + hw).toFixed(1));
+        L.s[0].setAttribute("stop-color", rgba(cBase)); L.s[1].setAttribute("stop-color", rgba(cLit)); L.s[2].setAttribute("stop-color", rgba(cBase));
+        L.r.style.opacity = op.toFixed(3);
+      }
+      // the one band of light: a ring that peaks just behind the content's edge and fades past it
+      if (front && !still) {
+        const edge = R, r = Math.max(2, edge + FRONT_SOFT * 0.3);
+        const o = (v) => Math.min(1, Math.max(0, v / r)).toFixed(4);
+        frontStops[1].setAttribute("offset", o(edge - FRONT_SOFT * 1.2)); frontStops[2].setAttribute("offset", o(edge - FRONT_SOFT * 0.45));
+        front.setAttribute("r", r.toFixed(1));
+        frontRect.style.opacity = (1 - ss(0.5, 0.62, T)).toFixed(3);
+      }
+    };
+    // the content is PRINTED by the front: a soft circular mask centred on the face grows across each element
+    // as the front passes (its radius is the front's), so a big element appears progressively across its area.
+    // The pale flood on it resolves to colour as the front moves on. Cheap: a mask, no blur.
+    const MASK_PROPS = ["mask-image", "mask-size", "mask-position", "mask-repeat", "-webkit-mask-image", "-webkit-mask-size", "-webkit-mask-position", "-webkit-mask-repeat"];
+    const unmask = (el) => { for (const k of MASK_PROPS) el.style.removeProperty(k); };
+    const setMask = (el, img) => { el.style.setProperty("mask-image", img); el.style.setProperty("-webkit-mask-image", img); };
+    const content = () => {
+      const R = still ? 0 : frontR();
+      for (const L of lines) {
+        if (L.part || L.done) continue; // one write per element (the "Hello!" and "I'm Agam" blocks share one)
+        const el = L.el;
+        if (still) { const p = (T - L.p0) / L.D; if (p >= 0.3) el.style.opacity = ss(0.3, 0.6, p).toFixed(3); if (p >= 1) { el.style.removeProperty("opacity"); L.done = true; } continue; }
+        if (R >= L.dmax + FRONT_SOFT) { el.style.removeProperty("filter"); unmask(el); L.done = true; continue; }
+        if (R < L.dmin - 4) { if (!L.masked) { setMask(el, "linear-gradient(transparent, transparent)"); L.masked = true; } continue; } // not reached: fully hidden
+        // the front is crossing it: radius R about the face's centre, in the element's own coordinates
+        setMask(el, `radial-gradient(circle at ${(fx - L.ex).toFixed(1)}px ${(fy - L.ey).toFixed(1)}px, #000 ${Math.max(0, R - FRONT_SOFT).toFixed(1)}px, transparent ${Math.max(1, R).toFixed(1)}px)`);
+        L.masked = true;
+        const I = 1 - ss(0, 1, (R - L.dmin) / Math.max(1, L.dmax + FRONT_SOFT - L.dmin)); // the pale flood, resolving as the front moves on
+        const B = L.big ? 0.45 : 1.2; // a light image would wash to white
+        el.style.filter = I > 0.01 ? `brightness(${(1 + B * I).toFixed(2)}) saturate(${(1 - 0.75 * I).toFixed(2)})` : "";
+      }
+    };
+    let next = 0, over = false, tm = 0, raf = 0, fb = 0;
+    const done = () => {
+      if (over) return;
+      over = true;
+      marks.forEach(([, el]) => { el.setAttribute("data-in", ""); el.style.removeProperty("filter"); el.style.removeProperty("opacity"); unmask(el); });
+      window.removeEventListener("heromorph:t", onT);
+      window.removeEventListener("resize", place);
+      ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued);
+      svg?.remove();
+      clearTimeout(fb); clearTimeout(tm); cancelAnimationFrame(raf);
+      tm = setTimeout(() => { setSeq(false); markIntroDone(); }, 800);
+    };
+    const onT = (e) => {
+      clearTimeout(fb);
+      const t = (T = e.detail);
+      while (next < marks.length && marks[next][0] <= t) marks[next++][1].setAttribute("data-in", "");
+      if (glow) { light(); content(); }
+      // over when the morph lands, or every mark is in and every light has finished
+      if (t >= 1 || (next >= marks.length && lines.every((L) => L.dead))) done();
+    };
+    window.addEventListener("heromorph:t", onT);
+    // the light runs every frame from the first one: the sweep on the wall clock, the blooms on the
+    // latest t (the morph's events and the frames are not in lockstep)
+    let started = false, pre = 0, cap = 0;
+    const frame = () => { if (over) return; light(); pre = requestAnimationFrame(frame); };
+    if (svg) pre = requestAnimationFrame(frame);
+    const first = () => { started = true; window.removeEventListener("heromorph:t", first); };
+    window.addEventListener("heromorph:t", first);
+    // no morph started within a beat of the wave's end: run the same marks on a plain clock
+    armRef.current = () => {
+      place();
+      cap = setTimeout(done, 9000);
+      fb = setTimeout(() => {
+        if (started) return;
+        const t0 = performance.now();
+        const tick = () => {
+          if (over) return;
+          const u = Math.min(1, (performance.now() - t0) / 2600);
+          onT({ detail: u });
+          if (!over) raf = requestAnimationFrame(tick);
+        };
+        tick();
+      }, 1500);
+    };
+    return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); window.removeEventListener("heromorph:t", first); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
+  }, [seq]);
+  // the wave has ended: the safety timers and the plain-clock fallback start now
+  useEffect(() => { if (stage === "reveal") armRef.current?.(); }, [stage]);
   // the intro plays over a hero nobody sees yet (it is inside the monitor): skip it
   useEffect(() => {
     if (sceneWindow) skip();
@@ -508,7 +1001,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   }, [reduce, measure]);
 
   return (
-    <div className="hello" ref={rootRef} data-page="3" data-stage={stage} data-reduce={reduce ? "true" : undefined} data-waving={waving ? "true" : undefined} data-scene={sceneWindow ? "window" : undefined}>
+    <div className="hello" ref={rootRef} data-page="3" data-stage={stage} data-seq={seq ? "" : undefined} data-glow={seq && GLOW_IN ? "" : undefined} data-reduce={reduce ? "true" : undefined} data-waving={waving ? "true" : undefined} data-scene={sceneWindow ? "window" : undefined}>
       {/* Figma node 1:4: a full-bleed sky across the top, dissolved into the page
           by a very large blurred white ellipse. Reproduced as the LIVE shader
           rather than the pasted screenshot, and the dissolve as a mask rather
@@ -531,14 +1024,14 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           more than twice the sky. A soft wash is the one thing that can afford
           to be rendered at a lower resolution. */}
       {sceneWindow && (
-        <Suspense fallback={null}>
+        <Guard name="room-scene"><Suspense fallback={null}>
           <WindowSceneFolio run1Ref={sceneRun1} run2Ref={sceneRun2} heroRef={heroRef} />
-        </Suspense>
+        </Suspense></Guard>
       )}
       {!sceneWindow && (
       <div className="hello-sky" aria-hidden>
         <div className="hello-sky__lens">
-          <Suspense fallback={null}>
+          <Guard name="sky-shader"><Suspense fallback={null}>
             <ShaderCanvas
               preset="livingSky"
               className="hello-sky__canvas"
@@ -548,43 +1041,81 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               tod={pinnedTod}
               superSample={SKY_NARROW ? 0.55 : 1}
             />
-          </Suspense>
+          </Suspense></Guard>
         </div>
       </div>
       )}
 
       {/* the weather tooltip over the bare sky, as on /hello (was the
           mtqt7wsl/mtqtcc6f status bar in the top controls until 07 Sep 2026) */}
-      {!sceneWindow && <SkyTip />}
-      {/* the room's loader (2026-10-05): a quiet pill at the bottom while the scene warms
-          behind the page; once it is ready, if the reader is further down, it offers the
-          way back up (at the top the hand-over is automatic) */}
-      {/* shown 3 s after the page has loaded (pillDue; was from the load itself, 2026-10-05);
-          the warm-up itself still waits for an idle page */}
-      {sceneAllowed && pillDue && !sceneLive && !entering && warmState !== "failed" && (
-        <div className="wscene-warm-pill" role="status" aria-live="polite">
-          {warmState === "idle" || warmState === "loading" ? (
-            <>
+      {/* weather tooltip over the sky removed (Agam 2026-10-11) */}
+      {/* the way into the room (2026-10-11, opt-in): ONE glass container at the top
+          centre, fading in a moment after load. While the room warms in the background it
+          holds "Setting up the room" with the loader (a click anywhere on it queues the
+          entry); once ready the text turns to "The room is ready" and a solid white
+          "Enter the room" button grows in on its right (annotations mv3sf3jm-qb2htt,
+          mv3u3h6m-4trwcm, mv3unisi-raj9d1). The status text is the polite live region.
+          Both texts and the button's width are measured (roomBtnRef) so the morph tweens.
+          Hidden if the warm-up fails. The container's class is also what the monitor's
+          page capture skips (sceneWarm.js) */}
+      {roomBtnShown && (
+        <Guard name="room-button">
+        <div
+          ref={roomBtnRef}
+          className="wscene-warm-pill"
+          data-state={journey === "landing" || journey === "handoff" ? journey : going ? "entering" : warmState === "ready" ? "ready" : enterWanted ? "queued" : "warming"}
+          aria-busy={warmState !== "ready" || going}
+          onPointerEnter={() => setWarmWanted(true)}
+          onClick={warmState === "ready" ? undefined : () => { setWarmWanted(true); setEnterWanted(true); }}
+        >
+          <span className="wscene-warm-pill__status" role="status" aria-live="polite">
+            <span className="wscene-warm-pill__label" data-on={warmState !== "ready" || undefined} aria-hidden={warmState === "ready"}>
               Setting up the room
               <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
-            </>
-          ) : cancelled ? (
-            <button type="button" onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setCancelled(false); setCountdown(0); }}>
-              Enter the room
-            </button>
-          ) : !atTop ? (
-            <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-              The room is ready, back to the top
-            </button>
-          ) : (
-            <>
-              <span>Entering the room in {countdown ?? 5}</span>
-              <button type="button" className="wscene-warm-pill__cancel" onClick={() => { setCancelled(true); setCountdown(null); }}>
-                Cancel
-              </button>
-            </>
-          )}
+            </span>
+            <span className="wscene-warm-pill__label" data-on={(warmState === "ready" && !going && journey === "idle") || undefined} aria-hidden={!(warmState === "ready" && !going && journey === "idle")}>
+              The room is ready
+            </span>
+            {/* the landing: the room's "scroll" floater's own label and arrow (WindowSceneFolio.jsx) */}
+            <span className="wscene-warm-pill__label" data-on={journey === "landing" || journey === "handoff" || undefined} aria-hidden="true">
+              scroll
+              <svg className="wscene-nudge__arrow" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor">
+                <path d="M480-240 240-480l56-56 144 144v-368h80v368l144-144 56 56-240 240Z" />
+              </svg>
+            </span>
+          </span>
+          <button
+            type="button"
+            className="wscene-warm-pill__btn"
+            tabIndex={warmState === "ready" && !going && journey === "idle" ? 0 : -1}
+            aria-hidden={!(warmState === "ready" && !going && journey === "idle")}
+            onFocus={() => setWarmWanted(true)}
+            onClick={() => { setWarmWanted(true); setEnterWanted(true); }}
+          >
+            <span className="wscene-warm-pill__btn-label">View</span>
+            {/* the loading state inside the white button once it is clicked */}
+            <span className="wscene-warm-pill__btn-dots wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
+          </button>
         </div>
+        </Guard>
+      )}
+
+      {/* "Back to the room": see backShown above. Mounted while in the room's layout so it can
+          fade; hidden (visibility) when not shown, so it is neither seen nor tabbable */}
+      {sceneWindow && (
+        <button
+          type="button"
+          className="wscene-back-pill"
+          data-on={backShown || undefined}
+          tabIndex={backShown ? 0 : -1}
+          aria-hidden={!backShown}
+          onClick={backToRoom}
+        >
+          <svg className="wscene-back-pill__arrow" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+            <path d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z" />
+          </svg>
+          Back to the room
+        </button>
       )}
 
       {/* the scene's main runway (2026-09-27, Agam): a spacer ABOVE the page. The
@@ -602,13 +1133,15 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               opposite ends of it. The badge holds its final position from the
               first painted frame, so the intro is the words arriving around it
               rather than the face travelling. */}
-          <h1 className="hello-hero__greet" onClick={stage === "reveal" ? undefined : skip} data-calm>
+          <h1 className="hello-hero__greet" onClick={stage === "reveal" ? undefined : skip} data-calm aria-labelledby="hello-hero-title">
             {/* The words, for anything that reads rather than looks. The mark
                 below is outlines and carries no text at all, so this is the only
                 place the greeting exists as language. */}
-            <span className="hello-hero__sr">{GREETING.join(" ")}</span>
+            <HelloFlipSr store={helloFlip} rest={GREETING[1]} />
 
-            <span className="hello-hero__badge" aria-hidden>
+            {/* not aria-hidden: the face is a button once it is clay (HeroMorph); everything else in
+                it (the drawing, the wave, the canvas) hides itself */}
+            <span className="hello-hero__badge">
               {/* The index page's avatar markup, verbatim: the same MorphFace
                   component and the same `.header__wave` hand on the same
                   `.header__avatar-wrap` frame, so the sequence and its geometry
@@ -617,7 +1150,9 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                   viewport and ends here, and there is only ever one of it. */}
               <span className="hello-hero__flyer" ref={flyerRef}>
                 <span className="header__avatar-wrap" onMouseEnter={replayGreeting}>
-                  <MorphFace key={`face-${replayId}`} />
+                  {/* still: no 2D turn before the morph, nor on hover (2026-10-11) */}
+                  <MorphFace key={`face-${replayId}`} still />
+                  <Guard name="hero-morph"><HeroMorph ready={stage === "reveal"} /></Guard>
                   {!reduce && (
                     <span
                       className="header__wave"
@@ -638,8 +1173,10 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               </span>
             </span>
 
-            <GreetingMark className="hello-hero__mark-art" />
+            <Guard name="greeting-mark"><GreetingMark className="hello-hero__mark-art" helloLayer={<Guard name="hello-flip"><HelloFlipLayer store={helloFlip} ready={stage === "reveal"} reduce={reduce} /></Guard>} /></Guard>
           </h1>
+          {/* the stretchy Hello's keyboard slider and its polite announcer: outside the h1 so the heading stays words */}
+          <Guard name="hello-flip-control"><HelloFlipControl store={helloFlip} /></Guard>
 
           {/* Figma node 643:88426, frame "107" (07 Sep 2026, pin mtqremeh): the
               credentials paragraph is gone; the greeting keeps the two links
@@ -670,7 +1207,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             slides in, siblings dim); hrefs by organisation until the frame has its own */}
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
           {TIMELINE.map((r, i) => (
-            <HelloLink to={r.href} onNavigate={onNavigate} className="work__item" key={i} style={{ "--i": i }}>
+            <HelloLink to={r.href} onNavigate={onNavigate} className="work__item" key={i} style={{ "--i": i }} data-project={r.href /* mv3mbvr7: shares one spotlight with the WorkGrid cards (useLinkedSpotlight.js) */}>
               <span className="work__main">
                 <span className="work__year">{r.year}</span>
                 <span className="work__title">
@@ -688,10 +1225,10 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       </section>
 
       {/* pin mtqremeh: the card grid from Figma 643:88426 replaces the phone marquee */}
-      <WorkGrid onNavigate={onNavigate} />
+      <Guard name="work-grid"><WorkGrid onNavigate={onNavigate} /></Guard>
       {/* mtqrs7rg: the path section moved above the timeline; mtqsskme: the
           timeline now lives INSIDE it as mode 2 */}
-      <AlongPath reduce={reduce} modeTwo={<Timeline />} />
+      <Guard name="along-path"><AlongPath reduce={reduce} modeTwo={<Timeline />} /></Guard>
 
       {/* New section (msbhsexa follow-up): work travelling a customisable path.
           /hello only for now, so /hello0 is unchanged. */}
@@ -769,7 +1306,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                 <CopyButton value={EMAIL} label="Copy email" side="left" />
               </span>
             </span>
-            <FootIllus className="hello-foot__illus" />
+            <Guard name="foot-illus"><FootIllus className="hello-foot__illus" /></Guard>
             <span className="hello-foot__msg hello-foot__msg--right">
               <span className="hello-foot__bubble hello-foot__bubble--right" data-tip="Click to copy">
                 <a className="hello-foot__bubble-link" href={`tel:${PHONE_HREF}`} aria-label={`Call ${PHONE}`}>
@@ -805,6 +1342,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       {/* endRun is off for now: a zero-height marker keeps the hook's second runway
           ref (restore the class hello-scene-end with the ending) */}
       {sceneWindow && <div className="hello-scene-end hello-scene-end--off" ref={sceneRun2} aria-hidden />}
+      {!sceneWindow && <Guard name="site-cursor"><SiteCursor /></Guard>}
     </div>
   );
 }

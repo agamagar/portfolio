@@ -1937,3 +1937,10 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* QA (10 Oct): the exploration chip tags (KILLED / SCALE / ...) were 8px, under
    any readable floor; 10px with the pill grown to fit */
 .expl-chip__tag { font-size: 10px; height: 17px; }
+
+/* mv3osdv0 (11 Oct, "need more spacing from the timeline"): an open card's
+   near edge lands --rail-anchor from the ticks (48px on the hello rail). On
+   this page the month and year rows sit in that band, so an opened card below
+   the line (First review) pressed against "AUG / 2025". This rail gets a wider
+   anchor: open cards stop clear of the labels and their leaders grow to match. */
+.rwf-glass .tlx__rail { --rail-anchor: 84px; }

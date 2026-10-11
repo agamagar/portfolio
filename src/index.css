@@ -12,6 +12,7 @@
    with the column (~65px on the 816 desktop column). "Use the case study frame
    default padding" = `padding: var(--case-study-frame-default-padding)`. */
 :root {
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif; /* the one serif; lib/serifFont.js overrides it on <html> */
   --case-study-frame-default: 1512 / 982;
   --case-study-frame-default-padding: 7.94%;
 }
@@ -661,7 +662,7 @@ html.dark .page-control__play button {
 /* ---- scan v3: the departure board / promise ledger ---- */
 /* The thesis line above the board. One claim, Newsreader, no decoration. */
 .scan-claim {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 1.375rem;
   font-weight: 500;
   line-height: 1.35;
@@ -750,7 +751,7 @@ main:has(.scan-row:hover) .scan-row:not(:hover) {
 }
 .scan-row__title {
   display: block;
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.25;
@@ -1970,6 +1971,53 @@ html.dark .top-controls .page-control {
     inset 0 0 0 1px rgba(255, 255, 255, 0.07),
     0 4px 14px -6px rgba(0, 0, 0, 0.5);
 }
+/* THE NAV GLASS AS TOKENS (11 Oct 2026, mv3pzlmb-fpyvxb / mv3q0l6n-ahl210):
+   the same film, blur, edges and lift as the rule above, named once so that
+   glass surfaces which are NOT the 38px circles (the footer contact bubbles,
+   the side-quests "Read the case study" pill, both in hello3.css) wear it
+   without copying values. The rules above still carry their literal values;
+   folding them onto these tokens is a refactor for another day. No lens here:
+   #glass-lens is built for a 38px circle and would warp a pill. */
+:root {
+  --glass-film: rgba(255, 255, 255, 0.62);
+  --glass-film-hover: rgba(255, 255, 255, 0.78);
+  --glass-blur: blur(14px) saturate(1.8);
+  --glass-edge:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 4px 14px -6px rgba(40, 20, 80, 0.22);
+}
+html.dark {
+  --glass-film: rgba(28, 28, 32, 0.62);
+  --glass-film-hover: rgba(44, 44, 50, 0.72);
+  --glass-edge:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 4px 14px -6px rgba(0, 0, 0, 0.5);
+}
+/* THE ROOM PILL'S LOOK, one source for both (annotation mv3uyfz1-ead3go, 11 Oct 2026):
+   the homepage's "Setting up the room / The room is ready / View" pill (.wscene-warm-pill,
+   hello3.css) and the room's "scroll" floater (.wscene-nudge, windowScene.css) share
+   the glass container, size, padding, radius, edge and type; each keeps its own
+   position and behaviour. Here, not in either feature's stylesheet, because the
+   room's stylesheet loads later and elsewhere. */
+.wscene-warm-pill,
+.wscene-nudge,
+.wscene-back-pill {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--glass-film);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
+  color: var(--fg);
+  font: 500 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  white-space: nowrap;
+}
 /* DARK CONTRAST (10 Oct, "glass button have poor contrast in dark mode"): the
    45% dark film was gated against the hero's deepest purple (#9674db), but the
    buttons actually sit over the PALE lavender at the top of the heart, where
@@ -2005,7 +2053,8 @@ html.dark.glass-lens .top-controls .theme-toggle:hover,
 html.dark.glass-lens .top-controls .sound-toggle:hover,
 html.dark.glass-lens .top-controls__back:hover,
 html.dark.glass-lens .top-controls .page-control__play button:hover,
-html.dark.glass-lens .article__hero-replay:hover { color: var(--fg); }
+html.dark.glass-lens .article__hero-replay:hover,
+:root.dark.glass-lens .ap__play:hover { color: var(--fg); }
 
 /* the arrow alone, in the same circle, and the first item of the bar. It needs
    its own pointer-events because .top-controls sets none on the container so a
@@ -2223,7 +2272,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   /* Newsreader: a serif designed for reading on screens / long passages (per its
      Google Fonts description), already loaded on the site. Upright, no italics,
      slightly heavier for easy legibility at this size. */
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-style: normal;
   font-size: 0.9375rem;
   font-weight: 460;
@@ -2944,7 +2993,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   max-width: 16ch;
 }
 .slide__meta {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.125rem;
   color: var(--muted-2);
@@ -3343,7 +3392,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
 }
 .slide__cite {
   margin: 1.5rem 0 0;
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.0625rem;
   color: var(--muted);
@@ -3696,7 +3745,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
 .slide--title.is-casestudy .slide__title {
   margin: 0;
   max-width: 20ch;
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-weight: 500;
   color: #2a2019;
   font-size: clamp(2rem, 4.6vw, 3.4rem);
@@ -3743,7 +3792,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   color: var(--accent);
 }
 .slide__contents-label {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: clamp(1.5rem, 3.1vw, 2.25rem);
   font-weight: 500;
   line-height: 1.12;
@@ -3828,7 +3877,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   font-size: 0.9rem;
 }
 .slide--contents.is-index .slide__contents-label {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-weight: 500;
   color: #2a2019;
   font-size: clamp(1.35rem, 2.7vw, 2.1rem);
@@ -3942,7 +3991,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   min-height: min(56vh, 560px);
 }
 .slide--statement.is-quiet .slide__statement {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: clamp(1.9rem, 4vw, 2.9rem);
   font-weight: 500;
   line-height: 1.2;
@@ -4014,7 +4063,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   color: var(--muted);
 }
 .slide--statement.is-centered .slide__statement {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-weight: 500;
   font-size: clamp(1.9rem, 4vw, 2.9rem);
   line-height: 1.25;
@@ -4068,7 +4117,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
 }
 .present__chapter {
   justify-self: center;
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.0625rem;
   line-height: 1;
@@ -4867,21 +4916,39 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   from { opacity: 0; transform: translateY(32px); }
   to { opacity: 1; transform: none; }
 }
-.page--article[data-load-reveal]::before {
+/* mv3n1dcl (11 Oct, "glitch on every open"): measured on a screencast, the
+   mist was half see-through while the page waited, so the sidebar, the top
+   controls and the bottom bar sat there frosted for 0.3-0.6 s (the hero and body
+   were at opacity 0) and read as a stalled page; then the clear animated
+   backdrop-filter itself, which Chromium repaints on the main thread every
+   frame of the reveal. Now two layers, both animating OPACITY only (the
+   compositor runs it; the blur value never changes): ::after is a solid cover
+   in the page colour while waiting, so the screen is one calm field, and it
+   lifts quickly on "in"; ::before is the frost (blur + a film of the page
+   colour) and clears more slowly, so the page still comes into focus. */
+.page--article[data-load-reveal]::before,
+.page--article[data-load-reveal]::after {
   content: "";
   position: fixed; inset: 0; z-index: 2147483000;
   pointer-events: none;
+  will-change: opacity;
+}
+.page--article[data-load-reveal]::before {
   background: color-mix(in srgb, var(--bg, #fff) 55%, transparent);
   -webkit-backdrop-filter: blur(22px) saturate(1.1);
   backdrop-filter: blur(22px) saturate(1.1);
 }
+.page--article[data-load-reveal]::after { background: var(--bg, #fff); }
 .page--article[data-load-reveal="in"]::before {
   animation: cs-demist 1400ms cubic-bezier(0.2, 0, 0, 1) forwards;
 }
+.page--article[data-load-reveal="in"]::after {
+  animation: cs-demist 450ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
 @keyframes cs-demist {
-  0% { -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1); opacity: 1; }
-  99% { -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); opacity: 0; visibility: visible; }
-  100% { -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 0; visibility: hidden; }
+  0% { opacity: 1; }
+  99% { opacity: 0; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
 }
 @keyframes cs-reveal-fade {
   from { opacity: 0; }
@@ -4892,12 +4959,15 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   .page--article[data-load-reveal="in"] .article__head,
   .page--article[data-load-reveal="in"] .article__body { animation: none; }
   .page--article[data-load-reveal]::before { display: none; }
+  /* the cover still hides the wait, then simply goes (no fade) */
+  .page--article[data-load-reveal="in"]::after { display: none; }
 }
 @media print {
   .page--article[data-load-reveal] .article__head,
   .page--article[data-load-reveal] .article__hero-board,
   .page--article[data-load-reveal] .article__body { opacity: 1 !important; animation: none !important; }
-  .page--article[data-load-reveal]::before { display: none; }
+  .page--article[data-load-reveal]::before,
+  .page--article[data-load-reveal]::after { display: none; }
 }
 
 .header,
@@ -5547,7 +5617,7 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
   white-space: nowrap;
 }
 .slide--statement.is-underline .slide__statement-mark em {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-weight: 500;
   text-transform: none;
@@ -5622,7 +5692,7 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
   background: var(--accent);
 }
 .deck-dramatic__line {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-weight: 500;
   font-size: clamp(1.9rem, 4.5vw, 3.4rem);
   line-height: 1.18;
@@ -5659,7 +5729,7 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
   max-width: 40ch;
 }
 .deck-step__kicker {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.0625rem;
   color: var(--muted-2);
@@ -6078,7 +6148,7 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 .deck-contact__stamp--tr { top: 1.2rem; right: -2.2rem; }
 .deck-contact__stamp--br { bottom: -1.1rem; right: 1rem; }
 .deck-contact__line {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: 500;
   line-height: 1.15;
@@ -6912,7 +6982,8 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
    surface each sits on. */
 .pron__btn,
 .sscene__replay,
-.article__hero-replay {
+.article__hero-replay,
+.ap__play {
   width: 32px;
   height: 32px;
   display: inline-flex;
@@ -6933,20 +7004,20 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
   cursor: pointer;
   transition: color var(--m3-dur-effects-fast) var(--m3-effects-fast), border-color var(--m3-dur-effects-fast) var(--m3-effects-fast), background-color var(--m3-dur-effects-fast) var(--m3-effects-fast);
 }
-.pron__btn:hover, .sscene__replay:hover, .article__hero-replay:hover { background: rgba(255, 255, 255, 0.4); }
+.pron__btn:hover, .sscene__replay:hover, .article__hero-replay:hover, .ap__play:hover { background: rgba(255, 255, 255, 0.4); }
 /* mtmpht8g: press feedback, a quick sink and a springy return */
-.pron__btn, .sscene__replay, .article__hero-replay {
+.pron__btn, .sscene__replay, .article__hero-replay, .ap__play {
   transition:
     transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-fast),
     background-color var(--m3-dur-effects-fast) var(--m3-effects-fast),
     color var(--m3-dur-effects-fast) var(--m3-effects-fast);
 }
-.pron__btn:active, .sscene__replay:active, .article__hero-replay:active {
+.pron__btn:active, .sscene__replay:active, .article__hero-replay:active, .ap__play:active {
   transform: scale(0.88);
   background: rgba(255, 255, 255, 0.55);
 }
 .pron__btn.is-muted { color: #8b7aa8; }
-.pron__btn:focus-visible, .sscene__replay:focus-visible, .article__hero-replay:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.pron__btn:focus-visible, .sscene__replay:focus-visible, .article__hero-replay:focus-visible, .ap__play:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 /* the scene replay (mtmlir34): bottom right of the plate */
 .sscene__replay {
   position: absolute;
@@ -6957,12 +7028,13 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 }
 /* on dark page plates the glass goes dark so it reads as a lens, not a chip */
 :root.dark .sscene__replay,
-:root.dark .article__hero-replay {
+:root.dark .article__hero-replay,
+:root.dark .ap__play {
   background: rgba(255, 255, 255, 0.12);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 6px 16px -8px rgba(0, 0, 0, 0.6);
   color: #fff;
 }
-:root.dark .sscene__replay:hover, :root.dark .article__hero-replay:hover { background: rgba(255, 255, 255, 0.2); }
+:root.dark .sscene__replay:hover, :root.dark .article__hero-replay:hover, :root.dark .ap__play:hover { background: rgba(255, 255, 255, 0.2); }
 .pron__head,
 .pron__bob {
   position: absolute;
@@ -7956,14 +8028,17 @@ figcaption.article__figcap-heading {
    #5f5f5f / #b5b5b5 icon ink, and on Chromium the same refracting lens
    (#glass-lens is built for a 38px circle, so the size must match). */
 .article__hero-replay,
-:root.dark .article__hero-replay {
+:root.dark .article__hero-replay,
+.ap__play,
+:root.dark .ap__play {
   width: 38px; height: 38px;
   border: 0; border-radius: 999px; corner-shape: round;
   -webkit-backdrop-filter: blur(14px) saturate(1.8);
   backdrop-filter: blur(14px) saturate(1.8);
   pointer-events: auto;
 }
-.article__hero-replay {
+.article__hero-replay,
+.ap__play {
   background: rgba(255, 255, 255, 0.62);
   color: #5f5f5f;
   box-shadow:
@@ -7972,7 +8047,8 @@ figcaption.article__figcap-heading {
     inset 0 0 0 1px rgba(255, 255, 255, 0.45),
     0 4px 14px -6px rgba(40, 20, 80, 0.22);
 }
-:root.dark .article__hero-replay {
+:root.dark .article__hero-replay,
+:root.dark .ap__play {
   background: rgba(28, 28, 32, 0.62);
   color: #b5b5b5;
   box-shadow:
@@ -7981,14 +8057,21 @@ figcaption.article__figcap-heading {
     inset 0 0 0 1px rgba(255, 255, 255, 0.07),
     0 4px 14px -6px rgba(0, 0, 0, 0.5);
 }
-.article__hero-replay:hover, :root.dark .article__hero-replay:hover { color: var(--fg); }
-.article__hero-replay:active { transform: none; scale: 0.92; }
-html.glass-lens .article__hero-replay {
+.article__hero-replay:hover, :root.dark .article__hero-replay:hover,
+.ap__play:hover, :root.dark .ap__play:hover { color: var(--fg); }
+.article__hero-replay:active, .ap__play:active { transform: none; scale: 0.92; }
+/* mv3pzco6-rea15g (11 Oct 2026, "make this standard like the glass
+   buttons"): the side-quests Pause/Play button (src/hello3/AlongPath.jsx)
+   joins this recipe by name instead of carrying its own grey disc. */
+html.glass-lens .article__hero-replay,
+:root.glass-lens .ap__play,
+:root.dark.glass-lens .ap__play {
   -webkit-backdrop-filter: url(#glass-lens) blur(0.5px) saturate(1.3) brightness(1.05);
   backdrop-filter: url(#glass-lens) blur(0.5px) saturate(1.3) brightness(1.05);
   background: radial-gradient(circle closest-side, rgba(255, 255, 255, 0.45) 45%, rgba(255, 255, 255, 0.08) 100%);
 }
-html.dark.glass-lens .article__hero-replay {
+html.dark.glass-lens .article__hero-replay,
+:root.dark.glass-lens .ap__play {
   background: radial-gradient(circle closest-side, rgba(28, 28, 32, 0.72) 45%, rgba(28, 28, 32, 0.2) 100%);
   color: #e0e0e0;
 }
@@ -8292,8 +8375,9 @@ html .page--article[data-case="scheduled-delivery"] .article__body :is(
 html .page--article[data-case="scheduled-delivery"] .article__body .suc__persona strong { font-weight: 600; }
 
 /* mv2mmvt6 (10 Oct): the Figma link on the prototype plate, the hero replay's
-   glass (same class) moved to the top right corner of the plate */
-.article__plate-embed .article__plate-link { position: absolute; top: 12px; right: 12px; bottom: auto; z-index: 4; text-decoration: none; }
+   glass (same class). mv3onu6q (11 Oct, "move the button placement to the
+   bottom right"): bottom right corner of the plate, not the top right */
+.article__plate-embed .article__plate-link { position: absolute; top: auto; right: 12px; bottom: 12px; z-index: 4; text-decoration: none; }
 
 /* mv2mnnxw (10 Oct): "this should be the same size as inside the box right to
    this". The banner phone is a % of .gtmr-one (83.5% of the plate) and the
@@ -8339,26 +8423,28 @@ html .page--article .article__body .rv-ed__stats dd { margin-top: 0.4rem; font-s
 .rv-ed__partners > li { flex: 1; display: flex; align-items: center; }
 html .page--article .article__body .rv-ed__partners li { font-size: 1.125rem; line-height: 1.35; }
 
-/* Option 3: scope map */
-.rv-map__grid {
-  display: grid; align-items: center; justify-items: center; margin: 1rem auto 0; max-width: 40rem;
-  grid-template-columns: 1fr 2.5rem auto 2.5rem 1fr;
-  grid-template-rows: auto 2rem auto 2rem auto;
-  grid-template-areas: ". . top . ." ". . v . ." "left hl me hr right" ". . v2 . ." "fns fns fns fns fns";
-}
-.rv-map__node--top { grid-area: top; } .rv-map__node--left { grid-area: left; } .rv-map__node--right { grid-area: right; }
-.rv-map__me { grid-area: me; } .rv-map__fns { grid-area: fns; }
-.rv-map__wire--v { grid-area: v; } .rv-map__wire--v2 { grid-area: v2; } .rv-map__wire--hl { grid-area: hl; } .rv-map__wire--hr { grid-area: hr; }
-.rv-map__wire--v, .rv-map__wire--v2 { width: 1px; height: 100%; background: var(--rv-accent); opacity: 0.6; }
-.rv-map__wire--hl, .rv-map__wire--hr { height: 1px; width: 100%; background: var(--rv-accent); opacity: 0.6; }
-.rv-map__node { padding: 0.55rem 0.9rem; border-radius: 12px; border: 1px solid var(--rv-rule); font-size: 0.9375rem; line-height: 1.3; text-align: center; max-width: 13rem; }
-.rv-map__me { display: grid; place-items: center; gap: 0.15rem; padding: 1.1rem 1.4rem; border-radius: 999px; background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
+/* Option 3: scope map. 11 Oct (mv3opl9t): the role pill heads a tree, a trunk
+   drops to a bar that spans the four column centres, and a stub drops into each
+   of the four equal columns (three relationships + the functions). */
+.rv-map__tree { --rv-gap: 1rem; --rv-drop: 1.5rem; display: flex; flex-direction: column; align-items: center; margin-top: 2.25rem; }
+.rv-map__me { position: relative; display: grid; place-items: center; gap: 0.15rem; padding: 1.1rem 1.6rem; border-radius: 999px; background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
+.rv-map__me::after { content: ""; position: absolute; top: 100%; left: 50%; width: 1px; height: var(--rv-drop); background: var(--rv-accent); opacity: 0.6; }
 .rv-map__me b { font-weight: 500; font-size: 1.125rem; } .rv-map__me small { font-size: 0.75rem; opacity: 0.85; }
 :root.dark .rv-map__me { color: #1a1030; }
-.rv-map__fns { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
-html .page--article .article__body .rv-map__fns li { padding: 0.35rem 0.8rem; border-radius: 999px; background: color-mix(in srgb, var(--rv-accent) 14%, transparent); font-size: 0.875rem; }
-.rv-map__stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--rv-rule); }
-html .page--article .article__body .rv-map__stats dt { font-size: 1.5rem; font-weight: 300; }
+.rv-map__cols { position: relative; align-self: stretch; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--rv-gap); margin-top: var(--rv-drop); padding-top: var(--rv-drop); }
+/* the bar runs from the first column's centre to the last's */
+.rv-map__cols::before { content: ""; position: absolute; top: 0; left: calc((100% - 3 * var(--rv-gap)) / 8); right: calc((100% - 3 * var(--rv-gap)) / 8); height: 1px; background: var(--rv-accent); opacity: 0.6; }
+.rv-map__node { position: relative; display: flex; align-items: center; justify-content: center; padding: 0.85rem 0.9rem; border-radius: 12px; border: 1px solid var(--rv-rule); text-align: center; }
+.rv-map__node::before { content: ""; position: absolute; bottom: 100%; left: 50%; width: 1px; height: calc(var(--rv-drop) + 1px); background: var(--rv-accent); opacity: 0.6; }
+html .page--article .article__body .rv-map__node { font-size: 0.9375rem; line-height: 1.35; }
+html .page--article .article__body .rv-map__node--fns { background: color-mix(in srgb, var(--rv-accent) 12%, transparent); border-color: color-mix(in srgb, var(--rv-accent) 30%, transparent); }
+/* mv3orhii: the role card's stat foot, as an outlined box: three equal cells,
+   hairline dividers, the radius clipping the cells so no edge doubles up */
+.rv-map__foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rv-rule); border-radius: 16px; corner-shape: round; overflow: hidden; }
+.rv-map__foot > div { padding: 1rem 1.25rem 1.25rem; }
+.rv-map__foot > div + div { border-left: 1px solid var(--rv-rule); }
+html .page--article .article__body .rv-map__foot dt { font-size: 1.375rem; font-weight: 400; line-height: 1.2; }
+html .page--article .article__body .rv-map__foot dd { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.4; color: var(--rv-soft); }
 
 /* Option 2: role card */
 .rv-card {
@@ -8388,14 +8474,16 @@ html .page--article .article__body .rv-card__foot dd { margin-top: 0.3rem; font-
 
 @media (max-width: 700px) {
   .rv-ed__grid { grid-template-columns: 1fr; }
-  .rv-map__grid { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "top" "v" "me" "v2" "left" "right" "fns"; gap: 0.5rem; }
-  .rv-map__wire--hl, .rv-map__wire--hr { display: none; }
-  .rv-map__wire--v, .rv-map__wire--v2 { height: 1.25rem; }
+  .rv-map__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: 0; }
+  .rv-map__cols::before, .rv-map__node::before, .rv-map__me::after { display: none; }
+  .rv-map__foot { grid-template-columns: 1fr; }
+  .rv-map__foot > div + div { border-left: 0; border-top: 1px solid var(--rv-rule); }
   .rv-card__foot { grid-template-columns: 1fr; }
   .rv-card__foot > div + div { border-left: 0; border-top: 1px solid rgba(51, 9, 94, 0.12); }
 }
-html .page--article .article__body .rv dl.rv-map__stats { margin-top: 2.25rem; }
-html .page--article .article__body .rv ul.rv-map__fns { margin-top: 0; }
+html .page--article .article__body .rv dl.rv-map__foot { margin-top: 2.25rem; }
+html .page--article .article__body .rv ul.rv-map__cols { margin-top: var(--rv-drop); padding-top: var(--rv-drop); }
+@media (max-width: 700px) { html .page--article .article__body .rv ul.rv-map__cols { padding-top: 0; } }
 html .page--article .article__body .rv dl.rv-card__foot { margin: 2rem -2.25rem 0; }
 html .page--article .article__body .rv ul.rv-card__chips { margin-top: 1.5rem; }
 html .page--article .article__body .rv div.rv-ed__grid { margin-top: 2.5rem; }
@@ -8425,7 +8513,7 @@ html.dark.qa-on .qa-confirm { color: #ffc970; }
 .page--article .article__body .rwf-run .rwf .dio span.dio__count { color: rgba(255, 255, 255, 0.85); }
 /* QA: Option 1's partner lines were losing to the case's body-font rule */
 .page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-ed__partners li,
-.page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-map__fns li,
+.page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-map__cols li,
 .page--article[data-case="scheduled-delivery"] .article__body .rv ul.rv-card__chips li { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); }
 
 /* QA (10 Oct), light mode contrast, measured on the page:
@@ -8443,10 +8531,9 @@ html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
    on their inline colour so the active one keeps the library's own style. */
 .article__figure-live button[style*="color: rgba(0, 0, 0, 0.22)"] { color: rgba(0, 0, 0, 0.6) !important; }
 .article__figure-live button[style*="color: rgba(255, 255, 255, 0.25)"] { color: rgba(255, 255, 255, 0.62) !important; }
-/* QA (10 Oct): at phone width the scope map's three numbers ran past the box */
+/* QA (10 Oct): at phone width the scope map's three numbers ran past the box
+   (11 Oct: they now sit in the outlined foot, one per row at this width) */
 @media (max-width: 700px) {
-  .rv-map__stats { gap: 1rem; justify-content: space-between; }
-  html .page--article .article__body .rv-map__stats dt { font-size: 1.125rem; white-space: nowrap; }
   html .page--article .article__body .rv p.rv__statement { font-size: 1.375rem; }
 }
 

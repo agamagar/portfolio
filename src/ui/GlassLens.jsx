@@ -87,16 +87,22 @@ export function GlassLens() {
   useEffect(() => {
     if (!on) return;
     let ro, el, raf;
-    const fit = () => {
-      const r = el.getBoundingClientRect();
-      const w = Math.round(r.width), h = Math.round(r.height);
+    // mv3n1dcl (11 Oct): the size comes from the ResizeObserver entry, which is
+    // measured after layout. It used to call getBoundingClientRect from the 500 ms
+    // poll below, which forced a synchronous layout of the whole case study while
+    // it was still loading (up to ~490 ms on the 39,000 px Scheduled Delivery
+    // page, landing in the middle of its load reveal).
+    const fit = ([entry]) => {
+      const box = entry.borderBoxSize?.[0];
+      const w = Math.round(box ? box.inlineSize : entry.contentRect.width);
+      const h = Math.round(box ? box.blockSize : entry.contentRect.height);
       if (!w || !h) return;
       setPill((p) => (p && p.w === w && p.h === h ? p : { w, h, map: lensMap(w, h, BEZEL) }));
     };
     const find = () => {
       el = document.querySelector(".cs-tabs.article__index-tabs");
       if (!el) { raf = setTimeout(find, 500); return; }
-      ro = new ResizeObserver(fit); ro.observe(el); fit();
+      ro = new ResizeObserver(fit); ro.observe(el); // an observer always reports once on observe
     };
     find();
     return () => { clearTimeout(raf); ro?.disconnect(); };

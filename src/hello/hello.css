@@ -1916,7 +1916,7 @@ to {
 
 .pd__title {
   margin: 0;
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 40;
   font-weight: 400;
   font-size: clamp(1.6rem, 3vw, 2.1rem);
@@ -2233,7 +2233,7 @@ to { opacity: 1; transform: none; }
 }
 
 .sq__title {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 40;
   font-weight: 400;
   font-size: clamp(1.7rem, 3.4vw, 2.3rem);
@@ -2621,7 +2621,7 @@ to { opacity: 1; transform: none; }
 }
 
 .booth__title {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 44;
   font-weight: 400;
   font-size: clamp(1.9rem, 4.2vw, 2.8rem);
@@ -3372,7 +3372,7 @@ to {
 
 .hello-foot__title {
   margin: 0;
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 40;
   font-weight: 400;
   font-size: clamp(1.7rem, 3.4vw, 2.3rem);
@@ -3600,7 +3600,7 @@ to {
 
 .pd2__blurb {
   margin: 12px 0 0;
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 20;
   font-size: 15px;
   line-height: 1.5;
@@ -4081,7 +4081,7 @@ to {
 
 .ap__title {
   margin: 0;
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 40;
   font-weight: 400;
   font-size: clamp(1.7rem, 3.4vw, 2.3rem);
@@ -4434,7 +4434,7 @@ to {
      A 36.8px face is only loud if you picture it under a resting card. It never
      appears there: the caption shows ONLY while the tile is expanded, so it sits
      under a card twice this cell's width. */
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-variation-settings: "opsz" 40;
   font-weight: 400;
   /* ...MINUS 12px: 4 for msd942u2, then 8 more for msdgjjtc. Still arithmetic on
@@ -5146,7 +5146,7 @@ to {
     radial-gradient(circle at 18% 26%, rgba(120, 92, 48, 0.07) 0 22%, transparent 60%),
     radial-gradient(circle at 82% 78%, rgba(120, 92, 48, 0.06) 0 18%, transparent 55%);
   color: var(--note-ink);
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   border: 1px solid var(--note-rule);
   border-radius: 3px;
   box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.75);

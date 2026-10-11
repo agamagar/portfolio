@@ -70,10 +70,30 @@ export default function SdAvailability({ onBack, hero = false }) {
       .then((t) => setRows(parseCsv(t)));
   }, []);
 
+  // mv3n1dcl (11 Oct, "glitch on every open"): the two liveline charts drew on
+  // every animation frame from the moment the case study mounted, on screen or
+  // not (liveline's loop ignores `paused` and never stops while mounted), and
+  // the clock below re-rendered this figure every frame: about 40% of the main
+  // thread, all through the page's load reveal. Now the charts mount, and the
+  // clock runs, only while the figure is near the viewport.
+  const box = useRef(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "300px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [rows]);
+  // A liveline that MOUNTS paused never captures a "now" and draws nothing, so
+  // once the reader has paused the tape the charts stay mounted (paused, they
+  // were on screen when it happened); they only unmount while playing.
+  const mounted = near || !playing;
+
   // Replay clock. One tick per frame, fractional days accumulate so the pace
   // is independent of frame rate.
   useEffect(() => {
-    if (!rows || !playing) return;
+    if (!rows || !playing || !near) return;
     // Re-anchor so the last played day sits at "now", then advance in real time.
     t0.current = Date.now() / 1000 - n * DAY;
     const step = () => {
@@ -88,7 +108,7 @@ export default function SdAvailability({ onBack, hero = false }) {
     raf.current = requestAnimationFrame(step);
     return () => { cancelAnimationFrame(raf.current); clearTimeout(hold.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, playing]);
+  }, [rows, playing, near]);
 
   const played = useMemo(() => (rows ? rows.slice(0, Math.max(n, 1)) : []), [rows, n]);
   const cur = played[played.length - 1];
@@ -129,7 +149,8 @@ export default function SdAvailability({ onBack, hero = false }) {
   const TOGGLE_H = 26;
   const layer = (on) => ({ position: "absolute", inset: `0 0 ${TOGGLE_H}px`, visibility: on ? "visible" : "hidden" });
   const chart = rows ? (
-    <div style={{ position: "relative", height: "100%" }}>
+    <div ref={box} style={{ position: "relative", height: "100%" }}>
+      {mounted && <>
       <div style={layer(mode === "pct")}>
         <Liveline
           data={pctData}
@@ -168,6 +189,7 @@ export default function SdAvailability({ onBack, hero = false }) {
           paused={!playing}
         />
       </div>
+      </>}
     </div>
   ) : (
     <div style={{ padding: 24, color: mute }}>Loading the tape…</div>

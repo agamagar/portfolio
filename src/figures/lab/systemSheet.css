@@ -23,7 +23,7 @@
 .syssheet__rail { display: none; }
 @media (min-width: 1080px) {
   .syssheet__rail { display: block; position: sticky; top: 5rem; align-self: start; }
-  .syssheet__rail-title { font-family: "Newsreader", Georgia, serif; font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+  .syssheet__rail-title { font-family: var(--font-serif); font-size: 13px; color: var(--muted); margin: 0 0 14px; }
   .syssheet__rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
   .syssheet__rail a {
     display: flex; align-items: baseline; gap: 8px; padding: 5px 10px; border-radius: 999px;
@@ -38,7 +38,7 @@
 .ss-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
 .ss-mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
 .ss-sans { font-family: "Inter", sans-serif; letter-spacing: -0.011em; }
-.ss-serif { font-family: "Newsreader", Georgia, serif; }
+.ss-serif { font-family: var(--font-serif); }
 .ss-body { font-size: 14.5px; line-height: 1.6; color: var(--muted); margin: 14px 0 0; }
 .ss-body code, .ss-bench__foot code, .ss-howto code, .ss-arch code, .ss-film__what code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.86em; color: var(--fg); background: var(--hover); padding: 0.5px 5px; border-radius: 5px; }
 
@@ -57,22 +57,22 @@
 .ss-title { font-size: clamp(26px, 4.2vw, 42px); line-height: 1.08; letter-spacing: -0.022em; margin: 0 0 16px; color: var(--fg); max-width: 16ch; }
 .ss-lede { font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0 0 22px; max-width: 60ch; }
 .ss-status { display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--muted-2); padding: 7px 13px; border: 1px solid var(--line); border-radius: 999px; }
-.ss-howto { font-family: "Newsreader", Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--muted); margin: 26px 0 0; max-width: 62ch; }
+.ss-howto { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--muted); margin: 26px 0 0; max-width: 62ch; }
 .ss-howto em { font-style: italic; color: var(--fg); }
-.ss-note__mark { font-family: "Newsreader", Georgia, serif; color: var(--accent); padding: 0 3px; font-style: normal; }
+.ss-note__mark { font-family: var(--font-serif); color: var(--accent); padding: 0 3px; font-style: normal; }
 
 /* ---- entry shell ---- */
 .ss-entry { padding: 56px 0; border-bottom: 1px solid var(--line); opacity: 0; transform: translateY(10px); transition: opacity 600ms var(--m3-effects-default), transform 600ms var(--ss-move); }
 .ss-entry.is-in { opacity: 1; transform: none; }
 .ss-entry__head { margin-bottom: 26px; position: relative; }
-.ss-entry__no { font-family: "Newsreader", Georgia, serif; font-size: 14px; color: var(--accent); letter-spacing: 0.01em; }
+.ss-entry__no { font-family: var(--font-serif); font-size: 14px; color: var(--accent); letter-spacing: 0.01em; }
 @media (min-width: 1080px) { .ss-entry__no { position: absolute; left: -118px; top: 2px; font-size: 22px; color: color-mix(in srgb, var(--fg) 30%, transparent); } }
 .ss-entry__heading { display: flex; align-items: baseline; gap: 12px; margin: 6px 0 0; }
 .ss-entry__title { font-size: clamp(20px, 2.6vw, 27px); line-height: 1.15; letter-spacing: -0.018em; margin: 0; color: var(--fg); }
 .ss-entry__lead { font-size: 15px; line-height: 1.55; color: var(--muted); margin: 12px 0 0; max-width: 62ch; }
 
 /* serif field note: an editorial aside with a left rule, not a filled box */
-.ss-note { font-family: "Newsreader", Georgia, serif; font-size: 16px; line-height: 1.55; color: var(--fg); padding: 1px 0 1px 18px; border-left: 2px solid color-mix(in srgb, var(--accent) 35%, var(--line)); margin: 26px 0 0; max-width: 64ch; }
+.ss-note { font-family: var(--font-serif); font-size: 16px; line-height: 1.55; color: var(--fg); padding: 1px 0 1px 18px; border-left: 2px solid color-mix(in srgb, var(--accent) 35%, var(--line)); margin: 26px 0 0; max-width: 64ch; }
 
 /* witty asides as a clean dotted list, not a row of pills */
 .ss-chips { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; }
@@ -151,7 +151,7 @@
 .ss-film__name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 600; color: var(--fg); }
 .ss-film__what { font-size: 12px; line-height: 1.45; color: var(--muted); margin: 0; flex: 1; }
 .ss-film__cell .ss-kind { align-self: flex-start; }
-.ss-film__aside { font-family: "Newsreader", Georgia, serif; font-size: 13px; line-height: 1.4; color: var(--muted-2); margin: 2px 0 0; }
+.ss-film__aside { font-family: var(--font-serif); font-size: 13px; line-height: 1.4; color: var(--muted-2); margin: 2px 0 0; }
 
 /* ---- No.06 registry ---- */
 .ss-reg { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -176,7 +176,7 @@
 .ss-row:first-of-type { border-top: none; }
 .ss-row__name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 600; color: var(--fg); }
 .ss-row__what { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin: 4px 0 0; }
-.ss-row__aside { font-family: "Newsreader", Georgia, serif; font-size: 13.5px; line-height: 1.45; color: var(--muted-2); margin: 6px 0 0; }
+.ss-row__aside { font-family: var(--font-serif); font-size: 13.5px; line-height: 1.45; color: var(--muted-2); margin: 6px 0 0; }
 
 /* ---- No.07 grammars ---- */
 .ss-grams { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
@@ -252,13 +252,13 @@
 .ss-bh__row:first-of-type { border-top: none; }
 .ss-bh__name { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; font-weight: 600; color: var(--fg); }
 .ss-bh__what { display: block; font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 4px; }
-.ss-bh__aside { display: block; font-family: "Newsreader", Georgia, serif; font-size: 13px; line-height: 1.4; color: var(--muted-2); margin-top: 5px; }
+.ss-bh__aside { display: block; font-family: var(--font-serif); font-size: 13px; line-height: 1.4; color: var(--muted-2); margin-top: 5px; }
 
 /* ---- colophon ---- */
 .ss-colophon { padding: 56px 0 24px; }
-.ss-colophon__no { font-family: "Newsreader", Georgia, serif; font-size: 22px; color: color-mix(in srgb, var(--fg) 30%, transparent); margin: 0 0 14px; }
+.ss-colophon__no { font-family: var(--font-serif); font-size: 22px; color: color-mix(in srgb, var(--fg) 30%, transparent); margin: 0 0 14px; }
 .ss-colophon__body { font-size: 15px; line-height: 1.6; color: var(--muted); margin: 0 0 22px; max-width: 60ch; }
-.ss-colophon__rule { font-family: "Newsreader", Georgia, serif; font-size: clamp(20px, 3vw, 28px); line-height: 1.3; color: var(--fg); margin: 0; max-width: 22ch; }
+.ss-colophon__rule { font-family: var(--font-serif); font-size: clamp(20px, 3vw, 28px); line-height: 1.3; color: var(--fg); margin: 0; max-width: 22ch; }
 
 /* ---- copiable reference handle under each element ---- */
 .ss-ref {

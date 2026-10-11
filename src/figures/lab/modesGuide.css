@@ -16,7 +16,7 @@
 /* per-mode section */
 .mg__mode { padding: 30px 0; border-top: 1px solid var(--line); }
 .mg__mode-head { display: flex; align-items: baseline; gap: 12px; }
-.mg__no { font-family: "Newsreader", Georgia, serif; font-size: 20px; color: color-mix(in srgb, var(--fg) 32%, transparent); }
+.mg__no { font-family: var(--font-serif); font-size: 20px; color: color-mix(in srgb, var(--fg) 32%, transparent); }
 .mg__mode-title { font-size: clamp(18px, 2.2vw, 22px); letter-spacing: -0.016em; margin: 0; color: var(--fg); }
 .mg__count { margin-left: auto; font-size: 11px; color: var(--muted-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
 .mg__oneline { font-size: 14.5px; line-height: 1.55; color: var(--muted); margin: 10px 0 18px; max-width: 70ch; }

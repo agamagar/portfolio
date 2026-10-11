@@ -182,7 +182,7 @@ export const DECK_PRESETS = [
     "archetype": "base-asset",
     "label": "Marker highlight",
     "blurb": "A marker-swipe highlight behind two inline key terms, tonal on the accent (Smith and Diction base asset, .deck-mark).",
-    "html": "<div class=\"slide\" style=\"--accent:#2563EB; max-width:760px; min-height:auto;\">\n  <span class=\"slide__eyebrow\">Base asset: Mark</span>\n  <p style=\"font-family:'Newsreader',Georgia,serif; font-size:clamp(1.5rem,3.4vw,2.1rem); line-height:1.4; letter-spacing:-0.01em; color:var(--fg); max-width:30ch; margin:0.75rem 0 0;\">The bet was that <mark class=\"deck-mark\">speed</mark> would beat <mark class=\"deck-mark\" data-tone=\"warm\">certainty</mark>, so we made delete instant and recovery cheap.</p>\n  <p style=\"font-size:0.95rem; color:var(--muted); margin:1.5rem 0 0;\">Tones: default (accent), <mark class=\"deck-mark\" data-tone=\"warm\">warm</mark>, <mark class=\"deck-mark\" data-tone=\"sage\">sage</mark>.</p>\n</div>"
+    "html": "<div class=\"slide\" style=\"--accent:#2563EB; max-width:760px; min-height:auto;\">\n  <span class=\"slide__eyebrow\">Base asset: Mark</span>\n  <p style=\"font-family:var(--font-serif); font-size:clamp(1.5rem,3.4vw,2.1rem); line-height:1.4; letter-spacing:-0.01em; color:var(--fg); max-width:30ch; margin:0.75rem 0 0;\">The bet was that <mark class=\"deck-mark\">speed</mark> would beat <mark class=\"deck-mark\" data-tone=\"warm\">certainty</mark>, so we made delete instant and recovery cheap.</p>\n  <p style=\"font-size:0.95rem; color:var(--muted); margin:1.5rem 0 0;\">Tones: default (accent), <mark class=\"deck-mark\" data-tone=\"warm\">warm</mark>, <mark class=\"deck-mark\" data-tone=\"sage\">sage</mark>.</p>\n</div>"
   },
   {
     "name": "chrome",

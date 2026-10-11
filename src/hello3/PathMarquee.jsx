@@ -55,6 +55,15 @@ export default function PathMarquee({
   playing = true,
   /** carousel only: how long a card is held at the centre, ms */
   dwell = 1500,
+  /** per-card dwell (ms), asked as a card comes to rest; falls back to `dwell`.
+   *  11 Oct 2026, Agam: "make each card play through completely" */
+  dwellFor,
+  /** the hop between two cards is a damped spring on the run's shared position:
+   *  { zeta, omega (rad/s) }. zeta < 1 gives a small floaty overshoot. */
+  spring = { zeta: 0.7, omega: 2 * Math.PI, lead: 0.12 },
+  /** carousel clock, for a progress ring (mv3pitov): called as ("rest", { dwell, step }),
+   *  ("travel", { step }), ("hold") when the clock stops and ("resume") when it restarts */
+  onCycle,
   direction = "normal",
   /** remap 0..1 -> 0..1 to bunch items up or spread them out along the run */
   easing,
@@ -113,6 +122,18 @@ export default function PathMarquee({
   // One mutable bag for the interaction state. It is a ref, not state, because
   // every field is read inside the rAF loop and none of them should re-render.
   const ui = useRef({ hovering: false, dragging: false, dragV: 0, factor: 1 });
+  const hoverModeRef = useRef(hoverMode);
+  hoverModeRef.current = hoverMode;
+  const onCycleRef = useRef(onCycle);
+  onCycleRef.current = onCycle;
+  const cycle = (phase, info) => onCycleRef.current?.(phase, info);
+  const dwellForRef = useRef(dwellFor);
+  dwellForRef.current = dwellFor;
+  const springRef = useRef(spring);
+  springRef.current = spring;
+  // the rest's clock, kept across the carousel effect's re-runs so that Pause
+  // and Play carry on where the rest left off instead of restarting it
+  const dwellState = useRef(null); // { item, total, remaining }
 
   const spec = PATH_PRESETS[preset] || PATH_PRESETS.ribbon;
   const d = dProp || spec.d;
@@ -162,6 +183,9 @@ export default function PathMarquee({
       layer.style.width = `${vbW}px`;
       layer.style.height = `${vbH}px`;
       layer.style.transform = `scale(${k})`;
+      // published so content inside the run can opt out of the fit (the
+      // side-quests caption, hello3.css), which at phone width is about 0.33
+      layer.style.setProperty("--pm-fit", String(k));
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -404,12 +428,19 @@ export default function PathMarquee({
       a.playbackRate = dir;
     });
     animsRef.current = anims;
+    // a run being held (a carousel rest, or the Pause button) stays held when
+    // its animations are rebuilt
+    if (ui.current.held) anims.forEach((a) => a.pause());
 
     // A marquee nobody is looking at should not advance. The old loop checked a
     // flag and returned early, which still cost a wake-up per frame; pausing the
     // animations costs nothing at all while off-screen.
     const io = new IntersectionObserver(
-      ([e]) => anims.forEach((a) => (e.isIntersecting ? a.play() : a.pause())),
+      // 11 Oct 2026: coming back on screen used to play() unconditionally,
+      // which overrode both the carousel's rest and the Pause button: pause,
+      // scroll away, scroll back, and the run was moving under a Play icon.
+      // It resumes now only if nothing is holding it.
+      ([e]) => anims.forEach((a) => (!e.isIntersecting ? a.pause() : ui.current.held ? undefined : a.play())),
       { threshold: 0 },
     );
     if (wrapRef.current) io.observe(wrapRef.current);
@@ -503,15 +534,135 @@ export default function PathMarquee({
       }
       if (pick) pick.dataset.focus = "true";
     };
-    const hold = () => {
+    const restItem = () => itemRefs.current.filter(Boolean).find((el) => el.dataset.focus) || null;
+    // THE REST'S CLOCK. A card rests for ITS OWN dwell (a video: its length, so
+    // it plays through once from the start; a still: the default). The clock
+    // only runs while nothing holds the run: a "Stop" hover or keyboard focus
+    // inside it freezes the clock (and, through "hold", the video and the ring),
+    // and it carries on from where it was when released. Pause keeps the same
+    // state across the effect's re-run (dwellState), so Play resumes the rest.
+    const runDwell = () => {
+      let last = performance.now();
+      let frozen = false;
+      const tick = () => {
+        if (stopped) return;
+        const st = dwellState.current;
+        if (!st) return;
+        const now = performance.now();
+        const wrap = wrapRef.current;
+        const kbd = wrap && wrap.contains(document.activeElement) && document.activeElement.matches(":focus-visible");
+        // the browser's own :hover as well as the item events (one run missed a freeze with events alone)
+        const hov = ui.current.hovering || !!wrap?.matches(":hover");
+        const f = (hov && hoverModeRef.current === "pause") || kbd || document.hidden;
+        if (f !== frozen) { frozen = f; cycle(f ? "hold" : "resume"); }
+        if (!f) st.remaining -= now - last;
+        last = now;
+        if (st.remaining <= 0) { dwellState.current = null; travel(); return; }
+        timer = setTimeout(tick, 50);
+      };
+      // a rest reached under a "Stop" hover is held from its first frame
+      if ((ui.current.hovering || wrapRef.current?.matches(":hover")) && hoverModeRef.current === "pause") { frozen = true; cycle("hold"); }
+      tick();
+    };
+    const hold = (resumeSame) => {
       if (stopped) return;
+      ui.current.held = true;
       live().forEach((a) => a.pause());
       setFocus(true);
-      timer = setTimeout(travel, dwell);
+      const item = restItem();
+      const prev = dwellState.current;
+      if (resumeSame && prev && prev.item === item && prev.remaining > 0) {
+        cycle("rest", { dwell: prev.total, remaining: prev.remaining, step: stepMs, item, resumed: true });
+      } else {
+        const ms = Math.max(300, (dwellForRef.current ? dwellForRef.current(item) : dwell) || dwell);
+        dwellState.current = { item, total: ms, remaining: ms };
+        cycle("rest", { dwell: ms, remaining: ms, step: stepMs, item, resumed: false });
+      }
+      runDwell();
     };
+    // THE HOP IS A SPRING (11 Oct 2026, Agam: "on the wave transitions there is
+    // a break at the end ... a jerk ... make it feel whimsical and free").
+    // Before, the run played at full speed the instant it left a rest and was
+    // paused dead at the centre when it arrived: a velocity step at both ends.
+    // Now each hop is driven here, frame by frame, by the step response of a
+    // damped spring on the run's ONE shared position (every item's animation
+    // time moves by the same eased amount), so x, y (the wave), depth and the
+    // parting all follow one value. It starts from zero speed, accelerates,
+    // overshoots the centre a little (zeta 0.7: ~4.6% of a card step) and
+    // settles back, with continuous velocity throughout. The distance L is the
+    // resting card's progress minus the next card's (mod 1), exact for any
+    // spacing, and the settled position IS the next card at the old rest, so
+    // no centre-finding or wind-back is needed. A drag takes over (the legacy
+    // watch below finishes the hop); a "Stop" hover freezes the spring.
     const travel = () => {
       if (stopped) return;
+      const rest = restItem();
+      const items = itemRefs.current.filter(Boolean).slice(0, shown);
+      const as = items.map((el) => el.getAnimations()[0]);
+      const idx = rest ? items.indexOf(rest) : -1;
+      const prog = (a) => a?.effect?.getComputedTiming().progress;
+      if (idx < 0 || as.some((a) => !a) || typeof prog(as[idx]) !== "number") return travelLegacy();
+      const dir = direction === "reverse" ? -1 : 1;
+      const pr = prog(as[idx]);
+      let L = 1;
+      as.forEach((a, i) => {
+        if (i === idx) return;
+        const dl = ((((pr - prog(a)) * dir) % 1) + 1) % 1;
+        if (dl > 1e-4 && dl < L) L = dl;
+      });
+      const dur = as[0].effect.getTiming().duration;
+      if (!(L < 1) || !(dur > 0)) return travelLegacy();
       setFocus(false);
+      ui.current.held = true; // the animations stay paused; this loop owns their time
+      cycle("travel", { step: stepMs });
+      as.forEach((a) => a.pause());
+      const t0 = as.map((a) => Number(a.currentTime) || 0);
+      const { zeta, omega, lead = 0.12 } = springRef.current;
+      // A spring fed a target that EASES IN (time constant `lead`, seconds): a
+      // plain step response kicks at t = 0 (acceleration jumps from 0 to
+      // omega^2); this one starts with zero speed AND zero acceleration, then
+      // overshoots and settles like a spring. Integrated in 4 ms substeps, so
+      // it follows real elapsed time however irregular the frames are.
+      let u = 0, xs = 0, vs = 0;
+      const sim = (ms) => {
+        let r = ms / 1000;
+        while (r > 1e-9) {
+          const h = Math.min(0.004, r);
+          u += (1 - u) * (1 - Math.exp(-h / lead));
+          vs += (omega * omega * (u - xs) - 2 * zeta * omega * vs) * h;
+          xs += vs * h;
+          r -= h;
+        }
+      };
+      const put = (s01) => {
+        const delta = L * s01 * dir * dur;
+        as.forEach((a, i) => {
+          let ct = t0[i] + delta;
+          if (ct < 0) ct += dur * Math.ceil(-ct / dur);
+          a.currentTime = ct;
+        });
+      };
+      let tms = 0;
+      let last = performance.now();
+      const step = (now) => {
+        if (stopped) return;
+        if (ui.current.dragging) { ui.current.held = false; return travelLegacy(); }
+        const dt = Math.min(250, now - last); // real elapsed time (a stalled tab must not warp the hop)
+        last = now;
+        const frozen = (ui.current.hovering || wrapRef.current?.matches(":hover")) && hoverModeRef.current === "pause";
+        if (!frozen) { tms += dt; sim(dt); }
+        const settled = tms > 300 && Math.abs(1 - xs) < 0.0015 && Math.abs(vs) < 0.02;
+        if (settled || tms > 4000) { put(1); hold(); return; }
+        put(xs);
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
+    const travelLegacy = () => {
+      if (stopped) return;
+      setFocus(false);
+      ui.current.held = false;
+      cycle("travel", { step: stepMs });
       live().forEach((a) => a.play());
       // start from the resting card's own gap: from Infinity the very first frame
       // read as "closing in", phase 1 began at once, and the run stopped one frame
@@ -571,9 +722,14 @@ export default function PathMarquee({
         if (tries++ < 180) raf = requestAnimationFrame(start);
         return;
       }
-      anims.forEach((a) => { a.currentTime = duration / 2; });
-      if (playing) hold();
-      else anims.forEach((a) => a.pause());
+      // ALIGN ONCE PER SET OF ANIMATIONS, not on every run of this effect: it
+      // also re-runs when `playing` flips, and re-aligning there snapped every
+      // card to a new place the moment Pause or Play was pressed (11 Oct 2026).
+      if (anims.some((a) => !a.apAligned)) anims.forEach((a) => { a.currentTime = duration / 2; a.apAligned = true; });
+      // resuming from a Pause pressed mid-travel carries on to the next centre
+      // instead of resting off-centre
+      if (playing) (nearestGap() < 4 ? hold(true) : travel());
+      else { ui.current.held = true; anims.forEach((a) => a.pause()); cycle("hold"); }
     };
     start();
 
@@ -582,6 +738,7 @@ export default function PathMarquee({
       clearTimeout(timer);
       cancelAnimationFrame(raf);
       setFocus(false);
+      ui.current.held = false;
     };
   }, [carousel, playing, dwell, reduce, speed, spread, count, shown, d]);
 
@@ -627,8 +784,9 @@ export default function PathMarquee({
     // ITEMS', so the run resumed in the gaps between cards. The whole run is
     // the hover region now: enter anywhere over it and it slows or stops;
     // leave it and the ramp above begins from wherever the pace is.
-    const onEnter = () => { ui.current.hovering = true; kick(); };
-    const onLeave = () => { ui.current.hovering = false; kick(); };
+    // the ring's clock stops with the run under a "Stop" hover, and goes on after
+    const onEnter = () => { ui.current.hovering = true; kick(); if (hoverMode === "pause") cycle("hold"); };
+    const onLeave = () => { ui.current.hovering = false; kick(); if (hoverMode === "pause") cycle("resume"); };
     el.addEventListener("pointerenter", onEnter);
     el.addEventListener("pointerleave", onLeave);
     return () => {
@@ -710,7 +868,11 @@ export default function PathMarquee({
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
-
+      // the depth ladder's top, for content that has to hold a real on-screen
+      // size at the centre (the side-quests caption button, 11 Oct 2026).
+      // Deliberately not --pm-smax: hello.css's hover maths reads that name
+      // together with a live per-item scale this engine does not publish.
+      style={{ "--pm-depth-max": scaleRange ? scaleRange[1] : 1 }}
     >
       {/* The svg is the SIZER: it establishes the aspect ratio so the absolutely
           positioned items resolve against the same box the path was drawn in.

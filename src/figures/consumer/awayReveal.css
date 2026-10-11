@@ -54,7 +54,7 @@
 /* the claim builds word by word: rise on the pure decelerate, fade on the flat curve */
 .ch-claim { margin: 0; padding: 0 24px; display: flex; flex-wrap: wrap; justify-content: center; max-width: 380px; }
 .ch-word {
-  font-family: "Newsreader", Georgia, serif; font-size: 27px; line-height: 1.18; color: #e9edf6;
+  font-family: var(--font-serif); font-size: 27px; line-height: 1.18; color: #e9edf6;
   opacity: 0; transform: translateY(9px);
   transition: opacity var(--m3-dur-word-build) var(--m3-effects-default),
               transform var(--m3-dur-word-build) var(--m3-emphasized-decelerate);

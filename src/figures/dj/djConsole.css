@@ -255,7 +255,7 @@
   margin: 0;
 }
 .dj__title {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: clamp(24px, 3.4vw, 38px);
   font-weight: 500;
   line-height: 1;

@@ -31,7 +31,34 @@ export function readMs(el, name, fallback = 0) {
 }
 
 // stages: "center" -> "rise" -> "settle" -> "reveal"
-const NEXT = { center: "rise", rise: "settle", settle: "reveal" };
+// (11 Oct, later: the face animates in place and the morph starts the moment the wave ends, so
+// the centre hold goes straight to reveal; Hello.jsx then reveals the page on the morph's clock)
+const NEXT = { center: "reveal", rise: "settle", settle: "reveal" };
+
+// THE HOLD (11 Oct 2026, "make the loading more smooth"). The face no longer turns
+// (MorphFace still) and no longer travels, so holding it alone for the whole wave
+// (holdEnd, 3.1 s, then the 750 ms rise) left 3.5 to 4 s of a small face on an empty
+// page before anything else arrived. The words now come in once the hand has popped
+// up and given its first full swing (42% of the wave keyframes), so the wave plays on
+// under the arrival and ends just as the page reaches rest (rise + settle land the
+// reveal at ~3.25 s, the wave ends at 3.1 s). Derived from MORPH_SEQUENCE, so it
+// follows the wave if that is retimed.
+const CENTER_HOLD = MORPH_SEQUENCE.holdEnd; // the whole wave, alone (Agam: reveal in sync with the morph that follows it)
+
+// Resolved once the intro has reached rest (or was never played). Heavy work that is
+// not part of the intro (the tab icon, main.jsx) waits on it so it never lands on the
+// reveal's frames.
+let markRevealed;
+export const introRevealed = new Promise((r) => (markRevealed = r));
+// Called by Hello.jsx when the page's staggered reveal (on the morph's clock) has finished
+export const markIntroDone = () => {
+  introPending = false;
+  markRevealed();
+  window.dispatchEvent(new Event("intro:done"));
+};
+// true from the moment an intro mounts at "center" until it reaches rest
+let introPending = false;
+export const introIsPlaying = () => introPending;
 
 // ONCE PER VISIT, not once per mount (Agam, 08 Sep 2026: "when I press back
 // from a detailed page the face animation should not play"). The rule above
@@ -50,12 +77,17 @@ let introPlayed = false;
 export function useIntroStage(rootRef, { off = false } = {}) {
   const [stage, setStage] = useState(() => {
     if (typeof window === "undefined" || off) return "reveal";
-    if (introPlayed) return "reveal";
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return "reveal";
+    if (introPlayed || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      queueMicrotask(() => markIntroDone());
+      return "reveal";
+    }
+    introPending = true;
     return "center";
   });
   useEffect(() => {
-    if (stage === "reveal") introPlayed = true;
+    if (stage === "reveal") {
+      introPlayed = true;
+    }
   }, [stage]);
 
   const timers = useRef([]);
@@ -74,16 +106,27 @@ export function useIntroStage(rootRef, { off = false } = {}) {
     if (stage === "reveal") return undefined;
     const el = rootRef.current;
 
-    // The hold at centre is the index sequence's own hold: the wave ends at
-    // MORPH_SEQUENCE.holdEnd, and the rise begins there so the face turns back
-    // while it is already moving.
+    // The hold at centre is CENTER_HOLD (above): the hand's first full swing, with
+    // the rest of the wave playing on under the page's arrival.
     const hold =
       stage === "center"
-        ? MORPH_SEQUENCE.holdEnd
+        ? CENTER_HOLD
         : readMs(el, stage === "rise" ? "--hello-rise" : "--hello-settle", 800);
 
-    timers.current.push(setTimeout(() => setStage((s) => NEXT[s] || "reveal"), hold));
-    return clear;
+    // the text first shows at settle: leaving rise waits for the web fonts (capped),
+    // so the links and the timeline never paint in a fallback face and then swap
+    let alive = true;
+    const next = () => alive && setStage((s) => NEXT[s] || "reveal");
+    timers.current.push(
+      setTimeout(() => {
+        if (stage !== "rise" || !document.fonts?.ready) return next();
+        Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 800))]).then(next);
+      }, hold)
+    );
+    return () => {
+      alive = false;
+      clear();
+    };
   }, [stage, rootRef]);
 
   // Lock the page while the loader owns the viewport, and let any real input out.

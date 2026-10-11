@@ -9,9 +9,10 @@
 // A WebGL context, a render loop and an audio graph at the bottom of a landing
 // page should not be running while somebody is still reading the greeting.
 
+import { lazyRetry } from "../ui/Guard";
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 
-const DjConsole = lazy(() => import("../figures/dj/DjConsole"));
+const DjConsole = lazyRetry(() => import("../figures/dj/DjConsole"));
 
 // `variant="card"` is the /hello booth: no 3D record crate, and the manual
 // play button back on (annotation msbhza4n). The crate and the play control are

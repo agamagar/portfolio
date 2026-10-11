@@ -8,9 +8,9 @@ import {
   createContext,
   useContext,
   Fragment,
-  lazy,
   Suspense,
 } from "react";
+import { Guard, StaticFallback, lazyRetry as lazy } from "./ui/Guard"; // chunk-retry lazy + blank-page guards
 import { flushSync } from "react-dom";
 import MorphFace from "./MorphFace";
 import TexturedBackground from "./TexturedBackground";
@@ -137,6 +137,8 @@ import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
 import { topprDeck } from "./decks/toppr.deck";
 import Tooltips from "./ui/Tooltips";
+import { runRouteTransition, installProjectIntent, configureProjectTransition, rememberScroll, savedScroll } from "./ui/projectTransition"; // project-transition (11 Oct): card-to-hero move + shimmer when slow
+import "./ui/projectTransition.css";
 
 // Project list. "Toppr" is a real, decided project; the rest are sample slots
 // to fill in one at a time. Each title splits into segments; `accent: true`
@@ -304,6 +306,7 @@ const WeatherSky = lazy(() => import("./WeatherSky"));
 // into its own chunk and never weighs down the home page or case studies.
 const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
 // the window scene's header controls (sky and look), only while the scene is on
+import FontSwitch from "./ui/FontSwitch";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
 // The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
 // so its chunk never reaches any other page. See src/scene/window/.
@@ -946,25 +949,26 @@ function RoleEditorial({ s }) {
 }
 // Option 3: the scope map. The role at the centre, the three relationships wired to it,
 // the five functions it ran across underneath.
+// 11 Oct (mv3opl9t, "make this the header and the 4 boxes below in 4 equal
+// columns"): the role is the head of a tree, the three relationships and the
+// functions hang under it as four equal columns. mv3opydb / mv3orhii ("add this
+// to option 3 as well"): the role statement, and the stats with their lines
+// from the role card, in an outlined box.
 function RoleScopeMap({ s }) {
-  const [top, left, right] = ROLE_PARTNERS;
   return (
     <div className="rv rv--map">
       <RoleOptionTag n={3} name="Scope map" />
       <p className="rv__label">My role</p>
-      <div className="rv-map__grid" aria-label="Who the role answered to and worked with">
-        <span className="rv-map__node rv-map__node--top">{top}</span>
-        <span className="rv-map__wire rv-map__wire--v" aria-hidden />
-        <span className="rv-map__node rv-map__node--left">{left}</span>
-        <span className="rv-map__wire rv-map__wire--hl" aria-hidden />
+      <p className="rv__statement">{s.roleFrame.statement}</p>
+      <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
         <span className="rv-map__me"><b>Lead designer</b><small>end to end</small></span>
-        <span className="rv-map__wire rv-map__wire--hr" aria-hidden />
-        <span className="rv-map__node rv-map__node--right">{right}</span>
-        <span className="rv-map__wire rv-map__wire--v2" aria-hidden />
-        <ul className="rv-map__fns">{ROLE_FUNCTIONS.map((f) => <li key={f}>{f}</li>)}</ul>
+        <ul className="rv-map__cols">
+          {ROLE_PARTNERS.map((p) => <li key={p} className="rv-map__node">{p}</li>)}
+          <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.join(", ")}</li>
+        </ul>
       </div>
-      <dl className="rv-map__stats">
-        {ROLE_STATS.map(([big]) => <div key={big}><dt>{big}</dt></div>)}
+      <dl className="rv-map__foot">
+        {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
       </dl>
     </div>
   );
@@ -8127,22 +8131,70 @@ caseStudies["zepiris-prd"] = {
   passcode: "zepiris2026",
 };
 
+// What "ready" means for each case, for the hover/focus prefetch and the opening
+// beat (src/ui/projectTransition.js): its hero image or poster decoded, and the SD
+// heart's chunk + layers warm. Read at hover time, so later entries are covered.
+configureProjectTransition({
+  assetsFor: (slug) => {
+    const cs = caseStudies[{ "occasion-buying": "cross-sell" }[slug] || slug];
+    if (!cs || cs.locked || cs.doc) return null;
+    return {
+      images: [cs.heroImage, cs.heroPoster],
+      warm: cs.heroFig === "schedHeartHero" ? warmHeart : null,
+      ownReveal: !!cs.loadReveal, // the case has its own load reveal: no card-to-hero move on top of it
+    };
+  },
+});
+
 /* ---------- minimal client-side router (no deps) ---------- */
 const NavContext = createContext(() => {});
 
 function useRoute() {
   const [path, setPath] = useState(() => window.location.pathname);
-  useEffect(() => {
-    const onPop = () => setPath(window.location.pathname);
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
+  // the path React is showing (the event handlers below outlive renders)
+  const pathRef = useRef(path);
+  // Every route change goes through runRouteTransition (src/ui/projectTransition.js):
+  // home <-> case study gets the card-to-hero move, the 150 ms readiness beat and, if
+  // the page is slow, the shimmer skeleton; any other change commits as before.
+  // The scroll is set inside the commit, instantly (html is scroll-behavior: smooth),
+  // so the new page is at its place on its first frame.
   const navigate = useCallback((to) => {
     if (to === window.location.pathname) return;
-    window.history.pushState({}, "", to);
-    setPath(to);
-    window.scrollTo({ top: 0 });
+    rememberScroll(); // on the entry being left, so Back returns to it
+    runRouteTransition(pathRef.current, to, () => {
+      window.history.pushState({}, "", to);
+      pathRef.current = to;
+      flushSync(() => setPath(to));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
   }, []);
+  useEffect(() => {
+    installProjectIntent();
+    // Back/forward land where the reader left that page (stored by rememberScroll),
+    // not where the browser guesses before React has rendered it. Reloads keep the
+    // browser's own restore.
+    const auto = () => { try { history.scrollRestoration = "auto"; } catch { /* ignore */ } };
+    try { history.scrollRestoration = "manual"; } catch { /* ignore */ }
+    window.addEventListener("pagehide", auto);
+    const onPop = () => {
+      const to = window.location.pathname;
+      const y = savedScroll();
+      runRouteTransition(pathRef.current, to, () => {
+        pathRef.current = to;
+        flushSync(() => setPath(to));
+        window.scrollTo({ top: y ?? 0, behavior: "instant" });
+      });
+    };
+    // components outside the NavContext (the side quests) ask for a route this way
+    const onAsk = (e) => { e.preventDefault(); navigate(e.detail); };
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("app:navigate", onAsk);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("app:navigate", onAsk);
+      window.removeEventListener("pagehide", auto);
+    };
+  }, [navigate]);
   return [path, navigate];
 }
 
@@ -9866,38 +9918,11 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     setListening(false);
   }, [slug]);
 
-  // muzdylub (8 Oct, "the page load is not smooth, glitch on every open, need a
-  // smooth reveal"): a case that opts in (cs.loadReveal) opens with its content
-  // held at opacity 0 (layout is already final, the hero's space reserved) until
-  // the fonts and the hero's assets are ready, then rises in one staggered
-  // reveal (index.css [data-load-reveal]). Capped at 1.6 s so a slow asset can never
-  // leave the page blank. The hero mounts only once revealed (LoadRevealContext).
+  // muzdylub (8 Oct) load reveal: held, then revealed, by CaseLoadReveal below.
+  // mv3n1dcl (11 Oct): the state lives THERE, not here, so the flip to "in" no
+  // longer re-renders this whole page (a 130 ms React commit landed on the
+  // reveal's first frames and the hero jumped in instead of rising).
   const gated = !!cs.loadReveal && !compact;
-  const [revealed, setRevealed] = useState(!gated);
-  useEffect(() => {
-    if (!gated) { setRevealed(true); return undefined; }
-    setRevealed(false);
-    let live = true;
-    const settled = (async () => {
-      // two frames: layout has run, so every font the page needs has been requested
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      await Promise.all([
-        document.fonts ? document.fonts.ready : null,
-        cs.heroFig === "schedHeartHero" ? warmHeart() : null,
-      ]);
-      // the chunk is in; React commits the hero a beat later. Wait for its layers
-      // to be on the page so it rises with the rest, not after it.
-      if (cs.heroFig === "schedHeartHero") {
-        await new Promise((r) => {
-          const poll = () => (document.querySelector(".article__hero-board .shl__heart") ? r() : requestAnimationFrame(poll));
-          poll();
-        });
-      }
-    })().catch(() => {});
-    const cap = new Promise((r) => setTimeout(r, 1600));
-    Promise.race([settled, cap]).then(() => { if (live) setRevealed(true); });
-    return () => { live = false; };
-  }, [slug, gated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Scroll-spy: highlight the index entry for the section currently in view.
   useEffect(() => {
@@ -9918,9 +9943,8 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   }, [cs, listening]);
 
   return (
-    <LoadRevealContext.Provider value={revealed}>
     <>
-    <div className="page page--article" data-case={cs.styleKey || slug} data-load-reveal={gated ? (revealed ? "in" : "wait") : undefined}>
+    <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
       <div className="article__layout">
         <nav className="article__index" aria-label="Sections">
           <div className="article__index-top">
@@ -10202,9 +10226,53 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
       </div>
 
       <Footer credits={cs.credits} />
-    </div>
+    </CaseLoadReveal>
     {presenting && <Presentation cs={cs} onExit={onExitPresent} theme={theme} toggleTheme={toggleTheme} />}
     </>
+  );
+}
+
+// The case study's page element, with the load reveal's state held here (see
+// the muzdylub note inside). CaseStudy renders this element's children, so when
+// `revealed` flips only this div's attribute and the LoadRevealContext readers
+// (the hero) update: React does not re-render the 39,000 px article under it.
+function CaseLoadReveal({ gated, slug, heroFig, children, ...rest }) {
+  // muzdylub (8 Oct, "the page load is not smooth, glitch on every open, need a
+  // smooth reveal"): a case that opts in (cs.loadReveal) opens with its content
+  // held at opacity 0 (layout is already final, the hero's space reserved) until
+  // the fonts and the hero's assets are ready, then rises in one staggered
+  // reveal (index.css [data-load-reveal]). Capped at 1.6 s so a slow asset can never
+  // leave the page blank. The hero mounts during the wait and holds its clock
+  // until revealed (LoadRevealContext).
+  const [revealed, setRevealed] = useState(!gated);
+  useEffect(() => {
+    if (!gated) { setRevealed(true); return undefined; }
+    setRevealed(false);
+    let live = true;
+    const settled = (async () => {
+      // two frames: layout has run, so every font the page needs has been requested
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      await Promise.all([
+        document.fonts ? document.fonts.ready : null,
+        heroFig === "schedHeartHero" ? warmHeart() : null,
+      ]);
+      // the chunk is in; React commits the hero a beat later. Wait for its layers
+      // to be on the page so it rises with the rest, not after it.
+      if (heroFig === "schedHeartHero") {
+        await new Promise((r) => {
+          const poll = () => (document.querySelector(".article__hero-board .shl__heart") ? r() : requestAnimationFrame(poll));
+          poll();
+        });
+      }
+    })().catch(() => {});
+    const cap = new Promise((r) => setTimeout(r, 1600));
+    Promise.race([settled, cap]).then(() => { if (live) setRevealed(true); });
+    return () => { live = false; };
+  }, [slug, gated]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <LoadRevealContext.Provider value={revealed}>
+      <div {...rest} data-load-reveal={gated ? (revealed ? "in" : "wait") : undefined}>{children}</div>
     </LoadRevealContext.Provider>
   );
 }
@@ -11268,7 +11336,7 @@ export default function App() {
            back in without the CSS having to know how many buttons there are */
         data-feedback-toolbar={isPortfolio ? undefined : "true"} /* mtr7e0z9: on /portfolio the row holds the four chips, which need to be annotatable */
         style={{
-          "--n": variant === "play" ? 3 : 1,
+          "--n": variant === "play" ? 4 : 2,
           ...(slug === "resume" || isBrickLab || isDj || isWindow || isStella ? { display: "none" } : null),
         }}
       >
@@ -11304,14 +11372,15 @@ export default function App() {
             instead. */}
         <SoundToggle on={sound} onToggle={toggleSound} i={variant === "play" ? 1 : 0} />
         <ThemeToggle theme={theme} onToggle={toggleTheme} i={variant === "play" ? 2 : 1} />
+        <FontSwitch i={variant === "play" ? 3 : 2} feedback={feedback} />
         {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
           <Suspense fallback={null}>
-            <SceneControls i={variant === "play" ? 3 : 2} feedback={feedback} />
+            <SceneControls i={variant === "play" ? 4 : 3} feedback={feedback} />
           </Suspense>
         )}
         {/* mtqrqf4l: no Scan / Read toggle on /portfolio */}
         {!isPortfolio && <PageControl
-          i={variant === "play" ? 3 : 2}
+          i={variant === "play" ? 4 : 3}
           variant={variant}
           mode={mode}
           onScan={() => setMode("scan")}
@@ -11326,7 +11395,7 @@ export default function App() {
       ) : isHello ? (
         <Hello onNavigate={navigate} detail="card" />
       ) : isHello3 ? (
-        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
+        <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
       ) : isLab ? (
         <>
           {/* the tab icon at a size its motion can be judged (7 Oct) */}
@@ -11419,7 +11488,7 @@ export default function App() {
           <CaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
         )
       ) : isPortfolio ? (
-        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
+        <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
       ) : isList ? (
         <Home mode="read" />
       ) : mode === "scan" ? (
@@ -11451,7 +11520,7 @@ export default function App() {
            and which is archived live at /lab). */
         /* 07 Sep 2026, Agam: the phone-frames view (Hello3, the /hello3 mount) is
            the default at the root; the drawer Hello stays reachable at /hello. */
-        <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
+        <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
       ) : (
         <Home mode={mode} />
       )}

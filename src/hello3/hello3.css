@@ -160,8 +160,9 @@
 .hello[data-page="3"] .hello-hero__table .work__item::after { display: none; }
 
 /* mtqrxfqh: card hover on the landing grid. The card lifts a touch and its
-   composition eases in by 2%, on the site's spatial curve; the others do not
-   dim (the grid is a set of equals, unlike the list). Focus mirrors hover. */
+   composition eases in by 2%, on the site's spatial curve. Focus mirrors
+   hover. Since mv3mbvr7 the others DO dim, together with the timeline rows
+   (the shared spotlight, further down). */
 .hello[data-page="3"] .wg__card {
   border-radius: 0; /* mtqs1kzd: square corners, as on the frame */
   transition: transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-default),
@@ -325,6 +326,24 @@
 }
 /* the hover dim on the rows must not wait for the entrance delay */
 .hello[data-page="3"][data-stage="reveal"] .hello-hero__table:has(.work__item:hover) .work__item { transition-delay: 0s; }
+/* mv3mbvr7 (11 Oct 2026): ONE spotlight across the timeline and the cards.
+   useLinkedSpotlight.js writes data-spot on the page while a row or card is
+   pointed at or keyboard-focused, and data-lit on every element of that
+   project; everything else greys to the rows' own 0.4 on the rows' own fade
+   (500ms, effects curve). The hovered card keeps its lift. A timeline project
+   with no card (cross-sell is hidden) simply greys all the cards. */
+.hello[data-page="3"][data-spot] .hello-hero__table .work__item[data-project]:not([data-lit]),
+.hello[data-page="3"][data-spot] .wg__card[data-project]:not([data-lit]) { opacity: 0.4; }
+.hello[data-page="3"][data-spot] .hello-hero__table .work__item[data-lit] { opacity: 1; }
+.hello[data-page="3"] .wg__card { --wg-fade: 500ms var(--m3-effects-default, ease); }
+/* once the spotlight has been used the entrance staggers are long spent, so
+   the dim answers at once both ways (otherwise a card would wait its 150 +
+   90n ms before un-greying) */
+.hello[data-page="3"][data-stage="reveal"][data-spot-ready] .hello-hero__table .work__item { transition-delay: 0s; }
+.hello[data-page="3"][data-stage="reveal"][data-spot-ready] .wg__card {
+  transition: opacity var(--wg-fade), translate 700ms var(--m3-spatial-standard-default, ease), transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-default), box-shadow var(--m3-dur-effects-default) var(--m3-effects-default);
+  transition-delay: 0s;
+}
 @media (prefers-reduced-motion: reduce) {
   .hello[data-page="3"] .hello-hero__link, .hello[data-page="3"] .hello-chip, .hello[data-page="3"] .hello-hero__table .work__item,
   .hello[data-page="3"]:not([data-stage="reveal"]) .hello-hero__link, .hello[data-page="3"]:not([data-stage="reveal"]) .hello-chip, .hello[data-page="3"]:not([data-stage="reveal"]) .hello-hero__table .work__item { translate: 0 0; transition: none; }
@@ -570,6 +589,59 @@ html.dark .hello[data-page="3"] .hello-foot__bubble { --bub: #3a3a3c; --bub-ink:
 .hello[data-page="3"] .hello-foot__bubble--left::after   { right: -10px; border-bottom-left-radius: 10px; }
 .hello[data-page="3"] .hello-foot__bubble--right::before { left: -7px; border-bottom-right-radius: 16px; }
 .hello[data-page="3"] .hello-foot__bubble--right::after  { left: -10px; border-bottom-right-radius: 10px; }
+/* GLASS (mv3pzlmb-fpyvxb, 11 Oct 2026: "make these glass as well"): the
+   contact bubbles wear the site's nav glass through the --glass-* tokens
+   (index.css) instead of the iMessage greys. Text takes --fg, not the icon
+   ink, since it is text (4.5:1, not 3:1). THE TAIL IS DROPPED: it was a
+   bubble-coloured circle with a page-coloured one cut over it, which on a
+   see-through film paints a doubled dark patch and a solid disc. */
+.hello[data-page="3"] .hello-foot__bubble,
+html.dark .hello[data-page="3"] .hello-foot__bubble {
+  background: var(--glass-film);
+  color: var(--fg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
+}
+.hello[data-page="3"] .hello-foot__bubble:hover,
+html.dark .hello[data-page="3"] .hello-foot__bubble:hover { background: var(--glass-film-hover); }
+.hello[data-page="3"] .hello-foot__bubble:active { scale: 0.97; }
+/* THE TAIL, BACK IN GLASS (mv3s5q3u-j3725p, 11 Oct 2026: "because of the glass
+   the message bubble shape is gone"). The original curl was painted: a 20px
+   bubble-coloured box with a 16px bottom corner (::before, right -7px), and a
+   10px page-coloured box with a 10px corner laid over it (::after, right
+   -10px). Paint cannot cut see-through glass, so the tail is now the exact
+   region that trick used to show OUTSIDE the pill, computed from the same
+   three circles (the 16px corner, the 10px cut, the pill's 17px corner) and
+   drawn as one glass piece with clip-path: it meets the pill along the pill's
+   own curve without overlapping it, so the film never doubles. ::before is the
+   tail; ::after has nothing left to do. */
+/* the tail's LIFT: the pill's glass edge ends in a soft drop shadow, which is
+   most of what shows it on a light page, and a clipped piece cannot cast one.
+   ::after draws the same outline blurred in a small SVG (blur inside the image,
+   so no clip cuts it), 4px down like the pill's, under the tail. */
+.hello[data-page="3"] .hello-foot__bubble::after {
+  display: block;
+  width: 30px; height: 33px; bottom: -12px;
+  border-radius: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 33'%3E%3Cfilter id='b' x='-60%25' y='-60%25' width='220%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cpath transform='translate(8 8)' d='M0.17 13.62A16 16 0 0 0 10 17L14 17L14 16.54A10 10 0 0 1 7 7L7 0A17 17 0 0 1 0.17 13.62Z' fill='rgba(40,20,80,0.22)' filter='url(%23b)'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+  z-index: -1;
+}
+html.dark .hello[data-page="3"] .hello-foot__bubble::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 33'%3E%3Cfilter id='b' x='-60%25' y='-60%25' width='220%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cpath transform='translate(8 8)' d='M0.17 13.62A16 16 0 0 0 10 17L14 17L14 16.54A10 10 0 0 1 7 7L7 0A17 17 0 0 1 0.17 13.62Z' fill='rgba(0,0,0,0.5)' filter='url(%23b)'/%3E%3C/svg%3E"); }
+.hello[data-page="3"] .hello-foot__bubble--left::after { right: -15px; left: auto; }
+.hello[data-page="3"] .hello-foot__bubble--right::after { left: -15px; right: auto; scale: -1 1; }
+.hello[data-page="3"] .hello-foot__bubble::before {
+  display: block;
+  width: 14px; height: 17px; bottom: 0;
+  border-radius: 0;
+  background: var(--glass-film);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  clip-path: path("M0.17 13.62A16 16 0 0 0 10 17L14 17L14 16.54A10 10 0 0 1 7 7L7 0A17 17 0 0 1 0.17 13.62Z");
+}
+.hello[data-page="3"] .hello-foot__bubble--left::before { right: -7px; left: auto; }
+.hello[data-page="3"] .hello-foot__bubble--right::before { left: -7px; right: auto; scale: -1 1; }
+.hello[data-page="3"] .hello-foot__bubble:hover::before { background: var(--glass-film-hover); }
 /* the reveal: the cursor anywhere in the footer section (mtr8whkh, was the
    sign-off block only), or a bubble taking focus */
 .hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
@@ -635,6 +707,11 @@ html.dark .hello[data-page="3"] .hello-foot__bubble { --bub: #3a3a3c; --bub-ink:
   .hello[data-page="3"] .hello-foot__bubble--right::before { left: -7px; right: auto; border-bottom-right-radius: 16px; border-bottom-left-radius: 0; }
   .hello[data-page="3"] .hello-foot__bubble--left::after,
   .hello[data-page="3"] .hello-foot__bubble--right::after { left: -10px; right: auto; border-bottom-right-radius: 10px; border-bottom-left-radius: 0; }
+  /* the glass tail (mv3s5q3u) and its lift mirror to the left on both */
+  .hello[data-page="3"] .hello-foot__bubble--left::before,
+  .hello[data-page="3"] .hello-foot__bubble--right::before { scale: -1 1; }
+  .hello[data-page="3"] .hello-foot__bubble--left::after,
+  .hello[data-page="3"] .hello-foot__bubble--right::after { left: -15px; right: auto; scale: -1 1; }
 }
 /* mtr7c6mg "reduce the height by 120px" (the footer).
 
@@ -757,6 +834,12 @@ body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
    with the hero. Same size, mask and stage rules; nothing on the page paints
    an opaque background, so every section sits on the sky. */
 .hello[data-page="3"] .hello-sky { position: fixed; }
+/* Agam 2026-10-11: the sky's rest place sits higher and it travels further down on
+   scroll. --hello-para is both the start offset (-para) and the drift, and the
+   canvas is para taller than the band, so the top edge never shows (hello.css). */
+@media (prefers-reduced-motion: no-preference) { @supports (animation-timeline: scroll()) {
+  .hello[data-page="3"] .hello-sky { --hello-para: 176px; } /* was 88 */
+} }
 /* the canvas's own box. At every width it is the band, so nothing changes;
    on a phone it runs wider than the screen so the shader is handed a
    landscape aspect, and .hello-sky's overflow: hidden crops it back. 220%
@@ -903,6 +986,24 @@ body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
 @keyframes wg-cur-b { 0%, 22% { transform: translate(0, 0); } 34%, 50% { transform: translate(14px, -18px); } 62%, 80% { transform: translate(-16px, 6px); } 100% { transform: translate(0, 0); } }
 @keyframes wg-cur-c { 0%, 15% { transform: translate(0, 0); } 28%, 46% { transform: translate(18px, 12px); } 60%, 82% { transform: translate(-9px, -14px); } 100% { transform: translate(0, 0); } }
 @media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .wg__cur { transform: none !important; } }
+/* mv3mdlaf: the cursor story (CursorStory in WorkGrid.jsx). The bubble is
+   folded into the arrow until the cursor speaks (data-said), then springs out
+   of it on the pop curve; it folds back faster and plainer as they leave.
+   Reduced motion renders data-said from the start, so the bubbles simply sit. */
+.hello[data-page="3"] .wg__cur-pill {
+  transform-origin: 0 0;
+  scale: 0.2; opacity: 0;
+  transition: scale 200ms var(--m3-effects-default, ease), opacity 140ms linear;
+}
+.hello[data-page="3"] .wg__cur--right .wg__cur-pill { transform-origin: 100% 0; }
+.hello[data-page="3"] .wg__cur[data-said] .wg__cur-pill {
+  scale: 1; opacity: 1;
+  transition: scale 460ms var(--ds-ease-pop, cubic-bezier(0.34, 1.46, 0.64, 1)), opacity 120ms linear;
+}
+.hello[data-page="3"] .wg__cur { transform-origin: 0 0; }
+.hello[data-page="3"] .wg__cur--right { transform-origin: 100% 0; }
+/* mv3t0j1r: the Toppr phone layer rises and falls with the cursor story (transform only) */
+.hello[data-page="3"] .wg__card--toppr .wg__live--over { will-change: transform; }
 
 /* the pro17 plate's Dynamic Island (see FigmaPhone): 125 / 402 of the screen
    width, 125 : 37, its top 11 / 874 down, centred */
@@ -1029,32 +1130,32 @@ body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
    lists and print the option's name), and the three booleans as switches.
    It replaces the chip rows that mtrwr8ac hid. */
 .hello[data-page="3"] .ap { position: relative; }
+/* the 146px the Pause button moved down (11 Oct 2026, 64 then 146), so it
+   keeps its old distance to the section after */
+.hello[data-page="3"] .ap { margin-bottom: 24px; } /* the one-line caption needs far less room (11 Oct 2026) */ /* +24 so the footer box (its hover reveal) starts below the button */
 /* mu9trf5q: the run's play/pause, under the middle of the stage where the
    focused card rests. Same filled circle as the site's other controls, so it
    reads as a control rather than a piece of the figure. */
 .hello[data-page="3"] .ap__play {
   position: absolute;
   left: 50%;
-  bottom: -64px; /* was 0: below the focused card's caption (muksv25q), which reached it on the big walkthrough card */
+  bottom: -80px; /* was 0: below the focused card's caption (muksv25q), which reached it on the big walkthrough card; -64 -> -128 (11 Oct 2026) once the caption ended on a 44px button; -128 -> -210 once it became a wall label, -234 once every label kept the full fixed template (the portrait cards set the depth), -199 once the meta line and hairline went (mv3sl7a5), back to -64 once the caption became one line, -80 once it wrapped to the card width (the timer ring and Pause sit under the caption: Agam, "the rotating timer below") with a description and credit line (mv3q1yei) */
   translate: -50% 0;
   z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.375rem;
-  height: 2.375rem;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  corner-shape: round;
-  background: #f7f7f7;
-  color: #5f5f5f; /* 5.96 on #f7f7f7 */
-  cursor: pointer;
-  transition: background var(--m3-dur-effects-default, 250ms) var(--m3-effects-default, ease),
-    color var(--m3-dur-effects-default, 250ms) var(--m3-effects-default, ease);
+  /* mv3pzco6-rea15g: the LOOK is the site's standard glass button now, shared
+     by name in index.css with the hero replay and the nav (38px circle, film,
+     specular edge, lift, ink, the Chromium lens, hover / press / focus). Only
+     where it sits lives here. */
 }
-html.dark .hello[data-page="3"] .ap__play { background: #1c1c20; color: #b5b5b5; } /* 8.28 on #1c1c20 */
-.hello[data-page="3"] .ap__play:hover { color: var(--fg); }
+/* mv3pitov-madcn7: the run's timer, a ring round the Pause button that fills
+   0 -> 360 deg with the carousel's own clock (AlongPath drives the dashoffset
+   with one WAAPI animation; nothing here animates). It sits just outside the
+   button, starts at 12 o'clock and runs clockwise. */
+.hello[data-page="3"] .ap__ring { position: absolute; inset: -5px; width: calc(100% + 10px); height: calc(100% + 10px); rotate: -90deg; pointer-events: none; overflow: visible; }
+.hello[data-page="3"] .ap__ring circle { fill: none; stroke-width: 2; }
+.hello[data-page="3"] .ap__ring-track { stroke: color-mix(in srgb, var(--fg) 14%, transparent); }
+.hello[data-page="3"] .ap__ring-fill { stroke: var(--fg); stroke-linecap: butt; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .ap__ring-fill { display: none; } }
 .hello[data-page="3"] .ap__panel { position: absolute; top: clamp(40px, 8vh, 96px); right: var(--hello-gutter, 24px); z-index: 6; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 .hello[data-page="3"] .ap__panel-toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1083,6 +1184,29 @@ html.dark .hello[data-page="3"] .ap__play { background: #1c1c20; color: #b5b5b5;
 .hello[data-page="3"] .ap__switches { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 2px; }
 .hello[data-page="3"] .ap__switch { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg); }
 .hello[data-page="3"] .ap__switch input { accent-color: var(--fg); margin: 0; }
+/* card shapes (11 Oct 2026): the defs svg takes no room; the Reshuffle button
+   is the panel's own quiet pill */
+.hello[data-page="3"] .ap__shape-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.hello[data-page="3"] .ap__reshuffle {
+  justify-self: start; min-height: 32px; padding: 0 12px; border: 0; border-radius: 999px; corner-shape: round;
+  background: color-mix(in srgb, var(--fg) 8%, var(--bg)); color: var(--fg); font: 500 12px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif; cursor: pointer;
+}
+.hello[data-page="3"] .ap__reshuffle:hover:not(:disabled) { background: color-mix(in srgb, var(--fg) 14%, var(--bg)); }
+.hello[data-page="3"] .ap__reshuffle:active:not(:disabled) { scale: 0.97; }
+.hello[data-page="3"] .ap__reshuffle:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.hello[data-page="3"] .ap__reshuffle:disabled { opacity: 0.45; cursor: default; }
+/* a shaped card drops its rectangular frame: the 1px border and the shadow
+   were drawn round the box, and a clip leaves only odd fragments of them */
+.hello[data-page="3"] .ap__card[data-shape] { border-color: transparent; box-shadow: none; }
+/* SHAPES KEEP THEIR OWN PROPORTIONS (11 Oct 2026, "almost correct but
+   squished"). The Material shapes are drawn in a 1:1 box, and the clip uses the
+   card's box, so a shaped card becomes square, at the same area as every
+   other card (--ap-opt-square, set by AlongPath from REF_ASPECT), with its
+   media cropped to cover from the centre. Every scale the run applies is
+   uniform, so nothing stretches it after that. !important: the card's aspect
+   and --ap-opt are inline (cardStyle). */
+.hello[data-page="3"] .ap__card[data-shape] { aspect-ratio: 1 / 1 !important; --ap-opt: var(--ap-opt-square, 0.75) !important; }
+.hello[data-page="3"] .ap .ap__plate { object-position: center; } /* every card is 4:3 now (11 Oct 2026): crop around the middle, where these frames carry their content */
 @media (max-width: 700px) { .hello[data-page="3"] .ap__panel { top: 16px; right: 16px; } }
 
 /* mtry27ut "the bubble reveal animation is too simple". It was a width slide
@@ -1227,7 +1351,8 @@ html.dark .hello[data-page="3"] .ap__play { background: #1c1c20; color: #b5b5b5;
    whole sits 24px left of the gutter (mtsludru + mttina8x, for the face and
    "Hello!"), so the name line alone steps 24px back to the right. In the
    mark's units (208 across 240px) that is 20.8. */
-.hello[data-page="3"] .gm__name { transform: translateX(13.9px); } /* 16px on screen: the name lands on the 80px gutter the hero column uses */
+.hello[data-page="3"] .gm__name { transform: translate(13.9px, 3.6px); } /* 16px on screen: the name lands on the 80px gutter the hero column uses; y 3.6 units = 4px on screen more space under "Hello!" (Agam 2026-10-11) */
+.hello[data-page="3"] .hello-hero__mark-art { margin-bottom: 4px; } /* keeps the gap below the name as it was after the 4px drop */
 
 /* mttix8zw: the chip glyphs sit between Phosphor's regular and bold. The
    glyphs are filled shapes in a 256-unit box drawn at a 16-unit stem; a
@@ -1252,7 +1377,7 @@ html.dark .hello[data-page="3"] .ap__play { background: #1c1c20; color: #b5b5b5;
 
 /* mttiyvmv read as 10%, then mttja92x "on hover it should expand a lot more":
    the cards grow to 1.5x under the pointer (the original was 1.3) */
-.hello[data-page="3"] .ap__stage { --ap-hover: 1.5; }
+.hello[data-page="3"] .ap__stage { --ap-hover: 1.618; } /* phi (11 Oct 2026); was 1.5 */
 
 /* mttisr5t: the dwell rings on the video card and the cinema they open. */
 .hello[data-page="3"] .ap__dwell {
@@ -1498,6 +1623,11 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: transparent; 
    you are on it. Resting keeps the 12 from mu9q8e8v; hover takes 4 off the
    right, the same edge that 6 was added to, so the pill tightens slightly as
    the cursor arrives. */
+/* mv3skah3-udv4qr (11 Oct 2026): "in the default state add 2px internal padding
+   on the right", on the PHONE bubble only (the email bubble shares the class and
+   keeps its 12). Default = open and resting, the state mu9rz63x split from
+   hover, so 12 -> 14 here; the hover rule below still takes it to 8. */
+.hello[data-page="3"] .hello-foot[data-revealed]:not(:hover) .hello-foot__bubble--right { padding-right: 14px; }
 .hello[data-page="3"] .hello-foot:hover .hello-foot__bubble { padding-right: 8px; }
 /* the copy cell is 0 wide closed (no margin, so it takes no room at all) and
    24 wide with an 8px lead when open; both transition */
@@ -1759,77 +1889,300 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --ch
    16.5:1 dark), the meta line --muted (4.95:1 on white, the token's own measure),
    the metrics as outlined chips in --fg. */
 .hello[data-page="3"] .ap__slot { position: relative; }
-.hello[data-page="3"] .pm__item[data-focus] { z-index: 998; }
-.hello[data-page="3"] .pm__item[data-focus] .ap__card { scale: 1.2; }
+/* THE ACTIVE CARD ON TOP (Agam, 11 Oct 2026: "when the cards reach their z
+   index should be maximum"). AlongPath marks one item data-ap-active: the
+   hovered card, else the keyboard-focused one, else the one resting on the
+   centre. The run animates z-index per item in its keyframes (PathMarquee
+   rollingZIndex), and an animation beats a normal declaration, which is why
+   the old 998 / 999 rules here and in hello.css never won; !important is the
+   only author rule that outranks an animation. data-ap-was holds the card
+   that just stopped being active one step below for as long as its shrink
+   and slide-back take, so it never drops behind a neighbour mid-transition.
+   Every item sits in one stacking context (.pm__layer, which the fit scales),
+   so nothing between them caps these. */
+.hello[data-page="3"] .pm__item[data-ap-active] { z-index: 1000 !important; }
+.hello[data-page="3"] .pm__item[data-ap-was] { z-index: 999 !important; }
+/* ...and in focus: with Air + haze depth (Agam's base, 11 Oct) the keyframes
+   blur and pale every card by its depth, the active one too. The card you
+   reached comes fully forward; everything else keeps its depth. Transitions
+   do not run against an animated value, so this is a cut, not a fade. */
+.hello[data-page="3"] .pm__item[data-ap-active] { filter: none !important; opacity: 1 !important; }
+.hello[data-page="3"] .ap__stage {
+  --ap-focus: 1.483; /* (1 + 1/phi^3) x 1.2: the golden-ratio snap growth (SNAP in AlongPath.jsx) made 20% bigger (Agam, 11 Oct 2026: "the tile that is centred should be 20% bigger"); was 1.236, before that 1.2 */
+  /* extra air either side of the active card, on screen, over and above its
+     growth: "more spacing on hover", and the same on the centre (Agam, 11 Oct) */
+  --ap-gap-extra: 36;
+}
+/* keyboard focus grows a card the way hover does */
+.hello[data-page="3"] .ap__card:focus-visible, .hello[data-page="3"] .pm__item[data-focus] .ap__card:focus-visible { scale: calc(var(--ap-hover) * var(--pm-smax, 1) / var(--pm-live, var(--pm-s, 1))); }
+.hello[data-page="3"] .pm__item[data-focus] .ap__card { scale: var(--ap-focus); }
+/* the rule above outranks .ap__card:hover (hello.css), so the centre card held
+   at 1.2 under the pointer while its neighbours parted for 1.5. Hover wins
+   again, and a drag still reverts it (hello.css data-grabbing). */
+.hello[data-page="3"] .pm__item[data-focus] .ap__card:hover { scale: calc(var(--ap-hover) * var(--pm-smax, 1) / var(--pm-live, var(--pm-s, 1))); }
+.hello[data-page="3"] .pm[data-grabbing="true"] .pm__item[data-focus] .ap__card:hover { scale: var(--ap-focus); }
+/* CONTINUOUS PARTING (11 Oct 2026, "move out of the way for the cards at the
+   center"): while AlongPath's loop runs (data-ap-continuous), it owns every
+   card's growth as --ap-k and its sideways move as translate, both eased in
+   JS each frame. So the CSS growth rules above (rest, hover, focus, drag)
+   stand down here, and the card's own transitions are off: a transition
+   retargeted every frame would only add lag. The rules above still apply
+   wherever the loop does not run (reduced motion, the timeline mode). */
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__card,
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__card:hover,
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__card:focus-visible,
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .pm__item[data-focus] .ap__card {
+  scale: var(--ap-k, 1) !important;
+  transition: none !important;
+}
+/* the walkthrough card opens the cinema from the keyboard too (AlongPath, 11 Oct 2026) */
+.hello[data-page="3"] .ap__card--dwell:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 .hello[data-page="3"] .ap__cap {
   position: absolute;
   left: 50%;
-  top: calc(100% + 12px);
-  width: max-content;
-  max-width: min(280px, 70vw);
+  top: calc(100% + 24px); /* 12 -> 24 (11 Oct 2026, Agam: "more spacing between the text and the card"); the card grows from its bottom edge, so this gap holds as it grows */
+  /* ONE measure for every card (standardised, 11 Oct 2026): a fixed width,
+     not max-content, so every label is the same block */
+  width: min(300px, 70vw); /* ~46ch of its 12.5px description */
+  bottom: auto; /* hello.css anchors the old side label with bottom: 0, which with
+                   this top left the box 0px tall; the fixed slots need a real box */
   translate: -50% 6px;
   opacity: 0;
+  visibility: hidden; /* 11 Oct 2026: it holds a button now, so hidden means out of the tab order too */
   pointer-events: none;
-  text-align: left;
+  /* centred as a block AND as text (Agam, 11 Oct 2026): the column of lines
+     sits on the card's centre line, not ranged left from it */
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
   font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
-  transition: opacity 240ms ease, translate 360ms var(--m3-spatial-standard-default, ease);
+  transition: opacity 240ms ease, translate 360ms var(--m3-spatial-standard-default, ease), visibility 0s linear 240ms;
 }
-.hello[data-page="3"] .pm__item[data-focus] .ap__cap { opacity: 1; translate: -50% 0; transition-delay: 180ms; }
+.hello[data-page="3"] .pm__item[data-focus] .ap__cap {
+  opacity: 1; visibility: visible; pointer-events: auto; translate: -50% 0;
+  transition: opacity 240ms ease 180ms, translate 360ms var(--m3-spatial-standard-default, ease) 180ms, visibility 0s linear 0s;
+}
 .hello[data-page="3"] .ap__cap p { margin: 0; }
-.hello[data-page="3"] .ap__cap-title { font-size: 13px; line-height: 1.3; font-weight: 600; color: var(--fg); }
-.hello[data-page="3"] .ap__cap-meta { font-size: 12px; line-height: 1.35; margin-top: 2px !important; color: var(--muted); }
-.hello[data-page="3"] .ap__cap-metrics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px !important; }
-.hello[data-page="3"] .ap__cap-metric {
-  font-size: 11px;
-  line-height: 1;
-  padding: 5px 8px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--fg);
-  white-space: nowrap;
+/* THE WALL LABEL (mv3q1yei-nhzo9u). Proportioned after MoMA / Tate / Met
+   tombstones: the title is the only weight, about 1.2x the body; maker and
+   date sit plain beneath it; medium and role are the small tracked line;
+   a short hairline; the description on generous leading; the credit line
+   smallest and quietest. The site's own faces (Stack Sans Headline for the
+   title, Google Sans Flex for the rest; Google Sans Code is not loaded on
+   this site, so the tracked line uses Flex in caps) and colour tokens only. */
+/* ONE TEMPLATE, FIXED SLOTS (Agam, 11 Oct 2026: "standardise the text on all
+   cards"). Every slot has a set height whatever it holds, so a card missing a
+   field keeps the same rhythm and the button lands at the same distance under
+   every card: title one line, meta one line, description three, metric one,
+   then the button's own row. AlongPath's WallLabel always renders all six. */
+.hello[data-page="3"] .ap__cap-title { width: 100%; height: 1.25em; font: 600 15px/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hello[data-page="3"] .ap__cap-meta { width: 100%; height: 1.4em; font-size: 10.5px; line-height: 1.4; margin-top: 4px !important; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* types are one word (Video, Screen, Image) so every meta line fits the measure */
+.hello[data-page="3"] .ap__cap-rule { flex: none; width: 24px; height: 0; margin: 10px auto; border: 0; border-top: 1px solid var(--line); }
+/* THE ONE-LINE CAPTION (11 Oct 2026). Newsreader, the site's serif (as the
+   section headings), one line of 7-9 words, centred under the card; where
+   the card has a page the line is the link and wears the hero Resume link's
+   classes (hello-hero__link--out: blue, underline on hover; the arrow leans
+   out). The focus ring here matches that link's underline-under-focus. */
+.hello[data-page="3"] .ap__cap-line {
+  margin: 0; max-width: 100%;
+  font: 400 16px/1.3 var(--font-serif); font-variation-settings: "opsz" 18; /* the run's layer enlarges it (fit x depth), so 16 draws at about 20 */
+  letter-spacing: -0.005em; color: var(--fg); text-align: center; text-wrap: balance;
 }
+.hello[data-page="3"] .ap__cap-link { display: inline; text-decoration: none; }
+/* WHITE, NOT BLUE (11 Oct 2026, Agam via the hello-flip session: "the below the
+   image should be white in side quests"). The line took the hero link's blue
+   through hello-hero__link--out; it is the page's text colour now (--fg: white
+   in dark, near-black in light, where white would vanish), on every card, link
+   or not. The arrow follows (currentColor); hover underline and the lean-out
+   stay. The html.dark rule is needed to outrank the hero link's own dark blue. */
+.hello[data-page="3"] .ap__cap .ap__cap-link,
+html.dark .hello[data-page="3"] .ap__cap .ap__cap-link { color: var(--fg); }
+/* THE CARD'S WIDTH (Agam, 11 Oct 2026: "width of text on the cards in side quest
+   should be limited to the width of the card"). The caption line is as wide as
+   the card above it, never wider; a longer line wraps, balanced. It sits in the
+   card's slot, so it scales with the card as the card grows at the centre. */
+.hello[data-page="3"] .ap__cap:has(.ap__cap-line) { width: 100%; max-width: 100%; }
+/* THE ARROW, OPTICALLY ALIGNED (12 Oct 2026, "align the redirect arrow properly
+   with the text"). Copied from the hero's Resume link, measured: its 14px arrow
+   at 16px is 0.875em wide, its centre sits 0.34em above the text baseline
+   (about half the cap height; Newsreader's cap height is 0.715em, x-height
+   0.512em, same as Google Sans Flex), and the gap is 0.25em. All in em, so it
+   scales with the line. The inline-block's bottom sits on the baseline, so
+   vertical-align: -0.0975em puts its centre at 0.4375 - 0.0975 = 0.34em. The last
+   word and the arrow are one nowrap unit (.ap__cap-tail). */
+.hello[data-page="3"] .ap__cap-tail { white-space: nowrap; }
+.hello[data-page="3"] .ap__cap-arrow { display: inline-block; width: 0.875em; height: 0.875em; margin-left: 0.25em; vertical-align: -0.0975em; }
+.hello[data-page="3"] .ap__cap-link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 4px; text-decoration: underline; text-underline-offset: 3px; }
+/* mv3sl7a5: with the meta line and the hairline gone, the description sits
+   8px under the title (was 4 + meta + 21 of rule) */
+.hello[data-page="3"] .ap__cap-text { margin-top: 8px !important; }
+.hello[data-page="3"] .ap__cap-text { width: 100%; height: calc(3 * 1.55em); font-size: 12.5px; line-height: 1.55; color: var(--fg); text-wrap: pretty; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.hello[data-page="3"] .ap__cap-metric { width: 100%; height: 1.4em; font-size: 11px; line-height: 1.4; margin-top: 6px !important; color: var(--muted); white-space: nowrap; }
+.hello[data-page="3"] .ap__cap-action { display: flex; justify-content: center; align-items: center; margin-top: 12px; height: calc(46px / max(1, var(--pm-fit, 1)) / var(--pm-depth-max, 1)); }
+/* the metrics are one plain line now; the chips they were read as tags, and
+   the caption's last element is the button below (Agam, 11 Oct 2026) */
+
+/* The button wears the section's own control, the Tune pill (.ap__panel-
+   toggle): same ground, ink, radius and face, at the 44px touch floor. */
+/* mv3q0l6n-ahl210 (11 Oct 2026): "make this button glass as well and lesser
+   internal padding". The nav glass via the --glass-* tokens (index.css), and
+   tighter: 14px sides (was 20) and exactly 44px tall ON SCREEN. The caption
+   is inside the run's fitted layer, which ENLARGES it on wide screens (fit
+   1.09 at 1440 made a 44px floor draw at 48); dividing by the fit when it is
+   over 1 lands it on the floor itself. */
+.hello[data-page="3"] .ap__cap-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: calc(46px / max(1, var(--pm-fit, 1)) / var(--pm-depth-max, 1)); padding: 0 14px; /* and by the depth peak (PathMarquee --pm-depth-max); 46 not 44 because a rest lands a hair below the peak (measured 42.9 at 44) */
+  border-radius: 999px; corner-shape: round;
+  background: var(--glass-film);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
+  color: var(--fg); font: 500 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color 150ms ease, scale 150ms ease;
+}
+.hello[data-page="3"] .ap__cap-cta:hover { background: var(--glass-film-hover); }
+.hello[data-page="3"] .ap__cap-cta:active { scale: 0.97; }
+.hello[data-page="3"] .ap__cap-cta:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .hello[data-page="3"] .ap__cap { transition: none; }
 }
+/* 11 Oct 2026 (QA): the caption lives inside the run's layer, which is scaled
+   to fit the stage (PathMarquee publishes it as --pm-fit). At 390px that is
+   about 0.33, so the 13px title drew at about 4px. Undo the fit when it
+   SHRINKS the run, never when it enlarges it, so desktop is untouched. */
+.hello[data-page="3"] .ap__cap {
+  --ap-cap-k: calc(1 / min(1, var(--pm-fit, 1)));
+  top: calc(100% + 24px * var(--ap-cap-k));
+  scale: var(--ap-cap-k);
+  transform-origin: top center;
+}
 
-/* ---- the room's loader and the hand-over (2026-10-05; Hello.jsx, scene/window/sceneWarm.js)
-   The page opens as the plain portfolio; this pill sits at the bottom while the scene warms
-   behind it, in the same look as the scene's own scroll nudge (windowScene.css), whose
-   stylesheet is not loaded yet. Ink is --fg on a 78 % --bg glass pill, as the nudge. */
+/* ---- the way into the room and the hand-over (2026-10-05; opt-in since 2026-10-11;
+   Hello.jsx, scene/window/sceneWarm.js)
+   The page opens as the plain portfolio and the room warms behind it on every load. At
+   the top sits ONE glass button in the site's glass (the --glass-* tokens, index.css,
+   as the contact bubbles and the Along the Path button), fading in a moment after load.
+   While the room warms it carries the loader inside it, "Setting up the room ···",
+   quieter; once ready the same element morphs (width, shape, colour) into a solid white
+   "Enter the room" button (annotations mv3sf3jm-qb2htt, mv3u3h6m-4trwcm). It is never
+   entered without a click. */
 .wscene-warm-pill {
   position: fixed;
   left: 50%;
-  bottom: max(20px, env(safe-area-inset-bottom));
+  top: max(20px, env(safe-area-inset-top)); /* top of the page, not the bottom (Agam 2026-10-11) */
   z-index: 3;
   translate: -50% 0;
   display: inline-flex;
   align-items: center;
+  /* size, padding, radius, glass, edge, ink and type: the shared room-pill look (index.css) */
+  /* gently, a moment after the page has drawn */
+  animation: wscene-pill-in 480ms ease 1.2s backwards; /* backwards, not both: a held animation value would block the landing's translate transition */
+  transition: padding 460ms cubic-bezier(0.3, 0, 0, 1), translate 680ms cubic-bezier(0.3, 0, 0, 1), opacity 220ms ease;
+}
+.wscene-warm-pill:not([data-state="ready"]) { cursor: pointer; }
+.wscene-warm-pill[data-state="ready"] { padding: 0 6px 0 18px; }
+/* the status text: both texts in one cell, the width tweens between their measured widths */
+.wscene-warm-pill__status {
+  display: inline-grid;
+  place-items: center start;
+  width: var(--lw-busy, 150px);
+  transition: width 460ms cubic-bezier(0.3, 0, 0, 1);
+}
+.wscene-warm-pill[data-state="ready"] .wscene-warm-pill__status { width: var(--lw-ready, 110px); }
+.wscene-warm-pill__label {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  padding: 13px 16px; /* 12 px taller than the first cut (7 px), Agam 2026-10-05 */
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--bg) 78%, transparent);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
-  backdrop-filter: blur(10px) saturate(1.2);
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--fg) 10%, transparent);
-  color: var(--fg);
-  font: 500 12px/1 "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
-  letter-spacing: 0.04em;
-  animation: wscene-pill-in 360ms ease both;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 0s linear 200ms, translate 300ms ease;
 }
-.wscene-warm-pill button {
-  font: inherit;
-  letter-spacing: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
+.wscene-warm-pill__label[data-on] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease 80ms, visibility 0s;
+}
+/* warming in the background: the loader a touch quieter; full strength on hover or once a
+   click has queued the entry */
+.wscene-warm-pill[data-state="warming"] .wscene-warm-pill__label[data-on] { opacity: 0.72; transition: opacity 240ms ease; }
+.wscene-warm-pill[data-state="warming"]:hover .wscene-warm-pill__label[data-on] { opacity: 1; }
+/* the white "Enter the room" button (annotations mv3u3h6m-4trwcm, mv3unisi-raj9d1): zero
+   width until the room is ready, then it grows in on the container's right. A hairline
+   and soft shadow keep it legible on the pale light-mode sky; the focus ring is the page
+   ink (dark on light, white on dark) with a gap so it never merges with the white fill. */
+.wscene-warm-pill__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  min-height: 32px;
+  margin-left: 0;
   padding: 0;
-  cursor: pointer;
-}
-.wscene-warm-pill button:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 6px;
+  overflow: hidden;
+  border: 0;
   border-radius: 999px;
+  corner-shape: round;
+  background: #fff;
+  color: #0e0e11;
+  font: 600 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(14, 14, 17, 0.14), 0 4px 12px rgba(14, 14, 17, 0.2);
+  transition: width 460ms cubic-bezier(0.3, 0, 0, 1), margin-left 460ms cubic-bezier(0.3, 0, 0, 1), opacity 300ms ease 120ms, background-color 150ms ease, scale 150ms ease;
 }
+.wscene-warm-pill[data-state="ready"] .wscene-warm-pill__btn {
+  width: calc(var(--lw-btn, 100px) + 32px);
+  margin-left: 14px;
+  opacity: 1;
+  pointer-events: auto;
+}
+.wscene-warm-pill__btn:hover { background: #f1f1f4; }
+.wscene-warm-pill__btn:active { scale: 0.97; }
+.wscene-warm-pill__btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+/* THE JOURNEY (Hello.jsx): click -> the white button turns into a loader and the text slides
+   out, the container closing round it; the room swaps in under it; then it flies to the
+   room's "scroll" floater's spot and becomes it, and the real floater takes over.
+   --fly-y is the measured distance; the pill is fixed, so only a translate moves. */
+/* three classes, to beat `.wscene-warm-pill .wscene-nudge__dots { display: inline-flex }`: while hidden the dots took 18 px of the button and pushed the label off-centre */
+.wscene-warm-pill .wscene-warm-pill__btn-dots.wscene-nudge__dots { display: none; flex: none; align-items: center; opacity: 0; transition: opacity 240ms ease 200ms; }
+.wscene-warm-pill[data-state="entering"] { padding: 0 6px; }
+.wscene-warm-pill[data-state="entering"] .wscene-warm-pill__status { width: 0; }
+.wscene-warm-pill[data-state="entering"] .wscene-warm-pill__label { translate: -14px 0; }
+.wscene-warm-pill[data-state="entering"] .wscene-warm-pill__btn {
+  width: calc(var(--lw-dots, 18px) + 32px);
+  margin-left: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+.wscene-warm-pill[data-state="entering"] .wscene-warm-pill__btn-label { display: none; }
+.wscene-warm-pill[data-state="entering"] .wscene-warm-pill__btn-dots { display: inline-flex; opacity: 1; }
+.wscene-warm-pill__btn-dots i { width: 4px; height: 4px; border-radius: 50%; corner-shape: round; background: currentColor; animation: wscene-warm-dot 1.2s ease-in-out infinite; }
+.wscene-warm-pill__btn-dots { gap: 3px; }
+.wscene-warm-pill__btn-dots i:nth-child(2) { animation-delay: 0.15s; }
+.wscene-warm-pill__btn-dots i:nth-child(3) { animation-delay: 0.3s; }
+.wscene-warm-pill[data-state="landing"],
+.wscene-warm-pill[data-state="handoff"] {
+  padding: 0 18px;
+  translate: -50% var(--fly-y, 0px);
+  pointer-events: none;
+}
+.wscene-warm-pill[data-state="landing"] .wscene-warm-pill__status,
+.wscene-warm-pill[data-state="handoff"] .wscene-warm-pill__status { width: var(--lw-scroll, 70px); }
+.wscene-warm-pill[data-state="landing"] .wscene-warm-pill__btn,
+.wscene-warm-pill[data-state="handoff"] .wscene-warm-pill__btn { width: 0; margin-left: 0; opacity: 0; transition: width 460ms cubic-bezier(0.3, 0, 0, 1), margin-left 460ms cubic-bezier(0.3, 0, 0, 1), opacity 200ms ease; }
+/* closing again, the button keeps showing its loader dots, never the "View" label (which
+   flashed back for a frame as the width shrank) */
+.wscene-warm-pill[data-state="landing"] .wscene-warm-pill__btn-label,
+.wscene-warm-pill[data-state="handoff"] .wscene-warm-pill__btn-label { display: none; }
+.wscene-warm-pill[data-state="landing"] .wscene-warm-pill__btn-dots,
+.wscene-warm-pill[data-state="handoff"] .wscene-warm-pill__btn-dots { display: inline-flex; opacity: 1; }
+.wscene-warm-pill[data-state="handoff"] { opacity: 0; }
+.wscene-warm-pill__label .wscene-nudge__arrow { flex: none; }
+.wscene-warm-pill__btn-label { flex: none; font-family: "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; font-weight: 500; } /* mv3v2iqh: 2px smaller (14 -> 12); mv3v2q1h: one weight lighter (600 -> 500). mv3uxtvm: Google Sans Code; label "View" (mv3uxlp2), Agam 2026-10-11 */
 .wscene-warm-pill .wscene-nudge__dots {
   display: inline-flex;
   gap: 3px;
@@ -1849,21 +2202,15 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --ch
   40% { opacity: 1; }
 }
 @keyframes wscene-pill-in {
-  from { opacity: 0; translate: -50% 8px; }
-}
-/* the countdown's Cancel: set apart by a hairline, a touch quieter than the count */
-.wscene-warm-pill__cancel {
-  margin-left: 4px;
-  padding-left: 10px !important;
-  border-left: 1px solid color-mix(in oklab, var(--fg) 22%, transparent) !important;
-  opacity: 0.72;
-}
-.wscene-warm-pill__cancel:hover,
-.wscene-warm-pill__cancel:focus-visible {
-  opacity: 1;
+  from { opacity: 0; translate: -50% -8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .wscene-warm-pill { animation: none; }
+  .wscene-warm-pill, .wscene-warm-pill__status, .wscene-warm-pill__btn, .wscene-warm-pill__label, .wscene-warm-pill__label[data-on] { transition: none !important; }
+  /* a simple crossfade for the hand-off */
+  .wscene-warm-pill[data-state="handoff"] { transition: opacity 220ms ease !important; }
+  .wscene-warm-pill__btn-dots i { animation: none; opacity: 0.6; }
+  .wscene-warm-pill__btn:active { scale: none; }
   .wscene-warm-pill .wscene-nudge__dots i { animation: none; opacity: 0.6; }
 }
 /* the hand-over: the sky band fades before the page switches into the room's layout
@@ -1887,4 +2234,93 @@ html.wscene-handover .top-controls[data-scrolled] > * {
 html.wscene-handover .hello[data-scene="window"] .wscene-nudge {
   opacity: 0;
   transition: none;
+}
+
+/* mv3s6uwq (Agam 2026-10-11): the footer's location/role line at the same size as
+   the hero's Resume link (16px; was 12.5px). Size only: weight and face unchanged. */
+.hello[data-page="3"] .hello-foot__meta { font-size: 16px; }
+
+
+/* THE PAGE REVEALS ON THE MORPH'S CLOCK (11 Oct, Agam). While data-seq is on the root, the stage gates
+   above are overridden: containers stay up, and every element waits for its own data-in, which
+   Hello.jsx sets as the morph's timeline t passes its mark. One easing and one rise for all; the
+   heading only fades (it never moves in x). The attribute lifts once everything is in, to the same
+   computed values, so nothing re-animates. The room pill waits for the end. */
+.hello[data-page="3"][data-seq][data-seq] :is(.hello-hero__links, .hello-hero__table, .wg) { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
+.hello[data-page="3"][data-seq][data-seq] :is(.hello-hero__mark-art, .hello-hero__link, .hello-hero__table .work__item, .wg__card, .ap, .tlx, .hello-foot):not([data-in]) { opacity: 0; translate: 0 14px; visibility: hidden; pointer-events: none; transition: none; }
+.hello[data-page="3"][data-seq][data-seq] .hello-hero__mark-art:not([data-in]) { translate: none; transform: translateY(6px); }
+.hello[data-page="3"][data-seq][data-seq] :is(.hello-hero__mark-art, .hello-hero__link, .hello-hero__table .work__item, .wg__card, .ap, .tlx, .hello-foot)[data-in] { opacity: 1; translate: 0 0; transform: none; visibility: visible; pointer-events: auto; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1), translate 700ms cubic-bezier(0.22, 1, 0.36, 1), transform 700ms cubic-bezier(0.22, 1, 0.36, 1); transition-delay: 0s; }
+.hello[data-page="3"][data-seq] .wscene-warm-pill { animation: none; opacity: 0; visibility: hidden; }
+
+/* ONE COMPONENT, ICON KEPT (mv3usx4y-m9d9x4, 11 Oct 2026: "the icons should be
+   there in the expanded state too, and connect both states so the animation
+   happens on the same component"). The bubble was already one element (icon,
+   typing dots and text are cells of its grid); mttj8p7s collapsed the icon's
+   column to 0 and faded it once the bubble opened. It stays now: same 18px
+   cell, fully visible, and the bubble's LEFT padding stays at the closed 9px,
+   so the icon does not move while the pill grows and the text arrives beside
+   it. The text takes the 7px lead the icon used to give it. Later in the file
+   than the rules it overrides, same selectors. */
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble { grid-template-columns: 18px max-content max-content max-content; padding-left: 9px; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-icon,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-icon { width: 18px; opacity: 1; overflow: visible; }
+.hello[data-page="3"] :is(.hello-foot:hover, .hello-foot[data-revealed]) .hello-foot__bubble-text,
+.hello[data-page="3"] .hello-foot__figure:focus-within .hello-foot__bubble-text { margin-left: 7px; }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hello-foot__bubble { grid-template-columns: 18px max-content max-content; padding-left: 9px; }
+  .hello[data-page="3"] .hello-foot__bubble-icon { width: 18px; opacity: 1; overflow: visible; }
+  .hello[data-page="3"] .hello-foot__bubble-text { margin-left: 7px; }
+}
+/* THE GLOW-IN (11 Oct, Agam: "just like the dramatic glow transition of the face animation, use it for
+   the entire page load"). The face's flood is a bright, pale, soft wash that resolves to the crisp,
+   coloured form. Every element does the same: Hello.jsx writes inline opacity and filter (brightness,
+   saturate, blur, a warm drop-shadow) from the morph's t as it passes the element's mark, so the page
+   shares the face's speed ramp, then removes them (no filter at rest). At most a few elements
+   glow at once. Here: no rise and no CSS transition on the glowing elements; the below-the-fold
+   sections just fade. Off with GLOW_IN in Hello.jsx or ?glow=0 (the plain staggered rise above). */
+.hello[data-page="3"][data-seq][data-seq][data-glow] :is(.hello-hero__mark-art, .hello-hero__link, .hello-hero__table .work__item, .wg__card):is(:not([data-in]), [data-in]) { translate: 0 0; transform: none; transition: none; }
+
+/* mv3wj4pk (Agam 2026-10-11): more room above the footer, 96 -> 144px */
+.hello[data-page="3"] .hello-foot { padding-top: 144px; }
+/* NO DRIFT (11 Oct, "the shimmer for the project list is shifting"): the list sits 48px low until the
+   reveal (the rule above), then the reveal rule pulls it to its place, so the rows moved 48px under
+   blocks measured during the wave. While the sequence runs the list is already at its final place. */
+.hello[data-page="3"][data-seq][data-seq] .hello-hero__table { translate: 0 0; }
+
+/* ---- BACK TO THE ROOM (Hello.jsx backShown): the way back up to the room once the visitor
+   has been in it and is on the landing page. The glass look is the shared room-pill rule
+   (index.css), at the top centre where the room pill sat; a button, so it is focusable and
+   Enter/Space work; hidden (visibility) when not shown. */
+.wscene-back-pill {
+  position: fixed;
+  left: 50%;
+  top: max(20px, env(safe-area-inset-top));
+  z-index: 3;
+  translate: -50% -8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px 0 12px;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 240ms ease, translate 360ms cubic-bezier(0.3, 0, 0, 1), visibility 0s linear 240ms, background-color 150ms ease, scale 150ms ease;
+}
+.wscene-back-pill[data-on] {
+  opacity: 1;
+  visibility: visible;
+  translate: -50% 0;
+  transition: opacity 240ms ease, translate 360ms cubic-bezier(0.3, 0, 0, 1), visibility 0s, background-color 150ms ease, scale 150ms ease;
+}
+.wscene-back-pill:hover { background: var(--glass-film-hover); }
+.wscene-back-pill:active { scale: 0.97; }
+.wscene-back-pill:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.wscene-back-pill__arrow { flex: none; }
+/* not over the dev Inspect overlay (InspectMode.jsx: its toggle button always carries data-inspect-ui, the active overlay is a div with it) */
+html:has(div[data-inspect-ui]) .wscene-back-pill { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .wscene-back-pill, .wscene-back-pill[data-on] { translate: -50% 0; transition: opacity 200ms ease, visibility 0s linear 200ms !important; }
+  .wscene-back-pill[data-on] { transition: opacity 200ms ease !important; }
 }
