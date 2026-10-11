@@ -42,3 +42,11 @@ public/data/sd/
 # only the header's product-design resume is public; tailored ones stay local
 public/resume/*.pdf
 !public/resume/agam-agarwal-product-design.pdf
+
+# 11 Oct (Drive reconcile): face tooling's Blender autosaves and regenerable renders
+# stay out of git; a local prod-preview build folder too
+*.blend1
+tools/face3d/pose-*.png
+tools/face3d/preview*.png
+tools/face3d/fit/**/*.log
+.prodbuild/
