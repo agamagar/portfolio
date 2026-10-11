@@ -145,6 +145,15 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
 
         const meshes = [];
         root.traverse((o) => { if (o.isMesh) meshes.push(o); });
+        // the turnaround atlas (fit.json "mv"): each part's colour from every side, used where
+        // the reference never saw the surface; switched on once its image has loaded
+        const mv = {};
+        Object.entries(fit?.mv?.maps || {}).forEach(([part, file]) => {
+          const on = { value: 0 };
+          const t = new THREE.TextureLoader().load(rfit.replace(/[^/]*$/, file), (tt) => { tt.needsUpdate = true; on.value = 1; });
+          t.flipY = false; t.colorSpace = THREE.NoColorSpace;
+          mv[part] = { t, on };
+        });
         meshes.forEach((o) => {
           const key = partKey(o.name);
           // the fitted part's light, its albedo-ratio texture (stored as data, not colour)
@@ -175,7 +184,9 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
               uMapRaw: { value: o.name === "Skin" ? skinRaw : null }, uMargin: { value: o.name === "Skin" ? margins : null },
-              uHasRaw: { value: o.name === "Skin" && skinRaw && rawLoaded === 2 ? 1 : 0 } },
+              uHasRaw: { value: o.name === "Skin" && skinRaw && rawLoaded === 2 ? 1 : 0 },
+              uMV: { value: mv[o.name] && o.geometry.attributes._mvuv ? mv[o.name].t : null },
+              uHasMV: mv[o.name] && o.geometry.attributes._mvuv ? mv[o.name].on : { value: 0 } },
           });
           if (o.name === "Skin" && skinRaw) rawMats.push(mat);
           o.material = mat;

@@ -138,10 +138,13 @@ export const VERT = /* glsl */ `
 #include <color_pars_vertex>
 // how squarely this point faced the fitted camera at rest (the reference only shows those)
 uniform mat3 uRestNM;
-varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen;
+// the turnaround atlas's UVs (fit mode, Skin and Hair only)
+attribute vec2 _mvuv;
+varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
 void main(){
   #include <color_vertex>
   vUv = uv;
+  vMvUv = _mvuv;
   vSeen = normalize(uRestNM * normal).z;
   #include <beginnormal_vertex>
   #include <morphinstance_vertex>
@@ -164,8 +167,10 @@ uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
 uniform sampler2D uMapRaw, uMargin; uniform float uHasRaw; uniform vec3 uActs;
 // which part the reference shows at each pixel (id = part * 2 + layer + 1), and who this is
 uniform sampler2D uIdMap; uniform float uPartId, uLayered; uniform vec2 uIdRes;
+// the surface colour from every side: an albedo atlas baked from the turnaround views (tools/face3d/fit/mv)
+uniform sampler2D uMV; uniform float uHasMV;
 #include <color_pars_fragment>
-varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen;
+varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
 vec3 shEval(vec3 n){
   return uSH[0] * 0.282095 + uSH[1] * 0.488603 * n.y + uSH[2] * 0.488603 * n.z + uSH[3] * 0.488603 * n.x
@@ -244,6 +249,14 @@ void main(){
     vec3 whole = uRatioMean.x > 0.0 ? uRatioMean
       : uUseMap > 0.5 ? pow(texture2D(uMap, vUv, 12.0).rgb, vec3(uTexGamma)) * uTexScale : vec3(1.0);
     local = mix(whole, local, smoothstep(0.0, 0.3, vSeen)); // hidden and facing away (the nose's underside): the part's colour, not a blur of its neighbours
+    // with the turnaround atlas, the surface's own colour from the views that saw it: wherever
+    // the reference never saw it, and everywhere once the head has turned away (at rest, a
+    // fragment on the edge of what the reference saw keeps the blend above, so the drawing's
+    // own view is untouched)
+    if (uHasMV > 0.5) {
+      vec3 mvc = pow(texture2D(uMV, vMvUv).rgb, vec3(uTexGamma)) * uTexScale;
+      local = mix(mvc, local, step(0.01, seen) * (1.0 - uTurn));
+    }
     // and only trust it where the surface faced the camera squarely: an edge-on sliver at rest
     // would stretch into streaks once the head turns
     // turned away from the fitted pose, surfaces that were edge-on at rest fade to plain clay too
