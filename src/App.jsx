@@ -68,6 +68,7 @@ import { playCue } from "./ui/sound"; // mukuatqi: motion cues for the scroll-sc
 import HeroChips from "./hello3/HeroChips";
 import DesignFigure from "./figures/design/DesignFigure";
 import Whiteboard from "./figures/Whiteboard";
+import { SD_BOARDS } from "./figures/board/boards.scheduledDelivery"; // 11 Oct: whiteboards written by the board engine (src/figures/board)
 import ReelFigure, { ReelPresets, reels } from "./figures/reel/Reel";
 import CrossSellTree from "./figures/crosssell/CrossSellTree";
 import XsFramework from "./figures/crosssell/XsFramework";
@@ -370,7 +371,7 @@ const figmaEmbedUrl = (fileKey, nodeId) =>
 const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
 import { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // base iPhone frame, Scheduled Delivery only for now
 import { animate as motionAnimate } from "motion";
-import { Refresh as IconRefresh, CursorPointer as IconCursor } from "iconoir-react";
+import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink } from "iconoir-react";
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
 import { GlassLens } from "./ui/GlassLens";
 import { LoadRevealContext } from "./ui/loadReveal"; // muzdylub (8 Oct)
@@ -912,6 +913,79 @@ function fireLayer(node, i) {
 // size and padding; label left in the Context and Objective face, the
 // statement at the section-heading size (24px), the role paragraph set in
 // three columns below. Rises in like the other frames.
+// mv2mooey (10 Oct): "reimagine this section", kept the original and added three
+// copies under it to compare (Agam: "make copy of this and do 1 and 3 and 2 as
+// new copies"). Same facts as the frame: statement, the three leadership lines,
+// ROLE_STATS. Each copy carries an "Option" tag so they can be told apart.
+const ROLE_PARTNERS = ["Design leadership and the CPO", "Expectations with the C-suite", "Senior Director, New Category"];
+const ROLE_FUNCTIONS = ["Design", "Product", "Content", "Engineering and QA", "Operations"];
+function RoleOptionTag({ n, name }) {
+  return <p className="rv__tag">Option {n} · {name}</p>;
+}
+// Option 1: the editorial spread. One big statement, then numbers left, partners right.
+function RoleEditorial({ s }) {
+  return (
+    <div className="rv rv--editorial">
+      <RoleOptionTag n={1} name="Editorial spread" />
+      <p className="rv__label">My role</p>
+      <p className="rv__statement">{s.roleFrame.statement}</p>
+      <div className="rv-ed__grid">
+        <dl className="rv-ed__stats">
+          {ROLE_STATS.map(([big, small]) => (
+            <div key={big}><dt>{big}</dt><dd>{small}</dd></div>
+          ))}
+        </dl>
+        <ul className="rv-ed__partners">
+          {s.roleFrame.leadership.map((l) => <li key={l}>{l}</li>)}
+        </ul>
+      </div>
+    </div>
+  );
+}
+// Option 3: the scope map. The role at the centre, the three relationships wired to it,
+// the five functions it ran across underneath.
+function RoleScopeMap({ s }) {
+  const [top, left, right] = ROLE_PARTNERS;
+  return (
+    <div className="rv rv--map">
+      <RoleOptionTag n={3} name="Scope map" />
+      <p className="rv__label">My role</p>
+      <div className="rv-map__grid" aria-label="Who the role answered to and worked with">
+        <span className="rv-map__node rv-map__node--top">{top}</span>
+        <span className="rv-map__wire rv-map__wire--v" aria-hidden />
+        <span className="rv-map__node rv-map__node--left">{left}</span>
+        <span className="rv-map__wire rv-map__wire--hl" aria-hidden />
+        <span className="rv-map__me"><b>Lead designer</b><small>end to end</small></span>
+        <span className="rv-map__wire rv-map__wire--hr" aria-hidden />
+        <span className="rv-map__node rv-map__node--right">{right}</span>
+        <span className="rv-map__wire rv-map__wire--v2" aria-hidden />
+        <ul className="rv-map__fns">{ROLE_FUNCTIONS.map((f) => <li key={f}>{f}</li>)}</ul>
+      </div>
+      <dl className="rv-map__stats">
+        {ROLE_STATS.map(([big]) => <div key={big}><dt>{big}</dt></div>)}
+      </dl>
+    </div>
+  );
+}
+// Option 2: the role card. A badge-like glass card: title, scope, partners as chips, stats on the foot.
+function RoleCard({ s }) {
+  return (
+    <div className="rv rv--card">
+      <RoleOptionTag n={2} name="Role card" />
+      <div className="rv-card">
+        <p className="rv-card__kicker">Lead designer · Scheduled Delivery</p>
+        <p className="rv-card__statement">{s.roleFrame.statement}</p>
+        <ul className="rv-card__chips">
+          {s.roleFrame.leadership.map((l, k) => { const I = [Compass, Buildings, Handshake][k]; return <li key={l}>{I && <I weight="fill" aria-hidden />}{ROLE_PARTNERS[k]}</li>; })}
+        </ul>
+        <dl className="rv-card__foot">
+          {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
+        </dl>
+      </div>
+    </div>
+  );
+}
+
 function RoleFrame({ s, i }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -943,6 +1017,25 @@ function RoleFrame({ s, i }) {
       </div>
     </div>
   );
+}
+
+// QA (10 Oct): writer's check-notes left in the copy ("[Confirm ...]",
+// "[Reconcile ...]") were showing to readers. They stay in the source as the
+// accuracy markers the writing harness wants, but render as a hidden span that
+// only the dev QA layer (html.qa-on) reveals.
+const CONFIRM_RE = /(\s*\[(?:Confirm|CONFIRM|Reconcile|TODO|TBD)[^\]]*\])/g;
+function confirmNotes(text) {
+  if (typeof text !== "string" || !CONFIRM_RE.test(text)) return text;
+  CONFIRM_RE.lastIndex = 0;
+  return text.split(CONFIRM_RE).map((part, k) => (k % 2 ? <span className="qa-confirm" key={k}>{part}</span> : part));
+}
+
+// mv2lud20 (10 Oct): "highlight the text making it faster to read, use squiggly
+// underline": ==phrase== in section copy renders as a highlight with a wavy
+// underline, so the claim can be read by skimming the marked words alone.
+function squiggle(text) {
+  if (typeof text !== "string" || !text.includes("==")) return text;
+  return text.split(/==(.+?)==/g).map((part, k) => (k % 2 ? <mark className="squiggle" key={k}>{part}</mark> : part));
 }
 
 function SplitSection({ s, i }) {
@@ -1034,7 +1127,7 @@ function SplitSection({ s, i }) {
         )}
       </div>
       <div className="article__split-main">
-        {(s.p || []).map((para, j) => <p key={j} data-rise>{para}</p>)}
+        {(s.p || []).map((para, j) => <p key={j} data-rise>{squiggle(para)}</p>)}
         {s.ul && (
           <ul data-rise>
             {s.ul.map((li, k) => <li key={k}>{li?.t ? `${li.t}: ${li.d}` : li}</li>)}
@@ -2246,6 +2339,7 @@ export const caseStudies = {
         // mukxmirl (28 Sep): this and Two directions below are ONE section now
         h: "Different ways we explored how schedule could exist on the app",
         group: "Directions",
+        whiteboardNext: SD_BOARDS.directions, // 11 Oct: tabbed vs single page, and the sentence that decided it
         tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
         p: [
           "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\"",
@@ -9480,8 +9574,9 @@ export function CaseStudyBody({ cs }) {
           )}
           {s.split && <SplitSection s={s} i={i} />}
           {s.roleFrame && <RoleFrame s={s} i={i} />}
+          {s.roleFrame?.options && (<><RoleEditorial s={s} /><RoleScopeMap s={s} /><RoleCard s={s} /></>)}
           {/* 27 Sep: go-broad wireframes expanding My role, draft only */}
-          {s.roleWireframes && <SchedRoleWireframes only={s.roleWireframesOnly} />}
+          {s.roleWireframes && <SchedRoleWireframes only={s.roleWireframesOnly} exclude={s.roleWireframesOnly ? undefined : s.roleWireframesFirst} />}
           {/* mtmvvd0m: a section can drop its heading */}
           {/* mujvribt (27 Sep): on a slideLayout case the prose part of every
               section takes the role-slide layout (label column + statement +
@@ -9516,7 +9611,7 @@ export function CaseStudyBody({ cs }) {
           )}
           {(s.split || s.roleFrame ? [] : s.p || []).map((para, j) => (
             <Fragment key={j}>
-              <p>{para}</p>
+              <p>{confirmNotes(para)}</p>
               {/* an optional figure copy that sits inline under the first paragraph */}
               {j === 0 && s.inlineFig && (
                 <figure className="article__figure">

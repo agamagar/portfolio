@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marker Hand glyph QA</title>
+<style>body{margin:0;background:#fff;font:12px system-ui}svg{display:block;width:100%;height:auto}</style></head>
+<body><div id="o"></div>
+<script type="module">
+import { HAND } from "../data/markerHand.data.js";
+const chars = Object.keys(HAND.glyphs).filter(c => c !== " ");
+const cols = 5, cw = 190, ch = 250, S = 0.16;
+const rows = Math.ceil(chars.length / cols);
+let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols*cw} ${rows*ch}">`;
+chars.forEach((c, i) => {
+  const g = HAND.glyphs[c], x = (i % cols) * cw + 14, y = Math.floor(i / cols) * ch + 165;
+  svg += `<g transform="translate(${x},${y}) scale(${S},${-S})">
+    <line x1="-50" y1="0" x2="${g.w+50}" y2="0" stroke="#e33" stroke-width="6"/><line x1="-50" y1="${HAND.xHeight}" x2="${g.w+50}" y2="${HAND.xHeight}" stroke="#39f" stroke-width="6"/>
+    <path d="${g.d}" fill="#0b7a5f" fill-opacity=".35"/>
+    ${g.s.map((s, k) => { const p = []; for (let j = 0; j < s.length; j += 2) p.push(s[j] + "," + s[j+1]);
+      const col = ["#e11","#e80","#08f","#a0c","#090","#555","#c06"][k % 7];
+      return `<polyline points="${p.join(" ")}" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${s[0]}" cy="${s[1]}" r="26" fill="${col}"/>`; }).join("")}
+  </g><text x="${x}" y="${y+60}" fill="#000">${c.replace("<","&lt;")} · ${g.s.length}</text>`;
+});
+document.getElementById("o").innerHTML = svg + "</svg>";
+</script></body></html>

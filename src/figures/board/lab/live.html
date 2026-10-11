@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotate a live element</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#f4f2ec; color:#1f2430; font:16px/1.5 system-ui,sans-serif; }
+  main { min-height:100vh; display:grid; place-items:center; padding:140px 320px; }
+  .card { width:360px; background:#fff; border-radius:20px; padding:24px; box-shadow:0 20px 50px -24px rgba(20,16,45,.35), 0 0 0 1px #e8e4da; display:grid; gap:14px; }
+  .card h2 { margin:0; font-size:22px; } .card p { margin:0; color:#6b7280; }
+  .price { font-size:34px; font-weight:700; width:max-content; padding:2px 10px; } .price small { font-size:14px; color:#6b7280; font-weight:400; }
+  .row { display:flex; gap:8px; } .chip { padding:6px 12px; border-radius:999px; background:#eef2ff; color:#3b4cca; font-size:13px; }
+  .cta { border:0; border-radius:14px; padding:14px; background:#0b8a6c; color:#fff; font:600 16px system-ui; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card" id="card">
+    <h2 class="title">Plan the week once</h2>
+    <p class="desc">Choose a delivery slot and we will reserve everything for it.</p>
+    <div class="row"><span class="chip">Tomorrow 7 AM</span><span class="chip">Sunday 9 AM</span></div>
+    <div class="price">₹149 <small>per delivery</small></div>
+    <button class="cta">Reserve my slot</button>
+  </div>
+</main>
+<script type="module">
+  import { annotateElement } from "../core/annotateElement.js";
+  const a = annotateElement(document.getElementById("card"), [
+    { selector: ".title", text: "Say the benefit, not the feature", kind: "underline", color: "purple", side: "left" },
+    { selector: ".chip:first-child", text: "Slots as chips: one tap, no calendar", kind: "box", color: "blue", side: "left" },
+    { selector: ".price", text: "Price shown early. No surprises at checkout", kind: "circle", color: "red", side: "right" },
+    { selector: ".cta", text: "One loud action", kind: "box", color: "orange", side: "right" },
+  ], { margin: [110, 320], animate: new URLSearchParams(location.search).has("static") ? false : true });
+  window.__a = a;
+</script>
+</body>
+</html>
