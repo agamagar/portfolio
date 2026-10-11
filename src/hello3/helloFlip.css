@@ -1,0 +1,77 @@
+/* The stretchy "Hello" (HelloFlip.jsx, 2026-10-11). Own file so the hero's
+   stylesheets, which several sessions edit, are untouched. */
+
+/* The drawn "!" always hands over to the layer's copy (same path, same place);
+   the rest of the drawn word hands over only while the word differs. */
+.hello-hero__mark-art[data-hf] .gm__hello > path:first-of-type,
+.hello-hero__mark-art[data-hf="live"] .gm__hello > path { visibility: hidden; }
+.hf__word { visibility: hidden; }
+.hf[data-live] .hf__word { visibility: visible; }
+
+/* live type matched to the outlines: 700 + a 1.4-unit stroke = the drawn stem */
+.hf__t {
+  font-family: "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif;
+  font-weight: 700;
+  font-size: 46.8px;
+  font-kerning: none;
+  stroke: currentColor;
+  stroke-width: 1.4px;
+  stroke-linejoin: round;
+}
+
+/* the mark takes no pointer (hello3.css mtr81k5b); the handle takes it back */
+.hf[data-ready] .hf__bang,
+.hf[data-ready] .hf__bang * ,
+.hf[data-ready] .hf__wordhit { pointer-events: all; }
+.hf[data-ready] .hf__bang { cursor: grab; touch-action: pan-y; }
+html.hf-grabbing, html.hf-grabbing * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+
+/* the hint: quiet, and only a hint. On hover the "!" leans out to the right as
+   if pulled, twice, and settles. Once per session it does it by itself. */
+.hf[data-ready] .hf__bang:hover,
+.hf__bang[data-hint] { animation: hf-nudge 900ms cubic-bezier(0.3, 0, 0.2, 1) both; }
+html.hf-grabbing .hf__bang { animation: none; }
+@keyframes hf-nudge {
+  0%, 100% { transform: translateX(0); }
+  22% { transform: translateX(7px); }
+  42% { transform: translateX(0); }
+  60% { transform: translateX(3.5px); }
+  76% { transform: translateX(0); }
+}
+
+.hf__ring { stroke: var(--focus-ring, #4c8bf5); stroke-width: 1.6px; }
+
+/* the language, small and after the "!", like a footnote */
+.hf__cap {
+  font: 500 10.5px/1 "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+  fill: var(--muted-2, #6b6a63);
+  opacity: 0;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+.hf__cap[data-on] { opacity: 1; transition-delay: 500ms; }
+html.dark .hf__cap { fill: #9a9a93; }
+
+/* keyboard: the slider is invisible; its focus draws the ring on the "!" */
+.hf-slider {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hf__bang:hover, .hf__bang[data-hint] { animation: none; }
+  .hf__cap, .hf__cap[data-on] { transition: none; }
+}
+
+/* THE HERO HEADING IN A CHOSEN FONT (nav Aa menu, "Heading"; GreetingMark.jsx draws live text).
+   The drawn glyphs hide, the intro step is dropped so the heading holds its x, and the "!" stays
+   draggable: its hit target is kept, its drawn mark is transparent until the word changes. */
+.gm__live { font-family: var(--font-hero), Georgia, serif; font-weight: 700; fill: currentColor; font-kerning: normal; }
+.hello-hero__mark-art[data-hero-live] :is(.gm__hello, .gm__name) > path { visibility: hidden !important; }
+.hello[data-page="3"] .hello-hero__mark-art[data-hero-live] .gm__hello { transform: translateX(-6px) !important; transition: none; }
+.hello-hero__mark-art[data-hero-live]:not([data-hf="live"]) .hf__bang path { fill: transparent; }
+.hello-hero__mark-art[data-hero-live][data-hf="live"] .gm__live--hello { visibility: hidden; }
