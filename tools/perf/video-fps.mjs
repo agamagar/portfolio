@@ -1,6 +1,6 @@
 // Minimal repro: do playing <video>s cap rAF at 30 fps when something else moves? node video-fps.mjs [count] [fps]
 import { chromium } from "playwright-core";
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 for (const n of (process.argv[2] || "0,1,6").split(",").map(Number)) {
   const p = await (await b.newContext({ viewport: { width: 1000, height: 700 } })).newPage();
   await p.route("**/away60.mp4", (r) => r.fulfill({ contentType: "video/mp4", path: "/tmp/perfruns/away60.mp4" }));

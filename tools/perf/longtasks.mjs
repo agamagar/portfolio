@@ -1,7 +1,7 @@
 // What are the long main-thread tasks (>14 ms) while a section idles in view? node longtasks.mjs <url> [selector]
 import { chromium } from "playwright-core";
 const [url, sel = ".ap"] = process.argv.slice(2);
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
 await p.goto(url, { waitUntil: "load" }); await p.waitForTimeout(6000);
 await p.evaluate((s) => document.querySelector(s).scrollIntoView({ block: "center", behavior: "instant" }), sel); await p.waitForTimeout(3000);

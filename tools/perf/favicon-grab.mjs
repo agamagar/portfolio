@@ -2,7 +2,7 @@
 import { chromium } from "playwright-core";
 import fs from "node:fs";
 const [url, out] = process.argv.slice(2);
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 const p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage();
 await p.goto(url, { waitUntil: "load" }); await p.waitForTimeout(1500);
 for (let i = 0; i < 3; i++) {

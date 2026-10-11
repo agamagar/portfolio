@@ -1,7 +1,7 @@
 // Main-thread long tasks in the first N s of a cold open (workers excluded). node coldlong.mjs <url> [seconds] [runs]
 import { chromium } from "playwright-core";
 const [url, secs = 6, runs = 3] = process.argv.slice(2);
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 for (let r = 0; r < Number(runs); r++) {
   const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
   await p.addInitScript(() => { window.__lt = []; new PerformanceObserver((l) => l.getEntries().forEach((e) => window.__lt.push([e.startTime, e.duration]))).observe({ type: "longtask", buffered: true }); });

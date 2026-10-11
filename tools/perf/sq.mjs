@@ -1,7 +1,7 @@
 // Side-quests section frame times at 1440: node tools/perf/sq.mjs <url> [seconds]. Scrolls to .pm / .along-path section, records idle and scrolling frames, plus trace totals.
 import { chromium } from "playwright-core";
 const url = process.argv[2]; const secs = Number(process.argv[3] || 6);
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
 await p.addInitScript(() => { window.__f = []; let l = 0, on = false; window.__rec = (v) => { on = v; l = 0; if (v) window.__f = []; }; const t = (n) => { if (on && l) window.__f.push(n - l); l = n; requestAnimationFrame(t); }; requestAnimationFrame(t); });
 await p.goto(url, { waitUntil: "load" }); await p.waitForTimeout(5000);

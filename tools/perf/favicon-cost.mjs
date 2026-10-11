@@ -1,7 +1,7 @@
 // Where do the favicon's main-thread milliseconds go? node favicon-cost.mjs <url>
 import { chromium } from "playwright-core";
 const url = process.argv[2];
-const b = await chromium.launch({ channel: "chrome", headless: !process.env.HEADED, args: ["--ignore-gpu-blocklist"] });
+const b = await chromium.launch({ channel: "chrome", headless: true, args: ["--ignore-gpu-blocklist"] });
 const p = await (await b.newContext({ viewport: { width: 1000, height: 700 } })).newPage();
 await p.addInitScript(() => {
   const T = (window.__t = {});
