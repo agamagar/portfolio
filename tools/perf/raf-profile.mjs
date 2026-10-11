@@ -20,10 +20,11 @@ await p.addInitScript(() => {
   };
 });
 await p.goto(url, { waitUntil: "load" }); await p.waitForTimeout(3000);
+if (process.argv[4] === "sq") { await p.waitForFunction(() => document.documentElement.dataset.wsceneDrawn, null, { timeout: 90000, polling: 500 }).catch(() => console.log("no handover")); await p.waitForTimeout(2000); await p.evaluate(() => document.querySelector(".ap").scrollIntoView({ block: "center", behavior: "instant" })); await p.waitForTimeout(9000); }
 await p.evaluate(() => { for (const k in window.__raf) delete window.__raf[k]; });
 await p.mouse.move(700, 450);
 const t0 = Date.now();
-while (Date.now() - t0 < secs * 1000) { await p.mouse.wheel(0, 120); await p.waitForTimeout(16); }
+while (Date.now() - t0 < secs * 1000) { if (process.argv[4] === "sq") await p.waitForTimeout(16); else { await p.mouse.wheel(0, 120); await p.waitForTimeout(16); } }
 const r = await p.evaluate(() => ({ raf: window.__raf, lis: window.__listeners }));
 const show = (o) => Object.entries(o).sort((a, b) => b[1].ms - a[1].ms).slice(0, 12).map(([k, v]) => `${v.ms.toFixed(0).padStart(6)}ms ${String(v.n).padStart(5)}x  ${k}`).join("\n");
 console.log("rAF callbacks:\n" + show(r.raf) + "\n\nlisteners:\n" + show(r.lis));

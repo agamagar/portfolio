@@ -686,7 +686,7 @@ export const DEFAULTS = { hold: HOLD, morph: MORPH, wander: WANDER, spinX: 0, sp
  * `paint(t, opts)` takes live overrides of DEFAULTS; `paint.state(t, opts)`
  * reports which shapes and how far through the morph a time lands.
  */
-export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
+export function createFaviconPainter(ctx, { supersample = 1, particles, noBlit = false } = {}) {
   const glCanvas = document.createElement("canvas");
   glCanvas.width = glCanvas.height = ctx.canvas.width * supersample;
   const gl = glCanvas.getContext("webgl2", { premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true });
@@ -794,10 +794,14 @@ export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
       gl.disable(gl.BLEND);
     }
 
+    // noBlit: the favicon reads the pixels back itself, asynchronously (startFavicon3d)
+    if (noBlit) return;
     const out = ctx.canvas.width;
     ctx.clearRect(0, 0, out, out);
     ctx.drawImage(glCanvas, 0, 0, out, out);
   }
+  paint.gl = gl;
+  paint.size = W0;
   paint.state = state;
   paint.lost = false;
   return paint;
@@ -812,7 +816,7 @@ export function startFavicon3d() {
 
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = SIZE;
-  const paint = createFaviconPainter(canvas.getContext("2d"), { supersample: SS });
+  const paint = createFaviconPainter(canvas.getContext("2d"), { supersample: SS, noBlit: true });
   if (!paint) return; // no WebGL2: keep the static face
 
   let link = document.querySelector('link[rel="icon"]');
@@ -825,17 +829,53 @@ export function startFavicon3d() {
   const staticType = link.getAttribute("type");
   const t0 = performance.now();
 
-  // Encode asynchronously (toBlob, not toDataURL): a synchronous readback waits
-  // on the GPU and would stall the page's main thread every frame, which the
-  // 4D shapes make expensive. A frame still encoding means the next tick skips.
-  let busy = false, shown = null, stopped = false;
-  function frame() {
-    if (paint.lost) return stop();
-    if (busy) return;
-    busy = true;
-    paint((performance.now() - t0) / 1000);
-    canvas.toBlob((blob) => {
-      busy = false;
+  // perf (11 Oct): the frame is read back WITHOUT blocking the page. canvas.toBlob on
+  // the drawn canvas waited for the GPU queue (measured 25.7 ms per call, 2.3 s of every
+  // 5 s of main thread, whatever the page was doing), and the 4D shapes made it worse.
+  // Now: paint, queue a readPixels into a pixel-pack buffer behind a fence, and only
+  // pick the bytes up on a later tick once the fence has signalled. A 2x2 box average
+  // does the supersample downscale drawImage used to do (same 2:1 filter), then the
+  // 64px frame goes through a CPU canvas to toBlob (an async encode, no GPU wait).
+  const gl = paint.gl, W = paint.size, out = SIZE, k = W / out;
+  // two pack buffers, alternated: a frame is never written into the buffer still waiting to be read
+  const glBufs = [0, 1].map(() => {
+    const b = gl.createBuffer();
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, b);
+    gl.bufferData(gl.PIXEL_PACK_BUFFER, W * W * 4, gl.STREAM_READ);
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+    return b;
+  });
+  let wi = 0;
+  const raw = new Uint8Array(W * W * 4);
+  const img = new ImageData(out, out);
+  const cpu = document.createElement("canvas");
+  cpu.width = cpu.height = out;
+  const cctx = cpu.getContext("2d", { willReadFrequently: true });
+  let fence = null, encoding = false, shown = null, stopped = false;
+  function resolve() {
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, glBufs[wi]);
+    gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, raw);
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+    wi ^= 1;
+    const d = img.data, n = k * k;
+    for (let y = 0; y < out; y++) {
+      for (let x = 0; x < out; x++) {
+        let r = 0, g = 0, b = 0, a = 0;
+        for (let j = 0; j < k; j++) {
+          // readPixels rows run bottom-up
+          const row = (W - 1 - (y * k + j)) * W;
+          for (let i = 0; i < k; i++) { const q = (row + x * k + i) * 4; r += raw[q]; g += raw[q + 1]; b += raw[q + 2]; a += raw[q + 3]; }
+        }
+        // the GL buffer is premultiplied; ImageData is not
+        const o = (y * out + x) * 4;
+        if (a > 0) { d[o] = Math.min(255, (r * 255) / a); d[o + 1] = Math.min(255, (g * 255) / a); d[o + 2] = Math.min(255, (b * 255) / a); d[o + 3] = a / n; }
+        else d[o] = d[o + 1] = d[o + 2] = d[o + 3] = 0;
+      }
+    }
+    cctx.putImageData(img, 0, 0);
+    encoding = true;
+    cpu.toBlob((blob) => {
+      encoding = false;
       if (!blob || stopped) return;
       const next = URL.createObjectURL(blob);
       link.type = "image/png";
@@ -843,6 +883,27 @@ export function startFavicon3d() {
       if (shown) URL.revokeObjectURL(shown);
       shown = next;
     }, "image/png");
+  }
+  function frame() {
+    if (paint.lost) return stop();
+    if (stopped) return;
+    if (fence) {
+      // last frame's pixels: take them if the GPU is done and the previous encode has
+      // finished, otherwise skip this tick and keep waiting
+      if (encoding) return;
+      const st = gl.clientWaitSync(fence, 0, 0);
+      if (st === gl.TIMEOUT_EXPIRED) return;
+      gl.deleteSync(fence);
+      fence = null;
+      if (st !== gl.WAIT_FAILED) resolve();
+    }
+    // and straight on to the next frame, so a tick that collects one also starts one
+    paint((performance.now() - t0) / 1000);
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, glBufs[wi]);
+    gl.readPixels(0, 0, W, W, gl.RGBA, gl.UNSIGNED_BYTE, 0);
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+    fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush();
   }
 
   const src = `let id;onmessage=(e)=>{clearInterval(id);if(e.data>0)id=setInterval(()=>postMessage(0),e.data)}`;
@@ -857,6 +918,8 @@ export function startFavicon3d() {
     if (shown) URL.revokeObjectURL(shown);
     worker.postMessage(0);
     worker.terminate();
+    if (fence) gl.deleteSync(fence);
+    glBufs.forEach((b) => gl.deleteBuffer(b));
     URL.revokeObjectURL(url);
     link.href = staticHref;
     if (staticType) link.type = staticType;
