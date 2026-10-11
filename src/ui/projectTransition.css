@@ -1,0 +1,126 @@
+/* OPENING A PROJECT (project-transition, 11 Oct 2026). Driven by
+   src/ui/projectTransition.js; html[data-pt] is set only for the length of a
+   home <-> case transition, so nothing here touches any other route change
+   (the theme toggle's circular reveal keeps its own ::view-transition rules). */
+
+/* ---------- the move (View Transitions) ---------- */
+/* the home page falls back: a short fade with a hair of depth, no slide */
+html[data-pt="open"]::view-transition-old(root) {
+  animation: pt-recede 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+/* the case arrives under it; its own entrance (the fade-up on head, hero and
+   body, or the SD page's de-mist reveal) plays live inside this layer, so the
+   content follows staggered without a second animation stacked on it */
+html[data-pt="open"]::view-transition-new(root) {
+  animation: pt-arrive 320ms cubic-bezier(0.2, 0, 0, 1) 60ms both;
+}
+html[data-pt="back"]::view-transition-old(root) {
+  animation: pt-recede 220ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+html[data-pt="back"]::view-transition-new(root) {
+  animation: pt-arrive 300ms cubic-bezier(0.2, 0, 0, 1) 40ms both;
+}
+/* the clicked card grows into the hero (and back): emphasized-decelerate */
+html[data-pt]::view-transition-group(pt-hero) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+html[data-pt="back"]::view-transition-group(pt-hero) { animation-duration: 440ms; }
+/* the card face and the hero cross-fade inside the moving box; both fill it
+   (the card is 4:3-ish, the hero wider), so neither stretches */
+html[data-pt]::view-transition-old(pt-hero),
+html[data-pt]::view-transition-new(pt-hero) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+/* the card stays until the hero has come up under it, so the moving box is
+   never empty (the SD hero rises from 0 inside its own reveal) */
+html[data-pt]::view-transition-old(pt-hero) { animation-name: pt-out; animation-duration: 300ms; animation-delay: 200ms; animation-fill-mode: both; }
+html[data-pt]::view-transition-new(pt-hero) { animation-name: pt-in; animation-duration: 280ms; animation-fill-mode: both; }
+
+@keyframes pt-recede { to { opacity: 0; transform: scale(0.985); } }
+@keyframes pt-arrive { from { opacity: 0; } }
+@keyframes pt-out { to { opacity: 0; } }
+@keyframes pt-in { from { opacity: 0; } }
+
+/* fallbacks: reduced motion gets an instant swap with a short fade; a browser
+   without View Transitions gets the same fade, a little longer */
+html[data-pt="fade"] #root { animation: pt-arrive 160ms linear both; }
+@supports not (view-transition-name: a) {
+  html[data-pt="open"] #root,
+  html[data-pt="back"] #root { animation: pt-arrive 240ms cubic-bezier(0.2, 0, 0, 1) both; }
+}
+
+/* ---------- the skeleton (shown only when the page is not ready in 150 ms) ---------- */
+/* The home page's load language (shimmer-glow, hello3/Hello.jsx): square-cornered
+   blocks at each element's real box, one diagonal band of light sweeping across
+   all of them on one clock (background-attachment: fixed puts every block on the
+   same viewport-wide gradient, so the band runs across the page, not per block). */
+.pt-skel {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483100; /* over the SD page's own wait cover */
+  pointer-events: none;
+  background: var(--bg, #fff);
+  transition: background-color 420ms cubic-bezier(0.2, 0, 0, 1) 140ms;
+}
+.pt-skel__b {
+  position: absolute;
+  display: block;
+  border-radius: 0;
+  background-color: var(--pt-base);
+  background-image: linear-gradient(110deg, transparent 38%, var(--pt-lit) 50%, transparent 62%);
+  background-size: 220vw 100%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  animation: pt-sweep 1500ms linear infinite;
+  left: 0;
+  top: 0;
+  transition: transform 320ms cubic-bezier(0.2, 0, 0, 1), width 320ms cubic-bezier(0.2, 0, 0, 1), height 320ms cubic-bezier(0.2, 0, 0, 1);
+}
+@keyframes pt-sweep {
+  from { background-position: 120vw 0; }
+  to { background-position: -220vw 0; }
+}
+/* the hand-off: the band leaves, each block warms into the face's pale bloom and
+   spreads a little past its edges; the cover clears under it so the content
+   resolves out of the light; then the light fades */
+.pt-skel--glow { background-color: transparent; }
+.pt-skel--glow .pt-skel__b {
+  animation: pt-bloom 760ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+@keyframes pt-bloom {
+  0% { background-color: var(--pt-base); box-shadow: 0 0 0 0 transparent; opacity: 1; }
+  30% { background-color: var(--pt-bloom); box-shadow: 0 0 24px 6px var(--pt-bloom); opacity: 1; }
+  100% { background-color: var(--pt-bloom); box-shadow: 0 0 40px 12px transparent; opacity: 0; }
+}
+
+/* while the skeleton stands, the case's content is laid out but held (opacity
+   only, so nothing moves: CLS 0); the SD page holds itself (data-load-reveal) */
+html[data-pt-hold] .page--article:not([data-load-reveal]) :is(.article__head, .article__hero-board, .article__body) {
+  animation: none;
+  opacity: 0;
+}
+/* and resolves out of the bloom: up from bright and soft to sharp, staggered */
+html[data-pt-resolve=""] .page--article:not([data-load-reveal]) :is(.article__head, .article__hero-board, .article__body) {
+  animation: pt-resolve 640ms cubic-bezier(0.2, 0, 0, 1) 180ms backwards;
+}
+html[data-pt-resolve=""] .page--article:not([data-load-reveal]) .article__head { animation-delay: 240ms; }
+html[data-pt-resolve=""] .page--article:not([data-load-reveal]) .article__body { animation-delay: 300ms; }
+@keyframes pt-resolve {
+  from { opacity: 0; filter: brightness(1.35) blur(6px) saturate(0.6); }
+  to { opacity: 1; filter: none; }
+}
+/* the SD page's de-mist cover would sit over the bloom; the skeleton is the wait there */
+html[data-pt-hold] .page--article[data-load-reveal]::after { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-skel__b { background-image: none; animation: none; }
+  .pt-skel { transition-duration: 160ms; transition-delay: 0ms; }
+  .pt-skel--glow .pt-skel__b { animation: pt-out 160ms linear forwards; }
+  html[data-pt-resolve=""] .page--article:not([data-load-reveal]) :is(.article__head, .article__hero-board, .article__body) {
+    animation: pt-arrive 160ms linear backwards;
+  }
+}
