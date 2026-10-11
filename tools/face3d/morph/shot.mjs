@@ -1,0 +1,12 @@
+import { chromium } from "/Users/agamagarwal/portfolio/node_modules/playwright/index.mjs";
+const b = await chromium.launch({ args: ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"] });
+const p = await b.newPage({ viewport: { width: 560, height: 640 } });
+const errs = []; p.on("pageerror", (e) => errs.push(e.message)); p.on("console", (m) => m.type() === "error" && errs.push(m.text()));
+await p.goto("http://localhost:58731/");
+await p.waitForFunction(() => window.morph, null, { timeout: 90000 });
+await p.locator('input[type=range]').fill("760");
+await p.waitForTimeout(300);
+await p.screenshot({ path: process.argv[2] });
+await p.getByRole("button").click(); await p.waitForTimeout(1500);
+console.log("after play 1.5s, slider:", await p.locator('input[type=range]').inputValue(), "errors:", errs.length, errs.slice(0, 3));
+await b.close();

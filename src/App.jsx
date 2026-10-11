@@ -36,6 +36,7 @@ import SystemSheet, { Ref } from "./figures/lab/SystemSheet";
 import ModesGuide from "./figures/lab/ModesGuide";
 import DeckPresets from "./figures/lab/DeckPresets";
 import FeedbackBench from "./figures/lab/FeedbackBench";
+import FaviconLab from "./figures/lab/FaviconLab";
 import AlongPathV1 from "./figures/lab/alongpath-v1/AlongPathV1";
 import TimelineVerticalV1 from "./figures/lab/timeline-v1/TimelineVerticalV1";
 import DetailV1 from "./figures/lab/DetailV1";
@@ -47,6 +48,7 @@ import ShaderGallery from "./figures/shaders/ShaderGallery";
 import SkyLab from "./figures/sky/SkyLab";
 import ThreeLinesLab from "./figures/threeLines/ThreeLinesLab";
 import PixelMascotLab from "./figures/pixelMascot/PixelMascotLab";
+import FaceLab from "./figures/faces/FaceLab"; // /faces, the face-style playground (2026-10-08)
 import StellaLab from "./figures/stella/StellaLab";
 import Hello from "./hello/Hello";
 import Hello3 from "./hello3/Hello";
@@ -11001,6 +11003,7 @@ export default function App() {
   // and boxes their source files report. See tools/figma-motion/README.md.
   const isMotionCheck = path === "/motion-check";
   const isMascot = path === "/mascot";
+  const isFaces = path === "/faces";
   const isStella = path === "/stella";
   const isDj = path === "/dj";
   const isWindow = path === "/window";
@@ -11195,7 +11198,7 @@ export default function App() {
   // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
-  const variant = isCrossSellTree || isLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
+  const variant = isCrossSellTree || isLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
@@ -11326,6 +11329,8 @@ export default function App() {
         <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
       ) : isLab ? (
         <>
+          {/* the tab icon at a size its motion can be judged (7 Oct) */}
+          <FaviconLab />
           <MotionLab />
           {/* the audible half of the design system, beside the visual one
               (annotation msmqar1v) */}
@@ -11377,6 +11382,8 @@ export default function App() {
         <Suspense fallback={null}>
           <MotionCheck onBack={() => navigate("/")} />
         </Suspense>
+      ) : isFaces ? (
+        <FaceLab onBack={() => navigate("/")} />
       ) : isMascot ? (
         <PixelMascotLab onBack={() => navigate("/")} />
       ) : isStella ? (

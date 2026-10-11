@@ -1,0 +1,240 @@
+// The mascot morph's renderer (2026-10-10): one WebGL canvas, at the reference's own size
+// (802 x 862, scaled by CSS), that draws the fitted head three ways and blends them:
+//   ink    the head drawn in the line drawing's register, live from the mesh: the hair a
+//          solid ink mass, an ink band inside the silhouette, the ear and the nose drawn as
+//          lines (the ear's rim, the nose's occluding contour), eyes, brows and mouth as ink
+//   flat   each part in a flat colour
+//   shaded the fitted clay look (faceRig3D, what FaceSV draws)
+// plus the morph field (morphField.js): the drawing warped and blended into the ink.
+// Lines are a constant width in pixels: jump flooding gives every pixel its distance to the
+// nearest seed (background, ear rim, nose contour, mouth), and the ink is a distance test.
+import * as THREE from "three";
+import { createFaceRig, PART_ID } from "./faceRig3D";
+
+export const FW = 802, FH = 862;
+
+const QUAD_VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
+
+// the ids pass with depth: R = part code, G = view depth
+// B = how squarely the surface faces the camera, on the nose (the skin's front layer, in the
+// nose's own box) and the ear; else -1
+const ID_DEPTH_FRAG_PATCH = (frag) => frag.replace("gl_FragColor = vec4(id / 255.0, 0.0, 0.0, 1.0);",
+  "bool nz = (id == 1.0 && vUv.x >= 0.5 && vO.x > -0.2 && vO.x < 0.25 && vO.y > -0.25 && vO.y < 0.5 && vO.z > 0.8) || id == 8.0;\n  gl_FragColor = vec4(id, vDepth, nz ? abs(vNz) : -1.0, 1.0);");
+
+// seeds: for each of the four sets a pixel is a seed of, write its own coordinates
+// set 0: background (and the ears), set 1: the ear's rim, set 2: the nose's contour, set 3: the mouth
+const SEED_FRAG = /* glsl */ `
+uniform sampler2D tId; uniform vec2 uRes; uniform float uDepthK, uGraze; varying vec2 vUv;
+float idAt(vec2 p){ return texture2D(tId, p / uRes).r; }
+float zAt(vec2 p){ return texture2D(tId, p / uRes).g; }
+void main(){
+  vec2 p = floor(vUv * uRes) + 0.5;
+  float id = idAt(p);
+  // the band runs inside the silhouette and along the ears' joins, as the drawing's does
+  bool bg = id < 0.5 || abs(id - ${PART_ID.Ear.toFixed(1)}) < 0.5;
+  // the ear's rim: ear pixels next to anything that is not ear (background, hair, face)
+  bool ear = false;
+  if (abs(id - ${PART_ID.Ear.toFixed(1)}) < 0.5) {
+    for (int i = 0; i < 4; i++) {
+      vec2 o = i == 0 ? vec2(1,0) : i == 1 ? vec2(-1,0) : i == 2 ? vec2(0,1) : vec2(0,-1);
+      if (abs(idAt(p + o) - ${PART_ID.Ear.toFixed(1)}) > 0.5) ear = true;
+    }
+  }
+  // set 2, the nose and the folds inside the ear.
+  // The nose: the edge of the skin's front layer (the nose, nzHere >= 0 there) against the
+  // cheek, on the side the nose is turned to (the viewer's right, and below). The ear's
+  // folds: an occluding contour inside the ear, this pixel in front and the neighbour far
+  // behind, much further than the surface's own slope here.
+  bool nose = false;
+  float nzHere = texture2D(tId, p / uRes).b;
+  bool inEar = abs(id - ${PART_ID.Ear.toFixed(1)}) < 0.5;
+  bool isNose = abs(id - ${PART_ID.Skin.toFixed(1)}) < 0.5 && nzHere >= 0.0;
+  if (isNose) {
+    // on the nose's edge (a cheek pixel next to it), with the edge's outward normal (away
+    // from the nose pixels in a 5 x 5 window) pointing right or down
+    bool edge = false; vec2 c = vec2(0.0);
+    for (int j = -2; j <= 2; j++) for (int i = -2; i <= 2; i++) {
+      vec4 t = texture2D(tId, (p + vec2(float(i), float(j))) / uRes);
+      bool n = abs(t.r - ${PART_ID.Skin.toFixed(1)}) < 0.5 && t.b >= 0.0;
+      if (n) c += vec2(float(i), float(j));
+      else if (abs(i) + abs(j) == 1 && abs(t.r - ${PART_ID.Skin.toFixed(1)}) < 0.5) edge = true;
+    }
+    vec2 nrm = -c / max(length(c), 1e-3);
+    if (edge && length(c) > 1.5 && (nrm.x > 0.25 || nrm.y < -0.6)) nose = true;
+  }
+  if (inEar && nzHere < uGraze) {
+    float z = zAt(p);
+    for (int i = 0; i < 8; i++) {
+      float a = float(i) * 0.7853982;
+      vec2 o = floor(vec2(cos(a), sin(a)) * 1.5 + 0.5);
+      if (abs(idAt(p + o) - id) > 0.5 || abs(idAt(p - o) - id) > 0.5 || abs(idAt(p + o * 3.0) - id) > 0.5) continue;
+      float jump = zAt(p + o) - z, slope = abs(z - zAt(p - o));
+      if (jump > uDepthK && jump > 6.0 * slope) nose = true;
+    }
+  }
+  bool mouth = abs(id - ${PART_ID.Mouth.toFixed(1)}) < 0.5;
+  vec2 none = vec2(-1.0);
+  if (gl_FragCoord.x < 0.0) discard;
+  gl_FragColor = vec4(bg ? p : none, ear ? p : none);
+  #ifdef SECOND
+  gl_FragColor = vec4(nose ? p : none, mouth ? p : none);
+  #endif
+}`;
+
+const JFA_FRAG = /* glsl */ `
+uniform sampler2D tSeed; uniform vec2 uRes; uniform float uStep; varying vec2 vUv;
+void main(){
+  vec2 p = floor(vUv * uRes) + 0.5;
+  vec4 best = vec4(-1.0); vec2 bd = vec2(1e9);
+  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+    vec2 q = p + vec2(float(i), float(j)) * uStep;
+    if (q.x < 0.0 || q.y < 0.0 || q.x > uRes.x || q.y > uRes.y) continue;
+    vec4 s = texture2D(tSeed, q / uRes);
+    if (s.x >= 0.0) { float d = distance(p, s.xy); if (d < bd.x) { bd.x = d; best.xy = s.xy; } }
+    if (s.z >= 0.0) { float d = distance(p, s.zw); if (d < bd.y) { bd.y = d; best.zw = s.zw; } }
+  }
+  gl_FragColor = best;
+}`;
+
+const COMP_FRAG = /* glsl */ `
+uniform sampler2D tShaded, tId, tJ0, tJ1, tF2, tF3, tD, tDi; uniform vec2 uRes, uGrid; uniform float uGridStep;
+uniform vec3 uPaper, uInk, uFlatSkin, uFlatHair, uFlatEye, uFlatBrow, uFlatMouth;
+// line widths in px (0 = off): the band inside the silhouette, the ear's line, the nose's
+// line (and the ear's fold), the mouth
+uniform float uBand, uEarW, uNoseW, uMouthW;
+// the morph field: uField of the way from the 3D ink to the field; uWarp how far the warp
+// has carried both shapes; uBlend how far the field has gone from the drawing to the ink
+uniform float uField, uWarp, uBlend;
+// developing: inside the head, everything deeper than uDev px from the outline has taken its
+// flat colour (and the ink has left it); deeper than uDevS, its shading
+uniform float uDev, uDevS, uSoft;
+uniform float uDebug;
+varying vec2 vUv;
+float dist(vec4 s, bool second, vec2 p){ vec2 q = second ? s.zw : s.xy; return q.x < 0.0 ? 1e4 : distance(p, q); }
+float within(float d, float r){ return r <= 0.0 ? 0.0 : clamp(r - d + 0.5, 0.0, 1.0); }
+// image px (y down) to texture coords
+vec2 tuv(vec2 x){ return vec2(x.x / uRes.x, 1.0 - x.y / uRes.y); }
+vec2 disp(sampler2D t, vec2 x){ return texture2D(t, vec2((x.x / uGridStep + 0.5) / uGrid.x, 1.0 - (x.y / uGridStep + 0.5) / uGrid.y)).rg; }
+float field(vec2 y){
+  // the drawing's point that the warp carries here, and the ink's point
+  vec2 x2 = y, x3 = y;
+  for (int i = 0; i < 6; i++) { x2 = y - uWarp * disp(tD, x2); x3 = y - (1.0 - uWarp) * disp(tDi, x3); }
+  float f2 = texture2D(tF2, tuv(x2)).r, f3 = texture2D(tF3, tuv(x3)).r;
+  return mix(f2, f3, uBlend);
+}
+void main(){
+  vec2 p = floor(vUv * uRes) + 0.5;
+  vec2 uv = vUv;
+  vec2 pImg = vec2(vUv.x * uRes.x, (1.0 - vUv.y) * uRes.y);
+  float id = texture2D(tId, uv).r;
+  vec4 j0 = texture2D(tJ0, uv), j1 = texture2D(tJ1, uv);
+  float dBg = dist(j0, false, p), dEar = dist(j0, true, p), dNose = dist(j1, false, p), dMouth = dist(j1, true, p);
+  bool head = id > 0.5;
+  bool isHair = abs(id - ${PART_ID.Hair.toFixed(1)}) < 0.5;
+  bool isEar = abs(id - ${PART_ID.Ear.toFixed(1)}) < 0.5;
+  bool isEye = abs(id - ${PART_ID.EyeL.toFixed(1)}) < 0.5 || abs(id - ${PART_ID.EyeR.toFixed(1)}) < 0.5;
+  bool isBrow = abs(id - ${PART_ID.BrowL.toFixed(1)}) < 0.5 || abs(id - ${PART_ID.BrowR.toFixed(1)}) < 0.5;
+  bool isMouth = abs(id - ${PART_ID.Mouth.toFixed(1)}) < 0.5;
+  float band = head && !isEar ? within(dBg, uBand) : 0.0;
+  float ear = within(dEar, uEarW * 0.5) * (head ? 1.0 : 0.0);
+  float nose = within(dNose, uNoseW * 0.5);
+  float mouth = within(dMouth, uMouthW * 0.5);
+  if (uDebug > 2.5) { vec4 t = texture2D(tId, uv); gl_FragColor = vec4(t.b < 0.0 ? 0.0 : t.b, t.b < 0.0 ? 0.3 : 0.0, fract(t.g * 4.0), 1.0); return; }
+  if (uDebug > 1.5) { gl_FragColor = vec4(isEye ? 1.0 : 0.0, isBrow ? 1.0 : 0.0, mouth, 1.0); return; }
+  if (uDebug > 0.5) { gl_FragColor = vec4(max(isHair ? 1.0 : 0.0, band), ear, nose, 1.0); return; }
+  // how far this pixel has developed (the front moves from deep inside out to the outline)
+  // (the ear counts as outside for the band, so it measures its depth from its own rim, set
+  // deeper so it develops with the cheek beside it)
+  float depth = isEar ? dEar + 70.0 : dBg;
+  // the ink leaves along a crisp front; the colour washes in softly just ahead of it (uSoft
+  // px wide), so the front never reads as a grey halo and the distance's ridge never shows
+  float inkDev = head ? clamp(depth - uDev + 0.5, 0.0, 1.0) : 0.0;
+  float dev = head ? smoothstep(uDev - uSoft, uDev + 0.5, depth) : 0.0;
+  float devS = head ? smoothstep(uDevS - uSoft, uDevS + 0.5, depth) : 0.0;
+  // the 3D ink: the hair mass and the eyes and brows until developed, the lines by width
+  float mass = (isHair || isEye || isBrow) ? 1.0 - inkDev : 0.0;
+  float ink3 = max(max(mass, band * (1.0 - inkDev)), max(max(ear, nose), mouth));
+  // the colour under it: paper, then flat part colours, then the clay
+  vec3 flatC = isHair ? uFlatHair : isEye ? uFlatEye : isBrow ? uFlatBrow : isMouth ? uFlatMouth : uFlatSkin;
+  vec4 sh = texture2D(tShaded, uv);
+  vec3 shaded = sh.rgb + uPaper * (1.0 - sh.a); // premultiplied by the resolve
+  vec3 col = mix(uPaper, flatC, dev);
+  col = mix(col, shaded, devS);
+  // the morph field (the drawing on its way to the ink), anti-aliased over a pixel
+  float fInk = 0.0;
+  if (uField > 0.0) fInk = clamp(0.5 - field(pImg), 0.0, 1.0);
+  float ink = mix(ink3, fInk, uField);
+  col = mix(col, uInk, ink);
+  gl_FragColor = vec4(col, 1.0);
+  #include <colorspace_fragment>
+}`;
+
+export function createMorphRenderer({ canvas, src, fitSrc }) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1);
+  renderer.setSize(FW, FH, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const rig = createFaceRig({ W: FW, H: FH, src, fitSrc });
+
+  const rtShaded = new THREE.WebGLRenderTarget(FW, FH, { samples: 4, colorSpace: THREE.SRGBColorSpace });
+  const fl = { type: THREE.FloatType, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, depthBuffer: false };
+  const rtId = new THREE.WebGLRenderTarget(FW, FH, { ...fl, depthBuffer: true });
+  const ping = [0, 1].map(() => [new THREE.WebGLRenderTarget(FW, FH, fl), new THREE.WebGLRenderTarget(FW, FH, fl)]);
+
+  const quadScene = new THREE.Scene();
+  const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2));
+  quad.frustumCulled = false;
+  quadScene.add(quad);
+  const res = new THREE.Vector2(FW, FH);
+  const seedMat = (second) => new THREE.ShaderMaterial({ vertexShader: QUAD_VERT, fragmentShader: SEED_FRAG, defines: second ? { SECOND: 1 } : {},
+    uniforms: { tId: { value: rtId.texture }, uRes: { value: res }, uDepthK: { value: 0.04 }, uGraze: { value: 0.45 } } });
+  const seeds = [seedMat(false), seedMat(true)];
+  const jfa = new THREE.ShaderMaterial({ vertexShader: QUAD_VERT, fragmentShader: JFA_FRAG, uniforms: { tSeed: { value: null }, uRes: { value: res }, uStep: { value: 1 } } });
+
+  const C = (h) => new THREE.Color(h);
+  const comp = new THREE.ShaderMaterial({ vertexShader: QUAD_VERT, fragmentShader: COMP_FRAG,
+    uniforms: { tShaded: { value: rtShaded.texture }, tId: { value: rtId.texture }, tJ0: { value: null }, tJ1: { value: null },
+      tF2: { value: null }, tF3: { value: null }, tD: { value: null }, tDi: { value: null }, uGrid: { value: new THREE.Vector2(1, 1) }, uGridStep: { value: 4 },
+      uField: { value: 0 }, uWarp: { value: 0 }, uBlend: { value: 0 }, uDev: { value: 1e4 }, uDevS: { value: 1e4 }, uSoft: { value: 70 },
+      uRes: { value: res }, uPaper: { value: C("#ebebeb") }, uInk: { value: C("#17171a") },
+      uFlatSkin: { value: C("#f2dcc6") }, uFlatHair: { value: C("#4a2a1c") }, uFlatEye: { value: C("#171111") }, uFlatBrow: { value: C("#3b2016") }, uFlatMouth: { value: C("#d9ab90") },
+      uBand: { value: 0 }, uEarW: { value: 0 }, uNoseW: { value: 0 }, uMouthW: { value: 0 },
+      uDebug: { value: 0 } } });
+
+  // the ids pass carries depth too: patch the rig's id materials once it loads
+  const ready = rig.ready.then(() => {
+    for (const o of Object.values(rig.parts)) {
+      const m = o.userData.mats.id;
+      m.vertexShader = m.vertexShader.replace("varying vec3 vO;", "varying vec3 vO; varying float vDepth; varying float vNz;")
+        .replace("gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);",
+          "vec4 mvp = modelViewMatrix * vec4(transformed, 1.0); vDepth = -mvp.z; vNz = normalize(normalMatrix * objectNormal).z; gl_Position = projectionMatrix * mvp;")
+        .replace("#include <begin_vertex>", "#include <beginnormal_vertex>\n  #include <morphnormal_vertex>\n  #include <begin_vertex>");
+      m.fragmentShader = ID_DEPTH_FRAG_PATCH(m.fragmentShader).replace("varying vec3 vO;", "varying vec3 vO; varying float vDepth; varying float vNz;");
+      m.needsUpdate = true;
+    }
+    return rig;
+  });
+
+  const runQuad = (mat, target) => { quad.material = mat; renderer.setRenderTarget(target); renderer.render(quadScene, quadCam); };
+
+  // render one frame: pose for the head, u for the blend uniforms
+  const frame = (pose, u = {}) => {
+    rig.pose(pose);
+    rig.shaded(renderer, rtShaded);
+    rig.ids(renderer, rtId);
+    // seeds then jump flooding, both seed textures together (32, 16, ... 1 px)
+    for (let k = 0; k < 2; k++) runQuad(seeds[k], ping[k][0]);
+    let cur = 0;
+    for (let step = 256; step >= 1; step /= 2) {
+      jfa.uniforms.uStep.value = step;
+      for (let k = 0; k < 2; k++) { jfa.uniforms.tSeed.value = ping[k][cur].texture; runQuad(jfa, ping[k][1 - cur]); }
+      cur = 1 - cur;
+    }
+    comp.uniforms.tJ0.value = ping[0][cur].texture;
+    comp.uniforms.tJ1.value = ping[1][cur].texture;
+    for (const k in u) if (comp.uniforms[k]) comp.uniforms[k].value = u[k];
+    runQuad(comp, null);
+  };
+  return { renderer, rig, ready, frame, comp, seeds, FW, FH };
+}

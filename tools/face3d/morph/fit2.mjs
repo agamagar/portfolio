@@ -1,0 +1,21 @@
+import { chromium } from "/Users/agamagarwal/portfolio/node_modules/playwright/index.mjs";
+import fs from "fs";
+const b = await chromium.launch({ args: ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"] });
+const p = await b.newPage();
+p.on("pageerror", (e) => console.log("ERR", e.message));
+await p.goto("http://localhost:58731/?fit");
+await p.waitForFunction(() => window.F, null, { timeout: 60000 });
+const res = await p.evaluate(() => {
+  const { F } = window; const { nelderMead } = window.fitPose;
+  const P = (x) => ({ yaw: x[0], pitch: x[1], tilt: x[6], keys: { mouthSmileLeft: Math.max(0, x[7]), mouthSmileRight: Math.max(0, x[7]) } });
+  const Q = (x) => ({ s: x[2], th: x[3], tx: x[4], ty: x[5] });
+  const f = (x) => F.score(P(x), Q(x)) + (x[7] < 0 ? -x[7] : 0);
+  let x = [-0.217, -0.0422, 5.5418, -0.11529, -295.15, -77.52, 0, 0];
+  let r = nelderMead(f, x, [0.05, 0.04, 0.1, 0.02, 5, 5, 0.05, 0.2], 300);
+  r = nelderMead(f, r.x, [0.02, 0.02, 0.05, 0.01, 3, 3, 0.02, 0.1], 300);
+  x = r.x;
+  return { best: F.score(P(x), Q(x), true), x };
+});
+console.log(JSON.stringify(res));
+fs.writeFileSync(process.argv[2], JSON.stringify(res));
+await b.close();
