@@ -52,8 +52,8 @@
 // a page setInterval: the favicon is most visible when the user is on ANOTHER
 // tab, and that is exactly when rAF stops and page timers drop to 1 Hz.
 //
-// Falls back to the static face (public/favicon.svg) under prefers-reduced-motion
-// or without WebGL2, and Safari ignores runtime favicon swaps, so it keeps the face.
+// Falls back to the pre-rendered first frame (public/favicon-sphere.svg, favicon-32.png) under prefers-reduced-motion
+// or without WebGL2, and Safari ignores runtime favicon swaps, so it keeps that first frame.
 
 const SIZE = 64;
 const SS = 2; // supersample: draw at 128px, downscale for soft edges
@@ -93,11 +93,14 @@ const SHAPES = [
   { name: "tesseract", group: "4d", f: "WIRE", strut: 0.045, color: [80, 190, 255], ...cube4() },
   { name: "24-cell", group: "4d", f: "WIRE", strut: 0.032, color: [255, 185, 30], ...icositetra4() },
   { name: "tesseract slice", group: "4d", f: "sdSlice(p)", color: [255, 70, 140] },
+  // the favicon's last stop (12 Oct): a clay-skin head-shaped blob the cube melts into, under the
+  // still of the three.js face (src/lib/faceStill.js), which fades in over it as the blob fades out
+  { name: "head", group: "face", face: true, f: "sdHead(p)", color: [242, 205, 170] },
 ];
 const MAX_EDGES = 96; // the 24-cell's count: the edge texture is this wide
 // how fast the 3D tumble runs while each shape is on screen: slow for the 4D
 // ones, so their own rotation through w is what reads
-const TUMBLE = SHAPES.map((s) => (s.f === "WIRE" ? 0.3 : s.group === "4d" ? 0.45 : 1));
+const TUMBLE = SHAPES.map((s) => (s.face ? 0.2 : s.f === "WIRE" ? 0.3 : s.group === "4d" ? 0.45 : 1));
 
 // Particle clouds for the 4D polytopes: points inside each one's 4D hull, as
 // random weightings of its vertices. Dirichlet weights with alpha 0.5 (squared
@@ -237,16 +240,17 @@ function makeMotion(seed = Math.random) {
 // smootherstep's integral is x^6 - 3x^5 + 2.5x^4), so scrubbing or jumping to
 // any time gives the same pose as playing up to it: no drift, no jump.
 const smoothInt = (x) => x ** 6 - 3 * x ** 5 + 2.5 * x ** 4;
-function tumbleTime(t, hold, morph) {
-  const N = SHAPES.length, cycle = hold + morph;
-  const seg = (i) => hold * TUMBLE[i] + morph * (TUMBLE[i] + TUMBLE[(i + 1) % N]) / 2;
+function tumbleTime(t, hold, morph, seq) {
+  const N = seq.length, cycle = hold + morph;
+  const tm = (i) => TUMBLE[seq[i % N]];
+  const seg = (i) => hold * tm(i) + morph * (tm(i) + tm(i + 1)) / 2;
   let perLoop = 0;
   for (let i = 0; i < N; i++) perLoop += seg(i);
   const loops = Math.floor(t / (cycle * N));
   let rest = t - loops * cycle * N, tau = loops * perLoop;
   for (let i = 0; i < N && rest > 0; i++) {
     if (rest >= cycle) { tau += seg(i); rest -= cycle; continue; }
-    const a = TUMBLE[i], b = TUMBLE[(i + 1) % N];
+    const a = tm(i), b = tm(i + 1);
     if (rest <= hold) return tau + rest * a;
     const x = (rest - hold) / morph;
     return tau + hold * a + morph * (a * x + (b - a) * smoothInt(x));
@@ -324,8 +328,7 @@ function hslToRgb([h, s, l]) {
   const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
   return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
 }
-const HSL = SHAPES.map((s) => rgbToHsl(s.color));
-function mixColor(i, j, p) {
+function mixColor(HSL, i, j, p) {
   const [a, b] = [HSL[i], HSL[j]];
   let dh = b[0] - a[0];
   if (dh > 180) dh -= 360;
@@ -345,7 +348,7 @@ precision highp float;
 uniform vec2 uRes;
 uniform mat3 uRot;
 uniform vec2 uOff;
-uniform float uIdA, uIdB, uMix, uSwell, uStep;
+uniform float uIdA, uIdB, uMix, uSwell, uStep, uBlob;
 uniform vec3 uColor;
 uniform mat4 uR4;               // 4D rotation, for the slice
 uniform highp sampler2D uEdges; // rows 0-3: A start, A end, B start, B end (xyz, radius); rows 4-7: their k
@@ -359,6 +362,8 @@ const float PHI = 1.618033988749895;
 const vec3 LIGHT = vec3(-0.3835, 0.6136, 0.6903);
 const vec3 HALF = vec3(-0.2086, 0.3337, 0.9192);
 
+// a head-sized ovoid: a touch taller than wide, the face's proportions
+float sdHead(vec3 p){ return (length(p / vec3(0.9, 1.04, 0.95)) - 1.0) * 0.9; }
 float sdBox(vec3 p, vec3 b){ vec3 q = abs(p) - b; return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0); }
 
 // square pyramid, base 1.8 wide, 1.71 tall, centred on its solid centroid (a
@@ -576,7 +581,7 @@ void main(){
   }
   vec3 base = col * 0.4 + (col + (1.0 - col) * 0.25 - col * 0.4) * lum;
   base += (1.0 - base) * glint;
-  outColor = vec4(base * alpha, alpha);
+  outColor = vec4(base * alpha, alpha) * uBlob;
 }
 `;
 
@@ -616,6 +621,15 @@ void main(){
   outColor = vec4(col * a, a);
 }`;
 
+// The face still: the three.js render of the head, laid over the frame, premultiplied.
+const FFRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uFace;
+uniform vec2 uRes;
+uniform float uA;
+out vec4 outColor;
+void main(){ outColor = texture(uFace, gl_FragCoord.xy / uRes) * uA; }`;
+
 function compile(gl) {
   const sh = (type, src) => {
     const s = gl.createShader(type);
@@ -634,6 +648,7 @@ function compile(gl) {
   };
   const prog = link(VERT, FRAG);
   const pts = link(PVERT, PFRAG);
+  const face = link(VERT, FFRAG);
   gl.useProgram(prog);
   const quad = gl.createVertexArray();
   gl.bindVertexArray(quad);
@@ -651,7 +666,7 @@ function compile(gl) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, MAX_EDGES, 8, 0, gl.RGBA, gl.FLOAT, null);
   const u = {};
-  for (const n of ["uRes", "uRot", "uOff", "uIdA", "uIdB", "uMix", "uSwell", "uStep", "uColor", "uR4", "uEdges", "uNA", "uNB", "uSliceW", "uTintA", "uTintB"])
+  for (const n of ["uRes", "uRot", "uOff", "uIdA", "uIdB", "uMix", "uSwell", "uStep", "uColor", "uR4", "uEdges", "uNA", "uNB", "uSliceW", "uTintA", "uTintB", "uBlob"])
     u[n] = gl.getUniformLocation(prog, n);
   gl.uniform1i(u.uEdges, 0);
   // one vertex array per 4D cloud, uploaded once
@@ -668,15 +683,27 @@ function compile(gl) {
   });
   const pu = {};
   for (const n of ["uR4", "uRot", "uOff", "uRes", "uSize", "uSweepP", "uAlpha", "uMode", "uColor"]) pu[n] = gl.getUniformLocation(pts, n);
-  return { u, prog, pts, pu, quad, clouds };
+  const fu = { uFace: gl.getUniformLocation(face, "uFace"), uRes: gl.getUniformLocation(face, "uRes"), uA: gl.getUniformLocation(face, "uA") };
+  return { u, prog, pts, pu, quad, clouds, face, fu };
 }
 
 // ---------------------------------------------------------------- painter
 
 const smooth = (t) => t * t * t * (t * (t * 6 - 15) + 10); // smootherstep
 
-export const SHAPE_NAMES = SHAPES.map((s) => s.name);
-export const SHAPE_GROUPS = SHAPES.map((s) => s.group);
+// the bench lists the real solids and polytopes; the head belongs to the favicon
+export const SHAPE_NAMES = SHAPES.filter((s) => !s.face).map((s) => s.name);
+export const SHAPE_GROUPS = SHAPES.filter((s) => !s.face).map((s) => s.group);
+
+// The tab icon's own run (12 Oct, Agam: "only between 3 shapes, sphere, pyramid and the cube with
+// the 3 primary colours, and the final image added to the morph is the three.js face"): three
+// solids in red, yellow and blue, then the face, then round again.
+const FAVICON_SEQUENCE = [
+  { name: "sphere", color: [228, 52, 44] },
+  { name: "pyramid", color: [250, 196, 30] },
+  { name: "cube", color: [36, 98, 226] },
+  { name: "head" },
+];
 export const DEFAULTS = { hold: HOLD, morph: MORPH, wander: WANDER, spinX: 0, spinY: 0 };
 
 /**
@@ -686,7 +713,7 @@ export const DEFAULTS = { hold: HOLD, morph: MORPH, wander: WANDER, spinX: 0, sp
  * `paint(t, opts)` takes live overrides of DEFAULTS; `paint.state(t, opts)`
  * reports which shapes and how far through the morph a time lands.
  */
-export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
+export function createFaviconPainter(ctx, { supersample = 1, particles, noBlit = false, sequence } = {}) {
   const glCanvas = document.createElement("canvas");
   glCanvas.width = glCanvas.height = ctx.canvas.width * supersample;
   const gl = glCanvas.getContext("webgl2", { premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true });
@@ -705,7 +732,10 @@ export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
   const motion = makeMotion();
   const edges = new Float32Array(MAX_EDGES * 8 * 4);
   ctx.imageSmoothingQuality = "high";
-  const N = SHAPES.length;
+  // which shapes, in what order and colour: the whole list (the bench) unless a sequence is given
+  const seq = sequence ? sequence.map((e) => SHAPES.findIndex((x) => x.name === e.name)) : SHAPES.filter((x) => !x.face).map((_, i) => i);
+  const HSL = seq.map((si, k) => rgbToHsl((sequence && sequence[k].color) || SHAPES[si].color));
+  const N = seq.length;
   const W0 = glCanvas.width;
   // a small render (the favicon) gets fewer, slightly fatter points and struts
   const small = W0 <= 160;
@@ -720,12 +750,32 @@ export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
     return { idx, next: (idx + 1) % N, p };
   };
 
+  // the face still, uploaded once it has rendered (setFace): texture unit 1, unit 0 is the edges
+  let faceTex = null;
+  const setFace = (canvas) => {
+    if (!canvas || paint.lost) return;
+    faceTex = faceTex || gl.createTexture();
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, faceTex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.activeTexture(gl.TEXTURE0);
+  };
+
   function paint(t, opts) {
     if (paint.lost) return;
     const o = opts ? { ...DEFAULTS, ...opts } : DEFAULTS;
     const { idx, next, p } = state(t, o);
-    const [A, B] = [SHAPES[idx], SHAPES[next]];
-    const m = motion(t, tumbleTime(t, o.hold, o.morph));
+    const [A, B] = [SHAPES[seq[idx]], SHAPES[seq[next]]];
+    const m = motion(t, tumbleTime(t, o.hold, o.morph, seq));
     const R4 = rot4(m);
     const W = glCanvas.width;
     gl.useProgram(P.prog);
@@ -737,15 +787,20 @@ export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
     const off = [(m.ox * o.wander) / 0.32, -(m.oy * o.wander) / 0.32];
     gl.uniformMatrix3fv(u.uRot, false, rot);
     gl.uniform2f(u.uOff, off[0], off[1]);
-    gl.uniform1f(u.uIdA, idx);
-    gl.uniform1f(u.uIdB, next);
+    gl.uniform1f(u.uIdA, seq[idx]);
+    gl.uniform1f(u.uIdB, seq[next]);
+    // how much of the head the face has taken over: 1 on the face, 0 anywhere else
+    const presence = (A.face ? 1 - p : 0) + (B.face ? p : 0);
+    const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+    const faceA = faceTex ? sm(0.45, 0.95, presence) : 0;
+    gl.uniform1f(u.uBlob, 1 - (faceTex ? sm(0.75, 1, presence) : 0));
     gl.uniform1f(u.uMix, p);
     const wired = A.f === "WIRE" || B.f === "WIRE" || A.thin || B.thin;
     gl.uniform1f(u.uSwell, (wired ? SWELL_WIRE : SWELL_SOLID) * Math.sin(Math.PI * p));
     // a blended field is not an exact distance (and the Möbius twist stretches
     // space), so march in shorter steps then
     gl.uniform1f(u.uStep, p > 0 ? 0.7 : 0.85);
-    const color = mixColor(idx, next, p);
+    const color = mixColor(HSL, idx, next, p);
     gl.uniform3fv(u.uColor, color);
     // R4 is row-major, so WebGL reads its transpose: the inverse rotation, which
     // turns the slice just as well
@@ -789,60 +844,115 @@ export function createFaviconPainter(ctx, { supersample = 1, particles } = {}) {
         gl.uniform1f(pu.uAlpha, alpha);
         gl.drawArrays(gl.POINTS, 0, nPts);
       };
-      if (nA) draw(idx, both ? 1 : 0, 0.85 * (both ? 1 : 1 - p));
-      if (nB) draw(next, both ? 2 : 0, 0.85 * (both ? 1 : p));
+      if (nA) draw(seq[idx], both ? 1 : 0, 0.85 * (both ? 1 : 1 - p));
+      if (nB) draw(seq[next], both ? 2 : 0, 0.85 * (both ? 1 : p));
       gl.disable(gl.BLEND);
     }
 
+    if (faceA > 0.002) {
+      gl.useProgram(P.face);
+      gl.bindVertexArray(P.quad);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, faceTex);
+      gl.uniform1i(P.fu.uFace, 1);
+      gl.uniform2f(P.fu.uRes, W, W);
+      gl.uniform1f(P.fu.uA, faceA);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.disable(gl.BLEND);
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
+    // noBlit: the favicon reads the pixels back itself, asynchronously (startFavicon3d)
+    if (noBlit) return;
     const out = ctx.canvas.width;
     ctx.clearRect(0, 0, out, out);
     ctx.drawImage(glCanvas, 0, 0, out, out);
   }
+  paint.glCanvas = glCanvas;
   paint.state = state;
+  paint.setFace = setFace;
   paint.lost = false;
   return paint;
 }
 
 // ---------------------------------------------------------------- start
 
+// perf (11 Oct): the favicon is the last thing to start, never part of the load. It waits for the
+// window load, then any case-study load reveal ([data-load-reveal="wait"] -> "in"), then an idle
+// callback, and at least QUIET_MS after load, so shader compilation and the first frames never
+// land in the first ~3 s. It is NOT paused with the tab hidden: that is when the icon is seen.
+const QUIET_MS = 3000;
 export function startFavicon3d() {
+  if (typeof window === "undefined") return;
+  const begin = () => {
+    const waitingOnReveal = () => !!document.querySelector('[data-load-reveal="wait"]');
+    const go = () => (waitingOnReveal() ? setTimeout(go, 250) : (window.requestIdleCallback || ((f) => setTimeout(f, 50)))(startNow, { timeout: 2000 }));
+    setTimeout(go, QUIET_MS);
+  };
+  if (document.readyState === "complete") begin();
+  else window.addEventListener("load", begin, { once: true });
+}
+
+function startNow() {
   if (typeof window === "undefined" || !document.createElement("canvas").getContext) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (reduce.matches) return;
+  // automation (headless QA, screenshots) has no GPU: a ray-marcher on software GL starves the
+  // compositor and hangs page.screenshot on the home page (A/B, 12 Oct: 4/4 hangs on, 0/4 off).
+  // The static first-frame sphere (index.html) stays; real browsers are unaffected.
+  if (navigator.webdriver) return;
 
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = SIZE;
-  const paint = createFaviconPainter(canvas.getContext("2d"), { supersample: SS });
+  const paint = createFaviconPainter(canvas.getContext("2d"), { supersample: SS, noBlit: true, sequence: FAVICON_SEQUENCE });
   if (!paint) return; // no WebGL2: keep the static face
+  // the three.js face, rendered once (a dynamic import: three and the GLB stay out of the bundle's
+  // first load); until it arrives the head stays the clay blob
+  import("./faceStill").then((m) => m.renderFaceStill(SIZE * SS)).then((c) => c && paint.setFace(c)).catch(() => {});
 
-  let link = document.querySelector('link[rel="icon"]');
+  // one icon link only, so a browser cannot pick a static one over the animated one (the page's
+  // pre-rendered sphere files stay as the first-frame fallback for when this never starts)
+  const links = document.querySelectorAll('link[rel="icon"]');
+  let link = links[0];
+  links.forEach((l, i) => i && l.remove());
   if (!link) {
     link = document.createElement("link");
     link.rel = "icon";
     document.head.appendChild(link);
   }
-  const staticHref = link.getAttribute("href");
-  const staticType = link.getAttribute("type");
+  link.removeAttribute("sizes");
   const t0 = performance.now();
 
-  // Encode asynchronously (toBlob, not toDataURL): a synchronous readback waits
-  // on the GPU and would stall the page's main thread every frame, which the
-  // 4D shapes make expensive. A frame still encoding means the next tick skips.
+  // perf (11 Oct): the frame never touches the page's main thread for readback. The old
+  // canvas.toBlob on the drawn canvas waited for the GPU queue: 25.7 ms per call, 2.3 s of
+  // every 5 s of main thread (and a PBO + fence read-back still stalled in getBufferSubData
+  // while the GPU was busy with the section's videos). Now the GL frame is snapshotted with
+  // createImageBitmap (a GPU-side copy, async) and handed to a worker, which downscales it
+  // 2:1 (high-quality, as drawImage did) and encodes the PNG on OffscreenCanvas. Any waiting
+  // on the GPU happens in the worker. A frame still in flight means the next tick skips.
   let busy = false, shown = null, stopped = false;
+  const encSrc = `const c=new OffscreenCanvas(${SIZE},${SIZE}),x=c.getContext("2d");x.imageSmoothingQuality="high";
+onmessage=async(e)=>{try{x.clearRect(0,0,${SIZE},${SIZE});x.drawImage(e.data,0,0,${SIZE},${SIZE});e.data.close();postMessage(await c.convertToBlob({type:"image/png"}))}catch(err){postMessage(null)}}`;
+  const encUrl = URL.createObjectURL(new Blob([encSrc], { type: "text/javascript" }));
+  const enc = new Worker(encUrl);
+  enc.onmessage = (e) => {
+    busy = false;
+    const blob = e.data;
+    if (!blob || stopped) return;
+    const next = URL.createObjectURL(blob);
+    link.type = "image/png";
+    link.href = next;
+    if (shown) URL.revokeObjectURL(shown);
+    shown = next;
+  };
   function frame() {
     if (paint.lost) return stop();
-    if (busy) return;
+    if (busy || stopped) return;
     busy = true;
     paint((performance.now() - t0) / 1000);
-    canvas.toBlob((blob) => {
-      busy = false;
-      if (!blob || stopped) return;
-      const next = URL.createObjectURL(blob);
-      link.type = "image/png";
-      link.href = next;
-      if (shown) URL.revokeObjectURL(shown);
-      shown = next;
-    }, "image/png");
+    createImageBitmap(paint.glCanvas).then((bmp) => enc.postMessage(bmp, [bmp]), () => { busy = false; });
   }
 
   const src = `let id;onmessage=(e)=>{clearInterval(id);if(e.data>0)id=setInterval(()=>postMessage(0),e.data)}`;
@@ -851,15 +961,16 @@ export function startFavicon3d() {
   worker.onmessage = frame;
   worker.postMessage(1000 / FPS);
 
+  // stopping holds the current frame: the icon is never put back to anything older (the old face
+  // used to return here), so `shown` is left alone and its blob URL stays alive
   const stop = () => {
     if (stopped) return;
     stopped = true;
-    if (shown) URL.revokeObjectURL(shown);
     worker.postMessage(0);
     worker.terminate();
+    enc.terminate();
+    URL.revokeObjectURL(encUrl);
     URL.revokeObjectURL(url);
-    link.href = staticHref;
-    if (staticType) link.type = staticType;
   };
   reduce.addEventListener?.("change", (e) => e.matches && stop(), { once: true });
   frame();

@@ -13,14 +13,39 @@
         if (!pick || pick.theme !== "light") document.documentElement.classList.add("dark");
       }
     </script>
+    <!-- 11 Oct (mv3n1dcl): the page colour before any stylesheet lands. The dark
+         class above was set before first paint, but its background lives in
+         index.css, which in dev arrives with the JS: every open flashed white for
+         ~0.3 s. Same values as the --bg tokens. -->
+    <style>html { background: #fff; } html.dark { background: #0e0e11; color-scheme: dark; }</style>
+    <!-- The serif and heading font picks (lib/serifFont.js, keys "serif-font" and "hero-font") are
+         applied before first paint, and their Google fonts requested here only when not Newsreader. -->
+    <script>
+      try {
+        var S = { corben: ["Corben:wght@400;700", "Corben"], bitter: ["Bitter:ital,wght@0,400..700;1,400..500", "Bitter"], brawler: ["Brawler:wght@400;700", "Brawler"] };
+        var R = document.documentElement, pre = false;
+        [["serif-font", "--font-serif", "serif"], ["hero-font", "--font-hero", "heroFont"]].forEach(function (k) {
+          var sp = localStorage.getItem(k[0]);
+          if (sp !== "newsreader" && !S[sp]) return;
+          R.style.setProperty(k[1], '"' + (S[sp] ? S[sp][1] : "Newsreader") + '", Georgia, "Times New Roman", serif');
+          R.dataset[k[2]] = sp;
+          if (!S[sp] || document.getElementById("serif-" + sp)) return;
+          var h;
+          if (!pre) { pre = true;
+            h = document.createElement("link"); h.rel = "preconnect"; h.href = "https://fonts.googleapis.com"; document.head.appendChild(h);
+            h = document.createElement("link"); h.rel = "preconnect"; h.href = "https://fonts.gstatic.com"; h.crossOrigin = ""; document.head.appendChild(h); }
+          h = document.createElement("link"); h.id = "serif-" + sp; h.rel = "stylesheet"; h.href = "https://fonts.googleapis.com/css2?family=" + S[sp][0] + "&display=swap"; document.head.appendChild(h);
+        });
+      } catch (e) {}
+    </script>
     <title>Agam Agarwal</title>
-    <!-- The site had no icon of any kind, so every tab showed the browser's blank
-         document glyph. This is the face redrawn at 32px (public/favicon.svg),
-         not exported down to it: the illustration's 3.18 and 4.18 unit strokes
-         disappear at that size. Its ink follows the browser chrome's theme, not
-         the page's. TODO: a raster apple-touch-icon, which needs a rasterizer
-         this repo does not currently have. -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- The tab icon's FIRST FRAME of its run (red sphere, then yellow pyramid, blue cube, the
+         three.js face: src/lib/favicon3d.js), pre-rendered, so nothing shows the old face before
+         the animation starts or when it cannot run (reduced motion, Safari, no WebGL2).
+         favicon3d keeps ONE rel="icon" link and holds its last frame if it ever stops. -->
+    <link rel="icon" href="/favicon-sphere.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
