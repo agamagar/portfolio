@@ -25,6 +25,7 @@ import { createWeatherBridge } from "./weatherBridge.js";
 import { deepMerge, hexToLinear, clone } from "./params.js";
 import { composeParams, normalizeLook, LOOK_NAMES } from "./looks.js";
 import { seededRandom } from "./capture.js";
+import { prepareRoomTextures } from "./materials.js";
 import { pickQuality, gpuInfo, probeViewport, normalizeQuality, BUDGETS_MS } from "./quality.js";
 import { skyGain } from "./light/exposure.js";
 import { gradeSky } from "./light/grade.js";
@@ -282,6 +283,7 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   let lastSkyUniforms = null;
   const METER_REGION = { u0: 0.25, u1: 0.75, v0: 0.02, v1: 0.55 };
   let lastStats = { backend: "none", drawCalls: 0, triangles: 0, frameMs: 0 };
+  let texturesReady = null, rawTextures = null; // the room's textures from the worker (init), kept for rebuild()
   let lastGpuMs = null;
   let measuring = false;
   let lastFrameSpan = [0, 0]; // performance.now() around the last frame() the loop ran
@@ -324,7 +326,7 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   // --- build -------------------------------------------------------------------------
   function buildModules() {
     const chair = chairPose(P);
-    room = buildRoom(P, { renderer, random, chair, uniforms });
+    room = buildRoom(P, { renderer, random, chair, uniforms, textures: rawTextures });
     scene.add(room.group);
     // the engine owns the screen's material: the poster, rising to the page ground
     room.anchors.monitorScreen.material = screenMat;
@@ -387,6 +389,11 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
       const pick = pickQuality({ gpu, ...probeViewport() });
       setQuality(pick.quality, pick.why);
     }
+    // the room's procedural textures start now, in a Web Worker (materials.js
+    // prepareRoomTextures), and run beside the sky plate and the weather fetch below;
+    // the build waits for them. Generated on the main thread they were about 0.5 s of
+    // the warm-up's CPU (the biggest block measured 2026-10-05)
+    texturesReady = prepareRoomTextures(P.quality).catch(() => null);
     rApi.setSize(typeof window !== "undefined" ? window.innerWidth : 1440, typeof window !== "undefined" ? window.innerHeight : 900);
     rApi.applyParams(P);
 
@@ -480,6 +487,9 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     // opts.gate (sceneWarm.js, the warm-up behind the plain page): an async "wait for a
     // quiet moment" before each heavy step, so the build and the compile batches never
     // land while the reader is scrolling. Absent on every other path
+    rawTextures = (await texturesReady) || null;
+    if (disposed) return false;
+    mark("textures");
     if (opts.gate) await opts.gate();
     if (disposed) return false;
     buildModules();
