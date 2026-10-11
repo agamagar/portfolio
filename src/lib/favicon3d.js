@@ -808,7 +808,23 @@ export function createFaviconPainter(ctx, { supersample = 1, particles, noBlit =
 
 // ---------------------------------------------------------------- start
 
+// perf (11 Oct): the favicon is the last thing to start, never part of the load. It waits for the
+// window load, then any case-study load reveal ([data-load-reveal="wait"] -> "in"), then an idle
+// callback, and at least QUIET_MS after load, so shader compilation and the first frames never
+// land in the first ~3 s. It is NOT paused with the tab hidden: that is when the icon is seen.
+const QUIET_MS = 3000;
 export function startFavicon3d() {
+  if (typeof window === "undefined") return;
+  const begin = () => {
+    const waitingOnReveal = () => !!document.querySelector('[data-load-reveal="wait"]');
+    const go = () => (waitingOnReveal() ? setTimeout(go, 250) : (window.requestIdleCallback || ((f) => setTimeout(f, 50)))(startNow, { timeout: 2000 }));
+    setTimeout(go, QUIET_MS);
+  };
+  if (document.readyState === "complete") begin();
+  else window.addEventListener("load", begin, { once: true });
+}
+
+function startNow() {
   if (typeof window === "undefined" || !document.createElement("canvas").getContext) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (reduce.matches) return;
