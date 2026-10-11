@@ -16,7 +16,7 @@ import { introRevealed } from "./useStage";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import "./siteCursor.css";
 
-const KEY = "agam-site-cursor-dismissed";
+const KEY = "agam-site-cursor-dismissed-v2"; // v2 (12 Oct): old Esc dismissals no longer count
 const APPEAR_AFTER = 3000; // ms after the load reveal
 
 // The tour. aim(rect) returns where the arrow TIP lands, beside the thing, never on it.
@@ -122,7 +122,7 @@ export default function SiteCursor() {
     const start = () => { last = performance.now(); raf = requestAnimationFrame(frame); };
     const onVis = () => { cancelAnimationFrame(raf); if (!document.hidden && !dead) start(); };
     const onMove = (e) => { ptr.x = e.clientX; ptr.y = e.clientY; };
-    const onKey = (e) => { if (e.key === "Escape") dismiss.current(); };
+    const onKey = (e) => { if (e.key === "Escape") setOn(false); }; // Esc hides for this visit only (Agentation also uses Esc); the × dismisses for good
 
     Promise.race([
       Promise.all([introRevealed, heroMorphSettledOrTimeout(4000)]),
