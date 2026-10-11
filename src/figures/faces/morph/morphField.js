@@ -108,17 +108,24 @@ export function drawingCoverage(pose, W, H) {
 }
 
 // ---- textures ------------------------------------------------------------------
+// The data (half floats, rows in GL's bottom-up order) is built apart from the textures, so a
+// worker can build it off the main thread (morphWorker.js) and the page only wraps it.
 const toHalf = THREE.DataUtils.toHalfFloat;
-export function fieldTexture(f, w, h) {
-  // rows flipped to GL's bottom-up order
+export function fieldHalf(f, w, h) {
   const a = new Uint16Array(w * h);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) a[(h - 1 - y) * w + x] = toHalf(Math.max(-60000, Math.min(60000, f[y * w + x])));
+  return a;
+}
+export function fieldTexture(f, w, h) {
+  return halfFieldTexture(fieldHalf(f, w, h), w, h);
+}
+export function halfFieldTexture(a, w, h) {
   const t = new THREE.DataTexture(a, w, h, THREE.RedFormat, THREE.HalfFloatType);
   t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true;
   return t;
 }
-// the displacement on a grid (every `step` px), as an RG texture in px
-export function warpTexture(fn, W, H, step = 4) {
+// the displacement on a grid (every `step` px), RG in px
+export function warpHalf(fn, W, H, step = 4) {
   const gw = Math.ceil(W / step) + 1, gh = Math.ceil(H / step) + 1;
   const a = new Uint16Array(gw * gh * 2);
   for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
@@ -126,8 +133,29 @@ export function warpTexture(fn, W, H, step = 4) {
     const k = ((gh - 1 - j) * gw + i) * 2;
     a[k] = toHalf(dx); a[k + 1] = toHalf(dy);
   }
+  return { a, gw, gh, step };
+}
+export function warpTexture(fn, W, H, step = 4) {
+  return halfWarpTexture(warpHalf(fn, W, H, step));
+}
+export function halfWarpTexture({ a, gw, gh, step }) {
   const t = new THREE.DataTexture(a, gw, gh, THREE.RGFormat, THREE.HalfFloatType);
   t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true;
   t.userData = { gw, gh, step };
   return t;
+}
+
+// everything the morph field needs from the two coverages and the landmark pairs, as data:
+// the signed distance fields and both warps (about 0.5 s of arithmetic, so run in a worker)
+export function buildFields(cov2, cov3, pairs, W, H) {
+  const a = pairs.map((p) => p.a), b = pairs.map((p) => p.b);
+  return {
+    F2: fieldHalf(sdf(cov2, W, H), W, H), F3: fieldHalf(sdf(cov3, W, H), W, H),
+    D: warpHalf(tps(a, b, 0.02), W, H), Di: warpHalf(tps(b, a, 0.02), W, H),
+  };
+}
+
+// the hero's morph only needs the drawing's own field (the lines fade, they no longer warp)
+export function drawingField(cov2, W, H) {
+  return fieldHalf(sdf(cov2, W, H), W, H);
 }

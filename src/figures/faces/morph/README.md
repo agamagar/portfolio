@@ -29,3 +29,17 @@ turned clay head shows smeared texture on the far ear; the ink look has no textu
 To wire into the site: render <MorphPage/> or call createMascotMorph(canvas) and drive
 render(t). It needs WebGL2 (float render targets). If face.glb or fit.json change, re-run
 tools/face3d/morph (the pose fit and landmarks.py) to refresh handoff.json.
+
+## In the homepage hero (2026-10-11)
+Wired into the desktop hero by src/hello3/HeroMorph.jsx (one line in src/hello3/Hello.jsx).
+Changes here for it:
+- morphRenderer: `clear` (premultiplied output over a transparent ground) and `ink` (the
+  page's own ink colour, so the drawing matches in both themes).
+- mascotMorph: `createMascotMorph(canvas, { clear, ink, still })`; `still` renders only the
+  last frame (reduced motion). The fields (SDFs, thin-plate warps) are built in a worker
+  (morphWorker.js; the main-thread fallback is the same buildFields): the build's long task
+  went from 630 ms to 160 ms (GLB parse and shader compile).
+- faceRig3D: FaceSV's current fit materials (skin-raw.png + margins.png raw skin at rest,
+  ratioMean, uTurn/uActs), and every sampler bound (the unbound ones raised GL warnings).
+- handoff.json regenerated against the 11 Oct face.glb / fit.json (pose kept: it still scores
+  head 0.866, hair 0.79, ear 0.846; the landmark targets moved 4 px mean, 20 px max).

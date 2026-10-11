@@ -41,7 +41,10 @@ const FACE_EXTRA_REST = FACE_EXTRA.map((p) => {
   });
 });
 
-export default function MorphFace() {
+// `still` (the homepage hero, 2026-10-11, Agam: "before the transition from 2D to 3D the
+// face does not need to change form"): the face holds state 1, no turn; the wave hand beside
+// it is the caller's and still plays
+export default function MorphFace({ still = false } = {}) {
   const featRefs = useRef([]);
   const eyeRefs = useRef([]);
   const headRef = useRef(null);
@@ -137,7 +140,7 @@ export default function MorphFace() {
     };
 
     render(0);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (still || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return; // stays at state 1
     }
     // Timeline (starts with the wave at 500ms): turn to state 2, hold there until
@@ -168,7 +171,7 @@ export default function MorphFace() {
       clearTimeout(timer);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [still]);
 
   return (
     <svg className="header__avatar" viewBox={FACE_VIEWBOX} preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden>

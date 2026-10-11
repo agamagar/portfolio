@@ -105,10 +105,14 @@ uniform float uBand, uEarW, uNoseW, uMouthW;
 // the morph field: uField of the way from the 3D ink to the field; uWarp how far the warp
 // has carried both shapes; uBlend how far the field has gone from the drawing to the ink
 uniform float uField, uWarp, uBlend;
+// the ink's two layers (2026-10-11, "remove the ink from the face animations"): uLive3 the live
+// 3D ink head (hair mass, band, ear / nose / mouth lines; 0 = never drawn), uInkA the drawing's
+// own lines (the field), which fade out as the clay arrives
+uniform float uLive3, uInkA;
 // developing: inside the head, everything deeper than uDev px from the outline has taken its
 // flat colour (and the ink has left it); deeper than uDevS, its shading
 uniform float uDev, uDevS, uSoft;
-uniform float uDebug;
+uniform float uDebug, uClear;
 varying vec2 vUv;
 float dist(vec4 s, bool second, vec2 p){ vec2 q = second ? s.zw : s.xy; return q.x < 0.0 ? 1e4 : distance(p, q); }
 float within(float d, float r){ return r <= 0.0 ? 0.0 : clamp(r - d + 0.5, 0.0, 1.0); }
@@ -163,18 +167,38 @@ void main(){
   // the morph field (the drawing on its way to the ink), anti-aliased over a pixel
   float fInk = 0.0;
   if (uField > 0.0) fInk = clamp(0.5 - field(pImg), 0.0, 1.0);
-  float ink = mix(ink3, fInk, uField);
+  float ink = mix(ink3 * uLive3, fInk * uInkA, uField);
   col = mix(col, uInk, ink);
-  gl_FragColor = vec4(col, 1.0);
+  if (uClear < 0.5) { gl_FragColor = vec4(col, 1.0); }
+  else {
+    // over a clear ground (the hero, 2026-10-11): the page shows through. Premultiplied
+    // layers: the flat colours, the clay over them, the ink over both
+    vec3 c0 = flatC * dev;
+    vec3 c1 = mix(c0, sh.rgb + c0 * (1.0 - sh.a), devS);
+    float a1 = mix(dev, sh.a + dev * (1.0 - sh.a), devS);
+    float a = mix(a1, 1.0, ink);
+    gl_FragColor = vec4(a > 0.0 ? mix(c1, uInk, ink) / a : vec3(0.0), a);
+  }
   #include <colorspace_fragment>
+  gl_FragColor.rgb *= gl_FragColor.a;
 }`;
 
-export function createMorphRenderer({ canvas, src, fitSrc }) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, preserveDrawingBuffer: true });
+// clear: draw over a transparent ground (premultiplied) instead of the paper; ink: the
+// line colour (any CSS colour), so the drawing keeps the page's own ink in both themes
+export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = "#17171a" }) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: clear, premultipliedAlpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);
   renderer.setSize(FW, FH, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const rig = createFaceRig({ W: FW, H: FH, src, fitSrc });
+  // the rigs on hand: clay (always), and noir once loaded (the click on the hero's head). Each
+  // brings its own camera, light, textures and parts; frame() draws the current one
+  const rigs = { clay: rig };
+  let wear = rig;
+  const FLATS = {
+    clay: { uFlatSkin: "#f2dcc6", uFlatHair: "#4a2a1c", uFlatEye: "#171111", uFlatBrow: "#3b2016", uFlatMouth: "#d9ab90" },
+    noir: { uFlatSkin: "#6c6c6c", uFlatHair: "#1d1d1d", uFlatEye: "#0a0a0a", uFlatBrow: "#1a1a1a", uFlatMouth: "#474747" },
+  };
 
   const rtShaded = new THREE.WebGLRenderTarget(FW, FH, { samples: 4, colorSpace: THREE.SRGBColorSpace });
   const fl = { type: THREE.FloatType, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, depthBuffer: false };
@@ -196,15 +220,16 @@ export function createMorphRenderer({ canvas, src, fitSrc }) {
   const comp = new THREE.ShaderMaterial({ vertexShader: QUAD_VERT, fragmentShader: COMP_FRAG,
     uniforms: { tShaded: { value: rtShaded.texture }, tId: { value: rtId.texture }, tJ0: { value: null }, tJ1: { value: null },
       tF2: { value: null }, tF3: { value: null }, tD: { value: null }, tDi: { value: null }, uGrid: { value: new THREE.Vector2(1, 1) }, uGridStep: { value: 4 },
-      uField: { value: 0 }, uWarp: { value: 0 }, uBlend: { value: 0 }, uDev: { value: 1e4 }, uDevS: { value: 1e4 }, uSoft: { value: 70 },
-      uRes: { value: res }, uPaper: { value: C("#ebebeb") }, uInk: { value: C("#17171a") },
+      uField: { value: 0 }, uWarp: { value: 0 }, uBlend: { value: 0 }, uLive3: { value: 1 }, uInkA: { value: 1 }, uDev: { value: 1e4 }, uDevS: { value: 1e4 }, uSoft: { value: 70 },
+      uRes: { value: res }, uPaper: { value: C("#ebebeb") }, uInk: { value: new THREE.Color().setStyle(ink) }, uClear: { value: clear ? 1 : 0 },
       uFlatSkin: { value: C("#f2dcc6") }, uFlatHair: { value: C("#4a2a1c") }, uFlatEye: { value: C("#171111") }, uFlatBrow: { value: C("#3b2016") }, uFlatMouth: { value: C("#d9ab90") },
       uBand: { value: 0 }, uEarW: { value: 0 }, uNoseW: { value: 0 }, uMouthW: { value: 0 },
       uDebug: { value: 0 } } });
 
-  // the ids pass carries depth too: patch the rig's id materials once it loads
-  const ready = rig.ready.then(() => {
+  // the ids pass carries depth too: patch a rig's id materials once it loads
+  const patchIds = (rig) => {
     for (const o of Object.values(rig.parts)) {
+      if (!o.userData.mats) continue;
       const m = o.userData.mats.id;
       m.vertexShader = m.vertexShader.replace("varying vec3 vO;", "varying vec3 vO; varying float vDepth; varying float vNz;")
         .replace("gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);",
@@ -214,15 +239,16 @@ export function createMorphRenderer({ canvas, src, fitSrc }) {
       m.needsUpdate = true;
     }
     return rig;
-  });
+  };
+  const ready = rig.ready.then(() => patchIds(rig));
 
   const runQuad = (mat, target) => { quad.material = mat; renderer.setRenderTarget(target); renderer.render(quadScene, quadCam); };
 
   // render one frame: pose for the head, u for the blend uniforms
   const frame = (pose, u = {}) => {
-    rig.pose(pose);
-    rig.shaded(renderer, rtShaded);
-    rig.ids(renderer, rtId);
+    wear.pose(pose);
+    wear.shaded(renderer, rtShaded);
+    wear.ids(renderer, rtId);
     // seeds then jump flooding, both seed textures together (32, 16, ... 1 px)
     for (let k = 0; k < 2; k++) runQuad(seeds[k], ping[k][0]);
     let cur = 0;
@@ -236,5 +262,20 @@ export function createMorphRenderer({ canvas, src, fitSrc }) {
     for (const k in u) if (comp.uniforms[k]) comp.uniforms[k].value = u[k];
     runQuad(comp, null);
   };
-  return { renderer, rig, ready, frame, comp, seeds, FW, FH };
+  // noir: the hatted head fitted to the noir tile (public/faces/face-noir.glb + fit-noir.json),
+  // loaded on demand (7.5 MB). No id map, raw skin or margins: it draws what its own maps carry
+  let noirP = null;
+  const loadNoir = () => (noirP ||= (() => {
+    const r = createFaceRig({ W: FW, H: FH, src: "/faces/face-noir.glb", fitSrc: "/faces/fit-noir.json", idSrc: null, rawSrc: null, marginSrc: null, skinId: "noir", hat: true });
+    rigs.noir = r;
+    return r.ready.then(() => patchIds(r));
+  })());
+  // wear a rig: its camera and parts, and its flat under-colours
+  const setRig = (name) => {
+    if (!rigs[name]) return false;
+    wear = rigs[name];
+    for (const k in FLATS[name]) comp.uniforms[k].value.set(FLATS[name][k]);
+    return true;
+  };
+  return { renderer, rig, ready, frame, comp, seeds, FW, FH, loadNoir, setRig, get rigName() { return wear === rigs.noir ? "noir" : "clay"; } };
 }

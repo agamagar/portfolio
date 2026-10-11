@@ -1,0 +1,105 @@
+/* The hero's mascot morph (HeroMorph.jsx, 2026-10-11): a canvas laid over the SVG head,
+   out of flow so nothing moves. It has no box until it is placed (a canvas's default
+   300 x 150 box, moved into place, counted as a layout shift), and once its picture is on
+   screen the SVG steps aside. */
+.hero-morph {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hero-morph__cv {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* THE CLICK (HeroMorph.jsx): a transparent button over the head. The box ignores the pointer;
+   only the hit area, an ellipse over the head inside the 802 x 862 frame, takes it. The focus
+   ring is that same ellipse. */
+.hero-morph__btn {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.hero-morph__hit {
+  position: absolute;
+  left: 6%;
+  top: 3%;
+  width: 76%;
+  height: 84%;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.hero-morph__btn:focus-visible { outline: none; }
+.hero-morph__btn:focus-visible .hero-morph__hit { outline: 2px solid var(--link, #1a6fd0); outline-offset: 1px; }
+.hero-morph__btn[aria-busy="true"] .hero-morph__hit { cursor: progress; }
+.header__avatar-wrap[data-morph="on"] > .header__avatar {
+  visibility: hidden;
+}
+/* The drawing keeps its own size and place (Agam, 2026-10-11: "the 2D face has also increased
+   in size, let's take it back to the previous size, keep 3D the current size"). The clay's
+   larger framing (1.21, 6px right) is HeroMorph's: its canvas grows into it during the morph. */
+
+/* THE FACE ANIMATES IN PLACE (Agam, 2026-10-11: "when the Hello text moves to the right, that
+   is not required. Let's animate the face in place, so the Hello text does not have to animate
+   on the x axis at all"). Homepage (Hello3) only; /hello keeps its intro.
+   1. No flight: the flyer holds its resting scale in every stage (hello.css translates it from
+      the viewport's middle by --fly-x during center and rise; useFlight still sets --fly-rest).
+   2. The face arrives where it stays: a short fade (no grow: the badge would scale about its
+      own centre, not the face's, and the face would drift sideways).
+   3. "Hello!" never leaves its drawn place: no step right while the face travelled or while a
+      wave replays (hello3.css mtr7ek2q / mtr81k5b), so no glide back either.
+   The selectors carry extra weight on purpose: this file loads before hello.css and hello3.css. */
+.hello[data-page="3"][data-stage] .hello-hero__badge .hello-hero__flyer {
+  transform: scale(var(--fly-rest, 1));
+  transition: none;
+}
+.hello[data-page="3"]:not([data-reduce]) .hello-hero__greet .hello-hero__badge {
+  animation: hm-face-in 520ms var(--m3-effects-default, cubic-bezier(0.2, 0, 0, 1)) both;
+}
+@keyframes hm-face-in {
+  from { opacity: 0; }
+}
+.hello[data-page="3"][data-stage] .hello-hero__greet .hello-hero__mark-art .gm__hello {
+  transform: translateX(-6px);
+  transition: none;
+}
+/* With "Hello!" staying put, the wave hand (index.css .header__wave) would cover its "H";
+   it used to step out of the way. The hand moves up instead, over the face's top-right, clear
+   of the cap height. `translate`, so it composes with the wave's own rotation. */
+.hello[data-page="3"] .hello-hero__badge .header__wave {
+  translate: -3px -15px;
+}
+
+/* Once the head is clay the wave hand goes (Agam, 2026-10-11: "once the face has turned,
+   remove the wave animation"): the clay's own emotes take over (HeroMorph). A filter, because
+   the wave's keyframes own its opacity; it stays gone on hover replays too. */
+.hello[data-page="3"] .hello-hero__badge .header__avatar-wrap > .header__wave {
+  transition: filter 400ms var(--m3-effects-default, ease);
+}
+.hello[data-page="3"] .hello-hero__badge .header__avatar-wrap[data-clay="on"] > .header__wave {
+  filter: opacity(0);
+}
+
+/* Noir on the light page (Agam, 2026-10-12: "fix the noir face on light mode"). The noir skin
+   is a mid grey lit hard from the upper left, so on white the lit cheek and jaw rise to nearly
+   the page's own colour and the face loses its edge, with a ragged cut where the fit's texture
+   stops. A fine warm-black contour (the page's ink) closes the silhouette, and a faint soft
+   shadow seats it on the page. On the wrapper, so it composes with the canvas's spin blur;
+   :has() follows aria-pressed, which flips at the hidden midpoint of the turn. The dark
+   theme, and clay on either theme, are untouched. */
+html:not(.dark) .hero-morph:has(> .hero-morph__btn[aria-pressed="true"]) {
+  filter: drop-shadow(0 0 0.5px rgba(26, 18, 12, 0.9)) drop-shadow(0 0 0.4px rgba(26, 18, 12, 0.45)) drop-shadow(0 1px 2px rgba(26, 18, 12, 0.07));
+}
