@@ -8517,6 +8517,8 @@ html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
 .qa-reply__sent { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .qa-reply__sent li { margin: 0; padding: 6px 8px; border-radius: 8px; background: rgba(127, 224, 174, 0.12); color: #c9f2dc; font-size: 12px; }
 .qa-reply__sent li::before { content: "Sent · "; color: #7fe0ae; font-weight: 600; }
+
+
 /* ---- /lab: 3D favicon preview (FaviconLab) ---- */
 .favicon-lab__stage {
   position: relative;
