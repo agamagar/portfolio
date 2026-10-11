@@ -10,7 +10,7 @@ for (const [n, p] of PAGES) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto(BASE + p, { waitUntil: "load" });
-  await page.waitForTimeout(2500);
+  await page.waitForLoadState("networkidle").catch(() => {}); await page.waitForTimeout(4000);
   const h = await page.evaluate(() => document.documentElement.scrollHeight);
   const stops = Math.min(12, Math.ceil(h / 900));
   for (let i = 0; i < stops; i++) {
