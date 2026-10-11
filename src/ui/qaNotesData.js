@@ -126,7 +126,7 @@ export const QA_NOTES = [
     id: "rv-fixes",
     route: "/work/scheduled-delivery",
     status: "fixed",
-    sel: ".rv-map__stats",
+    sel: ".rv-map__foot",
     title: "My role options: three fixes",
     detail:
       "Option tags and the scope map's centre node were 3.6:1 in light mode (now 6.6:1); Option 1's partner lines fell back to the body font; and at phone width the scope map's numbers ran past the box.",
