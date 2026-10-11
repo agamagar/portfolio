@@ -10,123 +10,234 @@
 // underdamped spring, so a pick-up, a carry or a landing sets it nodding for a
 // second or two after the hand stops. update(dt) runs every frame.
 //
-// The retriever, round 2: the first read as a cartoon puppy. A retriever is a long
-// muzzle on a broad skull, ears set level with the eyes and hanging to the jaw with
-// feathered edges, a cream ruff on the chest, a feathered plume of a tail, and a
-// rich gold coat paler on the feathering. The cat: a grey tabby with a white chest
-// and muzzle, upright triangular ears, green eyes, its tail wrapped round its paws.
+// Round 3 (2026-10-11, Agam: "make the cat and dog models more detailed"): the
+// stretched spheres are gone. Each pet is now sculpted as one smooth vinyl body and
+// one head (petSculpt.js: a distance field meshed with surface nets), so the parts
+// melt into each other the way a cast figure's do: thighs into the back, the stop
+// between skull and muzzle, toes cut into the paws, a mouth line, eye sockets. The
+// markings are painted per vertex (the retriever's cream ruff, feathering and
+// darker ears; the tabby's mackerel stripes, the M on its brow, cheek lines, a
+// ringed tail with a dark tip, white bib, muzzle and socks) with a soft occlusion
+// baked into the creases. Eyes are glossy lenses with a painted iris and catch
+// light, the noses wet and glossy, the cat's ears cupped with a pink inside and
+// whiskers.
+// The pose has some character: the retriever tilts its head, the cat glances
+// across at the dog, its ringed tail wrapped round its paws, the tip lifted.
 
 import * as THREE from "three/webgpu";
-import { Batch, M } from "./geom.js";
+import { DOG_EYE, CAT_EYE } from "./petShapes.js";
+
+// The sculpted bodies and heads, baked by tools/pets/bake.mjs (about 120 KB, meshopt
+// compressed), fetched once with the room (never on page load) and shared by both.
+const PETS_URL = `${import.meta.env?.BASE_URL ?? "/"}room/pets.glb`;
+let petsPromise = null;
+function loadPets() {
+  petsPromise ||= (async () => {
+    const [{ GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
+      import("three/addons/loaders/GLTFLoader.js"),
+      import("three/addons/libs/meshopt_decoder.module.js"),
+    ]);
+    const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(PETS_URL);
+    const parts = {};
+    // each named node holds one quantised mesh (its node transform dequantises it)
+    gltf.scene.traverse((o) => { if (o.isMesh && o.parent?.name) parts[o.parent.name] = o; });
+    return parts;
+  })();
+  petsPromise.catch(() => { petsPromise = null; }); // a failed fetch may be retried by a rebuild
+  return petsPromise;
+}
+// start the fetch as this module loads (it ships in the room's lazy chunk, so with
+// the room, not the page): the pets are then in place before the room's shader
+// warm-up, which skips anything still hidden
+if (typeof window !== "undefined") loadPets().catch(() => {});
 
 const SIZE = { dog: 0.42, cat: 0.42 }; // about 4.2 cm tall on the edge (2026-10-05: "make the cat and dog smaller", was 0.55)
+const NECK = { dog: [0, 0.06, 0.004], cat: [0, 0.0495, 0.0038] }; // the spring's pivot, in the model's frame
+
+// ---------------------------------------------------------------------------
+// Small glossy parts
+// ---------------------------------------------------------------------------
+
+// A 64 px eye: the iris (and a slit pupil for the cat), a dark rim, a catch light.
+function eyeTexture(cat) {
+  const S = 64;
+  const cv = typeof document !== "undefined" ? document.createElement("canvas") : new OffscreenCanvas(S, S);
+  cv.width = cv.height = S;
+  const g = cv.getContext("2d");
+  g.fillStyle = cat ? "#4e7a26" : "#120c08"; // the cat's iris runs to the lens edge: no dark ring in the fur
+  g.fillRect(0, 0, S, S);
+  const r = S * (cat ? 0.72 : 0.46);
+  const grd = g.createRadialGradient(S / 2, S / 2, r * 0.15, S / 2, S / 2, r);
+  if (cat) { grd.addColorStop(0, "#d8d24a"); grd.addColorStop(0.55, "#8fb43a"); grd.addColorStop(1, "#4e7a26"); }
+  else { grd.addColorStop(0, "#7a4a24"); grd.addColorStop(0.6, "#4a2a14"); grd.addColorStop(1, "#24140a"); }
+  g.fillStyle = grd;
+  g.beginPath(); g.arc(S / 2, S / 2, r, 0, Math.PI * 2); g.fill();
+  if (!cat) {
+    g.strokeStyle = "rgba(20,12,6,0.85)"; g.lineWidth = S * 0.05;
+    g.beginPath(); g.arc(S / 2, S / 2, r - S * 0.02, 0, Math.PI * 2); g.stroke();
+  }
+  g.fillStyle = "#050302";
+  g.beginPath();
+  if (cat) g.ellipse(S / 2, S / 2, S * 0.07, S * 0.36, 0, 0, Math.PI * 2);
+  else g.arc(S / 2, S / 2, S * 0.2, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = "rgba(255,252,244,0.95)";
+  g.beginPath(); g.ellipse(S * 0.36, S * 0.33, S * 0.085, S * 0.07, -0.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "rgba(255,252,244,0.5)";
+  g.beginPath(); g.arc(S * 0.62, S * 0.66, S * 0.035, 0, Math.PI * 2); g.fill();
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+// a lens: a flattened sphere with its front projected onto the eye texture
+function eyeGeo(rx, ry, rz) {
+  const g = new THREE.SphereGeometry(1, 16, 12);
+  const p = g.attributes.position, uv = g.attributes.uv;
+  for (let i = 0; i < p.count; i++) uv.setXY(i, 0.5 + p.getX(i) * 0.5, 0.5 + p.getY(i) * 0.5);
+  g.scale(rx, ry, rz);
+  return g;
+}
+
+// a nose: a sphere pinched to a rounded triangle, point down
+function noseGeo(w, h, d) {
+  const g = new THREE.SphereGeometry(1, 16, 10);
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const y = p.getY(i);
+    const k = 1 - 0.38 * Math.max(0, -y);
+    p.setX(i, p.getX(i) * k * w);
+    p.setY(i, y * h);
+    p.setZ(i, p.getZ(i) * d);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+// the base: a rounded plinth turned on a lathe
+function baseGeo() {
+  const pts = [[0, 0], [0.028, 0], [0.0282, 0.0012], [0.0278, 0.0058], [0.0272, 0.0072], [0.0262, 0.0079], [0.024, 0.008], [0, 0.008]];
+  return new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), 48);
+}
 
 export function buildBobblehead(mats, parent, kind = "dog") {
   const m = mats.m;
   const cat = kind === "cat";
-  const vinyl = (name, color, rough = 0.45) => new THREE.MeshPhysicalMaterial({ name, color, roughness: rough, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.3 });
-  // coats: the retriever's rich gold over pale feathering; the tabby's grey over white
-  const coat = vinyl(cat ? "catCoat" : "dogFur", cat ? 0x7d7a76 : 0xd29a4c);
-  const pale = vinyl(cat ? "catWhite" : "dogPale", cat ? 0xefece6 : 0xf0d3a0);
-  const stripe = vinyl("catStripe", 0x4a4743);
-  const dark = new THREE.MeshStandardMaterial({ name: "petDark", color: 0x1a120c, roughness: 0.25 });
-  const nose = new THREE.MeshStandardMaterial({ name: cat ? "catNose" : "dogNose", color: cat ? 0xd98b8f : 0x1a120c, roughness: 0.3 });
-  const iris = new THREE.MeshStandardMaterial({ name: "catIris", color: 0x6fa33a, roughness: 0.2, emissive: 0x0c1404 });
-  const tongue = new THREE.MeshStandardMaterial({ name: "dogTongue", color: 0xd8606a, roughness: 0.4 });
-  const baseM = new THREE.MeshStandardMaterial({ name: "bobbleBase", color: 0x2a2523, roughness: 0.5, metalness: 0.1 });
-  const blob = (B, mat, [x, y, z], [sx, sy, sz], seg = 20, rot = null) => {
-    const g = new THREE.SphereGeometry(1, seg, Math.round(seg * 0.65));
-    g.scale(sx, sy, sz);
-    B.add(mat, g, rot ? M.mul(M.T(x, y, z), rot) : M.T(x, y, z));
-  };
+  const t0 = performance.now();
+  const owned = []; // materials and textures this pet owns, freed with its geometry
+
+  const coatM = new THREE.MeshPhysicalMaterial({
+    name: cat ? "catCoat" : "dogFur", color: 0xffffff, vertexColors: true, roughness: 0.52, metalness: 0,
+    clearcoat: 0.35, clearcoatRoughness: 0.4, sheen: 0.4, sheenRoughness: 0.55, sheenColor: cat ? 0xc8c4be : 0xf6d29a,
+  });
+  const eyeTex = eyeTexture(cat);
+  const eyeM = new THREE.MeshPhysicalMaterial({ name: "petEye", map: eyeTex, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.04 });
+  const noseM = new THREE.MeshPhysicalMaterial({ name: cat ? "catNose" : "dogNose", color: cat ? 0xd98a8f : 0x17110d, roughness: cat ? 0.38 : 0.22, clearcoat: cat ? 0.4 : 0.9, clearcoatRoughness: 0.12 });
+  const baseM = new THREE.MeshPhysicalMaterial({ name: "bobbleBase", color: 0x2a2523, roughness: 0.42, metalness: 0.1, clearcoat: 0.4, clearcoatRoughness: 0.3 });
+  owned.push(coatM, eyeM, eyeTex, noseM, baseM);
 
   const root = new THREE.Group();
   root.name = cat ? "catBobbleModel" : "bobbleheadModel";
   root.scale.setScalar(SIZE[kind] ?? 0.55);
   parent.add(root);
+  // QA close-ups (tools): dev, or the capture contract's capture=1
+  if (typeof window !== "undefined" && (import.meta.env?.DEV || /[?&]capture=1/.test(window.location?.search || ""))) (window.__pets ||= {})[kind] = root;
+  const add = (par, geo, mat, name, x = 0, y = 0, z = 0) => {
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.name = name;
+    mesh.position.set(x, y, z);
+    // in the room's shadows like everything else (unshadowed, the sun and the lamp
+    // reach it through the walls and it glows white)
+    mesh.castShadow = mesh.receiveShadow = true;
+    par.add(mesh);
+    return mesh;
+  };
 
   // --- the base and the body (static) ---
-  const BB = new Batch(cat ? "catBody" : "dogBody");
-  BB.add(baseM, new THREE.CylinderGeometry(0.026, 0.028, 0.008, 28), M.T(0, 0.004, 0));
-  if (cat) {
-    // a slimmer, upright sit: the haunches, a narrow chest, the white bib
-    // (2026-10-05: the haunches with two stripe rings round them read as a two-tier
-    // grey platform under the cat; the rings are gone and the haunches sit low
-    // and wide on the base, the back feet tucked beside them)
-    // round 2: still a tier; now ONE pear of a body rising straight off the base,
-    // the haunches folded into it, no tucked feet
-    blob(BB, coat, [0, 0.024, -0.002], [0.014, 0.018, 0.015]);
-    blob(BB, coat, [0, 0.037, 0.002], [0.012, 0.017, 0.011]);
-    blob(BB, pale, [0, 0.034, 0.0105], [0.0075, 0.014, 0.005], 14);
-    // front legs, white socks
-    for (const s of [-1, 1]) {
-      BB.add(coat, new THREE.CylinderGeometry(0.0034, 0.0038, 0.022, 10), M.T(s * 0.0055, 0.019, 0.01));
-      blob(BB, pale, [s * 0.0055, 0.0095, 0.012], [0.0042, 0.003, 0.0055], 10);
-    }
-    // the tail, wrapped round the front of the paws
-    const tail = new THREE.TorusGeometry(0.019, 0.0034, 8, 18, Math.PI * 1.1);
-    tail.rotateX(Math.PI / 2);
-    BB.add(coat, tail, M.mul(M.T(0, 0.0105, 0.0), M.RY(-0.3)));
-  } else {
-    // the retriever: haunches, a deeper chest, and the cream ruff that marks the breed
-    blob(BB, coat, [0, 0.026, -0.005], [0.021, 0.019, 0.022]);
-    blob(BB, coat, [0, 0.043, 0.002], [0.016, 0.02, 0.015]);
-    blob(BB, pale, [0, 0.045, 0.012], [0.011, 0.016, 0.007], 14); // the ruff
-    blob(BB, pale, [0, 0.035, 0.013], [0.008, 0.01, 0.006], 12);
-    for (const s of [-1, 1]) {
-      BB.add(coat, new THREE.CylinderGeometry(0.0042, 0.0046, 0.026, 10), M.T(s * 0.0065, 0.021, 0.011));
-      blob(BB, pale, [s * 0.0065, 0.0095, 0.014], [0.0055, 0.0035, 0.007], 10);
-      // feathering on the backs of the front legs
-      blob(BB, pale, [s * 0.0065, 0.022, 0.0075], [0.0035, 0.009, 0.003], 10);
-    }
-    for (const s of [-1, 1]) blob(BB, coat, [s * 0.016, 0.012, 0.003], [0.006, 0.004, 0.011], 10);
-    // the feathered plume of a tail, sweeping round onto the base
-    const tail = new THREE.TorusGeometry(0.014, 0.0045, 8, 14, Math.PI * 0.85);
-    tail.rotateY(Math.PI / 2);
-    BB.add(coat, tail, M.mul(M.T(0.012, 0.012, -0.012), M.RY(-0.6)));
-    blob(BB, pale, [0.02, 0.008, -0.004], [0.004, 0.004, 0.008], 10); // its pale tip
-  }
-  BB.build(root);
+  const base = add(root, baseGeo(), baseM, cat ? "catBase" : "dogBase");
 
   // --- the head (bobbles): pivots at the neck ---
   const neck = new THREE.Group();
   neck.name = cat ? "catNeck" : "bobbleNeck";
-  neck.position.set(0, cat ? 0.052 : 0.06, 0.004);
+  neck.position.set(...NECK[kind]);
   root.add(neck);
-  const HB = new Batch(cat ? "catHead" : "dogHead");
-  if (cat) {
-    // a round head, a short muzzle with a white whisker pad, upright ears, green eyes
-    blob(HB, coat, [0, 0.019, 0.0], [0.02, 0.017, 0.018], 24);
-    blob(HB, pale, [0, 0.012, 0.015], [0.009, 0.0065, 0.006], 14);
-    blob(HB, nose, [0, 0.0145, 0.0205], [0.0022, 0.0017, 0.0015], 8);
-    for (const s of [-1, 1]) {
-      const ear = new THREE.ConeGeometry(0.0075, 0.014, 4);
-      HB.add(coat, ear, M.mul(M.T(s * 0.012, 0.035, -0.002), M.RZ(-s * 0.3)));
-      blob(HB, iris, [s * 0.008, 0.022, 0.0155], [0.0034, 0.0036, 0.0016], 10);
-      blob(HB, dark, [s * 0.008, 0.022, 0.0168], [0.0011, 0.0029, 0.0008], 8); // the slit pupil
-    }
-    // forehead stripes, the tabby's M
-    for (const s of [-1, 0, 1]) blob(HB, stripe, [s * 0.005, 0.031, 0.011], [0.0012, 0.004, 0.0015], 8);
-  } else {
-    // the retriever's head: a broad skull, a LONG muzzle forward (round 1 was a short
-    // puppy snout), a black nose at its end, kind dark eyes, a happy tongue
-    blob(HB, coat, [0, 0.022, 0.0], [0.02, 0.018, 0.019], 24);
-    blob(HB, coat, [0, 0.013, 0.02], [0.0095, 0.0085, 0.014], 18); // the muzzle
-    blob(HB, pale, [0, 0.009, 0.024], [0.0085, 0.006, 0.011], 14); // its pale underside
-    blob(HB, dark, [0, 0.0155, 0.0335], [0.0045, 0.0033, 0.003], 10); // nose
-    blob(HB, tongue, [0, 0.0045, 0.03], [0.004, 0.0045, 0.0018], 10);
-    for (const s of [-1, 1]) {
-      blob(HB, dark, [s * 0.0088, 0.0255, 0.0165], [0.0026, 0.003, 0.0016], 10); // eyes
-      // the ears: set level with the eyes, hanging to the jaw, feathered paler edges
-      blob(HB, coat, [s * 0.0195, 0.014, 0.001], [0.0045, 0.014, 0.0095], 14, M.RZ(s * 0.18));
-      blob(HB, pale, [s * 0.021, 0.0045, 0.001], [0.0038, 0.0045, 0.008], 10);
-    }
+  // the pose, held inside the spring: the retriever's curious tilt, the cat's glance
+  // across at the dog beside it
+  const pose = new THREE.Group();
+  if (cat) pose.rotation.set(-0.04, -0.32, 0.07);
+  else pose.rotation.set(-0.08, 0.06, 0.15);
+  neck.add(pose);
+  // the sculpted body and head arrive with pets.glb; the toy stays hidden till then
+  let disposed = false;
+  root.visible = false;
+  loadPets()
+    .then((parts) => {
+      if (disposed) return;
+      for (const [part, par] of [["Body", root], ["Head", pose]]) {
+        const src = parts[kind + part];
+        if (!src) throw new Error(`pets.glb has no ${kind}${part}`);
+        const mesh = new THREE.Mesh(src.geometry, coatM);
+        mesh.name = kind + part;
+        mesh.position.copy(src.position);
+        mesh.quaternion.copy(src.quaternion);
+        mesh.scale.copy(src.scale);
+        mesh.castShadow = mesh.receiveShadow = true;
+        par.add(mesh);
+      }
+      root.visible = true;
+      if (import.meta.env?.DEV) {
+        let tris = 0;
+        root.traverse((o) => { if (o.isMesh) tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; });
+        console.info(`[bobblehead] ${kind}: ${Math.round(tris)} tris, ready ${(performance.now() - t0).toFixed(0)} ms after the build`);
+      }
+    })
+    .catch((e) => console.warn("[bobblehead] pets.glb failed:", e?.message || e));
+
+  // eyes, set into their sockets and turned out with the skull's curve
+  for (const s of [-1, 1]) {
+    const E = cat ? CAT_EYE : DOG_EYE;
+    const eye = add(pose, cat ? eyeGeo(0.0037, 0.0031, 0.0023) : eyeGeo(0.0029, 0.003, 0.0022), eyeM, "petEye", s * E[0], E[1], E[2]);
+    eye.rotation.set(-0.12, s * (cat ? 0.36 : 0.3), s * (cat ? 0.2 : 0));
   }
-  HB.build(neck);
+  if (cat) {
+    add(pose, noseGeo(0.0024, 0.0016, 0.0013), noseM, "catNose", 0, 0.0146, 0.0196).rotation.x = 0.35;
+    // whiskers: three a side from the pads, fanning and drooping
+    const whiskerM = new THREE.MeshStandardMaterial({ name: "catWhisker", color: 0xf4f1ea, roughness: 0.6 });
+    owned.push(whiskerM);
+    const ws = [];
+    for (const s of [-1, 1])
+      for (const [dy, rz] of [[0.0008, 0.22], [0, 0.04], [-0.0008, -0.14]]) {
+        const w = new THREE.CylinderGeometry(0.00011, 0.00024, 0.017, 3);
+        w.translate(0, 0.0085, 0);
+        w.rotateZ(-s * (Math.PI / 2 - rz));
+        w.rotateY(s * 0.42);
+        w.translate(s * 0.005, 0.0112 + dy, 0.0168);
+        ws.push(w);
+      }
+    add(pose, mergeAll(ws), whiskerM, "catWhiskers");
+  } else {
+    add(pose, noseGeo(0.0043, 0.003, 0.0027), noseM, "dogNose", 0, 0.0168, 0.0314).rotation.x = 0.2;
+    // a happy tongue, out of the side of the mouth
+    const tongueM = new THREE.MeshPhysicalMaterial({ name: "dogTongue", color: 0xd65f69, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.15 });
+    owned.push(tongueM);
+    const tg = new THREE.SphereGeometry(1, 14, 10);
+    tg.scale(0.0033, 0.0012, 0.0043);
+    add(pose, tg, tongueM, "dogTongue", 0.0012, 0.0078, 0.0238).rotation.set(0.85, 0.12, 0);
+  }
+
   // the spring under the head, a short dark coil only visible as the head tips
   const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.006, 10), m.steelDark);
   coil.position.y = neck.position.y - 0.003;
   root.add(coil);
+
+  // free this pet's own materials and eye canvas when room.js disposes the geometry
+  // (the base's geometry is this pet's own; the shared sculpted geometry is freed by
+  // the same traversal and re-uploads if a rebuilt room uses it again)
+  base.geometry.addEventListener("dispose", () => {
+    disposed = true;
+    owned.forEach((o) => o.dispose());
+  });
 
   // the head's spring: two angles (pitch about x, roll about z), underdamped
   const st = { px: 0, vx: 0, pz: 0, vz: 0 };
@@ -162,4 +273,23 @@ export function buildBobblehead(mats, parent, kind = "dog") {
     st.vz += 0.6 * strength * (Math.random() < 0.5 ? -1 : 1);
   }
   return { group: root, jiggle, update, nudge };
+}
+
+// merge the whiskers' small geometries into one (position and normal only)
+function mergeAll(geos) {
+  const parts = geos.map((g) => (g.index ? g.toNonIndexed() : g));
+  let n = 0;
+  for (const g of parts) n += g.attributes.position.count;
+  const pos = new Float32Array(n * 3), nrm = new Float32Array(n * 3);
+  let o = 0;
+  for (const g of parts) {
+    pos.set(g.attributes.position.array, o * 3);
+    nrm.set(g.attributes.normal.array, o * 3);
+    o += g.attributes.position.count;
+  }
+  geos.forEach((g) => g.dispose());
+  const out = new THREE.BufferGeometry();
+  out.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  out.setAttribute("normal", new THREE.BufferAttribute(nrm, 3));
+  return out;
 }

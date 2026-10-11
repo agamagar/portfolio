@@ -162,7 +162,7 @@ function halfOf(toy) {
   const inv = new THREE.Matrix4().copy(toy.matrixWorld).invert();
   const box = new THREE.Box3();
   toy.traverse((o) => {
-    if (!o.isMesh || !o.geometry) return;
+    if (!o.isMesh || !o.geometry || o.name === "contactShadow") return;
     if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
     _tb.copy(o.geometry.boundingBox).applyMatrix4(_tm.multiplyMatrices(inv, o.matrixWorld));
     box.union(_tb);
@@ -302,10 +302,11 @@ export function buildRoom(P, ctx) {
     const w = state.wind || { speed: 8, gustEnvelope: 1, vecX: 0, vecZ: -1 };
     const wk = Math.min(1, (w.speed || 0) / 20);
     const gustN = ((w.gustEnvelope || 1) - 1) / 0.5;
-    // R1 rocks a degree or two in real gusts about its ajar angle (outward = -y rotation)
+    // R1 rocks a degree or two in real gusts about its ajar angle (outward: win.ajarSign,
+    // +y hung on its outer stile, -y on its meeting stile)
     const Rp = P.room.window.right;
     const rock = Rp.rockDeg * wk * (0.6 * gustN + 0.4 * Math.sin(tS * 1.3 + 0.7));
-    win.handleLeaf.rotation.y = -Math.max(0, Rp.ajarDeg + rock) * D2R;
+    win.handleLeaf.rotation.y = (win.ajarSign ?? -1) * Math.max(0, Rp.ajarDeg + rock) * D2R;
     // the bead chain: a rope simulated bead by bead (room/beadChain.js). The draught
     // through the ajar leaf sways it; the cursor sweeps it (Agam, 2026-09-27: "hover
     // physics... wave it around like a real beaded rope")

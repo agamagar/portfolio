@@ -126,6 +126,36 @@ export function buildWindow(P, ctx, mats, root) {
     }
   };
 
+  // --- one French pair: two leaves meeting on a rebated joint, from x0. spec: { L, gap,
+  // R } with L and R as [stile, pane, stile] left to right. Both pairs are built here so
+  // they cannot drift apart again (2026-10-11, Agam: "the left window door is much more
+  // accurate, check and apply to the right"). A and B: [batch, glass list] per leaf (R1
+  // has its own batch, it swings). hingeA "outer" hangs leaf A on its outer stile like
+  // L1; "meeting" on its meeting stile (the old angled fit's R1). Leaf B always hangs
+  // on its outer stile. With w.solidDoors each pair is one door: the two leaves close
+  // up with no meeting joint (2026-10-11, Agam: "apart from the center slit I see two
+  // more slots"), a wide wooden bar between its pane columns, hung on one side only ---
+  const sum3 = ([a2, b2, c2]) => a2 + b2 + c2;
+  const solid = w.solidDoors === true;
+  const mirrorSpec = (sp) => ({ L: [...sp.R].reverse(), gap: sp.gap, R: [...sp.L].reverse() });
+  function pair(jointBatch, x0, sp, rowsSpec, [bA, gA], [bB, gB], hingeA = "outer", solid = false) {
+    const A = leaf(bA, gA, x0, sp.L, rowsSpec);
+    const B = leaf(bB, gB, A[3] + (solid ? 0 : sp.gap), sp.R, rowsSpec);
+    if (solid) {
+      hinge(bA, A[0], -1);
+      return { A, B };
+    }
+    // the meeting stiles close on a rebated joint: no slot of sky between them. The
+    // open 0.03 W slot let the fill light both stiles' sides and drew a pale line
+    // down the pair (round 2, x 962 to 965 at 17:41); now a dark joint a hair below
+    // the faces
+    jointBatch.add(m.dark, boxGeo(k(A[3]), k(B[0]), k(rowsSpec.bot), k(rowsSpec.top), k(zb), k(zf - w.jointDepth), "y"), null, { cast: false });
+    if (hingeA === "meeting") hinge(bA, A[3], 1);
+    else hinge(bA, A[0], -1);
+    hinge(bB, B[3], 1);
+    return { A, B };
+  }
+
   // --- the casing: one vertical profile (x, z), from the wall edge xo to the
   // opening edge xi; dir = +1 when x grows toward the opening ---
   function casingProfile(xo, dir) {
@@ -150,19 +180,13 @@ export function buildWindow(P, ctx, mats, root) {
 
   // --- the left French pair ---
   const ms = w.meetingStile;
-  const L1x0 = -(ms[1] / 2 + ms[0] + w.paneL1 + w.hingeStile);
-  leaf(S, glassGeos.L, L1x0, [w.hingeStile, w.paneL1, ms[0]]);
-  const L2 = leaf(S, glassGeos.L, ms[1] / 2, [ms[2], w.paneL2, w.hingeStile]);
-  // the meeting stiles close on a rebated joint: no slot of sky between them. The
-  // open 0.03 W slot let the fill light both stiles' sides and drew a pale line
-  // down the pair (round 2, x 962 to 965 at 17:41); now a dark joint a hair below
-  // the faces
-  S.add(m.dark, boxGeo(k(-ms[1] / 2), k(ms[1] / 2), k(Y.bot), k(Y.top), k(zb), k(zf - w.jointDepth), "y"), null, { cast: false });
-  hinge(S, L1x0, -1);
-  hinge(S, L2[3], 1);
+  const specL = { L: [w.hingeStile, w.paneL1, ms[0]], gap: ms[1], R: [ms[2], w.paneL2, w.hingeStile] };
+  const L1x0 = -((solid ? 0 : ms[1] / 2) + sum3(specL.L)); // the meeting line on x = 0
+  const L2 = pair(S, L1x0, specL, rowsL, [S, glassGeos.L], [S, glassGeos.L], "outer", solid).B;
   const casL_i = L1x0 - w.rebate; // opening edge of the left casing
   const casL_o = casL_i - Cs.width; // its wall edge
-  S.add(m.enamel, prismGeo(casingProfile(casL_o, 1), "y", k(Y.bot - 0.4), k(Y.headHi), { smooth: [6, 7, 8, 9, 10, 12, 13] }));
+  const casingSmooth = { smooth: [6, 7, 8, 9, 10, 12, 13] }; // the bead and the rebate's round-over
+  S.add(m.enamel, prismGeo(casingProfile(casL_o, 1), "y", k(Y.bot - 0.4), k(Y.headHi), casingSmooth));
 
   // --- two old screw holes on L2's hinge stile (5482; 13-photo 4.4) ---
   // The fixings of a lost handle: the upper one a small torn slot (bare wood
@@ -211,7 +235,14 @@ export function buildWindow(P, ctx, mats, root) {
   // --- the right section: its own frame, glass plane at local z = 0 ---
   const Rp = w.right;
   const a = (Rp.flat ? 0 : Rp.angleDeg) * D2R;
-  const origin = Rp.flat ? [Rp.origin[0], 0] : Rp.origin;
+  const matchLeft = Rp.flat === true && Rp.matchLeft !== false;
+  // a solid right door swings whole: R2 rides in R1's batch and group (its glass keeps
+  // its own dust key); hung by the post, its free edge opens behind the right casing
+  const doorR = solid && matchLeft;
+  // solid doors meet across one slit (the post's gap) with no post board between them:
+  // the 0.51 W board read as a slot on each side of it (2026-10-11, Agam)
+  const postGap = R.window.post?.gap ?? 0.025;
+  const origin = doorR ? [L2[3] + postGap, 0] : Rp.flat ? [Rp.origin[0], 0] : Rp.origin;
   const right = new THREE.Group();
   right.name = "rightSection";
   right.position.set(k(origin[0]), 0, k(origin[1]));
@@ -221,26 +252,32 @@ export function buildWindow(P, ctx, mats, root) {
   const Rw = (lx, lz) => [origin[0] + lx * Math.cos(a) - lz * Math.sin(a), origin[1] + lx * Math.sin(a) + lz * Math.cos(a)];
   const RS = new Batch("rightSection");
   const R1B = new Batch("R1");
-  // R1: hinged on its right, ajar outward; its body hangs from the pivot
-  const r1w = Rp.freeStile + Rp.paneR1 + Rp.hingeStileR1;
+  // the right pair: the left pair mirrored (Rp.matchLeft, flat only), so its stiles,
+  // meeting joint, hinges and casing are the left's; R1 (mirroring L2) hangs on its
+  // outer stile by the post and stands ajar. matchLeft false, or the angled fit, keeps
+  // the photo-fit section: a narrow free stile at the post, R1 hung on its meeting
+  // stile, a 0.42 W double stile between R1 and R2
+  const specR = matchLeft
+    ? mirrorSpec(specL)
+    : { L: [Rp.freeStile, Rp.paneR1, Rp.hingeStileR1], gap: Rp.gapR, R: [Rp.stileR2, Rp.paneR2, Rp.stileR2out] };
+  const hingeR1 = matchLeft ? (Rp.hingeR1 ?? "outer") : "meeting";
+  const r1w = sum3(specR.L);
+  // R1 ajar outward; its body hangs from the pivot on its hinge stile's outer arris.
+  // ajarSign: the rotation.y that swings its free stile outward (room.js)
+  const pivotX = hingeR1 === "meeting" ? r1w : 0;
+  const ajarSign = hingeR1 === "meeting" ? -1 : 1;
   const handleLeaf = new THREE.Group();
   handleLeaf.name = "handleLeaf";
-  handleLeaf.position.set(k(r1w), 0, k(zb));
+  handleLeaf.position.set(k(pivotX), 0, k(zb));
   right.add(handleLeaf);
   const r1Body = new THREE.Group();
-  r1Body.position.set(-k(r1w), 0, -k(zb));
+  r1Body.position.set(-k(pivotX), 0, -k(zb));
   handleLeaf.add(r1Body);
-  leaf(R1B, glassGeos.R1, 0, [Rp.freeStile, Rp.paneR1, Rp.hingeStileR1], rowsR);
-  hinge(R1B, r1w, 1);
-  const r2x0 = r1w + Rp.gapR;
-  const R2 = leaf(RS, glassGeos.R2, r2x0, [Rp.stileR2, Rp.paneR2, Rp.stileR2out], rowsR);
-  // the joint between R1's hinge stile and R2 (as the meeting stiles)
-  RS.add(m.dark, boxGeo(k(r1w), k(r2x0), k(YR.bot), k(Y.top), k(zb), k(zf - w.jointDepth), "y"), null, { cast: false });
-  hinge(RS, R2[3], 1);
-  // right casing of the section (mirror profile) and its head
+  const R2 = pair(RS, 0, specR, rowsR, [R1B, glassGeos.R1], [doorR ? R1B : RS, glassGeos.R2], hingeR1, doorR).B;
+  // right casing of the section (mirror profile, the same smoothing) and its head
   const casR_i = R2[3] + w.rebate;
   const casR_o = casR_i + Cs.width;
-  RS.add(m.enamel, prismGeo(casingProfile(casR_o, -1), "y", k(YR.bot - 0.4), k(Y.headHi)));
+  RS.add(m.enamel, prismGeo(casingProfile(casR_o, -1), "y", k(YR.bot - 0.4), k(Y.headHi), casingSmooth));
 
   // the brass D-handle on R1's free stile, centred on the B/C rail: its edge-on bow
   // glints across y 1740 to 2100 in the wide photo, and 5482 shows it beside the
@@ -248,7 +285,8 @@ export function buildWindow(P, ctx, mats, root) {
   // handle.enabled: false leaves it off (Agam, 2026-09-27)
   if (w.handle.enabled !== false) {
     const Hd = w.handle;
-    const hx = k(Rp.freeStile * 0.45), hy = k((YR.C1 + YR.B0) / 2), hz = k(zf);
+    // on R1's free stile, 0.45 of the stile in from its free edge
+    const hx = k(hingeR1 === "meeting" ? specR.L[0] * 0.45 : r1w - specR.L[2] * 0.45), hy = k((YR.C1 + YR.B0) / 2), hz = k(zf);
     const L = Hd.length, so = Hd.standoff;
     const path = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, L / 2, 0.004),
@@ -279,7 +317,9 @@ export function buildWindow(P, ctx, mats, root) {
   {
     const f = Cs.face, bk = Cs.back;
     const Lx = L2[3]; // L2's hinge stile outer edge
-    const R1c = Rw(-0.01, zf - 0.03); // just behind R1's outer room-face corner
+    // just behind R1's outer room-face corner (level with the faces when the pairs
+    // match, as at L2's end)
+    const R1c = Rw(-0.01, matchLeft ? zf : zf - 0.03);
     const x0 = Lx + 0.02, x1 = Math.min(R1c[0] - 0.03, Lx + 0.4);
     // two shallow grooves (a V 0.012 W deep under the enamel, like the casing's quirk)
     const g = (xc) => [[xc - 0.025, f], [xc, f - 0.012], [xc + 0.025, f]];
@@ -311,6 +351,8 @@ export function buildWindow(P, ctx, mats, root) {
       const gw = R.window.post?.gap ?? 0.025; // W
       const zb2 = zf - (w.jointDepth ?? 0.02);
       S.add(m.dark, boxGeo(k(Lx), k(Lx + gw), k(YR.bot), k(Y.top), k(zb2 - 0.02), k(zf + 0.002), "y"), null, { cast: false });
+      // one slit only, at L2's edge: a twin on R1's edge read as a second slot
+      // (2026-10-11, Agam)
     }
     if (!flush) {
     // its side facing L2 (from L2's room face out to the post's face, 0.33 W deep)
@@ -444,7 +486,7 @@ export function buildWindow(P, ctx, mats, root) {
     parent.add(g);
     return g;
   };
-  const glassR2 = mkGlass(glassGeos.R2, right, "glassR2", m.glass, "R2");
+  const glassR2 = mkGlass(glassGeos.R2, doorR ? r1Body : right, "glassR2", m.glass, "R2");
   const glassPanes = [mkGlass(glassGeos.L, root, "glassL", m.glass, "L"), mkGlass(glassGeos.R1, r1Body, "glassR1", m.glass, "R1"), glassR2].filter(Boolean);
   // R2 frosted: while the dark plane stands behind it (every look but Dreamlike) the
   // pane is a diffuser, and what the eye sees there IS the film on the glass. The
@@ -460,7 +502,7 @@ export function buildWindow(P, ctx, mats, root) {
     gd.renderOrder = 2;
     gd.castShadow = false;
     gd.receiveShadow = false;
-    right.add(gd);
+    glassR2.parent.add(gd);
   }
 
   const r2Pane = { x0: k(R2[1]), x1: k(R2[2]), y0: k(YR.D0), y1: k(Y.A1) };
@@ -477,6 +519,7 @@ export function buildWindow(P, ctx, mats, root) {
     YR,
     right,
     handleLeaf,
+    ajarSign,
     blocked,
     glassPanes,
     r2Pane,

@@ -44,6 +44,11 @@ export const ROOM_PARAMS = {
     // round 1's 0.2 W showed 18 mm of rebate through the glass at the hero's
     // obliquity, a dark rim inside every pane
     leaf: { depth: 0.35, glassFromBack: 0.1 },
+    // each pair is one solid door: no meeting joint between its pane columns, one slit
+    // at the window's centre (2026-10-11, Agam: "apart from the center slit I see two
+    // more slots"); the right door swings slightly open as a whole. false: two leaves
+    // per pair on a rebated meeting joint, as before
+    solidDoors: true,
     jointDepth: 0.012, // W, how far the meeting and hinge joints sit below the faces
     // the pane reveal (room side, between the glass and the chamfer) and the putty
     // at the glass (13-photo 4.3; 5481: the reveals read dark like the wood, with a
@@ -89,6 +94,12 @@ export const ROOM_PARAMS = {
     // passes through `origin` (x, z) at R1's outer stile edge.
     right: {
       flat: true, // 2026-09-27 (Agam: "two broken pieces"): one flat frame, same rows as the left pair; R1 stays ajar
+      // 2026-10-11 (Agam: "the left window door is much more accurate, check and apply
+      // to the right"): with flat, the right pair is the left pair mirrored (window.js
+      // pair()): 0.57 W outer stiles, the same middle, the panes swapped. The photo-fit stiles below are used only with matchLeft
+      // false or the angled fit. hingeR1: "outer" (by the post) or "meeting"
+      matchLeft: true,
+      hingeR1: "outer",
       angleDeg: 23,
       origin: [2.18, 0.393], // W (x, z) of R1's free-stile outer edge on the glass line (fit)
       freeStile: 0.216, // R1's handle stile (its free edge), fit

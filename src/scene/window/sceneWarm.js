@@ -15,6 +15,7 @@
 // of building its own and resizes it to the viewport. Nothing is compiled twice.
 
 import { createWindowEngine } from "./engine.js";
+import { setWarmReady } from "./warmFlag.js";
 
 let warm = null; // { host, canvas, engine, ready: Promise<boolean>, ok }
 
@@ -75,6 +76,7 @@ export function takeWarmScene() {
   const w = warm;
   if (!w || !w.ok) return null;
   warm = null;
+  setWarmReady(false);
   w.host.remove(); // the canvas moves into the page's own host
   return { canvas: w.canvas, engine: w.engine, poster: w.poster || null, posterSize: w.posterSize || null, folio: w.folio || null };
 }
@@ -101,19 +103,14 @@ export function folioParams({ pFrom, sweepDeg }) {
   ].filter(Boolean);
 }
 
-export async function prepareWarmScene() {
-  if (!warm || !warm.ok) return false;
-  const w = warm;
+// The landing capture itself: the warm engine at the viewport's size, the screen's rect
+// at p = 1 measured, the plain page's top captured and set on the monitor. Used once at
+// warm-up (prepareWarmScene) and again at the click (refreshWarmPoster).
+async function capturePoster(w) {
   const { engine } = w;
   const vw = window.innerWidth, vh = window.innerHeight;
   await quietMoment();
   engine.resize(vw, vh);
-  for (const patch of folioParams(FOLIO)) {
-    await quietMoment();
-    await engine.setParams(patch);
-  }
-  if (warm !== w) return false;
-  w.folio = { ...FOLIO };
   const rect = engine.screenRectAt(1);
   const root = document.querySelector(".hello");
   if (!rect || !root) return false;
@@ -128,12 +125,28 @@ export async function prepareWarmScene() {
     rect,
     bg: dark ? "#0e0e11" : "#ffffff",
     dpr: window.devicePixelRatio || 1,
-    skip: ["hello-sky", "hello-sky__tip", "wscene-warm-pill"],
+    skip: ["hello-sky", "hello-sky__tip", "wscene-warm-pill", "sc"],
   });
   if (!top || warm !== w) return false;
   engine.setPoster(top, dark ? "dark" : "light");
   w.poster = top;
   w.posterSize = `${vw}x${vh}`;
+  return true;
+}
+
+export async function prepareWarmScene() {
+  if (!warm || !warm.ok) return false;
+  const w = warm;
+  const { engine } = w;
+  await quietMoment();
+  engine.resize(window.innerWidth, window.innerHeight);
+  for (const patch of folioParams(FOLIO)) {
+    await quietMoment();
+    await engine.setParams(patch);
+  }
+  if (warm !== w) return false;
+  w.folio = { ...FOLIO };
+  if (!(await capturePoster(w))) return false;
   // prime the full-size path, hidden: frames along the pull-out (inside the screen out
   // to the room) allocate every full-size target and draw what the camera will see, one
   // quiet moment at a time; it ends parked on the first frame of the hand-over (p = 1)
@@ -143,7 +156,24 @@ export async function prepareWarmScene() {
     engine.setScroll(p, 0);
     await engine.renderOnce();
   }
+  setWarmReady(true); // a page that remounts later finds the room ready (warmFlag.js)
   return true;
+}
+
+// At the click (Hello.jsx): the monitor's copy of the page is retaken from the page as it
+// is NOW. The one made at warm-up can be old (before a layout change, a resize, a return
+// visit to the page, the cards' own animation), and the hand-over dissolves from the live
+// page to that copy, so a stale one showed as the page "gliding back" to an older state
+// (Agam, 2026-10-11). Resolves false (the old copy stays) if there is nothing to retake.
+export async function refreshWarmPoster() {
+  const w = warm;
+  if (!w || !w.ok || !w.folio) return false;
+  const ok = await capturePoster(w).catch(() => false);
+  if (ok && warm === w) {
+    w.engine.setScroll(1, 0); // parked on the hand-over's first frame again
+    await w.engine.renderOnce();
+  }
+  return ok;
 }
 
 // Drop a warm engine that will never be used (the page left before the hand-over).
@@ -156,6 +186,7 @@ export function dropWarmScene() {
   }
   warm.host.remove();
   warm = null;
+  setWarmReady(false);
 }
 
 // Give an adopted canvas and engine back to the warm slot instead of disposing them

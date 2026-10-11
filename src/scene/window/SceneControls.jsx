@@ -81,20 +81,7 @@ export default function SceneControls({ i = 0, feedback }) {
 
   return (
     <>
-      <button
-        type="button"
-        style={{ "--i": i }}
-        className="theme-toggle scene-ctl"
-        data-tip
-        aria-label={mine ? "Showing my sky in Bangalore. Switch to your sky" : "Showing your sky. Switch to my sky in Bangalore"}
-        aria-pressed={!mine}
-        onClick={() => {
-          feedback?.("toggle");
-          setSkyMode(mine ? "yours" : "mine");
-        }}
-      >
-        {mine ? <HomeSimple width={15} height={15} strokeWidth={2} aria-hidden /> : <Globe width={15} height={15} strokeWidth={2} aria-hidden />}
-      </button>
+      {/* my sky (Bangalore) vs your sky switcher hidden from the top nav (Agam 2026-10-11); skyMode keeps its default */}
       <span className="scene-ctl__wrap" ref={wrapRef} style={{ "--i": i + 1 }}>
         <button
           ref={btnRef}

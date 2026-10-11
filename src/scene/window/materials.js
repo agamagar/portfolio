@@ -257,9 +257,25 @@ function wrapTextures(node) {
 // The textures for a quality tier, generated in a worker: resolves to what
 // createRoomMaterials takes as ctx.textures, or null if there is no worker (then the
 // materials generate them on the main thread). One worker per call, gone on receipt.
-export function prepareRoomTextures(quality = "high") {
+export async function prepareRoomTextures(quality = "high") {
+  if (typeof Worker === "undefined") return null;
+  // a repeat visit reads them back from IndexedDB (texCache.js, keyed by a hash of the
+  // generator); the first one generates in the worker and stores the result
+  let cache = null;
+  try {
+    cache = await import("./texCache.js");
+    const hit = await cache.readTextures(quality);
+    if (hit) return hit;
+  } catch {
+    cache = null;
+  }
+  const made = await generateInWorker(quality);
+  if (made && cache) cache.writeTextures(made);
+  return made;
+}
+
+function generateInWorker(quality) {
   return new Promise((resolve) => {
-    if (typeof Worker === "undefined") return resolve(null);
     let worker;
     try {
       worker = new Worker(new URL("./roomTextures.worker.js", import.meta.url), { type: "module" });

@@ -14,6 +14,7 @@
 // Frame: x along the edge, y up, z toward the camera; origin on the edge's top.
 
 import * as THREE from "three/webgpu";
+import { creased, ownWith } from "./propKit.js";
 import { Batch, M } from "./geom.js";
 
 const SCALE = 1 / 3;
@@ -51,10 +52,10 @@ export function buildVrHeadset(mats, parent) {
   const H = 0.098, DEPTH = 0.07, BEV = 0.022;
   const zFront = -DEPTH / 2, zFace = DEPTH / 2;
   const plan = trapezoid(0.092 - BEV, 0.082 - BEV, -zFront - 0.004, -zFace + 0.004, 0.02);
-  const shell = new THREE.ExtrudeGeometry(plan, { depth: H - 2 * BEV, bevelEnabled: true, bevelThickness: BEV, bevelSize: BEV, bevelSegments: 5, curveSegments: 10 });
+  const shell = new THREE.ExtrudeGeometry(plan, { depth: H - 2 * BEV, bevelEnabled: true, bevelThickness: BEV, bevelSize: BEV, bevelSegments: 12, curveSegments: 28 });
   shell.rotateX(-Math.PI / 2); // extrude axis -> up; the plan's y -> -z
   shell.translate(0, BEV, 0); // its foot on y = 0
-  add(shellM, shell);
+  add(shellM, creased(shell, 35));
 
   // --- the front (facing the wall): three tall dark sensor pills, the side ones a
   // little larger, set into the shell's face
@@ -68,10 +69,10 @@ export function buildVrHeadset(mats, parent) {
   // cut-out, and the two lenses
   // (render: the interface swamped the shell; a little smaller, so the white shell frames it)
   const iface = trapezoid(0.068, 0.064, -zFace, -zFace - 0.02, 0.016);
-  const ifaceG = new THREE.ExtrudeGeometry(iface, { depth: H * 0.6, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.006, bevelSegments: 3, curveSegments: 8 });
+  const ifaceG = new THREE.ExtrudeGeometry(iface, { depth: H * 0.6, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.006, bevelSegments: 6, curveSegments: 20 });
   ifaceG.rotateX(-Math.PI / 2);
   ifaceG.translate(0, H * 0.2 + 0.008, 0);
-  add(faceM, ifaceG);
+  add(faceM, creased(ifaceG, 35));
   // the nose cut-out: a shell-coloured notch filling the interface's bottom middle
   const nose = new THREE.SphereGeometry(1, 14, 10);
   nose.scale(0.016, 0.012, 0.012); // flatter: render 1 read as a white ball
@@ -82,19 +83,44 @@ export function buildVrHeadset(mats, parent) {
     add(lensM, lens, M.T(s * 0.03, H * 0.53, zFace + 0.0305)); // just proud of the interface, so they read
   }
 
+
+  // --- the detail pass (2026-10-11, Agam: "add a lot more detail to the 3D models") ---
+  const ringM = new THREE.MeshStandardMaterial({ name: "vrBezel", color: 0x0c0d0f, roughness: 0.35, metalness: 0.4 });
+  const camM = new THREE.MeshPhysicalMaterial({ name: "vrCamera", color: 0x07080a, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05 });
+  const ventM = new THREE.MeshStandardMaterial({ name: "vrVent", color: 0x1b1c1f, roughness: 0.8 });
+  for (const s of [-1, 1]) {
+    // a black bezel round each lens, and the lens's fresnel rings
+    const bez = new THREE.TorusGeometry(0.0205, 0.0028, 10, 36);
+    add(ringM, bez, M.T(s * 0.03, H * 0.53, zFace + 0.0318));
+    for (const [r0, r1] of [[0.007, 0.0078], [0.0125, 0.0133]]) {
+      const rg = new THREE.RingGeometry(r0, r1, 32);
+      add(ringM, rg, M.T(s * 0.03, H * 0.53, zFace + 0.0326));
+    }
+    // the tracking cameras at the face's outer top corners
+    const cam = new THREE.SphereGeometry(1, 14, 10);
+    cam.scale(0.0055, 0.0055, 0.0025);
+    add(camM, cam, M.T(s * 0.074, H * 0.8, zFace - 0.002));
+  }
+  // vent slits across the top and a power button on the right
+  for (let i = 0; i < 6; i++) add(ventM, new THREE.BoxGeometry(0.05, 0.0012, 0.0022), M.T(0, H - 0.0005, zFront + 0.02 + i * 0.0055));
+  const btn = new THREE.CylinderGeometry(0.0042, 0.0042, 0.003, 18);
+  btn.rotateZ(Math.PI / 2);
+  add(ringM, btn, M.T(0.0905, H * 0.7, 0));
+
   // (2026-10-05: "remove the strap from the VR headset": no arms, no band; the
   // shell and its face side alone)
 
   const g = new THREE.Group();
   g.name = "vrModel";
   g.position.y = 0.0005; // a hair of clearance on the edge
-  B.build(g);
+  const meshes = B.build(g);
+  ownWith(meshes, [ringM, camM, ventM]);
   parent.add(g);
 
   // the glisten: a soft highlight on each lens that sweeps across it every few
   // seconds while the headset sits still, like light running over curved glass. An
   // additive white ellipse clipped (by size) to the lens, its sweep eased in and out,
-  // the two lenses a beat apart. It never blooms: the room's MRT emissive is unset
+  // the two lenses in step, as one light on one visor. It never blooms: the room's MRT emissive is unset
   const glints = [];
   for (const s of [-1, 1]) {
     const mat = new THREE.MeshBasicNodeMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
@@ -104,7 +130,7 @@ export function buildVrHeadset(mats, parent) {
     glint.rotation.z = -0.5; // a diagonal streak
     glint.renderOrder = 2;
     g.add(glint);
-    glints.push({ glint, mat, cx: s * 0.03 * SCALE, cy: H * 0.53 * SCALE, z: (zFace + 0.0328) * SCALE, phase: s > 0 ? 0.18 : 0 });
+    glints.push({ glint, mat, cx: s * 0.03 * SCALE, cy: H * 0.53 * SCALE, z: (zFace + 0.0328) * SCALE, phase: 0 }); // one phase: both lenses glint together (2026-10-11)
   }
   const PERIOD = 4.2, SWEEP = 0.9; // s between sweeps, s a sweep takes
   let t = 0;
@@ -120,5 +146,8 @@ export function buildVrHeadset(mats, parent) {
     }
   }
   // it has no head to nod: room.js feeds every toy's motion, so this is a no-op
-  return { group: g, update, jiggle() {} };
+  const api = { group: g, update, jiggle() {} };
+  // QA close-ups (tools): dev, or the capture contract's capture=1
+  if (typeof window !== "undefined" && (import.meta.env?.DEV || /[?&]capture=1/.test(window.location?.search || ""))) (window.__pets ||= {}).vr = api;
+  return api;
 }

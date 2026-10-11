@@ -1,6 +1,6 @@
 // A die-cast miniature of a Royal Enfield Meteor 350 on the monitor's top edge
 // (2026-09-27, Agam: "remove that and add a small miniature model of a Meteor 350";
-// it replaces the souvenir tile). About 1:30, 7 cm long like the woodie beside it.
+// it replaces the souvenir tile). 1:64 like the woodie beside it (3.3 cm long; it was 1:30, 7 cm).
 // Modelled in real metres (x along the bike, front at +x; y up; z across) and scaled
 // down by the group: the cruiser read is the silhouette, so the parts that make it
 // are here, the rest is left out. A 19" front and 17" rear alloy wheel, the teardrop
@@ -10,8 +10,9 @@
 
 import * as THREE from "three/webgpu";
 import { Batch, M } from "./geom.js";
+import { ownWith, tubeAlong } from "./propKit.js";
 
-const SCALE = 1 / 30;
+const SCALE = 1 / 40; // 1:40, 5 cm long, vs the car's 1:64 (2026-10-11, Agam: "make the bike bigger" twice; readability over strict scale); was 1:30, 1:64, 1:51
 const WB = 1.4; // wheelbase
 const FX = WB / 2, RX = -WB / 2, FR = 0.33, RR = 0.31;
 
@@ -112,12 +113,83 @@ export function buildBike(mats, parent) {
   for (const s of [-1, 1]) bar(black, [0.12, 0.3, s * 0.12], [0.12, 0.3, s * 0.26], 0.018);
   bar(black, [-0.05, 0.28, -0.14], [-0.2, 0.0, -0.32], 0.016);
 
+  // --- the detail pass (2026-10-11, Agam: "add a lot more detail to the 3D models") ---
+  const lampM = new THREE.MeshStandardMaterial({ name: "bikeLamp", color: 0xfff1c8, roughness: 0.1, emissive: 0x4a3f22 });
+  const tailM = new THREE.MeshStandardMaterial({ name: "bikeTail", color: 0xb3121a, roughness: 0.25, emissive: 0x3a0306 });
+  const amberM = new THREE.MeshStandardMaterial({ name: "bikeAmber", color: 0xe08a1c, roughness: 0.2, emissive: 0x3a2004 });
+  const plateM = new THREE.MeshStandardMaterial({ name: "bikePlate", color: 0xe9e6dc, roughness: 0.5 });
+  // tread blocks round both tyres, and finer wire spokes between the alloy ones
+  for (const [x, r] of [[FX, FR], [RX, RR]]) {
+    const R = r - 0.065 + 0.07;
+    for (let i = 0; i < 64; i++) {
+      const a = (i / 64) * Math.PI * 2;
+      add(m.tyre, new THREE.BoxGeometry(0.02, 0.007, 0.095), M.mul(M.T(x, r, 0), M.RZ(a), M.T(R, 0, 0)));
+    }
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2 + 0.17;
+      const w = i % 2 ? 0.03 : -0.03;
+      bar(alloy, [x, r, w], [x + Math.cos(a) * (r - 0.09), r + Math.sin(a) * (r - 0.09), w * 0.2], 0.0045);
+    }
+  }
+  // the front disc and its caliper, the rear drum
+  const disc = new THREE.RingGeometry(0.07, 0.125, 36);
+  add(m.chrome, disc, M.T(FX, FR, 0.065));
+  add(m.chrome, disc, M.mul(M.T(FX, FR, 0.0645), M.RY(Math.PI)));
+  add(black, new THREE.BoxGeometry(0.07, 0.05, 0.03), M.T(FX - 0.13, FR + 0.04, 0.075));
+  const drum = new THREE.CylinderGeometry(0.075, 0.075, 0.05, 24);
+  drum.rotateX(Math.PI / 2);
+  add(black, drum, M.T(RX, RR, 0.06));
+  // the headlamp: a chrome rim and a lit lens, two amber indicators on stalks
+  const lensRing = new THREE.TorusGeometry(0.075, 0.012, 8, 28);
+  lensRing.rotateY(Math.PI / 2);
+  add(m.chrome, lensRing, M.T(0.675, 0.92, 0));
+  const lens = new THREE.SphereGeometry(0.07, 18, 10);
+  lens.scale(0.4, 1, 1);
+  add(lampM, lens, M.T(0.675, 0.92, 0));
+  for (const s of [-1, 1]) {
+    bar(black, [0.58, 0.88, s * 0.1], [0.6, 0.84, s * 0.2], 0.01);
+    blob(amberM, [0.6, 0.83, s * 0.21], [0.035, 0.03, 0.035], 10);
+    blob(amberM, [-0.82, 0.66, s * 0.12], [0.03, 0.026, 0.03], 10);
+  }
+  // cables: clutch and brake runs from the grips along the bars and down the forks
+  for (const s of [-1, 1]) add(black, tubeAlong([[0.34, 1.1, s * 0.42], [0.42, 1.06, s * 0.3], [0.5, 1.0, s * 0.14], [0.5, 0.78, s * 0.08]], 0.007, 14, 5));
+  // brake and clutch levers
+  for (const s of [-1, 1]) bar(m.chrome, [0.34, 1.12, s * 0.38], [0.44, 1.12, s * 0.52], 0.008);
+  // the chain: sprocket, the two runs and the rear sprocket, the gear lever
+  const spr = (x, y, rad) => {
+    const g = new THREE.CylinderGeometry(rad, rad, 0.02, 20);
+    g.rotateX(Math.PI / 2);
+    add(m.chrome, g, M.T(x, y, -0.07));
+  };
+  spr(-0.1, 0.38, 0.05);
+  spr(RX, RR, 0.085);
+  bar(black, [-0.1, 0.43, -0.075], [RX, RR + 0.085, -0.075], 0.008);
+  bar(black, [-0.1, 0.33, -0.075], [RX, RR - 0.085, -0.075], 0.008);
+  bar(m.chrome, [-0.02, 0.34, -0.16], [0.08, 0.28, -0.24], 0.01);
+  // the engine's side cover and a heat-shield with bands along the exhaust
+  const cover = new THREE.CylinderGeometry(0.09, 0.09, 0.012, 24);
+  cover.rotateX(Math.PI / 2);
+  add(m.chrome, cover, M.T(0.02, 0.42, -0.155));
+  for (let i = 0; i < 4; i++) {
+    const band = new THREE.TorusGeometry(0.045, 0.01, 6, 16);
+    band.rotateY(Math.PI / 2);
+    add(black, band, M.T(-0.45 - i * 0.14, 0.34 + i * 0.016, 0.2));
+  }
+  // the tail: a red lamp, the number plate on its bracket, knee pads on the tank
+  blob(tailM, [RX - 0.34, 0.6, 0], [0.03, 0.03, 0.045], 10);
+  add(plateM, new THREE.BoxGeometry(0.01, 0.07, 0.15), M.T(RX - 0.4, 0.5, 0));
+  for (const s of [-1, 1]) blob(black, [0.16, 0.8, s * 0.17], [0.1, 0.05, 0.015], 10);
+  // the seat's piping
+  add(black, tubeAlong([[-0.45, 0.76, 0.06], [-0.24, 0.79, 0.18], [0.0, 0.76, 0.12]], 0.007, 12, 4));
+  add(black, tubeAlong([[-0.45, 0.76, -0.06], [-0.24, 0.79, -0.18], [0.0, 0.76, -0.12]], 0.007, 12, 4));
+
   // lean onto the stand: roll about x toward -z
   const g = new THREE.Group();
   g.name = "bikeModel";
   g.rotation.x = -0.1;
   g.position.y = 0.0015;
-  B.build(g);
+  const meshes = B.build(g);
+  ownWith(meshes, [lampM, tailM, amberM, plateM]);
   parent.add(g);
   return g;
 }

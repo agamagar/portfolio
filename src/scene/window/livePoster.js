@@ -109,7 +109,11 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
   await mediaReady(root, landTop, landTop + vh);
   // extraSkip (sceneWarm.js): the plain page's own sky band, its tooltip and the loader
   // pill, when the landing is captured from the plain page before the hand-over
-  const skip = (el) => el.nodeType === 1 && [...SKIP, ...extraSkip].some((c) => el.classList?.contains(c));
+  // ...and every fixed overlay among the root's own children (the site cursor `.sc`, the
+  // loader pill, the sky band): they belong to the viewport, not to the page, so baked
+  // into the monitor's copy they sat there as ghosts at the hand-over (2026-10-11)
+  const overlay = (el) => el.parentElement === root && getComputedStyle(el).position === "fixed";
+  const skip = (el) => el.nodeType === 1 && ([...SKIP, ...extraSkip].some((c) => el.classList?.contains(c)) || overlay(el));
   const below = (el) => {
     if (el.nodeType !== 1 || el === root) return false;
     const r = el.getBoundingClientRect();

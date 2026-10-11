@@ -11,6 +11,7 @@ import { buildCar } from "./car.js";
 import { buildBike } from "./bike.js";
 import { buildScooter } from "./scooter.js";
 import { buildBobblehead } from "./bobblehead.js";
+import { contactShadow, footprint } from "./propKit.js";
 import { buildVrHeadset } from "./vrHeadset.js";
 import { buildTissueFrame } from "./tissueFrame.js";
 import { makeCodeScreen } from "./codeScreen.js";
@@ -291,12 +292,20 @@ export function buildInterior(P, ctx, mats, root, win) {
   car.name = "car";
   place(car, R.car);
   buildCar(mats, car, { quality: P.quality });
+  {
+    const fp = footprint(car);
+    if (fp) contactShadow(car, { w: fp.w * 1.15, d: fp.d * 1.5 }).position.set(fp.cx, 0.0002, fp.cz);
+  }
   // the Meteor 350 miniature, where the souvenir tile was (Agam, 2026-09-27: "remove
   // that and add a small miniature model of a Meteor 350")
   const bike = new THREE.Group();
   bike.name = "bike";
   place(bike, R.bike);
   buildBike(mats, bike);
+  {
+    const fp = footprint(bike);
+    if (fp) contactShadow(bike, { w: fp.w * 1.15, d: fp.d * 1.5 }).position.set(fp.cx, 0.0002, fp.cz);
+  }
   // the Zepto scooter, the golden retriever bobblehead and the VR headset (2026-10-05)
   const mk = (name, C, build) => {
     if (!C || C.hidden) return null; // hidden: not built at all, so it cannot be hovered or dragged
@@ -304,6 +313,9 @@ export function buildInterior(P, ctx, mats, root, win) {
     grp.name = name;
     place(grp, C);
     const api = build(grp);
+    // a soft contact shadow under it, so it sits on the monitor's edge
+    const fp = footprint(grp);
+    if (fp) contactShadow(grp, { w: fp.w * 1.18, d: fp.d * 1.3 }).position.set(fp.cx, 0.0002, fp.cz);
     if (api?.update) grp.userData.bobble = api; // the bobblehead's head spring
     return grp;
   };

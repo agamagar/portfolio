@@ -14,6 +14,7 @@
 
 import * as THREE from "three/webgpu";
 import { Batch, boxGeo, M } from "./geom.js";
+import { ownWith, tubeAlong } from "./propKit.js";
 
 const L = 0.07; // length
 const FRONT_WHEEL = 0.0215, REAR_WHEEL = -0.0225, WHEEL_R = 0.0062;
@@ -71,15 +72,7 @@ function pearl(g) {
   return g;
 }
 
-export function buildCar(mats, parent, { quality = "high" } = {}) {
-  const m = mats.m;
-  const CB = new Batch("car");
-  const seg = quality === "low" ? 16 : 28;
-  // the lower body, tail (-x) to nose (+x): the beltline at 14.8 mm, the sides
-  // rolling under to the rocker, the fenders swelling over the wheels, the nose and
-  // the tail rounded down
-  const body = loft(
-    [
+const BODY = [
       [-0.0362, 0.0082, 0.0108, 0.004, 2.5],
       [-0.0357, 0.0066, 0.0132, 0.0094, 2.8],
       [-0.0346, 0.0056, 0.0148, 0.0113, 3],
@@ -94,9 +87,16 @@ export function buildCar(mats, parent, { quality = "high" } = {}) {
       [0.0347, 0.0058, 0.0124, 0.0107, 2.8],
       [0.0358, 0.0068, 0.0108, 0.0088, 2.6],
       [0.0362, 0.008, 0.0094, 0.004, 2.5],
-    ],
-    seg,
-  );
+];
+
+export function buildCar(mats, parent, { quality = "high" } = {}) {
+  const m = mats.m;
+  const CB = new Batch("car");
+  const seg = quality === "low" ? 16 : 28;
+  // the lower body, tail (-x) to nose (+x): the beltline at 14.8 mm, the sides
+  // rolling under to the rocker, the fenders swelling over the wheels, the nose and
+  // the tail rounded down
+  const body = loft(BODY, seg);
   CB.add(m.carBody, body);
   // the cabin: tinted glass all round (the pillars and the roof skin go over it),
   // a raked windshield, a crowned roof, the wagon's near-upright tail
@@ -177,8 +177,71 @@ export function buildCar(mats, parent, { quality = "high" } = {}) {
       hub.rotateX(Math.PI / 2);
       CB.add(m.chrome, hub, M.T(wx, WHEEL_R, s * 0.0119));
     }
-  CB.build(parent);
+  // --- the detail pass (2026-10-11, Agam: "add a lot more detail to the 3D models") ---
+  const gapM = new THREE.MeshStandardMaterial({ name: "carGap", color: 0x0d0e10, roughness: 0.6 });
+  const plateM = new THREE.MeshStandardMaterial({ name: "carPlate", color: 0xe9e6dc, roughness: 0.5 });
+  const tailM = new THREE.MeshStandardMaterial({ name: "carTail", color: 0xb3121a, roughness: 0.25, emissive: 0x3a0306 });
+  const lensM = new THREE.MeshStandardMaterial({ name: "carHeadLens", color: 0xfff3cf, roughness: 0.12, emissive: 0x4a4026 });
+  // where the lofted body's side is at (x, y), by the stations
+  const bodyZ = (x, y) => {
+    let i = 0;
+    while (i < BODY.length - 2 && x > BODY[i + 1][0]) i++;
+    const a = BODY[i], b = BODY[i + 1], k = Math.max(0, Math.min(1, (x - a[0]) / (b[0] - a[0])));
+    const yb = a[1] + (b[1] - a[1]) * k, yt = a[2] + (b[2] - a[2]) * k, hw = a[3] + (b[3] - a[3]) * k, n = a[4] + (b[4] - a[4]) * k;
+    const t = (y - (yb + yt) / 2) / ((yt - yb) / 2);
+    return Math.abs(t) >= 1 ? 0 : hw * Math.pow(1 - Math.pow(Math.abs(t), n), 1 / n);
+  };
+  // panel gaps: the door shut lines run down the sides from the pillars, hugging the
+  // body, and a hood line across the bonnet
+  for (const s of [-1, 1]) {
+    for (const x of [-0.0322, -0.0205, -0.0075]) {
+      const pts = [];
+      for (let y = 0.0066; y <= 0.0154; y += 0.0011) pts.push([x, y, s * (bodyZ(x, y) + 0.00004)]);
+      CB.add(gapM, tubeAlong(pts, 0.00013, 14, 4));
+    }
+    // the sill line under the doors
+    const sill = [];
+    for (let x = -0.0322; x <= 0.0096; x += 0.0053) sill.push([x, 0.0064, s * (bodyZ(x, 0.0064) + 0.00004)]);
+    CB.add(gapM, tubeAlong(sill, 0.00012, 16, 4));
+    // door handles and the fuel flap's dot
+    for (const x of [-0.0226, -0.0108]) CB.add(m.chrome, boxGeo(x - 0.0017, x + 0.0017, 0.0132, 0.0137, 0, 0.0004, "x"), M.T(0, 0, s * (bodyZ(x, 0.0134) - 0.0001) - (s < 0 ? 0.0004 : 0)));
+    // mirrors on short stalks
+    CB.add(m.chrome, tubeAlong([[0.0086, 0.0164, s * 0.0112], [0.0082, 0.0172, s * 0.0124]], 0.0002, 4, 5));
+    const mir = new THREE.SphereGeometry(1, 12, 8);
+    mir.scale(0.0009, 0.0016, 0.0011);
+    CB.add(m.chrome, mir, M.T(0.0081, 0.0176, s * 0.0132));
+    // tail lights and headlight lenses with chrome rims
+    const tl = new THREE.SphereGeometry(1, 10, 8);
+    tl.scale(0.0005, 0.0011, 0.0017);
+    CB.add(tailM, tl, M.T(-0.0357, 0.0097, s * 0.0077));
+    const rim = new THREE.TorusGeometry(0.0019, 0.00028, 6, 20);
+    rim.rotateY(Math.PI / 2);
+    CB.add(m.chrome, rim, M.T(0.0335, 0.0128, s * 0.0094));
+    const ln = new THREE.SphereGeometry(0.0015, 12, 8);
+    CB.add(lensM, ln, M.T(0.0331, 0.0128, s * 0.0094));
+  }
+  const hood = [];
+  for (let z = -0.0098; z <= 0.0099; z += 0.0033) hood.push([0.0098, 0.0158, z]);
+  CB.add(gapM, tubeAlong(hood, 0.00012, 12, 4));
+  CB.add(plateM, boxGeo(-0.0364, -0.0359, 0.0072, 0.0087, -0.0038, 0.0038, "z"));
+  // wheels: a tread of small blocks round each tyre and six thin spokes in each rim
+  for (const wx of [FRONT_WHEEL, REAR_WHEEL])
+    for (const s of [-1, 1]) {
+      for (let i = 0; i < 48; i++) {
+        const a = (i / 48) * Math.PI * 2;
+        CB.add(m.tyre, boxGeo(-0.00026, 0.00026, WHEEL_R - 0.0001, WHEEL_R + 0.00009, -0.0021, 0.0021, "z"), M.mul(M.T(wx, WHEEL_R, s * 0.0118), M.RZ(a)));
+      }
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2 + 0.26;
+        CB.add(m.chrome, boxGeo(0.0008, 0.0039, -0.0002, 0.0002, -0.00012, 0.00012, "x"), M.mul(M.T(wx, WHEEL_R, s * 0.0141), M.RZ(a)));
+      }
+      const wall = new THREE.TorusGeometry(WHEEL_R * 0.82, 0.00022, 6, 28);
+      CB.add(m.tyre, wall, M.T(wx, WHEEL_R, s * 0.0141));
+    }
+  const meshes = CB.build(parent);
+  ownWith(meshes, [gapM, plateM, tailM, lensM]);
 }
+
 
 // the car's frame for the livery painter (materials.js)
 export const CAR = { L, FRONT_WHEEL, REAR_WHEEL, WHEEL_R, Y0, YSPAN };
