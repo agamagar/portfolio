@@ -4800,6 +4800,93 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   }
 }
 
+/* ---------- case-study load reveal (muzdylub, 8 Oct) ----------
+   "The page load for this case study is not smooth, glitch on every open, need
+   a smooth reveal of animation on load." A case with cs.loadReveal puts
+   data-load-reveal on .page--article (NOT data-reveal: hello/hello.css owns a
+   global [data-reveal] { opacity: 0 } that hid the whole page when this first
+   used that name): "wait" while the fonts and the hero's assets
+   settle (capped at 1.6 s in CaseStudy), then "in". Layout is final the whole
+   time (opacity only; the hero's space is reserved by an empty .shh), so nothing
+   moves while it waits. The old fade-up on these elements ran at mount, behind
+   the lazy hero, and was over before anything was ready: it is replaced, for
+   these pages only, by one reveal that starts when the page is. The hero and the
+   header rise; the long body only fades (a 39,000 px layer is not translated). */
+.page--article[data-load-reveal] .article__head,
+.page--article[data-load-reveal] .article__hero-board,
+.page--article[data-load-reveal] .article__body {
+  animation: none;
+}
+.page--article[data-load-reveal="wait"] .article__head,
+.page--article[data-load-reveal="wait"] .article__hero-board,
+.page--article[data-load-reveal="wait"] .article__body {
+  opacity: 0;
+}
+/* mv-demist (10 Oct, "when the page loads it should be a soft de-mist, coming
+   into focus"): the rise is gone. The hero and header settle from a hair
+   larger as they fade (a lens finding focus, not a slide), and a viewport-sized
+   MIST sits over everything and clears: frosted (backdrop blur + a film of the
+   page colour) to sharp. The mist is fixed and viewport-sized, so the blur
+   costs one screen of pixels, never the 39,000 px body. */
+/* QA 11 Oct ("the header animation glitches"): the hero board rises WITHOUT the
+   scale. Scaling the board re-rasterised its blurred, x3.4-scaled heart layers
+   on every frame of the reveal; a translate stays on the compositor. */
+.page--article[data-load-reveal="in"] .article__hero-board {
+  animation: cs-reveal-hero 1100ms cubic-bezier(0.05, 0.7, 0.1, 1) backwards;
+}
+@keyframes cs-reveal-hero {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: none; }
+}
+.page--article[data-load-reveal="in"] .article__head {
+  animation: cs-reveal-focus 1100ms cubic-bezier(0.05, 0.7, 0.1, 1) 80ms backwards;
+}
+.page--article[data-load-reveal="in"] .article__body {
+  animation: cs-reveal-rise-fade 900ms cubic-bezier(0.05, 0.7, 0.1, 1) 120ms backwards;
+}
+/* 11 Oct ("add a small movement up the y axis during reveal"): the focus
+   settle now also rises 40px, and the body rises 32px with its fade (11 Oct, "need more movement": was 16 / 12) */
+@keyframes cs-reveal-focus {
+  from { opacity: 0; transform: translateY(40px) scale(1.025); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes cs-reveal-rise-fade {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
+}
+.page--article[data-load-reveal]::before {
+  content: "";
+  position: fixed; inset: 0; z-index: 2147483000;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--bg, #fff) 55%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.1);
+  backdrop-filter: blur(22px) saturate(1.1);
+}
+.page--article[data-load-reveal="in"]::before {
+  animation: cs-demist 1400ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+@keyframes cs-demist {
+  0% { -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1); opacity: 1; }
+  99% { -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); opacity: 0; visibility: visible; }
+  100% { -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 0; visibility: hidden; }
+}
+@keyframes cs-reveal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page--article[data-load-reveal="in"] .article__hero-board,
+  .page--article[data-load-reveal="in"] .article__head,
+  .page--article[data-load-reveal="in"] .article__body { animation: none; }
+  .page--article[data-load-reveal]::before { display: none; }
+}
+@media print {
+  .page--article[data-load-reveal] .article__head,
+  .page--article[data-load-reveal] .article__hero-board,
+  .page--article[data-load-reveal] .article__body { opacity: 1 !important; animation: none !important; }
+  .page--article[data-load-reveal]::before { display: none; }
+}
+
 .header,
 .section-label,
 .work__item,

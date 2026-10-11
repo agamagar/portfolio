@@ -309,7 +309,15 @@ const WindowScenePage = lazy(() => import("./scene/window/WindowScenePage"));
 const SdAvailability = lazy(() => import("./figures/sdAvailability/SdAvailability"));
 // mujk4cl5 (27 Sep): the hero is now the Figma 231:8842 loop; the old entrance-only
 // hero (SchedHeartHero.jsx) is kept on disk
-const SchedHeartHero = lazy(() => import("./figures/scheduled/SchedHeartLoop"));
+const loadHeart = () => import("./figures/scheduled/SchedHeartLoop");
+const SchedHeartHero = lazy(loadHeart);
+// 8 Oct (muzdylub): chunk + every opening asset, fetched once. Started the moment
+// the bundle runs on a Scheduled Delivery URL, and awaited by the load reveal.
+let heartWarm;
+const warmHeart = () => (heartWarm ||= loadHeart().then((m) => m.preloadHeart()).catch(() => {}));
+if (typeof window !== "undefined" && window.location.pathname.startsWith("/work/scheduled-delivery")) warmHeart();
+// LoadRevealContext (ui/loadReveal.js) is false while a case study that opts in
+// (cs.loadReveal) is still settling; the hero holds its clock on it
 const PronCards = lazy(() => import("./figures/scheduled/PronCards"));
 const SdImpactCharts = lazy(() => import("./figures/sdAvailability/SdImpactCharts"));
 const SchedMetricStory = lazy(() => import("./figures/scheduled/SchedMetricStory"));
@@ -365,6 +373,7 @@ import { animate as motionAnimate } from "motion";
 import { Refresh as IconRefresh, CursorPointer as IconCursor } from "iconoir-react";
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
 import { GlassLens } from "./ui/GlassLens";
+import { LoadRevealContext } from "./ui/loadReveal"; // muzdylub (8 Oct)
 import SchedInsight from "./figures/scheduled/SchedInsight";
 import { Compass, Buildings, Handshake } from "@phosphor-icons/react";
 import SchedUseCases from "./figures/scheduled/SchedUseCases";
@@ -558,8 +567,12 @@ const figures = {
     </Suspense>
   ),
   // Scheduled Delivery hero: the heart lockup from Figma, animated (mtmgr6eg).
+  // 8 Oct (muzdylub): an empty .shh stands in until the chunk lands (same aspect
+  // ratio and cap, so nothing below it moves when the real hero mounts). The hero
+  // mounts during the page's wait, behind opacity 0, and holds its own clock until
+  // the reveal (SchedHeartLoop reads LoadRevealContext).
   schedHeartHero: () => (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="shh shl" aria-hidden="true" />}>
       <SchedHeartHero />
     </Suspense>
   ),
@@ -1816,6 +1829,7 @@ export const caseStudies = {
     heroLoop: false, // mtmhrtlb looped it; mtmkjwp3: play once, replay button
     heroToggleHidden: true, // mtpauadr: the Animation / Video toggle is hidden; the coded heart hero is the header
     heroFirst: true, // mtpavlcs: the heart hero sits above the facts header
+    loadReveal: true, // muzdylub (8 Oct): hold the page until fonts + the hero's assets are ready, then rise in one staggered reveal (CaseStudy, index.css [data-load-reveal])
     heroAlt: "Schedule Delivery: the lockup settling inside a lavender heart",
     eyebrow: "Zepto · Case study",
     // mtparlyq: title wording and the facts header from Figma Portfolio 2026
@@ -9698,6 +9712,39 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     setListening(false);
   }, [slug]);
 
+  // muzdylub (8 Oct, "the page load is not smooth, glitch on every open, need a
+  // smooth reveal"): a case that opts in (cs.loadReveal) opens with its content
+  // held at opacity 0 (layout is already final, the hero's space reserved) until
+  // the fonts and the hero's assets are ready, then rises in one staggered
+  // reveal (index.css [data-load-reveal]). Capped at 1.6 s so a slow asset can never
+  // leave the page blank. The hero mounts only once revealed (LoadRevealContext).
+  const gated = !!cs.loadReveal && !compact;
+  const [revealed, setRevealed] = useState(!gated);
+  useEffect(() => {
+    if (!gated) { setRevealed(true); return undefined; }
+    setRevealed(false);
+    let live = true;
+    const settled = (async () => {
+      // two frames: layout has run, so every font the page needs has been requested
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      await Promise.all([
+        document.fonts ? document.fonts.ready : null,
+        cs.heroFig === "schedHeartHero" ? warmHeart() : null,
+      ]);
+      // the chunk is in; React commits the hero a beat later. Wait for its layers
+      // to be on the page so it rises with the rest, not after it.
+      if (cs.heroFig === "schedHeartHero") {
+        await new Promise((r) => {
+          const poll = () => (document.querySelector(".article__hero-board .shl__heart") ? r() : requestAnimationFrame(poll));
+          poll();
+        });
+      }
+    })().catch(() => {});
+    const cap = new Promise((r) => setTimeout(r, 1600));
+    Promise.race([settled, cap]).then(() => { if (live) setRevealed(true); });
+    return () => { live = false; };
+  }, [slug, gated]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Scroll-spy: highlight the index entry for the section currently in view.
   useEffect(() => {
     const els = cs.sections
@@ -9717,8 +9764,9 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   }, [cs, listening]);
 
   return (
+    <LoadRevealContext.Provider value={revealed}>
     <>
-    <div className="page page--article" data-case={cs.styleKey || slug}>
+    <div className="page page--article" data-case={cs.styleKey || slug} data-load-reveal={gated ? (revealed ? "in" : "wait") : undefined}>
       <div className="article__layout">
         <nav className="article__index" aria-label="Sections">
           <div className="article__index-top">
@@ -10003,6 +10051,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     </div>
     {presenting && <Presentation cs={cs} onExit={onExitPresent} theme={theme} toggleTheme={toggleTheme} />}
     </>
+    </LoadRevealContext.Provider>
   );
 }
 

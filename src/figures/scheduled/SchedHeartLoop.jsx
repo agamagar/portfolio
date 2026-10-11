@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimationFrame } from "motion/react";
 import { cubicBezier } from "motion";
 import { useReducedMotion } from "../ds/hooks";
 import { Refresh as IconRefresh } from "iconoir-react";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback";
+import { LoadRevealContext } from "../../ui/loadReveal"; // muzdylub: the clock waits for the page's reveal
 import { withAudio } from "../../ui/sound";
 import { voice } from "../../ui/motion-sound/synth.js"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 
@@ -148,19 +149,45 @@ const DELIVERY = [["D", 0, 152.77, 0.5748], ["e", 59, 149.72, 0.5821], ["l", 111
 // group's resting opacity 0 baked in, and an "inf" filter region. The files in
 // heart-v2/ are repaired: true viewBox, no baked opacity, finite region.)
 const svgCache = new Map();
+const loadSvg = (src) =>
+  svgCache.has(src)
+    ? Promise.resolve(svgCache.get(src))
+    : fetch(src).then((r) => r.text()).then((t) => {
+        const fixed = t.replace(/style="display: block;"/, 'style="display:block;width:100%;height:100%;overflow:visible"');
+        svgCache.set(src, fixed);
+        return fixed;
+      });
 function InlineSvg({ src }) {
   const [html, setHtml] = useState(() => svgCache.get(src) || "");
   useEffect(() => {
-    if (svgCache.has(src)) return;
+    // QA 11 Oct ("sometimes doesn't show the green layer"): this used to return
+    // early when the cache already held the SVG. If preloadHeart() filled the
+    // cache AFTER the first render but BEFORE this effect, the state stayed ""
+    // and the bolts drew nothing for the whole visit. Always sync from the cache.
+    if (svgCache.has(src)) { setHtml(svgCache.get(src)); return undefined; }
     let live = true;
-    fetch(src).then((r) => r.text()).then((t) => {
-      const fixed = t.replace(/style="display: block;"/, 'style="display:block;width:100%;height:100%;overflow:visible"');
-      svgCache.set(src, fixed);
-      if (live) setHtml(fixed);
-    });
+    loadSvg(src).then((h) => { if (live) setHtml(h); });
     return () => { live = false; };
   }, [src]);
   return <span className="shl__svg" aria-hidden dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+// 8 Oct (muzdylub, "the page load for this case study is not smooth"): every
+// asset the opening frames draw, fetched and decoded BEFORE the hero mounts, so
+// the 4s morph starts on a complete picture (the bolts used to pop in after
+// their fetch, the hearts as each <img> decoded). Never rejects: a failed asset
+// just falls back to loading in place, as before.
+export function preloadHeart() {
+  const decode = (src) => {
+    const im = new Image();
+    im.src = src;
+    return im.decode().catch(() => {});
+  };
+  return Promise.all([
+    ...HEARTS.map((h) => decode(SRC + h.src)),
+    decode(SRC + "icon-heart.svg"),
+    ...BOLTS.map((b) => loadSvg(SRC + b.src).catch(() => {})),
+  ]).then(() => {});
 }
 
 // ONE CLOCK (QA 27 Sep, "make sure all the frames are in sync"). Every layer
@@ -294,7 +321,32 @@ export default function SchedHeartLoop() {
     return () => { ro.disconnect(); io.disconnect(); };
   }, []);
   useEffect(() => { if (reduce) p.set(REST); }, [reduce, p]);
-  const play = !reduce && inView;
+  // muzdylub (8 Oct): mounted while the page is still held at opacity 0, with its
+  // assets warm, but the clock waits for the reveal so the opening beats (the
+  // heart <-> lightning morph, its sound cues) play on a visible page, in step
+  // with it rising. Outside a gated page the context is true: no hold.
+  const revealed = useContext(LoadRevealContext);
+  // QA 11 Oct ("the header animation glitches and sometimes doesn't show the
+  // green layer"): two more conditions before the clock may run.
+  // 1. The bolts' SVG text is in hand. The cap on the page reveal (1.6s) can let
+  //    the page in before preloadHeart() finished, and the morph would play its
+  //    green beat (0.8s-3.2s) over empty bolts.
+  // 2. The de-mist (index.css, 1.4s) has mostly cleared: the clock used to start
+  //    on the reveal itself, so the first bolts formed under the frosted mist.
+  const [boltsReady, setBoltsReady] = useState(() => BOLTS.every((b) => svgCache.has(SRC + b.src)));
+  useEffect(() => {
+    if (boltsReady) return undefined;
+    let live = true;
+    Promise.all(BOLTS.map((b) => loadSvg(SRC + b.src).catch(() => {}))).then(() => { if (live) setBoltsReady(true); });
+    return () => { live = false; };
+  }, [boltsReady]);
+  const [clear, setClear] = useState(false);
+  useEffect(() => {
+    if (!revealed) { setClear(false); return undefined; }
+    const t = setTimeout(() => setClear(true), 500);
+    return () => clearTimeout(t);
+  }, [revealed]);
+  const play = !reduce && inView && revealed && boltsReady && clear;
   // 27 Sep: plays ONCE ("should not play on loop") and holds on REST, the
   // frame where the full lockup is on screen; the replay button runs it again.
   const [done, setDone] = useState(false);
