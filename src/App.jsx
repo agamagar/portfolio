@@ -36,6 +36,7 @@ import SystemSheet, { Ref } from "./figures/lab/SystemSheet";
 import ModesGuide from "./figures/lab/ModesGuide";
 import DeckPresets from "./figures/lab/DeckPresets";
 import FeedbackBench from "./figures/lab/FeedbackBench";
+import FaviconLab from "./figures/lab/FaviconLab";
 import AlongPathV1 from "./figures/lab/alongpath-v1/AlongPathV1";
 import TimelineVerticalV1 from "./figures/lab/timeline-v1/TimelineVerticalV1";
 import DetailV1 from "./figures/lab/DetailV1";
@@ -11326,6 +11327,8 @@ export default function App() {
         <Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} />
       ) : isLab ? (
         <>
+          {/* the tab icon at a size its motion can be judged (7 Oct) */}
+          <FaviconLab />
           <MotionLab />
           {/* the audible half of the design system, beside the visual one
               (annotation msmqar1v) */}

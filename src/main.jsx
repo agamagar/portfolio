@@ -5,9 +5,14 @@ import "./tailwind.css";
 import "@fontsource-variable/stack-sans-headline"; // Stack Sans Headline (OFL-1.1, Fontsource) for the case header, 2026-09-06
 import "./index.css";
 import { startSmoothScroll } from "./ui/smoothScroll";
+import { startFavicon3d } from "./lib/favicon3d";
 
 // inertial wheel scroll for the whole site; no-op under reduced motion
 startSmoothScroll();
+
+// tab icon morphs through solids, one-sided surfaces and 4D shapes (src/lib/favicon3d.js);
+// static face under reduced motion or without WebGL2
+startFavicon3d();
 
 // Agentation visual-feedback toolbar — dev-only, so it never ships in a production
 // build. `endpoint` points at the local agentation-mcp server (`npm run dev:all`),
