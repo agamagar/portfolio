@@ -9,6 +9,7 @@ const IDLE = Number(arg("idle", 60));
 const ONLY = (arg("only", "home-plain,home-room,sd")).split(",");
 const OUT = arg("out", "/tmp/bench.json");
 const LABEL = arg("label", "run");
+const THROTTLE = arg("throttle", ""); // "4g" = 9 Mbps/170 ms (CDP "Regular 4G"-ish); "slow4g" = 1.6 Mbps/150 ms
 
 const SCENARIOS = {
   "home-plain": { path: "/?scene=off", room: false },
@@ -68,6 +69,7 @@ async function run(name, sc, browser) {
   const cdp = await ctx.newCDPSession(page);
   await cdp.send("Network.enable"); await cdp.send("Performance.enable");
   await cdp.send("Network.setCacheDisabled", { cacheDisabled: true });
+  if (THROTTLE) { const t = THROTTLE === "slow4g" ? [1.6e6, 0.75e6, 150] : [9e6, 1.5e6, 170]; await cdp.send("Network.emulateNetworkConditions", { offline: false, downloadThroughput: t[0] / 8, uploadThroughput: t[1] / 8, latency: t[2] }); }
   const reqs = new Map(); let total = 0;
   cdp.on("Network.requestWillBeSent", (e) => reqs.set(e.requestId, { url: e.request.url, type: e.type, bytes: 0 }));
   cdp.on("Network.loadingFinished", (e) => { const r = reqs.get(e.requestId); if (r) { r.bytes = e.encodedDataLength; total += e.encodedDataLength; } });
@@ -83,7 +85,7 @@ async function run(name, sc, browser) {
   out.load = { fcp: round(m.fcp), lcp: round(m.lcp), tbt: round(tbt), cls: +m.cls.toFixed(4), dcl: round(m.dcl), loadEvent: round(m.loadEvt), jsKB: round(byType(/\.m?js$/) / 1024), cssKB: round(byType(/\.css$/) / 1024), imgKB: round(byType(/\.(png|jpe?g|webp|avif|gif|svg)$/i) / 1024), fontKB: round(byType(/\.(woff2?|ttf|otf)$/i) / 1024), mediaKB: round(byType(/\.(mp4|webm|mov|glb|ktx2|mp3|m4a|wav)$/i) / 1024), totalKB: round(total / 1024), requests: reqs.size, longTasks: m.long.length };
 
   if (sc.room) {
-    const ok = await page.waitForFunction(() => document.documentElement.classList.contains("wscene-handover") || document.documentElement.dataset.wsceneDrawn, null, { timeout: 40000 }).then(() => true).catch(() => false);
+    const ok = await page.waitForFunction(() => document.documentElement.classList.contains("wscene-handover") || document.documentElement.dataset.wsceneDrawn, null, { timeout: 90000, polling: 500 }).then(() => true).catch(() => false);
     await sleep(4000);
     out.room = { handedOver: ok };
     out.room.heap = await heapNow(cdp);
