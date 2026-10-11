@@ -26,10 +26,11 @@ export function startSmoothScroll() {
   if (lenis || typeof window === "undefined") return lenis;
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return null;
   lenis = new Lenis({
-    // 1.1s ease-out-expo: long enough to feel inertial, short enough that a
-    // stop feels like a stop. Lenis's own default curve.
-    duration: 1.1,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    // 10 Oct ("the scroll should be minimal, right now it is too jarring"):
+    // the 1.1s expo glide is gone. A lerp of 0.2 closes 20% of the gap each
+    // frame, so the page settles in ~150ms: it tracks the wheel almost 1:1 and
+    // only rounds off the notches. (Was duration 1.1 + ease-out-expo.)
+    lerp: 0.2,
     smoothWheel: true,
     syncTouch: false,
     wheelMultiplier: 1,
