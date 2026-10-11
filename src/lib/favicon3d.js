@@ -800,8 +800,7 @@ export function createFaviconPainter(ctx, { supersample = 1, particles, noBlit =
     ctx.clearRect(0, 0, out, out);
     ctx.drawImage(glCanvas, 0, 0, out, out);
   }
-  paint.gl = gl;
-  paint.size = W0;
+  paint.glCanvas = glCanvas;
   paint.state = state;
   paint.lost = false;
   return paint;
@@ -829,81 +828,34 @@ export function startFavicon3d() {
   const staticType = link.getAttribute("type");
   const t0 = performance.now();
 
-  // perf (11 Oct): the frame is read back WITHOUT blocking the page. canvas.toBlob on
-  // the drawn canvas waited for the GPU queue (measured 25.7 ms per call, 2.3 s of every
-  // 5 s of main thread, whatever the page was doing), and the 4D shapes made it worse.
-  // Now: paint, queue a readPixels into a pixel-pack buffer behind a fence, and only
-  // pick the bytes up on a later tick once the fence has signalled. A 2x2 box average
-  // does the supersample downscale drawImage used to do (same 2:1 filter), then the
-  // 64px frame goes through a CPU canvas to toBlob (an async encode, no GPU wait).
-  const gl = paint.gl, W = paint.size, out = SIZE, k = W / out;
-  // two pack buffers, alternated: a frame is never written into the buffer still waiting to be read
-  const glBufs = [0, 1].map(() => {
-    const b = gl.createBuffer();
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, b);
-    gl.bufferData(gl.PIXEL_PACK_BUFFER, W * W * 4, gl.STREAM_READ);
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-    return b;
-  });
-  let wi = 0;
-  const raw = new Uint8Array(W * W * 4);
-  const img = new ImageData(out, out);
-  const cpu = document.createElement("canvas");
-  cpu.width = cpu.height = out;
-  const cctx = cpu.getContext("2d", { willReadFrequently: true });
-  let fence = null, encoding = false, shown = null, stopped = false;
-  function resolve() {
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, glBufs[wi]);
-    gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, raw);
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-    wi ^= 1;
-    const d = img.data, n = k * k;
-    for (let y = 0; y < out; y++) {
-      for (let x = 0; x < out; x++) {
-        let r = 0, g = 0, b = 0, a = 0;
-        for (let j = 0; j < k; j++) {
-          // readPixels rows run bottom-up
-          const row = (W - 1 - (y * k + j)) * W;
-          for (let i = 0; i < k; i++) { const q = (row + x * k + i) * 4; r += raw[q]; g += raw[q + 1]; b += raw[q + 2]; a += raw[q + 3]; }
-        }
-        // the GL buffer is premultiplied; ImageData is not
-        const o = (y * out + x) * 4;
-        if (a > 0) { d[o] = Math.min(255, (r * 255) / a); d[o + 1] = Math.min(255, (g * 255) / a); d[o + 2] = Math.min(255, (b * 255) / a); d[o + 3] = a / n; }
-        else d[o] = d[o + 1] = d[o + 2] = d[o + 3] = 0;
-      }
-    }
-    cctx.putImageData(img, 0, 0);
-    encoding = true;
-    cpu.toBlob((blob) => {
-      encoding = false;
-      if (!blob || stopped) return;
-      const next = URL.createObjectURL(blob);
-      link.type = "image/png";
-      link.href = next;
-      if (shown) URL.revokeObjectURL(shown);
-      shown = next;
-    }, "image/png");
-  }
+  // perf (11 Oct): the frame never touches the page's main thread for readback. The old
+  // canvas.toBlob on the drawn canvas waited for the GPU queue: 25.7 ms per call, 2.3 s of
+  // every 5 s of main thread (and a PBO + fence read-back still stalled in getBufferSubData
+  // while the GPU was busy with the section's videos). Now the GL frame is snapshotted with
+  // createImageBitmap (a GPU-side copy, async) and handed to a worker, which downscales it
+  // 2:1 (high-quality, as drawImage did) and encodes the PNG on OffscreenCanvas. Any waiting
+  // on the GPU happens in the worker. A frame still in flight means the next tick skips.
+  let busy = false, shown = null, stopped = false;
+  const encSrc = `const c=new OffscreenCanvas(${SIZE},${SIZE}),x=c.getContext("2d");x.imageSmoothingQuality="high";
+onmessage=async(e)=>{try{x.clearRect(0,0,${SIZE},${SIZE});x.drawImage(e.data,0,0,${SIZE},${SIZE});e.data.close();postMessage(await c.convertToBlob({type:"image/png"}))}catch(err){postMessage(null)}}`;
+  const encUrl = URL.createObjectURL(new Blob([encSrc], { type: "text/javascript" }));
+  const enc = new Worker(encUrl);
+  enc.onmessage = (e) => {
+    busy = false;
+    const blob = e.data;
+    if (!blob || stopped) return;
+    const next = URL.createObjectURL(blob);
+    link.type = "image/png";
+    link.href = next;
+    if (shown) URL.revokeObjectURL(shown);
+    shown = next;
+  };
   function frame() {
     if (paint.lost) return stop();
-    if (stopped) return;
-    if (fence) {
-      // last frame's pixels: take them if the GPU is done and the previous encode has
-      // finished, otherwise skip this tick and keep waiting
-      if (encoding) return;
-      const st = gl.clientWaitSync(fence, 0, 0);
-      if (st === gl.TIMEOUT_EXPIRED) return;
-      gl.deleteSync(fence);
-      fence = null;
-      if (st !== gl.WAIT_FAILED) resolve();
-    }
-    // and straight on to the next frame, so a tick that collects one also starts one
+    if (busy || stopped) return;
+    busy = true;
     paint((performance.now() - t0) / 1000);
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, glBufs[wi]);
-    gl.readPixels(0, 0, W, W, gl.RGBA, gl.UNSIGNED_BYTE, 0);
-    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-    fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-    gl.flush();
+    createImageBitmap(paint.glCanvas).then((bmp) => enc.postMessage(bmp, [bmp]), () => { busy = false; });
   }
 
   const src = `let id;onmessage=(e)=>{clearInterval(id);if(e.data>0)id=setInterval(()=>postMessage(0),e.data)}`;
@@ -918,8 +870,8 @@ export function startFavicon3d() {
     if (shown) URL.revokeObjectURL(shown);
     worker.postMessage(0);
     worker.terminate();
-    if (fence) gl.deleteSync(fence);
-    glBufs.forEach((b) => gl.deleteBuffer(b));
+    enc.terminate();
+    URL.revokeObjectURL(encUrl);
     URL.revokeObjectURL(url);
     link.href = staticHref;
     if (staticType) link.type = staticType;
