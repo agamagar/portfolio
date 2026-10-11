@@ -1,0 +1,27 @@
+/* The serif menu (FontSwitch.jsx). The bubble is .theme-toggle, so size, glass and hover
+   match the others; this adds the "Aa" mark and a glass menu. Items are set in their own
+   serif, so the label is the preview. */
+.font-ctl__wrap { position: relative; display: inline-flex; }
+.font-ctl__aa { font: 600 14px/1 var(--font-serif); letter-spacing: -0.02em; }
+.font-ctl__menu {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
+  display: flex; flex-direction: column; gap: 2px; min-width: 11rem; padding: 6px;
+  border-radius: 14px; color: var(--fg);
+  background: var(--glass-film-hover, rgba(255, 255, 255, 0.78));
+  -webkit-backdrop-filter: var(--glass-blur, blur(14px) saturate(1.8));
+  backdrop-filter: var(--glass-blur, blur(14px) saturate(1.8));
+  box-shadow: var(--glass-edge, 0 12px 32px -12px rgb(0 0 0 / 0.35));
+}
+html.dark .font-ctl__menu { background: rgba(28, 28, 32, 0.82); }
+.font-ctl__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; padding: 8px 12px; border: none; border-radius: 9px; background: none;
+  color: inherit; font-size: 1.0625rem; line-height: 1.3; text-align: left; cursor: pointer;
+}
+.font-ctl__item:hover, .font-ctl__item:focus-visible { background: color-mix(in oklab, var(--fg) 8%, transparent); outline: none; }
+.font-ctl__item:focus-visible { box-shadow: inset 0 0 0 2px var(--fg); }
+.font-ctl__check { font-family: system-ui, sans-serif; font-size: 0.8125rem; }
+.font-ctl__group { display: flex; flex-direction: column; gap: 2px; }
+.font-ctl__group + .font-ctl__group { margin-top: 4px; padding-top: 4px; border-top: 1px solid color-mix(in oklab, var(--fg) 12%, transparent); }
+.font-ctl__glabel { padding: 6px 12px 2px; font: 500 11px/1.2 var(--sans, system-ui, sans-serif); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.font-ctl__item:not([style]) { font-family: inherit; }
