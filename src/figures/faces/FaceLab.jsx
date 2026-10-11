@@ -21,7 +21,7 @@ const btn = { font: "500 13px/1 Inter, system-ui, sans-serif", padding: "8px 12p
 export default function FaceLab({ onBack }) {
   const face = useRef(null);
   const [skin, setSkin] = useState(SKINS[0]);
-  const [cycle, setCycle] = useState(true);
+  const [cycle, setCycle] = useState(false); // skins change on click (the spin); Cycle turns auto-change on
   const [overlay, setOverlay] = useState(false);
   const [moment, setMoment] = useState("rest");
   return (

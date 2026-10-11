@@ -623,7 +623,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
   }, [size, src, skin0, cycle]);
 
   return (
-    <div ref={host} className="face-sv" title="Drag to turn. Double-click to reset."
+    <div ref={host} className="face-sv" title="Click to change style. Drag to turn. Double-click to reset."
       style={{ position: "relative", width: Math.round(size * 1.15), height: Math.round(size * 1.25), touchAction: "none" }}
       onClick={(e) => { if (e.currentTarget.dragged) { e.currentTarget.dragged = false; return; } api.current?.next(); }}>
       <style>{`
@@ -637,7 +637,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         @media (hover: none) { .face-sv__hint { opacity: 1; transform: translate(-50%, 0); } }
         @media (prefers-reduced-motion: reduce) { .face-sv__hint { transition: none; } }
       `}</style>
-      <span className="face-sv__hint" aria-hidden="true">Drag to turn</span>
+      <span className="face-sv__hint" aria-hidden="true">Click to change, drag to turn</span>
     </div>
   );
 });
