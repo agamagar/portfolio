@@ -242,7 +242,7 @@ export function buildRoom(P, ctx) {
 
   const win = buildWindow(P, ctx, mats, group);
   const inside = buildInterior(P, ctx, mats, group, win);
-  // a fresh room starts with the blind raised and the chain at rest
+  // a fresh room starts with the blind at its default drop and the chain at rest
   // its starting drop is params.room.blind.defaultDrop (0 raised .. 1 lowered)
   {
     const d0 = Math.max(0, Math.min(1, P.room.blind?.defaultDrop ?? 0));

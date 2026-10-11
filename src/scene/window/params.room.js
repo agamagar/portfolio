@@ -295,7 +295,7 @@ export const ROOM_PARAMS = {
   // fabric Roman blind raised into soft folds, sagging lower on the left (13-photo 7)
   // lowBottom: the hem when fully lowered (W); -0.12 tucks it past the sill top (y 0) to
   // where the glass ends, so no bright strip shows under it (2026-10-05: "all the way down")
-  blind: { bottom: 7.55, top: 9.6, left: -3.6, folds: 5, sag: 0.35, depth: 0.9, lowBottom: -0.12, defaultDrop: 0 }, // defaultDrop: where the blind starts, 0 raised .. 1 lowered (in dev, __blindDrop() reads the live one)
+  blind: { bottom: 7.55, top: 9.6, left: -3.6, folds: 5, sag: 0.35, depth: 0.9, lowBottom: -0.12, defaultDrop: 0.68 }, // defaultDrop: where the blind starts, 0 raised .. 1 lowered (0.68: Agam's pick, 11 Oct) (in dev, __blindDrop() reads the live one)
   // spreadTop / spreadBottom: half the two strands' spacing at the top and the
   // bottom (m; fit to the 17:41 photo: 1.3 cm apart at 5 W, 4.7 cm at 0.6 W).
   // x: the pair's centre, moved 0.1 W left in round 2 (the render's pair sat 11 to
