@@ -227,6 +227,11 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     el.style.position = "relative";
     renderer.domElement.style.position = "relative";
     renderer.domElement.style.zIndex = 1;
+    // the backdrop plate (noir's room): its own layer under the rain, so it can fade
+    const backPlate = document.createElement("div");
+    Object.assign(backPlate.style, { position: "absolute", left: 0, top: 0, width: W + "px", height: H + "px", zIndex: 0, pointerEvents: "none",
+      backgroundSize: `${W}px ${H}px`, backgroundRepeat: "no-repeat" });
+    el.appendChild(backPlate);
     const front = document.createElement("img");
     front.alt = "";
     Object.assign(front.style, { position: "absolute", left: 0, top: 0, width: W + "px", height: H + "px", zIndex: 2, pointerEvents: "none", display: "none" });
@@ -301,7 +306,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         }
       }
       const pl = fitOn ? sk.rig?.plates : null;
-      el.style.background = pl?.back ? `url(${pl.back}) 0 0 / ${W}px ${H}px no-repeat, ${sk.bg}` : sk.bg;
+      el.style.background = sk.bg;
+      backPlate.style.backgroundImage = pl?.back ? `url(${pl.back})` : "none";
       front.style.display = pl?.front ? "block" : "none";
       if (pl?.front && !front.src.endsWith(pl.front)) front.src = pl.front;
       setRain(!!(fitOn && sk.rig?.rain));
@@ -351,9 +357,10 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       // turn (yaw), nod (pitch, + = chin down) and tilt (roll)
       head.rotation.set(s.pitch, s.yaw, baseRoll + s.tilt);
       head.position.y = -NECK + s.hy;
-      turn.rotation.set(view.pitch, view.yaw, 0, "YXZ");
+      turn.rotation.set(view.pitch, view.yaw + spin.yaw, 0, "YXZ");
       // pull back as the head turns away from the drawing's pose, so no angle is cropped
-      const away = Math.min(1, (Math.abs(Math.atan2(Math.sin(view.yaw), Math.cos(view.yaw))) + Math.abs(view.pitch)) / 0.7);
+      const vy = view.yaw + spin.yaw;
+      const away = Math.min(1, (Math.abs(Math.atan2(Math.sin(vy), Math.cos(vy))) + Math.abs(view.pitch)) / 0.7);
       shared.uTurn.value = away;
       const on = (v) => Math.min(1, Math.max(0, v / 0.12)); // reaches clean skin early in a move
       shared.uActs.value.set(
@@ -391,8 +398,10 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       if (busy || !next || next === skin) return;
       if (reduce()) { applySkin(next); return; }
       busy = true;
-      setTimeout(() => applySkin(next), BOUNCE[0] * 0.36); // at the top of the hop
-      await play(...BOUNCE);
+      // a full turn on the Y axis, right to left; the new skin goes on at the half turn,
+      // facing away and at full speed, inside the blur. Its model loads first (once).
+      if (next.rig) await loadRig(next.rig.src, next.rig.fit, next.rig).ready;
+      await new Promise((done) => { Object.assign(spin, { active: true, t0: performance.now(), next, swapped: false, done }); });
       const pool = Object.keys(EMOTES).filter((e) => !["blink", "sad", "angry", "lookAround"].includes(e));
       await emote(pool[Math.floor(Math.random() * pool.length)]);
       busy = false;
@@ -484,13 +493,91 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       }
     };
 
+    // ---- the skin-change spin ------------------------------------------------------
+    // Speed ramp: a small wind-up the other way, then slow, fast, slow (a quartic in-out),
+    // so the turn is quickest at the half turn where the skin changes. Right to left: the
+    // face's front travels toward the viewer's left (negative yaw).
+    const SPIN_MS = 1150;
+    const spin = { active: false, yaw: 0, t0: 0, next: null, swapped: false, done: null };
+    const spinAngle = (t) => {
+      const p = Math.min(1, Math.max(0, (t - spin.t0) / SPIN_MS));
+      const e = p < 0.5 ? 8 * p ** 4 : 1 - 8 * (1 - p) ** 4;
+      const windup = p < 0.16 ? 0.16 * Math.sin(Math.PI * p / 0.16) : 0;
+      return -2 * Math.PI * e + windup;
+    };
+    // Motion blur by accumulation: several renders spread across one frame's shutter
+    // (the angle swept in a sixtieth of a second), averaged. More samples the faster it
+    // turns, none at rest.
+    const blur = (() => {
+      const opts = { type: THREE.HalfFloatType, depthBuffer: true };
+      const frameRT = new THREE.WebGLRenderTarget(1, 1, opts);
+      const accRT = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: false });
+      const qcam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const qgeo = new THREE.PlaneGeometry(2, 2);
+      const qv = "varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }";
+      const add = new THREE.Mesh(qgeo, new THREE.ShaderMaterial({
+        uniforms: { tex: { value: null }, k: { value: 1 } }, vertexShader: qv, depthTest: false, depthWrite: false,
+        transparent: true, blending: THREE.AdditiveBlending,
+        fragmentShader: "uniform sampler2D tex; uniform float k; varying vec2 vUv; void main(){ gl_FragColor = texture2D(tex, vUv) * k; }",
+      }));
+      // the average is premultiplied linear light: un-premultiply, encode for the screen, re-premultiply
+      const show = new THREE.Mesh(qgeo, new THREE.ShaderMaterial({
+        uniforms: { tex: { value: null } }, vertexShader: qv, depthTest: false, depthWrite: false, blending: THREE.NoBlending,
+        fragmentShader: `uniform sampler2D tex; varying vec2 vUv; void main(){ vec4 c = texture2D(tex, vUv);
+          gl_FragColor = vec4(c.a > 1e-4 ? c.rgb / c.a : vec3(0.0), c.a);
+          #include <colorspace_fragment>
+          gl_FragColor.rgb *= gl_FragColor.a; }`,
+      }));
+      const qscene = new THREE.Scene();
+      const size = new THREE.Vector2();
+      return {
+        render(now) {
+          renderer.getDrawingBufferSize(size);
+          if (frameRT.width !== size.x || frameRT.height !== size.y) { frameRT.setSize(size.x, size.y); accRT.setSize(size.x, size.y); }
+          const shutter = 1000 / 60;
+          const sweep = Math.abs(spinAngle(now + shutter / 2) - spinAngle(now - shutter / 2));
+          const n = Math.max(1, Math.min(24, Math.ceil(sweep / 0.03)));
+          if (n === 1) { renderer.render(scene, cam); return; }
+          const keep = spin.yaw;
+          renderer.setRenderTarget(accRT); renderer.setClearColor(0x000000, 0); renderer.clear();
+          for (let i = 0; i < n; i++) {
+            spin.yaw = spinAngle(now + (i / (n - 1) - 0.5) * shutter);
+            turn.rotation.set(view.pitch, view.yaw + spin.yaw, 0, "YXZ");
+            renderer.setRenderTarget(frameRT); renderer.clear();
+            renderer.render(scene, cam);
+            add.material.uniforms.tex.value = frameRT.texture; add.material.uniforms.k.value = 1 / n;
+            qscene.children.length = 0; qscene.add(add);
+            renderer.setRenderTarget(accRT); renderer.autoClear = false; renderer.render(qscene, qcam); renderer.autoClear = true;
+          }
+          spin.yaw = keep;
+          turn.rotation.set(view.pitch, view.yaw + spin.yaw, 0, "YXZ");
+          renderer.setRenderTarget(null);
+          show.material.uniforms.tex.value = accRT.texture;
+          qscene.children.length = 0; qscene.add(show);
+          renderer.render(qscene, qcam);
+        },
+        dispose() { frameRT.dispose(); accRT.dispose(); qgeo.dispose(); add.material.dispose(); show.material.dispose(); },
+      };
+    })();
+
     let raf = 0, lastStep = -1;
     const frame = (now) => {
+      if (spin.active) {
+        const p = (now - spin.t0) / SPIN_MS;
+        if (p >= 0.5 && !spin.swapped) { spin.swapped = true; applySkin(spin.next); }
+        // flat layers (plates, rain) are drawn for the front pose: fade them out as the
+        // turn starts and back in as it lands
+        const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+        const plates = spin.swapped ? ss(0.72, 1, p) : 1 - ss(0, 0.22, p);
+        for (const l of [front, rain, backPlate]) l.style.opacity = plates;
+        if (p >= 1) { spin.active = false; spin.yaw = 0; for (const l of [front, rain, backPlate]) l.style.opacity = 1; spin.done?.(); }
+        else spin.yaw = spinAngle(now);
+      }
       stepView(now);
       // on twos (12 poses a second) for the drawn styles; the fitted clay look runs smooth
       const STEP_MS = fitOn ? 1 : 1000 / 12;
       const step = Math.floor(now / STEP_MS);
-      const viewMoving = !!drag || view.home || Math.abs(view.vy) + Math.abs(view.vp) > 1e-5;
+      const viewMoving = !!drag || view.home || Math.abs(view.vy) + Math.abs(view.vp) > 1e-5 || spin.active;
       if (step !== lastStep || viewMoving) {
         lastStep = step;
         const t = step * STEP_MS;
@@ -509,7 +596,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         }
         apply(held ? { ...s, ...held } : s);
         lView.copy(lightDir).transformDirection(cam.matrixWorldInverse);
-        renderer.render(scene, cam);
+        if (spin.active) blur.render(now);
+        else renderer.render(scene, cam);
       }
       raf = requestAnimationFrame(frame);
     };
@@ -517,6 +605,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      blur.dispose();
       clearTimeout(idleT);
       clearTimeout(cycleT);
       rainAnim?.cancel();
@@ -528,6 +617,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       renderer.dispose();
       el.removeChild(renderer.domElement);
       el.removeChild(front);
+      el.removeChild(backPlate);
       el.removeChild(rain);
     };
   }, [size, src, skin0, cycle]);
