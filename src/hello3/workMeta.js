@@ -19,4 +19,6 @@ export const newestFirst = (items) => [...items].sort((a, b) => key(b.href) - ke
 
 // Shown but not openable: no link, no route prefetch, no project transition.
 export const LOCKED = new Set(["/work/away-agent", "/work/cross-sell"]);
+// the newest Zepto project carries a "New" tag (mv58rul2)
+export const NEW = new Set(["/work/scheduled-delivery"]);
 export const LOCK_COPY = "Awaiting approval: shared under NDA";

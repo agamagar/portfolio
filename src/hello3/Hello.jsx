@@ -31,7 +31,7 @@ import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- he
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
 import WorkGrid from "./WorkGrid";
 import LockedLink from "./LockedLink";
-import { LOCKED, newestFirst } from "./workMeta";
+import { LOCKED, NEW, newestFirst } from "./workMeta";
 import SiteCursor from "./SiteCursor";
 import { Guard, lazyRetry } from "../ui/Guard"; // blank-page guards: a failing piece hides itself, never the page
 // The REBUILT timeline, shared with /hello rather than forked (2026-08-07).
@@ -756,6 +756,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // over WAVE_MS through the wave's own speed ramp. Nothing prints before T = 0.
     let M = 0, T = -1;
     const BLOOM_IN = 320, BLOOM_OUT = 760, WAVE_MS = 2000;
+    // ONE EVENT (Agam: "the glow sweep should start right along with the first animation of the 2D-to-3D
+    // morph"): with the morph running, the sweep's clock T IS the morph's t (M), from where the clay's flood
+    // becomes visible (W0 = 0.12; flood.js DEV starts at 0.08) to W1 = 0.72, so the front is emitted by the face
+    // from its first frames, shares the morph's speed ramp, and cannot reach the heading before the face has
+    // visibly begun to change. Without a morph (phones, repeat visits, reduced motion) T runs on a plain clock.
+    const W0 = 0.12, W1 = 0.72;
+    let tied = false;
     // SKELETONS SHAPED LIKE THE CONTENT (idea 3): text gets one bar per real line fragment, at its real
     // length (year, name and line of a work row are three bars; a wrapped line is two), measured with a
     // Range over the hidden but laid-out text; cards get their own corner radius. Each block becomes
@@ -763,17 +770,31 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const range = document.createRange();
     const textShapes = (el, ox, oy) => {
       const frags = [];
-      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (/\S/.test(n.data) ? 1 : 3) });
+      // text of the row itself: not a hidden tooltip (the locked rows' "awaiting approval" copy sits absolutely under the row)
+      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (/\S/.test(n.data) && !n.parentElement?.closest(".lock__tip, [role=tooltip]") ? 1 : 3) });
       for (let n = tw.nextNode(); n; n = tw.nextNode()) {
         range.selectNodeContents(n);
         for (const r of range.getClientRects()) if (r.width > 1 && r.height > 1) frags.push([r.left, r.top, r.right, r.height]);
       }
-      frags.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-      const out = [];
+      // the title's lock and "New" pill are part of its bar (their boxes, not just the glyphs)
+      for (const x of el.querySelectorAll(".lock__badge, .new-tag")) { if (x.closest(".lock__tip, [role=tooltip]")) continue; const r = x.getBoundingClientRect(); if (r.width > 1 && r.height > 1) frags.push([r.left, r.top + r.height / 2 - 7, r.right, 14]); }
+      // group into lines by centre height (the year's mono face sits a px off the title's: sorting on the raw top
+      // let one column swallow another), then merge neighbours within a line left to right
+      const lines2 = [];
       for (const f of frags) {
-        const c = out[out.length - 1];
-        if (c && Math.abs(f[1] - c[1]) < 4 && f[0] - c[2] < 10) { c[2] = Math.max(c[2], f[2]); c[3] = Math.max(c[3], f[3]); }
-        else out.push([...f]);
+        const cy = f[1] + f[3] / 2;
+        const ln = lines2.find((l) => Math.abs(l.cy - cy) < Math.max(6, f[3] * 0.4));
+        if (ln) ln.f.push(f); else lines2.push({ cy, f: [f] });
+      }
+      lines2.sort((a, b) => a.cy - b.cy);
+      const out = [];
+      for (const ln of lines2) {
+        ln.f.sort((a, b) => a[0] - b[0]);
+        let c = null;
+        for (const f of ln.f) {
+          if (c && f[0] - c[2] < 10) { c[2] = Math.max(c[2], f[2]); c[1] = Math.min(c[1], f[1]); c[3] = Math.max(c[3], f[3]); }
+          else out.push((c = [...f]));
+        }
       }
       // a bar is the line's x-height band, not its full line box
       return out.map(([l, t, r, h]) => { const bh = Math.max(6, Math.round(h * 0.56)); return [l + ox, t + oy + (h - bh) / 2, r - l, bh, 2]; });
@@ -1065,7 +1086,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // the reveal's clock, every frame once the light has left: marks (data-in), the light, the print
     const step = () => {
       if (over) return;
-      T = Math.min(1, (performance.now() - waveAt) / (still ? 2600 : WAVE_MS));
+      T = tied ? Math.min(1, (M - W0) / (W1 - W0)) : Math.min(1, (performance.now() - waveAt) / (still ? 2600 : WAVE_MS));
       if (import.meta.env.DEV) (window.__fr ||= []).push([Math.round(performance.now()), T < 0 ? null : Math.round(frontC()), +M.toFixed(3)]); // dev only: the load QA plots the front
       while (next < marks.length && marks[next][0] <= T) marks[next++][1].setAttribute("data-in", "");
       if (glow && T >= 0) { light(); content(); }
@@ -1076,13 +1097,15 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // THE BLOOM: the finished face swells with warm light (brighter, a little paler, a soft halo in the clay's
     // own skin) and the wave leaves it at the peak. A Web Animation on the face's frame, fill none: nothing left.
     let waveAt = Infinity;
-    const launch = () => {
+    const launch = (withMorph) => {
       if (waveAt !== Infinity || over) return;
       clearTimeout(fb);
+      tied = !!withMorph;
       // no hold between the morph landing and the light leaving (it used to wait BLOOM_IN = 320 ms with nothing
       // moving): the front starts at the clay's rim on the same frame, and the bloom swells under it
       waveAt = performance.now();
-      const face = !still && glow ? root.querySelector(".hello-hero__flyer .header__avatar-wrap") : null;
+      // the face's own flood is the bloom: the separate end-bloom only plays when there is no morph to flood
+      const face = !still && glow && !withMorph ? root.querySelector(".hello-hero__flyer .header__avatar-wrap") : null;
       if (face?.animate) {
         const halo = `rgba(${FLOOD_RGB.join(",")},${dark ? 0.55 : 0.9})`;
         face.animate([
@@ -1097,7 +1120,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const onT = (e) => {
       clearTimeout(fb);
       M = e.detail;
-      if (M >= 1) launch();
+      launch(true); // the first morph frame starts the sweep's clock (no-op after that)
     };
     window.addEventListener("heromorph:t", onT);
     // the skeletons' shimmer runs every frame from the first one, on the wall clock
@@ -1444,6 +1467,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                 <span className="work__year">{r.year}</span>
                 <span className="work__title">
                   {r.org}
+                  {NEW.has(r.href) && <span className="new-tag">New</span>}
                   <svg className="work__arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M7 17 17 7" />
                     <path d="M8 7h9v9" />
