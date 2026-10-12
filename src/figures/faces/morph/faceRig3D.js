@@ -9,6 +9,7 @@
 
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { MODES, skinById, partKey, VERT, FRAG } from "../faceSkins";
 
 // the ids pass: part codes (red channel / 255); the ear is the skin past the cheek on the side we see (the far ear stays skin:
@@ -86,7 +87,8 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
   });
   const rawP = Promise.all([data(rawSrc), data(marginSrc)]);
 
-  rig.ready = new Promise((done) => new GLTFLoader().load(src, async (gltf) => {
+  // (a rig may ship meshopt-compressed: FaceSV loads the same files)
+  rig.ready = new Promise((done) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(src, async (gltf) => {
     const fit = (rig.fit = await fitP);
     const [skinRaw, margins] = await rawP;
     // the turnaround atlas (fit.json "mv", 11 Oct, as FaceSV): each part's colour from every

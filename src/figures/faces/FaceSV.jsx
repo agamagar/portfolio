@@ -16,6 +16,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 import { SKINS, MODES, PROPS, skinById, partKey, VERT, FRAG, OUT_VERT, OUT_FRAG } from "./faceSkins";
 
@@ -133,7 +134,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
           margins = data(F.margins, THREE.LinearFilter);
         }
       }
-      r.ready = new Promise((done) => new GLTFLoader().load(rsrc, async (gltf) => {
+      // (the fitted rigs ship meshopt-compressed: tools/face3d/fit/tile/pack.sh)
+      r.ready = new Promise((done) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(rsrc, async (gltf) => {
         const fit = (r.fit = await fitP);
         if (!alive) return;
         const root = (r.root = gltf.scene);
@@ -195,7 +197,9 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
             vertexShader: OUT_VERT, fragmentShader: OUT_FRAG, side: THREE.BackSide,
             uniforms: { uColor: { value: new THREE.Color() }, uWidth: { value: 1 }, uRes: { value: res }, uShift: { value: new THREE.Vector2() } },
           }));
-          const lines = o.name === "MouthInner" ? [] : [outline(), outline()];
+          // (no ink round the lids: closed, a lid's outline drew a ring round the eye, a ghost
+          // eye, where a drawn blink is just the lid's own edge)
+          const lines = o.name === "MouthInner" || o.name.startsWith("Lid") ? [] : [outline(), outline()];
           lines.forEach((l) => o.add(l));
           if (o.morphTargetDictionary) r.morphs.push(o, ...lines.map((l) => Object.assign(l, { morphTargetDictionary: o.morphTargetDictionary })));
           o.userData.rest = { p: o.position.clone(), s: o.scale.clone(), r: o.rotation.clone() };
@@ -204,6 +208,11 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         });
         root.position.y = NECK; // at rest the whole stack is identity (the fitted textures rely on it)
         r.loaded = true;
+        done(r);
+      }, undefined, () => {
+        // a rig that fails to load (offline, a missing file): the skin falls back to its drawn
+        // look on the base rig, and a switch waiting on it goes ahead instead of hanging
+        r.failed = true;
         done(r);
       }));
       rigs[rsrc] = r;
@@ -269,11 +278,13 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     let fitOn = false; // the skin is drawn with its rig's fitted light and textures
     const applySkin = (sk) => {
       skin = sk;
-      const want = sk.rig ? loadRig(sk.rig.src, sk.rig.fit, sk.rig) : baseRig;
+      const own = sk.rig ? loadRig(sk.rig.src, sk.rig.fit, sk.rig) : null;
+      const want = own && !own.failed ? own : baseRig;
       if (want.loaded) useRig(want);
       else want.ready.then(() => { if (skin === sk) applySkin(sk); });
-      fitOn = !!(want.loaded && rig === want && fit && (sk.mode === "fit" || sk.rig));
-      const pr = sk.pixel ? sk.pixel : dpr;
+      fitOn = !!(want.loaded && rig === want && fit && (sk.mode === "fit" || (sk.rig && want === own)));
+      // (a fitted rig draws at full resolution: its texture is the tile's own pixel art)
+      const pr = sk.pixel && !fitOn ? sk.pixel : dpr;
       renderer.setPixelRatio(pr);
       renderer.setSize(W, H);
       res.set(W * pr, H * pr);
@@ -282,13 +293,14 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       shared.uDot.value = 7 * pr;
       for (const s of skinned) {
         const P = sk.parts[s.key] || sk.parts.Skin;
-        if (PROPS.includes(s.key)) s.mesh.visible = !!sk.props?.includes(s.key);
+        if (PROPS.includes(s.key)) s.mesh.visible = !!sk.props?.includes(s.key) && (!fitOn || s.mat.uniforms.uUseMap.value > 0.5);
         s.mat.uniforms.uBase.value.set(P.base);
         if (fitOn && s.key === "Eye" && fit) s.mat.uniforms.uBase.value.setRGB(...fit.eye, THREE.LinearSRGBColorSpace);
         s.mat.uniforms.uShade.value.set(P.shade);
         s.mat.uniforms.uDeep.value.set(P.deep);
         s.mat.uniforms.uSpec.value = P.spec || 0;
-        const ol = sk.outline;
+        // (a fitted rig's texture carries the tile's own ink: no drawn outline on top)
+        const ol = fitOn ? null : sk.outline;
         if (s.ink) {
           s.ink.visible = !!ol;
           s.mis.visible = !!ol?.misreg;
