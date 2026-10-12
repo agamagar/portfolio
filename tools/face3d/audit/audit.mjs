@@ -16,7 +16,11 @@ await page.waitForFunction(() => document.querySelector(".face-sv")?.__face, nul
 await page.waitForTimeout(4000);
 let ids = await page.evaluate(async () => (await import("/src/figures/faces/faceSkins.js")).SKINS.map((s) => s.id)).catch(() => null);
 if (process.env.SKINS) ids = process.env.SKINS.split(",");
-const VIEWS = [["rest", null, 0, 0], ["grin", "grin", 0.4, 0], ["blink", "blink", 0.45, 0], ["turnL", null, 0, -1.0], ["turnR", null, 0, 1.1], ["back", null, 0, 3.14]];
+let VIEWS = [["rest", null, 0, 0], ["grin", "grin", 0.4, 0], ["blink", "blink", 0.45, 0], ["turnL", null, 0, -1.0], ["turnR", null, 0, 1.1], ["back", null, 0, 3.14]];
+// MOMENTS=1: every emote held where it reads strongest (FaceLab's moments), for the emote sheet
+if (process.env.MOMENTS) VIEWS = [["blink", "blink", 0.45], ["grin", "grin", 0.4], ["surprised", "surprised", 0.3], ["wink", "wink", 0.4],
+  ["laugh", "laugh", 0.15], ["shy", "shy", 0.5], ["think", "think", 0.5], ["look", "lookAround", 0.3], ["nod", "nod", 0.25],
+  ["sad", "sad", 0.5], ["angry", "angry", 0.25], ["puff", "puff", 0.5]].map((v) => [...v, 0]);
 const views = process.env.VIEWS ? VIEWS.filter((v) => process.env.VIEWS.split(",").includes(v[0])) : VIEWS;
 for (const id of ids) {
   cur = id;

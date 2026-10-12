@@ -51,7 +51,7 @@ export const SKINS = [
     },
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the hose tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-hose.glb", fit: "/faces/fit-hose.json", idmap: "/faces/idmap-hose.png", raw: "/faces/skin-raw-hose.png",
+    rig: { src: "/faces/face-hose.glb", fit: "/faces/fit-hose.json", idmap: "/faces/idmap-hose.png", depth: "/faces/depth-hose.png", raw: "/faces/skin-raw-hose.png",
       margins: "/faces/margins-hose.png", plates: { back: "/faces/hose-back.webp" } },
     outline: { ink: "#1a1410", width: 3.4, small: 1.8 },
   },
