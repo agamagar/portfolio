@@ -19,8 +19,12 @@ export const PATH_PRESETS = {
   // a calm wave: reads as a horizon rather than a trick
   wave: {
     label: "Wave",
-    viewBox: "0 0 1000 300",
-    d: "M0 150C125 60 250 60 375 150C500 240 625 240 750 150C875 60 950 90 1000 130",
+    // 12 Oct 2026, mv4raap5-dyf0zl ("make this a little taller", on the run's own
+    // svg): the vertical sweep and the box are both x1.18 (300 -> 354 high, same
+    // 1000 wide), so the wave keeps its shape and is 18% taller on screen. The
+    // original: viewBox "0 0 1000 300", y values 150 / 60 / 240 / 60 / 90 / 130.
+    viewBox: "0 0 1000 354",
+    d: "M0 177C125 70.8 250 70.8 375 177C500 283.2 625 283.2 750 177C875 70.8 950 106.2 1000 153.4",
   },
   // a closed loop, so the run never visibly restarts
   loop: {

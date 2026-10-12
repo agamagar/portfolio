@@ -7996,6 +7996,41 @@ figcaption.article__figcap-heading {
   .article__postit-wrap { translate: -74.5px 75.8px; rotate: -9deg; }
 }
 
+/* mv4h2fqo (12 Oct, "make this a vertical layout"): a split that opts in
+   (s.splitStack) stacks: heading and TL;DR note on top, the prose below at the
+   column's full width. The frame keeps the case-study padding but drops the
+   fixed aspect ratio (it would leave a hole under stacked content); the note
+   keeps its desk-drop tilt but sits at its own spot instead of the column
+   slot's 74px/76px offset. */
+/* mv5778ls (12 Oct, "use the default case study section height here"): the stacked split uses the standard
+   case-study frame (the base .article__split rule: --case-study-frame-default aspect ratio, content centred,
+   frame padding), not a height of its own; the earlier hug / text-equal overrides (mv4h9o8y, mv51r8rx, mv56tp3l) are gone */
+.article__split.article__split--stack { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+/* mv51r8rx (12 Oct, "hug the height"): the annotated box is the heading + note
+   block (.article__split-side, 309px). It was taller than its content twice
+   over: the note paper is aspect-ratio 1 (a square with empty yellow under the
+   text) and the heading carried 8px above and 32px below. In the stacked
+   split the note's height is its text's, and the heading hugs it. */
+.article__split--stack .article__postit { aspect-ratio: auto; }
+
+/* mv549mc0 (12 Oct) put the sticky note where Agam dropped it: right of the heading, tilted
+   about -4deg, hanging 54px into the section's right padding. mv56tp3l (12 Oct, "the
+   height should be the same height as the text height"): the note no longer adds
+   height. The split is a two-column grid, the heading across the top, the text
+   in the left column and the note in a 15rem column beside it, top-aligned with
+   the text; the note's own box is 0 high (its paper paints past it, tilt and all),
+   so the row is exactly as tall as the text. */
+@media (min-width: 701px) {
+  .article__split.article__split--stack { grid-template-columns: minmax(0, 1fr) 15rem; column-gap: 2rem; row-gap: 0; align-items: start; }
+  .article__split--stack .article__split-side { display: contents; }
+  .article__body .article__split--stack .article__split-side h2 { grid-column: 1 / -1; margin: 0 0 1.25rem; }
+  .article__split--stack .article__split-main { grid-column: 1; grid-row: 2; }
+  .article__split--stack .article__postit-wrap { grid-column: 2; grid-row: 2; align-self: start; justify-self: end; margin: 0 -3.3rem 0 0; width: 15rem; max-height: 0; translate: 0 0; rotate: -4deg; }
+}
+@media (max-width: 700px) {
+  .article__split--stack .article__postit-wrap { margin-left: auto; margin-right: 0.25rem; rotate: -4deg; }
+}
+
 /* muikq572: the "When instant delivery fails" box in dark mode. The box goes
    to the dark chip surface; each row's TEXT is repainted light via a mask of
    its own export (clipped to the text side of --split), while the img itself is
@@ -8153,7 +8188,8 @@ html.dark.glass-lens .article__hero-replay,
 @media (max-width: 700px) { .article__body .role-frame ul.role-frame__leadership { grid-template-columns: 1fr; } }
 /* mv2lfboc (10 Oct): the role numbers, moved in from Who I worked with. Same
    three-column grid and ink as the leadership row above, the figure set larger. */
-.article__body .role-frame dl.role-frame__stats { margin: 1.75rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+/* mv4h8uzj (12 Oct, "make these vertical"): one stat per row, full width; each keeps its icon, figure and line stacked */
+.article__body .role-frame dl.role-frame__stats { margin: 1.75rem 0 0; display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
 .article__body .role-frame dl.role-frame__stats > div { display: flex; flex-direction: column; gap: 0.35rem; }
 .page--article .article__body .role-frame dl.role-frame__stats dt { margin: 0; font: 400 1.5rem/1.1 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: #33095e; white-space: nowrap; }
 .page--article .article__body .role-frame dl.role-frame__stats dd { margin: 0; font-size: 0.8125rem; line-height: 1.45; color: var(--muted); }
@@ -8279,6 +8315,16 @@ html.dark.glass-lens .article__hero-replay,
 .article__body .cs-sec.cs-sec--stack > * { grid-column: 1; }
 .article__body .cs-sec.cs-sec--stack > h2 { grid-row: auto; position: static; margin-bottom: 0.75rem; }
 .article__body .cs-sec.cs-sec--stack > .cs-sec__in { margin-top: 1.5rem; }
+/* mv59g9e3 (12 Oct): heading left, subheading right in one row (stacks below 700px); the figure runs full width under both */
+.article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 2rem; }
+.article__body .cs-sec.cs-sec--row > * { grid-column: 1 / -1; }
+.article__body .cs-sec.cs-sec--row > h2 { grid-column: 1; grid-row: 1; margin: 0; }
+.article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 2; grid-row: 1; margin: 0; }
+@media (max-width: 700px) {
+  .article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr); }
+  .article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
+  .article__body .cs-sec.cs-sec--row > p.article__tldr { margin-top: 0.75rem; }
+}
 
 /* mukwatlg (28 Sep): a centred stacked section: the label and text centred in
    the frame, the text centre-aligned, the figure centred under it */
@@ -8291,6 +8337,13 @@ html.dark.glass-lens .article__hero-replay,
    body ink rather than the heading violet so the two don't compete */
 .article__body ul.article__terms { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; gap: 1.25rem; }
 .article__body ul.article__terms > li { padding: 0; margin: 0; }
+/* mv59foxe (12 Oct): a term with an icon: the My role icon disc at the left, title and line beside it */
+.article__body ul.article__terms > li:has(> .role-frame__icon) { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 1rem; align-items: start; }
+.article__body ul.article__terms > li > .role-frame__icon { grid-row: 1 / span 2; }
+.article__body ul.article__terms > li > p { grid-column: 2; }
+/* mv598hzr (12 Oct): in a stacked section the terms sit in one row of equal columns (stack below 700px) */
+.article__body .cs-sec--stack ul.article__terms { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; align-items: start; }
+@media (max-width: 700px) { .article__body .cs-sec--stack ul.article__terms { grid-template-columns: 1fr; gap: 1.25rem; } }
 .article__body ul.article__terms > li::before, .article__body ul.article__terms > li::marker { content: none; }
 .page--article .article__body .article__terms p.article__term-t { font-size: 1.2rem; font-weight: 300; line-height: 1.3; color: var(--fg); margin: 0 0 0.3rem; }
 .page--article .article__body .article__terms p.article__term-d { margin: 0; }
@@ -8372,7 +8425,7 @@ html .page--article[data-case="scheduled-delivery"] .article__body :is(
   font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
   font-weight: 400;
 }
-html .page--article[data-case="scheduled-delivery"] .article__body .suc__persona strong { font-weight: 600; }
+html .page--article[data-case="scheduled-delivery"] .article__body .suc__persona strong { font-weight: 500; }
 
 /* mv2mmvt6 (10 Oct): the Figma link on the prototype plate, the hero replay's
    glass (same class). mv3onu6q (11 Oct, "move the button placement to the
@@ -8666,3 +8719,57 @@ html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
 }
 .favicon-lab__strip--light { background: #f1f3f4; color: #3c4043; }
 .favicon-lab__strip--dark { background: #202124; color: #bdc1c6; }
+
+/* mv56uy5f (12 Oct, "make this horizontal: icon on the left, the text and subtext on the right"):
+   each My role frame item is a row, the 44px icon disc at the left and the title above its subtext
+   at the right; the items themselves stay stacked (mv4h8uzj). Scoped to .role-frame. */
+.page--article .article__body .role-frame ul.role-frame__leadership li { flex-direction: row; align-items: center; gap: 1rem; }
+.article__body .role-frame dl.role-frame__stats { gap: 1.25rem; }
+.article__body .role-frame dl.role-frame__stats > div { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 1rem; row-gap: 0.15rem; align-items: center; }
+.article__body .role-frame dl.role-frame__stats > div > .role-frame__icon { grid-row: 1 / span 2; }
+.article__body .role-frame dl.role-frame__stats > div > dt { grid-column: 2; align-self: end; }
+.article__body .role-frame dl.role-frame__stats > div > dd { grid-column: 2; align-self: start; margin: 0; }
+/* mv56vlgg: the scope map's boxes carry the same icon disc above their text */
+.rv-map__node { flex-direction: column; gap: 0.6rem; }
+
+/* mv58620u: the prototype's loading overlay (ProtoFrame in App.jsx): the still of its first screen with a glass
+   loader (the site's glass button, three dots) in the middle; fades out when the embed has loaded */
+.pe { position: absolute; inset: 0; z-index: 4; transition: opacity 450ms ease; }
+.pe[data-st="ready"] { opacity: 0; pointer-events: none; }
+.pe__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; background: #fff; }
+.pe .pe__badge { right: auto; bottom: auto; left: 50%; top: 50%; translate: -50% -50%; z-index: 5; display: inline-flex; align-items: center; justify-content: center; gap: 3px; text-decoration: none; }
+.pe__badge i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: pe-dot 1s ease-in-out infinite; }
+.pe__badge i:nth-child(2) { animation-delay: 0.15s; } .pe__badge i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes pe-dot { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+.pe .pe__msg { position: absolute; left: 50%; top: calc(50% + 32px); translate: -50% 0; z-index: 5; padding: 4px 10px; border-radius: 999px; corner-shape: round; background: rgba(20, 10, 40, 0.62); color: #fff; font: 500 12px/1.3 "Google Sans Flex", Inter, sans-serif; white-space: nowrap; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .pe { transition: none; } .pe__badge i { animation: none; opacity: 0.7; } }
+
+/* mv58by9f: the frame's stat rows, now under the scope map: the icon disc at the left, the figure above its line at the right */
+.rv-map__rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; margin-top: 2rem; }
+.rv-map__rows > div { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 1rem; row-gap: 0.15rem; align-items: center; }
+.rv-map__rows > div > .role-frame__icon { grid-row: 1 / span 2; }
+.rv-map__rows > div > dt { grid-column: 2; align-self: end; }
+.rv-map__rows > div > dd { grid-column: 2; align-self: start; margin: 0; }
+html .page--article .article__body .rv-map__rows dt { font: 400 1.5rem/1.1 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--rv-ink); white-space: nowrap; }
+html .page--article .article__body .rv-map__rows dd { font-size: 0.8125rem; line-height: 1.45; color: var(--rv-soft); }
+html .page--article .article__body .rv dl.rv-map__rows { margin-top: 2rem; }
+
+/* mv593w8x / mv59529x / mv595euw (12 Oct): the scope map as the FINAL My role: no dashed box, the label and the
+   statement centred. The statement takes the whole content width, capped at 70ch so a wide column keeps a readable measure
+   (at the 816 column 70ch is wider than the 686px of content, so it is the full width there). */
+.article__body .rv.rv--final { border: 0; }
+html .page--article .article__body .rv--final h2.rv__label, html .page--article .article__body .rv--final p.rv__label { text-align: center; margin-top: 0; }
+html .page--article .article__body .rv--final p.rv__statement { width: 100%; max-width: 70ch; margin-left: auto; margin-right: auto; text-align: center; }
+/* mv591ryn (12 Oct, "make sure this bit is only 50 percent of the card"): the split's text column is exactly half
+   of the card's width (408px of 816). The card pads 7.94% a side, so the column is 50% / (1 - 2 x 0.0794) of the content box. */
+@media (min-width: 701px) {
+  .article__split.article__split--stack { grid-template-columns: calc(50% / (1 - 2 * 0.0794)) minmax(0, 1fr); column-gap: 2rem; }
+}
+/* the final My role's label is an h2 (it carries the section id): it wears the label's own look, over the full width, centred */
+html .page--article .article__body .rv--final h2.rv__label { display: block; width: 100%; margin: 0 0 1.25rem; font: 400 1.5rem/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--rv-accent); letter-spacing: 0; text-align: center; max-width: none; }
+
+/* mv59ku9w (12 Oct): a TL;DR given as a list renders as bullets inside the same note */
+.article__body .tldr-b { display: block; position: relative; padding-left: 1.1em; margin-top: 0.4em; }
+.article__body .tldr-b::before { content: "•"; position: absolute; left: 0.1em; }
+.article__body .tldr-b { font-size: 1.0625rem; line-height: 1.45; font-weight: 400; margin-top: 0.55em; }
+.article__body .tldr-b::before { font-size: 1.1em; }

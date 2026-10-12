@@ -15,7 +15,7 @@ import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { FLOOD_RGB } from "../figures/faces/morph/flood";
 import { warmIsReady } from "../scene/window/warmFlag";
-import { Check, Copy, Mail, Phone } from "iconoir-react";
+import { Check, Copy, Lock, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
 import { markIntroDone, useIntroStage } from "./useStage";
@@ -30,6 +30,8 @@ import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
 import WorkGrid from "./WorkGrid";
+import LockedLink from "./LockedLink";
+import { LOCKED, newestFirst } from "./workMeta";
 import SiteCursor from "./SiteCursor";
 import { Guard, lazyRetry } from "../ui/Guard"; // blank-page guards: a failing piece hides itself, never the page
 // The REBUILT timeline, shared with /hello rather than forked (2026-08-07).
@@ -164,13 +166,16 @@ function ContactLines() {
 // order: year and organisation from the projects list, the line is each case's
 // own title (helloData / App.jsx). CaratLane has no case page, so its line is
 // the role's headline and it links to the list.
-const TIMELINE = [
+const TIMELINE_ROWS = [
   { year: "2025", org: "Zepto", line: "Scheduling on a 10-minute platform", href: "/work/scheduled-delivery" },
   { year: "2026", org: "Away", line: "An agent that never takes the wheel", href: "/work/away-agent" },
   { year: "2026", org: "Zepto", line: "The half of cross-sell nobody solved", href: "/work/cross-sell" },
   { year: "2023", org: "CaratLane", line: "E-commerce for a jewelry brand" /* mtqs7lcx: shorter */, href: "/list" },
   { year: "2019", org: "Toppr", line: "Joyful learning experiences for students", href: "/work/toppr" },
 ];
+// mv58rul2: the whole list newest first (the order App.jsx's project list uses),
+// by year, then the project's date (workMeta.js); the cards below follow it
+const TIMELINE = newestFirst(TIMELINE_ROWS);
 
 // see the sky note in the markup: a phone gets a wider canvas, sampled lower
 const SKY_NARROW = typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches;
@@ -860,7 +865,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // cards, easing to a stop. Built for k = (farthest element) / (total travel), so the first keys stay where
     // they are in px and the run out to the viewport's far corner happens at speed.
     const buildRamp = (k) => {
-      const K = [[0, 0], [0.12, 0.14 * k], [0.4, 0.3 * k], [0.78, 0.92], [1, 1]];
+      // ONE SWEEP, ONE EASING (Agam: "one single sweep with no break"): the earlier keys held the front back
+      // across the heading and links (slope ~0.5) and then sped it up again, which read as a step. These
+      // keys only ever slow down: out of the face at full speed, easing continuously to the far corner
+      // (slope 0 only at the very end). k is no longer needed; kept so the call sites stay as they are.
+      void k;
+      const K = [[0, 0], [0.18, 0.3], [0.55, 0.8], [1, 1]];
       const x = K.map((q) => q[0]), y = K.map((q) => q[1]);
       const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
       const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
@@ -1056,6 +1066,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const step = () => {
       if (over) return;
       T = Math.min(1, (performance.now() - waveAt) / (still ? 2600 : WAVE_MS));
+      if (import.meta.env.DEV) (window.__fr ||= []).push([Math.round(performance.now()), T < 0 ? null : Math.round(frontC()), +M.toFixed(3)]); // dev only: the load QA plots the front
       while (next < marks.length && marks[next][0] <= T) marks[next++][1].setAttribute("data-in", "");
       if (glow && T >= 0) { light(); content(); }
       if (T >= 1 && (!glow || lines.every((L) => L.dead && (L.part || L.done)))) { done(); return; }
@@ -1068,7 +1079,9 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const launch = () => {
       if (waveAt !== Infinity || over) return;
       clearTimeout(fb);
-      waveAt = performance.now() + (still ? 0 : BLOOM_IN);
+      // no hold between the morph landing and the light leaving (it used to wait BLOOM_IN = 320 ms with nothing
+      // moving): the front starts at the clay's rim on the same frame, and the bloom swells under it
+      waveAt = performance.now();
       const face = !still && glow ? root.querySelector(".hello-hero__flyer .header__avatar-wrap") : null;
       if (face?.animate) {
         const halo = `rgba(${FLOOD_RGB.join(",")},${dark ? 0.55 : 0.9})`;
@@ -1422,8 +1435,11 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         {/* mtqrtgd3: the rows are real links with the list's hover configs (arrow
             slides in, siblings dim); hrefs by organisation until the frame has its own */}
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
-          {TIMELINE.map((r, i) => (
-            <HelloLink to={r.href} onNavigate={onNavigate} className="work__item" key={i} style={{ "--i": i }} data-project={r.href /* mv3mbvr7: shares one spotlight with the WorkGrid cards (useLinkedSpotlight.js) */}>
+          {TIMELINE.map((r, i) => {
+            const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
+            const rowProps = LOCKED.has(r.href) ? { badge: false } : { to: r.href, onNavigate };
+            return (
+            <Row {...rowProps} className="work__item" key={r.href} style={{ "--i": i }} data-project={r.href /* mv3mbvr7: shares one spotlight with the WorkGrid cards (useLinkedSpotlight.js) */}>
               <span className="work__main">
                 <span className="work__year">{r.year}</span>
                 <span className="work__title">
@@ -1432,11 +1448,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                     <path d="M7 17 17 7" />
                     <path d="M8 7h9v9" />
                   </svg>
+                  {LOCKED.has(r.href) && <span className="lock__badge" aria-hidden><Lock width={14} height={14} strokeWidth={2} /></span>}
                 </span>
               </span>
               <span className="work__meta">{r.line}</span>
-            </HelloLink>
-          ))}
+            </Row>
+            );
+          })}
         </div>
       </section>
 

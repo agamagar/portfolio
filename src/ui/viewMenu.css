@@ -1,0 +1,30 @@
+/* The eye bubble (ViewMenu.jsx): fixed bottom-left, safe-area aware, the nav's glass. The wrapper
+   sits inside .top-controls, so it opts out of that bar's fold-away on scroll. The dev-only
+   Inspect pill owns the very corner, so in dev the eye sits above it. */
+.view-menu {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 55;
+  display: inline-flex;
+  pointer-events: none;
+}
+.view-menu__btn { pointer-events: auto; }
+.top-controls[data-scrolled] > .view-menu,
+html .top-controls[data-scrolled] > .view-menu { translate: none !important; opacity: 1 !important; pointer-events: none; transition: none; }
+.view-menu[data-dev] { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 44px); }
+.view-menu__panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.view-menu__panel .font-ctl__wrap,
+.view-menu__panel .scene-ctl__wrap { position: relative; }
+/* each control's own dropdown opens to the right of its bubble, bottom-aligned */
+.view-menu__panel :is(.font-ctl__menu, .scene-ctl__menu) { top: auto; bottom: 0; right: auto; left: calc(100% + 8px); }
+/* the case study's Design / PRD / Listen tabs sit fixed along the bottom-left: ride above them */
+body:has(.article__index-tabs) .view-menu { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 64px); }

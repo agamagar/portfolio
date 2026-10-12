@@ -37,6 +37,46 @@ const P = {
   o: ["M160.541 36.9481C157.919 36.9481 155.59 36.4307 153.555 35.3957C151.519 34.3262 149.933 32.7393 148.794 30.6349C147.656 28.4959 147.086 25.8223 147.086 22.6139C147.086 19.2675 147.673 16.5421 148.846 14.4377C150.053 12.2988 151.675 10.7291 153.71 9.72862C155.78 8.69366 158.109 8.17618 160.696 8.17618C163.387 8.17618 165.733 8.71091 167.734 9.78037C169.769 10.8153 171.339 12.4023 172.443 14.5412C173.581 16.6456 174.151 19.3193 174.151 22.5622C174.151 25.9085 173.547 28.6512 172.339 30.7901C171.167 32.8945 169.545 34.447 167.475 35.4474C165.44 36.4479 163.128 36.9481 160.541 36.9481ZM160.748 30.7901C161.817 30.7901 162.714 30.4969 163.439 29.9104C164.163 29.2894 164.715 28.3924 165.095 27.2195C165.474 26.0465 165.664 24.6493 165.664 23.0279C165.664 21.234 165.457 19.7333 165.043 18.5258C164.629 17.2838 164.025 16.3351 163.232 15.6797C162.473 15.0242 161.541 14.6964 160.437 14.6964C159.402 14.6964 158.523 15.0069 157.798 15.6279C157.074 16.2144 156.522 17.0941 156.142 18.2671C155.763 19.44 155.573 20.8545 155.573 22.5104C155.573 25.1323 156.022 27.1677 156.919 28.6167C157.85 30.0656 159.126 30.7901 160.748 30.7901Z", 147.086, 174.151],
   "!": ["M178.427 25.3566L176.719 2.06989H185.879L184.171 25.3566H178.427ZM181.636 36.8964C179.876 36.8964 178.548 36.5169 177.651 35.7579C176.788 34.999 176.357 33.826 176.357 32.2391C176.357 30.6176 176.788 29.4274 177.651 28.6684C178.548 27.9095 179.876 27.53 181.636 27.53C183.429 27.53 184.775 27.9095 185.672 28.6684C186.569 29.4274 187.017 30.6176 187.017 32.2391C187.017 35.3439 185.223 36.8964 181.636 36.8964Z", 176.357, 187.017],
 };
+
+/* ---- the "!" that becomes a drag handle ------------------------------------
+   On hover (and on focus, and while the demo cursor drags) the glyph itself changes form: its tapered
+   stem and its round dot grow into the two halves of one vertical capsule, 11.2 x 36.4 units (the "!"'s
+   own footprint, so nothing around it moves), and the grip cut-outs fade in: a dot at each end and a
+   pair of notches, left and right, for the way it pulls. Shapes are rounded polygons whose corners
+   and radii are interpolated by one spring (0 = "!", 1 = handle); at 0 the drawn path shows. */
+const HX0 = 176.1, HX1 = 187.3, HTOP = 1.0, HBOT = 37.4, HSEAM = 19.2, HR = 5.6;
+const HCX = (HX0 + HX1) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+// corners (clockwise from top-left) and a radius each -> a path with cubic-rounded corners
+function roundedPoly(pts, radii) {
+  const n = pts.length;
+  let d = "";
+  for (let i = 0; i < n; i++) {
+    const c = pts[i], pv = pts[(i + n - 1) % n], nx = pts[(i + 1) % n], r = radii[i];
+    const toward = (q) => { const dx = q[0] - c[0], dy = q[1] - c[1], l = Math.hypot(dx, dy) || 1; return [c[0] + (dx / l) * Math.min(r, l / 2), c[1] + (dy / l) * Math.min(r, l / 2)]; };
+    const a = toward(pv), b = toward(nx), k = 0.5523;
+    d += (i ? "L" : "M") + a[0].toFixed(3) + " " + a[1].toFixed(3)
+      + "C" + lerp(a[0], c[0], k).toFixed(3) + " " + lerp(a[1], c[1], k).toFixed(3) + " " + lerp(b[0], c[0], k).toFixed(3) + " " + lerp(b[1], c[1], k).toFixed(3) + " " + b[0].toFixed(3) + " " + b[1].toFixed(3);
+  }
+  return d + "Z";
+}
+// the drawn "!": stem quad (176.719..185.879 over 178.427..184.171, y 2.07..25.36) and a dot (10.66 x 9.37, y 27.53..36.9)
+const STEM0 = [[176.719, 2.06989], [185.879, 2.06989], [184.171, 25.3566], [178.427, 25.3566]];
+const STEM1 = [[HX0, HTOP], [HX1, HTOP], [HX1, HSEAM + 2], [HX0, HSEAM + 2]];
+const DOT0 = [[176.357, 27.53], [187.017, 27.53], [187.017, 36.8964], [176.357, 36.8964]];
+const DOT1 = [[HX0, HSEAM], [HX1, HSEAM], [HX1, HBOT], [HX0, HBOT]];
+const mixPts = (a, b, t) => a.map((p, i) => [lerp(p[0], b[i][0], t), lerp(p[1], b[i][1], t)]);
+function handleShapes(m) {
+  const t = Math.min(1.08, Math.max(0, m));
+  const dotR0 = 4.685;
+  return {
+    stem: roundedPoly(mixPts(STEM0, STEM1, t), [lerp(0, HR, t), lerp(0, HR, t), 0, 0]),
+    dot: roundedPoly(mixPts(DOT0, DOT1, t), [lerp(dotR0, 0, t), lerp(dotR0, 0, t), lerp(dotR0, HR, t), lerp(dotR0, HR, t)]),
+  };
+}
+const GRIP_DOTS = [[HCX, 7.2], [HCX, 31.2]];
+const TRI_L = `M${HCX - 4.4} ${HSEAM}L${HCX - 1.4} ${HSEAM - 2.9}V${HSEAM + 2.9}Z`;
+const TRI_R = `M${HCX + 4.4} ${HSEAM}L${HCX + 1.4} ${HSEAM - 2.9}V${HSEAM + 2.9}Z`;
 const mid = (k) => (P[k][1] + P[k][2]) / 2;
 const BANG_W = P["!"][2] - P["!"][1];
 const BASE = 36.2237; // the drawn baseline
@@ -66,7 +106,10 @@ export function useHelloFlipStore() {
         ls.add(f);
         return () => ls.delete(f);
       },
-      api: null, // filled by the layer: { step(d), commit(), home() }
+      api: null, // filled by the layer: { step(d), commit(), home(), bangRect() }
+      // the pointer over the "!", written by the layer's handlers, read by the layer's handle loop
+      ptr: { inside: false, down: false, x: 0, y: 0, x0: 0, demo: false, type: "" },
+      wake: null,
     };
   }
   return ref.current;
@@ -389,9 +432,16 @@ export function HelloFlipLayer({ store, ready, reduce }) {
     return Math.max(MIN_LEN + 1, Math.min(MAX_LEN, m));
   };
 
+  // the first interaction of any kind ends the periodic nudge for the session
+  const touched = () => {
+    try { sessionStorage.setItem("hf-touched", "1"); } catch { /* private mode */ }
+    setHint(false);
+  };
+
   // keyboard
   store.api = {
     step(d) {
+      touched();
       const s = st.current;
       s.max = fitMax();
       const n = Math.max(MIN_LEN, Math.min(s.max, s.count + d));
@@ -407,12 +457,77 @@ export function HelloFlipLayer({ store, ready, reduce }) {
       else goGreeting(s.count);
     },
     home: goHome,
+    bangRect: () => gRef.current?.querySelector(".hf__bang path")?.getBoundingClientRect(),
   };
+
+  // the "!" -> handle morph: one spring (m) and a press scale, written straight to the SVG, no React state
+  const hRef = useRef({});
+  useEffect(() => {
+    const R = hRef.current;
+    const svg = gRef.current?.ownerSVGElement;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const S = { m: 0, v: 0, sc: 1, vs: 0, last: 0, raf: 0, shapeKey: -1 };
+    const K = 340, C = 2 * Math.sqrt(K) * 0.62;
+    const frame = (now) => {
+      S.raf = 0;
+      const ts = window.__hfTimeScale || 1; // a slow-motion switch for captures
+      const dt = Math.min(0.032, Math.max(0.001, (now - S.last) / 1000)) * ts;
+      S.last = now;
+      const p = store.ptr;
+      const want = ready && (((p.inside || p.down) && (p.demo || (fine.matches && p.type === "mouse"))) || store.get().focus);
+      const tm = want ? 1 : 0, tsc = want ? (p.down ? 0.94 : 1.12) : 1; // grown a little when offered, pressed in when held
+      if (reduce) { S.m = tm; S.v = 0; S.sc = tsc; S.vs = 0; }
+      else {
+        let a = K * (tm - S.m) - C * S.v; S.v += a * dt; S.m += S.v * dt;
+        a = K * (tsc - S.sc) - C * S.vs; S.vs += a * dt; S.sc += S.vs * dt;
+      }
+      const m = S.m;
+      const on = m > 0.002;
+      const mix = Math.min(1, m * 8); // a short crossfade at the start hides the dot's ellipse vs rounded rect
+      if (R.drawn) R.drawn.style.opacity = on ? String(Math.max(0, 1 - mix)) : "";
+      if (R.g) {
+        R.g.style.display = on ? "" : "none";
+        R.g.style.opacity = on ? String(mix) : "0";
+        if (on) {
+          const sh = handleShapes(m);
+          R.stem.setAttribute("d", sh.stem);
+          R.dot.setAttribute("d", sh.dot);
+          R.g.setAttribute("transform", `translate(${HCX} ${HSEAM}) scale(${S.sc.toFixed(3)}) translate(${-HCX} ${-HSEAM})`);
+          const gr = Math.min(1, Math.max(0, (m - 0.45) / 0.45));
+          const dir = p.down ? Math.sign(p.x - p.x0) * (Math.abs(p.x - p.x0) > 3) : 0;
+          R.grips.style.opacity = gr.toFixed(3);
+          R.triL.style.opacity = dir > 0 ? "0.3" : "1";
+          R.triR.style.opacity = dir < 0 ? "0.3" : "1";
+        }
+      }
+      if (svg) {
+        // the live heading font's own "!" fades as the handle comes in (GreetingMark.jsx tspan)
+        svg.style.setProperty("--hm", on ? String(Math.min(1, m).toFixed(3)) : "0");
+        if (p.demo && on) svg.style.setProperty("--hf-handle", "#1a6fd0"); else svg.style.removeProperty("--hf-handle");
+      }
+      const settling = Math.abs(tm - S.m) > 0.002 || Math.abs(S.v) > 0.01 || Math.abs(tsc - S.sc) > 0.002 || Math.abs(S.vs) > 0.01;
+      // a pointer inside rewrites the direction every move, which wakes the loop, so only run while moving
+      if (settling || (want && p.down)) S.raf = requestAnimationFrame(frame);
+    };
+    const wake = () => { if (!S.raf && !document.hidden) { S.last = performance.now(); S.raf = requestAnimationFrame(frame); } };
+    store.wake = wake;
+    wake();
+    return () => { cancelAnimationFrame(S.raf); if (store.wake === wake) store.wake = null; };
+  }, [store, ready, reduce, snap.focus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // pointer
   const [hint, setHint] = useState(false);
+  // what the dragger overlay needs to know about the pointer (the demo cursor sends id 77)
+  const track = (e, patch) => {
+    const p = store.ptr;
+    p.type = e.pointerType; p.demo = e.pointerId === 77; p.x = e.clientX; p.y = e.clientY;
+    if (patch) Object.assign(p, patch);
+    store.wake?.();
+  };
   const onDown = (e) => {
     if (!ready || e.button > 0) return;
+    touched();
+    track(e, { inside: true, down: true, x0: e.clientX });
     const s = st.current;
     const svg = gRef.current.ownerSVGElement;
     const r = svg.getBoundingClientRect();
@@ -424,6 +539,7 @@ export function HelloFlipLayer({ store, ready, reduce }) {
     document.documentElement.classList.add("hf-grabbing");
   };
   const onMove = (e) => {
+    track(e);
     const s = st.current;
     const d = s.drag;
     if (!d || e.pointerId !== d.id) return;
@@ -446,6 +562,7 @@ export function HelloFlipLayer({ store, ready, reduce }) {
     kick();
   };
   const onUp = (e) => {
+    track(e, { down: false });
     const s = st.current;
     const d = s.drag;
     if (!d || e.pointerId !== d.id) return;
@@ -467,13 +584,22 @@ export function HelloFlipLayer({ store, ready, reduce }) {
     kick();
   };
 
-  // one quiet nudge, once a session, a moment after the hero settles
+  // the periodic nudge: the "!" leans right and back a moment after the hero
+  // settles, then every few seconds, three times at most per session, and never after the first
+  // interaction (drag, click, key) or under reduced motion
   useEffect(() => {
     if (!ready || reduce) return;
-    let seen = false;
-    try { seen = sessionStorage.getItem("hf-hint") === "1"; sessionStorage.setItem("hf-hint", "1"); } catch { /* private mode */ }
-    if (seen) return;
-    const t = setTimeout(() => setHint(true), 2600);
+    let n = 0, touchedAlready = false;
+    try { n = +sessionStorage.getItem("hf-nudges") || 0; touchedAlready = sessionStorage.getItem("hf-touched") === "1"; } catch { /* private mode */ }
+    if (touchedAlready || n >= 3) return;
+    let t;
+    const fire = () => {
+      try { if (sessionStorage.getItem("hf-touched") === "1") return; sessionStorage.setItem("hf-nudges", String(++n)); } catch { ++n; }
+      const idle = !st.current.drag && st.current.form === "hello" && st.current.count === MIN_LEN;
+      if (idle) { setHint(false); requestAnimationFrame(() => setHint(true)); }
+      if (n < 3) t = setTimeout(fire, 5200);
+    };
+    t = setTimeout(fire, 2600);
     return () => clearTimeout(t);
   }, [ready, reduce]);
 
@@ -558,9 +684,25 @@ export function HelloFlipLayer({ store, ready, reduce }) {
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
+          onPointerEnter={(e) => track(e, { inside: true })}
+          onPointerLeave={(e) => track(e, { inside: false })}
         >
           <rect className="hf__hit" x={P["!"][1] - 36} y="-4" width={BANG_W + 49} height={BASE + 10} fill="transparent" />
-          <path d={P["!"][0]} />
+          <path className="hf__bangd" d={P["!"][0]} ref={(n) => (hRef.current.drawn = n)} />
+          <g className="hf__handle" ref={(n) => (hRef.current.g = n)} style={{ display: "none" }} mask={`url(#${uid}m)`}>
+            <path ref={(n) => (hRef.current.stem = n)} />
+            <path ref={(n) => (hRef.current.dot = n)} />
+          </g>
+          <defs>
+            <mask id={`${uid}m`} maskUnits="userSpaceOnUse" x={HX0 - 6} y={HTOP - 6} width={HX1 - HX0 + 12} height={HBOT - HTOP + 12}>
+              <rect x={HX0 - 6} y={HTOP - 6} width={HX1 - HX0 + 12} height={HBOT - HTOP + 12} fill="#fff" />
+              <g ref={(n) => (hRef.current.grips = n)} fill="#000" style={{ opacity: 0 }}>
+                {GRIP_DOTS.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.15" />)}
+                <path ref={(n) => (hRef.current.triL = n)} d={TRI_L} />
+                <path ref={(n) => (hRef.current.triR = n)} d={TRI_R} />
+              </g>
+            </mask>
+          </defs>
           {snap.focus && <rect className="hf__ring" x={P["!"][1] - 4} y="-2" width={BANG_W + 8} height={BASE + 5} rx="4" fill="none" />}
         </g>
       </g>

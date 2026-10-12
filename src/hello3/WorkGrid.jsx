@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Cursor from "../figures/ds/Cursor";
 import { useInViewLoop, useReducedMotion } from "../figures/ds/hooks";
 import HelloLink from "./HelloLink";
+import LockedLink from "./LockedLink";
+import { LOCKED, newestFirst } from "./workMeta";
 import useLinkedSpotlight from "./useLinkedSpotlight";
 import FigmaPhone from "./FigmaPhone";
 import ClipVideo from "../hello/ClipVideo";
@@ -447,8 +449,10 @@ export default function WorkGrid({ onNavigate }) {
   return (
     <section className="wg" aria-label="Selected work" ref={sectionRef}>
       <div className="wg__grid">
-        {CARDS.filter((c) => !c.hidden).map((c, i) => (
-          <HelloLink key={c.src} to={c.href} onNavigate={onNavigate} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? c.alt : undefined}>
+        {newestFirst(CARDS.filter((c) => !c.hidden)).map((c, i) => { // mv58rul2: same newest-first order as the timeline
+          const Card = LOCKED.has(c.href) ? LockedLink : HelloLink;
+          return (
+          <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top" } : { to: c.href, onNavigate })} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? c.alt : undefined}>
             {c.live === "caratlane" ? (
               <span className="wg__live" aria-hidden>
                 <FigmaPhone plate="pro17" className="wg__phone" screen={<ClipVideo clip={CARAT_CLIP} playing />} alt="" />
@@ -522,8 +526,9 @@ export default function WorkGrid({ onNavigate }) {
             ) : (
               <img src={c.src} alt={c.alt} width="666" height="432" loading="lazy" draggable="false" />
             )}
-          </HelloLink>
-        ))}
+          </Card>
+          );
+        })}
       </div>
     </section>
   );

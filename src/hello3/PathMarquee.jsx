@@ -81,8 +81,8 @@ export default function PathMarquee({
   slowOnHover = true,
   slowFactor = 0.25,
   draggable = true,
-  dragSensitivity = 0.35,
-  dragDecay = 0.94,
+  dragSensitivity = 0.1, // percent of the path per pointer px: the cards follow the finger at about 1.3x (was 0.35, ~4.5x)
+  dragDecay = 0.9,
 
   // ---- depth -----------------------------------------------------------
   rollingZIndex = true,
@@ -518,11 +518,12 @@ export default function PathMarquee({
     // the card resting on the centre carries data-focus (muksv25q: "when each video
     // reaches the center, it grows 20% and a caption with a metric or two shows
     // below"); the page styles it, travel clears it
-    const setFocus = (on) => {
+    const setFocus = (on, only) => {
       const wrap = wrapRef.current;
       const els = itemRefs.current.filter(Boolean).slice(0, shown);
       els.forEach((el) => delete el.dataset.focus);
       if (!on || !wrap) return;
+      if (only) { only.dataset.focus = "true"; return; }
       const box = wrap.getBoundingClientRect();
       const mid = box.left + box.width / 2;
       let best = Infinity, pick = null;
@@ -564,12 +565,14 @@ export default function PathMarquee({
       if ((ui.current.hovering || wrapRef.current?.matches(":hover")) && hoverModeRef.current === "pause") { frozen = true; cycle("hold"); }
       tick();
     };
-    const hold = (resumeSame) => {
+    const hold = (resumeSame, only) => {
       if (stopped) return;
       ui.current.held = true;
       live().forEach((a) => a.pause());
-      setFocus(true);
+      setFocus(true, only);
       const item = restItem();
+      const rp = item?.getAnimations()[0]?.effect?.getComputedTiming().progress;
+      if (typeof rp === "number") ui.current.restP = rp; // where a resting card sits (the drag's snap target)
       const prev = dwellState.current;
       if (resumeSame && prev && prev.item === item && prev.remaining > 0) {
         cycle("rest", { dwell: prev.total, remaining: prev.remaining, step: stepMs, item, resumed: true });
@@ -733,7 +736,59 @@ export default function PathMarquee({
     };
     start();
 
+    // A DRAG TAKES THE RUN, AND HANDS IT BACK SNAPPED. dragStart stops the
+    // carousel's own clocks (rest timer, hop spring, watch loop) so nothing
+    // fights the pointer; dragEnd glides every card to the nearest card-at-
+    // centre position (a short ease with a little overshoot, like the hop) and
+    // then rests there exactly as after a hop, so the auto-run carries on.
+    ui.current.dragStart = () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+      dwellState.current = null;
+      setFocus(false);
+      ui.current.held = true;
+      cycle("travel", { step: stepMs });
+    };
+    ui.current.dragEnd = () => {
+      if (stopped) return;
+      const items = itemRefs.current.filter(Boolean).slice(0, shown);
+      const as = items.map((el) => el.getAnimations()[0]);
+      const prog = (a) => a?.effect?.getComputedTiming().progress;
+      const dur = as[0]?.effect?.getTiming().duration;
+      const home = ui.current.restP;
+      let pick = null;
+      const settle = () => { if (playing) hold(false, pick); else { setFocus(true, pick); cycle("hold"); } };
+      if (!dur || typeof home !== "number" || as.some((a) => typeof prog(a) !== "number")) { settle(); return; }
+      // the card to land on is named here, not re-found from the screen once
+      // it arrives: the page's layout re-centres on whichever card rests, so a
+      // geometric pick could choose the neighbour and shift the whole row a card
+      let delta = Infinity;
+      as.forEach((a, i) => {
+        const dl = ((((home - prog(a)) % 1) + 1.5) % 1) - 0.5;
+        if (Math.abs(dl) < Math.abs(delta)) { delta = dl; pick = items[i]; }
+      });
+      const t0 = as.map((a) => Number(a.currentTime) || 0);
+      const MS = 520, c1 = 1.0, c3 = c1 + 1;
+      const t_start = performance.now();
+      const step = (now) => {
+        if (stopped) return;
+        if (ui.current.dragging) return; // grabbed again mid-snap
+        const t = Math.min(1, (now - t_start) / MS);
+        const e = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); // ease-out with a slight overshoot
+        as.forEach((a, i) => {
+          let ct = t0[i] + delta * e * dur;
+          ct = ((ct % dur) + dur) % dur;
+          a.currentTime = ct;
+        });
+        if (t < 1) raf = requestAnimationFrame(step);
+        else settle();
+      };
+      raf = requestAnimationFrame(step);
+    };
+
     return () => {
+      ui.current.dragStart = null;
+      ui.current.dragEnd = null;
       stopped = true;
       clearTimeout(timer);
       cancelAnimationFrame(raf);
@@ -797,15 +852,15 @@ export default function PathMarquee({
   }, [reduce, hoverMode, slowOnHover, slowFactor, direction]);
 
   const pointer = useRef({ x: 0, y: 0 });
+  // A press only becomes a drag after it moves DRAG_PX, so a plain click on a
+  // card still opens its link (and never stops the run); a drag swallows the
+  // click that follows it.
+  const DRAG_PX = 6;
+  const down = useRef(null);
   const onDown = (e) => {
     if (!draggable || reduce) return;
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-    ui.current.dragging = true;
-    ui.current.dragV = 0;
-    cancelAnimationFrame(ui.current.glide || 0);
-    // hold the run still under the finger; the hover ease does not own this
-    for (const a of animsRef.current) a.playbackRate = 0;
-    pointer.current = { x: e.clientX, y: e.clientY };
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    down.current = { x: e.clientX, y: e.clientY, id: e.pointerId, el: e.currentTarget };
   };
   // Drag moves TIME, not position. Shifting currentTime slides every item along
   // the shared keyframe list at once — the same thing the old loop did by adding
@@ -815,10 +870,25 @@ export default function PathMarquee({
     if (!anims.length) return;
     const dur = anims[0].effect.getTiming().duration;
     const shift = (pathPercent / 100) * dur;
-    for (const a of anims) a.currentTime = Number(a.currentTime ?? 0) + shift;
+    for (const a of anims) a.currentTime = (((Number(a.currentTime ?? 0) + shift) % dur) + dur) % dur;
+  };
+  const beginDrag = (e) => {
+    try { down.current.el.setPointerCapture?.(e.pointerId); } catch { /* a pointer that is already gone */ }
+    ui.current.dragging = true;
+    ui.current.dragV = 0;
+    cancelAnimationFrame(ui.current.glide || 0);
+    // hold the run still under the finger; the hover ease does not own this
+    for (const a of animsRef.current) a.playbackRate = 0;
+    ui.current.dragStart?.();
+    pointer.current = { x: down.current.x, y: down.current.y };
   };
   const onMove = (e) => {
-    if (!draggable || !ui.current.dragging) return;
+    if (!draggable) return;
+    if (!ui.current.dragging) {
+      const d = down.current;
+      if (!d || d.id !== e.pointerId || Math.hypot(e.clientX - d.x, e.clientY - d.y) < DRAG_PX) return;
+      beginDrag(e);
+    }
     const dx = e.clientX - pointer.current.x;
     const dy = e.clientY - pointer.current.y;
     // project onto the dominant axis: a path can double back, so raw magnitude
@@ -830,7 +900,12 @@ export default function PathMarquee({
   };
   const onUp = (e) => {
     if (!draggable) return;
-    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    const wasDragging = ui.current.dragging;
+    down.current = null;
+    if (!wasDragging) return;
+    ui.current.justDragged = true;
+    setTimeout(() => { ui.current.justDragged = false; }, 0);
+    try { e.currentTarget.releasePointerCapture?.(e.pointerId); } catch { /* already released */ }
     ui.current.dragging = false;
     // A flick keeps going and decays. This is the one place a short-lived rAF is
     // still right: it is a transient gesture, not a permanent engine, and it
@@ -841,14 +916,15 @@ export default function PathMarquee({
         ? (hoverMode === "pause" ? 0 : slowFactor)
         : 1;
       for (const a of animsRef.current) a.playbackRate = dir * want;
+      ui.current.dragEnd?.();
     };
-    if (reduce || Math.abs(ui.current.dragV) < 0.05) {
+    if (reduce || Math.abs(ui.current.dragV) < 0.04) {
       resume();
       return;
     }
     const glide = () => {
       ui.current.dragV *= dragDecay;
-      if (Math.abs(ui.current.dragV) < 0.05) {
+      if (Math.abs(ui.current.dragV) < 0.04) {
         ui.current.dragV = 0;
         resume();
         return;
@@ -868,6 +944,7 @@ export default function PathMarquee({
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
+      onClickCapture={(e) => { if (ui.current.justDragged) { e.preventDefault(); e.stopPropagation(); } }}
       // the depth ladder's top, for content that has to hold a real on-screen
       // size at the centre (the side-quests caption button, 11 Oct 2026).
       // Deliberately not --pm-smax: hello.css's hover maths reads that name

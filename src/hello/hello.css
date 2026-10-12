@@ -4564,9 +4564,7 @@ to {
 /* and it has to come to the front, which only the ITEM can do since it carries
    the rolling z-index the run assigns */
 
-.pm__item:has(.ap__card:hover) {
-  z-index: 999;
-}
+/* (hover no longer raises the card, 11 Oct 2026: only the centre snap does) */
 
 /* ── SOLO ON HOVER (annotation mso8at14: "hide other elements on hover, keep
    only the main frame") ────────────────────────────────────────────────────

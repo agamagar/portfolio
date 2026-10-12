@@ -6,6 +6,7 @@ import "./tailwind.css";
 import "@fontsource-variable/stack-sans-headline"; // Stack Sans Headline (OFL-1.1, Fontsource) for the case header, 2026-09-06
 import "./index.css";
 import { startSmoothScroll } from "./ui/smoothScroll";
+import { startScrollHoverGuard } from "./ui/scrollHover";
 import { startFavicon3d } from "./lib/favicon3d";
 import { introIsPlaying, introRevealed } from "./hello3/useStage";
 import { heroMorphSettledOrTimeout } from "./hello3/heroMorphGate";
@@ -13,6 +14,7 @@ import "./hello3/inspect-overrides.css"; // Inspect mode's written overrides; la
 
 // inertial wheel scroll for the whole site; no-op under reduced motion
 startSmoothScroll();
+startScrollHoverGuard(); // no hover while the page scrolls (ui/scrollHover.js)
 
 // tab icon morphs through solids, one-sided surfaces and 4D shapes (src/lib/favicon3d.js);
 // static face under reduced motion or without WebGL2.

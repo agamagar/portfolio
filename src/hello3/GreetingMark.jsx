@@ -35,6 +35,7 @@ export default function GreetingMark({ className = "", helloLayer = null, ...res
       aria-hidden="true"
       focusable="false"
       data-hero-live={liveText ? "" : undefined}
+      style={liveText ? { "--hf-bang-dx": fit.bangDx } : undefined}
       {...rest}
     >
       {/* mttiw5u0 (09 Sep 2026): the seven "I'm Agam" glyphs are one group so
@@ -62,7 +63,7 @@ export default function GreetingMark({ className = "", helloLayer = null, ...res
       <path d="M83.357 36.2237V2.06989H91.7402V36.2237H83.357ZM62.9164 36.2237V2.06989H71.2996V36.2237H62.9164ZM69.178 22.5622V15.5244H87.7555V22.5622H69.178Z" />
       {/* the stretchy Hello (HelloFlip.jsx, 2026-10-11): draws over these
           paths in the same units and hides them only while the word differs */}
-      {liveText && <text className="gm__live gm__live--hello" x={fit.hx} y="36.2237" fontSize={fit.fs} letterSpacing={fit.hello.ls || undefined} {...tx(fit.hello.len)}>Hello!</text>}
+      {liveText && <text className="gm__live gm__live--hello" x={fit.hx} y="36.2237" fontSize={fit.fs} letterSpacing={fit.hello.ls || undefined} {...tx(fit.hello.len)}>Hello<tspan className="gm__live-bang">!</tspan></text>}
       {helloLayer}
       </g>
     </svg>

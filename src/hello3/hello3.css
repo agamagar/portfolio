@@ -1139,7 +1139,7 @@ body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
 .hello[data-page="3"] .ap__play {
   position: absolute;
   left: 50%;
-  bottom: -80px; /* was 0: below the focused card's caption (muksv25q), which reached it on the big walkthrough card; -64 -> -128 (11 Oct 2026) once the caption ended on a 44px button; -128 -> -210 once it became a wall label, -234 once every label kept the full fixed template (the portrait cards set the depth), -199 once the meta line and hairline went (mv3sl7a5), back to -64 once the caption became one line, -80 once it wrapped to the card width (the timer ring and Pause sit under the caption: Agam, "the rotating timer below") with a description and credit line (mv3q1yei) */
+  bottom: calc(-80px + var(--ap-gain, 0px) + var(--ap-bottom-extra, 0px)); /* + the section's extra height (mv4fzufr) and the extra bottom room (mv4gmd56), so it keeps its distance under the caption. Was 0: below the focused card's caption (muksv25q), which reached it on the big walkthrough card; -64 -> -128 (11 Oct 2026) once the caption ended on a 44px button; -128 -> -210 once it became a wall label, -234 once every label kept the full fixed template (the portrait cards set the depth), -199 once the meta line and hairline went (mv3sl7a5), back to -64 once the caption became one line, -80 once it wrapped to the card width (the timer ring and Pause sit under the caption: Agam, "the rotating timer below") with a description and credit line (mv3q1yei) */
   translate: -50% 0;
   z-index: 4;
   /* mv3pzco6-rea15g: the LOOK is the site's standard glass button now, shared
@@ -1916,11 +1916,6 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --ch
 /* keyboard focus grows a card the way hover does */
 .hello[data-page="3"] .ap__card:focus-visible, .hello[data-page="3"] .pm__item[data-focus] .ap__card:focus-visible { scale: calc(var(--ap-hover) * var(--pm-smax, 1) / var(--pm-live, var(--pm-s, 1))); }
 .hello[data-page="3"] .pm__item[data-focus] .ap__card { scale: var(--ap-focus); }
-/* the rule above outranks .ap__card:hover (hello.css), so the centre card held
-   at 1.2 under the pointer while its neighbours parted for 1.5. Hover wins
-   again, and a drag still reverts it (hello.css data-grabbing). */
-.hello[data-page="3"] .pm__item[data-focus] .ap__card:hover { scale: calc(var(--ap-hover) * var(--pm-smax, 1) / var(--pm-live, var(--pm-s, 1))); }
-.hello[data-page="3"] .pm[data-grabbing="true"] .pm__item[data-focus] .ap__card:hover { scale: var(--ap-focus); }
 /* CONTINUOUS PARTING (11 Oct 2026, "move out of the way for the cards at the
    center"): while AlongPath's loop runs (data-ap-continuous), it owns every
    card's growth as --ap-k and its sideways move as translate, both eased in
@@ -2328,3 +2323,176 @@ html:has(div[data-inspect-ui]) .wscene-back-pill { display: none; }
 /* mv4g15l9 (Agam 2026-10-12): a little more room under the work cards, 60 -> 96px */
 .hello[data-page="3"] .wg { padding-bottom: 96px; }
 
+
+/* THE LIVE-AUDIO INDICATOR (12 Oct 2026): a tiny speaker in the corner of the
+   hand-drawn animation's card, only while its sound is playing. */
+.hello[data-page="3"] .ap__speaker { position: absolute; left: 8px; bottom: 8px; width: 16px; height: 16px; padding: 4px; box-sizing: content-box; border-radius: 999px; color: #fff; background: rgba(0, 0, 0, 0.55); opacity: 0; scale: 0.8; transition: opacity 200ms ease, scale 200ms ease; pointer-events: none; z-index: 2; }
+.hello[data-page="3"] .ap__card[data-audio-live] .ap__speaker { opacity: 1; scale: 1; }
+
+/* A TALLER SECTION (12 Oct 2026, mv4fzufr-v7t44c, "increase the height of this
+   section"): about 20-25% more room, so the 20%-bigger centre card, its caption
+   and the timer breathe. The same GAIN is added above and below the stage's own
+   padding (desktop: the symmetric clamp; touch: its asymmetric one), so the run
+   stays exactly where it was relative to the added room, and the Pause control
+   moves up by the gain (see .ap__play). 9.5vh = +171 px of section at 900 px high
+   (785 -> 956, +21.8%), +152 at 800 (+20.5%). */
+.hello[data-page="3"] .ap__stage {
+  --ap-gain: clamp(40px, 9.5vh, 100px);
+  /* mv4gmd56-ovr2wc (12 Oct 2026, "need more spacing at the bottom"): 64 px more
+     BELOW the run only, so the timer and caption never sit tight against the
+     next section; the Pause control rises by the same amount (see .ap__play) */
+  --ap-bottom-extra: 64px;
+  padding: calc(clamp(70px, 12vh, 130px) + var(--ap-gain)) 0 calc(clamp(70px, 12vh, 130px) + var(--ap-gain) + var(--ap-bottom-extra));
+}
+@media (hover: none) {
+  .hello[data-page="3"] .ap__stage { padding: calc(clamp(36px, 6vh, 70px) + 40px + var(--ap-gain)) 0 calc(clamp(48px, 8vh, 80px) + var(--ap-gain) + var(--ap-bottom-extra)); }
+}
+
+/* THE CAPTION ARRIVES WITH THE CARD (12 Oct 2026, mv4z5kxr-8bhgms: "animate this
+   text as well along when it comes in"). While the run's loop is on
+   (data-ap-continuous), AlongPath writes --cap-p (0..1) on the slot from the
+   card's own nearness to the centre: the phi zones and curves of the landing
+   (arriving shorter, leaving longer). Each word has its progress
+   q = clamp(0, p * k - i * 0.1, 1) (k = 1 + 0.1 * the arrow's index, so the
+   last item reaches 1 exactly when the card lands): a short stagger, the arrow
+   last, each rising 8px as it fades in, and the reverse on the way out. No
+   transition: the value is already eased and synced with the card, so there is
+   no separate pop after it settles. The caption is out of the tab order and
+   unclickable until it is mostly in. Under reduced motion the loop is off, so
+   none of this applies and the older plain fade (data-focus) stays. */
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__cap { opacity: 1; translate: -50% 0; transition: none; visibility: hidden; pointer-events: none; }
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__slot[data-cap-live] .ap__cap { visibility: visible; }
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__slot[data-cap-on] .ap__cap { pointer-events: auto; }
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__cap-w,
+.hello[data-page="3"] .ap__stage[data-ap-continuous] .ap__cap-arrow {
+  --q: clamp(0, calc(var(--cap-p, 0) * var(--cap-k, 2) - var(--i, 0) * 0.1), 1);
+  opacity: var(--q);
+  transform: translateY(calc((1 - var(--q)) * 8px));
+}
+.hello[data-page="3"] .ap__cap-w { display: inline-block; }
+
+/* THE BUBBLE AS ONE SHAPE (12 Oct 2026, mv4zdmlv-88gvx4). BubbleShape.jsx draws
+   the whole bubble, pill and tail, as one path: a clipped glass layer, a rim
+   stroke, and a masked blurred shadow. So the bubble's own fill, backdrop, inset
+   edges and drop shadow are gone, and so are both tail pseudo-elements (the
+   painted curl, then the clipped glass piece with its blurred lift). Colours are
+   the nav glass tokens (index.css), the rim and shadow values the ones the old
+   inset / drop shadows carried. */
+.hello[data-page="3"] .hello-foot__bubble,
+html.dark .hello[data-page="3"] .hello-foot__bubble,
+.hello[data-page="3"] .hello-foot__bubble:hover,
+html.dark .hello[data-page="3"] .hello-foot__bubble:hover { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+.hello[data-page="3"] .hello-foot__bubble::before,
+.hello[data-page="3"] .hello-foot__bubble::after { display: none !important; }
+.hello[data-page="3"] .hello-foot__shape {
+  --shape-shadow: rgba(40, 20, 80, 0.30);
+  --rim-top: rgba(255, 255, 255, 0.9);
+  --rim-mid: rgba(255, 255, 255, 0.45);
+  --rim-bottom: rgba(0, 0, 0, 0.08);
+  position: absolute; top: -24px; height: 82px; z-index: 0; pointer-events: none; display: block;
+}
+html.dark .hello[data-page="3"] .hello-foot__shape {
+  --shape-shadow: rgba(0, 0, 0, 0.55);
+  --rim-top: rgba(255, 255, 255, 0.16);
+  --rim-mid: rgba(255, 255, 255, 0.08);
+  --rim-bottom: rgba(0, 0, 0, 0.35);
+}
+.hello[data-page="3"] .hello-foot__shape svg { position: absolute; display: block; overflow: visible; }
+.hello[data-page="3"] .hello-foot__shape-shadow { left: 0; top: 0; width: 100%; height: 100%; }
+.hello[data-page="3"] .hello-foot__shape-shadow-fill { fill: var(--shape-shadow); }
+.hello[data-page="3"] .hello-foot__shape-glass {
+  position: absolute; left: 24px; top: 24px; height: 34px;
+  background: var(--glass-film);
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  transition: background-color 150ms ease;
+}
+.hello[data-page="3"] .hello-foot__bubble:hover .hello-foot__shape-glass { background: var(--glass-film-hover); }
+.hello[data-page="3"] .hello-foot__shape-rim { left: 24px; top: 24px; width: auto; height: 34px; }
+.hello[data-page="3"] .hello-foot__shape .rim-top { stop-color: var(--rim-top); }
+.hello[data-page="3"] .hello-foot__shape .rim-mid { stop-color: var(--rim-mid); }
+.hello[data-page="3"] .hello-foot__shape .rim-bottom { stop-color: var(--rim-bottom); }
+
+/* THE SOUND HINT (12 Oct 2026): a pill in the hand-drawn card's corner while its
+   sound is meant to play but cannot (site sound off, or no click yet). */
+.hello[data-page="3"] .ap__audio-hint { position: absolute; left: 8px; bottom: 8px; display: none; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 999px; color: #fff; background: rgba(0, 0, 0, 0.6); font: 500 12px/1 var(--font-sans, system-ui); white-space: nowrap; cursor: pointer; z-index: 3; }
+.hello[data-page="3"] .ap__audio-hint svg { width: 14px; height: 14px; }
+.hello[data-page="3"] .ap__card[data-audio-hint] .ap__audio-hint { display: inline-flex; }
+
+/* THE SOUND BUTTON (12 Oct 2026): the glass Pause button's twin, immediately to its
+   left (38px + a 10px gap), same size and glass (it carries .ap__play too). */
+.hello[data-page="3"] .ap__sound { translate: calc(-50% - 48px) 0; }
+.hello[data-page="3"] .ap__sound[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+
+/* THE POSTER (12 Oct 2026, mv583b24-dat00t): a full-viewport view of a side-quests
+   card, portalled to <body> (so these rules are not scoped to .hello). The picture
+   keeps its card's aspect and flies in from the card (AlongPath, WAAPI); the
+   title sets in the serif at display size. */
+.apx { position: fixed; inset: 0; z-index: 90; color: #fff; }
+.apx__scrim { position: absolute; inset: 0; background: rgba(8, 8, 12, 0.94); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
+.apx__stage { position: absolute; inset: 0; overflow-y: auto; display: grid; justify-items: center; align-content: center; gap: clamp(20px, 4vh, 44px); padding: 72px clamp(20px, 6vw, 96px); }
+.apx__media { position: relative; height: min(50vh, 640px); aspect-ratio: var(--apx-ar, 3 / 4); max-width: 86vw; border-radius: 14px; overflow: hidden; background: #000 center / cover no-repeat; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55); flex: none; }
+.apx__pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; user-select: none; }
+.apx__text { display: grid; justify-items: center; gap: 14px; text-align: center; max-width: min(1100px, 92vw); }
+.apx__title { margin: 0; font: 400 clamp(40px, 7.4vw, 116px)/0.96 var(--font-serif, "Newsreader", Georgia, serif); font-variation-settings: "opsz" 72; letter-spacing: -0.025em; text-wrap: balance; }
+.apx__sub { margin: 0; font: 400 clamp(16px, 1.7vw, 22px)/1.35 var(--font-serif, "Newsreader", Georgia, serif); color: rgba(255, 255, 255, 0.72); text-wrap: balance; }
+.apx__cta { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px; margin-top: 6px; border-radius: 999px; corner-shape: round; background: rgba(255, 255, 255, 0.16); -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.12); color: #fff; font: 500 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif; text-decoration: none; white-space: nowrap; transition: background-color 150ms ease, scale 150ms ease; }
+.apx__cta:hover { background: rgba(255, 255, 255, 0.26); }
+.apx__cta:active { scale: 0.97; }
+.apx__cta:focus-visible, .apx .ap__play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+/* the controls are the site's glass button (.ap__play); only where they sit is here */
+.apx .ap__play { position: absolute; z-index: 2; color: #e8e8e8; }
+.apx__close { top: 22px; right: 22px; }
+.apx__sound { top: 22px; right: 72px; }
+.apx__prev, .apx__next { top: 50%; translate: 0 -50%; }
+.apx__prev { left: clamp(10px, 2.4vw, 32px); }
+.apx__next { right: clamp(10px, 2.4vw, 32px); }
+.apx__sound[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+@media (max-width: 720px) { .apx__prev, .apx__next { top: auto; bottom: 22px; translate: none; } .apx__prev { left: 22px; } .apx__next { right: 22px; } .apx__media { height: min(40vh, 520px); } }
+
+/* mv58rul2 (12 Oct 2026): projects awaiting NDA approval (LockedLink.jsx).
+   Shown but not openable: no href, no lift, a lock that appears on hover or
+   focus, and a glass tooltip (the nav glass tokens, as the footer bubbles
+   wear) with the reason. A click, Enter or Space holds the tooltip for a
+   moment (data-tip-open) so touch and keyboard readers get it too. */
+.hello[data-page="3"] .is-locked { cursor: not-allowed; position: relative; }
+.hello[data-page="3"] .lock__badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--muted-2, #6b6a63);
+  opacity: 0; scale: 0.7;
+  transition: opacity 180ms var(--m3-effects-default, ease), scale 260ms var(--ds-ease-pop, cubic-bezier(0.34, 1.46, 0.64, 1));
+}
+/* in the timeline row it sits after the organisation */
+.hello[data-page="3"] .hello-hero__table .lock__badge { margin-left: 6px; vertical-align: -2px; }
+.hello[data-page="3"] .hello-hero__table .work__title { display: inline-flex; align-items: center; }
+/* on a card it is a chip in the corner */
+.hello[data-page="3"] .wg__card > .lock__badge {
+  position: absolute; z-index: 4; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 999px;
+  background: var(--glass-film); color: var(--fg);
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-edge);
+}
+.hello[data-page="3"] .lock__tip {
+  position: absolute; z-index: 6; pointer-events: none;
+  display: inline-flex; align-items: center; gap: 8px; width: max-content; max-width: min(320px, 86vw);
+  padding: 9px 14px; border-radius: 12px; corner-shape: round;
+  background: rgba(255, 255, 255, 0.9); color: var(--fg); /* denser than the nav film: it sits over text */
+  -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); box-shadow: var(--glass-edge), 0 10px 28px -12px rgba(0, 0, 0, 0.5);
+  font: 500 13px/1.3 "Google Sans Flex", system-ui, sans-serif; letter-spacing: 0;
+  opacity: 0; translate: 0 4px; visibility: hidden;
+  transition: opacity 160ms var(--m3-effects-default, ease), translate 220ms var(--m3-spatial-standard-default, ease), visibility 0s 160ms;
+}
+.hello[data-page="3"] .lock__tip svg { flex: none; }
+html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 10px 28px -12px rgba(0, 0, 0, 0.6); }
+.hello[data-page="3"] .hello-hero__table .is-locked .lock__tip { left: 88px; top: calc(100% + 2px); }
+.hello[data-page="3"] .wg__card.is-locked .lock__tip { left: 50%; top: 14px; translate: -50% -4px; }
+.hello[data-page="3"] .is-locked:hover .lock__badge, .hello[data-page="3"] .is-locked:focus-visible .lock__badge,
+.hello[data-page="3"] .is-locked[data-tip-open] .lock__badge { opacity: 1; scale: 1; }
+.hello[data-page="3"] .is-locked:hover .lock__tip, .hello[data-page="3"] .is-locked:focus-visible .lock__tip,
+.hello[data-page="3"] .is-locked[data-tip-open] .lock__tip { opacity: 1; visibility: visible; transition-delay: 0s; translate: 0 0; }
+.hello[data-page="3"] .wg__card.is-locked:hover .lock__tip, .hello[data-page="3"] .wg__card.is-locked:focus-visible .lock__tip,
+.hello[data-page="3"] .wg__card.is-locked[data-tip-open] .lock__tip { translate: -50% 0; }
+/* a locked card does not lift or zoom: it is not going anywhere */
+.hello[data-page="3"] .wg__card.is-locked:hover { transform: none; box-shadow: none; }
+.hello[data-page="3"] .wg__card.is-locked:hover img { transform: none; }
+.hello[data-page="3"] .wg__card.is-locked:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; box-shadow: none; }
+@media (max-width: 720px) { .hello[data-page="3"] .hello-hero__table .is-locked .lock__tip { left: 56px; } }
+@media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .lock__tip, .hello[data-page="3"] .lock__badge { transition: none; translate: 0 0; scale: 1; } }

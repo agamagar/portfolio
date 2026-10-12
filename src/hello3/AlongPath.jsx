@@ -9,7 +9,9 @@
 // section art is "real product UI at recognizable fidelity", never decorative
 // filler, and everything here is licensed because it is Agam's own.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { lockBackgroundScroll } from "../ui/smoothScroll";
 // mttx7x50 follow-up ("icons still look off"): the rings and the cinema close
 // used Phosphor bold glyphs, the one family the site does not draw with
 // anywhere except the top chip row; Iconoir at 16 / stroke 2 is the house set.
@@ -202,12 +204,35 @@ function WallLabel({ cap }) {
   const facts = [cap.title, [cap.year, cap.type, cap.role].filter(Boolean).join(" · "), cap.text, cap.metric].filter(Boolean).join(". ");
   const text = cap.line || cap.title;
   const external = /^https?:\/\//.test(cap.cta?.to || "");
-  // the last word and the arrow are ONE nowrap unit, so the arrow can never
-  // wrap onto a line of its own (12 Oct 2026, "align the redirect arrow properly")
+  // EACH WORD IS ITS OWN UNIT (12 Oct 2026, mv4z5kxr-8bhgms: "animate this text
+  // as well along when it comes in"): while the run's loop is on, AlongPath writes
+  // --cap-p (0..1) on the slot from the SAME nearness that drives the card's
+  // landing, and every word rises and fades with a short stagger (--i), the
+  // arrow last. The last word and the arrow stay one nowrap unit so the arrow
+  // can never wrap onto a line of its own.
   const words = text.split(" ");
   const last = words.pop();
+  const n = words.length + 1; // index of the arrow
+  const w = (t, i) => (
+    <span className="ap__cap-w" style={{ "--i": i }}>{t}</span>
+  );
+  const body = (
+    <>
+      {words.map((t, i) => (
+        <span key={i}>{w(t, i)} </span>
+      ))}
+      <span className="ap__cap-tail">
+        {w(last, words.length)}
+        {cap.cta && (
+          <svg className="hello-hero__link-ne ap__cap-arrow" style={{ "--i": n }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M7 17 17 7" /><path d="M8 7h9v9" />
+          </svg>
+        )}
+      </span>
+    </>
+  );
   return (
-    <div className="ap__cap" aria-description={facts || undefined}>
+    <div className="ap__cap" style={{ "--cap-k": 1 + 0.1 * n }} aria-description={facts || undefined}>
       {cap.cta ? (
         <a
           className="ap__cap-line ap__cap-link hello-hero__link--out"
@@ -222,16 +247,10 @@ function WallLabel({ cap }) {
             go(cap.cta.to);
           }}
         >
-          {words.length > 0 && <span>{words.join(" ")} </span>}
-          <span className="ap__cap-tail">
-            {last}
-            <svg className="hello-hero__link-ne ap__cap-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M7 17 17 7" /><path d="M8 7h9v9" />
-            </svg>
-          </span>
+          {body}
         </a>
       ) : (
-        <p className="ap__cap-line">{text}</p>
+        <p className="ap__cap-line">{body}</p>
       )}
     </div>
   );
@@ -252,48 +271,199 @@ function DwellVideo({ plate, onOpen }) {
     <article
       className="ap__card ap__card--dwell"
       style={cardStyle(plate)}
-      onClick={() => onOpen(ref.current)}
+      onClick={(e) => onOpen(e.currentTarget)}
       // 11 Oct 2026 (QA): the cinema only opened on a click, so keyboard
       // users could not reach it at all
       role="button"
       tabIndex={0}
       aria-label={`Play ${plate.alt}`}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(ref.current); } }}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(e.currentTarget); } }}
     >
-      <video ref={ref} className="ap__plate" src={plate.video} poster={plate.poster} muted loop playsInline autoPlay preload="metadata" aria-label={plate.alt} />
+      <video ref={ref} className="ap__plate" src={plate.video} poster={plate.poster} muted loop playsInline autoPlay preload="metadata" aria-label={plate.alt} data-audio-src={plate.full || undefined} />
+      {/* the live-audio indicator (12 Oct 2026): shown while this card's sound is playing */}
+      {plate.full && (
+        <svg className="ap__speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M11 5 6 9H3v6h3l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" />
+        </svg>
+      )}
+      {/* THE SOUND HINT (12 Oct 2026, Agam heard nothing): the site's sound is OFF by
+          default and the browser refuses audio before a click or key, so while this
+          card rests and its sound cannot play, a small pill says why and one click
+          fixes it (turns the site sound on, which is also the gesture the
+          browser wants). Shown by audioSync through data-audio-hint. */}
+      {plate.full && (
+        <span className="ap__audio-hint" role="button" tabIndex={-1} onClick={(e) => { e.stopPropagation(); window.dispatchEvent(new CustomEvent("ap-sound-hint")); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M11 5 6 9H3v6h3l5 4z" /><path d="m16 9 5 6M21 9l-5 6" /></svg>
+          <span className="ap__audio-hint-t" />
+        </span>
+      )}
     </article>
   );
 }
-function Cinema({ plate, from, onClose }) {
-  const ref = useRef(null);
-  // whatever opened the cinema (the card), read at first render: by the time
-  // the effect runs, autoFocus has already moved focus to Close. Focus goes
-  // back there when the cinema closes.
-  const openerRef = useRef(typeof document !== "undefined" ? document.activeElement : null);
-  // onClose arrives as a fresh arrow on every AlongPath render, and with it in
-  // the effect's deps any re-render while the cinema was open re-ran the
-  // effect: the video rewound to `from` and replayed (11 Oct 2026, QA).
-  const closeRef = useRef(onClose);
-  closeRef.current = onClose;
+// THE POSTER (12 Oct 2026, mv583b24-dat00t: "when I click any of the cards, not
+// just the video, I should be able to expand it to a full view, with the title
+// coming in a bigger font, like a poster"). It replaces the old video-only
+// cinema. The card's picture grows from where it sits in the run (a FLIP: the
+// final layout is measured, then the picture is animated from the card's
+// rectangle to it), the title sets in the serif at display size, the one-line
+// caption sits under it and the case-study link is a glass button. The run
+// pauses behind it (AlongPath), left / right step through the cards, Esc, the
+// close button or the backdrop dismiss it, and the picture flies back. A video
+// carries on from where the card's was; its sound follows the site toggle (the
+// same one the run's own sound button mirrors). The overlay follows the
+// PhoneLightbox's rules: a portalled aria-modal dialog, focus moves in and is
+// trapped, the page behind is locked (Lenis stopped), focus goes back to the
+// card. Reduced motion: a fade, no flight.
+const POSTER_ITEMS = PLATES.filter((p) => !p.hidden && (p.video || p.src));
+function Poster({ start, from, reduce, onClose }) {
+  const [i, setI] = useState(start);
+  const plate = POSTER_ITEMS[i];
+  const cap = plate.cap || {};
+  const root = useRef(null);
+  const media = useRef(null);
+  const vid = useRef(null);
+  const closing = useRef(false);
+  // the picture is shown whole, at its own aspect (the card crops it): the card's
+  // own natural size when it opens (so the flight is measured right), then the
+  // file's, once loaded, when stepping
+  const [ar, setAr] = useState(from?.ar || 0);
+  const natural = (w, h) => { if (w && h) setAr(w / h); };
+  const [soundOn, setSoundOn] = useState(() => document.documentElement.dataset.sound === "on");
+  const hasAudio = !!plate.full;
+  const external = /^https?:\/\//.test(cap.cta?.to || "");
+  const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+  useEffect(() => lockBackgroundScroll(), []);
   useEffect(() => {
-    const v = ref.current;
+    const sync = () => setSoundOn(document.documentElement.dataset.sound === "on");
+    window.addEventListener("sound-pref", sync);
+    return () => window.removeEventListener("sound-pref", sync);
+  }, []);
+  // the picture flies out of its card (first card only; stepping cross-fades)
+  const flew = useRef(false);
+  useLayoutEffect(() => {
+    const el = media.current, r0 = from?.rect;
+    const text = root.current?.querySelectorAll(".apx__in");
+    if (reduce || !el || !r0 || flew.current) { root.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, fill: "backwards" }); return; }
+    flew.current = true;
+    const r1 = el.getBoundingClientRect();
+    if (!r1.width || !r0.width) return;
+    el.animate([
+      { transformOrigin: "0 0", transform: `translate(${r0.left - r1.left}px, ${r0.top - r1.top}px) scale(${r0.width / r1.width}, ${r0.height / r1.height})`, borderRadius: "10px" },
+      { transformOrigin: "0 0", transform: "none", borderRadius: "14px" },
+    ], { duration: 560, easing: ease, fill: "backwards" });
+    root.current?.querySelector(".apx__scrim")?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: "ease-out", fill: "backwards" });
+    text?.forEach((t, n) => t.animate([{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "none" }], { duration: 640, delay: 180 + n * 70, easing: ease, fill: "backwards" }));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // the video: from the card's own time on the first card, sound by the site toggle
+  useEffect(() => {
+    const v = vid.current;
     if (!v) return undefined;
-    v.currentTime = from || 0;
-    v.muted = false;
+    const at = i === start ? from?.time : 0;
+    const seek = () => { try { if (Number.isFinite(at)) v.currentTime = at; } catch { /* not seekable yet */ } };
+    if (v.readyState >= 1) seek(); else v.addEventListener("loadedmetadata", seek, { once: true });
+    return () => v.removeEventListener("loadedmetadata", seek);
+  }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const v = vid.current;
+    if (!v) return;
+    v.muted = !(soundOn && hasAudio);
     v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
-    const onKey = (e) => { if (e.key === "Escape") closeRef.current(); };
-    window.addEventListener("keydown", onKey);
-    const opener = openerRef.current;
-    return () => { window.removeEventListener("keydown", onKey); opener?.focus?.({ preventScroll: true }); };
-  }, [from]);
-  return (
-    <div className="ap__cinema" role="dialog" aria-modal="true" aria-label={plate.alt} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      {/* mttjkak0: the close is a labelled pill, centred above the video */}
-      <div className="ap__cinema-stack">
-        <button type="button" className="ap__cinema-close" onClick={onClose} autoFocus><Xmark width={16} height={16} strokeWidth={2} aria-hidden /><span>Close</span></button>
-        <video ref={ref} className="ap__cinema-video" src={plate.full || plate.video} poster={plate.poster} controls playsInline />
+  }, [soundOn, hasAudio, i]);
+  const close = () => {
+    if (closing.current) return;
+    closing.current = true;
+    const el = media.current, card = from?.el;
+    const r1 = el?.getBoundingClientRect(), r0 = card?.isConnected && i === start ? card.querySelector(".ap__plate")?.getBoundingClientRect() : null;
+    const done = () => onClose();
+    const fade = () => root.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: "forwards" }).finished.then(done, done);
+    if (reduce || !el || !r1 || !r0 || !r0.width || r0.bottom < 0 || r0.top > window.innerHeight) { fade(); return; }
+    root.current?.querySelectorAll(".apx__in, .apx__ui").forEach((t) => t.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" }));
+    root.current?.querySelector(".apx__scrim")?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, fill: "forwards" });
+    el.animate([
+      { transformOrigin: "0 0", transform: "none" },
+      { transformOrigin: "0 0", transform: `translate(${r0.left - r1.left}px, ${r0.top - r1.top}px) scale(${r0.width / r1.width}, ${r0.height / r1.height})` },
+    ], { duration: 480, easing: ease, fill: "forwards" }).finished.then(done, done);
+  };
+  const step = (d) => {
+    if (closing.current) return;
+    setAr(0);
+    setI((n) => (n + d + POSTER_ITEMS.length) % POSTER_ITEMS.length);
+    root.current?.querySelectorAll(".apx__media, .apx__in").forEach((t) => t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: "ease-out" }));
+  };
+  const closeRef = useRef(close); closeRef.current = close;
+  const stepRef = useRef(step); stepRef.current = step;
+  useEffect(() => {
+    const opener = from?.el;
+    const focusables = () => [...root.current.querySelectorAll("button, a[href]")].filter((e) => !e.disabled && e.getAttribute("aria-disabled") !== "true" && e.getClientRects().length > 0);
+    root.current.querySelector(".apx__close")?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); closeRef.current(); }
+      else if (e.key === "ArrowRight") stepRef.current(1);
+      else if (e.key === "ArrowLeft") stepRef.current(-1);
+      else if (e.key === "Tab") {
+        const f = focusables(); if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        else if (!root.current.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); opener?.focus?.({ preventScroll: true }); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const chev = (d) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={d} /></svg>
+  );
+  return createPortal(
+    <div className="apx" ref={root} role="dialog" aria-modal="true" aria-label={cap.title || plate.alt} onClick={(e) => { if (e.target === e.currentTarget || e.target.classList.contains("apx__stage") || e.target.classList.contains("apx__scrim")) close(); }}>
+      <div className="apx__scrim" />
+      <div className="apx__stage" data-lenis-prevent>
+        <div className="apx__media" ref={media} style={{ "--apx-ar": ar || (plate.aspect || "3 / 4"), backgroundImage: plate.poster ? `url(${plate.poster})` : undefined }}>
+          {plate.video ? (
+            <video key={plate.video} ref={vid} className="apx__pic" src={plate.full || plate.video} poster={plate.poster} loop playsInline autoPlay muted aria-label={plate.alt} onLoadedMetadata={(e) => natural(e.currentTarget.videoWidth, e.currentTarget.videoHeight)} />
+          ) : (
+            <img className="apx__pic" src={plate.src} alt={plate.alt} draggable="false" onLoad={(e) => natural(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)} />
+          )}
+        </div>
+        <div className="apx__text">
+          <h2 className="apx__title apx__in">{cap.title || plate.alt}</h2>
+          {cap.line && <p className="apx__sub apx__in">{cap.line}</p>}
+          {cap.cta && (
+            <a
+              className="apx__cta apx__in"
+              href={cap.cta.to}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              onClick={(e) => {
+                if (external || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                onClose();
+                go(cap.cta.to);
+              }}
+            >
+              <span>{cap.cta.label || "Read the case study"}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden width="14" height="14"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg>
+            </a>
+          )}
+        </div>
       </div>
-    </div>
+      <button type="button" className="apx__close apx__ui ap__play" aria-label="Close" onClick={close}><Xmark width={16} height={16} strokeWidth={2} aria-hidden /></button>
+      <button type="button" className="apx__prev apx__ui ap__play" aria-label="Previous card" onClick={() => step(-1)}>{chev("m15 6-6 6 6 6")}</button>
+      <button type="button" className="apx__next apx__ui ap__play" aria-label="Next card" onClick={() => step(1)}>{chev("m9 6 6 6-6 6")}</button>
+      <button
+        type="button"
+        className="apx__sound apx__ui ap__play"
+        aria-label={soundOn ? "Mute" : "Unmute"}
+        aria-pressed={!soundOn}
+        aria-disabled={!hasAudio}
+        onClick={() => { if (hasAudio) document.querySelector(".sound-toggle")?.click(); }}
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M11 5 6 9H3v6h3l5 4z" />
+          {soundOn ? (<><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" /></>) : (<path d="m16 9 5 6M21 9l-5 6" />)}
+        </svg>
+      </button>
+    </div>,
+    document.body,
   );
 }
 
@@ -477,7 +647,19 @@ export default function AlongPath({ reduce, modeTwo }) {
   // mu9trf5q: the run rests on one card at a time now, and this is the only
   // control on it so far - "right now just play, add play and pause for now".
   const [running, setRunning] = useState(true);
-  const [cinema, setCinema] = useState(null); // mttisr5t: { plate, from }
+  const [poster, setPoster] = useState(null); // mv583b24: { start, el, rect, time }
+  const wasRunning = useRef(true);
+  // open the poster for a card: the run pauses behind it and resumes on close
+  const openPoster = (p, el) => {
+    const start = POSTER_ITEMS.indexOf(p);
+    if (start < 0 || poster) return;
+    const pic = el?.querySelector(".ap__plate");
+    wasRunning.current = running;
+    setRunning(false);
+    const nat = pic?.naturalWidth ? pic.naturalWidth / pic.naturalHeight : pic?.videoWidth ? pic.videoWidth / pic.videoHeight : 0;
+    setPoster({ start, el, rect: pic?.getBoundingClientRect() || null, time: pic?.currentTime, ar: nat || 0 });
+  };
+  const closePoster = () => { setPoster(null); if (wasRunning.current) setRunning(true); };
   const [shapeMode, setShapeMode] = useState("rect");
   const [shapeSeed, setShapeSeed] = useState(1); // fixed default: the same shapes on every load; Reshuffle moves it
 
@@ -488,6 +670,108 @@ export default function AlongPath({ reduce, modeTwo }) {
   // card, empties for the travel, freezes with "hold" and carries on with
   // "resume". It also drives the resting card's video: seeks to 0 and plays on
   // a fresh landing, pauses with the ring, plays again with it.
+  // THE SOUND OF THE HAND-DRAWN ANIMATION (12 Oct 2026, Agam: "the hand-drawn
+  // animation video in side quests has audio, can we make that audio come
+  // through"). The plate's own files are silent (the perf copies and the 800 px
+  // plate carry no audio track; only follow-that-idea-full.mp4 does, checked with
+  // ffprobe), so a separate <audio> plays that file in step with the plate while
+  // its card is the resting one. It plays only when ALL hold: the site's sound is
+  // on (<html data-sound>, the top-right toggle), the visitor has interacted
+  // (autoplay policy; before that play() is refused and we stay silent, no
+  // errors), the card is resting and not held (hover / Pause / keyboard focus),
+  // the section is on screen and the tab visible. It fades in and out over 300 ms.
+  const audioCtl = useRef({ el: null, drift: 0, src: "", want: false, rest: false, held: false, seen: true, interacted: false, blocked: false, vol: 0, fade: 0, card: null }).current;
+  const audioSync = useRef(null);
+  audioSync.current = () => {
+    const a = audioCtl;
+    if (!a.el) return;
+    const sound = document.documentElement.dataset.sound === "on";
+    // a scroll or wheel is not a user activation, so the gate is the browser's
+    // own record of one (any click, tap or key, ever) as well as our listeners
+    const unlocked = a.interacted || !!navigator.userActivation?.hasBeenActive;
+    const go = a.rest && !a.held && sound && unlocked && !a.blocked && a.seen && !document.hidden;
+    // why the card is silent, when it is meant to be heard (a hint on the card)
+    const why = a.rest && a.seen ? (!sound ? "off" : (!unlocked || a.blocked) ? "tap" : "") : "";
+    if (a.card) {
+      if (why) { a.card.dataset.audioHint = why; const t = a.card.querySelector(".ap__audio-hint-t"); const txt = why === "off" ? "Sound off" : "Tap for sound"; if (t && t.textContent !== txt) t.textContent = txt; }
+      else a.card.removeAttribute("data-audio-hint");
+    }
+    a.card?.toggleAttribute("data-audio-live", !!(go && !a.el.paused));
+    clearInterval(a.fade);
+    const target = go ? 1 : 0;
+    if (go && a.el.paused) {
+      // start in step with the picture (the track loads later than the plate)
+      const vt = a.card?.querySelector("video")?.currentTime;
+      if (Number.isFinite(vt)) { try { a.el.currentTime = vt; } catch { /* not seekable yet */ } }
+    }
+    if (go && a.el.paused) a.el.play().catch(() => { /* refused: say so on the card, retry on the next gesture */ a.blocked = true; a.card?.removeAttribute("data-audio-live"); audioSync.current?.(); });
+    // while live, keep the track within 0.2 s of the picture (play start latency
+    // and buffering let it trail by a few tenths)
+    clearInterval(a.drift);
+    if (go) a.drift = setInterval(() => {
+      const vt = a.card?.querySelector("video")?.currentTime;
+      if (Number.isFinite(vt) && !a.el.paused && Math.abs(a.el.currentTime - vt) > 0.2) { try { a.el.currentTime = vt + 0.05; } catch { /* ignore */ } }
+    }, 500);
+    const t0 = performance.now(), v0 = a.el.volume, dur = 300;
+    a.fade = setInterval(() => {
+      const k = Math.min(1, (performance.now() - t0) / dur);
+      try { a.el.volume = Math.max(0, Math.min(1, v0 + (target - v0) * k)); } catch { /* ignore */ }
+      if (k >= 1) { clearInterval(a.fade); if (!target) { a.el.pause(); a.card?.removeAttribute("data-audio-live"); } else a.card?.toggleAttribute("data-audio-live", !a.el.paused); }
+    }, 30);
+  };
+  useEffect(() => {
+    const sync = () => audioSync.current?.();
+    const gesture = () => { audioCtl.interacted = true; audioCtl.blocked = false; sync(); };
+    // the hint's click: turn the site sound on (the top-right toggle owns that
+    // state) if it is off, and count the click as the gesture
+    const hint = () => {
+      audioCtl.interacted = true; audioCtl.blocked = false;
+      if (document.documentElement.dataset.sound !== "on") document.querySelector(".sound-toggle")?.click();
+      sync();
+    };
+    window.addEventListener("sound-pref", sync);
+    document.addEventListener("visibilitychange", sync);
+    window.addEventListener("ap-sound-hint", hint);
+    // click, touchend and keydown are the activations browsers accept; a scroll is not
+    for (const t of ["pointerdown", "click", "touchend", "keydown"]) window.addEventListener(t, gesture, { passive: true });
+    // "in view" for sound means about half the section is on screen (Agam, 12 Oct
+    // 2026: audible only when the section is in view AND this card is centred),
+    // or, when the section is taller than the window, half the window is filled
+    // by it. Thresholds every 10% so the crossing is reported promptly.
+    const io = new IntersectionObserver(([e]) => {
+      audioCtl.seen = e.isIntersecting && (e.intersectionRatio >= 0.5 || e.intersectionRect.height >= 0.5 * window.innerHeight);
+      sync();
+    }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] });
+    if (sectionRef.current) io.observe(sectionRef.current);
+    return () => {
+      window.removeEventListener("sound-pref", sync);
+      document.removeEventListener("visibilitychange", sync);
+      window.removeEventListener("ap-sound-hint", hint);
+      for (const t of ["pointerdown", "click", "touchend", "keydown"]) window.removeEventListener(t, gesture);
+      io.disconnect();
+      clearInterval(audioCtl.fade);
+      clearInterval(audioCtl.drift);
+      audioCtl.el?.pause();
+    };
+  }, []);
+  // THE SOUND BUTTON (12 Oct 2026, Agam: "add the audio button to the left side
+  // of the play button"). It MIRRORS the site-wide sound toggle (top right) rather
+  // than keeping a local override, so there is one truth for "is sound on": a
+  // click here flips that toggle (and is itself the gesture that unlocks audio).
+  // Dimmed while the centred card has no audio track (only the hand-drawn one has).
+  const [soundOn, setSoundOn] = useState(() => typeof document !== "undefined" && document.documentElement.dataset.sound === "on");
+  const [cardHasAudio, setCardHasAudio] = useState(false);
+  useEffect(() => {
+    const sync = () => setSoundOn(document.documentElement.dataset.sound === "on");
+    sync();
+    window.addEventListener("sound-pref", sync);
+    return () => window.removeEventListener("sound-pref", sync);
+  }, []);
+  const toggleSound = () => {
+    audioCtl.interacted = true; audioCtl.blocked = false;
+    document.querySelector(".sound-toggle")?.click();
+    audioSync.current?.();
+  };
   const ringRef = useRef(null);
   const ringAnim = useRef(null);
   const restVideo = useRef(null);
@@ -501,28 +785,49 @@ export default function AlongPath({ reduce, modeTwo }) {
     if (phase === "rest") {
       const v = info.item?.querySelector("video") || null;
       restVideo.current = v;
+      // sound: a rest on the audio-bearing plate starts its track from 0 (or
+      // carries on after a hold), silent unless every condition in audioSync holds
+      const src = v?.dataset.audioSrc || "";
+      setCardHasAudio(!!src);
+      if (src) {
+        if (!audioCtl.el) { audioCtl.el = new Audio(); audioCtl.el.preload = "auto"; audioCtl.el.volume = 0; }
+        if (audioCtl.src !== src) { audioCtl.el.src = src; audioCtl.src = src; }
+        // seek the PICTURE first: the audio aligns to the video's clock when it starts
+        if (!info.resumed) { try { v.currentTime = 0; audioCtl.el.currentTime = 0; } catch { /* not loaded yet: starts from 0 anyway */ } }
+        audioCtl.card?.removeAttribute("data-audio-live");
+        audioCtl.card = v.closest(".ap__card");
+        audioCtl.rest = true; audioCtl.held = false;
+        audioSync.current?.();
+      } else { audioCtl.rest = false; audioSync.current?.(); }
       if (v) { if (!info.resumed) { try { v.currentTime = 0; } catch { /* metadata not ready: it starts from wherever it is */ } } v.play?.().catch(() => {}); }
       sweep(info.resumed ? 1 - info.remaining / info.dwell : 0, info.remaining);
     } else if (phase === "travel") {
       restVideo.current = null;
+      audioCtl.rest = false; audioSync.current?.(); // fades out over 300 ms, then pauses
       ringAnim.current?.cancel();
       ringAnim.current = null; // empty ring while the run moves
     } else if (phase === "hold") {
       ringAnim.current?.pause();
       restVideo.current?.pause?.();
+      audioCtl.held = true; audioSync.current?.();
     } else if (phase === "resume") {
       if (ringAnim.current?.playState === "paused") ringAnim.current.play();
       restVideo.current?.play?.().catch(() => {});
+      audioCtl.held = false; audioSync.current?.();
     }
   }).current;
-  // How long a card rests: a video plays through once (its real duration, read
-  // once its metadata is in; 6 s until it is), a still gets a reading dwell.
+  // How long a card rests: a video plays from 0 for min(its real duration, 10 s)
+  // (Agam, 12 Oct 2026, mv4rix6s-4kcl78: "let's play 10 sec of the video and move
+  // to the next", replacing "play each card through completely"; the duration is
+  // read once its metadata is in, 6 s until it is), a still gets a reading dwell.
+  // The ring fills over this same time. One constant to change: VIDEO_DWELL_CAP.
   const STILL_DWELL = 3000;
+  const VIDEO_DWELL_CAP = 10000;
   const dwellFor = useRef((item) => {
     const v = item?.querySelector("video");
     if (!v) return STILL_DWELL;
     const d = v.duration;
-    return Number.isFinite(d) && d > 0 ? d * 1000 : 6000;
+    return Math.min(VIDEO_DWELL_CAP, Number.isFinite(d) && d > 0 ? d * 1000 : 6000);
   }).current;
   // mtqsyu3o: the section keeps ONE height across modes, Visual's. The stage's
   // height is measured while the run is up and locked while the timeline is in;
@@ -621,7 +926,6 @@ export default function AlongPath({ reduce, modeTwo }) {
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage || reduce || mode !== "cards") return undefined;
-    let hovered = null;
     let focused = null;
     let current = null;
     let wasTimer = 0;
@@ -763,7 +1067,7 @@ export default function AlongPath({ reduce, modeTwo }) {
       // recalibration mid-rest was a step (mv3sifxx)
       if (!cards.length || !cards[0].isConnected) refresh();
       const grabbing = stage.querySelector(".pm[data-grabbing='true']");
-      const lead = (!grabbing && (hovered || focused)) || null;
+      const lead = (!grabbing && focused) || null;
       if (lead !== lastLead) { lastLead = lead; leadChanged = now; }
       // ONE centre for travel and rest alike (mv3sifxx): switching to the
       // resting card's own progress on landing moved every card's distance by
@@ -812,13 +1116,26 @@ export default function AlongPath({ reduce, modeTwo }) {
           ? 1 - easeIn(Math.min(1, Math.abs(d) / (gapPhase * SNAP.zoneIn)))
           : 1 - easeOut(Math.min(1, Math.abs(d) / (gapPhase * SNAP.zoneOut)));
         const dc = p - centreP;
+        // THE CAPTION'S OWN NEARNESS, measured from the CENTRE (not the hovered
+        // card): the same phi zones and curves as `near` (arriving shorter, leaving
+        // longer), so the words ease in with the landing and out with the leaving,
+        // and hovering another card does not steal the resting card's caption.
+        const apc = reverseRef.current ? dc > 0 : dc < 0;
+        const capNear = apc
+          ? 1 - easeIn(Math.min(1, Math.abs(dc) / (gapPhase * SNAP.zoneIn)))
+          // LEAVING uses 1/phi of a step, not phi (the card's own exit): the caption
+          // has to be gone by the time the next card's caption starts to arrive,
+          // or two captions hang on screen at once (measured: the old caption was
+          // still 40-55% in at one step away with the card's wider zone)
+          : 1 - easeOut(Math.min(1, Math.abs(dc) / (gapPhase / PHI)));
+        const capP = smooth(Math.max(0, Math.min(1, (capNear - 0.3) / 0.7)));
         const reach = Math.max(0.05, dc < 0 ? centreP : 1 - centreP);
         // the falloff completes 60% of the way to each end: measured, a
         // falloff over the whole reach left the outermost VISIBLE cards at
         // about half size (the big middle cards push the smallest off-screen)
         const sz = edge + (1 - edge) * (1 - smooth(Math.min(1, Math.abs(dc) / (reach * 0.6))));
         const ds = r.width / (itemW.get(it) || r.width);
-        rows.push({ c, it, d, near, sz, ds, bx: r.left + r.width / 2 });
+        rows.push({ c, it, d, near, sz, ds, capP, bx: r.left + r.width / 2 });
         if (c === lead || (!lead && near > bestNear)) { bestNear = c === lead ? 2 : near; best = c; }
       }
       rows.sort((a, b) => a.d - b.d);
@@ -934,6 +1251,9 @@ export default function AlongPath({ reduce, modeTwo }) {
         shown.set(c, sv);
         // on the SLOT (card + caption), so the caption stays under the card
         c.parentElement.style.translate = `${sv.x.toFixed(2)}px 0`;
+        const slot = c.parentElement;
+        const cp = o.capP.toFixed(3);
+        if (slot.__capP !== cp) { slot.__capP = cp; slot.style.setProperty("--cap-p", cp); slot.toggleAttribute("data-cap-live", o.capP > 0.02); slot.toggleAttribute("data-cap-on", o.capP > 0.6); }
         c.style.setProperty("--ap-k", sv.k.toFixed(4));
       }
       setActive(best);
@@ -941,12 +1261,8 @@ export default function AlongPath({ reduce, modeTwo }) {
     };
     const kick = () => { if (!raf && visible) raf = requestAnimationFrame(frame); };
 
-    const onOver = (e) => { const c = e.target.closest(".ap__card"); if (c && stage.contains(c)) hovered = c; };
-    const onOut = (e) => { const c = e.target.closest(".ap__card"); if (c && !c.contains(e.relatedTarget) && hovered === c) hovered = null; };
     const onFocusIn = (e) => { const c = e.target.closest?.(".ap__card"); if (c && e.target.matches(":focus-visible")) focused = c; };
     const onFocusOut = (e) => { const c = e.target.closest?.(".ap__card"); if (c && focused === c) focused = null; };
-    stage.addEventListener("pointerover", onOver);
-    stage.addEventListener("pointerout", onOut);
     stage.addEventListener("focusin", onFocusIn);
     stage.addEventListener("focusout", onFocusOut);
     const ro = new ResizeObserver(() => { cards = []; resized = true; });
@@ -963,12 +1279,10 @@ export default function AlongPath({ reduce, modeTwo }) {
       cancelAnimationFrame(raf);
       clearTimeout(wasTimer);
       io.disconnect(); ro.disconnect(); mo.disconnect();
-      stage.removeEventListener("pointerover", onOver);
-      stage.removeEventListener("pointerout", onOut);
       stage.removeEventListener("focusin", onFocusIn);
       stage.removeEventListener("focusout", onFocusOut);
       delete stage.dataset.apContinuous;
-      stage.querySelectorAll(".ap__card").forEach((c) => { c.style.translate = ""; c.parentElement.style.translate = ""; c.style.removeProperty("--ap-k"); c.style.filter = ""; });
+      stage.querySelectorAll(".ap__card").forEach((c) => { c.style.translate = ""; c.parentElement.style.translate = ""; c.parentElement.style.removeProperty("--cap-p"); c.parentElement.removeAttribute("data-cap-live"); c.parentElement.removeAttribute("data-cap-on"); c.parentElement.__capP = undefined; c.style.removeProperty("--ap-k"); c.style.filter = ""; });
       stage.querySelectorAll(".pm__item").forEach((it) => { it.style.removeProperty("z-index"); it.style.removeProperty("filter"); it.style.removeProperty("opacity"); });
       stage.querySelectorAll(".pm__item[data-ap-active], .pm__item[data-ap-was]").forEach((it) => { delete it.dataset.apActive; delete it.dataset.apWas; });
     };
@@ -1073,6 +1387,23 @@ export default function AlongPath({ reduce, modeTwo }) {
         {mode !== "empty" && (
           <button
             type="button"
+            className="ap__play ap__sound"
+            data-tip={!cardHasAudio ? "This card has no sound" : soundOn ? "Mute" : "Unmute"}
+            aria-label={soundOn ? "Mute" : "Unmute"}
+            aria-pressed={!soundOn}
+            aria-disabled={!cardHasAudio}
+            data-off={!soundOn ? "" : undefined}
+            onClick={() => { if (cardHasAudio) toggleSound(); }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M11 5 6 9H3v6h3l5 4z" />
+              {soundOn ? (<><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" /></>) : (<path d="m16 9 5 6M21 9l-5 6" />)}
+            </svg>
+          </button>
+        )}
+        {mode !== "empty" && (
+          <button
+            type="button"
             className="ap__play"
             data-tip={running ? "Pause the run" : "Play the run"}
             aria-label={running ? "Pause the run" : "Play the run"}
@@ -1147,9 +1478,9 @@ export default function AlongPath({ reduce, modeTwo }) {
               </article>
             ) : p.video && p.dwell ? (
               // mttj9avx: the cinema always starts from the first frame, not the plate's current time
-              <DwellVideo key={p.video} plate={p} onOpen={() => setCinema({ plate: p, from: 0 })} />
+              <DwellVideo key={p.video} plate={p} onOpen={(el) => openPoster(p, el)} />
             ) : p.video ? (
-              <article key={p.video} className="ap__card" style={cardStyle(p)}>{/* --ap-opt: equal area, see cardStyle (was mttilgju's per-card `big`) */}
+              <article key={p.video} className="ap__card" style={cardStyle(p)} onClick={(e) => openPoster(p, e.currentTarget)} role="button" tabIndex={0} aria-label={`Open ${p.alt} full size`} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPoster(p, e.currentTarget); } }}>{/* --ap-opt: equal area, see cardStyle (was mttilgju's per-card `big`) */}
                 {/* muted + playsInline are what make autoplay legal on iOS at all;
                     `reduce` swaps it for the poster frame rather than motion. */}
                 <video
@@ -1166,7 +1497,7 @@ export default function AlongPath({ reduce, modeTwo }) {
                 />
               </article>
             ) : (
-              <article key={p.src} className="ap__card" style={cardStyle(p)}>
+              <article key={p.src} className="ap__card" style={cardStyle(p)} onClick={(e) => openPoster(p, e.currentTarget)} role="button" tabIndex={0} aria-label={`Open ${p.alt} full size`} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPoster(p, e.currentTarget); } }}>
                 <img className="ap__plate" src={p.src} alt={p.alt} loading="lazy" draggable="false" style={p.focus ? { objectPosition: p.focus } : undefined} />
               </article>
             )),
@@ -1175,7 +1506,7 @@ export default function AlongPath({ reduce, modeTwo }) {
         )}
       </div>
 
-      {cinema && <Cinema plate={cinema.plate} from={cinema.from} onClose={() => setCinema(null)} />}
+      {poster && <Poster start={poster.start} from={poster} reduce={reduce} onClose={closePoster} />}
 
       {/* the shape library's clip paths, only while shapes are on */}
       {shapeMode !== "rect" && (

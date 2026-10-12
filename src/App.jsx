@@ -124,10 +124,11 @@ import SchedMoments from "./figures/scheduled/SchedMoments";
 import SchedCartStates from "./figures/scheduled/SchedCartStates";
 import SchedPageStates from "./figures/scheduled/SchedPageStates";
 import SchedDateSwitch from "./figures/scheduled/SchedDateSwitch";
+import SchedToggleDemo from "./figures/scheduled/SchedToggleDemo"; // mv59m6yi
 import SchedGtm from "./figures/scheduled/SchedGtm";
 import SchedExplorations from "./figures/scheduled/SchedExplorations";
 import SchedPostBooking from "./figures/scheduled/SchedPostBooking";
-import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne } from "./figures/scheduled/SchedGtmReal";
+import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner } from "./figures/scheduled/SchedGtmReal";
 import SchedRnR from "./figures/scheduled/SchedRnR";
 import SchedPageReal from "./figures/scheduled/SchedPageReal";
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
@@ -307,6 +308,7 @@ const WeatherSky = lazy(() => import("./WeatherSky"));
 const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
 // the window scene's header controls (sky and look), only while the scene is on
 import FontSwitch from "./ui/FontSwitch";
+import ViewMenu from "./ui/ViewMenu";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
 // The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
 // so its chunk never reaches any other page. See src/scene/window/.
@@ -329,6 +331,8 @@ const SdImpactCharts = lazy(() => import("./figures/sdAvailability/SdImpactChart
 const SchedMetricStory = lazy(() => import("./figures/scheduled/SchedMetricStory"));
 const SchedCartStrip = lazy(() => import("./figures/scheduled/SchedCartStrip")); // mukxwvur
 const SchedReachExplorer = lazy(() => import("./figures/scheduled/SchedReachExplorer")); // 5 Oct, the Morphocode-style explorer
+const SchedCopyProcess = lazy(() => import("./figures/scheduled/SchedCopyProcess")); // 12 Oct, mv59i870: the copy, from first principles
+const SchedCityShift = lazy(() => import("./figures/scheduled/SchedCityShift")); // 12 Oct, winners-and-losers dot columns by city
 const SchedResearchStory = lazy(() => import("./figures/scheduled/SchedResearchStory")); // mukx7ffq
 const SchedEtaScroll = lazy(() => import("./figures/scheduled/SchedEtaScroll"));
 const SchedCartGrid = lazy(() => import("./figures/scheduled/SchedCartGrid"));
@@ -369,19 +373,65 @@ function withBreaks(str) {
 const PROTO_EMBED = !import.meta.env.PROD;
 const PROTO_STILL = "/figures/scheduled/proto-start.png";
 
+// mv58620u (12 Oct, "I can see it [the embed] loading in the view: a placeholder and a loading thing in the
+// centre"): the live prototype sits under an overlay, the still of its first screen with a glass loader in
+// the middle, until the iframe has loaded and had a moment to paint (Figma paints after its load event),
+// then the overlay fades out. If it has not loaded in 15 s (offline, or the file is private and Figma's
+// page never arrives) the still stays and the glass "Open in Figma" button replaces the loader. A private
+// file's sign-in wall still fires `load`, so that case reads as loaded: it cannot be told apart from here.
+function ProtoFrame({ src, title, id, link }) {
+  const [st, setSt] = useState("loading"); // loading | ready | failed
+  const [gone, setGone] = useState(false);
+  const loaded = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => { if (!loaded.current) setSt("failed"); }, 15000);
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    if (st !== "ready") return undefined;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = setTimeout(() => setGone(true), reduce ? 0 : 500);
+    return () => clearTimeout(t);
+  }, [st]);
+  const onLoad = () => { loaded.current = true; setTimeout(() => setSt("ready"), 900); };
+  return (
+    <>
+      <iframe src={src} title={title} loading="lazy" allowFullScreen data-embed={id} onLoad={onLoad} />
+      {!gone && (
+        <div className="pe" data-st={st}>
+          <img className="pe__poster" src={PROTO_STILL} alt="" aria-hidden="true" draggable="false" />
+          {st === "loading" && (
+            <span className="article__hero-replay pe__badge" role="status" aria-label="Loading the prototype"><i /><i /><i /></span>
+          )}
+          {st === "failed" && (
+            <>
+              <a className="article__hero-replay pe__badge pe__open" href={link || src} target="_blank" rel="noopener noreferrer" aria-label="Open the prototype in Figma" title="Open in Figma">
+                <IconLink width={16} height={16} strokeWidth={1.6} aria-hidden="true" />
+              </a>
+              <span className="pe__msg">Open in Figma</span>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
 const figmaEmbedUrl = (fileKey, nodeId) =>
   `https://embed.figma.com/proto/${fileKey}?node-id=${nodeId}&embed-host=portfolio&scaling=scale-down-width&footer=false&hotspot-hints=false&viewport-controls=false` +
   (FIGMA_EMBED_CLIENT_ID ? `&client-id=${FIGMA_EMBED_CLIENT_ID}` : "");
 // post an Embed API command into a prototype iframe (target origin per the docs)
 const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
+import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
+import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // base iPhone frame, Scheduled Delivery only for now
 import { animate as motionAnimate } from "motion";
-import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink } from "iconoir-react";
+import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, Expand as IconExpand } from "iconoir-react";
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
 import { GlassLens } from "./ui/GlassLens";
 import { LoadRevealContext } from "./ui/loadReveal"; // muzdylub (8 Oct)
 import SchedInsight from "./figures/scheduled/SchedInsight";
-import { Compass, Buildings, Handshake } from "@phosphor-icons/react";
+import { Compass, Buildings, Handshake, Clock, Lightning, ShieldCheck } from "@phosphor-icons/react";
 import SchedUseCases from "./figures/scheduled/SchedUseCases";
 import SchedRoleWireframes, { ROLE_STATS, STAT_ICON } from "./figures/scheduled/SchedRoleWireframes";
 import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
@@ -543,6 +593,16 @@ const figures = {
       <SchedCartStrip />
     </Suspense>
   ),
+  schedCopyProcess: () => (
+    <Suspense fallback={null}>
+      <SchedCopyProcess />
+    </Suspense>
+  ),
+  schedCityShift: () => (
+    <Suspense fallback={null}>
+      <SchedCityShift />
+    </Suspense>
+  ),
   schedReachExplorer: () => (
     <Suspense fallback={null}>
       <SchedReachExplorer />
@@ -633,11 +693,13 @@ const figures = {
   schedCartStates: SchedCartStates,
   schedPageStates: SchedPageStates,
   schedDateSwitch: SchedDateSwitch,
+  schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
   schedPostBooking: SchedPostBooking,
   schedGtmReal: SchedGtmReal,
   schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
+  schedGtmBanner: SchedGtmBanner, // mv56yxug: the banner animation alone, full view
   schedGtmCartOne: SchedGtmCartOne, // muky9xug: the cart screen alone
   schedRnR: SchedRnR,
   schedPageReal: SchedPageReal,
@@ -954,11 +1016,16 @@ function RoleEditorial({ s }) {
 // functions hang under it as four equal columns. mv3opydb / mv3orhii ("add this
 // to option 3 as well"): the role statement, and the stats with their lines
 // from the role card, in an outlined box.
-function RoleScopeMap({ s }) {
+function RoleScopeMap({ s, i }) {
+  // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
+  // "Option 3" tag, no dashed box, and its label carries the section's heading id for the index and scroll-spy.
+  // mv5939z4: the outlined stats box and mv58by9f's icon rows are parked (roleFrame.hideMapStats); mv5931ha: the
+  // four boxes are text only again.
+  const final = !!s.roleFrame.hideFrame;
   return (
-    <div className="rv rv--map">
-      <RoleOptionTag n={3} name="Scope map" />
-      <p className="rv__label">My role</p>
+    <div className={"rv rv--map" + (final ? " rv--final" : "")}>
+      {!final && <RoleOptionTag n={3} name="Scope map" />}
+      {final ? <h2 id={`sec-${i}`} className="rv__label">My role</h2> : <p className="rv__label">My role</p>}
       <p className="rv__statement">{s.roleFrame.statement}</p>
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
         <span className="rv-map__me"><b>Lead designer</b><small>end to end</small></span>
@@ -967,9 +1034,18 @@ function RoleScopeMap({ s }) {
           <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.join(", ")}</li>
         </ul>
       </div>
-      <dl className="rv-map__foot">
-        {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
-      </dl>
+      {!s.roleFrame.hideMapStats && (
+        <>
+          <dl className="rv-map__foot">
+            {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
+          </dl>
+          <dl className="rv-map__rows">
+            {ROLE_STATS.map(([big, small]) => { const I = STAT_ICON[big]; return (
+              <div key={big}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}<dt>{big}</dt><dd>{small}</dd></div>
+            ); })}
+          </dl>
+        </>
+      )}
     </div>
   );
 }
@@ -1123,7 +1199,7 @@ function SplitSection({ s, i }) {
     n.addEventListener("pointercancel", up);
   };
   return (
-    <div className="article__split" ref={ref}>
+    <div className={"article__split" + (s.splitStack ? " article__split--stack" : "")} ref={ref}>
       <div className="article__split-side">
         <h2 id={`sec-${i}`} data-rise>{s.h}</h2>
         {s.tldr && !s.hideTldr && (
@@ -1134,7 +1210,7 @@ function SplitSection({ s, i }) {
           <div className="article__postit-wrap" data-rise onPointerDown={peelNote}>
             <p className="article__postit">
               <span className="article__tldr-label">TL;DR</span>
-              {s.tldr}
+              {Array.isArray(s.tldr) ? s.tldr.map((t, k) => <span className="tldr-b" key={k}>{t}</span>) : s.tldr}
             </p>
             <span className="article__postit-curl" aria-hidden />
           </div>
@@ -1426,6 +1502,13 @@ function PlatesStack({ stack, gradient, children }) {
 // interruptible by nature; no easing, the scroll is the easing.
 function ScrollPhone({ src, long }) {
   const ref = useRef(null);
+  // mv54coar: click opens the full-page view; every phone card on the page is in
+  // the set, so next / previous step between them
+  const [lb, setLb] = useState(null);
+  const openLb = () => {
+    const items = collectExpandables(); // every expandable on the page, so next / previous cross figure kinds
+    setLb({ items, start: Math.max(0, items.findIndex((it) => it.el === ref.current)) });
+  };
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -1461,14 +1544,27 @@ function ScrollPhone({ src, long }) {
   // export; the whole phone travels through the card with the scroll
   return (
     // `long` (mukxenvq): a full-length page export; it also scrolls INSIDE the screen
-    <div className={"sp" + (long ? " sp--long" : "")} ref={ref}>
+    <>
+    <div className={"sp" + (long ? " sp--long" : "")} ref={ref} data-expand="" data-open={lb ? "" : undefined}
+      role="button" tabIndex={0} aria-haspopup="dialog" aria-label="Open this screen full page" title="Click to expand"
+      onClick={openLb} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(); } }}>
       <div className="sp__phone">
         <div className="sp__screen">
           <img src={src} alt="" draggable="false" />
         </div>
         <img className="sp__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
       </div>
+      {/* mv56ivr6 (12 Oct): the site's glass button (.article__hero-replay, the one the replay and
+          Open-in-Figma controls use: 38px, nav glass, same hover / press / focus), bottom right */}
+      <span className="article__hero-replay sp__hint" aria-hidden="true">
+        <IconExpand width={16} height={16} strokeWidth={1.6} aria-hidden="true" />
+      </span>
     </div>
+    {lb && (
+      <PhoneLightbox items={lb.items} start={lb.start} frame={IPHONE_FRAME_SRC}
+        onClose={(idx) => { const el = lb.items[idx].el; setLb(null); if (idx !== lb.start) el?.scrollIntoView({ block: "center" }); }} />
+    )}
+    </>
   );
 }
 
@@ -1936,6 +2032,7 @@ export const caseStudies = {
     heroLoop: false, // mtmhrtlb looped it; mtmkjwp3: play once, replay button
     heroToggleHidden: true, // mtpauadr: the Animation / Video toggle is hidden; the coded heart hero is the header
     heroFirst: true, // mtpavlcs: the heart hero sits above the facts header
+    expandFigures: true, // mv56ku8l (12 Oct): every image / diagram figure opens full page (ui/ExpandableFigure)
     loadReveal: true, // muzdylub (8 Oct): hold the page until fonts + the hero's assets are ready, then rise in one staggered reveal (CaseStudy, index.css [data-load-reveal])
     heroAlt: "Schedule Delivery: the lockup settling inside a lavender heart",
     eyebrow: "Zepto · Case study",
@@ -2101,6 +2198,14 @@ export const caseStudies = {
       {
         h: "Context & problem",
         split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
+        splitStack: true, // mv4h2fqo (12 Oct, "make this a vertical layout"): heading + note on top, the text below, full width
+        // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a circle over a modelled city and
+        // watch instant, schedule-only and nothing recount, with the 11 PM store closures one tap away.
+        // mv56y336 (12 Oct): moved here from The constraints. It answers this section's own line, "an app that
+        // only knew how to say now had nowhere to put them": it shows who has instant, who can only schedule,
+        // and how the clock changes that. The constraints are about slot width, booked-plus-live load and the
+        // delivery promise, none of which it shows.
+        // mv589p9j (12 Oct): the reach explorer moved to Impact (figsAfter, after the availability tape)
         group: "Problem",
         // mujp57h2 (27 Sep): re-voiced in the Fadell register (writing harness,
         // gate 0/0); was "Some demand wants groceries later, not now, and a
@@ -2209,7 +2314,11 @@ export const caseStudies = {
         // mv2legbw (10 Oct): "move this one section up", Who I worked with sits above the role frame
         roleWireframesFirst: ["Who I worked with"],
         roleFrame: {
-          stats: true, // mv2lfboc: ROLE_STATS under the leadership points
+          stats: false, // mv2lfboc put ROLE_STATS under the leadership points; mv58by9f (12 Oct) moved them into My role Option 3 (RoleScopeMap, .rv-map__rows)
+          hideFrame: true, // mv594ats (12 Oct, "hide this section"): the My role frame is parked; the scope map (Option 3) is now the final My role. Delete to bring the frame back
+          hideMapStats: true, // mv5939z4 + mv58by9f: the scope map's outlined stats box and icon rows are parked
+          hideEditorial: true, // mv4hab0z (12 Oct, "hide this"): Option 1 (RoleEditorial) parked; delete this line to bring it back
+          hideCard: true, // mv4h93kq (12 Oct, "hide this"): Option 2 (RoleCard) parked; delete this line to bring it back
           options: true, // mv2mooey: three reimagined copies under the original (RoleEditorial, RoleScopeMap, RoleCard)
           // mujvc9e0: merged from the Role at a glance slide (Agam, 27 Sep)
           lead: "Lead designer on the project.",
@@ -2258,6 +2367,7 @@ export const caseStudies = {
         // text sits right of the heading again (the standard layout) and the animated
         // board runs FULL WIDTH, right after the section
         figNext: "schedExplorations",
+        stack: true, // mv598hzr (12 Oct): vertical layout, heading on top; the three constraints run in a row
         group: "Problem",
         // mukxbblb (28 Sep): the TL;DR takes the intro line, verbatim; was "One-hour
         // slots, peak-time fulfilment, and an ironclad delivery-window promise shaped
@@ -2267,14 +2377,11 @@ export const caseStudies = {
         // bullet points don't work." Each constraint is now a title in the heading
         // size with a short line under it ({ t, d } items, see .article__terms)
         ul: [
-          { t: "One-hour slots, on shaky ground", d: "Every slot was an hour wide, and early on, slot availability itself was unreliable." },
-          { t: "Booked and live, side by side", d: "Pre-booked orders still had to go out through the peak windows, while live 10-minute demand kept flowing." },
-          { t: "A promise kept, every time", d: "A 6–7pm slot had to mean 6–7pm. Behind the hour a user picked sat a fulfilment window of about ninety minutes, margin for the dark store, and we kept tuning it against real conditions." },
+          { t: "One-hour slots, on shaky ground", icon: "clock", d: "Every slot was an hour wide, and early on, slot availability itself was unreliable." },
+          { t: "Booked and live, side by side", icon: "live", d: "Pre-booked orders still had to go out through the peak windows, while live 10-minute demand kept flowing." },
+          { t: "A promise kept, every time", icon: "promise", d: "A 6–7pm slot had to mean 6–7pm. Behind the hour a user picked sat a fulfilment window of about ninety minutes, margin for the dark store, and we kept tuning it against real conditions." },
         ],
-        // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a
-        // circle over a modelled city and watch instant, schedule-only and
-        // unserviceable recount, with the 11 PM store closures one tap away
-        figsAfter: [{ fig: "schedReachExplorer", bare: true }],
+        // 5 Oct: the reach explorer lived here; mv56y336 (12 Oct) moved it to Context & problem (figNext there)
         // Annotation mtmh8tov: the availability tape moved to Impact.
         // Annotation mtmhxqlv: Figma Portfolio 2026 node 460-53299, taken apart
         // (mtmj7y2h): the phone is the ground, the notification card drops in
@@ -2302,12 +2409,13 @@ export const caseStudies = {
         // mujqp1k6 (27 Sep): no longer a breaker; its own section, copy via the
         // writing harness (Sauer, gate 0/0), the cards below it.
         h: "Schedule means different things to different people. Even how they say it.", // mukw91sk (28 Sep); was "Two ways to say it"
-        center: true, // mukwatlg (28 Sep): heading and text centred
         nav: "Two ways to say it", // the side index keeps the short name
         stack: true, // mukvym27 + mukvyska (28 Sep): the text sits below the heading
         group: "Problem",
+        // mv59g9e3 (12 Oct): heading left, subheading right, in the other sections' type (the subheading is the section statement, .article__tldr)
+        tldr: "India is a diverse place, and it shows even in one word. One group says shed-yool. Another says sked-jool.",
+        rowHead: true,
         p: [
-          "India is a diverse place, and it shows even in one word. One group says shed-yool. Another says sked-jool.",
           // "Either way, the word asks the same thing of someone: to wait. So the work was making that wait feel safe, however you say it.", // mukwb44m (28 Sep): removed
         ],
         // mtmk4qua: coded, so the faces move (PronCards); the flat export stays
@@ -2441,6 +2549,18 @@ export const caseStudies = {
         divider: true,
       },
       {
+        // mv59m6yi (12 Oct): a showcase for the delivery-mode toggle micro-animation. Agam's own recording
+        // goes in public/figures/scheduled/instant-to-scheduled-toggle.mp4 (placeholder until then).
+        // [CONFIRM] the caption's last line once the recording is in: what the motion does, in his words.
+        h: "Instant to Scheduled: the toggle",
+        group: "Solution",
+        tldr: "One control moves the order from now to later.", // [CONFIRM] wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
+        fig: "schedToggleDemo",
+        figBare: true,
+        figure: "Switching the delivery mode from Instant to Scheduled. Instant promises 9 minutes; Schedule Delivery asks you to select a slot, the shift from now to later. [CONFIRM: what the micro-animation communicates, once the recording is in]",
+        divider: true,
+      },
+      {
         h: "One scroll across midnight",
         group: "Solution",
         tldr: "Today and Tomorrow shipped first. Later we dissolved the midnight line into one scroll, because at 11pm you are planning tonight, not tomorrow.",
@@ -2479,10 +2599,11 @@ export const caseStudies = {
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
             {
-              fig: "schedGtmRealOne",
+              fig: "schedGtmBanner", // mv56yxug (12 Oct): the animation alone, in its full view (was schedGtmRealOne, the whole phone)
+              fill: true,
               figBare: true,
               bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-              alt: "The go-to-market banner animation, on the phone: a sweeping clock and slot chips popping in.",
+              alt: "The go-to-market banner animation: a sweeping clock and slot chips popping in.",
               // heading/sub retained but off while the frame is side by side
               _heading: "The go-to-market banner",
               _sub: "A small animated banner at the top of the schedule page introduces the feature the moment you arrive, restrained so it never competes with the instant promise.",
@@ -2623,12 +2744,39 @@ export const caseStudies = {
       // muky37n5 (28 Sep): the doorstep photo moved INTO Impact, right of the text
       // { breaker: true, image: "/figures/scheduled/photos/bag-doorstep.webp" },
       {
+        // mv59i870 (12 Oct, "build a section showing the copywriting process: all the things we rejected and all the copy we finalised, and how it shows strong first-principles thinking").
+        // Written in the Sauer register (writing-craft gate 0/0). Every pair is real: the struck line and its replacement, with its source (see SchedCopyProcess.jsx).
+        h: "The copy, from first principles",
+        group: "Solution",
+        tldr: "The copy was rewritten line by line, and the rewrites show one habit: say what the person needs at that moment.",
+        p: [
+          "On a feature that asks people to trust \"later\" on an app they open because it means now, the words carry as much weight as the screens. A slot picker that says the wrong thing at the wrong moment spends the trust the whole feature rests on.",
+          "So the copy was rewritten again and again, and the rewrites are the evidence. Read them in order and four moves keep coming back. Say what the person can do, not what is wrong. Let the heading carry the claim. Name the thing at stake in plain words. And write what the evidence says, even when it is not the line I pitched.",
+          "The last one changed the story. The first draft of this case study said scheduled orders doubled in value because people plan ahead and build bigger carts. After launch, the data said roughly eight in ten scheduled orders were a fallback, placed because instant was not available at that moment. The sentence changed because the fact did.",
+          "Each pair below is a line that was struck and the line that replaced it, with where the change came from. The product-copy comments are paraphrased from the design file's own review history, not quoted.",
+        ],
+        figNext: "schedCopyProcess",
+        divider: true,
+      },
+      {
         h: "Impact",
         group: "After booking",
         sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
         // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
         // one-sentence version (adoption, 3x value, cancellation, appliances)
-        tldr: "Adoption peaked at 1.72% of all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money.",
+        // mv59ku9w (12 Oct, "make these bullet points, and write the impact accordingly"): six bullets, each leading with its number.
+        // Every figure is on the page or in sdReport.js: ROLLOUT (2 to 1,144 stores, 63 days), MONTHLY (May 1,809,603 = 1.72%; Aug 1.44%, Sep 1.39%),
+        // the 1.3% / eight-in-ten fallback reading (the Impact text and the post-launch study), VS_INSTANT (1,452 v 543, 5.85 v 4.65, cancelled 27.4 v about 11),
+        // ONTIME (Aug 82.5, Feb 92.6), ELECTRONICS (21.3% Jun, 54.0% Sep, partial) and APPLIANCE_AUG (cancelled 34.4 v 26.6). Was: "Adoption peaked at 1.72% of
+        // all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
+        tldr: [
+          "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and every store could take one by 12 December.",
+          "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
+          "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
+          "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65.",
+          "82.5% arrived inside the booked hour in August, down from 92.6% in February. The bigger miss is cancellation: 27.4% against about 11% for instant.",
+          "Appliances rose from 21% of scheduled GMV in June to 54% in September (1 to 21 Sep), and an appliance order is cancelled 34.4% of the time against 26.6% for the rest.",
+        ],
         // mukx8uu0 (28 Sep): "hide all this explanation info for now", the prose and
         // bullets are parked (underscored); drop the underscores to restore
         _p: [
@@ -2669,6 +2817,8 @@ export const caseStudies = {
           // mukx9cdw (28 Sep): the availability tape, once hung off the (now parked)
           // first paragraph, stands on its own as the section's first figure
           { fig: "sdAvailabilityHero", figBare: true, bare: true, caption: "Slot availability across 2026, replayed live: the share of carts offered at least one scheduled slot, per day." },
+          // mv589p9j (12 Oct, "move this to the analytics part and make it simple"): from Context & problem to here, where the other data figures live; simplified to one number, one highlight colour
+          { fig: "schedReachExplorer", figBare: true, bare: true, caption: "Where an address sits against an open dark store, and the clock, decides whether a cart gets instant or can only schedule. A model on the real Indiranagar map, not Zepto data." },
           {
             // 27 Sep: the dashboard grid became a story (SchedMetricStory);
             // swap the fig back to "sdImpactCharts" to restore the grid
@@ -2677,6 +2827,8 @@ export const caseStudies = {
             bare: true,
             caption: "The graphs, from the verified month-by-month pull: volume and adoption, when people book and how far ahead, whether the promise was kept, the basket and what it costs, the slot supply underneath it, and the September threshold experiment. Four questions the warehouse still cannot answer are left as spec cards rather than estimated.",
           },
+          // 12 Oct 2026: winners and losers by city (dot columns, real city x month data); see SchedCityShift
+          { fig: "schedCityShift", figBare: true, bare: true, caption: "City by city, month by month: a dot for each city with at least 500 scheduled orders, above the line when its delivered share rose on the month before and below when it fell. Shaded where the 6 AM slots opened up." },
         ],
         fig: "schedImpact",
         figBare: true, // mtmrnolv: no figure card around coded figures
@@ -2760,11 +2912,21 @@ export const caseStudies = {
       // mukq5ujj (28 Sep): "What I'd do differently" moved to the very bottom of the case study
       { h: "What I'd do differently", noHeading: true, roleWireframes: true, roleWireframesOnly: ["What I'd do differently"] },
     ],
-    _todo: [ // mukx4g4z (28 Sep): hidden, drop the underscore to restore
-      "Team and timeline: PM, eng, ops, and research partners, plus the dates",
-      "One line: why a dedicated schedule page beat a bottom sheet over the cart",
-      "Confirm the shipped unserviceable-cart solution (frames show items removed on save, plus schedule-for-when-we-open)",
-      "Reconcile the coded story figures against the real Schedule Order frames (slot labels, the exact AOV and adoption numbers, the shipped stuck-cart copy)",
+    // mukx4g4z (28 Sep) hid this box; 12 Oct: Agam asked for "points left to clarify, like the other
+    // case studies" at the bottom, so it is back as the same cs.todo box, rewritten to what is open now.
+    // Dev only: the public build and the presenting cut drop it, the trim cut keeps it. Questions, not answers.
+    todo: [
+      "Go-to-market: which surfaces shipped, and the banner copy [Confirm note in The go-to-market]",
+      "The stuck cart: does the pause-and-ask state match what shipped? [Confirm note in The stuck cart]",
+      "The wake-up: the exact window before the slot and the rider-screen details [Confirm note in After you book]",
+      "Returns & refunds: how the bot is framed (guided self-service or a conversational assistant), the problem it replaced and any outcome, plus your role and dates on it [two Confirm notes]",
+      "Team and timeline: PM, eng, ops and research partners, with the dates",
+      "One line on why a dedicated schedule page beat a bottom sheet over the cart",
+      "Reach explorer: the model's radii (1.6 km instant, 3.2 km scheduled), the 11 PM closures and the three stores are assumptions, not Zepto data. Confirm them or keep the 'illustrative' label loud",
+      "The pay-button debate: was it with the PM, and whose pitch was set aside (presenting prep, [CHECK]); name the person only if you are comfortable",
+      "The prototype embed: the Figma file is private to your account, so most visitors see a blank frame. Share it or drop the link",
+      "Design calls from the QA pass: the 'Nothing' swatch is 2.1:1 in light mode, and the reach map traps page scroll on a phone",
+      "The copy section: the pairs are real (annotation history, the 21 Jun draft, the design-file review thread), but the review-thread lines are paraphrased from the file, and the 21 Jun draft is shown as the \"first draft\". Confirm you are happy showing both, and the four moves as the way you describe your own process",
     ],
   },
   zepiris: {
@@ -9534,13 +9696,15 @@ const CASE_NARRATIONS = {
 // render ONE body from one place; CaseStudy calls it right where the block
 // used to be. Exported for src/hello/PhoneDetail3.jsx.
 // mujvribt: the role-slide layout for a section's prose, or nothing at all
-function SecWrap({ on, stack, center, side, children }) {
+function SecWrap({ on, stack, center, side, row, children }) {
   // `stack` (28 Sep): label on top, then heading, explanation and figure, one column
   // `center` (mukwatlg): the stacked content centred, text centre-aligned
-  return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "")}>{children}</div> : <>{children}</>;
+  return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "") + (row ? " cs-sec--row" : "")}>{children}</div> : <>{children}</>;
 }
 
 export function CaseStudyBody({ cs }) {
+  // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
+  const EF = cs.expandFigures ? ExpandableFigure : "figure";
   // the plates row (mtmlg1wh); shared by the standalone render and the duo view
   const renderPlates = (s) => (
             <PlatesStack stack={s.platesStack} gradient={s.platesGradient}>
@@ -9576,13 +9740,7 @@ export function CaseStudyBody({ cs }) {
                       <div className="article__plate-phone">
                         <div className="article__plate-screen">
                           {PROTO_EMBED ? (
-                            <iframe
-                              src={pl.embed}
-                              title={pl.alt || "Figma prototype"}
-                              loading="lazy"
-                              allowFullScreen
-                              data-embed={`pl-${k}`}
-                            />
+                            <ProtoFrame src={pl.embed} title={pl.alt || "Figma prototype"} id={`pl-${k}`} link={pl.figmaLink} />
                           ) : (
                             <img
                               src={PROTO_STILL}
@@ -9629,7 +9787,7 @@ export function CaseStudyBody({ cs }) {
                     </div>
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
-                    <div className="article__plate-video article__plate-video--fig article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
+                    <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>
                       <SectionFigure fig={pl.fig} variant="article" bare />
                     </div>
                   ) : pl.video ? (
@@ -9658,7 +9816,7 @@ export function CaseStudyBody({ cs }) {
       {cs.sections.map((s, i) => s.hidden ? null : s.breaker ? (
         // Annotation mtmi98gy: a breaker, an image that marks the turn from
         // context to solution. No heading, no index entry, no slide.
-        <figure className="article__figure article__figure--breaker" key={i} aria-hidden={s.figure ? undefined : true}>
+        <EF className="article__figure article__figure--breaker" key={i} aria-hidden={s.figure ? undefined : true}>
           {s.fig ? (
             <SectionFigure fig={s.fig} variant="article" bare />
           ) : (
@@ -9667,7 +9825,7 @@ export function CaseStudyBody({ cs }) {
           {s.figure && <figcaption>{s.figure}</figcaption>}
           {/* Figma 120 (14:57): a display-size line under the figure, kept visible past hideCaptions */}
           {s.figureHeading && <figcaption className="article__figcap-heading">{s.figureHeading}</figcaption>}
-        </figure>
+        </EF>
       ) : (
         <Fragment key={i}>
           {s.dividerBefore && (
@@ -9677,8 +9835,8 @@ export function CaseStudyBody({ cs }) {
           )}
           {s.split && <SplitSection s={s} i={i} />}
           {s.roleWireframes && s.roleWireframesFirst && !s.roleWireframesOnly && <SchedRoleWireframes only={s.roleWireframesFirst} />}
-          {s.roleFrame && <RoleFrame s={s} i={i} />}
-          {s.roleFrame?.options && (<><RoleEditorial s={s} /><RoleScopeMap s={s} /><RoleCard s={s} /></>)}
+          {s.roleFrame && !s.roleFrame.hideFrame && <RoleFrame s={s} i={i} />}
+          {s.roleFrame?.options && (<>{!s.roleFrame.hideEditorial && <RoleEditorial s={s} />}<RoleScopeMap s={s} i={i} />{!s.roleFrame.hideCard && <RoleCard s={s} />}</>)}
           {/* 27 Sep: go-broad wireframes expanding My role, draft only */}
           {s.roleWireframes && <SchedRoleWireframes only={s.roleWireframesOnly} exclude={s.roleWireframesOnly ? undefined : s.roleWireframesFirst} />}
           {/* mtmvvd0m: a section can drop its heading */}
@@ -9686,7 +9844,7 @@ export function CaseStudyBody({ cs }) {
               section takes the role-slide layout (label column + statement +
               body); figures after it stay full width. SecWrap is a Fragment
               everywhere else, so other case studies' DOM is unchanged. */}
-          <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage}>
+          <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
           {s.split || s.roleFrame ? null : s.noHeading ? <span id={`sec-${i}`} /> : <h2 id={`sec-${i}`}>{s.h}</h2>}
           {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
               first under the heading */}
@@ -9698,7 +9856,7 @@ export function CaseStudyBody({ cs }) {
           {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
             <p className="article__tldr">
               <span className="article__tldr-label">TL;DR</span>
-              {s.tldr}
+              {Array.isArray(s.tldr) ? s.tldr.map((t, k) => <span className="tldr-b" key={k}>{t}</span>) : s.tldr}
             </p>
           )}
           {/* mujuytgf: numbered points, Figma HBBgHT1u7e5jsz7BEEZ3fT 46:15909
@@ -9718,10 +9876,10 @@ export function CaseStudyBody({ cs }) {
               <p>{confirmNotes(para)}</p>
               {/* an optional figure copy that sits inline under the first paragraph */}
               {j === 0 && s.inlineFig && (
-                <figure className="article__figure">
+                <EF className="article__figure">
                   <SectionFigure fig={s.inlineFig} variant="article" bare={s.inlineFigBare} />
                   {s.inlineFigCaption && <figcaption>{s.inlineFigCaption}</figcaption>}
-                </figure>
+                </EF>
               )}
             </Fragment>
           ))}
@@ -9731,7 +9889,7 @@ export function CaseStudyBody({ cs }) {
           {s.ul && !s.split && !s.roleFrame && (
             <ul className={s.ul[0]?.t ? "article__terms" : undefined}>
               {s.ul.map((li, k) => (
-                <li key={k}>{li?.t ? <><p className="article__term-t">{li.t}</p><p className="article__term-d">{li.d}</p></> : li}</li>
+                <li key={k}>{li?.t ? <>{li.icon && (() => { const I = { clock: Clock, live: Lightning, promise: ShieldCheck }[li.icon]; return I && <span className="role-frame__icon" aria-hidden="true"><I weight="fill" /></span>; })()}<p className="article__term-t">{li.t}</p><p className="article__term-d">{li.d}</p></> : li}</li>
               ))}
             </ul>
           )}
@@ -9773,11 +9931,11 @@ export function CaseStudyBody({ cs }) {
           {s.chart && <DataViz chart={s.chart} />}
           {/* extra figures after the main one: [{ fig, caption, bare }] */}
           {(s.figsAfter || []).map((f, k) => (
-            <figure className="article__figure" key={`fa-${k}`}>
+            <EF className="article__figure" key={`fa-${k}`}>
               {/* mtp8qt8d: an extra figure may be a scene or a still, not only a coded fig */}
               <SectionFigure fig={f.fig} scene={f.scene} still={f.still} variant="article" bare={f.bare} />
               {f.caption && <figcaption>{f.caption}</figcaption>}
-            </figure>
+            </EF>
           ))}
           {/* muienfze: the key finding + central question frame, above the figure */}
           {/* muilckke: the use-cases frames (Figma 1167:43070), above the key finding */}
@@ -9785,7 +9943,7 @@ export function CaseStudyBody({ cs }) {
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
           {(s.figure || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || s.scene) && !s.introQuestion && (
-            <figure className="article__figure">
+            <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}
               {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}
               {s.platesToggle ? (
@@ -9829,27 +9987,27 @@ export function CaseStudyBody({ cs }) {
               )}
               {s.figure && <figcaption>{s.figure}</figcaption>}
               {s.figureHeading && <figcaption className="article__figcap-heading">{s.figureHeading}</figcaption>}
-            </figure>
+            </EF>
           )}
           {/* mujukg3s (27 Sep): the mango scene moved one place up, so the key finding follows it */}
           {/* mukuyuyb (28 Sep): a coded figure moved in from another section, right after this one's */}
           {s.figNext && (
-            <figure className="article__figure">
+            <EF className="article__figure">
               <SectionFigure fig={s.figNext} variant="article" bare />
-            </figure>
+            </EF>
           )}
           {/* 11 Oct: a whiteboard (src/figures/board) after the main figure, so it never replaces one:
               whiteboardNext: { board, alt, caption }. SectionFigure renders the easel, the lightbox writes it live. */}
           {s.whiteboardNext && (
-            <figure className="article__figure">
+            <EF className="article__figure">
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
-            </figure>
+            </EF>
           )}
           {/* mukub9lc (28 Sep): a second scroll scene right after the main one */}
           {s.sceneAfter && (
-            <figure className="article__figure">
+            <EF className="article__figure">
               <SectionFigure scene={s.sceneAfter} variant="article" bare />
-            </figure>
+            </EF>
           )}
           {s.insightBefore && s.insightAfterFigure && <SchedInsight />}
           {/* a deliberate empty slot for a screen still to be designed:
@@ -11336,7 +11494,7 @@ export default function App() {
            back in without the CSS having to know how many buttons there are */
         data-feedback-toolbar={isPortfolio ? undefined : "true"} /* mtr7e0z9: on /portfolio the row holds the four chips, which need to be annotatable */
         style={{
-          "--n": variant === "play" ? 4 : 2,
+          "--n": variant === "play" ? 2 : 1,
           ...(slug === "resume" || isBrickLab || isDj || isWindow || isStella ? { display: "none" } : null),
         }}
       >
@@ -11372,21 +11530,24 @@ export default function App() {
             instead. */}
         <SoundToggle on={sound} onToggle={toggleSound} i={variant === "play" ? 1 : 0} />
         <ThemeToggle theme={theme} onToggle={toggleTheme} i={variant === "play" ? 2 : 1} />
-        <FontSwitch i={variant === "play" ? 3 : 2} feedback={feedback} />
-        {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
-          <Suspense fallback={null}>
-            <SceneControls i={variant === "play" ? 4 : 3} feedback={feedback} />
-          </Suspense>
-        )}
-        {/* mtqrqf4l: no Scan / Read toggle on /portfolio */}
-        {!isPortfolio && <PageControl
-          i={variant === "play" ? 4 : 3}
-          variant={variant}
-          mode={mode}
-          onScan={() => setMode("scan")}
-          onRead={() => setMode("read")}
-          onPresent={() => setPresenting(true)}
-        />}
+        {/* the eye (bottom-left) holds everything else: font, view mode, the room's Look and Outside */}
+        <ViewMenu feedback={feedback}>
+          <FontSwitch i={0} feedback={feedback} />
+          {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
+            <Suspense fallback={null}>
+              <SceneControls i={0} feedback={feedback} />
+            </Suspense>
+          )}
+          {/* mtqrqf4l: no Scan / Read toggle on /portfolio */}
+          {!isPortfolio && <PageControl
+            i={0}
+            variant={variant}
+            mode={mode}
+            onScan={() => setMode("scan")}
+            onRead={() => setMode("read")}
+            onPresent={() => setPresenting(true)}
+          />}
+        </ViewMenu>
       </div>
       {isCrossSellTree ? (
         <CrossSellTree standalone />

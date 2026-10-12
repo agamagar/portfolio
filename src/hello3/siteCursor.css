@@ -1,57 +1,48 @@
-/* The site's cursor (SiteCursor.jsx). Arrow + name tag + speech bubble, in the
-   site's glass (--glass-* tokens), fonts and pop curve. Transform-only motion. */
+/* The site's cursor (SiteCursor.jsx): arrow + a solid name tag, Figma-style.
+   Blue = the site's link blue (--link, #1a6fd0, 5.0:1 with white). The token flips to a
+   light #6db1ff in dark mode, which white text cannot sit on, so the light value is used
+   in both themes. Transform-only motion. */
 .sc {
   position: fixed; left: 0; top: 0; z-index: 60;
   pointer-events: none;
   opacity: 0; scale: 0.6; transform-origin: 0 0;
   transition: opacity 160ms linear, scale 420ms var(--ds-ease-pop, cubic-bezier(0.34, 1.46, 0.64, 1));
   will-change: transform;
-  --sc-cur: #ff7859;
+  --sc-cur: #1a6fd0;
 }
 .sc[data-live] { opacity: 1; scale: 1; }
 .sc[data-leave] { opacity: 0; scale: 0.8; transition-duration: 300ms; }
 .sc__arrow {
-  position: absolute; left: 0; top: 0;
+  position: absolute; left: 0; top: 0; display: block;
   fill: var(--sc-cur); stroke: #fff; stroke-width: 0.7; stroke-linejoin: round;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28));
   transform: rotate(-6deg);
+  transition: scale 140ms ease; transform-origin: 2px 1.5px;
 }
-.sc__tag, .sc__bubble {
-  position: absolute; left: 14px;
-  background: var(--glass-film, rgba(255, 255, 255, 0.62));
-  -webkit-backdrop-filter: var(--glass-blur, blur(14px) saturate(1.8));
-  backdrop-filter: var(--glass-blur, blur(14px) saturate(1.8));
-  box-shadow: var(--glass-edge, inset 0 0 0 1px rgba(255, 255, 255, 0.5)), 0 6px 14px rgba(0, 0, 0, 0.12);
-  color: var(--fg, #111);
-  border-radius: 999px; corner-shape: round;
-  white-space: nowrap;
-}
+.sc[data-press] .sc__arrow { scale: 0.82; }
+/* the tag hangs off the arrow's lower right, like Figma's: solid fill, no stroke, snug */
 .sc__tag {
-  top: 16px; padding: 4px 10px;
-  /* a solid Figma-style fill: no stroke, no glass (the site's darkened coral, 4.67:1 with white) */
-  background: #c94a2d; color: #fff; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
-  font: 500 12px/14px "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
+  position: absolute; left: 11px; top: 13px;
+  display: block; width: max-content; white-space: nowrap;
+  padding: 3px 9px 4px;
+  border-radius: 999px; corner-shape: round;
+  background: var(--sc-cur); color: #fff;
+  font: 500 12px/16px "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
   letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
 }
-.sc__bubble {
-  top: 46px; display: flex; align-items: center; gap: 8px;
-  width: max-content; max-width: 260px; white-space: normal;
-  padding: 10px 8px 10px 14px; border-radius: 18px;
-  font: 400 14px/1.35 "Google Sans Flex", Inter, -apple-system, sans-serif;
-  transform-origin: 0 0; scale: 0.2; opacity: 0;
-  transition: scale 200ms var(--m3-effects-default, ease), opacity 140ms linear;
-  pointer-events: auto;
-}
-.sc[data-said] .sc__bubble { scale: 1; opacity: 1; transition: scale 460ms var(--ds-ease-pop, cubic-bezier(0.34, 1.46, 0.64, 1)), opacity 120ms linear; }
-.sc:not([data-said]) .sc__bubble { pointer-events: none; }
+/* the small x: only once it is resting; the one part that takes the pointer */
 .sc__x {
-  flex: none; width: 22px; height: 22px; border: 0; border-radius: 50%;
-  background: transparent; color: inherit; opacity: 0.55;
-  font: 400 16px/22px "Google Sans Flex", Inter, sans-serif; cursor: pointer; padding: 0;
+  position: absolute; left: 62px; top: 15px;
+  width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%;
+  background: rgba(17, 17, 17, 0.78); color: #fff;
+  font: 400 14px/20px "Google Sans Flex", Inter, sans-serif;
+  opacity: 0; pointer-events: none; cursor: pointer;
+  transition: opacity 200ms linear;
 }
-.sc__x:hover { opacity: 1; background: rgba(0, 0, 0, 0.08); }
-/* near the right edge the tag and bubble hang to the arrow's left */
-.sc[data-flip] .sc__tag, .sc[data-flip] .sc__bubble { left: auto; right: 0; }
-.sc[data-flip] .sc__bubble { transform-origin: 100% 0; }
+.sc[data-rest] .sc__x { opacity: 0.9; pointer-events: auto; }
+.sc__x:hover { opacity: 1; background: #111; }
+.sc[data-morph] .sc__arrow, .sc[data-morph] .sc__tag { opacity: 0; transition: opacity 120ms linear; } /* the page's dragger pill stands in (HelloDragger.jsx) */
+.sc__arrow, .sc__tag { transition-property: scale, opacity; }
 @media (hover: none), (pointer: coarse) { .sc { display: none; } }
-@media (prefers-reduced-motion: reduce) { .sc, .sc__bubble { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sc { transition: none; } }

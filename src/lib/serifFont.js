@@ -90,5 +90,12 @@ export async function fitHero(id) {
   const h = ink("Hello!"), n = ink("I\u2019m Agam");
   const hello = h.w > HELLO_W ? { len: h.adv * (HELLO_W / h.w), ls: 0 } : { len: null, ls: (HELLO_W - h.w) / 5 };
   const hs = hello.len ? HELLO_W / h.w : 1, ns = n.w > NAME_W ? NAME_W / n.w : 1;
-  return { fs, hx: 62.9164 + h.l * hs, hello, nx: n.l * ns, name: ns < 1 ? n.adv * ns : null };
+  // where this font's "!" is centred, against the drawn one (181.7): the drag handle that replaces the "!"
+  // on hover (HelloFlip.jsx) is drawn there, so it lands on the live glyph, not on the outline's place
+  const bang = ink("!");
+  const hx = 62.9164 + h.l * hs;
+  const bAdv = hello.len ? bang.adv * hs : bang.adv;
+  const hEnd = hx + (hello.len ?? h.adv + 6 * hello.ls) - (hello.len ? 0 : hello.ls);
+  const bangDx = hEnd - bAdv / 2 - 181.7;
+  return { fs, hx, hello, nx: n.l * ns, name: ns < 1 ? n.adv * ns : null, bangDx };
 }
