@@ -39,7 +39,7 @@ export const SKINS = [
     // its own fitted rig (tools/face3d/fit/noir): the head under a fedora fitted to the noir
     // tile, with that tile's light and surface; the rain behind and the coat collar in
     // front are flat layers cut from the tile. Until the rig loads, the mode above draws it.
-    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", idmap: "/faces/idmap-noir.png", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
+    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", idmap: "/faces/idmap-noir.png", depth: "/faces/depth-noir.png", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
     outline: null,
   },
   {
@@ -77,7 +77,7 @@ export const SKINS = [
     },
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the claySun tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-claySun.glb", fit: "/faces/fit-claySun.json", idmap: "/faces/idmap-claySun.png", raw: "/faces/skin-raw-claySun.png",
+    rig: { src: "/faces/face-claySun.glb", fit: "/faces/fit-claySun.json", idmap: "/faces/idmap-claySun.png", depth: "/faces/depth-claySun.png", raw: "/faces/skin-raw-claySun.png",
       margins: "/faces/margins-claySun.png", plates: { back: "/faces/claySun-back.webp" } },
     outline: null,
   },
@@ -104,7 +104,7 @@ export const SKINS = [
     // its own fitted rig (tools/face3d/fit/felt): the clay form re-fitted to the felt tile
     // (knit.png), with that tile's camera, light and surface (its raw skin, margins and id
     // map as clay has them); the red backdrop with the head painted out sits behind.
-    rig: { src: "/faces/face-felt.glb", fit: "/faces/fit-felt.json", idmap: "/faces/idmap-felt.png", raw: "/faces/skin-raw-felt.png",
+    rig: { src: "/faces/face-felt.glb", fit: "/faces/fit-felt.json", idmap: "/faces/idmap-felt.png", depth: "/faces/depth-felt.png", raw: "/faces/skin-raw-felt.png",
       margins: "/faces/margins-felt.png", plates: { back: "/faces/felt-back.webp" } },
     outline: null,
   },
@@ -117,7 +117,7 @@ export const SKINS = [
     },
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the stone tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-stone.glb", fit: "/faces/fit-stone.json", idmap: "/faces/idmap-stone.png", raw: "/faces/skin-raw-stone.png",
+    rig: { src: "/faces/face-stone.glb", fit: "/faces/fit-stone.json", idmap: "/faces/idmap-stone.png", depth: "/faces/depth-stone.png", raw: "/faces/skin-raw-stone.png",
       margins: "/faces/margins-stone.png", plates: { back: "/faces/stone-back.webp" } },
     outline: null,
   },
@@ -163,6 +163,9 @@ export const VERT = /* glsl */ `
 #include <color_pars_vertex>
 // how squarely this point faced the fitted camera at rest (the reference only shows those)
 uniform mat3 uRestNM;
+// the fitted camera's view at rest: how far from it this point sat (tested against the rig's depth map)
+uniform mat4 uRestMV;
+varying float vRestZ;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
@@ -181,6 +184,7 @@ void main(){
   vec4 mv = modelViewMatrix * vec4(transformed,1.0);
   vN = normalize(normalMatrix * objectNormal);
   vRN = uRestNM * objectNormal;
+  vRestZ = -(uRestMV * vec4(transformed, 1.0)).z;
   vV = normalize(-mv.xyz);
   vMV = mv.xyz;
   vP = (modelMatrix * vec4(transformed,1.0)).xyz;
@@ -200,6 +204,9 @@ uniform sampler2D uMV; uniform float uHasMV;
 // what the reference shows of this part: its median colour (linear) and its light's mean luminance
 // (fit.json "seen", tools/face3d/fit/ratiomean.py); 0 = none
 uniform vec3 uSeenRad; uniform float uSeenLum;
+// the rig's depth at rest (tools/face3d/fit/idmap, MODE=depth): view-space distance over [4.5, 10]
+uniform sampler2D uDepth; uniform float uHasDepth;
+varying float vRestZ;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -270,6 +277,13 @@ void main(){
         hits += step(abs(idv - want), 0.5);
       }
       seen = hits / 9.0;
+      // once turned, was this very point the one the reference showed, or something behind it?
+      // (a shadow-map test against the rest depth: the far ear sits behind the face at the same
+      // projected spot, both skin, which the id map alone can't tell apart). At rest: no effect
+      if (uHasDepth > 0.5 && uTurn > 0.0) {
+        float z = 4.5 + texture2D(uDepth, puv).r * 5.5;
+        seen *= mix(1.0, 1.0 - smoothstep(0.05, 0.12, vRestZ - z), uTurn);
+      }
       // texels on the reference's silhouette hold some backdrop (its anti-aliased edge): right at
       // rest, a coloured streak once a turn shows that surface from the side. Turned, a texel
       // within 3 px of the backdrop is not trusted
@@ -327,7 +341,9 @@ void main(){
     // at a new normal it tinted a turned head orange or red)
     vec3 unseen = litView * local;
     if (uSeenLum > 0.0 && uHasMV < 0.5) {
-      vec3 rel = uRatioMean.x > 0.0 ? local / max(whole, vec3(1e-3)) : vec3(1.0);
+      // (the blur's variation about the part's colour, gently: on surface the reference never
+      // saw it reads other parts' texels, and at full strength streaked noir's far ear)
+      vec3 rel = uRatioMean.x > 0.0 ? clamp(local / max(whole, vec3(1e-3)), 0.7, 1.4) : vec3(1.0);
       unseen = uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel;
     }
     col = mix(unseen, litRest * ratio, trust) * uTint;

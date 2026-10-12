@@ -120,7 +120,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       // feature's margin lies: at rest the skin shows raw; a margin fades to the clean skin
       // while its feature moves, so nothing is left behind
       // (switched on only once both images have loaded: a missing file means clean skin, never black)
-      let skinRaw = null, margins = null, rawLoaded = 0;
+      let skinRaw = null, margins = null, rawLoaded = 0, depthMap = null;
+      const depthOn = { value: 0 }; // switched on once the depth map has loaded
       const rawMats = [];
       const rawReady = () => { if (++rawLoaded === 2) rawMats.forEach((m) => { m.uniforms.uHasRaw.value = 1; }); };
       if (idMap) {
@@ -129,6 +130,11 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
           t.flipY = false; t.colorSpace = THREE.NoColorSpace; t.magFilter = t.minFilter = filter;
           return t;
         };
+        // the rest depth (optional): which surface the reference showed at each pixel, by distance
+        if (files?.depth) {
+          depthMap = new THREE.TextureLoader().load(files.depth, (t) => { t.flipY = false; t.needsUpdate = true; depthOn.value = 1; });
+          depthMap.flipY = false; depthMap.colorSpace = THREE.NoColorSpace; depthMap.magFilter = depthMap.minFilter = THREE.NearestFilter; depthMap.generateMipmaps = false;
+        }
         if (F.raw && F.margins) {
           skinRaw = data(F.raw, THREE.LinearFilter);
           margins = data(F.margins, THREE.LinearFilter);
@@ -185,6 +191,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
+              uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
+              uRestMV: { value: rc.matrixWorldInverse.clone().multiply(o.matrixWorld) },
               uSeenRad: { value: new THREE.Vector3().fromArray(fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
               uSeenLum: { value: fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
               uMapRaw: { value: o.name === "Skin" ? skinRaw : null }, uMargin: { value: o.name === "Skin" ? margins : null },

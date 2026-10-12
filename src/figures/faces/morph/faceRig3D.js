@@ -124,6 +124,8 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
           uFlatN: { value: new THREE.Vector3().fromArray(fit.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit.lids?.[o.name] ? 0.85 : 0 },
           uRatioMean: { value: new THREE.Vector3().fromArray(fit.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
+          // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
+          uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 },

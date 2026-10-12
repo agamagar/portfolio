@@ -6,7 +6,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
-export async function renderIdMap(glb, fitUrl, ids, props = []) {
+// mode "depth": instead of ids, each pixel's distance from the camera at rest (view-space -z,
+// over [DEPTH_NEAR, DEPTH_FAR] in 8 bits, 0.02 units a step; the far ear sits 0.5+ behind the
+// cheek it hides behind, so that is plenty, and the file stays small): FaceSV tests a
+// fragment against it once the head turns, so surface the reference never saw (the far ear,
+// behind the face) is told from surface it did, which the id map alone can't when both are skin
+export const DEPTH_NEAR = 4.5, DEPTH_FAR = 10;
+export async function renderIdMap(glb, fitUrl, ids, props = [], mode = "ids") {
   const W = 802, H = 862;
   const fit = await (await fetch(fitUrl)).json();
   const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(glb);
@@ -32,6 +38,19 @@ export async function renderIdMap(glb, fitUrl, ids, props = []) {
     if (o.name.startsWith("Lid") || o.name === "MouthInner") { o.visible = false; return; }
     // props show only on the skins that wear them (props: the ones this rig's skin wears)
     if (["Hat", "HatBand", "Pin"].includes(o.name) && !props.includes(o.name)) { o.visible = false; return; }
+    if (mode === "depth") {
+      o.material = new THREE.ShaderMaterial({
+        vertexShader: `#include <common>
+          #include <morphtarget_pars_vertex>
+          varying float vZ; void main(){
+          #include <begin_vertex>
+          #include <morphtarget_vertex>
+          vec4 mv = modelViewMatrix * vec4(transformed, 1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }`,
+        fragmentShader: `varying float vZ; void main(){
+          gl_FragColor = vec4(clamp((vZ - ${DEPTH_NEAR.toFixed(2)}) / ${(DEPTH_FAR - DEPTH_NEAR).toFixed(2)}, 0.0, 1.0), 0.0, 0.0, 1.0); }`,
+      });
+      return;
+    }
     o.material = new THREE.ShaderMaterial({
       uniforms: { uPart: { value: part }, uLayered: { value: layered ? 1 : 0 } },
       vertexShader: `#include <common>
@@ -45,13 +64,14 @@ export async function renderIdMap(glb, fitUrl, ids, props = []) {
         gl_FragColor = vec4(id / 255.0, 0.0, 0.0, 1.0); }`,
     });
   });
-  renderer.setClearColor(0x000000, 1);
+  renderer.setClearColor(mode === "depth" ? 0xffffff : 0x000000, 1); // depth: empty = farthest
   renderer.render(scene, cam);
   const gl = renderer.getContext();
   const px = new Uint8Array(W * H * 4);
   gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, px);
-  const out = new Uint8Array(W * H);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) out[y * W + x] = px[((H - 1 - y) * W + x) * 4]; // top row first
+  const ch = 1;
+  const out = new Uint8Array(W * H * ch);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) for (let c = 0; c < ch; c++) out[(y * W + x) * ch + c] = px[((H - 1 - y) * W + x) * 4 + c]; // top row first
   renderer.dispose();
   return Array.from(out);
 }
