@@ -37,7 +37,7 @@ from audit.mjs over the tile's backdrop colour (beforescore.py), so only a rough
 
 What is left in hose and riso is their silhouettes: a black ink outline (hose) and a torn paper
 rim (riso) that a smooth mesh edge can't follow pixel for pixel; about half of hose's error sits
-in a 6 px band round the outline. Inside the head both are under 1.
+in a 6 px band round the outline (a 6 px grow instead of 3 scored 1.35: no gain).
 
 ## Behaviour checked
 
