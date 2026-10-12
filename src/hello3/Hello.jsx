@@ -569,8 +569,10 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // rgba as arrays so the shimmer colours can run continuously into the bloom
     // the waiting skeleton whispers (Agam: "make the shimmer lighter, they are taking a lot of attention"):
     // half the block contrast, a dimmer, wider, slower band; the face and the glow draw the eye
-    const BASE = dark ? [255, 255, 255, 0.035] : [0, 0, 0, 0.032];
-    const LIT = dark ? [255, 255, 255, 0.09] : [255, 255, 255, 0.5];
+    // DARK IS ITS OWN GRADE (Agam: "the glow transition works smoothly in light mode, but dark mode is not so
+    // clean"). Against near-black a pale tone reads as a grey slab, so the dark skeleton is fainter still
+    const BASE = dark ? [255, 255, 255, 0.022] : [0, 0, 0, 0.032];
+    const LIT = dark ? [255, 255, 255, 0.05] : [255, 255, 255, 0.5];
     const mix = (c0, c1, k) => c0.map((v, i) => v + (c1[i] - v) * k);
     const rgba = (c) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${c[3].toFixed(3)})`;
     const ss = (e0, e1, x) => { const u = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return u * u * (3 - 2 * u); };
@@ -591,20 +593,25 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // which takes care of the quantisation on a pale ramp over a pale page.
     const S = 140; // px: the band's unit (the old soft edge)
     const WHITE = [255, 255, 255];
-    const CORE_RGB = mix(FLOOD_RGB, WHITE, dark ? 0.42 : 0.5), TAIL_RGB = FLOOD_RGB;
-    const CORE_A = dark ? 0.045 : 0.26, SIDE_A = dark ? 0.12 : 0.34;
+    // dark: the light is ADDED (the overlay screens onto the page, below), so it is lower and a touch cooler
+    // (the skin 60% to white, a warm ivory rather than a beige that muddies over black)
+    const CORE_RGB = mix(FLOOD_RGB, WHITE, dark ? 0.6 : 0.5), TAIL_RGB = dark ? mix(FLOOD_RGB, WHITE, 0.3) : FLOOD_RGB;
+    const CORE_A = dark ? 0.012 : 0.26, SIDE_A = dark ? 0.032 : 0.34;
     const gauss = (d, sg) => Math.exp(-((d / sg) ** 2));
-    const LEAD = 1.1 * S, TRAIL = 2.8 * S;
-    const side = (d) => (d >= 0 ? gauss(d, 0.42 * S) : 1 - ss(0, TRAIL, -d));
-    const band = (d) => CORE_A * gauss(d, 0.2 * S) + SIDE_A * side(d); // alpha, peak CORE_A + SIDE_A
+    // dark: a softer falloff all round (a wider core and lead, a longer trail), so no edge reads on black
+    const LEAD = (dark ? 1.45 : 1.1) * S, TRAIL = (dark ? 3.4 : 2.8) * S;
+    const side = (d) => (d >= 0 ? gauss(d, (dark ? 0.55 : 0.42) * S) : 1 - ss(0, TRAIL, -d));
+    const band = (d) => CORE_A * gauss(d, (dark ? 0.3 : 0.2) * S) + SIDE_A * side(d); // alpha, peak CORE_A + SIDE_A
     const bandRGB = (d) => (d >= 0 ? CORE_RGB : mix(CORE_RGB, TAIL_RGB, ss(0, 0.8 * S, -d)));
     // denser at the core, where the profile turns
-    const BAND_D = [-2.8, -2.35, -1.95, -1.6, -1.3, -1.03, -0.8, -0.6, -0.43, -0.29, -0.17, -0.07, 0, 0.08, 0.18, 0.3, 0.45, 0.62, 0.84, 1.1].map((k) => k * S);
+    const BAND_D = [-2.8, -2.35, -1.95, -1.6, -1.3, -1.03, -0.8, -0.6, -0.43, -0.29, -0.17, -0.07, 0, 0.08, 0.18, 0.3, 0.45, 0.62, 0.84, 1.1].map((k) => (k < 0 ? (k / 2.8) * TRAIL : (k / 1.1) * LEAD));
     if (glow && SKELETON) {
       const NS = "http://www.w3.org/2000/svg";
       svg = document.createElementNS(NS, "svg");
       svg.setAttribute("aria-hidden", "true");
       svg.style.cssText = "position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none;z-index:0";
+      // dark: the overlay SCREENS onto the page: light only adds, so a pale tone can never lay a grey film over black
+      if (dark) svg.style.mixBlendMode = "screen";
       const defs = document.createElementNS(NS, "defs");
       svg.appendChild(defs);
       // THE SKELETONS UNPRINT WHERE THE CONTENT PRINTS: every block sits in one group under one mask, the
@@ -633,6 +640,20 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       cm.setAttribute("x", "0"); cm.setAttribute("y", "0"); cm.setAttribute("width", String(VW)); cm.setAttribute("height", "2600");
       catchG = document.createElementNS(NS, "g");
       catchG.setAttribute("fill", "#fff");
+      // dark: DITHER. A faint warm ramp over near-black has only a couple of dozen 8-bit steps, so the light's mask
+      // carries a fixed grain (alpha 0.84-1 per pixel, 64px tile, made once): the band's alpha is jittered by a few
+      // percent pixel to pixel and the steps dissolve. Static, so it costs nothing per frame beyond the mask itself
+      if (dark) {
+        const g = document.createElement("canvas"); g.width = g.height = 64;
+        const c = g.getContext("2d"), im = c.createImageData(64, 64);
+        for (let i = 0; i < im.data.length; i += 4) { im.data[i] = im.data[i + 1] = im.data[i + 2] = 255; im.data[i + 3] = 214 + ((Math.random() * 42) | 0); }
+        c.putImageData(im, 0, 0);
+        const pat = document.createElementNS(NS, "pattern");
+        pat.setAttribute("id", "hello-grain"); pat.setAttribute("patternUnits", "userSpaceOnUse"); pat.setAttribute("width", "64"); pat.setAttribute("height", "64");
+        pat.innerHTML = `<image href="${g.toDataURL()}" width="64" height="64" style="image-rendering:pixelated"/>`;
+        defs.appendChild(pat);
+        catchG.setAttribute("fill", "url(#hello-grain)");
+      }
       cm.appendChild(catchG);
       defs.appendChild(cm);
       const mk = (el, part, m, w) => {
@@ -909,7 +930,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           if (C - 0.95 * S >= L.dmax) { L.r.style.opacity = "0"; L.dead = true; continue; } // hidden, kept: its shape still catches the light
           const warm = ss(L.dmin - 2 * S, L.dmin, lead), sh = 1;
           cx = sweepX(yc); hw = W * 0.36 * widen;
-          cBase = [...mix(BASE.slice(0, 3), CORE_RGB, warm), (BASE[3] + (SIDE_A * 0.45 - BASE[3]) * warm) * sh];
+          cBase = [...mix(BASE.slice(0, 3), CORE_RGB, warm), (BASE[3] + ((dark ? BASE[3] : SIDE_A * 0.45) - BASE[3]) * warm) * sh]; // dark: tinted, never brighter (a lit block on black is a slab)
           cLit = [...mix(LIT.slice(0, 3), CORE_RGB, warm), Math.min(1, LIT[3] * pulse) * (1 - warm) * sh + cBase[3] * warm];
           op = sh > 0.004 ? fadeIn : 0;
         }
@@ -962,11 +983,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         const d = C < L.dmin ? L.dmin - C : C > L.dmax ? L.dmax - C : 0;
         const I = g * (d >= 0 ? gauss(d, 0.36 * S) : 1 - ss(0, 1.6 * S, -d));
         const hz = g * gauss(d, 0.3 * S); // the haze: the core's own gaussian, a little wider
-        const B = L.big ? 0.4 : 1.1; // a light image would wash to white
+        const B = L.big ? (dark ? 0.18 : 0.4) : 1.1; // a light image would wash to white (and grey out on dark)
         let f = "";
         if (hz > 0.02 && (L.hz || lend(L))) { L.hz.map.setAttribute("scale", ((L.big ? 6 : 5) * hz).toFixed(2)); L.hz.aa.setAttribute("stdDeviation", (0.3 * hz).toFixed(3)); f = `url(#${L.hz.id}) `; }
         else free(L);
-        if (I > 0.01) f += `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
+        // dark keeps the content's colour and contrast (a paled, flattened image reads as grey haze on black)
+        if (I > 0.01) f += dark ? `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.25 * I).toFixed(3)}) sepia(${(0.08 * I).toFixed(3)})` : `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
         el.style.filter = f;
       }
     };
