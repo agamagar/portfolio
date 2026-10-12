@@ -7,6 +7,33 @@
 // the two fronts the face is pale and bright: that band is the face's glow. flood(t) is its width,
 // 0..1, and FLOOD_PEAK the t where it is widest, which is where the page's wave leaves the face.
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
+
+// THE ONE CLOCK. The morph runs t 0..1 over DURATION ms of real time through RAMP, and the page's light
+// wave is laid out on that same t (Hello.jsx: its radius is linear in t), so the face and the wave share
+// one tempo beat for beat: the same quick start, the same slow-motion stretch, the same settle.
+export const DURATION = 3800; // ms for t 0..1 (no turn since 11 Oct, so a little shorter than the test page's 4.2 s)
+// SPEED RAMP (Agam, 2026-10-11: "the 3D face reveal should be speed ramped"): one remap of
+// the morph's clock, real time u -> timeline t, so every track (the slide, the colour, the
+// grow, the thinning) ramps together like a film speed ramp: quick as the lines start to move
+// and the clay floods in, slow motion while the form resolves (t about 0.40 to 0.72), a quick
+// settle, then an ease into the hold. A monotone cubic through these keys (Fritsch-Carlson, so
+// it never runs backwards or overshoots); its slope is the playback speed.
+export const RAMP = [[0, 0], [0.18, 0.4], [0.62, 0.72], [0.85, 0.96], [1, 1]];
+export const ramp = (() => {
+  const x = RAMP.map((k) => k[0]), y = RAMP.map((k) => k[1]);
+  const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
+  const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
+  m[0] = Math.max(0, (3 * d[0] - m[1]) / 2); // the start is quick; the end stops (slope 0) into the hold
+  return (u) => {
+    if (u <= 0) return 0;
+    if (u >= 1) return 1;
+    let i = 0;
+    while (u > x[i + 1]) i++;
+    const h = x[i + 1] - x[i], s = (u - x[i]) / h, s2 = s * s, s3 = s2 * s;
+    return (2 * s3 - 3 * s2 + 1) * y[i] + (s3 - 2 * s2 + s) * h * m[i] + (-2 * s3 + 3 * s2) * y[i + 1] + (s3 - s2) * h * m[i + 1];
+  };
+})();
+
 const span = (t, a, b) => clamp01((t - a) / (b - a));
 const inOutQ = (x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
 const lerp = (a, b, k) => a + (b - a) * k;
