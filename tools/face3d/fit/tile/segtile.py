@@ -31,7 +31,10 @@ CFG = {
     "hose": dict(bgtol=7, dark=30, open=5, hair=dict(L=(0, 45), hue=(20, 75), chroma=18)),
     "pixel": dict(bgtol=14, dark=32, open=3, hair=dict(L=(0, 58), hue=(25, 80), chroma=14)),
     # riso: the torn white rim (L* > 82) walls the head off from the paper
-    "riso": dict(bgtol=7, dark=30, open=3, blur=2.5, rim=82, hair=dict(pink=True, L=(0, 38))),
+    # grow: the head's labels pushed out this many px into the backdrop, so the mesh covers a
+    # jagged edge's peaks; the texture there is the tile's own (backdrop) pixels, so at rest
+    # nothing changes but the torn rim is no longer cut (riso's silhouette: 0.45% of pixels)
+    "riso": dict(bgtol=7, dark=30, open=3, blur=2.5, rim=82, grow=3, hair=dict(pink=True, L=(0, 38))),
 }[SKIN]
 W = 200
 tile = Image.open(f"{SKIN}.png").convert("RGB")
@@ -170,6 +173,14 @@ if CFG["dark"] is not None:
             m = ls == i
             if sz[i - 1] < 0.2 * sz.max() and (m & near_hair).any():
                 parts[m] = 2
+# the score is taken on the labels as cut (tilediff.py), not the grown ones
+np.save("score_parts_full.npy", parts)
+np.save("score_parts_tile.npy", np.asarray(Image.fromarray(parts).resize(tile.size, Image.NEAREST)))
+if CFG.get("grow"):
+    out = nd.binary_dilation(parts > 0, structure=disk(CFG["grow"])) & (parts == 0)
+    idx = nd.distance_transform_edt(parts == 0, return_distances=False, return_indices=True)
+    near_l = parts[idx[0], idx[1]]
+    parts[out] = np.minimum(near_l[out], 2)
 np.save("ref_parts_full.npy", parts)
 np.save("trim_keep.npy", nd.binary_dilation(parts > 0, iterations=3))
 small = np.asarray(Image.fromarray(parts).resize((W, round(862 * W / 802)), Image.NEAREST))

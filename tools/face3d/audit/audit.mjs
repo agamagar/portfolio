@@ -25,6 +25,8 @@ for (const id of ids) {
   for (const [v, emote, k, yaw] of views) {
     await page.evaluate(([e, k, yaw]) => { const f = document.querySelector(".face-sv").__face; f.pose(e, k); f.setView(yaw, 0); }, [emote, k, yaw]);
     await page.waitForTimeout(700);
+    // a loaded machine runs few frames: make sure two have run since the pose was set
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     const png = await page.evaluate(() => document.querySelector(".face-sv").__face.snapshot());
     fs.writeFileSync(`${out}/${id}_${v}.png`, Buffer.from(png.split(",")[1], "base64"));
     if (v === "rest") await (await page.$(".face-sv")).screenshot({ path: `${out}/${id}_page.png` });

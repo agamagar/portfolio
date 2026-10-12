@@ -4,8 +4,9 @@ from PIL import Image, ImageDraw
 d, out = sys.argv[1], sys.argv[2]
 views = (sys.argv[3] if len(sys.argv) > 3 else "page,rest,grin,blink,turnL,turnR,back").split(",")
 skins = []
-for f in sorted(glob.glob(f"{d}/*_rest.png"), key=os.path.getmtime):
-    skins.append(os.path.basename(f)[:-9])
+first = [v for v in views if v != "page"][0]
+for f in sorted(glob.glob(f"{d}/*_{first}.png"), key=os.path.getmtime):
+    skins.append(os.path.basename(f)[:-len(first) - 5])
 S = 200
 g = Image.new("RGB", (90 + S * len(views), 20 + S * len(skins)), "white")
 dr = ImageDraw.Draw(g)

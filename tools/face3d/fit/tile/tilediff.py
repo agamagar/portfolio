@@ -13,7 +13,10 @@ comp = Image.open(f"{SKIN}-back.webp").convert("RGBA")
 comp.alpha_composite(im)
 comp = comp.convert("RGB")
 r = {}
-for tag, size, parts in (("tile", tile.size, np.load("ref_parts_tile.npy")), ("canvas", (802, 862), np.load("ref_parts_full.npy"))):
+import os
+pick = lambda a, b: np.load(a if os.path.exists(a) else b)  # the labels as cut, before any grow (segtile.py)
+for tag, size, parts in (("tile", tile.size, pick("score_parts_tile.npy", "ref_parts_tile.npy")),
+                         ("canvas", (802, 862), pick("score_parts_full.npy", "ref_parts_full.npy"))):
     ref = np.asarray(tile.resize(size, Image.LANCZOS) if tile.size != size else tile).astype(int)
     ours = np.asarray(comp.resize(size, Image.LANCZOS) if comp.size != size else comp).astype(int)
     d = np.abs(ours - ref).mean(-1)

@@ -185,6 +185,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
+              uSeenRad: { value: new THREE.Vector3().fromArray(fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
+              uSeenLum: { value: fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
               uMapRaw: { value: o.name === "Skin" ? skinRaw : null }, uMargin: { value: o.name === "Skin" ? margins : null },
               uHasRaw: { value: o.name === "Skin" && skinRaw && rawLoaded === 2 ? 1 : 0 },
               uMV: { value: mv[o.name] && o.geometry.attributes._mvuv ? mv[o.name].t : null },
@@ -218,6 +220,24 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       rigs[rsrc] = r;
       return r;
     };
+    // a rig's GPU side (its geometry, and per rig several 1604 x 862 data textures): cycling
+    // through every skin would otherwise keep all ten on the card. The base rig, the one on
+    // stage and the two most recently worn stay; an older one is let go (worn again, it reloads)
+    const recent = [];
+    const dropRig = (key) => {
+      const r = rigs[key];
+      if (!r?.loaded || r === rig) return;
+      const seen = new Set();
+      r.root.traverse((o) => {
+        if (!o.isMesh) return;
+        o.geometry.dispose();
+        for (const m of [].concat(o.material)) {
+          for (const u of Object.values(m.uniforms || {})) if (u.value?.isTexture && !seen.has(u.value)) { seen.add(u.value); u.value.dispose(); }
+          m.dispose();
+        }
+      });
+      delete rigs[key];
+    };
     const useRig = (r) => {
       if (rig === r) return;
       if (rig?.root) head.remove(rig.root);
@@ -227,6 +247,12 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       if (fit) {
         placeCam(cam, fit);
         baseRoll = 0;
+      }
+      const key = Object.keys(rigs).find((k) => rigs[k] === r);
+      if (key && r !== baseRig) {
+        if (recent.includes(key)) recent.splice(recent.indexOf(key), 1);
+        recent.push(key);
+        while (recent.length > 3) dropRig(recent.shift());
       }
     };
     const baseRig = loadRig(src, fitSrc);
@@ -417,6 +443,10 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       const pool = Object.keys(EMOTES).filter((e) => !["blink", "sad", "angry", "lookAround"].includes(e));
       await emote(pool[Math.floor(Math.random() * pool.length)]);
       busy = false;
+      // whoever switched once will likely switch again (a click, the cycle): fetch the next
+      // skin's rig now, so its turn doesn't wait on the network
+      const after = SKINS[(SKINS.indexOf(skin) + 1) % SKINS.length];
+      if (after.rig && alive) loadRig(after.rig.src, after.rig.fit, after.rig);
     };
     const nextSkin = () => switchSkin(SKINS[(SKINS.indexOf(skin) + 1) % SKINS.length]);
     const emote = async (n) => { if (!reduce() && EMOTES[n]) await play(...EMOTES[n]); };
@@ -433,6 +463,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     const pose = (n, k = 0.5) => { held = n && EMOTES[n] ? sample(EMOTES[n][1], k) : null; };
     api.current = { emote, bounce, pose, switchSkin, next: nextSkin, applySkin: (id) => applySkin(skinById(id)),
       // set the drag view directly (radians), for turntable checks
+      // what is on stage, for headless checks: the skin, and whether its fitted rig is drawing
+      state: () => ({ skin: skin.id, fitOn, rig: rig ? Object.keys(rigs).find((k) => rigs[k] === rig) || null : null }),
       setView: (yaw, pitch = 0) => { view.yaw = yaw; view.pitch = pitch; view.vy = view.vp = 0; view.home = false; },
       // a PNG of the face as it stands (renders first, so the drawing buffer is still there)
       snapshot: () => { renderer.render(scene, cam); return renderer.domElement.toDataURL("image/png"); } };

@@ -1,5 +1,6 @@
-# ratiomean.py: each textured part's median surface colour (the albedo ratio, decoded as the
-# shader decodes it), for a fit json that lacks "ratioMean" (noir). The shader paints that
+# ratiomean.py: each textured part's surface colour as a ratio, for a fit json without albedo2's
+# "ratioMean" (noir). (A turn's revealed surface takes its colour from "seen", seen.py; the ratio
+# still shapes the blur at the edge of what the reference saw.) The shader paints that
 # colour wherever a turn reveals surface the reference never saw; without it, it falls back
 # to the texture's smallest mip, which averages in the texture's padding (noir: near white).
 # The UVs are projected from the fitted camera, so a face the camera saw has positive area
@@ -10,6 +11,7 @@
 # shows on the part (light x AO^k x ratio, per seen face) divided by the part's light averaged
 # over the normals a camera-facing surface shows (cosine-weighted): a revealed surface then lands near the part's seen colour.
 #   Blender -b -P ratiomean.py -- MODEL.glb FIT.json [--write]
+# (an unpacked GLB: Blender's importer has no meshopt)
 import bpy, sys, json
 import numpy as np
 a = sys.argv[sys.argv.index("--") + 1:]

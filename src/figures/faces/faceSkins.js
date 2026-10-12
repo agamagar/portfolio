@@ -197,6 +197,9 @@ uniform sampler2D uMapRaw, uMargin; uniform float uHasRaw; uniform vec3 uActs;
 uniform sampler2D uIdMap; uniform float uPartId, uLayered; uniform vec2 uIdRes;
 // the surface colour from every side: an albedo atlas baked from the turnaround views (tools/face3d/fit/mv)
 uniform sampler2D uMV; uniform float uHasMV;
+// what the reference shows of this part: its median colour (linear) and its light's mean luminance
+// (fit.json "seen", tools/face3d/fit/ratiomean.py); 0 = none
+uniform vec3 uSeenRad; uniform float uSeenLum;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -267,6 +270,17 @@ void main(){
         hits += step(abs(idv - want), 0.5);
       }
       seen = hits / 9.0;
+      // texels on the reference's silhouette hold some backdrop (its anti-aliased edge): right at
+      // rest, a coloured streak once a turn shows that surface from the side. Turned, a texel
+      // within 3 px of the backdrop is not trusted
+      if (uTurn > 0.0) {
+        float bgHits = 0.0;
+        for (int i = 0; i < 4; i++) {
+          vec2 o = vec2(i == 0 ? 3.0 : i == 1 ? -3.0 : 0.0, i == 2 ? 3.0 : i == 3 ? -3.0 : 0.0);
+          bgHits += step(texture2D(uIdMap, puv + o / uIdRes).r * 255.0, 0.5);
+        }
+        seen *= 1.0 - uTurn * step(0.5, bgHits);
+      }
     }
     // where it wasn't, use the part's local colour: a heavily blurred (mip) read of its own
     // texture, so a turn reveals plausible surface with no seam against the textured part
@@ -308,7 +322,15 @@ void main(){
     if (uFlat > 0.0) nr = normalize(mix(nr, uFlatN, uFlat));
     vec3 litView = max(max(shEval(nl), 0.0) * occ, vec3(uFloor));
     vec3 litRest = max(max(shEval(nr), 0.0) * occ, vec3(uFloor));
-    col = mix(litView * local, litRest * ratio, trust) * uTint;
+    // (with "seen": the revealed surface in the colour the reference shows of the part, shaded by
+    // the view light's brightness only; the fitted light's hue swings with direction, and read off
+    // at a new normal it tinted a turned head orange or red)
+    vec3 unseen = litView * local;
+    if (uSeenLum > 0.0 && uHasMV < 0.5) {
+      vec3 rel = uRatioMean.x > 0.0 ? local / max(whole, vec3(1e-3)) : vec3(1.0);
+      unseen = uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel;
+    }
+    col = mix(unseen, litRest * ratio, trust) * uTint;
     if (uIsEye > 0.5 && uUseMap < 0.5) {
       // a glossy bead (when there is no fitted texture): the dark base and a sharp window highlight up and to the left
       col = uBase + vec3(1.0) * pow(max(dot(n, normalize(vec3(-0.45, 0.6, 0.75))), 0.0), 220.0) * 1.6;

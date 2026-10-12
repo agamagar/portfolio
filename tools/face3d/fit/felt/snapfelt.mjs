@@ -12,6 +12,9 @@ await page.waitForTimeout(9000);
 const png = await page.evaluate(async ([skin, pose, k]) => {
   const f = document.querySelector(".face-sv").__face;
   f.applySkin(skin); f.pose(pose, Number(k));
+  // a skin with its own rig: wait until that rig is drawing (a loaded machine parses the GLB slowly,
+  // and a snapshot before it lands scores the drawn fallback)
+  for (let i = 0; i < 600 && f.state && !f.state().fitOn; i++) await new Promise((r) => setTimeout(r, 500));
   await new Promise((r) => setTimeout(r, 900));
   return f.snapshot();
 }, [skin, pose, k]);
