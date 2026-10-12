@@ -13,7 +13,7 @@ import MorphFace from "../MorphFace";
 // room's page capture waits for it (heroMorphGate.js)
 import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
-import { DURATION, FLOOD_PEAK, FLOOD_RGB, flood, ramp } from "../figures/faces/morph/flood";
+import { FLOOD_RGB } from "../figures/faces/morph/flood";
 import { warmIsReady } from "../scene/window/warmFlag";
 import { Check, Copy, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
@@ -683,7 +683,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       }
       document.body.appendChild(svg);
     }
-    let T = 0; // the morph's latest t (0 while the face waves)
+    // TWO CLOCKS, ONE AFTER THE OTHER (Agam: "complete the entire cycle of the face waving and morphing to 3D, and
+    // THEN start the page reveal, so it feels like the glow is going outwards from the face"). M is the morph's t
+    // ("heromorph:t", 0 while the face waves); the page waits under its quiet skeletons until M reaches 1. Then the
+    // finished clay blooms (BLOOM_IN) and at the bloom's peak the light leaves it: T, the reveal's clock, runs 0..1
+    // over WAVE_MS through the wave's own speed ramp. Nothing prints before T = 0.
+    let M = 0, T = -1;
+    const BLOOM_IN = 320, BLOOM_OUT = 760, WAVE_MS = 2000;
     // SKELETONS SHAPED LIKE THE CONTENT (idea 3): text gets one bar per real line fragment, at its real
     // length (year, name and line of a work row are three bars; a wrapped line is two), measured with a
     // Range over the hidden but laid-out text; cards get their own corner radius. Each block becomes
@@ -780,11 +786,33 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       const RCORN = Math.max(Math.hypot(fx - vx0, fy - vy0), Math.hypot(vx1 - fx, fy - vy0), Math.hypot(fx - vx0, vy1 - fy), Math.hypot(vx1 - fx, vy1 - fy));
       RTOT = Math.max(RMAX, RCORN) + 40;
       CEND = RTOT + TRAIL * 0.5;
-      // the face's rim, where the light leaves it (the clay grows to 1.21x across the morph, ~1.1x at the peak)
-      rFace = (Math.max(fr.width, fr.height) / 2) * 1.1;
+      // the clay's rim, where the light leaves it (the clay ends 1.21x the drawing, grown from its right edge)
+      rFace = (Math.max(fr.width, fr.height) / 2) * 1.2;
+      waveRamp = buildRamp(Math.min(1, RMAX / RTOT));
       if (front) { front.setAttribute("cx", fx.toFixed(1)); front.setAttribute("cy", fy.toFixed(1)); }
       if (unprint) { unprint.setAttribute("cx", fx.toFixed(1)); unprint.setAttribute("cy", fy.toFixed(1)); }
     }
+    // THE WAVE'S OWN SPEED RAMP (Agam: "also add a speed ramp to it"; "the wave keeps its ramp"): a monotone cubic
+    // (Fritsch-Carlson, the same construction as the morph's RAMP: never backwards, no overshoot; its slope is the
+    // speed), keys = [share of the wave's time, share of its travel]: a quick launch out of the face, a
+    // slow-motion stretch as the light crosses the heading and the links, a fast sweep through the list and the
+    // cards, easing to a stop. Built for k = (farthest element) / (total travel), so the first keys stay where
+    // they are in px and the run out to the viewport's far corner happens at speed.
+    const buildRamp = (k) => {
+      const K = [[0, 0], [0.12, 0.14 * k], [0.4, 0.3 * k], [0.78, 0.92], [1, 1]];
+      const x = K.map((q) => q[0]), y = K.map((q) => q[1]);
+      const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
+      const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
+      return (u) => {
+        if (u <= 0) return 0;
+        if (u >= 1) return 1;
+        let i = 0;
+        while (u > x[i + 1]) i++;
+        const h = x[i + 1] - x[i], t = (u - x[i]) / h, t2 = t * t, t3 = t2 * t;
+        return (2 * t3 - 3 * t2 + 1) * y[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * y[i + 1] + (t3 - t2) * h * m[i + 1];
+      };
+    };
+    let waveRamp = buildRamp(1);
     place();
     if (import.meta.env.DEV) window.__skel = lines; // dev only: the load QA diffs each block against its element
     window.addEventListener("resize", place);
@@ -836,7 +864,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const hand = () => root.querySelector('.hello-hero__flyer .header__wave[data-kind="wave"]') || root.querySelector('.header__wave[data-kind="wave"]');
     let handEl = null;
     const beat = () => {
-      if (T > 0) return -1;
+      if (M > 0) return -1;
       if (!handEl?.isConnected) handEl = hand();
       if (!handEl) return -1;
       const an = handEl.getAnimations?.()[0];
@@ -847,17 +875,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       const deg = (Math.atan2(v[1], v[0]) * 180) / Math.PI;
       return Math.min(1, Math.max(0, deg / 30));
     };
-    // ONE TEMPO (Agam: "match the speed of the morph with the page reveal"). The band's core is a radius about
-    // the face's centre, LINEAR in the morph's t: it crosses the face's rim at FLOOD_PEAK, when the face's pale
-    // glow is widest, and reaches the viewport's far corner (plus half its trail) at t = 1, as the clay settles.
-    // No ramp of its own: t is already the morph's ramped clock (RAMP, flood.js), so the wave inherits the
-    // morph's speed beat for beat: its slow-motion stretch (t 0.40-0.72) carries the light across the heading
-    // and the links, its quick settle sweeps the list and the cards, and both ease to rest together. Before the
-    // peak the front is inside the face and unseen.
-    const frontC = () => rFace + ((CEND - rFace) * (T - FLOOD_PEAK)) / (1 - FLOOD_PEAK);
-    // the light's strength, one curve for the face and the ring: the face's own flood, rising with its bloom
-    // into the peak and then resolving with it (never below 40%), thinning out past the farthest element
-    const glowOf = (C) => (T <= FLOOD_PEAK ? flood(T) : 0.4 + 0.6 * flood(T)) * (1 - ss(RMAX + 0.5 * S, CEND, C));
+    // the band's core: a radius about the face's centre, from the clay's rim at T = 0 (the bloom's peak) to the
+    // viewport's far corner (plus half its trail) at T = 1, through the wave's speed ramp; before T = 0 it is
+    // nowhere (nothing lit, nothing printed)
+    const frontC = () => (T < 0 ? -1e5 : rFace + (CEND - rFace) * waveRamp(T));
+    // the light's strength: the bloom's own curve carried outward, strongest as it leaves the face and settling
+    // to a little under half as it spreads, thinning out past the farthest element
+    const glowOf = (C) => (0.45 + 0.55 * (1 - ss(0, 0.7, Math.max(0, T)))) * (1 - ss(RMAX + 0.5 * S, CEND, C));
     // ONE MATERIAL CHANGE: shimmer, light, content. While the face waves the skeletons shimmer; as the face
     // starts to flood their sweep quiets (to a third by the peak: the page holds its breath for the face). As
     // the light comes, each block takes on its colour (the grey tone warms into the light's own, its sweep
@@ -866,7 +890,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const light = () => {
       const W = document.documentElement.clientWidth, fadeIn = ss(0, 900, performance.now() - born);
       const bt = still ? -1 : beat();
-      const hush = 1 - 0.65 * ss(0.12, FLOOD_PEAK, T);
+      const hush = 1 - 0.65 * ss(0.1, 1, M); // the shimmer quiets while the face morphs
       const pulse = (bt < 0 ? 1 : 0.6 + 0.8 * bt) * hush, widen = bt < 0 ? 1 : 1 + 0.35 * bt;
       const C = still ? 0 : frontC();
       for (const L of lines) {
@@ -958,43 +982,53 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       clearTimeout(fb); clearTimeout(tm); cancelAnimationFrame(raf);
       tm = setTimeout(() => { setSeq(false); markIntroDone(); }, 800);
     };
+    // the reveal's clock, every frame once the light has left: marks (data-in), the light, the print
+    const step = () => {
+      if (over) return;
+      T = Math.min(1, (performance.now() - waveAt) / (still ? 2600 : WAVE_MS));
+      while (next < marks.length && marks[next][0] <= T) marks[next++][1].setAttribute("data-in", "");
+      if (glow && T >= 0) { light(); content(); }
+      if (T >= 1 && (!glow || lines.every((L) => L.dead && (L.part || L.done)))) { done(); return; }
+      if (T >= 1 && performance.now() - waveAt > (still ? 2600 : WAVE_MS) + 600) { done(); return; } // a last element's tail, then stop
+      raf = requestAnimationFrame(step);
+    };
+    // THE BLOOM: the finished face swells with warm light (brighter, a little paler, a soft halo in the clay's
+    // own skin) and the wave leaves it at the peak. A Web Animation on the face's frame, fill none: nothing left.
+    let waveAt = Infinity;
+    const launch = () => {
+      if (waveAt !== Infinity || over) return;
+      clearTimeout(fb);
+      waveAt = performance.now() + (still ? 0 : BLOOM_IN);
+      const face = !still && glow ? root.querySelector(".hello-hero__flyer .header__avatar-wrap") : null;
+      if (face?.animate) {
+        const halo = `rgba(${FLOOD_RGB.join(",")},${dark ? 0.55 : 0.9})`;
+        face.animate([
+          { filter: "brightness(1) saturate(1) drop-shadow(0 0 0px rgba(0,0,0,0))" },
+          { filter: `brightness(${dark ? 1.22 : 1.12}) saturate(0.86) drop-shadow(0 0 16px ${halo})`, offset: BLOOM_IN / (BLOOM_IN + BLOOM_OUT), easing: "cubic-bezier(0.33, 0, 0.2, 1)" },
+          { filter: "brightness(1) saturate(1) drop-shadow(0 0 0px rgba(0,0,0,0))" },
+        ], { duration: BLOOM_IN + BLOOM_OUT, easing: "cubic-bezier(0.4, 0, 0.6, 1)" });
+      }
+      raf = requestAnimationFrame(step);
+    };
+    // the morph's clock: the skeletons quiet as it runs; the light leaves when it lands (t = 1)
     const onT = (e) => {
       clearTimeout(fb);
-      const t = (T = e.detail);
-      while (next < marks.length && marks[next][0] <= t) marks[next++][1].setAttribute("data-in", "");
-      if (glow) { light(); content(); }
-      // over when the morph lands, or every mark is in and every light has finished
-      if (t >= 1 || (next >= marks.length && lines.every((L) => L.dead && (L.part || L.done)))) done();
+      M = e.detail;
+      if (M >= 1) launch();
     };
     window.addEventListener("heromorph:t", onT);
-    // the light runs every frame from the first one: the sweep on the wall clock, the blooms on the
-    // latest t (the morph's events and the frames are not in lockstep)
-    let started = false, pre = 0, cap = 0;
-    const frame = () => { if (over) return; light(); pre = requestAnimationFrame(frame); };
+    // the skeletons' shimmer runs every frame from the first one, on the wall clock
+    let pre = 0, cap = 0;
+    const frame = () => { if (over) return; if (T < 0) light(); pre = requestAnimationFrame(frame); };
     if (svg) pre = requestAnimationFrame(frame);
-    const first = () => { started = true; window.removeEventListener("heromorph:t", first); };
-    window.addEventListener("heromorph:t", first);
-    // no morph started within a beat of the wave's end: run the same marks on a plain clock
+    // no morph started within a beat of the wave's end (phones, no WebGL, reduced motion, a repeat visit):
+    // the face blooms as it is and the light leaves now
     armRef.current = () => {
       place();
-      cap = setTimeout(done, 9000);
-      fb = setTimeout(() => {
-        if (started) return;
-        // no face to flood: the same clock (DURATION through RAMP), entered a beat before the light leaves the
-        // face, so the page does not hold for a glow that never comes; reduced motion keeps the plain clock
-        let us = 0;
-        if (!still && glow) { let hi = 1; for (let i = 0; i < 24; i++) { const mid = (us + hi) / 2; if (ramp(mid) < FLOOD_PEAK - 0.08) us = mid; else hi = mid; } }
-        const t0 = performance.now(), len = still || !glow ? 2600 : DURATION * (1 - us);
-        const tick = () => {
-          if (over) return;
-          const u = Math.min(1, (performance.now() - t0) / len);
-          onT({ detail: still || !glow ? u : ramp(us + (1 - us) * u) });
-          if (!over) raf = requestAnimationFrame(tick);
-        };
-        tick();
-      }, 1500);
+      cap = setTimeout(done, 12000);
+      fb = setTimeout(() => { if (M === 0) launch(); }, 1500);
     };
-    return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); window.removeEventListener("heromorph:t", first); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
+    return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
   }, [seq]);
   // the wave has ended: the safety timers and the plain-clock fallback start now
   useEffect(() => { if (stage === "reveal") armRef.current?.(); }, [stage]);
