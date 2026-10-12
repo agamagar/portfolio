@@ -168,8 +168,12 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     const mouthOn = ["jawOpen", "mouthSmileLeft", "mouthSmileRight", "mouthFrownLeft", "mouthFrownRight", "mouthPucker"].some((n) => k(n) > 0.02);
     for (const n of ["LidL", "LidR"]) if (rig.parts[n]) rig.parts[n].visible = eyeOn;
     if (rig.parts.MouthInner) rig.parts.MouthInner.visible = mouthOn;
-    // the head's lift about the neck, and the gaze (the bead and its lids slide together)
+    // the head's lift and sideways shift about the neck, the body's squash and stretch (about the
+    // chin, as FaceSV's bounce), and the gaze (the bead and its lids slide together)
     head.position.y = -NECK + (p.hy || 0);
+    head.position.x = p.hx || 0;
+    const sx = p.sx ?? 1, sy = p.sy ?? 1;
+    body.scale.set(sx, sy, (sx + sy) / 2);
     for (const n of ["EyeL", "EyeR", "LidL", "LidR"]) {
       const o = rig.parts[n];
       if (o) o.position.set(o.userData.rest.p.x + (p.eyeX || 0), o.userData.rest.p.y + (p.eyeY || 0), o.userData.rest.p.z);
