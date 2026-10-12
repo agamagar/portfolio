@@ -17,15 +17,26 @@ for (const theme of ["light", "dark"]) {
   const ok = await page.waitForFunction(() => { const b = document.querySelector(".hero-morph__btn"); return b && !b.hidden; }, null, { timeout: 180000 }).then(() => true, () => false);
   await page.waitForTimeout(3000);
   const box = await page.evaluate(() => { const r = document.querySelector(".hero-morph")?.getBoundingClientRect(); return r && { x: r.x, y: r.y, w: r.width, h: r.height }; });
-  const clip = box && { x: Math.max(0, box.x - 40), y: Math.max(0, box.y - 40), width: box.w + 80, height: box.h + 80 };
-  await page.screenshot({ path: `${out}/hero_${theme}_clay.png`, clip: clip || undefined });
+  // the hero's own 2D canvas (a page screenshot stalls behind software WebGL), and the colour
+  // behind it, to judge its edges on that ground
+  const grab = async (name) => {
+    const r = await page.evaluate(() => {
+      const cv = document.querySelector(".hero-morph__cv");
+      let el = cv, bg = "rgba(0, 0, 0, 0)";
+      while (el && /rgba\(0, 0, 0, 0\)|transparent/.test(bg)) { bg = getComputedStyle(el).backgroundColor; el = el.parentElement; }
+      return { png: cv ? cv.toDataURL("image/png") : null, bg };
+    });
+    if (r.png) fs.writeFileSync(`${out}/hero_${theme}_${name}.png`, Buffer.from(r.png.split(",")[1], "base64"));
+    fs.writeFileSync(`${out}/hero_${theme}_${name}.bg`, r.bg);
+  };
+  await grab("clay");
   if (ok) {
     await page.click(".hero-morph__btn", { force: true });
     await page.waitForTimeout(9000);
-    await page.screenshot({ path: `${out}/hero_${theme}_noir.png`, clip: clip || undefined });
+    await grab("noir");
     await page.click(".hero-morph__btn", { force: true });
     await page.waitForTimeout(9000);
-    await page.screenshot({ path: `${out}/hero_${theme}_back.png`, clip: clip || undefined });
+    await grab("back");
   }
   console.log(theme, ok ? "morph held, clicked" : "no morph button", JSON.stringify(box));
   await page.close();

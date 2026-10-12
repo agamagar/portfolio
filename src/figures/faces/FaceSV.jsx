@@ -476,11 +476,6 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       setView: (yaw, pitch = 0) => { view.yaw = yaw; view.pitch = pitch; view.vy = view.vp = 0; view.home = false; },
       // a PNG of the face as it stands (renders first, so the drawing buffer is still there)
       snapshot: () => { renderer.render(scene, cam); return renderer.domElement.toDataURL("image/png"); } };
-    let cycleT = 0;
-    if (cycle > 0) {
-      const tick = () => { if (!document.hidden) nextSkin(); cycleT = setTimeout(tick, cycle); };
-      cycleT = setTimeout(tick, cycle);
-    }
     el.__face = api.current; // for headless checks: document.querySelector(".face-sv").__face.pose("grin")
     let n = 0, idleT = 0;
     const idle = () => {
@@ -659,7 +654,6 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       cancelAnimationFrame(raf);
       blur.dispose();
       clearTimeout(idleT);
-      clearTimeout(cycleT);
       rainAnim?.cancel();
       el.removeEventListener("pointerdown", onDown);
       el.removeEventListener("pointermove", onMove);
@@ -672,7 +666,17 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       el.removeChild(backPlate);
       el.removeChild(rain);
     };
-  }, [size, src, skin0, cycle]);
+  }, [size, src, skin0]);
+
+  // the auto-cycle: its own effect, so turning it on or off leaves the face (its skin, its loaded
+  // rigs) as it is; before, it rebuilt the renderer and reset the skin to the first
+  useEffect(() => {
+    if (!(cycle > 0)) return undefined;
+    let t = 0;
+    const tick = () => { if (!document.hidden) api.current?.next(); t = setTimeout(tick, cycle); };
+    t = setTimeout(tick, cycle);
+    return () => clearTimeout(t);
+  }, [cycle]);
 
   return (
     <div ref={host} className="face-sv" title="Click to change style. Drag to turn. Double-click to reset."
