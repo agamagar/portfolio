@@ -37,9 +37,13 @@ void main(){
 }`;
 
 // skinId: whose parts and shape keys it wears ("clay", or "noir": the fedora's hatCompress key);
+// cleanSrc: the skin's CLEAN texture (tools/face3d/morph/clean_skin.py, 12 Oct): the GLB's own map
+// still carried the eyes, brows and the mouth's crease, so on every emote the painted copy stayed
+// behind (two mouths, a shadow where an eye was). With it, wherever a rig uses the skin texture it
+// reads this instead; a missing file falls back to the GLB's map.
 // hat: show the hat parts (the clay rig hides them); a rig without an id map, raw skin or margins
 // (noir has none) passes null for them and draws what its own maps carry
-export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins.png", skinId = "clay", hat = false }) {
+export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false }) {
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(27, W / H, 0.1, 50);
   const lightDir = new THREE.Vector3(-0.35, 0.75, 0.75).normalize();
@@ -86,11 +90,19 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     t.flipY = false; t.colorSpace = THREE.NoColorSpace; t.magFilter = t.minFilter = THREE.LinearFilter;
   });
   const rawP = Promise.all([data(rawSrc), data(marginSrc)]);
+  // the clean skin keeps its mip chain: the shader reads a blurred level of the map for surface the
+  // reference never saw (a bias on the lookup), as it does of the GLB's own
+  const cleanP = !cleanSrc ? Promise.resolve(null) : new Promise((ok) => {
+    const t = new THREE.TextureLoader().load(cleanSrc, () => { t.needsUpdate = true; ok(t); }, undefined, () => ok(null));
+    t.flipY = false; t.colorSpace = THREE.NoColorSpace; t.generateMipmaps = true;
+    t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4;
+  });
 
   // (a rig may ship meshopt-compressed: FaceSV loads the same files)
   rig.ready = new Promise((done) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(src, async (gltf) => {
     const fit = (rig.fit = await fitP);
     const [skinRaw, margins] = await rawP;
+    const cleanSkin = await cleanP;
     // the turnaround atlas (fit.json "mv", 11 Oct, as FaceSV): each part's colour from every
     // side, for the surface the reference never saw. Its sampler MUST be bound: left unbound
     // it read a texture of another type and every clay draw failed (an empty, flat head)
@@ -100,6 +112,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     root.updateMatrixWorld(true);
     const meshes = [];
     root.traverse((o) => { if (o.isMesh) meshes.push(o); });
+    const skinMapTex = meshes.find((o) => o.name === "Skin")?.material?.map || null; // the skin's map (the lids share it)
     for (const o of meshes) {
       const key = partKey(o.name);
       if (key === "Pin" || (!hat && (key === "Hat" || key === "HatBand"))) { o.visible = false; continue; }
@@ -115,7 +128,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
         uniforms: { ...shared, uBase: { value: new THREE.Color(P.base) }, uShade: { value: new THREE.Color(P.shade) }, uDeep: { value: new THREE.Color(P.deep) },
           uSpec: { value: P.spec || 0 }, uIsHair: { value: key === "Hair" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
           uSH: { value: SHv(lit) }, uK: { value: lit.k },
-          uUseMap: { value: map ? 1 : 0 }, uMap: { value: map || blank }, uIsEye: { value: key === "Eye" ? 1 : 0 },
+          uUseMap: { value: map ? 1 : 0 }, uMap: { value: (cleanSkin && map && map === skinMapTex && cleanSkin) || map || blank }, uIsEye: { value: key === "Eye" ? 1 : 0 },
           uFloor: { value: lit.floor ?? 0.03 }, uTexScale: { value: lit.scale ?? 4 }, uTexGamma: { value: lit.gamma ?? 1 },
           uTint: { value: key === "MouthInner" ? (fit.mono ? new THREE.Vector3().setScalar(0.2) : new THREE.Vector3(0.32, 0.16, 0.14)) : new THREE.Vector3().setScalar(crease && !map ? 0.8 : 1) },
           uRestNM: { value: new THREE.Matrix3().setFromMatrix4(cam.matrixWorldInverse.clone().multiply(o.matrixWorld)) },

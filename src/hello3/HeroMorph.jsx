@@ -303,7 +303,7 @@ export default function HeroMorph({ ready }) {
         const to = style === "clay" ? "noir" : "clay";
         if (to === "noir") await mm.MR.loadNoir();
         if (!alive) return;
-        if (em) { em.gen++; em.busy = true; } // an emote in flight stops; none starts meanwhile
+        if (em) em.pause(); // the performance stops (and resets) while the head turns
         const glc = mm.MR.renderer.domElement;
         if (reduce || toLight) {
           cv.style.transition = "opacity 140ms linear";
@@ -343,7 +343,7 @@ export default function HeroMorph({ ready }) {
         cv.style.filter = "";
         if (!reduce) cv.style.opacity = "";
         btn.removeAttribute("aria-busy");
-        if (em) em.busy = false;
+        if (em) em.unpause();
         syncTheme(); // the theme may have changed during a turn
       }
     };
@@ -365,43 +365,60 @@ export default function HeroMorph({ ready }) {
     // one on hover in place of the wave. Each frame is the timeline's last frame with the
     // emote's pose on top; nothing draws between emotes. The framing does not move.
     let em = null;
+    // THE PERFORMANCE (Agam, 2026-10-12: "a little more dramatic... more dynamic and complex
+    // movement of the face itself"). figures/faces/morph/emoteEngine.js: springs on every channel,
+    // anticipation, overlapping action, chains, and an ambient layer (breathing, sway, eye darts,
+    // blinks). One loop drives it: about 60 fps while an emote plays, about 25 at rest for the
+    // ambient layer; it steps back if frames get expensive, stops off-screen or in a hidden tab,
+    // and is paused while the head turns (the click).
     const startEmotes = async (mm, glc) => {
-      const E = await import("../figures/faces/morph/emotes");
+      const EN = await import("../figures/faces/morph/emoteEngine");
       if (!alive || m !== mm) return;
-      em = { busy: false, seen: true, timers: [], gen: 0 };
-      const pick = (a) => a[Math.floor(Math.random() * a.length)];
-      const play = (name) => {
-        if (!em || em.busy || !m) return;
-        em.busy = true;
-        const g = em.gen;
-        const [dur, frames] = E.EMOTES[name];
+      const engine = EN.createEmoteEngine();
+      em = { engine, paused: false, seen: true, raf: 0, last: 0, cost: 0, gap: 40, timers: [], lastName: "" };
+      const pick = (pool) => { let n; do { n = pool[(Math.random() * pool.length) | 0]; } while (n === em.lastName && pool.length > 1); em.lastName = n; return n; };
+      const loop = (now) => {
+        if (!em) return;
+        em.raf = 0;
+        if (!alive || em.paused || m !== mm) return;
+        if (document.hidden || !em.seen) { em.last = 0; return; } // resumes on visibility / intersection
+        const playing = engine.active();
+        if (!playing && em.cost > 40) { em.last = 0; return; } // too heavy for the ambient layer: rest until the next emote
+        if (em.last && now - em.last < (playing ? 14 : em.gap)) { em.raf = requestAnimationFrame(loop); return; }
+        const dt = em.last ? Math.min(50, now - em.last) : 16;
+        em.last = now;
         const t0 = performance.now();
-        const tick = () => {
-          if (!alive || !em || !m || em.gen !== g) return; // a click took over (spin below)
-          const k = Math.min(1, (performance.now() - t0) / dur);
-          m.renderAt(1, E.toPose(E.sample(frames, k)));
-          blit(glc);
-          if (k < 1) raf = requestAnimationFrame(tick);
-          else em.busy = false;
-        };
-        raf = requestAnimationFrame(tick);
+        mm.renderAt(1, EN.toPose(engine.tick(dt, mm.MR.rigName)));
+        blit(glc);
+        em.cost = em.cost * 0.9 + (performance.now() - t0) * 0.1;
+        if (!playing) em.gap = em.cost > 22 ? 120 : em.cost > 10 ? 80 : 40;
+        em.raf = requestAnimationFrame(loop);
       };
-      const io = new IntersectionObserver(([e]) => { if (em) em.seen = e.isIntersecting; });
+      const resume = () => { if (em && !em.raf && !em.paused && alive && !document.hidden && em.seen) { em.last = 0; em.raf = requestAnimationFrame(loop); } };
+      em.pause = () => { if (!em) return; em.paused = true; cancelAnimationFrame(em.raf); em.raf = 0; engine.reset(); };
+      em.unpause = () => { if (!em) return; em.paused = false; resume(); };
+      const play = (name, opts) => { if (!em || em.paused || !m) return; if (engine.play(name, opts)) resume(); };
+      const io = new IntersectionObserver(([e]) => { if (em) { em.seen = e.isIntersecting; if (em.seen) resume(); } });
       io.observe(cv);
+      const onVis = () => resume();
+      document.addEventListener("visibilitychange", onVis);
       const idle = () => {
         em.timers.push(setTimeout(() => {
           if (!em) return;
-          if (!document.hidden && em.seen) play(pick(E.IDLE));
+          if (!document.hidden && em.seen) play(pick(EN.IDLE));
           idle();
         }, 8000 + Math.random() * 7000));
       };
-      em.timers.push(setTimeout(() => play(E.FIRST), 450));
+      em.timers.push(setTimeout(() => play(EN.FIRST), 450));
       idle();
-      const onEnter = () => play(pick(E.HOVER));
+      resume(); // the ambient layer starts at once
+      const onEnter = () => play(pick(EN.HOVER), { quick: true });
       wrap.addEventListener("mouseenter", onEnter);
       em.stop = () => {
         em.timers.forEach(clearTimeout);
+        cancelAnimationFrame(em.raf);
         io.disconnect();
+        document.removeEventListener("visibilitychange", onVis);
         wrap.removeEventListener("mouseenter", onEnter);
         em = null;
       };
