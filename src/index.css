@@ -8773,3 +8773,13 @@ html .page--article .article__body .rv--final h2.rv__label { display: block; wid
 .article__body .tldr-b::before { content: "•"; position: absolute; left: 0.1em; }
 .article__body .tldr-b { font-size: 1.0625rem; line-height: 1.45; font-weight: 400; margin-top: 0.55em; }
 .article__body .tldr-b::before { font-size: 1.1em; }
+
+/* mv5iv45m: the three metrics, centred under the final My role: icon above, figure, small description, three across */
+.rv--final .rv-map__rows { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; text-align: center; }
+.rv--final .rv-map__rows > div { grid-template-columns: minmax(0, 1fr); justify-items: center; row-gap: 0.4rem; }
+.rv--final .rv-map__rows > div > .role-frame__icon { grid-row: auto; }
+.rv--final .rv-map__rows > div > dt, .rv--final .rv-map__rows > div > dd { grid-column: 1; align-self: auto; }
+html .page--article .article__body .rv--final .rv-map__rows dt { white-space: normal; }
+@media (max-width: 700px) { .rv--final .rv-map__rows { grid-template-columns: 1fr; } }
+.rv--final .rv-map__rows > div { align-self: start; align-items: start; }
+.rv--final .rv-map__rows { align-items: start; }

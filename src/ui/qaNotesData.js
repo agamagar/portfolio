@@ -42,16 +42,6 @@ export const QA_NOTES = [
       "The Figma file (Schedule Order Handoff, 71cZSn…) is private to your personal account, so the embed renders a white screen and the new link button lands on Figma sign-in for anyone else. Either share the file as “anyone with the link can view”, or point the link at a public copy. Production builds already fall back to the still.",
   },
   {
-    id: "banner-twice",
-    route: "/work/scheduled-delivery",
-    status: "open",
-    sel: ".article__plates",
-    corner: "left", // the plate-link pin already holds this row's right corner
-    title: "The banner phone appears twice",
-    detail:
-      "The go-to-market banner phone is in this restored row and again in The go-to-market section. Keep one. Also: the left phone is cropped at the bottom and the right one at the top, so the pair does not sit on one line.",
-  },
-  {
     id: "role-options",
     route: "/work/scheduled-delivery",
     status: "open",

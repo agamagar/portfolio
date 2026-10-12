@@ -2004,13 +2004,11 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    with a small people icon before the label that bobs in sequence when the bubbles pop in */
 .rwf.rwf--stack.rwf--left { justify-items: start; text-align: left; }
 .rwf--left .rwf__main { align-items: flex-start; width: 100%; }
-.page--article .article__body .rwf-run .rwf--left p.rwf__tag { display: inline-flex; align-items: center; gap: 0.5rem; }
-.rwf__tag-icon { width: 1.35em; height: 1.35em; flex: none; color: #5b3fd1; transform-origin: 50% 80%; opacity: 0; }
-:root.dark .rwf__tag-icon { color: #b69cea; }
-.rwf[data-dio-pop="on"] .rwf__tag-icon { opacity: 1; animation: rwf-people 1.1s cubic-bezier(0.2, 0.9, 0.3, 1.2) both, rwf-people-bob 3.2s ease-in-out 1.2s infinite; }
-@keyframes rwf-people { 0% { opacity: 0; transform: scale(0.5) translateY(6px); } 60% { opacity: 1; transform: scale(1.12) translateY(-2px); } 100% { opacity: 1; transform: none; } }
-@keyframes rwf-people-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px) rotate(-3deg); } }
-@media (prefers-reduced-motion: reduce) { .rwf__tag-icon { opacity: 1; animation: none !important; } }
+/* mv5iv45e: the draw-on icon above the label takes the page ink (the insight figure's own colours) */
+.rwf--left .sin__icon--draw { color: #33095e; }
+:root.dark .rwf--left .sin__icon--draw { color: #b69cea; }
+.rwf--left { row-gap: 2rem; }
+.rwf--left > .rwf__tag, .rwf--left > .sin__icon { margin: 0; }
 
 /* mv5969ed (12 Oct, "make these cards a little bigger... icon and heading equal sizes... hide the stroke for now"):
    the phase cards on the rail (PhaseGlassRail) are ~14% bigger (font 11 -> 12.5px, height 35 -> 40px, padding 9/12 -> 10/15),
@@ -2040,3 +2038,11 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rwf--tabs .rwf-tabs__side { justify-items: center; width: 100%; }
 .rwf--tabs .rwf-tabs { justify-content: center; }
 .rwf--tabs .rwf-tabs__sidefig { text-align: left; width: 100%; } /* the review thread and other figures keep their own alignment */
+
+/* mv5isxgx (12 Oct): the label, the title and the steps are one wrapper (the tab bar and the figures follow it, as before) */
+.rwf-tabs__intro { display: grid; gap: 1.25rem; width: 100%; justify-items: center; text-align: center; min-width: 0; }
+.rwf-tabs__intro > .rwf-tabs__stack { width: 100%; }
+
+/* mv5iv45c: the team emoji before each name: same size as the name, on the text baseline, a hair of space */
+.dio__emoji { font-size: 1em; line-height: 1; margin-right: 0.45em; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.rwf--left > .sin__icon { margin-left: 7.94%; } /* the icon starts on the label's left edge */

@@ -23,7 +23,7 @@ const COLS = [
 // its dash offset runs 1 -> 0, one stroke after another, when the frame comes
 // into view. Inlined (they were CSS masks, which cannot animate per stroke);
 // the stroke is currentColor so the theme ink still applies.
-function DrawIcon({ src }) {
+export function DrawIcon({ src }) { // exported (mv5iv45e): the "Who I worked with" header uses the same draw-on icon
   const ref = useRef(null);
   const [svg, setSvg] = useState("");
   const uid = useId();

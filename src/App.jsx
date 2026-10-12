@@ -1034,11 +1034,17 @@ function RoleScopeMap({ s, i }) {
           <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.join(", ")}</li>
         </ul>
       </div>
+      {/* mv5iv45m (12 Oct, "there were three metrics with icons and small descriptions: bring them back"): the stats are
+          back (roleFrame.hideMapStats is off) as the icon rows, centred under the map, three across. The outlined
+          box that repeated the same numbers stays parked (roleFrame.hideMapFoot). */}
       {!s.roleFrame.hideMapStats && (
         <>
-          <dl className="rv-map__foot">
-            {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
-          </dl>
+          {s.roleFrame.hideMapFoot !== false && null}
+          {s.roleFrame.hideMapFoot === false && (
+            <dl className="rv-map__foot">
+              {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
+            </dl>
+          )}
           <dl className="rv-map__rows">
             {ROLE_STATS.map(([big, small]) => { const I = STAT_ICON[big]; return (
               <div key={big}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}<dt>{big}</dt><dd>{small}</dd></div>
@@ -2316,7 +2322,8 @@ export const caseStudies = {
         roleFrame: {
           stats: false, // mv2lfboc put ROLE_STATS under the leadership points; mv58by9f (12 Oct) moved them into My role Option 3 (RoleScopeMap, .rv-map__rows)
           hideFrame: true, // mv594ats (12 Oct, "hide this section"): the My role frame is parked; the scope map (Option 3) is now the final My role. Delete to bring the frame back
-          hideMapStats: true, // mv5939z4 + mv58by9f: the scope map's outlined stats box and icon rows are parked
+          hideMapStats: false, // mv5939z4 parked the scope map's stats; mv5iv45m (12 Oct) brought them back as the icon rows
+          hideMapFoot: true, // the outlined box that repeated them stays parked (set to false to show it)
           hideEditorial: true, // mv4hab0z (12 Oct, "hide this"): Option 1 (RoleEditorial) parked; delete this line to bring it back
           hideCard: true, // mv4h93kq (12 Oct, "hide this"): Option 2 (RoleCard) parked; delete this line to bring it back
           options: true, // mv2mooey: three reimagined copies under the original (RoleEditorial, RoleScopeMap, RoleCard)

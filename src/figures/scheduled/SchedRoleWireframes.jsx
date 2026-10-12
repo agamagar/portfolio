@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { animate as motionAnimate } from "motion";
+import { DrawIcon } from "./SchedInsight"; // mv5iv45e: the insight header's own draw-on stroke icon
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
@@ -513,6 +515,9 @@ function peopleRows(pin, lines) {
   });
   return { rows, count: `${n} ${n === 1 ? "person" : "people"}` };
 }
+// mv5iv45c: Product 📋 (the spec and the roadmap), Design 🎨, Content ✍️ (the words), Engineering and QA 🛠️ (build and test),
+// Supply chain 🚚 (the hubs and the rides), Leadership 🧭 (direction), Users 👥 (the validation study)
+const TEAM_EMOJI = { Product: "📋", Design: "🎨", Content: "✍️", "Engineering and QA": "🛠️", "Supply chain": "🚚", Leadership: "🧭", Users: "👥" };
 function Diorama({ d, groups }) {
   const people = (g) => d.pins.find((p) => p.g === g)?.people || groups.find(([n]) => n === g)?.[1] || [];
   // mv58al39 (12 Oct, "all the bubbles should have an animation as well, popping into view once this section
@@ -543,7 +548,8 @@ function Diorama({ d, groups }) {
             onMouseEnter={() => feedbackCoalesced("reveal", 250)} onFocus={() => feedbackCoalesced("reveal", 250)}
             style={{ ...(p.x > 60 ? { right: `${100 - p.x}%`, top: `${p.y}%` } : { left: `${p.x}%`, top: `${p.y}%` }), "--pop": order.indexOf(p.g) }} aria-label={`${p.g}: ${people(p.g).join(", ")}`}>
             {/* muk1dz9x: numbers removed, the tag names the zone */}
-            <span className="dio__tag">{p.g}</span>
+            {/* mv5iv45i (12 Oct): one emoji per team, before its name; aria-hidden, the name says the team */}
+            <span className="dio__tag">{TEAM_EMOJI[p.g] && <span className="dio__emoji" aria-hidden="true">{TEAM_EMOJI[p.g]}</span>}{p.g}</span>
             {(() => {
               const { rows, count } = peopleRows(p, people(p.g));
               return (
@@ -710,6 +716,22 @@ export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
 function Slide({ s: s0, embedded, compact, noCad, part }) {
   const s = part === "side" ? pickSide(s0) : part === "main" ? omitSide(s0) : s0;
+  // mv5iv45e: the vertical header rises in (opacity + 28px, label then title) when its section is a quarter in view, as
+  // the insight figure's lines do
+  const headRef = useRef(null);
+  useEffect(() => {
+    const el = headRef.current;
+    if (!s.left || !el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const items = [...el.querySelectorAll(".rwf__tag, .rwf__title")];
+    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] }, { duration: 0.7, delay: 0.1 + k * 0.1, ease: [0.22, 1, 0.36, 1] }));
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [s.left]);
   const body = (
       <div className="rwf__main">
         {s.title && <h3 className="rwf__title">{s.title}</h3>}
@@ -828,12 +850,12 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
   // `embedded` (mukq4l29): just the body, for a tab panel inside another section
   if (embedded) return body;
   return (
-    <section className={"rwf" + (s.stack ? " rwf--stack" : "") + (s.left ? " rwf--left" : "")} aria-label={s.tag}>
-      <p className="rwf__tag">
-        {/* mv592iwg: three people, bobbing in sequence once the bubbles pop in (the diorama sets data-dio-pop on this section) */}
-        {s.left && <UsersThree className="rwf__tag-icon" weight="fill" aria-hidden="true" />}
-        {s.tag}
-      </p>
+    <section ref={headRef} className={"rwf" + (s.stack ? " rwf--stack" : "") + (s.left ? " rwf--left" : "")} aria-label={s.tag}>
+      {/* mv5iv45e (12 Oct): "Who I worked with" is a vertical header like the Central question and the Key finding:
+          the stroke icon above (the same 64px, 3px-stroke line style, drawn on as it scrolls in), then the label,
+          then the title, which rise in the same way */}
+      {s.left && <DrawIcon src="/figures/scheduled/insight/icon-team.svg" />}
+      <p className="rwf__tag">{s.tag}</p>
       {body}
     </section>
   );
@@ -866,21 +888,24 @@ function LeadingWithDesign() {
   };
   return (
     <section className="rwf rwf--tabs" aria-label="Leading with design">
-      <p className="rwf__tag">Leading with design</p>
+      {/* mv5isxgx (12 Oct, "put this heading and the five steps text below it in one div"): the label, the title and the steps are ONE wrapper, so they lay out, centre and space as a unit; the figures and the tab bar follow it */}
+      <div className="rwf-tabs__intro">
+        <p className="rwf__tag">Leading with design</p>
+        <div className="rwf-tabs__stack">
+          {slides.map((sl, i) => sl && (
+            <div key={sl.tag} className="rwf-tabs__panel" role="tabpanel" id={`lwd-panel-${i}`} aria-labelledby={`lwd-tab-${i}`}
+              data-on={on === i ? "true" : undefined} aria-hidden={on !== i} inert={on !== i ? "" : undefined}>
+              <Slide s={sl} embedded compact part="main" />
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="rwf__tabwrap">
         {/* mukq87g4 (28 Sep): all five panels share ONE grid cell and only the
             active one is visible, so the section is always as tall as the
             tallest tab and never changes height when you switch */}
         {/* mv4hfar5 (12 Oct, "add this to the column on the left"): the tab list moved into the LEFT column as a pill row; mv4hj2c7 ("move this down"): now at the BOTTOM of it, under the panels it switches; the right column keeps the figures */}
         <div className="rwf-tabs__left">
-          <div className="rwf-tabs__stack">
-            {slides.map((sl, i) => sl && (
-              <div key={sl.tag} className="rwf-tabs__panel" role="tabpanel" id={`lwd-panel-${i}`} aria-labelledby={`lwd-tab-${i}`}
-                data-on={on === i ? "true" : undefined} aria-hidden={on !== i} inert={on !== i ? "" : undefined}>
-                <Slide s={sl} embedded compact part="main" />
-              </div>
-            ))}
-          </div>
           <div className="rwf-tabs" role="tablist" aria-label="Leading with design" aria-orientation="horizontal" onKeyDown={key}>
             {LEAD_GROUP.map(([label], i) => (
               <button key={label} type="button" role="tab" id={`lwd-tab-${i}`} aria-controls={`lwd-panel-${i}`}
