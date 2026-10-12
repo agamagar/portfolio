@@ -69,5 +69,13 @@ fit = {
     "ids": json.load(open(os.path.join(os.path.dirname(TEX), "passes", "meshes.json"))),
     "note": "fitted to public/faces/ref-clay.webp by tools/face3d/fit (camera, SH light per part in view space, AO^k)",
 }
+# the lids' flat normals and each part's median surface colour, as albedo2 wrote them: FaceSV
+# lights a lid with its eye's flat normal (without it a blink draws grey domes) and paints the
+# surface a turn reveals in the part's colour. (2026-10-12: these were merged by hand before;
+# the shipped clay and felt jsons carry the same numbers.)
+for key, name in (("lids", "lids.json"), ("ratioMean", "means.json")):
+    f = os.path.join(TEX, name)
+    if os.path.exists(f):
+        fit[key] = json.load(open(f))
 json.dump(fit, open(OUTJ, "w"), indent=1)
 print("FINAL", OUTG, OUTJ)

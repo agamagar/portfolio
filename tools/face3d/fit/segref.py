@@ -30,7 +30,7 @@ for i in range(1, n + 1):
     if i == big or sizes[i - 1] < 300:
         continue
     ys, xs = np.where(lbl == i)
-    h, w = ys.ptp() + 1, xs.ptp() + 1
+    h, w = np.ptp(ys) + 1, np.ptp(xs) + 1
     fill = len(ys) / (h * w)
     cy, cx = ys.mean(), xs.mean()
     kind = "?"

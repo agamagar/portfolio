@@ -4,7 +4,8 @@
 // render resolution. Everything else (rig, emotes, bounce) is shared, so switching a skin
 // mid-bounce is just a uniform change.
 //
-// Props (Hat, HatBand, Pin) are hidden unless a skin lists them in `props`; `keys` holds
+// Props (Hat, HatBand, Pin) are hidden unless a skin lists them in `props` (and, once a fitted rig
+// is worn, unless the fit textured them: riso's pin is in its tile's texture, noir's hat is fitted); `keys` holds
 // shape-key weights a skin always wears (noir: hatCompress, the hair pressed under the hat).
 // Parts: Skin (and the lids), Hair, Eye, Brow, Mouth, MouthInner. Each gets base (lit),
 // shade (turning away) and deep (core shadow). `spec` is the gloss on that part.
@@ -38,7 +39,7 @@ export const SKINS = [
     // its own fitted rig (tools/face3d/fit/noir): the head under a fedora fitted to the noir
     // tile, with that tile's light and surface; the rain behind and the coat collar in
     // front are flat layers cut from the tile. Until the rig loads, the mode above draws it.
-    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
+    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", idmap: "/faces/idmap-noir.png", turnOnly: true, depth: "/faces/depth-noir.png", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
     outline: null,
   },
   {
@@ -48,6 +49,10 @@ export const SKINS = [
       Eye: P("#1a1410", "#1a1410", "#1a1410"), Brow: P("#1a1410", "#1a1410", "#1a1410"),
       Mouth: P("#1a1410", "#1a1410", "#1a1410"), MouthInner: P("#7a1e14", "#5c140c", "#3c0c06"),
     },
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the hose tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-hose.glb", fit: "/faces/fit-hose.json", idmap: "/faces/idmap-hose.png", depth: "/faces/depth-hose.png", raw: "/faces/skin-raw-hose.png",
+      margins: "/faces/margins-hose.png", plates: { back: "/faces/hose-back.webp" } },
     outline: { ink: "#1a1410", width: 3.4, small: 1.8 },
   },
   {
@@ -57,6 +62,10 @@ export const SKINS = [
       Eye: P("#24160f", "#24160f", "#24160f", 1), Brow: P("#3f2416", "#2c180e", "#2c180e"),
       Mouth: P("#a4503f", "#83392b", "#83392b"), MouthInner: P("#5a1e18", "#43150f", "#2c0c08"),
     },
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the cel tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-cel.glb", fit: "/faces/fit-cel.json", idmap: "/faces/idmap-cel.png", depth: "/faces/depth-cel.png", raw: "/faces/skin-raw-cel.png",
+      margins: "/faces/margins-cel.png", plates: { back: "/faces/cel-back.webp" } },
     outline: { ink: "#3a2116", width: 1.7, small: 1.1 },
   },
   {
@@ -66,6 +75,10 @@ export const SKINS = [
       Eye: P("#150f0d", "#150f0d", "#0a0706", 1), Brow: P("#33190f", "#24110a", "#170a05"),
       Mouth: P("#d3a07f", "#b78364", "#8d5f47", 0.1), MouthInner: P("#561b15", "#40130e", "#2a0b07"),
     },
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the claySun tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-claySun.glb", fit: "/faces/fit-claySun.json", idmap: "/faces/idmap-claySun.png", depth: "/faces/depth-claySun.png", raw: "/faces/skin-raw-claySun.png",
+      margins: "/faces/margins-claySun.png", plates: { back: "/faces/claySun-back.webp" } },
     outline: null,
   },
   {
@@ -75,6 +88,10 @@ export const SKINS = [
       Eye: P("#1e120a", "#1e120a", "#1e120a"), Brow: P("#3b2010", "#3b2010", "#3b2010"),
       Mouth: P("#7c3b22", "#7c3b22", "#5a2814"), MouthInner: P("#4a1a10", "#3a120a", "#2a0c06"),
     },
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the pixel tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-pixel.glb", fit: "/faces/fit-pixel.json", idmap: "/faces/idmap-pixel.png", depth: "/faces/depth-pixel.png", raw: "/faces/skin-raw-pixel.png",
+      margins: "/faces/margins-pixel.png", plates: { back: "/faces/pixel-back.webp" } },
     outline: { ink: "#2a1608", width: 1, small: 0.6 },
   },
   {
@@ -87,7 +104,7 @@ export const SKINS = [
     // its own fitted rig (tools/face3d/fit/felt): the clay form re-fitted to the felt tile
     // (knit.png), with that tile's camera, light and surface (its raw skin, margins and id
     // map as clay has them); the red backdrop with the head painted out sits behind.
-    rig: { src: "/faces/face-felt.glb", fit: "/faces/fit-felt.json", idmap: "/faces/idmap-felt.png", raw: "/faces/skin-raw-felt.png",
+    rig: { src: "/faces/face-felt.glb", fit: "/faces/fit-felt.json", idmap: "/faces/idmap-felt.png", depth: "/faces/depth-felt.png", raw: "/faces/skin-raw-felt.png",
       margins: "/faces/margins-felt.png", plates: { back: "/faces/felt-back.webp" } },
     outline: null,
   },
@@ -98,6 +115,10 @@ export const SKINS = [
       Eye: P("#cfc7b8", "#a59c8d", "#6f675b"), Brow: P("#ddd6c9", "#aea595", "#777064"),
       Mouth: P("#d9d1c3", "#aaa192", "#726a5e"), MouthInner: P("#8a8174", "#6c6458", "#4c463d"),
     },
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the stone tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-stone.glb", fit: "/faces/fit-stone.json", idmap: "/faces/idmap-stone.png", depth: "/faces/depth-stone.png", raw: "/faces/skin-raw-stone.png",
+      margins: "/faces/margins-stone.png", plates: { back: "/faces/stone-back.webp" } },
     outline: null,
   },
   {
@@ -109,6 +130,10 @@ export const SKINS = [
       Pin: P("#1b1a19", "#1b1a19", "#1b1a19"),
     },
     props: ["Pin"],
+    // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the riso tile,
+    // with that tile's camera, light and surface, and its backdrop with the head painted out
+    rig: { src: "/faces/face-riso.glb", fit: "/faces/fit-riso.json", idmap: "/faces/idmap-riso.png", depth: "/faces/depth-riso.png", raw: "/faces/skin-raw-riso.png",
+      margins: "/faces/margins-riso.png", plates: { back: "/faces/riso-back.webp" } },
     outline: { ink: "#1b1a19", width: 1.4, small: 1, misreg: "#e0368f" },
   },
   {
@@ -138,9 +163,14 @@ export const VERT = /* glsl */ `
 #include <color_pars_vertex>
 // how squarely this point faced the fitted camera at rest (the reference only shows those)
 uniform mat3 uRestNM;
+// the fitted camera's view at rest: how far from it this point sat (tested against the rig's depth map)
+uniform mat4 uRestMV;
+varying float vRestZ;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
+// the (morphed) normal in the fitted camera's frame at rest: where the reference's light was fitted
+varying vec3 vRN;
 void main(){
   #include <color_vertex>
   vUv = uv;
@@ -153,6 +183,8 @@ void main(){
   #include <morphtarget_vertex>
   vec4 mv = modelViewMatrix * vec4(transformed,1.0);
   vN = normalize(normalMatrix * objectNormal);
+  vRN = uRestNM * objectNormal;
+  vRestZ = -(uRestMV * vec4(transformed, 1.0)).z;
   vV = normalize(-mv.xyz);
   vMV = mv.xyz;
   vP = (modelMatrix * vec4(transformed,1.0)).xyz;
@@ -166,11 +198,17 @@ uniform vec3 uSH[9], uTint; uniform float uK, uUseMap, uIsEye, uFloor, uTexScale
 uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
 uniform sampler2D uMapRaw, uMargin; uniform float uHasRaw; uniform vec3 uActs;
 // which part the reference shows at each pixel (id = part * 2 + layer + 1), and who this is
-uniform sampler2D uIdMap; uniform float uPartId, uLayered; uniform vec2 uIdRes;
+uniform sampler2D uIdMap; uniform float uPartId, uLayered, uTurnOnly; uniform vec2 uIdRes;
 // the surface colour from every side: an albedo atlas baked from the turnaround views (tools/face3d/fit/mv)
 uniform sampler2D uMV; uniform float uHasMV;
+// what the reference shows of this part: its median colour (linear) and its light's mean luminance
+// (fit.json "seen", tools/face3d/fit/ratiomean.py); 0 = none
+uniform vec3 uSeenRad; uniform float uSeenLum;
+// the rig's depth at rest (tools/face3d/fit/idmap, MODE=depth): view-space distance over [4.5, 10]
+uniform sampler2D uDepth; uniform float uHasDepth;
+varying float vRestZ;
 #include <color_pars_fragment>
-varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
+varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
 vec3 shEval(vec3 n){
   return uSH[0] * 0.282095 + uSH[1] * 0.488603 * n.y + uSH[2] * 0.488603 * n.z + uSH[3] * 0.488603 * n.x
@@ -239,6 +277,27 @@ void main(){
         hits += step(abs(idv - want), 0.5);
       }
       seen = hits / 9.0;
+      // a rig refined without an id map (noir: its map was made later, for turns) keeps its
+      // rest look: the map only gates a turned head
+      if (uTurnOnly > 0.5) seen = mix(1.0, seen, uTurn);
+      // once turned, was this very point the one the reference showed, or something behind it?
+      // (a shadow-map test against the rest depth: the far ear sits behind the face at the same
+      // projected spot, both skin, which the id map alone can't tell apart). At rest: no effect
+      if (uHasDepth > 0.5 && uTurn > 0.0) {
+        float z = 4.5 + texture2D(uDepth, puv).r * 5.5;
+        seen *= mix(1.0, 1.0 - smoothstep(0.05, 0.12, vRestZ - z), uTurn);
+      }
+      // texels on the reference's silhouette hold some backdrop (its anti-aliased edge): right at
+      // rest, a coloured streak once a turn shows that surface from the side. Turned, a texel
+      // within 3 px of the backdrop is not trusted
+      if (uTurn > 0.0) {
+        float bgHits = 0.0;
+        for (int i = 0; i < 4; i++) {
+          vec2 o = vec2(i == 0 ? 3.0 : i == 1 ? -3.0 : 0.0, i == 2 ? 3.0 : i == 3 ? -3.0 : 0.0);
+          bgHits += step(texture2D(uIdMap, puv + o / uIdRes).r * 255.0, 0.5);
+        }
+        seen *= 1.0 - uTurn * step(0.5, bgHits);
+      }
     }
     // where it wasn't, use the part's local colour: a heavily blurred (mip) read of its own
     // texture, so a turn reveals plausible surface with no seam against the textured part
@@ -248,6 +307,10 @@ void main(){
     // (the part's median colour from the fit; without one, the texture's smallest mip)
     vec3 whole = uRatioMean.x > 0.0 ? uRatioMean
       : uUseMap > 0.5 ? pow(texture2D(uMap, vUv, 12.0).rgb, vec3(uTexGamma)) * uTexScale : vec3(1.0);
+    // the blur reads whatever the reference showed at the projected spot: on a surface it never
+    // saw (the far temple behind the nose) that is another part's texels, amplified by this
+    // part's scale (noir's hair stores up to 276x): keep it near the part's own colour
+    if (uRatioMean.x > 0.0) local = clamp(local, whole * 0.33, whole * 3.0);
     local = mix(whole, local, smoothstep(0.0, 0.3, vSeen)); // hidden and facing away (the nose's underside): the part's colour, not a blur of its neighbours
     // with the turnaround atlas, the surface's own colour from the views that saw it: wherever
     // the reference never saw it, and everywhere once the head has turned away (at rest, a
@@ -261,11 +324,33 @@ void main(){
     // would stretch into streaks once the head turns
     // turned away from the fitted pose, surfaces that were edge-on at rest fade to plain clay too
     float turnGate = mix(1.0, smoothstep(0.3, 0.75, vSeen), uTurn);
-    ratio = mix(local, ratio, smoothstep(0.05, 0.35, seen) * smoothstep(0.0, 0.2, vSeen) * turnGate);
+    float trust = smoothstep(0.05, 0.35, seen) * smoothstep(0.0, 0.2, vSeen) * turnGate;
     // the light never drops below a floor (the texture maker uses the same one), so a
     // grazing edge keeps its colour instead of clipping to black
+    // The texture is the reference's colour divided by the light it was fitted under, so the
+    // textured surface keeps THAT light, with its normal as the fitted camera saw it (the
+    // light turns with the head). Lit by the view instead, a cheek the reference showed in
+    // shadow (a high ratio) blew out to white once a turn brought it round to face the light
+    // (noir, felt). Surface the reference never saw takes the view's light on its part colour.
+    // (At rest the two normals are the same.)
+    float occ = pow(max(ao, 1e-3), uK);
     vec3 nl = uFlat > 0.0 ? normalize(mix(n, uFlatN, uFlat)) : n;
-    col = max(max(shEval(nl), 0.0) * pow(max(ao, 1e-3), uK), vec3(uFloor)) * ratio * uTint;
+    vec3 nr = normalize(vRN);
+    if (uFlat > 0.0) nr = normalize(mix(nr, uFlatN, uFlat));
+    vec3 litView = max(max(shEval(nl), 0.0) * occ, vec3(uFloor));
+    vec3 litRest = max(max(shEval(nr), 0.0) * occ, vec3(uFloor));
+    // (with "seen": the revealed surface in the colour the reference shows of the part, shaded by
+    // the view light's brightness only; the fitted light's hue swings with direction, and read off
+    // at a new normal it tinted a turned head orange or red)
+    vec3 unseen = litView * local;
+    // (only as the head turns: at rest the fit's own refinement saw the plain blend)
+    if (uSeenLum > 0.0 && uHasMV < 0.5 && uTurn > 0.0) {
+      // (the blur's variation about the part's colour, gently: on surface the reference never
+      // saw it reads other parts' texels, and at full strength streaked noir's far ear)
+      vec3 rel = uRatioMean.x > 0.0 ? clamp(local / max(whole, vec3(1e-3)), 0.7, 1.4) : vec3(1.0);
+      unseen = mix(unseen, uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel, uTurn);
+    }
+    col = mix(unseen, litRest * ratio, trust) * uTint;
     if (uIsEye > 0.5 && uUseMap < 0.5) {
       // a glossy bead (when there is no fitted texture): the dark base and a sharp window highlight up and to the left
       col = uBase + vec3(1.0) * pow(max(dot(n, normalize(vec3(-0.45, 0.6, 0.75))), 0.0), 220.0) * 1.6;

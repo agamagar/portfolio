@@ -8,15 +8,18 @@ const page = await browser.newPage({ viewport: { width: 760, height: 980 }, devi
 page.on("console", (m) => { if (m.type() === "error" && !/4747|Agentation|CORS|Failed to load resource/.test(m.text())) console.log("console:", m.text()); });
 await page.goto(`http://localhost:${port}/?skin=${skin}`, { timeout: 240000 });
 await page.waitForFunction(() => document.querySelector(".face-sv")?.__face, null, { timeout: 240000 });
-await page.waitForTimeout(9000);
+await page.waitForTimeout(Number(process.env.SNAP_WAIT || 9000)); // (SNAP_WAIT: longer, for a build without state())
 const png = await page.evaluate(async ([skin, pose, k]) => {
   const f = document.querySelector(".face-sv").__face;
   f.applySkin(skin); f.pose(pose, Number(k));
+  // a skin with its own rig: wait until that rig is drawing (a loaded machine parses the GLB slowly,
+  // and a snapshot before it lands scores the drawn fallback)
+  for (let i = 0; i < 600 && f.state && !f.state().fitOn; i++) await new Promise((r) => setTimeout(r, 500));
   await new Promise((r) => setTimeout(r, 900));
   return f.snapshot();
 }, [skin, pose, k]);
 const fs = await import("node:fs");
 fs.writeFileSync(out, Buffer.from(png.split(",")[1], "base64"));
-await page.screenshot({ path: out.replace(".png", "_page.png") });
+await page.screenshot({ path: out.replace(".png", "_page.png"), timeout: 120000 }).catch(() => console.log("(page screenshot timed out; the canvas snapshot is written)"));
 await browser.close();
 console.log("ok", out);

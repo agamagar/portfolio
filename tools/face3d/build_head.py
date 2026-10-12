@@ -890,12 +890,15 @@ for eng in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"):
         continue
 scene.render.resolution_x = 900
 scene.render.resolution_y = 1000
+# (FACE3D_NO_PREVIEW=1: skip the preview and pose renders; the fit pipelines only need the
+# model, and on a machine without a GPU each EEVEE render takes a minute)
+PREVIEW = not os.environ.get("FACE3D_NO_PREVIEW")
 scene.render.filepath = os.path.join(OUT, "preview.png")
-bpy.ops.render.render(write_still=True)
+if PREVIEW: bpy.ops.render.render(write_still=True)
 cam.location = (-6.8, -0.4, 0.9)
 cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
 scene.render.filepath = os.path.join(OUT, "preview-side.png")
-bpy.ops.render.render(write_still=True)
+if PREVIEW: bpy.ops.render.render(write_still=True)
 
 # a sheet of expressions (front-ish 3/4), to judge the keys
 POSES = {
@@ -919,7 +922,7 @@ for pose, w in POSES.items():
             for kb in o.data.shape_keys.key_blocks[1:]:
                 kb.value = w.get(kb.name, 0.0)
     scene.render.filepath = os.path.join(OUT, f"pose-{pose}.png")
-    bpy.ops.render.render(write_still=True)
+    if PREVIEW: bpy.ops.render.render(write_still=True)
 for o in bpy.data.objects:
     if o.type == "MESH" and o.data.shape_keys:
         for kb in o.data.shape_keys.key_blocks[1:]:

@@ -16,6 +16,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 import { SKINS, MODES, PROPS, skinById, partKey, VERT, FRAG, OUT_VERT, OUT_FRAG } from "./faceSkins";
 
@@ -119,7 +120,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       // feature's margin lies: at rest the skin shows raw; a margin fades to the clean skin
       // while its feature moves, so nothing is left behind
       // (switched on only once both images have loaded: a missing file means clean skin, never black)
-      let skinRaw = null, margins = null, rawLoaded = 0;
+      let skinRaw = null, margins = null, rawLoaded = 0, depthMap = null;
+      const depthOn = { value: 0 }; // switched on once the depth map has loaded
       const rawMats = [];
       const rawReady = () => { if (++rawLoaded === 2) rawMats.forEach((m) => { m.uniforms.uHasRaw.value = 1; }); };
       if (idMap) {
@@ -128,12 +130,18 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
           t.flipY = false; t.colorSpace = THREE.NoColorSpace; t.magFilter = t.minFilter = filter;
           return t;
         };
+        // the rest depth (optional): which surface the reference showed at each pixel, by distance
+        if (files?.depth) {
+          depthMap = new THREE.TextureLoader().load(files.depth, (t) => { t.flipY = false; t.needsUpdate = true; depthOn.value = 1; });
+          depthMap.flipY = false; depthMap.colorSpace = THREE.NoColorSpace; depthMap.magFilter = depthMap.minFilter = THREE.NearestFilter; depthMap.generateMipmaps = false;
+        }
         if (F.raw && F.margins) {
           skinRaw = data(F.raw, THREE.LinearFilter);
           margins = data(F.margins, THREE.LinearFilter);
         }
       }
-      r.ready = new Promise((done) => new GLTFLoader().load(rsrc, async (gltf) => {
+      // (the fitted rigs ship meshopt-compressed: tools/face3d/fit/tile/pack.sh)
+      r.ready = new Promise((done) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(rsrc, async (gltf) => {
         const fit = (r.fit = await fitP);
         if (!alive) return;
         const root = (r.root = gltf.scene);
@@ -178,11 +186,15 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
                 : new THREE.Vector3().setScalar(crease && !map ? 0.8 : 1) },
               uRestNM: { value: new THREE.Matrix3().setFromMatrix4(rc.matrixWorldInverse.clone().multiply(o.matrixWorld)) },
               // the lids read the skin's texture, so they test against the skin's id
-              uIdMap: { value: idMap }, uIdRes: { value: new THREE.Vector2(802, 862) },
+              uIdMap: { value: idMap }, uIdRes: { value: new THREE.Vector2(802, 862) }, uTurnOnly: { value: files?.turnOnly ? 1 : 0 },
               uPartId: { value: fit?.ids && idMap ? fit.ids.indexOf(o.name.startsWith("Lid") ? "Skin" : o.name) : -1 },
               uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
+              uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
+              uRestMV: { value: rc.matrixWorldInverse.clone().multiply(o.matrixWorld) },
+              uSeenRad: { value: new THREE.Vector3().fromArray(fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
+              uSeenLum: { value: fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
               uMapRaw: { value: o.name === "Skin" ? skinRaw : null }, uMargin: { value: o.name === "Skin" ? margins : null },
               uHasRaw: { value: o.name === "Skin" && skinRaw && rawLoaded === 2 ? 1 : 0 },
               uMV: { value: mv[o.name] && o.geometry.attributes._mvuv ? mv[o.name].t : null },
@@ -195,7 +207,9 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
             vertexShader: OUT_VERT, fragmentShader: OUT_FRAG, side: THREE.BackSide,
             uniforms: { uColor: { value: new THREE.Color() }, uWidth: { value: 1 }, uRes: { value: res }, uShift: { value: new THREE.Vector2() } },
           }));
-          const lines = o.name === "MouthInner" ? [] : [outline(), outline()];
+          // (no ink round the lids: closed, a lid's outline drew a ring round the eye, a ghost
+          // eye, where a drawn blink is just the lid's own edge)
+          const lines = o.name === "MouthInner" || o.name.startsWith("Lid") ? [] : [outline(), outline()];
           lines.forEach((l) => o.add(l));
           if (o.morphTargetDictionary) r.morphs.push(o, ...lines.map((l) => Object.assign(l, { morphTargetDictionary: o.morphTargetDictionary })));
           o.userData.rest = { p: o.position.clone(), s: o.scale.clone(), r: o.rotation.clone() };
@@ -205,9 +219,32 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         root.position.y = NECK; // at rest the whole stack is identity (the fitted textures rely on it)
         r.loaded = true;
         done(r);
+      }, undefined, () => {
+        // a rig that fails to load (offline, a missing file): the skin falls back to its drawn
+        // look on the base rig, and a switch waiting on it goes ahead instead of hanging
+        r.failed = true;
+        done(r);
       }));
       rigs[rsrc] = r;
       return r;
+    };
+    // a rig's GPU side (its geometry, and per rig several 1604 x 862 data textures): cycling
+    // through every skin would otherwise keep all ten on the card. The base rig, the one on
+    // stage and the two most recently worn stay; an older one is let go (worn again, it reloads)
+    const recent = [];
+    const dropRig = (key) => {
+      const r = rigs[key];
+      if (!r?.loaded || r === rig) return;
+      const seen = new Set();
+      r.root.traverse((o) => {
+        if (!o.isMesh) return;
+        o.geometry.dispose();
+        for (const m of [].concat(o.material)) {
+          for (const u of Object.values(m.uniforms || {})) if (u.value?.isTexture && !seen.has(u.value)) { seen.add(u.value); u.value.dispose(); }
+          m.dispose();
+        }
+      });
+      delete rigs[key];
     };
     const useRig = (r) => {
       if (rig === r) return;
@@ -218,6 +255,12 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       if (fit) {
         placeCam(cam, fit);
         baseRoll = 0;
+      }
+      const key = Object.keys(rigs).find((k) => rigs[k] === r);
+      if (key && r !== baseRig) {
+        if (recent.includes(key)) recent.splice(recent.indexOf(key), 1);
+        recent.push(key);
+        while (recent.length > 3) dropRig(recent.shift());
       }
     };
     const baseRig = loadRig(src, fitSrc);
@@ -269,11 +312,13 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     let fitOn = false; // the skin is drawn with its rig's fitted light and textures
     const applySkin = (sk) => {
       skin = sk;
-      const want = sk.rig ? loadRig(sk.rig.src, sk.rig.fit, sk.rig) : baseRig;
+      const own = sk.rig ? loadRig(sk.rig.src, sk.rig.fit, sk.rig) : null;
+      const want = own && !own.failed ? own : baseRig;
       if (want.loaded) useRig(want);
       else want.ready.then(() => { if (skin === sk) applySkin(sk); });
-      fitOn = !!(want.loaded && rig === want && fit && (sk.mode === "fit" || sk.rig));
-      const pr = sk.pixel ? sk.pixel : dpr;
+      fitOn = !!(want.loaded && rig === want && fit && (sk.mode === "fit" || (sk.rig && want === own)));
+      // (a fitted rig draws at full resolution: its texture is the tile's own pixel art)
+      const pr = sk.pixel && !fitOn ? sk.pixel : dpr;
       renderer.setPixelRatio(pr);
       renderer.setSize(W, H);
       res.set(W * pr, H * pr);
@@ -282,13 +327,14 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       shared.uDot.value = 7 * pr;
       for (const s of skinned) {
         const P = sk.parts[s.key] || sk.parts.Skin;
-        if (PROPS.includes(s.key)) s.mesh.visible = !!sk.props?.includes(s.key);
+        if (PROPS.includes(s.key)) s.mesh.visible = !!sk.props?.includes(s.key) && (!fitOn || s.mat.uniforms.uUseMap.value > 0.5);
         s.mat.uniforms.uBase.value.set(P.base);
         if (fitOn && s.key === "Eye" && fit) s.mat.uniforms.uBase.value.setRGB(...fit.eye, THREE.LinearSRGBColorSpace);
         s.mat.uniforms.uShade.value.set(P.shade);
         s.mat.uniforms.uDeep.value.set(P.deep);
         s.mat.uniforms.uSpec.value = P.spec || 0;
-        const ol = sk.outline;
+        // (a fitted rig's texture carries the tile's own ink: no drawn outline on top)
+        const ol = fitOn ? null : sk.outline;
         if (s.ink) {
           s.ink.visible = !!ol;
           s.mis.visible = !!ol?.misreg;
@@ -405,6 +451,10 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       const pool = Object.keys(EMOTES).filter((e) => !["blink", "sad", "angry", "lookAround"].includes(e));
       await emote(pool[Math.floor(Math.random() * pool.length)]);
       busy = false;
+      // whoever switched once will likely switch again (a click, the cycle): fetch the next
+      // skin's rig now, so its turn doesn't wait on the network
+      const after = SKINS[(SKINS.indexOf(skin) + 1) % SKINS.length];
+      if (after.rig && alive) loadRig(after.rig.src, after.rig.fit, after.rig);
     };
     const nextSkin = () => switchSkin(SKINS[(SKINS.indexOf(skin) + 1) % SKINS.length]);
     const emote = async (n) => { if (!reduce() && EMOTES[n]) await play(...EMOTES[n]); };
@@ -421,14 +471,11 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     const pose = (n, k = 0.5) => { held = n && EMOTES[n] ? sample(EMOTES[n][1], k) : null; };
     api.current = { emote, bounce, pose, switchSkin, next: nextSkin, applySkin: (id) => applySkin(skinById(id)),
       // set the drag view directly (radians), for turntable checks
+      // what is on stage, for headless checks: the skin, and whether its fitted rig is drawing
+      state: () => ({ skin: skin.id, fitOn, rig: rig ? Object.keys(rigs).find((k) => rigs[k] === rig) || null : null }),
       setView: (yaw, pitch = 0) => { view.yaw = yaw; view.pitch = pitch; view.vy = view.vp = 0; view.home = false; },
       // a PNG of the face as it stands (renders first, so the drawing buffer is still there)
       snapshot: () => { renderer.render(scene, cam); return renderer.domElement.toDataURL("image/png"); } };
-    let cycleT = 0;
-    if (cycle > 0) {
-      const tick = () => { if (!document.hidden) nextSkin(); cycleT = setTimeout(tick, cycle); };
-      cycleT = setTimeout(tick, cycle);
-    }
     el.__face = api.current; // for headless checks: document.querySelector(".face-sv").__face.pose("grin")
     let n = 0, idleT = 0;
     const idle = () => {
@@ -607,7 +654,6 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       cancelAnimationFrame(raf);
       blur.dispose();
       clearTimeout(idleT);
-      clearTimeout(cycleT);
       rainAnim?.cancel();
       el.removeEventListener("pointerdown", onDown);
       el.removeEventListener("pointermove", onMove);
@@ -620,7 +666,17 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       el.removeChild(backPlate);
       el.removeChild(rain);
     };
-  }, [size, src, skin0, cycle]);
+  }, [size, src, skin0]);
+
+  // the auto-cycle: its own effect, so turning it on or off leaves the face (its skin, its loaded
+  // rigs) as it is; before, it rebuilt the renderer and reset the skin to the first
+  useEffect(() => {
+    if (!(cycle > 0)) return undefined;
+    let t = 0;
+    const tick = () => { if (!document.hidden) api.current?.next(); t = setTimeout(tick, cycle); };
+    t = setTimeout(tick, cycle);
+    return () => clearTimeout(t);
+  }, [cycle]);
 
   return (
     <div ref={host} className="face-sv" title="Click to change style. Drag to turn. Double-click to reset."

@@ -50,3 +50,6 @@ tools/face3d/pose-*.png
 tools/face3d/preview*.png
 tools/face3d/fit/**/*.log
 .prodbuild/
+
+# face fitting scratch (tools/face3d/work: per-skin fit runs and the local harness)
+tools/face3d/work/
