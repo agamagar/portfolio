@@ -2507,3 +2507,6 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
   font: 600 12px/16px "Google Sans Flex", system-ui, sans-serif; letter-spacing: 0.02em; white-space: nowrap;
 }
 .hello[data-page="3"] .new-tag--corner { position: absolute; z-index: 4; top: 14px; left: 14px; margin: 0; pointer-events: none; }
+
+/* the white button holds an up arrow (the same as "Back to the room"), named "Enter the workspace" for assistive tech (Agam, 12 Oct) */
+.wscene-warm-pill__btn-label svg { display: block; flex: none; }

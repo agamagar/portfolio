@@ -15,7 +15,7 @@
 // of building its own and resizes it to the viewport. Nothing is compiled twice.
 
 import { createWindowEngine } from "./engine.js";
-import { setWarmReady, warmStageStart, warmStageEnd } from "./warmFlag.js";
+import { setWarmReady } from "./warmFlag.js";
 
 let warm = null; // { host, canvas, engine, ready: Promise<boolean>, ok }
 
@@ -43,7 +43,6 @@ export function quietMoment() {
 
 export function warmScene({ opts, theme }) {
   if (warm) return warm.ready;
-  warmStageStart("build");
   const host = document.createElement("div");
   host.className = "wscene__warm";
   host.setAttribute("aria-hidden", "true");
@@ -59,7 +58,6 @@ export function warmScene({ opts, theme }) {
     .then((ok) => {
       if (warm) warm.ok = !!ok;
       engine.setActive(false); // warmed: nothing draws until the page takes it
-      warmStageEnd("build");
       if (ok && warm) watchLoss(warm);
       return !!ok;
     })
@@ -169,18 +167,13 @@ export async function prepareWarmScene() {
   const { engine } = w;
   await quietMoment();
   engine.resize(window.innerWidth, window.innerHeight);
-  warmStageStart("params");
   for (const patch of folioParams(FOLIO)) {
     await quietMoment();
     await engine.setParams(patch);
   }
-  warmStageEnd("params");
   if (warm !== w) return false;
   w.folio = { ...FOLIO };
-  warmStageStart("capture");
   if (!(await capturePoster(w))) return false;
-  warmStageEnd("capture");
-  warmStageStart("prime");
   // prime the full-size path, hidden: frames along the pull-out (inside the screen out
   // to the room) allocate every full-size target and draw what the camera will see, one
   // quiet moment at a time; it ends parked on the first frame of the hand-over (p = 1)
@@ -190,7 +183,6 @@ export async function prepareWarmScene() {
     engine.setScroll(p, 0);
     await engine.renderOnce();
   }
-  warmStageEnd("prime");
   setWarmReady(true); // a page that remounts later finds the room ready (warmFlag.js)
   return true;
 }

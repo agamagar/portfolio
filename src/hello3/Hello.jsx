@@ -14,7 +14,7 @@ import MorphFace from "../MorphFace";
 import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { FLOOD_RGB } from "../figures/faces/morph/flood";
-import { warmIsReady, resetWarmStages, warmStageStart, warmStageEnd, warmSecondsLeft } from "../scene/window/warmFlag";
+import { warmIsReady } from "../scene/window/warmFlag";
 import { Check, Copy, Lock, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
@@ -230,16 +230,6 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // Retry (`stalled`) rather than leaving the loader up for ever
   const [warmEpoch, setWarmEpoch] = useState(0);
   const [stalled, setStalled] = useState(false);
-  // the pill's countdown (whole seconds left, only ever counting down, from the warm-up's real
-  // stages; warmFlag.js), refreshed while the room is not ready
-  const [secsLeft, setSecsLeft] = useState(() => warmSecondsLeft());
-  useEffect(() => {
-    if (warmState === "ready") return undefined;
-    const tick = () => setSecsLeft(warmSecondsLeft());
-    tick();
-    const t = setInterval(tick, 250);
-    return () => clearInterval(t);
-  }, [warmState, warmEpoch]);
   const entryAttempts = useRef(0);
   const rewarm = useCallback(async () => {
     try {
@@ -295,11 +285,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     }
     let alive = true;
     setWarmState("loading");
-    resetWarmStages(); // the pill's countdown follows these stages (warmFlag.js)
-    warmStageStart("load");
     Promise.all([import("../scene/window/sceneWarm.js"), import("../scene/window/capture.js"), import("../scene/window/WindowSceneFolio")])
       .then(async ([{ warmScene, prepareWarmScene }, { parseCaptureParams }]) => {
-        warmStageEnd("load");
         if (!alive) return false;
         const opts = parseCaptureParams(window.location.search);
         const ok = await warmScene({ opts, theme: document.documentElement.classList.contains("dark") ? "dark" : "light" });
@@ -1328,8 +1315,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         >
           <span className="wscene-warm-pill__status" role="status" aria-live="polite">
             <span className="wscene-warm-pill__label" data-on={!uiReady || undefined} aria-hidden={uiReady}>
-              <span className="wscene-warm-pill__count" aria-hidden="true">{secsLeft}</span>
-              <span className="wscene-warm-pill__sr">Getting the workspace ready, about {secsLeft} {secsLeft === 1 ? "second" : "seconds"}</span>
+              Setting up workspace
+              <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
             </span>
             <span className="wscene-warm-pill__label" data-on={(uiReady && !going && journey === "idle") || undefined} aria-hidden={!(uiReady && !going && journey === "idle")}>
               {stalled ? "The room didn't load" : "The room is ready"}
