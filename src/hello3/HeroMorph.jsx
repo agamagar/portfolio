@@ -22,10 +22,10 @@
 // the visit shows the clay still from the cached last frame.
 import { useEffect, useRef } from "react";
 import { FACE_VIEWBOX } from "../faceMorph";
+import { DURATION, ramp } from "../figures/faces/morph/flood";
 import { settleHeroMorph } from "./heroMorphGate";
 import "./heroMorph.css";
 
-const DURATION = 3800; // ms for t 0..1 (no turn since 11 Oct, so a little shorter than the test page's 4.2 s)
 const BEAT = 0; // the morph starts the moment the wave ends (the page then reveals in step with it: Hello.jsx, "heromorph:t")
 const PREROLL = 120; // ms on frame 0 before the morph's clock starts (the SVG swaps out in it)
 const SWAP = 80; // ms after the first draw: the canvas is on screen by then
@@ -41,27 +41,9 @@ const FW = 802, FH = 862;
 const CLAY_SCALE = 1.21, CLAY_NUDGE = 6;
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const inOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
-// SPEED RAMP (Agam, 2026-10-11: "the 3D face reveal should be speed ramped"): one remap of
-// the morph's clock, real time u -> timeline t, so every track (the slide, the colour, the
-// grow, the thinning) ramps together like a film speed ramp: quick as the lines start to move
-// and the clay floods in, slow motion while the form resolves (t about 0.40 to 0.72), a quick
-// settle, then an ease into the hold. A monotone cubic through these keys (Fritsch-Carlson, so
-// it never runs backwards or overshoots); its slope is the playback speed.
-const RAMP = [[0, 0], [0.18, 0.4], [0.62, 0.72], [0.85, 0.96], [1, 1]];
-const ramp = (() => {
-  const n = RAMP.length, x = RAMP.map((k) => k[0]), y = RAMP.map((k) => k[1]);
-  const d = x.slice(1).map((xi, i) => (y[i + 1] - y[i]) / (xi - x[i]));
-  const m = [d[0], ...d.slice(1).map((di, i) => (di * d[i] <= 0 ? 0 : (2 * di * d[i]) / (di + d[i]))), 0];
-  m[0] = Math.max(0, (3 * d[0] - m[1]) / 2); // the start is quick; the end stops (slope 0) into the hold
-  return (u) => {
-    if (u <= 0) return 0;
-    if (u >= 1) return 1;
-    let i = 0;
-    while (u > x[i + 1]) i++;
-    const h = x[i + 1] - x[i], s = (u - x[i]) / h, s2 = s * s, s3 = s2 * s;
-    return (2 * s3 - 3 * s2 + 1) * y[i] + (s3 - 2 * s2 + s) * h * m[i] + (-2 * s3 + 3 * s2) * y[i + 1] + (s3 - s2) * h * m[i + 1];
-  };
-})();
+// SPEED RAMP (Agam, 2026-10-11: "the 3D face reveal should be speed ramped"): one remap of the
+// morph's clock, real time u -> timeline t (RAMP and ramp, in flood.js since the page's light wave
+// rides the very same curve: "match the speed of the morph with the page reveal").
 // from the slide's start to the clay's arrival (the timeline's 0.06 and 0.85)
 const grow = (t) => inOut(clamp01((t - 0.06) / 0.79));
 
