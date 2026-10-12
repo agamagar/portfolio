@@ -19,6 +19,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 import { SKINS, MODES, PROPS, skinById, partKey, VERT, FRAG, OUT_VERT, OUT_FRAG } from "./faceSkins";
+import { motionFor, easeKey, perform } from "./styleMotion";
 
 // kept for callers that want the Spider-Verse paper colour
 export const SV = { paper: skinById("print").bg };
@@ -177,7 +178,6 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
             : key === "Hat" || key === "HatBand" ? L.hat || L.hair : L.skin);
           const mat = new THREE.ShaderMaterial({
             vertexShader: VERT, fragmentShader: FRAG, vertexColors: !!o.geometry.attributes.color,
-            side: o.name === "Skin" || o.name === "Hair" ? THREE.DoubleSide : THREE.FrontSide,
             uniforms: { ...shared, uBase: { value: new THREE.Color() }, uShade: { value: new THREE.Color() }, uDeep: { value: new THREE.Color() },
               uSpec: { value: 0 }, uIsHair: { value: key === "Hair" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
               uSH: { value: lit ? SHv(lit) : Array.from({ length: 9 }, () => new THREE.Vector3()) }, uK: { value: lit ? lit.k : 0 },
@@ -198,6 +198,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
               uRestMV: { value: rc.matrixWorldInverse.clone().multiply(o.matrixWorld) },
               // the mirror's rest frame: the model at rest, the fitted camera's view and projection
+              uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 },
               uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: rc.matrixWorldInverse.clone() }, uRestP: { value: rc.projectionMatrix.clone() },
               uMirror: { value: depthMap && map && o.name === "Skin" && !(mv[o.name] && o.geometry.attributes._mvuv) ? 1 : 0 }, // (the quiff isn't symmetric)
               uSeenRad: { value: new THREE.Vector3().fromArray(fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
@@ -393,13 +394,14 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     };
     const BOUNCE = [640, [K(0, {}), K(0.14, { sx: 1.14, sy: 0.84, ...squint(0.6) }), K(0.42, { sx: 0.9, sy: 1.12, by: 0.45, ...both("eyeWide", 0.6), browInnerUp: 0.4 }), K(0.68, { sx: 1.12, sy: 0.88, ...squint(0.5) }), K(0.84, { sx: 0.96, sy: 1.04 }), K(1, {})]];
     let tracks = [];
-    const play = (dur, frames) => new Promise((done) => tracks.push({ t0: performance.now(), dur, frames, done }));
+    // (an emote takes as long as the skin's medium takes: tools/face3d/styles, styleMotion.js)
+    const play = (dur, frames) => new Promise((done) => tracks.push({ t0: performance.now(), dur: dur * motionFor(skin.id).durationScale, frames, done }));
     const sample = (frames, t) => {
       let i = 0;
       while (i < frames.length - 2 && t > frames[i + 1][0]) i++;
       const [ta, a] = frames[i], [tb, b] = frames[i + 1];
       const k = Math.min(1, Math.max(0, (t - ta) / (tb - ta || 1)));
-      const e = k * k * (3 - 2 * k);
+      const e = easeKey(motionFor(skin.id), k);
       const o = {};
       for (const key of Object.keys(a)) o[key] = a[key] + (b[key] - a[key]) * e;
       return o;
@@ -480,6 +482,11 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       // set the drag view directly (radians), for turntable checks
       // what is on stage, for headless checks: the skin, and whether its fitted rig is drawing
       state: () => ({ skin: skin.id, fitOn, rig: rig ? Object.keys(rigs).find((k) => rigs[k] === rig) || null : null }),
+      // hide one part until the next frame (headless checks: which part draws an artefact)
+      debugHide: (name) => {
+        if (!name) { for (const o of Object.values(parts)) if (o.userData.debugHidden) { o.visible = true; o.userData.debugHidden = false; } return; }
+        if (parts[name]) { parts[name].visible = false; parts[name].userData.debugHidden = true; }
+      },
       setView: (yaw, pitch = 0) => { view.yaw = yaw; view.pitch = pitch; view.vy = view.vp = 0; view.home = false; },
       // a PNG of the face as it stands (renders first, so the drawing buffer is still there)
       snapshot: () => { renderer.render(scene, cam); return renderer.domElement.toDataURL("image/png"); } };
@@ -628,8 +635,10 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
         else spin.yaw = spinAngle(now);
       }
       stepView(now);
-      // on twos (12 poses a second) for the drawn styles; the fitted clay look runs smooth
-      const STEP_MS = fitOn ? 1 : 1000 / 12;
+      // each skin is exposed at its medium's rate (clay on twos, cel and pixel on threes, noir on
+      // film's ones; styleMotion.js)
+      const prof = motionFor(skin.id);
+      const STEP_MS = prof.stepMs || 1;
       const step = Math.floor(now / STEP_MS);
       const viewMoving = !!drag || view.home || Math.abs(view.vy) + Math.abs(view.vp) > 1e-5 || spin.active;
       if (step !== lastStep || viewMoving) {
@@ -643,12 +652,16 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
           return true;
         });
         // a slow idle sway: never quite still, never far from the drawing's pose
+        // (its size and pace are the skin's: a stone head barely stirs, rubber hose bobs)
         if (!held && !reduce()) {
-          s.yaw += 0.035 * Math.sin(t * 0.00041) + 0.012 * Math.sin(t * 0.00113 + 1.3);
-          s.pitch += 0.02 * Math.sin(t * 0.00033 + 0.7);
-          s.tilt += 0.02 * Math.sin(t * 0.00027 + 2.1);
+          const ia = prof.idleAmp, tr = t * prof.idleRate;
+          s.yaw += ia * (0.035 * Math.sin(tr * 0.00041) + 0.012 * Math.sin(tr * 0.00113 + 1.3));
+          s.pitch += ia * 0.02 * Math.sin(tr * 0.00033 + 0.7);
+          s.tilt += ia * 0.02 * Math.sin(tr * 0.00027 + 2.1);
         }
-        apply(held ? { ...s, ...held } : s);
+        // the pose, performed in the skin's manner (amplitude, squash, turn budget, replacement
+        // shapes, pixel snap; boil only while it moves on its own: a held pose is a still frame)
+        apply(perform(held || reduce() ? { ...prof, boil: 0 } : prof, held ? { ...s, ...held } : s, base, step));
         lView.copy(lightDir).transformDirection(cam.matrixWorldInverse);
         if (spin.active) blur.render(now);
         else renderer.render(scene, cam);

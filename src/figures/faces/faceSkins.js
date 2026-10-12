@@ -174,6 +174,10 @@ uniform mat4 uRestModel, uRestV, uRestP;
 varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
+// the lip's recess while the mouth moves (uActs.z: 0 at rest): the fitted heads' mouths are creases
+// with no lips, and a lip ring standing proud of the skin drew a pale crescent beside an open mouth.
+// Pushed back from the camera it stays only where the opening shows it
+uniform vec3 uActs; uniform float uRecess;
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
 // the (morphed) normal in the fitted camera's frame at rest: where the reference's light was fitted
 varying vec3 vRN;
@@ -188,6 +192,7 @@ void main(){
   #include <begin_vertex>
   #include <morphtarget_vertex>
   vec4 mv = modelViewMatrix * vec4(transformed,1.0);
+  mv.xyz += normalize(mv.xyz) * uRecess * clamp(uActs.z, 0.0, 1.0);
   vN = normalize(normalMatrix * objectNormal);
   vRN = uRestNM * objectNormal;
   vRestZ = -(uRestMV * vec4(transformed, 1.0)).z;
@@ -252,9 +257,8 @@ vec3 ramp(float w, float soft){
 }
 
 void main(){
-  // (skin and hair are drawn two-sided: the fit's warp folds a few ear triangles over, and culled
-  // they opened holes through the ear as soon as the head turned; a back face is lit as its front)
-  float facing = gl_FrontFacing ? 1.0 : -1.0;
+  // (front faces only are drawn; facing is kept for the mirror's normal)
+  float facing = 1.0;
   vec3 n = normalize(vN) * facing; vec3 l = normalize(uL); vec3 v = normalize(vV);
   vec3 h = normalize(l + v);
   float d = dot(n, l);
@@ -308,7 +312,8 @@ void main(){
       }
       // texels on the reference's silhouette hold some backdrop (its anti-aliased edge): right at
       // rest, a coloured streak once a turn shows that surface from the side. Turned, a texel
-      // within 3 px of the backdrop is not trusted
+      // within 3 px of the backdrop is not trusted. (Only the backdrop: gating every part's edge
+      // drew a pale outline round the nose and the eye sockets at a small turn)
       if (uTurn > 0.0) {
         float bgHits = 0.0;
         for (int i = 0; i < 4; i++) {
