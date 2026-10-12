@@ -640,20 +640,6 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       cm.setAttribute("x", "0"); cm.setAttribute("y", "0"); cm.setAttribute("width", String(VW)); cm.setAttribute("height", "2600");
       catchG = document.createElementNS(NS, "g");
       catchG.setAttribute("fill", "#fff");
-      // dark: DITHER. A faint warm ramp over near-black has only a couple of dozen 8-bit steps, so the light's mask
-      // carries a fixed grain (alpha 0.84-1 per pixel, 64px tile, made once): the band's alpha is jittered by a few
-      // percent pixel to pixel and the steps dissolve. Static, so it costs nothing per frame beyond the mask itself
-      if (dark) {
-        const g = document.createElement("canvas"); g.width = g.height = 64;
-        const c = g.getContext("2d"), im = c.createImageData(64, 64);
-        for (let i = 0; i < im.data.length; i += 4) { im.data[i] = im.data[i + 1] = im.data[i + 2] = 255; im.data[i + 3] = 214 + ((Math.random() * 42) | 0); }
-        c.putImageData(im, 0, 0);
-        const pat = document.createElementNS(NS, "pattern");
-        pat.setAttribute("id", "hello-grain"); pat.setAttribute("patternUnits", "userSpaceOnUse"); pat.setAttribute("width", "64"); pat.setAttribute("height", "64");
-        pat.innerHTML = `<image href="${g.toDataURL()}" width="64" height="64" style="image-rendering:pixelated"/>`;
-        defs.appendChild(pat);
-        catchG.setAttribute("fill", "url(#hello-grain)");
-      }
       cm.appendChild(catchG);
       defs.appendChild(cm);
       const mk = (el, part, m, w) => {
@@ -685,7 +671,11 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       frontRect = document.createElementNS(NS, "rect");
       frontRect.setAttribute("x", "0"); frontRect.setAttribute("y", "0"); frontRect.setAttribute("width", String(Math.max(document.documentElement.clientWidth, 600))); frontRect.setAttribute("height", "2600");
       frontRect.setAttribute("fill", "url(#hello-front)"); frontRect.setAttribute("mask", "url(#hello-catch)"); frontRect.style.opacity = "0";
-      svg.appendChild(frontRect);
+      // dark: NO BAND AT ALL (Agam: "the boundary of the glow sweep should not be visible in dark mode ... only in
+      // the areas where this boundary touches these elements should it glow, and it should glow a little
+      // intensely, like the face"). The ring stays purely mathematical: not one pixel of light is drawn on the page
+      // in dark; the contact glow is the elements' own (content(), below). Light mode keeps the masked band
+      if (!dark) svg.appendChild(frontRect);
       // THE HAZE (Agam: "the glow reveal should be slightly distorted in the area where the elements are
       // appearing"): a few displacement filters, lent to the elements the band's core is crossing. Low-frequency
       // noise stretched across the line (a heat shimmer, not a wobble), one octave, sRGB so the noise's mean
@@ -981,14 +971,22 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         L.masked = true;
         // the core's distance to the element (0 while it is on it; < 0 once it has passed)
         const d = C < L.dmin ? L.dmin - C : C > L.dmax ? L.dmax - C : 0;
-        const I = g * (d >= 0 ? gauss(d, 0.36 * S) : 1 - ss(0, 1.6 * S, -d));
+        // (dark: the contact glow holds its strength all the way out to the cards, as the face's own flood does)
+        const I = (dark ? Math.min(1, 0.85 + 0.15 * g) : g) * (d >= 0 ? gauss(d, 0.36 * S) : 1 - ss(0, 1.6 * S, -d));
         const hz = g * gauss(d, 0.3 * S); // the haze: the core's own gaussian, a little wider
         const B = L.big ? (dark ? 0.18 : 0.4) : 1.1; // a light image would wash to white (and grey out on dark)
         let f = "";
         if (hz > 0.02 && (L.hz || lend(L))) { L.hz.map.setAttribute("scale", ((L.big ? 6 : 5) * hz).toFixed(2)); L.hz.aa.setAttribute("stdDeviation", (0.3 * hz).toFixed(3)); f = `url(#${L.hz.id}) `; }
         else free(L);
-        // dark keeps the content's colour and contrast (a paled, flattened image reads as grey haze on black)
-        if (I > 0.01) f += dark ? `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.25 * I).toFixed(3)}) sepia(${(0.08 * I).toFixed(3)})` : `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
+        // DARK: THE CONTACT GLOW IS THE CLAY'S FLOOD. Where the front touches an element, the element itself
+        // floods the way the face does: bright, warm and desaturated at contact (the clay's pale skin, #f2dcc6:
+        // sepia over a lifted, greyed colour), with a warm bloom on its own glyphs (a drop-shadow, which follows
+        // the glyphs' alpha and is clipped to the element's box by its print mask, so nothing spills onto the
+        // page), resolving to its true colour as the front moves on
+        if (I > 0.01 && dark) {
+          const big = L.big, r = big ? 0 : 7 * I;
+          f += `brightness(${(1 + (big ? 0.3 : 0.9) * I).toFixed(3)}) saturate(${(1 - (big ? 0.45 : 0.75) * I).toFixed(3)}) sepia(${((big ? 0.3 : 0.5) * I).toFixed(3)})` + (r > 0.3 ? ` drop-shadow(0 0 ${r.toFixed(1)}px rgba(${CORE_RGB.map((v) => v | 0).join(",")},${(0.8 * I).toFixed(3)}))` : "");
+        } else if (I > 0.01) f += `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
         el.style.filter = f;
       }
     };
