@@ -28,7 +28,7 @@ CFG = {
     "claySun": dict(bgtol=16, dark=45, open=1, hair=dict(L=(0, 75), hue=(15, 53), chroma=8)),
     "stone": dict(bgtol=22, dark=None),
     "cel": dict(bgtol=14, dark=40, open=4, hair=dict(L=(0, 70), hue=(30, 59), chroma=12)),
-    "hose": dict(bgtol=7, dark=30, open=5, hair=dict(L=(0, 45), hue=(20, 75), chroma=18)),
+    "hose": dict(bgtol=7, dark=30, open=5, grow=3, hair=dict(L=(0, 45), hue=(20, 75), chroma=18)),  # grow: its ink outline
     "pixel": dict(bgtol=14, dark=32, open=3, hair=dict(L=(0, 58), hue=(25, 80), chroma=14)),
     # riso: the torn white rim (L* > 82) walls the head off from the paper
     # grow: the head's labels pushed out this many px into the backdrop, so the mesh covers a

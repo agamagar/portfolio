@@ -64,7 +64,7 @@ export const SKINS = [
     },
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the cel tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-cel.glb", fit: "/faces/fit-cel.json", idmap: "/faces/idmap-cel.png", raw: "/faces/skin-raw-cel.png",
+    rig: { src: "/faces/face-cel.glb", fit: "/faces/fit-cel.json", idmap: "/faces/idmap-cel.png", depth: "/faces/depth-cel.png", raw: "/faces/skin-raw-cel.png",
       margins: "/faces/margins-cel.png", plates: { back: "/faces/cel-back.webp" } },
     outline: { ink: "#3a2116", width: 1.7, small: 1.1 },
   },
@@ -90,7 +90,7 @@ export const SKINS = [
     },
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the pixel tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-pixel.glb", fit: "/faces/fit-pixel.json", idmap: "/faces/idmap-pixel.png", raw: "/faces/skin-raw-pixel.png",
+    rig: { src: "/faces/face-pixel.glb", fit: "/faces/fit-pixel.json", idmap: "/faces/idmap-pixel.png", depth: "/faces/depth-pixel.png", raw: "/faces/skin-raw-pixel.png",
       margins: "/faces/margins-pixel.png", plates: { back: "/faces/pixel-back.webp" } },
     outline: { ink: "#2a1608", width: 1, small: 0.6 },
   },
