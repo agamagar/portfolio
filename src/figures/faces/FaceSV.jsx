@@ -25,7 +25,10 @@ export const SV = { paper: skinById("print").bg };
 
 const reduce = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb", fitSrc = "/faces/fit.json", skin: skin0 = "clay", cycle = 0, onSkin }, ref) {
+// backdrop: draw each skin's own ground (its colour, and a fitted rig's plates: noir's rain and
+// coat, the tiles' painted-out backdrops). Off by default (Agam, 2026-10-12: "it's always on a
+// transparent view"): the face is drawn on a transparent canvas and the page sets the ground
+const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb", fitSrc = "/faces/fit.json", skin: skin0 = "clay", cycle = 0, onSkin, backdrop = false }, ref) {
   const host = useRef(null);
   const api = useRef(null);
   const onSkinRef = useRef(onSkin);
@@ -174,6 +177,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
             : key === "Hat" || key === "HatBand" ? L.hat || L.hair : L.skin);
           const mat = new THREE.ShaderMaterial({
             vertexShader: VERT, fragmentShader: FRAG, vertexColors: !!o.geometry.attributes.color,
+            side: o.name === "Skin" || o.name === "Hair" ? THREE.DoubleSide : THREE.FrontSide,
             uniforms: { ...shared, uBase: { value: new THREE.Color() }, uShade: { value: new THREE.Color() }, uDeep: { value: new THREE.Color() },
               uSpec: { value: 0 }, uIsHair: { value: key === "Hair" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
               uSH: { value: lit ? SHv(lit) : Array.from({ length: 9 }, () => new THREE.Vector3()) }, uK: { value: lit ? lit.k : 0 },
@@ -193,6 +197,9 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
               uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
               uRestMV: { value: rc.matrixWorldInverse.clone().multiply(o.matrixWorld) },
+              // the mirror's rest frame: the model at rest, the fitted camera's view and projection
+              uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: rc.matrixWorldInverse.clone() }, uRestP: { value: rc.projectionMatrix.clone() },
+              uMirror: { value: depthMap && map && o.name === "Skin" && !(mv[o.name] && o.geometry.attributes._mvuv) ? 1 : 0 }, // (the quiff isn't symmetric)
               uSeenRad: { value: new THREE.Vector3().fromArray(fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
               uSeenLum: { value: fit?.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
               uMapRaw: { value: o.name === "Skin" ? skinRaw : null }, uMargin: { value: o.name === "Skin" ? margins : null },
@@ -351,12 +358,12 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
           }
         }
       }
-      const pl = fitOn ? sk.rig?.plates : null;
-      el.style.background = sk.bg;
+      const pl = fitOn && backdrop ? sk.rig?.plates : null;
+      el.style.background = backdrop ? sk.bg : "transparent";
       backPlate.style.backgroundImage = pl?.back ? `url(${pl.back})` : "none";
       front.style.display = pl?.front ? "block" : "none";
       if (pl?.front && !front.src.endsWith(pl.front)) front.src = pl.front;
-      setRain(!!(fitOn && sk.rig?.rain));
+      setRain(!!(fitOn && backdrop && sk.rig?.rain));
       onSkinRef.current?.(sk);
     };
 
@@ -666,7 +673,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
       el.removeChild(backPlate);
       el.removeChild(rain);
     };
-  }, [size, src, skin0]);
+  }, [size, src, skin0, backdrop]);
 
   // the auto-cycle: its own effect, so turning it on or off leaves the face (its skin, its loaded
   // rigs) as it is; before, it rebuilt the renderer and reset the skin to the first

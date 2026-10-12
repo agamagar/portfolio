@@ -166,6 +166,12 @@ uniform mat3 uRestNM;
 // the fitted camera's view at rest: how far from it this point sat (tested against the rig's depth map)
 uniform mat4 uRestMV;
 varying float vRestZ;
+// THE MIRROR (2026-10-12): the tile shows one side of the head; the far side is filled from the
+// near side's mirror image. The head is built symmetric about x = 0 (rest coordinates, uRestModel);
+// the mirrored point, projected by the fitted camera at rest (uRestV, uRestP), is where the
+// reference shows that point's twin: its screen spot (top-left origin), distance, normal
+uniform mat4 uRestModel, uRestV, uRestP;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
@@ -185,6 +191,13 @@ void main(){
   vN = normalize(normalMatrix * objectNormal);
   vRN = uRestNM * objectNormal;
   vRestZ = -(uRestMV * vec4(transformed, 1.0)).z;
+  vec4 rp = uRestModel * vec4(transformed, 1.0);
+  vec4 mv0 = uRestV * vec4(-rp.x, rp.y, rp.z, 1.0);
+  vec4 mc = uRestP * mv0;
+  vMirZ = -mv0.z;
+  vMirUv = vec2(mc.x / mc.w * 0.5 + 0.5, 0.5 - mc.y / mc.w * 0.5);
+  vec3 rn = mat3(uRestModel) * objectNormal;
+  vMirN = mat3(uRestV) * vec3(-rn.x, rn.y, rn.z);
   vV = normalize(-mv.xyz);
   vMV = mv.xyz;
   vP = (modelMatrix * vec4(transformed,1.0)).xyz;
@@ -207,6 +220,9 @@ uniform vec3 uSeenRad; uniform float uSeenLum;
 // the rig's depth at rest (tools/face3d/fit/idmap, MODE=depth): view-space distance over [4.5, 10]
 uniform sampler2D uDepth; uniform float uHasDepth;
 varying float vRestZ;
+// the mirror (see VERT): on for skin and hair of a rig with a depth map
+uniform float uMirror;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -236,7 +252,10 @@ vec3 ramp(float w, float soft){
 }
 
 void main(){
-  vec3 n = normalize(vN); vec3 l = normalize(uL); vec3 v = normalize(vV);
+  // (skin and hair are drawn two-sided: the fit's warp folds a few ear triangles over, and culled
+  // they opened holes through the ear as soon as the head turned; a back face is lit as its front)
+  float facing = gl_FrontFacing ? 1.0 : -1.0;
+  vec3 n = normalize(vN) * facing; vec3 l = normalize(uL); vec3 v = normalize(vV);
   vec3 h = normalize(l + v);
   float d = dot(n, l);
   float w = d * 0.5 + 0.5;
@@ -335,7 +354,7 @@ void main(){
     // (At rest the two normals are the same.)
     float occ = pow(max(ao, 1e-3), uK);
     vec3 nl = uFlat > 0.0 ? normalize(mix(n, uFlatN, uFlat)) : n;
-    vec3 nr = normalize(vRN);
+    vec3 nr = normalize(vRN) * facing;
     if (uFlat > 0.0) nr = normalize(mix(nr, uFlatN, uFlat));
     vec3 litView = max(max(shEval(nl), 0.0) * occ, vec3(uFloor));
     vec3 litRest = max(max(shEval(nr), 0.0) * occ, vec3(uFloor));
@@ -349,6 +368,24 @@ void main(){
       // saw it reads other parts' texels, and at full strength streaked noir's far ear)
       vec3 rel = uRatioMean.x > 0.0 ? clamp(local / max(whole, vec3(1e-3)), 0.7, 1.4) : vec3(1.0);
       unseen = mix(unseen, uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel, uTurn);
+    }
+    // the far side, from its mirror twin on the near side: where the twin was what the reference
+    // showed (its depth and part check out), its own texel lit by the fitted light at the
+    // mirrored normal, so the far side carries the near side's detail and shading. Only as the
+    // head turns (at rest the far side isn't in view, and the fit's rest is untouched)
+    if (uMirror > 0.5 && uTurn > 0.0) {
+      vec2 m = vMirUv;
+      float inside = step(0.0, m.x) * step(m.x, 1.0) * step(0.0, m.y) * step(m.y, 1.0);
+      // (two-sided: the fitted head is only nearly symmetric, and a twin that lands in front of the
+      // surface the reference showed (the near ear) is no twin either)
+      float twinSeen = inside * (1.0 - smoothstep(0.06, 0.15, abs(vMirZ - (4.5 + texture2D(uDepth, m).r * 5.5))));
+      float idv = floor(texture2D(uIdMap, m).r * 255.0 + 0.5);
+      twinSeen *= step(abs(idv - (uPartId * 2.0 + 1.0)), 0.5); // the twin on this part's front layer
+      vec2 tuv = vec2(uLayered > 0.5 ? m.x * 0.5 : m.x, m.y);
+      vec3 twin = pow(texture2D(uMap, tuv).rgb, vec3(uTexGamma)) * uTexScale;
+      vec3 nm = normalize(vMirN) * facing;
+      vec3 litTwin = max(max(shEval(nm), 0.0) * occ, vec3(uFloor));
+      unseen = mix(unseen, litTwin * twin, twinSeen * uTurn);
     }
     col = mix(unseen, litRest * ratio, trust) * uTint;
     if (uIsEye > 0.5 && uUseMap < 0.5) {
