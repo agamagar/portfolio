@@ -134,19 +134,24 @@ export function buildVrHeadset(mats, parent) {
   }
   const PERIOD = 4.2, SWEEP = 0.9; // s between sweeps, s a sweep takes
   let t = 0;
+  // hover (2026-10-12, "click the VR headset to open the 3D video viewer"): the lenses
+  // warm up and the glints stay lit while the cursor is over it; room.js sets hoverTo
+  let hover = 0, hoverTo = 0;
   function update(dt) {
     t += dt;
+    hover += (hoverTo - hover) * Math.min(1, dt * 10);
+    lensM.emissive.setRGB(0.16 * hover, 0.3 * hover, 0.85 * hover);
     for (const gl of glints) {
       const k = ((t / PERIOD + gl.phase) % 1) * PERIOD; // seconds into this cycle
       const u = Math.min(1, k / SWEEP); // 0..1 across the lens
       const e = u * u * (3 - 2 * u); // eased
       const R = 0.014 * SCALE; // how far it travels from the centre
       gl.glint.position.set(gl.cx - R + 2 * R * e, gl.cy + R * 0.6 - 1.2 * R * e, gl.z);
-      gl.mat.opacity = k < SWEEP ? 0.55 * Math.sin(Math.PI * u) : 0;
+      gl.mat.opacity = Math.max(k < SWEEP ? 0.55 * Math.sin(Math.PI * u) : 0, 0.6 * hover);
     }
   }
   // it has no head to nod: room.js feeds every toy's motion, so this is a no-op
-  const api = { group: g, update, jiggle() {} };
+  const api = { group: g, update, jiggle() {}, setHover(on) { hoverTo = on ? 1 : 0; } };
   // QA close-ups (tools): dev, or the capture contract's capture=1
   if (typeof window !== "undefined" && (import.meta.env?.DEV || /[?&]capture=1/.test(window.location?.search || ""))) (window.__pets ||= {}).vr = api;
   return api;

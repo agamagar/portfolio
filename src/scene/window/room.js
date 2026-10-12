@@ -100,7 +100,7 @@ function pickStep(toy, held, dt, vx) {
   const pk = (u.pick ??= { y: 0, v: 0, lean: 0 });
   // held: the pick-up lift plus however high the cursor has carried it (a drag
   // upward lifts it clear of the other toy, 2026-10-05); released: back to the edge
-  const target = held ? (u.liftTarget ?? MIN_LIFT) : 0;
+  const target = held ? (u.liftTarget ?? MIN_LIFT) : u.hoverLift ? 0.004 : 0; // hoverLift: the VR headset under the cursor
   if (reduceMotion) {
     pk.y = target;
     pk.v = 0;
@@ -348,6 +348,9 @@ export function buildRoom(P, ctx) {
       // that edge (where it fits between the others), gliding there
       if (drag && !drag.lamp && !drag.blind) {
         const t = drag.toy, tu = t.userData;
+        // a press and let-go on the VR headset that hardly moved is a click: the
+        // engine tells the page, which opens the 3D video viewer (vr/VrViewer.jsx)
+        if (t === inside.vr && drag.moved < 6 && (state.time || 0) - drag.t0 < 0.7) state.vrOpen = true;
         tu.liftTarget = 0;
         const e = edges(inside).find((ed) => ed.mon === t.parent);
         if (e) {
@@ -376,11 +379,21 @@ export function buildRoom(P, ctx) {
         const h = own && edgeHit(own);
         // grabAbove: the grab point's height over the edge's top, minus the toy's
         // own lift then, so the cursor's height carries the toy from exactly there
-        if (h) drag = { toy: overToy, off: overToy.position.x - h.x, grabAbove: h.y - own.y - (overToy.userData.pick?.y ?? 0) };
+        if (h) drag = { toy: overToy, x0: ptr.x, y0: ptr.y, t0: state.time || 0, moved: 0, off: overToy.position.x - h.x, grabAbove: h.y - own.y - (overToy.userData.pick?.y ?? 0) };
         if (drag) drag.toy.userData.liftTarget = Math.max(MIN_LIFT, overToy.userData.pick?.y ?? 0); // it leaves the surface the moment it is pressed
       }
     }
     wasDown = !!ptr?.down;
+    if (drag && ptr && drag.x0 !== undefined) drag.moved = Math.max(drag.moved ?? 0, Math.hypot(ptr.x - drag.x0, ptr.y - drag.y0));
+    // the VR headset under the cursor (and not being dragged): lift and glow
+    {
+      const vrOver = !!inside.vr && overToy === inside.vr && !drag && !state.vrLocked;
+      if (inside.vr) {
+        inside.vr.userData.hoverLift = vrOver;
+        inside.vr.userData.bobble?.setHover?.(vrOver || drag?.toy === inside.vr);
+      }
+      state.vrHover = vrOver;
+    }
     if (drag?.blind) {
       // the whole drop is about 55% of the view's height of pull; the chain itself
       // gives a couple of centimetres under the hand and springs back on release
@@ -532,6 +545,7 @@ export function buildRoom(P, ctx) {
       opening: win.opening,
       handleLeaf: win.handleLeaf,
       beadChain: inside.beadChain,
+      vr: inside.vr,
       rightSection: win.right,
       r2Pane: win.r2Pane,
       blockedPlane: win.blocked,

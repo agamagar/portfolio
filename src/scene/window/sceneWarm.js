@@ -58,6 +58,7 @@ export function warmScene({ opts, theme }) {
     .then((ok) => {
       if (warm) warm.ok = !!ok;
       engine.setActive(false); // warmed: nothing draws until the page takes it
+      if (ok && warm) watchLoss(warm);
       return !!ok;
     })
     .catch(() => {
@@ -67,6 +68,32 @@ export function warmScene({ opts, theme }) {
   warm = { host, canvas, engine, ready, ok: null };
   return ready;
 }
+
+// THE GPU CAN TAKE THE ROOM BACK (Agam: "if I click View after a long time on the home page,
+// the three.js view gets stuck on the load and never really comes into view"): after a long
+// idle, a sleep, a GPU reset or the browser trimming a background tab, the WebGPU device (or
+// the WebGL context) is lost. The warm room was kept in memory regardless, nothing noticed,
+// and the hand-over went into a dead renderer: a blank screen with the "scroll" floater.
+// A loss now drops the warm room at once and tells the page (the `wscene-warm-lost` event,
+// Hello.jsx), which warms a fresh one; warmAlive() lets the click check before it trusts it.
+function watchLoss(w) {
+  const lose = () => {
+    if (warm !== w || w.dead) return;
+    w.dead = true;
+    dropWarmScene();
+    window.dispatchEvent(new Event("wscene-warm-lost"));
+  };
+  w.canvas.addEventListener("webglcontextlost", (e) => {
+    e.preventDefault?.();
+    lose();
+  });
+  try {
+    w.engine.renderer?.backend?.device?.lost?.then(lose);
+  } catch {
+    /* no WebGPU device to watch */
+  }
+}
+export const warmAlive = () => !!warm && warm.ok === true && !warm.dead;
 
 // The warm canvas and engine, once, for useWindowScene to adopt (null if there is
 // none, or it failed: then the page builds its own the old way). poster: the live

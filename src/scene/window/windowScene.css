@@ -228,6 +228,11 @@ html.wscene-grab,
 html.wscene-grab body {
   cursor: grab;
 }
+/* the cursor over the VR headset (engine vrhover): it opens the 3D video viewer, so a pointer, not a grab */
+html.wscene-vr.wscene-grab,
+html.wscene-vr.wscene-grab body {
+  cursor: pointer;
+}
 
 /* the scroll nudge (WindowSceneFolio.jsx): the foot of the opening frame, over the
    monitor's screen, so it sits on a soft pill of the page ground; ink is the page's

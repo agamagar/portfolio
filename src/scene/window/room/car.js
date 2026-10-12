@@ -16,6 +16,7 @@ import * as THREE from "three/webgpu";
 import { Batch, boxGeo, M } from "./geom.js";
 import { ownWith, tubeAlong } from "./propKit.js";
 
+const CAR_SCALE = 0.85; // of the modelled casting (see buildCar)
 const L = 0.07; // length
 const FRONT_WHEEL = 0.0215, REAR_WHEEL = -0.0225, WHEEL_R = 0.0062;
 const Y0 = 0.004, YSPAN = 0.022; // the livery's v: 0 at the rocker, about 0.93 at the roof (it repeats past 1)
@@ -238,7 +239,13 @@ export function buildCar(mats, parent, { quality = "high" } = {}) {
       const wall = new THREE.TorusGeometry(WHEEL_R * 0.82, 0.00022, 6, 28);
       CB.add(m.tyre, wall, M.T(wx, WHEEL_R, s * 0.0141));
     }
-  const meshes = CB.build(parent);
+  // 15% smaller than the 1:64 casting (2026-10-12, Agam: "the car slightly smaller"):
+  // about 6 cm; scaled about the wheels' ground line, so it stays seated
+  const inner = new THREE.Group();
+  inner.name = "carModel";
+  inner.scale.setScalar(CAR_SCALE);
+  parent.add(inner);
+  const meshes = CB.build(inner);
   ownWith(meshes, [gapM, plateM, tailM, lensM]);
 }
 

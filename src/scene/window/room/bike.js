@@ -12,7 +12,7 @@ import * as THREE from "three/webgpu";
 import { Batch, M } from "./geom.js";
 import { ownWith, tubeAlong } from "./propKit.js";
 
-const SCALE = 1 / 40; // 1:40, 5 cm long, vs the car's 1:64 (2026-10-11, Agam: "make the bike bigger" twice; readability over strict scale); was 1:30, 1:64, 1:51
+const SCALE = 1 / 35; // 1:35, 5.8 cm long, vs the car's 1:64 (2026-10-12, Agam: "make the bike slightly bigger"; readability over strict scale); was 1:30, 1:64, 1:51, 1:40
 const WB = 1.4; // wheelbase
 const FX = WB / 2, RX = -WB / 2, FR = 0.33, RR = 0.31;
 

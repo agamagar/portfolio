@@ -230,6 +230,25 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
       if (root.classList.contains("wscene-grab")) e.preventDefault();
     };
     const onUp = () => engine.setPointerDown(false);
+    // the VR headset (room/vrHeadset.js): hover shows a pointer; a click dollies the
+    // camera in and opens the 3D video viewer, a chunk loaded on that first click
+    const onVrHover = (e) => root.classList.toggle("wscene-vr", !!e.detail);
+    let vrBusy = false;
+    const onVrOpen = async () => {
+      if (vrBusy || opts.capture) return;
+      vrBusy = true;
+      try {
+        const m = await import("./vr/openVrViewer.js");
+        await m.openVrViewer({ engine, reduced });
+      } catch (err) {
+        console.warn("vr viewer:", err);
+        engine.focusVr?.(false);
+      } finally {
+        vrBusy = false;
+      }
+    };
+    canvas.addEventListener("wscene:vrhover", onVrHover);
+    canvas.addEventListener("wscene:vropen", onVrOpen);
     const onToyDrag = (e) => root.classList.toggle("wscene-grabbing", !!e.detail);
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
@@ -452,6 +471,9 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
       canvas.removeEventListener("wscene:toydrag", onToyDrag);
+      canvas.removeEventListener("wscene:vrhover", onVrHover);
+      canvas.removeEventListener("wscene:vropen", onVrOpen);
+      root.classList.remove("wscene-vr");
       root.classList.remove("wscene-grabbing");
       document.removeEventListener("visibilitychange", onVis);
       clearTimeout(posterTimer);

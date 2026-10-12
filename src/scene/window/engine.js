@@ -245,6 +245,12 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   // react to it (the bead chain); the page feeds it (useWindowScene), capture never
   const pointer = { x: -1e4, y: -1e4, vx: 0, vy: 0, t: 0, active: false, down: false };
   let chainHover = false;
+  // the VR headset viewer (vr/VrViewer.jsx): hover and click events out, and a camera
+  // dolly toward the headset in (k 0..1, eased over DUR s; reduced motion cuts)
+  let vrHover = false;
+  const vrCam = { k: 0, to: 0, lastK: 0 };
+  const VR_DUR = 0.95;
+  const _vp = new THREE.Vector3(), _vf = new THREE.Vector3();
   let toyDrag = false; // a toy on the monitor is being dragged (room.js): grabbing hand
   const posters = {};
   const posterMean = { light: 0.6, dark: 0.08 };
@@ -656,6 +662,34 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
       }
       if (Number.isFinite(CF.bokeh)) pose.bokeh = (pose.bokeh ?? 1) * CF.bokeh;
     }
+    if (vrCam.k !== vrCam.to) {
+      const step = dt / VR_DUR;
+      vrCam.k = vrCam.to > vrCam.k ? Math.min(vrCam.to, vrCam.k + step) : Math.max(vrCam.to, vrCam.k - step);
+      if (!dt) vrCam.k = vrCam.to;
+    }
+    if (vrCam.k > 0 && room.anchors?.vr) {
+      // blend the scroll pose toward a close-up of the headset's face (+z of its frame)
+      const vr = room.anchors.vr;
+      vr.getWorldPosition(_vp);
+      _vp.y += 0.012;
+      _vf.set(0, 0, 1).transformDirection(vr.matrixWorld);
+      const dist = 0.2;
+      const to = [_vp.x + _vf.x * dist, _vp.y + _vf.y * dist + 0.02, _vp.z + _vf.z * dist];
+      const look = [_vp.x - to[0], _vp.y - to[1], _vp.z - to[2]];
+      const lk = (look[0] ** 2 + look[1] ** 2 + look[2] ** 2) ** 0.5;
+      const ang = Math.atan2(look[0], -look[2]) * 180 / Math.PI;
+      const pit = Math.atan2(look[1], Math.hypot(look[0], look[2])) * 180 / Math.PI;
+      const e = vrCam.k * vrCam.k * (3 - 2 * vrCam.k);
+      let dy = (ang - pose.yaw) % 360;
+      if (dy > 180) dy -= 360;
+      if (dy < -180) dy += 360;
+      pose.pos = pose.pos.map((v, i) => v + (to[i] - v) * e);
+      pose.yaw += dy * e;
+      pose.pitch += (pit - pose.pitch) * e;
+      pose.roll *= 1 - e;
+      pose.fov += (40 - pose.fov) * e;
+      pose.focus = pose.focus + (lk - pose.focus) * e;
+    }
     applyPose(camera, pose, P);
     // the velocity pass reads this frame's unjittered projection (taau.js: without
     // it every static pixel moved by the TAA jitter and nothing converged)
@@ -755,14 +789,24 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     // shot / ceilingLight: the named capture framing, and whether its photo had the
     // room's ceiling light on (the dusk close-ups), for the light rig
     const shotCfg = opts.shot ? (opts.shot === "ref1741" ? P.camera.ref : P.camera.shots?.[opts.shot]) : null;
-    const state = { time: t, dt, p, p2, look, weather: sw, wind, shot: opts.shot || null, ceilingLight: !!shotCfg?.ceilingLight, quality: P.quality, moonPlaced: moonPlacedNow, pointer: capture ? null : pointer, camera, view: { w: rApi.size.w, h: rApi.size.h } };
+    const state = { time: t, dt, p, p2, look, weather: sw, wind, shot: opts.shot || null, ceilingLight: !!shotCfg?.ceilingLight, quality: P.quality, moonPlaced: moonPlacedNow, pointer: capture || vrCam.to > 0 ? null : pointer, vrLocked: vrCam.to > 0, camera, view: { w: rApi.size.w, h: rApi.size.h } };
     lights.update(state, { sky: { linear: [uniforms.skyAvg.value.r, uniforms.skyAvg.value.g, uniforms.skyAvg.value.b] }, screenLight });
     room.update(state);
+    pointer.seenDown = true;
+    if (pointer.releaseAfterFrame) {
+      pointer.releaseAfterFrame = false;
+      pointer.down = false;
+    }
     // the cursor over the bead chain: the page shows a grab hand (useWindowScene)
     if (!!state.chainHover !== chainHover) {
       chainHover = !!state.chainHover;
       canvas.dispatchEvent(new CustomEvent("wscene:chainhover", { detail: chainHover }));
     }
+    if (!!state.vrHover !== vrHover) {
+      vrHover = !!state.vrHover;
+      canvas.dispatchEvent(new CustomEvent("wscene:vrhover", { detail: vrHover }));
+    }
+    if (state.vrOpen) canvas.dispatchEvent(new CustomEvent("wscene:vropen"));
     if (!!state.toyDrag !== toyDrag) {
       toyDrag = !!state.toyDrag;
       canvas.dispatchEvent(new CustomEvent("wscene:toydrag", { detail: toyDrag }));
@@ -1114,8 +1158,14 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     },
     // The primary button over the page (mouse and pen): a toy under the cursor
     // follows it while it is held (room.js)
+    // A press and release that both land between two frames (a click on a slow room)
+    // still reaches room.js: the release waits for the frame that saw the press.
     setPointerDown(down) {
-      pointer.down = !!down;
+      if (down) {
+        pointer.down = true;
+        pointer.seenDown = false;
+      } else if (pointer.down && !pointer.seenDown) pointer.releaseAfterFrame = true;
+      else pointer.down = false;
     },
     // The page's scroll progress (ignored while the URL pins p or p2).
     setScroll(p, p2 = 0) {
@@ -1128,6 +1178,24 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
       const ok = Array.isArray(rects) ? rects.filter((r) => r && r.x1 - r.x0 > 1 && r.y1 - r.y0 > 1) : [];
       calmBoxes = ok.length ? ok.map((r) => ({ x0: +r.x0, y0: +r.y0, x1: +r.x1, y1: +r.y1 })) : null;
       if (renderer && !loopOn && !capture) runFrames(1);
+    },
+    // The VR viewer: dolly in toward the headset (on) or back out (off); instant: cut.
+    focusVr(on, instant = false) {
+      vrCam.to = on ? 1 : 0;
+      if (instant) vrCam.k = vrCam.to;
+      if (renderer && !loopOn && !capture) runFrames(1);
+    },
+    // Tools: where the headset is on screen now, CSS px from the canvas's top left (null: no room)
+    vrScreenPos() {
+      const vr = room?.anchors?.vr;
+      if (!vr) return null;
+      vr.getWorldPosition(_vp);
+      _vp.y += 0.012;
+      _vp.project(camera);
+      return { x: (_vp.x * 0.5 + 0.5) * rApi.size.w, y: (-_vp.y * 0.5 + 0.5) * rApi.size.h, inView: Math.abs(_vp.x) < 1 && Math.abs(_vp.y) < 1 && _vp.z < 1 };
+    },
+    get vrFocus() {
+      return vrCam.k;
     },
     // Tools: pin the camera (null, null releases it back to the scroll).
     pinProgress(p, p2 = 0) {
