@@ -1,0 +1,34 @@
+/* SchedCityShift: the winners-and-losers dot-column chart (12 Oct 2026) */
+.csh { display: flex; flex-direction: column; gap: 0.7rem; width: 100%; color: var(--fg); }
+.csh--loading { color: var(--muted); font-size: 0.875rem; }
+.csh__title { margin: 0; font-size: 1rem; font-weight: 600; }
+.csh__sub { margin: 0.25rem 0 0; font-size: 0.8125rem; color: var(--muted); max-width: 62ch; }
+.csh__legend { display: grid; grid-template-columns: repeat(8, 1fr); width: min(340px, 100%); margin-left: auto; row-gap: 0.15rem; }
+.csh__chip i { display: block; height: 12px; }
+.csh__lt { font-size: 0.6875rem; color: var(--muted); grid-row: 2; grid-column: 2 / span 2; }
+.csh__lt--m { grid-column: 4 / span 2; text-align: center; }
+.csh__lt--r { grid-column: 7 / span 2; text-align: right; }
+.csh__plot { position: relative; }
+.csh__svg { display: block; width: 100%; height: auto; overflow: visible; outline: none; }
+.csh__svg:focus-visible { box-shadow: 0 0 0 2px #f0a868; border-radius: 4px; }
+.csh__zero { stroke: var(--muted); stroke-width: 1; opacity: 0.6; }
+.csh__ax { font: 400 10px "Google Sans Flex", "Inter", sans-serif; fill: var(--muted); }
+.csh__ax--m { font-size: 11px; fill: var(--fg); }
+.csh__band rect { fill: rgba(127, 127, 127, 0.14); }
+.csh__band text { font: 500 9.5px "Google Sans Flex", "Inter", sans-serif; letter-spacing: 0.06em; fill: var(--muted); }
+.csh__dot { stroke: var(--bg); stroke-width: 0.8; transition: r 120ms ease; cursor: default; }
+.csh__dot.is-sel { stroke: var(--fg); stroke-width: 1.6; }
+.csh__tip { position: absolute; transform: translateY(-120%); display: flex; flex-direction: column; gap: 0.1rem; padding: 0.4rem 0.6rem; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); font-size: 0.75rem; pointer-events: none; white-space: nowrap; z-index: 2; }
+.csh__tip small { color: var(--muted); font-size: 0.6875rem; }
+.csh__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0; }
+.csh__foot { display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between; }
+.csh__foot p { margin: 0; font-size: 0.75rem; color: var(--muted); max-width: 70ch; }
+.csh__toggle { flex: none; font: inherit; font-size: 0.75rem; padding: 0.3rem 0.7rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--fg); cursor: pointer; }
+.csh__tablewrap { max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.csh__table { border-collapse: collapse; width: 100%; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.csh__table caption { text-align: left; padding: 0.5rem 0.6rem; color: var(--muted); }
+.csh__table th, .csh__table td { padding: 0.25rem 0.6rem; text-align: right; border-top: 1px solid var(--line); }
+.csh__table th[scope="row"], .csh__table thead th:first-child { text-align: left; }
+.csh__table thead th { position: sticky; top: 0; background: var(--bg); }
+@media (prefers-reduced-motion: reduce) { .csh__dot { transition: none; } }
+@media (max-width: 600px) { .csh__foot { flex-direction: column; } }

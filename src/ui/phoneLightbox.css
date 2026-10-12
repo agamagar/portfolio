@@ -1,0 +1,67 @@
+/* PhoneLightbox (mv54coar). The overlay is the dimmed page; the phone is the
+   ScrollPhone phone at full size (same 1209 : 2472 proportions and screen
+   cutout), height-limited by the viewport, with the screen scrolling inside. */
+.pl {
+  position: fixed; inset: 0; z-index: 2147483200;
+  display: grid; place-items: center;
+  cursor: zoom-out;
+}
+/* the dim is its own layer so it can fade on its own clock while the phone is still flying home */
+.pl__dim { position: absolute; inset: 0; background: rgba(8, 6, 14, 0.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+/* the card's own plate (the Figma lavender), grown to the viewport: the frame the phone sits in */
+.pl__frame { position: fixed; left: 12px; top: 12px; right: 12px; bottom: 12px; border-radius: 20px; corner-shape: round; overflow: hidden;
+  background: linear-gradient(112deg, #f2e8ff 8%, #9674db 100%); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); }
+.pl .pl__caption { position: fixed; z-index: 2; left: 50%; bottom: 26px; translate: -50% 0; margin: 0; max-width: calc(100vw - 120px); text-align: center; font: 400 14px/1.4 "Google Sans Flex", Inter, sans-serif; color: rgba(51, 9, 94, 0.82); pointer-events: none; }
+.pl__phone {
+  position: relative; cursor: default; z-index: 1;
+  height: min(94vh, 94dvh, calc(92vw * 2472 / 1209));
+  aspect-ratio: 1209 / 2472;
+  filter: drop-shadow(0 30px 80px rgba(0, 0, 0, 0.6));
+}
+.pl__phone[data-cap] { height: min(86vh, 86dvh, calc(92vw * 2472 / 1209)); margin-bottom: 36px; }
+.pl__screen {
+  position: absolute; left: 5.29%; top: 2.39%; width: 89.41%; height: 95.11%;
+  border-radius: 13.7% / 6.3%; corner-shape: round;
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  background: #fff; scrollbar-width: none;
+}
+.pl__screen::-webkit-scrollbar { display: none; }
+.pl__screen:focus-visible { outline: 2px solid #b69cea; outline-offset: -2px; }
+.pl__screen img { display: block; width: 100%; height: auto; min-height: 100%; object-fit: cover; object-position: top; }
+.pl__bezel { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+.pl__close, .pl__nav {
+  position: fixed; z-index: 4; width: 44px; height: 44px; border: 0; border-radius: 50%; corner-shape: round;
+  display: grid; place-items: center; cursor: pointer;
+  background: rgba(255, 255, 255, 0.14); color: #fff;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  transition: background 160ms ease;
+}
+.pl__close:hover, .pl__nav:hover { background: rgba(255, 255, 255, 0.26); }
+.pl__close:focus-visible, .pl__nav:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.pl__close { top: 20px; right: 20px; }
+.pl__nav { top: 50%; translate: 0 -50%; }
+.pl__nav--prev { left: 20px; } .pl__nav--next { right: 20px; }
+.pl .pl__count { position: fixed; z-index: 4; bottom: 18px; left: 50%; translate: -50% 0; margin: 0; padding: 4px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); color: #fff; font: 500 12px/1.4 "Google Sans Flex", Inter, sans-serif; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .pl__nav--prev { left: 8px; } .pl__nav--next { right: 8px; } .pl__close { top: 12px; right: 12px; } }
+
+/* the card that opens it: a button in all but name */
+.sp[data-expand] { cursor: zoom-in; }
+.sp[data-expand]:focus-visible { outline: 2px solid #5b3fd1; outline-offset: 3px; }
+.sp[data-open] { visibility: hidden; } /* the frame in the overlay is the card, lifted */
+/* the expand control is the site's glass button (.article__hero-replay); the card only keeps it above the phone */
+.sp__hint { z-index: 4; }
+
+/* ---- figure items (mv56ku8l): a copy of the figure, zoomed, in a plain frame ---- */
+.pl__frame--plain { background: var(--bg, #0e0e11); border: 1px solid color-mix(in srgb, var(--fg, #fff) 14%, transparent); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); }
+.pl__scroller { position: fixed; left: 12px; top: 12px; right: 12px; bottom: 12px; z-index: 1; overflow: auto; overscroll-behavior: contain; display: flex; flex-direction: column; padding: 16px; border-radius: 20px; cursor: zoom-out; scrollbar-width: thin; }
+.pl__scroller:focus-visible { outline: 2px solid #b69cea; outline-offset: -2px; }
+.pl__box { margin: auto; flex: none; cursor: default; }
+.pl__clonein { color: var(--fg); text-align: left; }
+.pl__clonein figure { margin: 0; }
+
+/* the expand control on a figure: the site's glass button, shown on hover / focus (always on touch) */
+figure[data-exp] { position: relative; }
+.exp__btn { z-index: 6; opacity: 0; transition: opacity 160ms ease; }
+figure[data-exp]:hover > .exp__btn, figure[data-exp]:focus-within > .exp__btn, .exp__btn:focus-visible { opacity: 1; }
+@media (hover: none) { .exp__btn { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .exp__btn { transition: none; } }

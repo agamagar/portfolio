@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { animate } from "motion";
 import "./scheduled.css";
+import { uniqueSvgIds } from "../../lib/svgIds"; // mv4h4hhf: per-instance ids for the Figma exports
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 
 // muienfze (26 Sep 2026): Portfolio 2026 node 942:64899, "The key finding" beside
@@ -25,17 +26,18 @@ const COLS = [
 function DrawIcon({ src }) {
   const ref = useRef(null);
   const [svg, setSvg] = useState("");
+  const uid = useId();
   useEffect(() => {
     let live = true;
     fetch(src).then((r) => r.text()).then((t) => {
       if (!live) return;
       let i = 0;
-      setSvg(t.replace(/stroke="#33095E"/gi, 'stroke="currentColor"')
+      setSvg(uniqueSvgIds(t, "sin" + uid).replace(/stroke="#33095E"/gi, 'stroke="currentColor"')
         .replace(/<path /g, () => `<path pathLength="1" style="--i:${i++}" `)
         .replace(/style="display: block;"/, 'style="display:block;width:100%;height:100%"'));
     });
     return () => { live = false; };
-  }, [src]);
+  }, [src, uid]);
   // mujpn8um: SCROLL-LINKED, not play-once. As the icon travels from the
   // bottom of the viewport (95%) to just above centre (45%) each stroke draws
   // on in turn, on the decelerate curve; scrolling back undraws it.
@@ -50,9 +52,16 @@ function DrawIcon({ src }) {
     let raf = 0;
     const update = () => {
       raf = 0;
-      const r = el.getBoundingClientRect();
+      // mv58b49j (12 Oct, "it closes too early; it should conclude only when the item reaches the centre
+      // of the viewport"): the draw is driven by the WHOLE figure, not the icon. It starts as the figure's
+      // top edge enters (95% down the viewport) and reaches 1 exactly when the figure's centre is at the
+      // viewport's centre. It was the icon's centre reaching 45%, which is the figure's top part: it was
+      // finished with the figure still a quarter of a screen below the middle. Scroll-linked, so it
+      // un-draws on the way back; under reduced motion it is already drawn (above).
+      const r = (el.closest(".sin") || el).getBoundingClientRect();
       const vh = window.visualViewport?.height || window.innerHeight;
-      const p = clamp((vh * 0.95 - (r.top + r.height / 2)) / (vh * 0.5));
+      const c0 = vh * 0.95 + r.height / 2, c1 = vh * 0.5;
+      const p = clamp((c0 - (r.top + r.height / 2)) / (c0 - c1));
       paths.forEach((pa, i) => { pa.style.strokeDashoffset = (1 - ease(clamp((p - i * step) / span))).toFixed(4); });
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };

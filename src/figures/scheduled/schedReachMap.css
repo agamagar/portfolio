@@ -1,0 +1,24 @@
+/* Real-map layers of the reach explorer (mv588qrj, 12 Oct 2026). Muted, one hue family, light and dark via the page's own tokens. */
+.rex { --rex-park: color-mix(in srgb, #3f9b5f 16%, var(--bg)); --rex-water: color-mix(in srgb, #3a86d4 22%, var(--bg)); --rex-road: color-mix(in srgb, var(--fg) 20%, var(--bg)); --rex-road-major: color-mix(in srgb, var(--fg) 34%, var(--bg)); }
+.rex__park { fill: var(--rex-park); stroke: none; }
+.rex__water { fill: var(--rex-water); stroke: none; }
+.rex__drain { fill: none; stroke: var(--rex-water); stroke-width: 1.4; }
+.rex__road { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke: var(--rex-road); pointer-events: none; }
+.rex__road--minor { stroke-width: 0.8; }
+.rex__road--3 { stroke-width: 1.5; }
+.rex__road--2 { stroke-width: 2.2; stroke: var(--rex-road-major); }
+.rex__road--1 { stroke-width: 3; stroke: var(--rex-road-major); }
+.rex__street { font: 500 9px "Google Sans Flex", "Inter", sans-serif; fill: var(--muted); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; pointer-events: none; letter-spacing: 0.03em; }
+.rex__map .rex__block { opacity: 0.4; }
+.rex__map .rex__block[data-in] { opacity: 0.85; }
+.rex .rex__osm { position: absolute; right: 8px; bottom: 6px; font-size: 10px; color: var(--muted); background: color-mix(in srgb, var(--bg) 80%, transparent); padding: 1px 5px; border-radius: 4px; text-decoration: none; }
+.rex .rex__osm:hover, .rex .rex__osm:focus-visible { color: var(--fg); text-decoration: underline; }
+
+/* mv589p9j (12 Oct, "make it simple"): one highlight colour (schedule only, orange), everything else muted */
+.rex { --rex-mute: color-mix(in srgb, var(--fg) 38%, var(--bg)); --rex-none: color-mix(in srgb, var(--fg) 12%, var(--bg)); }
+.rex .rex__title { font-size: 15px; font-weight: 600; line-height: 1.3; padding: 16px 16px 0; margin: 0; }
+.rex .rex__big--hl { color: var(--sdc-c2); font-size: 34px; }
+.rex__legend--min { margin-top: 10px; }
+.rex__legend--min li { grid-template-columns: 8px 1fr auto; color: var(--muted); }
+.rex__road--minor { opacity: 0.55; }
+.rex .rex__ring { fill: none; }

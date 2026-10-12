@@ -29,6 +29,18 @@ export function SchedGtmRealOne() {
   );
 }
 
+// mv56yxug (12 Oct, "we don't need to show the whole thing, just the animation in its full view"):
+// the go-to-market plate shows the banner animation ALONE, at the plate's width
+// and its own 1080 x 340 ratio, instead of a cropped phone with the animation
+// small at its top. Same video, same speed (no playbackRate anywhere on it).
+export function SchedGtmBanner() {
+  return (
+    <div className="gtmr-banner" style={{ width: "88%", justifySelf: "center" }}>
+      <video className="gtmr-banner__video" style={{ width: "100%", borderRadius: 16 }} src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline aria-label="The go-to-market banner animation: a sweeping clock and slot chips popping in." />
+    </div>
+  );
+}
+
 // muky18to / muky9xug (28 Sep): the CART screen from the pair, alone in the
 // same bezel as SchedGtmRealOne, for the second go-to-market box
 export function SchedGtmCartOne() {

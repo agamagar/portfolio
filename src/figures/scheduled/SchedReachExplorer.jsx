@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./scheduled.css";
+import "./schedReachMap.css";
+import MAP from "./indiranagarMap.json"; // OSM extract, built by tools/osm-indiranagar.mjs
 
 // Reach explorer (5 Oct 2026), after the Morphocode Explorer reference Agam
 // pinned: a data panel on the left, a city on the right, and a dashed circle
@@ -10,59 +12,93 @@ import "./scheduled.css";
 // an open dark store, and by the clock. At 11 PM two of the three stores stop
 // taking instant orders, so their neighbourhoods flip to schedule-only.
 //
-// HONESTY: this is an illustrative MODEL. The blocks, the three stores and the
-// two reach radii are made up (seeded, so it draws the same every time). The
-// report has no geography, so nothing here is presented as Zepto data, and the
-// panel says so in its footnote.
+// mv588qrj (12 Oct): the base is now the real street map of Indiranagar,
+// Bangalore, from OpenStreetMap (c) OpenStreetMap contributors, ODbL: roads, parks
+// and water baked into indiranagarMap.json (no tile server, no key) and projected
+// with Web Mercator, scaled so the map's units are true ground distance at the
+// window's centre (KM units = 1 km). "Blocks" are 100 m squares of that map, kept
+// where a street runs through them and not inside a park or water.
+//
+// HONESTY: the geography is real; the MODEL is not. The three store pins, the
+// two reach radii and which stores close at 11 PM are made up. The report has no
+// geography, so nothing here is presented as Zepto data, and the panel says so
+// in its footnote. The stores sit at plausible spots, not real addresses.
 
-const W = 640, H = 800; // tall, so the map fills the panel's height (sliced to fit)
-const KM = 80; // units per km in the model
+const W = 640, H = 800; // map window in units; north is up
+const KM = 150; // units per km of ground: the window is 4.3 x 5.3 km
 const INSTANT_R = 1.6 * KM; // instant reach from an open store (daytime is mostly instant)
 const SCHED_R = 3.2 * KM; // scheduled reach (the next-day run goes further)
-const ANGLE = -29; // the grid's tilt, Manhattan-ish
+const CELL = KM / 10; // a block is a 100 m square
 
+// Web Mercator (EPSG:3857) metres, then to window units. Mercator stretches
+// ground distance by 1 / cos(lat), so metres are scaled back by cos(centre lat):
+// 1 km on the ground is KM units at the window's centre.
+const R_EARTH = 6378137;
+const merc = (lon, lat) => [R_EARTH * (lon * Math.PI) / 180, R_EARTH * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))];
+const [MX0, MY0] = merc(MAP.center[0], MAP.center[1]);
+const GROUND = Math.cos((MAP.center[1] * Math.PI) / 180); // ground metres per Mercator metre here
+const proj = (lon, lat) => { const [x, y] = merc(lon, lat); return [W / 2 + ((x - MX0) * GROUND * KM) / 1000, H / 2 - ((y - MY0) * GROUND * KM) / 1000]; };
+const pathOf = (pts, close) => pts.map(([lo, la], i) => { const [x, y] = proj(lo, la); return (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }).join("") + (close ? "Z" : "");
+
+// the three pins: unit positions on the map. Illustrative, not store addresses.
 const STORES = [
   { id: "A", name: "Store A", x: 214, y: 268, nightOpen: false },
   { id: "B", name: "Store B", x: 446, y: 392, nightOpen: true },
   { id: "C", name: "Store C", x: 282, y: 556, nightOpen: false },
 ];
 const KIND = [
-  { key: "instant", label: "Instant", color: "var(--sdc-c1)" },
-  { key: "sched", label: "Schedule", color: "var(--sdc-c2)" },
-  { key: "none", label: "Nothing", color: "var(--sdc-neutral)" },
+  { key: "instant", label: "Instant", color: "var(--rex-mute)" },
+  { key: "sched", label: "Schedule only", color: "var(--sdc-c2)" },
+  { key: "none", label: "Nothing", color: "var(--rex-none)" },
 ];
 
-// a tiny seeded PRNG so the city is identical on every render
-function rng(seed) {
-  let s = seed >>> 0;
-  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+// the real map as paths, once
+const GEO = {
+  parks: MAP.parks.map((g) => pathOf(g, true)),
+  water: MAP.water.map((g) => pathOf(g, true)),
+  drains: MAP.drains.map((g) => pathOf(g)),
+  minor: MAP.roads.minor.map((r) => pathOf(r.p)).join(""),
+  major: [1, 2, 3].map((c) => MAP.roads.major.filter((r) => r.c === c).map((r) => pathOf(r.p)).join("")),
+  labels: MAP.labels.filter((l) => l.name === "100 Feet Road" || l.name === "CMH Road").map((l) => ({ ...l, xy: proj(l.lon, l.lat) })),
+};
+
+function inPoly(x, y, poly) { // ray casting, poly = [[x, y]...]
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
 }
 
+// the blocks: 100 m squares kept where a street passes within 60 m and the
+// centre is not inside a park or water
 function buildCity() {
-  const r = rng(7);
-  const rad = (ANGLE * Math.PI) / 180, cos = Math.cos(rad), sin = Math.sin(rad);
+  const road = []; // road samples every ~10 m, hashed into cells for a quick nearest test
+  const hash = new Map(), hs = CELL * 2;
+  const add = (x, y) => { const k = Math.floor(x / hs) + "," + Math.floor(y / hs); (hash.get(k) || hash.set(k, []).get(k)).push([x, y]); };
+  [...MAP.roads.major, ...MAP.roads.minor].forEach((r) => {
+    const pts = r.p.map(([lo, la]) => proj(lo, la));
+    for (let i = 1; i < pts.length; i++) {
+      const [x1, y1] = pts[i - 1], [x2, y2] = pts[i], n = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / (KM / 100)));
+      for (let t = 0; t <= n; t++) add(x1 + ((x2 - x1) * t) / n, y1 + ((y2 - y1) * t) / n);
+    }
+  });
+  const near = (x, y, d) => {
+    const gx = Math.floor(x / hs), gy = Math.floor(y / hs);
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (const [px, py] of hash.get(gx + a + "," + (gy + b)) || []) if (Math.hypot(px - x, py - y) <= d) return true;
+    return false;
+  };
+  const voids = [...MAP.parks, ...MAP.water].map((g) => g.map(([lo, la]) => proj(lo, la)));
   const blocks = [];
-  const bw = 30, bh = 17, gx = 6, gy = 6;
-  for (let i = -22; i <= 22; i++) {
-    for (let j = -26; j <= 26; j++) {
-      if (r() < 0.07) continue; // parks and plazas
-      const avenue = Math.floor(i / 4) * 6; // every fourth column, a wider avenue
-      const lx = i * (bw + gx) + avenue, ly = j * (bh + gy);
-      const cx = W / 2 + lx * cos - ly * sin, cy = H / 2 + lx * sin + ly * cos;
-      if (cx < -20 || cx > W + 20 || cy < -20 || cy > H + 20) continue;
-      if (cx < 70 - cy * 0.06) continue; // the river on the west edge
-      if (cx > W - 120 && cy > H - 150 + (W - cx) * 0.9) continue; // the bay
-      const split = r() < 0.18; // some blocks are two lots
-      const h = split ? bh / 2 - 1 : bh;
-      blocks.push({ cx, cy, w: bw, h, off: split ? -bh / 4 : 0 });
-      if (split) blocks.push({ cx, cy, w: bw, h, off: bh / 4 });
+  for (let gy = CELL / 2; gy < H; gy += CELL) {
+    for (let gx = CELL / 2; gx < W; gx += CELL) {
+      if (!near(gx, gy, 0.06 * KM)) continue;
+      if (voids.some((v) => inPoly(gx, gy, v))) continue;
+      blocks.push({ k: blocks.length, x: gx, y: gy, w: CELL - 2.5, h: CELL - 2.5 });
     }
   }
-  return blocks.map((b, k) => {
-    // a split lot's centre sits a quarter-block either side, along the tilt
-    const ox = -b.off * Math.sin(rad), oy = b.off * Math.cos(rad);
-    return { ...b, k, x: b.cx + ox, y: b.cy + oy };
-  });
+  return blocks;
 }
 
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -79,16 +115,6 @@ function classify(block, night) {
   return { kind, nearest };
 }
 
-// largest-remainder rounding, so the waffle always has exactly 100 dots
-function toHundred(counts) {
-  const total = counts.reduce((a, b) => a + b, 0) || 1;
-  const raw = counts.map((c) => (c / total) * 100);
-  const out = raw.map(Math.floor);
-  let left = 100 - out.reduce((a, b) => a + b, 0);
-  raw.map((v, i) => [v - Math.floor(v), i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (left-- > 0) out[i] += 1; });
-  return out;
-}
-
 export default function SchedReachExplorer() {
   const city = useMemo(buildCity, []);
   const [night, setNight] = useState(false);
@@ -103,9 +129,6 @@ export default function SchedReachExplorer() {
   const inside = useMemo(() => tagged.filter((b) => dist(b, c) <= r), [tagged, c, r]);
   const counts = KIND.map((k) => inside.filter((b) => b.kind === k.key).length);
   const pct = counts.map((n) => (inside.length ? (n / inside.length) * 100 : 0));
-  const dots = toHundred(counts);
-  const byStore = STORES.map((s) => inside.filter((b) => b.nearest === s.id).length);
-  const maxStore = Math.max(1, ...byStore);
 
   // the idle drift: until someone touches it, the circle wanders the city on a
   // slow loop, only while on screen, never under reduced motion
@@ -164,6 +187,7 @@ export default function SchedReachExplorer() {
   return (
     <div className="rex">
       <aside className="rex__panel">
+        <h4 className="rex__title">At 11 PM the same address can go from instant to schedule only</h4>
         <div className="rex__row rex__row--slider">
           <input
             type="range" min="0.5" max="2" step="0.05" value={km}
@@ -174,54 +198,27 @@ export default function SchedReachExplorer() {
         </div>
         <div className="rex__seg" role="group" aria-label="Time of day">
           {[[false, "2 PM"], [true, "11 PM"]].map(([v, l]) => (
-            <button key={l} type="button" aria-pressed={night === v} onClick={() => setNight(v)}>{l}</button>
+            <button key={l} type="button" aria-pressed={night === v} onClick={() => { setTouched(true); setNight(v); }}>{l}</button>
           ))}
         </div>
 
         <section className="rex__sec">
-          <h4 className="rex__h">What the cart can offer</h4>
-          <div className="rex__stats">
-            <div><p className="rex__big rex__mono">{inside.length}</p><p className="rex__lbl">Blocks inside</p></div>
-            <div><p className="rex__big rex__mono">{pct[0].toFixed(1)}%</p><p className="rex__lbl">Get instant</p></div>
-          </div>
-        </section>
-
-        <section className="rex__sec">
-          <h4 className="rex__h">Instant, schedule, or nothing</h4>
-          <div className="rex__waffle-row">
-            <div className="rex__waffle" aria-hidden>
-              {KIND.flatMap((k, i) => Array.from({ length: dots[i] }, (_, n) => <i key={`${k.key}${n}`} style={{ background: k.color }} />))}
-            </div>
-            <ul className="rex__legend">
-              {KIND.map((k, i) => (
-                <li key={k.key}>
-                  <i style={{ background: k.color }} />
-                  <span className="rex__lead">{k.label}</span>
-                  <span className="rex__mono">{pct[i].toFixed(1)}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="rex__sec">
-          <h4 className="rex__h">Nearest dark store</h4>
-          <p className="rex__sub">Blocks in the circle, by the store closest to them</p>
-          <ul className="rex__bars">
-            {STORES.map((s, i) => (
-              <li key={s.id}>
-                <span className="rex__mono rex__bar-l">
-                  {s.name}{night && !s.nightOpen ? ", closed" : ""}
-                </span>
-                <span className="rex__mono">{byStore[i]}</span>
-                <span className="rex__bar"><b style={{ width: `${(byStore[i] / maxStore) * 100}%` }} /></span>
+          {/* mv589p9j (12 Oct, "make it simple"): one number, the one the case turns on. The waffle, the per-store bars and the second stat are gone; the same counts feed the map colours and this line. */}
+          <p className="rex__big rex__mono rex__big--hl">{pct[1].toFixed(0)}%</p>
+          <p className="rex__lbl">of the {inside.length} blocks in the circle can only schedule</p>
+          <ul className="rex__legend rex__legend--min">
+            {KIND.map((k, i) => (
+              <li key={k.key}>
+                <i style={{ background: k.color }} />
+                <span>{k.label}</span>
+                <span className="rex__mono">{pct[i].toFixed(0)}%</span>
               </li>
             ))}
           </ul>
         </section>
 
         <p className="rex__note">
-          Illustrative model: made-up blocks and three stores, instant reach {INSTANT_R / KM} km, scheduled reach {SCHED_R / KM} km. It shows how distance and the clock decide a cart's options. It is not Zepto data.
+          Illustrative model on a real map of Indiranagar, Bangalore: the streets are OpenStreetMap, but the three stores are placed for the demo, not real addresses, and instant reach is {INSTANT_R / KM} km, scheduled reach {SCHED_R / KM} km. A block is a 100 m square of the map. It shows how distance and the clock decide a cart's options. It is not Zepto data.
         </p>
       </aside>
 
@@ -231,7 +228,7 @@ export default function SchedReachExplorer() {
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid slice"
           role="img"
-          aria-label={`A city of blocks with three dark stores. Inside the circle, ${pct[0].toFixed(0)}% of blocks get instant delivery, ${pct[1].toFixed(0)}% can only schedule, ${pct[2].toFixed(0)}% get nothing. Drag the circle, or focus it and use the arrow keys.`}
+          aria-label={`A street map of Indiranagar, Bangalore, with three illustrative dark stores. Inside the circle, ${pct[0].toFixed(0)}% of blocks get instant delivery, ${pct[1].toFixed(0)}% can only schedule, ${pct[2].toFixed(0)}% get nothing. Drag the circle, or focus it and use the arrow keys.`}
           tabIndex={0}
           onPointerDown={onDown}
           onPointerMove={onMove}
@@ -239,15 +236,29 @@ export default function SchedReachExplorer() {
           onPointerCancel={onUp}
           onKeyDown={onKey}
         >
+          <g className="rex__geo" aria-hidden="true">
+            {GEO.parks.map((d, i) => <path key={"p" + i} d={d} className="rex__park" />)}
+            {GEO.water.map((d, i) => <path key={"w" + i} d={d} className="rex__water" />)}
+            {GEO.drains.map((d, i) => <path key={"d" + i} d={d} className="rex__drain" />)}
+          </g>
           {tagged.map((b) => (
             <rect
               key={b.k}
               x={b.x - b.w / 2} y={b.y - b.h / 2} width={b.w} height={b.h}
-              transform={`rotate(${ANGLE} ${b.x} ${b.y})`}
               fill={fill(b)}
+              data-in={dist(b, c) <= r ? "" : undefined}
               className="rex__block"
             />
           ))}
+          <g className="rex__geo" aria-hidden="true">
+            <path d={GEO.minor} className="rex__road rex__road--minor" />
+            <path d={GEO.major[2]} className="rex__road rex__road--3" />
+            <path d={GEO.major[1]} className="rex__road rex__road--2" />
+            <path d={GEO.major[0]} className="rex__road rex__road--1" />
+            {GEO.labels.map((l) => (
+              <text key={l.name} x={l.xy[0]} y={l.xy[1]} transform={`rotate(${l.ang} ${l.xy[0]} ${l.xy[1]})`} className="rex__street" textAnchor="middle">{l.name}</text>
+            ))}
+          </g>
           {STORES.map((s) => {
             const open = !night || s.nightOpen;
             return (
@@ -264,6 +275,7 @@ export default function SchedReachExplorer() {
             <path d="M-5 0H5M0 -5V5" />
           </g>
         </svg>
+        <a className="rex__osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
         <p className="rex__hint">{touched ? "Drag the circle, or its edge to resize" : "Drag the circle to explore"}</p>
       </div>
     </div>

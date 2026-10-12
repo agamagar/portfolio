@@ -813,7 +813,8 @@ html.dark .article__body .suc p.suc__label { color: #b69cea; }
   color: var(--muted);
   padding-inline: 120px; /* mv2lon1x (10 Oct): "add 200px left and right padding"; mv2lq0x1: "reduce ... by 80px" */
 }
-.suc__persona strong { font-weight: 600; color: var(--ink); }
+/* mv4h375u (12 Oct, "bring down the font weight by one level and underline") */
+.suc__persona strong { font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
 @media (max-width: 700px) {
   .suc__frame { aspect-ratio: auto; min-height: 60vh; }
   .suc { --muted: rgba(51, 9, 94, 0.6); }
@@ -1125,6 +1126,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rwf-chart__line--b { stroke: var(--sb); stroke-dasharray: 4 3; }
 .rwf-chart__dot { stroke: var(--bg, #fff); stroke-width: 1.5; }
 .rwf-chart__dot--a { fill: var(--sa); } .rwf-chart__dot--b { fill: var(--sb); }
+.rwf-chart__area--a { fill: var(--sa); fill-opacity: 0.16; stroke: none; }
 .rwf-chart__bar--a { fill: var(--sa); } .rwf-chart__bar--b { fill: var(--sb); }
 .rwf-chart__seq--0 { fill: #e4dcfb; background: #e4dcfb; }
 .rwf-chart__seq--1 { fill: #c4b3f5; background: #c4b3f5; }
@@ -1477,7 +1479,8 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rwf-glass .tlx__rail-leader { box-sizing: content-box; }
 
 /* mukpkglc: the speed charts side by side, one shared legend under both */
-.rwf__charts.rwf__charts--pair { grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+/* mv4hecwh (12 Oct): stacked, one below the other, same width */
+.rwf__charts.rwf__charts--pair { grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
 .page--article .article__body .rwf-run .rwf p.rwf-chart__key--shared { margin-top: -0.75rem; }
 @media (max-width: 700px) { .rwf__charts.rwf__charts--pair { grid-template-columns: 1fr; } }
 .rwf-chart__key--shared .rwf-chart__sw--b { margin-left: 0; } /* each entry is its own span now */
@@ -1898,14 +1901,15 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rex__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .rex .rex__big { font-size: 22px; font-weight: 600; line-height: 1.1; }
 .rex .rex__lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.rex__waffle-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
-.rex__waffle { display: grid; grid-template-columns: repeat(10, 7px); gap: 2px; }
-.rex__waffle i { width: 7px; height: 7px; border-radius: 50%; corner-shape: round; transition: background 200ms ease; }
+.rex__waffle-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; }
+.rex__waffle { display: grid; grid-template-columns: repeat(10, 5px); gap: 2px; }
+.rex__waffle i { width: 5px; height: 5px; border-radius: 50%; corner-shape: round; transition: background 200ms ease; }
 .rex__legend { display: grid; gap: 4px; }
-.rex__legend li { display: grid; grid-template-columns: 8px 1fr auto; gap: 6px; align-items: center; font-size: 12px; }
+.rex__legend li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: 12px; }
 .rex__legend i { width: 8px; height: 8px; border-radius: 50%; corner-shape: round; }
-.rex__lead { overflow: hidden; white-space: nowrap; }
-.rex__lead::after { content: " ........................................"; color: var(--muted); }
+/* QA 12 Oct: the dotted leader was a run of "." characters clipped by the column, so on the 252px panel it ended at one to four dots ("Instant ."); it is now a dotted rule that fills whatever width is left */
+.rex__lead { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; overflow: hidden; }
+.rex__lead::after { content: ""; flex: 1; min-width: 6px; border-bottom: 1px dotted var(--muted); transform: translateY(-3px); }
 .rex__bars { display: grid; gap: 8px; }
 .rex__bars li { display: grid; grid-template-columns: 1fr auto; row-gap: 3px; }
 .rex__bar-l { color: var(--fg); }
@@ -1944,3 +1948,95 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    the line (First review) pressed against "AUG / 2025". This rail gets a wider
    anchor: open cards stop clear of the labels and their leaders grow to match. */
 .rwf-glass .tlx__rail { --rail-anchor: 84px; }
+
+/* mv4h6hzo (12 Oct, "the pill should only expand towards the side where there
+   is no pointy edge"): every pill has one sharp corner, its pointer, at top
+   left. Pills on the right half of the picture are right-anchored and grow
+   LEFT, i.e. toward their pointer, so the pointer moved with the growing edge.
+   Their pointer is now on the right (top right), the edge they are anchored by,
+   so the tail stays fixed on what it points at and the pill grows away from it. */
+.dio__pin[data-side="right"] { border-top-left-radius: 23px; border-top-right-radius: 1px; }
+
+/* mv4hfar5 (12 Oct): the tab list sits in the left column, on top of the panels */
+.rwf-tabs__left { display: grid; gap: 1.5rem; min-width: 0; align-content: start; }
+
+/* mv56x0js + mv56x3bp (12 Oct, "make this full width"): the Leading with design block
+   spans the whole content column (816px, the same measure as the full-width
+   figures around it), not a left column beside a right one. One column, in this
+   order: the active tab's panel, its figure (the tabs that have one), and the tab
+   bar at the bottom, where mv4hj2c7 put it. */
+.rwf__tabwrap { grid-template-columns: minmax(0, 1fr); column-gap: 0; row-gap: 1.75rem; }
+.rwf-tabs__left { display: contents; }
+.rwf-tabs__left > .rwf-tabs__stack { order: 1; }
+.rwf-tabs__side { order: 2; position: static; }
+.rwf-tabs__left > .rwf-tabs { order: 3; }
+.rwf-tabs__side:not(:has(.rwf-tabs__sidefig[data-on])) { display: none; } /* a tab with no figure leaves no empty row */
+
+/* mv56yxug (12 Oct): a figure plate whose content is the animation itself fills the plate: no
+   top padding for a phone, the banner centred at 88% of the width in its own 1080 x 340 ratio */
+.article__plate-video--fig.article__plate-video--fill,
+.article__plates--stack .article__plate:not(.article__plate--wide) .article__plate-video--fig.article__plate-video--fill { padding: 0 !important; display: grid; place-items: center; }
+.article__plate-video--fill { grid-template-columns: minmax(0, 1fr); }
+.article__plate-video--fig.article__plate-video--fill > .gtmr-banner { width: 88%; justify-self: center; }
+.gtmr-banner__video { display: block; width: 100%; height: auto; aspect-ratio: 1080 / 340; border-radius: 16px; corner-shape: round; box-shadow: 0 14px 34px -14px rgba(40, 10, 90, 0.45); }
+
+/* mv58al39 (12 Oct): the diorama pills pop in once the picture reaches the middle of the viewport.
+   Hidden before (opacity only, they are absolutely placed so no layout moves), then scale .6 -> 1.05 -> 1
+   with a fade, from the tail corner (top left; top right for the right-anchored pills, mv4h6hzo),
+   80ms apart in reading order. The pills' own `translate` is a separate property, so the scale composes with it. */
+.dio__stage[data-pop="wait"] .dio__pin { opacity: 0; pointer-events: none; }
+.dio__stage[data-pop="on"] .dio__pin { transform-origin: 0 0; animation: dio-pop 520ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both; animation-delay: calc(var(--pop, 0) * 80ms); }
+.dio__stage[data-pop="on"] .dio__pin[data-side="right"] { transform-origin: 100% 0; }
+@keyframes dio-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  55% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .dio__stage[data-pop] .dio__pin { animation: none; opacity: 1; } }
+
+/* mv58cpc6 (12 Oct, "move this up, by 12px"): the cards under the line (First review, Content pass, M2 ships,
+   Returns and refunds) and their leaders sit 12px higher: their own anchor is 72px, the rail's other cards keep 84px.
+   Both the card and its leader read --rail-anchor, so they move together and the leader still meets the card's edge. */
+.rwf-glass .tlx__rail-tagcard[data-below="true"],
+.rwf-glass .tlx__rail-leader[data-below="true"] { --rail-anchor: 72px; }
+
+/* mv592iwg (12 Oct): "Who I worked with" is left-aligned, label and title on the left edge like My role above it,
+   with a small people icon before the label that bobs in sequence when the bubbles pop in */
+.rwf.rwf--stack.rwf--left { justify-items: start; text-align: left; }
+.rwf--left .rwf__main { align-items: flex-start; width: 100%; }
+.page--article .article__body .rwf-run .rwf--left p.rwf__tag { display: inline-flex; align-items: center; gap: 0.5rem; }
+.rwf__tag-icon { width: 1.35em; height: 1.35em; flex: none; color: #5b3fd1; transform-origin: 50% 80%; opacity: 0; }
+:root.dark .rwf__tag-icon { color: #b69cea; }
+.rwf[data-dio-pop="on"] .rwf__tag-icon { opacity: 1; animation: rwf-people 1.1s cubic-bezier(0.2, 0.9, 0.3, 1.2) both, rwf-people-bob 3.2s ease-in-out 1.2s infinite; }
+@keyframes rwf-people { 0% { opacity: 0; transform: scale(0.5) translateY(6px); } 60% { opacity: 1; transform: scale(1.12) translateY(-2px); } 100% { opacity: 1; transform: none; } }
+@keyframes rwf-people-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px) rotate(-3deg); } }
+@media (prefers-reduced-motion: reduce) { .rwf__tag-icon { opacity: 1; animation: none !important; } }
+
+/* mv5969ed (12 Oct, "make these cards a little bigger... icon and heading equal sizes... hide the stroke for now"):
+   the phase cards on the rail (PhaseGlassRail) are ~14% bigger (font 11 -> 12.5px, height 35 -> 40px, padding 9/12 -> 10/15),
+   every card has the same heading size and line height (the icon is the emoji at the heading's own size, so they match too),
+   and the stroke is hidden. To bring the stroke back, set --rwf-card-stroke to var(--line) here.
+   Without the stroke the cards would vanish into the page, so the resting fill is a faint tint of the ink. */
+.rwf-glass { --rwf-card-stroke: transparent; }
+.rwf-glass .tlx__rail { --rail-card-h: 40px; --rail-lane: 47px; } /* lane step 42 -> 47 so the taller cards keep a 7px gap */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { padding: 10px 15px; border-color: var(--rwf-card-stroke); }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { background: color-mix(in srgb, var(--fg) 7%, var(--bg)); }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) .tlx__rail-tag { font-size: 12.5px; line-height: 20px; letter-spacing: 0.06em; font-weight: 600; }
+.rwf-glass .tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) { height: calc(var(--rail-card-h) + 20px); }
+/* the label and title start at the same left edge as the section above (its 7.94% frame padding) */
+.page--article .article__body .rwf-run .rwf--left :is(p.rwf__tag, h3.rwf__title) { padding-left: 7.94%; }
+
+/* mv597jqh + mv597txc (12 Oct): Leading with design reads top to bottom and sits centred like My role.
+   Each step is the number first, then its heading and subheading directly below it (it was the number on the
+   left and the heading and text on the right), and the whole block (label, title, steps, tab bar) is centred
+   in the full-width div with centred text. */
+.rwf.rwf--tabs { justify-items: center; text-align: center; }
+.rwf--tabs .rwf__tabwrap { width: 100%; justify-items: center; }
+.rwf--tabs .rwf-tabs__stack, .rwf--tabs .rwf-tabs__panel > .rwf__main { width: 100%; align-items: center; text-align: center; }
+.rwf--tabs .rwf__title, .rwf--tabs .rwf__lead { text-align: center; margin-inline: auto; }
+.rwf-tabs__panel .rwf__list li { grid-template-columns: 1fr; justify-items: center; text-align: center; row-gap: 0.4rem; padding: 1.1rem 0 1.2rem; }
+.rwf-tabs__panel .rwf__list li .rwf__n { grid-row: auto; }
+.rwf-tabs__panel .rwf__list li .rwf__what, .rwf-tabs__panel .rwf__list li .rwf__detail { grid-column: 1; max-width: 46ch; }
+.rwf--tabs .rwf-tabs__side { justify-items: center; width: 100%; }
+.rwf--tabs .rwf-tabs { justify-content: center; }
+.rwf--tabs .rwf-tabs__sidefig { text-align: left; width: 100%; } /* the review thread and other figures keep their own alignment */

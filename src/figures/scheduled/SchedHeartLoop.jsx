@@ -1,4 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useId, useMemo, useRef, useState } from "react";
+import { uniqueSvgIds } from "../../lib/svgIds"; // mv4h4hhf: per-instance ids
 import { motion, useMotionValue, useTransform, useAnimationFrame } from "motion/react";
 import { cubicBezier } from "motion";
 import { useReducedMotion } from "../ds/hooks";
@@ -169,7 +170,10 @@ function InlineSvg({ src }) {
     loadSvg(src).then((h) => { if (live) setHtml(h); });
     return () => { live = false; };
   }, [src]);
-  return <span className="shl__svg" aria-hidden dangerouslySetInnerHTML={{ __html: html }} />;
+  // mv4h4hhf: the cached text is shared, so each instance renders its own id-prefixed copy
+  const uid = useId();
+  const unique = useMemo(() => uniqueSvgIds(html, "shl" + uid), [html, uid]);
+  return <span className="shl__svg" aria-hidden dangerouslySetInnerHTML={{ __html: unique }} />;
 }
 
 // 8 Oct (muzdylub, "the page load for this case study is not smooth"): every

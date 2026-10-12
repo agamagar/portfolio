@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
@@ -44,6 +44,7 @@ const SLIDES = [
       ["5 functions", "Design, product, content, engineering and QA, operations"],
     ],
     stack: true, // mujv7fzk: label over content, both centred
+    left: true, // mv592iwg (12 Oct): ...now left-aligned like the section above, with a small animated people icon before the label
     title: "The team around the file.",
     kind: "map",
     // muk0jers (27 Sep): the table becomes Figma 278:5449, a brick diorama of
@@ -59,7 +60,7 @@ const SLIDES = [
         { g: "Engineering and QA", x: 47, y: 44 },
         { g: "Supply chain", x: 12, y: 49, kind: "notes" },
         { g: "Leadership", x: 70, y: 70, people: ["Design leadership and the CPO", "The C-suite", "Senior Director of New Category"] },
-        { g: "Who it was for", x: 55, y: 14, kind: "users", people: ["The 45-user validation study, run just after launch"] },
+        { g: "Users", x: 55, y: 14, kind: "users", people: ["The 45-user validation study, run just after launch"] },
       ],
     },
     groups: [
@@ -91,6 +92,10 @@ const SLIDES = [
   },
   {
     tag: "Timeline management",
+    // mv58e69r + mv58e13o (12 Oct, "remove"): the whole slide is parked (its "Ship first, measure first, iterate
+    // later" heading, the two stacked rollout charts, the legend and source note go with it). Not deleted: delete
+    // this line to bring it back.
+    hidden: true,
     stack: true, // mukuo5m5 (28 Sep): vertical, label over title over charts, so the graphs get the width
     // title: "Scoping M1 small was the timeline decision.", // mukpqnci (28 Sep): removed at Agam's request, uncomment to restore
     // mukpqxg3 (28 Sep): the four points commented out at Agam's request, uncomment to restore
@@ -352,56 +357,96 @@ function SpeedStrip() {
 // mukpkglc (28 Sep): the two speed charts sit SIDE BY SIDE with one legend, so
 // each is drawn at half width (320) rather than a 600-wide chart squeezed to
 // half, which would shrink its 9px labels to about 4px
+// mv4hecwh (12 Oct, "combine these graphs in parallel view, one below the
+// other") stacked the two speed charts at the same width, height and plot
+// margins. mv56wfv2 (12 Oct, "make these 2 graphs the same type and timeline"):
+// both are now LINE charts (the monthly bars became a line with an area under
+// it, a dot per month) on ONE date axis, the union of their data: the pilot's
+// first day, 10 Oct 2025, to the end of the last full month, 31 Aug 2026, with
+// the same month ticks and labels, so the same date sits at the same x in both.
+// The rollout has seven checkpoint days between 10 Oct and 23 Dec 2025 and
+// nothing after, so its line stops there and the rest of its plot is empty,
+// as it should be: no data is drawn where there is none. Each month's total is
+// one point, at the middle of the days it covers (the 16th; October's pilot
+// month runs from the 10th, so the 20th).
+const STACK_W = 600, STACK_H = 190, STACK_P = { l: 40, r: 40, t: 14, b: 30 };
+const T0 = new Date("2025-10-10").getTime(), T1 = new Date("2026-08-31").getTime();
+const sx = (t) => STACK_P.l + ((t - T0) / (T1 - T0)) * (STACK_W - STACK_P.l - STACK_P.r);
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// the shared axis: month starts from 1 Nov 2025 to 1 Aug 2026, "Oct" at the left end (the pilot day, 10 Oct 2025) and the year at each January
+const AXIS_TICKS = [{ t: T0, lbl: "Oct", anchor: "start" }, ...Array.from({ length: 10 }, (_, k) => {
+  const d = new Date(Date.UTC(2025, 10 + k, 1)); const m = d.getUTCMonth();
+  return { t: d.getTime(), lbl: MONTH_NAMES[m] + (m === 0 ? " 26" : ""), anchor: "middle" };
+})];
+function SharedAxis({ H, P, W }) {
+  return (
+    <>
+      {AXIS_TICKS.map((k) => (
+        <g key={k.t}>
+          <line x1={sx(k.t)} x2={sx(k.t)} y1={H - P.b} y2={H - P.b + 4} className="rwf-chart__grid" />
+          <text x={sx(k.t)} y={H - 10} className="rwf-chart__axis" textAnchor={k.anchor}>{k.lbl}</text>
+        </g>
+      ))}
+      <line x1={P.l} x2={W - P.r} y1={H - P.b} y2={H - P.b} className="rwf-chart__grid" />
+    </>
+  );
+}
 function RolloutChart() {
-  const W = 320, H = 230, P = { l: 34, r: 34, t: 14, b: 30 };
-  const maxD = daysFrom(ROLLOUT[ROLLOUT.length - 1].d), maxO = 40000, maxS = 1200;
-  const x = (d) => P.l + (daysFrom(d) / maxD) * (W - P.l - P.r);
+  const W = STACK_W, H = STACK_H, P = STACK_P;
+  const maxO = 40000, maxS = 1200;
+  const t = (d) => new Date(d).getTime();
   const yO = (v) => P.t + (1 - v / maxO) * (H - P.t - P.b), yS = (v) => P.t + (1 - v / maxS) * (H - P.t - P.b);
-  const line = (f, k) => ROLLOUT.map((r, i) => `${i ? "L" : "M"}${x(r.d).toFixed(1)},${f(r[k]).toFixed(1)}`).join(" ");
+  const line = (f, k) => ROLLOUT.map((r, i) => `${i ? "L" : "M"}${sx(t(r.d)).toFixed(1)},${f(r[k]).toFixed(1)}`).join(" ");
   const full = ROLLOUT.find((r) => r.mark === "full rollout");
+  const lastR = ROLLOUT[ROLLOUT.length - 1];
   return (
     <figure className="rwf-chart" tabIndex={0} onMouseEnter={() => feedbackCoalesced("navigate", 200)} onFocus={() => feedbackCoalesced("navigate", 200)}>
       <figcaption>Pilot to every store, in {daysFrom(full.d)} days</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Rollout: 2 stores on 10 Oct 2025 to ${full.stores} stores on 12 Dec; daily scheduled orders from 16 to ${ROLLOUT[ROLLOUT.length - 1].orders.toLocaleString("en-IN")} by 23 Dec`}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Rollout: 2 stores on 10 Oct 2025 to ${full.stores} stores on 12 Dec; daily scheduled orders from 16 to ${lastR.orders.toLocaleString("en-IN")} by 23 Dec. The chart shares its date axis with the monthly chart below, so nothing is drawn after 23 Dec.`}>
         {[0, 20000, 40000].map((g) => <g key={g}><line x1={P.l} x2={W - P.r} y1={yO(g)} y2={yO(g)} className="rwf-chart__grid" /><text x={P.l - 5} y={yO(g) + 3} className="rwf-chart__axis" textAnchor="end">{g ? `${g / 1000}k` : 0}</text></g>)}
         {[0, 600, 1200].map((g) => <text key={g} x={W - P.r + 5} y={yS(g) + 3} className="rwf-chart__axis">{g}</text>)}
-        <rect className="rwf-hl" x={x(ROLLOUT[0].d)} y={P.t} width={x(full.d) - x(ROLLOUT[0].d)} height={H - P.t - P.b} rx="4" />
+        <rect className="rwf-hl" x={sx(t(ROLLOUT[0].d))} y={P.t} width={sx(t(full.d)) - sx(t(ROLLOUT[0].d))} height={H - P.t - P.b} rx="4" />
         <path d={line(yS, "stores")} className="rwf-chart__line rwf-chart__line--b" />
         <path d={line(yO, "orders")} className="rwf-chart__line rwf-chart__line--a" />
         {ROLLOUT.map((r) => (
           <g key={r.d}>
-            <circle cx={x(r.d)} cy={yO(r.orders)} r="3.5" className="rwf-chart__dot rwf-chart__dot--a"><title>{`${r.label}: ${r.orders.toLocaleString("en-IN")} orders a day, ${r.stores} stores`}</title></circle>
-            <circle cx={x(r.d)} cy={yS(r.stores)} r="3.5" className="rwf-chart__dot rwf-chart__dot--b"><title>{`${r.label}: ${r.stores} stores`}</title></circle>
+            <circle cx={sx(t(r.d))} cy={yO(r.orders)} r="3.5" className="rwf-chart__dot rwf-chart__dot--a"><title>{`${r.label}: ${r.orders.toLocaleString("en-IN")} orders a day, ${r.stores} stores`}</title></circle>
+            <circle cx={sx(t(r.d))} cy={yS(r.stores)} r="3.5" className="rwf-chart__dot rwf-chart__dot--b"><title>{`${r.label}: ${r.stores} stores`}</title></circle>
           </g>
         ))}
-        {ROLLOUT.filter((r, i) => i === 0 || r.mark === "full rollout" || i === ROLLOUT.length - 1).map((r) => <text key={r.d} x={x(r.d)} y={H - 10} className="rwf-chart__axis" textAnchor="middle">{r.label}</text>)}
-        <Callout x={Math.min(x(ROLLOUT[1].d) + 6, W - 176)} y={P.t + 4} w={172}
-          lines={[`${ROLLOUT[0].stores} stores to ${full.stores.toLocaleString("en-IN")} in ${daysFrom(full.d)} days`, `orders a day: ${ROLLOUT[0].orders} to ${ROLLOUT[ROLLOUT.length - 1].orders.toLocaleString("en-IN")}`]} />
+        <SharedAxis H={H} P={P} W={W} />
+        <Callout x={Math.min(sx(t(lastR.d)) + 12, W - P.r - 176)} y={P.t + 4} w={172}
+          lines={[`${ROLLOUT[0].stores} stores to ${full.stores.toLocaleString("en-IN")} in ${daysFrom(full.d)} days`, `orders a day: ${ROLLOUT[0].orders} to ${lastR.orders.toLocaleString("en-IN")}`]} to={[sx(t(full.d)), yS(full.stores)]} />
       </svg>
     </figure>
   );
 }
 function ScaleChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
-  const W = 320, H = 230, P = { l: 34, r: 6, t: 14, b: 30 }, max = 2e6;
-  const bw = (W - P.l - P.r) / rows.length;
+  const W = STACK_W, H = STACK_H, P = STACK_P, max = 2e6;
   const y = (v) => P.t + (1 - v / max) * (H - P.t - P.b);
+  // one point a month, at the middle of the days the month covers
+  const at = (r) => { const [yr, mo] = r.m.split("-").map(Number); return r.m === "2025-10" ? new Date(Date.UTC(2025, 9, 20)).getTime() : Date.UTC(yr, mo - 1, 16); };
+  const pts = rows.map((r) => [sx(at(r)), y(r.sd), r]);
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
   const mi = rows.findIndex((r) => r.sd >= 1e6);
+  const mline = pts.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)},${py.toFixed(1)}`).join(" ");
+  const area = `${mline} L${pts[pts.length - 1][0].toFixed(1)},${y(0)} L${pts[0][0].toFixed(1)},${y(0)} Z`;
+  const [yr1, mo1] = rows[mi].m.split("-").map(Number);
+  const hlEnd = sx(Date.UTC(yr1, mo1, 0)); // the end of the month it passed a million
+  const pk = pts[rows.indexOf(peak)];
   return (
     <figure className="rwf-chart" tabIndex={0} onMouseEnter={() => feedbackCoalesced("navigate", 200)} onFocus={() => feedbackCoalesced("navigate", 200)}>
       <figcaption>Scheduled orders a month</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Monthly scheduled orders: 383 in the October 2025 pilot, over a million by January 2026, peaking at ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Monthly scheduled orders: 383 in the October 2025 pilot, over a million by January 2026, peaking at ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}. The chart shares its date axis with the rollout chart above.`}>
         {[0, 1e6, 2e6].map((g) => <g key={g}><line x1={P.l} x2={W - P.r} y1={y(g)} y2={y(g)} className="rwf-chart__grid" /><text x={P.l - 5} y={y(g) + 3} className="rwf-chart__axis" textAnchor="end">{g ? `${g / 1e6}M` : 0}</text></g>)}
-        <rect className="rwf-hl" x={P.l} y={P.t} width={bw * (mi + 1)} height={H - P.t - P.b} rx="4" />
-        {rows.map((r, i) => (
-          <g key={r.m}>
-            <rect x={P.l + i * bw + 2} y={y(r.sd)} width={bw - 4} height={Math.max(1, y(0) - y(r.sd))} rx="3" className="rwf-chart__bar--a"><title>{`${r.label}: ${r.sd.toLocaleString("en-IN")} orders, ${r.sdPct}% of all shipments`}</title></rect>
-            {(i === 0 || i === mi || r === peak || i === rows.length - 1) && <text x={P.l + i * bw + bw / 2} y={H - 10} className="rwf-chart__axis" textAnchor="middle">{r.label}</text>}
-          </g>
-        ))}
-        <text x={P.l + rows.indexOf(peak) * bw + bw / 2} y={y(peak.sd) - 5} className="rwf-chart__lbl" textAnchor="middle">{(peak.sd / 1e6).toFixed(2)}M</text>
-        <Callout x={Math.min(P.l + bw * (mi + 1) + 6, W - 184)} y={P.t + 8} w={180}
+        <rect className="rwf-hl" x={P.l} y={P.t} width={hlEnd - P.l} height={H - P.t - P.b} rx="4" />
+        <path d={area} className="rwf-chart__area--a" />
+        <path d={mline} className="rwf-chart__line rwf-chart__line--a" />
+        {pts.map(([px, py, r]) => <circle key={r.m} cx={px} cy={py} r="3.5" className="rwf-chart__dot rwf-chart__dot--a"><title>{`${r.label}: ${r.sd.toLocaleString("en-IN")} orders, ${r.sdPct}% of all shipments`}</title></circle>)}
+        <text x={pk[0]} y={pk[1] - 8} className="rwf-chart__lbl" textAnchor="middle">{(peak.sd / 1e6).toFixed(2)}M</text>
+        <SharedAxis H={H} P={P} W={W} />
+        <Callout x={Math.min(hlEnd + 8, W - P.r - 184)} y={P.t + 8} w={180}
           lines={[`From ${rows[0].sd} orders to ${(rows[mi].sd / 1e6).toFixed(2)}M a month`, `in ${mi} months, peak ${(peak.sd / 1e6).toFixed(2)}M in ${peak.label}`]} />
       </svg>
     </figure>
@@ -470,9 +515,25 @@ function peopleRows(pin, lines) {
 }
 function Diorama({ d, groups }) {
   const people = (g) => d.pins.find((p) => p.g === g)?.people || groups.find(([n]) => n === g)?.[1] || [];
+  // mv58al39 (12 Oct, "all the bubbles should have an animation as well, popping into view once this section
+  // reaches the centre of the page"): the pills are hidden, their space reserved (they are absolutely
+  // placed, so nothing moves), until the picture crosses the middle of the viewport; then each one pops in,
+  // in reading order, 80 ms apart, from its tail corner. Reduced motion: shown at once.
+  const stage = useRef(null);
+  const [pop, setPop] = useState(() => typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  useEffect(() => { if (pop) stage.current?.closest(".rwf")?.setAttribute("data-dio-pop", "on"); }, [pop]);
+  useEffect(() => {
+    if (pop) return undefined;
+    const el = stage.current; if (!el) return undefined;
+    // the middle band of the viewport: the figure has "reached the centre" once it overlaps a thin strip around it
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setPop(true); el.closest(".rwf")?.setAttribute("data-dio-pop", "on"); io.disconnect(); } }, { rootMargin: "-48% 0px -48% 0px", threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [pop]);
+  const order = [...d.pins].sort((a, b) => a.y - b.y || a.x - b.x).map((p) => p.g);
   return (
     <figure className="dio">
-      <div className="dio__stage">
+      <div className="dio__stage" ref={stage} data-pop={pop ? "on" : "wait"}>
         <img src={d.src} alt={d.alt} loading="lazy" />
         {d.pins.map((p, i) => (
           <button type="button" className="dio__pin" key={p.g}
@@ -480,7 +541,7 @@ function Diorama({ d, groups }) {
             // still as the pill grows; right-side pins grow leftward into the image
             data-side={p.x > 60 ? "right" : "left"}
             onMouseEnter={() => feedbackCoalesced("reveal", 250)} onFocus={() => feedbackCoalesced("reveal", 250)}
-            style={p.x > 60 ? { right: `${100 - p.x}%`, top: `${p.y}%` } : { left: `${p.x}%`, top: `${p.y}%` }} aria-label={`${p.g}: ${people(p.g).join(", ")}`}>
+            style={{ ...(p.x > 60 ? { right: `${100 - p.x}%`, top: `${p.y}%` } : { left: `${p.x}%`, top: `${p.y}%` }), "--pop": order.indexOf(p.g) }} aria-label={`${p.g}: ${people(p.g).join(", ")}`}>
             {/* muk1dz9x: numbers removed, the tag names the zone */}
             <span className="dio__tag">{p.g}</span>
             {(() => {
@@ -639,7 +700,10 @@ function Cadence({ s }) {
 // mukwg17w (28 Sep): a slide can render just its MAIN part (text) or just its
 // SIDE part (its visual: the review thread, the copy pairs, the promise/fact
 // split, the crit cadence), so a layout can place the visual in its own column.
-const SIDE_KEYS = ["thread", "pairs", "split", "cadence"];
+// mv4hcyhe (12 Oct, "hide this"): the crit-cadence figure is parked, not deleted
+// (its data stays on the Leadership slide). Set SHOW_CADENCE = true to bring it back.
+const SHOW_CADENCE = false;
+const SIDE_KEYS = ["thread", "pairs", "split", ...(SHOW_CADENCE ? ["cadence"] : [])];
 const pickSide = (s) => Object.fromEntries(SIDE_KEYS.filter((k) => s[k]).map((k) => [k, s[k]]));
 const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SIDE_KEYS.includes(k)));
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
@@ -739,7 +803,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
             })}
           </dl>
         )}
-        {s.cadence && !noCad && <Cadence s={s} />}
+        {SHOW_CADENCE && s.cadence && !noCad && <Cadence s={s} />}
         {s.thread && (
           <div className="rwf-thread" aria-label="Review thread from the design file, paraphrased">
             <p className="rwf-thread__head">From the design file <span>paraphrased, not verbatim</span></p>
@@ -764,8 +828,12 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
   // `embedded` (mukq4l29): just the body, for a tab panel inside another section
   if (embedded) return body;
   return (
-    <section className={"rwf" + (s.stack ? " rwf--stack" : "")} aria-label={s.tag}>
-      <p className="rwf__tag">{s.tag}</p>
+    <section className={"rwf" + (s.stack ? " rwf--stack" : "") + (s.left ? " rwf--left" : "")} aria-label={s.tag}>
+      <p className="rwf__tag">
+        {/* mv592iwg: three people, bobbing in sequence once the bubbles pop in (the diorama sets data-dio-pop on this section) */}
+        {s.left && <UsersThree className="rwf__tag-icon" weight="fill" aria-hidden="true" />}
+        {s.tag}
+      </p>
       {body}
     </section>
   );
@@ -803,27 +871,29 @@ function LeadingWithDesign() {
         {/* mukq87g4 (28 Sep): all five panels share ONE grid cell and only the
             active one is visible, so the section is always as tall as the
             tallest tab and never changes height when you switch */}
-        <div className="rwf-tabs__stack">
-          {slides.map((sl, i) => sl && (
-            <div key={sl.tag} className="rwf-tabs__panel" role="tabpanel" id={`lwd-panel-${i}`} aria-labelledby={`lwd-tab-${i}`}
-              data-on={on === i ? "true" : undefined} aria-hidden={on !== i} inert={on !== i ? "" : undefined}>
-              <Slide s={sl} embedded compact part="main" />
-            </div>
-          ))}
+        {/* mv4hfar5 (12 Oct, "add this to the column on the left"): the tab list moved into the LEFT column as a pill row; mv4hj2c7 ("move this down"): now at the BOTTOM of it, under the panels it switches; the right column keeps the figures */}
+        <div className="rwf-tabs__left">
+          <div className="rwf-tabs__stack">
+            {slides.map((sl, i) => sl && (
+              <div key={sl.tag} className="rwf-tabs__panel" role="tabpanel" id={`lwd-panel-${i}`} aria-labelledby={`lwd-tab-${i}`}
+                data-on={on === i ? "true" : undefined} aria-hidden={on !== i} inert={on !== i ? "" : undefined}>
+                <Slide s={sl} embedded compact part="main" />
+              </div>
+            ))}
+          </div>
+          <div className="rwf-tabs" role="tablist" aria-label="Leading with design" aria-orientation="horizontal" onKeyDown={key}>
+            {LEAD_GROUP.map(([label], i) => (
+              <button key={label} type="button" role="tab" id={`lwd-tab-${i}`} aria-controls={`lwd-panel-${i}`}
+                aria-selected={on === i} tabIndex={on === i ? 0 : -1} className="rwf-tabs__tab"
+                ref={(el) => (tabs.current[i] = el)} onClick={() => { if (i !== on) feedback("select"); setOn(i); }}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
         {/* mukw790w (28 Sep): a right-hand column beside the text: the active
-            tab's figure (the crit cadence, on Leadership) with the tab pills under it */}
+            tab's figure (the tab pills moved to the left column, mv4hfar5) */}
         <div className="rwf-tabs__side">
-        {/* mukvntjs (28 Sep): the tab bar sits BELOW the panel, under the crit-cadence box */}
-        <div className="rwf-tabs" role="tablist" aria-label="Leading with design" aria-orientation="vertical" onKeyDown={key}>
-          {LEAD_GROUP.map(([label], i) => (
-            <button key={label} type="button" role="tab" id={`lwd-tab-${i}`} aria-controls={`lwd-panel-${i}`}
-              aria-selected={on === i} tabIndex={on === i ? 0 : -1} className="rwf-tabs__tab"
-              ref={(el) => (tabs.current[i] = el)} onClick={() => { if (i !== on) feedback("select"); setOn(i); }}>
-              {label}
-            </button>
-          ))}
-        </div>
           {/* mukwg17w: each tab's own visual, all in ONE grid cell (the tallest
               sets the height), so switching tabs never shifts the layout */}
           <div className="rwf-tabs__vizstack">
@@ -841,7 +911,7 @@ function LeadingWithDesign() {
 
 // `exclude` (10 Oct, mv2legbw): drop slides that App.jsx renders elsewhere
 export default function SchedRoleWireframes({ only, exclude }) {
-  const list = (only ? only.map((t) => SLIDES.find((x) => x.tag === t)).filter(Boolean) : SLIDES).filter((s) => !exclude?.includes(s.tag));
+  const list = (only ? only.map((t) => SLIDES.find((x) => x.tag === t)).filter(Boolean) : SLIDES).filter((s) => !exclude?.includes(s.tag) && !s.hidden); // a slide with hidden: true is parked (mv58e69r)
   const grouped = new Set(LEAD_GROUP.map(([, t]) => t));
   return (
     <div className="rwf-run">

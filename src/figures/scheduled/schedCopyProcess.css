@@ -1,0 +1,16 @@
+/* SchedCopyProcess: struck line, then the line that replaced it */
+.cpr { display: grid; gap: 2.25rem; width: 100%; color: var(--fg); text-align: left; }
+.cpr__move { margin: 0 0 0.6rem; display: flex; align-items: baseline; gap: 0.7rem; font-size: 1rem; font-weight: 600; }
+.cpr__n { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif; font-weight: 200; font-size: 1.75rem; line-height: 1; color: var(--lbl, #7a5cd8); }
+.cpr__list { list-style: none; margin: 0; padding: 0; display: grid; }
+.cpr__pair { display: grid; gap: 0.3rem; padding: 0.95rem 0; border-top: 1px solid var(--rule, var(--line)); }
+.cpr .cpr__was, .cpr .cpr__now, .cpr .cpr__src { margin: 0; }
+.cpr__was { font-size: 0.9375rem; color: var(--muted); }
+.cpr__was del { text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--muted) 70%, transparent); }
+.cpr__now { font-size: 1.0625rem; line-height: 1.4; font-weight: 500; }
+.cpr__now ins { text-decoration: none; background: color-mix(in srgb, #7a5cd8 18%, transparent); padding: 0.05em 0.3em; border-radius: 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.cpr__src { font-size: 0.75rem; color: var(--muted); }
+.cpr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.page--article .article__body .cpr p.cpr__was, .page--article .article__body .cpr p.cpr__src { color: var(--muted); }
+.page--article .article__body .cpr p.cpr__src { font-size: 0.75rem; }
+.page--article .article__body .cpr p.cpr__now { font-size: 1.0625rem; color: var(--fg); }

@@ -58,16 +58,7 @@ export const QA_NOTES = [
     sel: ".rv",
     title: "Pick one My role direction",
     detail:
-      "Three copies sit under the original: 1 Editorial spread, 3 Scope map, 2 Role card. Pick one and the rest go (App.jsx roleFrame.options, RoleEditorial / RoleScopeMap / RoleCard).",
-  },
-  {
-    id: "svg-ids",
-    route: "/work/scheduled-delivery",
-    status: "open",
-    sel: "#Vector",
-    title: "Duplicate SVG ids from a Figma export",
-    detail:
-      "#Vector, #Vector_2 and #Vector_3 each appear twice (an inline SVG pasted from Figma, rendered two times). Harmless today, but any gradient or mask that references one of those ids will pick the first copy. Rename on export or strip the ids.",
+      "(Options 1 and 2 are parked: roleFrame.hideEditorial / hideCard in App.jsx; only Option 3, the scope map, shows.) Three copies sit under the original: 1 Editorial spread, 3 Scope map, 2 Role card. Pick one and the rest go (App.jsx roleFrame.options, RoleEditorial / RoleScopeMap / RoleCard).",
   },
   {
     id: "chart-buttons",
@@ -132,6 +123,95 @@ export const QA_NOTES = [
       "Option tags and the scope map's centre node were 3.6:1 in light mode (now 6.6:1); Option 1's partner lines fell back to the body font; and at phone width the scope map's numbers ran past the box.",
   },
 
+  // ---------- reach explorer (The constraints), QA of 12 Oct ----------
+  {
+    id: "rex-illustrative",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__note",
+    title: "Reach explorer: confirm the numbers, or label it more loudly",
+    detail:
+      "It is an illustrative model (seeded blocks, three made-up stores, 1.6 km instant and 3.2 km scheduled reach) and the footnote says so, but at 11px at the foot of the panel; on a phone it is below the fold. Confirm those radii and the 11 PM store hours are what you want to claim, or add an “Illustrative model” tag to the figure's heading so nobody reads 100.0% as Zepto data.",
+  },
+  {
+    id: "rex-neutral-contrast",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__legend",
+    title: "Reach explorer: the “Nothing” swatch is faint in light mode",
+    detail:
+      "The grey dot and its blocks measure 2.1:1 on white in light mode (3.0:1 dark), under the 3:1 non-text floor. A design call because --sdc-neutral is shared with the other charts: suggest rgba(0,0,0,.45) in light, which is about 3.4:1.",
+  },
+  {
+    id: "rex-touch-trap",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__map svg",
+    title: "Reach explorer: the map traps page scroll on a phone",
+    detail:
+      "The map has touch-action: none, so a thumb that lands on it drags the circle instead of scrolling the page, and on a 476px screen the map is most of the figure. Options: touch-action: pan-y with the circle moved by its handle only, or a “tap to explore” lock.",
+  },
+  {
+    id: "rex-mobile-crop",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__map svg",
+    nth: 0,
+    corner: "left",
+    title: "Reach explorer: on a phone the circle can leave the frame",
+    detail:
+      "At 476px the 640×800 map is sliced to a 4:3 window (about y 158–641), so the idle drift and a 2 km circle run off the visible edge and the numbers count blocks you cannot see. Suggest a taller map on phones (aspect 1:1) or clamping the circle to the visible window.",
+  },
+  {
+    id: "rex-legend-leaders",
+    route: "/work/scheduled-delivery",
+    status: "fixed",
+    sel: ".rex__legend",
+    corner: "left",
+    title: "Reach explorer: legend leaders and percentages",
+    detail:
+      "The dotted leaders were typed “.” characters clipped by the column (“Instant .”, “Schedule ..”), and the values had no % sign. They are now a dotted rule that fills the space, and the values read 91.3%.",
+  },
+  {
+    id: "rex-idle-drift",
+    route: "/work/scheduled-delivery",
+    status: "fixed",
+    sel: ".rex__seg",
+    title: "Reach explorer: the circle kept wandering after you used the clock",
+    detail:
+      "Only the slider and the map stopped the idle drift, so flipping 2 PM / 11 PM left the circle moving and the numbers changing under you. The toggle now counts as touching it. Checked in the same pass: keyboard (arrow keys, shift for big steps, focus ring), reduced motion (no drift), 60 fps while dragging and drifting, no console errors, no horizontal overflow at 476.",
+  },
+
+  {
+    id: "rex-confirm-model",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__panel",
+    corner: "left",
+    title: "[CONFIRM] Reach explorer: the model's facts",
+    detail:
+      "Nothing in the report or the case text backs these, so they are model assumptions, not facts: instant reach 1.6 km and scheduled reach 3.2 km from an open store; Stores A and C closing for instant at 11 PM and Store B staying open; three stores. What the case does say: a shipment can be unserviceable because its store is closed or out of stock for that window (The cart is a complex construct), and 11 pm is a planning-tonight moment (One scroll across midnight). Confirm the radii and the 11 PM rule, or soften the footnote to say they are illustrative only. Numbers are untouched.",
+  },
+  {
+    id: "rex-placement",
+    route: "/work/scheduled-delivery",
+    status: "note",
+    sel: ".rex",
+    corner: "left",
+    title: "Reach explorer: now in Impact (was Context & problem, was The constraints)",
+    detail:
+      "12 Oct (mv589p9j): moved on to Impact, after the availability tape, and simplified to one number and one highlight colour (the waffle and per-store bars are gone). Earlier: was in The constraints, which is about one-hour slots, booked-plus-live load and the delivery promise; the explorer shows none of those. It now follows the arriving-tomorrow scene in Context & problem, where the copy says an app that only knew how to say now had nowhere to put them: this is who gets instant, who can only schedule, and how 11 PM changes it. Labels changed to match what it counts: the panel heading “Instant, schedule, or nothing” became “Instant, schedule only, or nothing” (the schedule dots are blocks that cannot get instant) and “Get instant” became “Blocks with instant” (the share is of blocks, not carts).",
+  },
+  {
+    id: "rex-real-map",
+    route: "/work/scheduled-delivery",
+    status: "open",
+    sel: ".rex__map",
+    corner: "left",
+    title: "[CONFIRM] Reach explorer: the real Indiranagar map and the store pins",
+    detail:
+      "The base is now the real street map of Indiranagar, Bangalore (OpenStreetMap, ODbL, attribution in the corner; baked into indiranagarMap.json by tools/osm-indiranagar.mjs, no live tiles). The three store pins are NOT real stores: they sit at plausible spots on the map and the footnote says so. If you want them at real dark-store locations (or a different neighbourhood), give me the coordinates; I did not guess a specific store. Blocks are 100 m squares of the map kept where a street runs through them; the 1.6 / 3.2 km radii and the 11 PM closures are still the model's assumptions (see rex-confirm-model).",
+  },
   // ---------- notes ----------
   {
     id: "thin-numerals",
