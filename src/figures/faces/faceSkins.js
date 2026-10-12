@@ -216,7 +216,7 @@ uniform vec3 uSH[9], uTint; uniform float uK, uUseMap, uIsEye, uFloor, uTexScale
 uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
 uniform sampler2D uMapRaw, uMargin; uniform float uHasRaw; uniform vec3 uActs;
 // which part the reference shows at each pixel (id = part * 2 + layer + 1), and who this is
-uniform sampler2D uIdMap; uniform float uPartId, uLayered, uTurnOnly; uniform vec2 uIdRes;
+uniform sampler2D uIdMap; uniform float uPartId, uLayered, uTurnOnly, uDefringe; uniform vec2 uIdRes;
 // the surface colour from every side: an albedo atlas baked from the turnaround views (tools/face3d/fit/mv)
 uniform sampler2D uMV; uniform float uHasMV;
 // what the reference shows of this part: its median colour (linear) and its light's mean luminance
@@ -314,7 +314,8 @@ void main(){
       // carry the tile's backdrop colour in their anti-aliasing (claySun's yellow, felt's red, cel's
       // blue rim round the hair; the tiles were upscaled about 2x, so the band is wide). They take
       // the colour 11 px further in, from the same part's texels
-      if (uUseMap > 0.5) {
+      // (only on a transparent ground: over the skin's own backdrop the tile's edge is right)
+      if (uUseMap > 0.5 && uDefringe > 0.5) {
         float nearBg = 0.0;
         vec3 inner = vec3(0.0); float nIn = 0.0;
         for (int i = 0; i < 8; i++) {

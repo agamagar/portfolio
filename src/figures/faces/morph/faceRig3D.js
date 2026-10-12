@@ -46,7 +46,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
   const lView = new THREE.Vector3();
   // uActs (shared, as FaceSV): how much the eyes, brows and mouth are moving, so their skin
   // margins fade to the clean skin while an emote moves them
-  const shared = { uL: { value: lView }, uMode: { value: MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() } };
+  const shared = { uL: { value: lView }, uMode: { value: MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() }, uDefringe: { value: 0 } };
   const skin = skinById(skinId);
 
   const body = new THREE.Group();
