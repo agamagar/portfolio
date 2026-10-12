@@ -16,6 +16,11 @@ const MOMENTS = [
   ["wink", "wink", 0.4], ["laugh", "laugh", 0.15], ["shy", "shy", 0.5], ["think", "think", 0.5],
   ["look", "lookAround", 0.3], ["nod", "nod", 0.25], ["sad", "sad", 0.5], ["angry", "angry", 0.25], ["puff", "puff", 0.5],
 ];
+// the ground behind the face: Agam picks it (2026-10-12: "a separate colour toggle... don't do it
+// automatically"). The face itself is drawn on a transparent canvas; nothing changes per skin.
+// "check" shows the alpha as a checkerboard.
+const GROUNDS = [["none", "transparent"], ["check", "repeating-conic-gradient(#d6d6d6 0 25%, #f4f4f4 0 50%) 0 0 / 24px 24px"],
+  ["white", "#ffffff"], ["paper", "#ebebeb"], ["ink", "#121212"], ["black", "#000000"]];
 const btn = { font: "500 13px/1 Inter, system-ui, sans-serif", padding: "8px 12px", borderRadius: 999, border: "1px solid rgba(0,0,0,0.15)", background: "rgba(255,255,255,0.78)", color: "#222", cursor: "pointer" };
 
 export default function FaceLab({ onBack }) {
@@ -24,8 +29,9 @@ export default function FaceLab({ onBack }) {
   const [cycle, setCycle] = useState(false); // skins change on click (the spin); Cycle turns auto-change on
   const [overlay, setOverlay] = useState(false);
   const [moment, setMoment] = useState("rest");
+  const [ground, setGround] = useState("transparent");
   return (
-    <div style={{ minHeight: "100vh", background: skin.bg, transition: "background 380ms ease", display: "grid", placeItems: "center", padding: 24 }}>
+    <div style={{ minHeight: "100vh", background: ground, display: "grid", placeItems: "center", padding: 24 }}>
       <div style={{ display: "grid", justifyItems: "center", gap: 20 }}>
         <div style={{ position: "relative" }}>
           <FaceSV ref={face} size={400} skin={SKINS[0].id} cycle={cycle && !overlay ? 6000 : 0} onSkin={setSkin} />
@@ -41,6 +47,20 @@ export default function FaceLab({ onBack }) {
           ))}
           <button type="button" style={btn} onClick={() => setCycle((c) => !c)}>{cycle ? "Stop cycling" : "Cycle"}</button>
           <button type="button" style={{ ...btn, fontWeight: overlay ? 700 : 500 }} onClick={() => { setOverlay((o) => !o); face.current?.setSkin("clay"); }}>Reference 30%</button>
+        </div>
+        <div role="group" aria-label="Background" style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", alignItems: "center", maxWidth: 640 }}>
+          {GROUNDS.map(([label, value]) => (
+            <button key={label} type="button" aria-pressed={ground === value} title={`Background: ${label}`} onClick={() => setGround(value)}
+              style={{ ...btn, padding: "6px 10px", display: "inline-flex", alignItems: "center", gap: 6, outline: ground === value ? "2px solid #222" : "none" }}>
+              <span aria-hidden="true" style={{ width: 14, height: 14, borderRadius: 999, border: "1px solid rgba(0,0,0,0.25)", background: value === "transparent" ? "linear-gradient(135deg, #fff 45%, #e0368f 45% 55%, #fff 55%)" : value }} />
+              {label}
+            </button>
+          ))}
+          <label style={{ ...btn, padding: "6px 10px", display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <input type="color" aria-label="Custom background colour" value={/^#[0-9a-f]{6}$/i.test(ground) ? ground : "#ebebeb"} onChange={(e) => setGround(e.target.value)}
+              style={{ width: 18, height: 18, padding: 0, border: 0, background: "none" }} />
+            custom
+          </label>
         </div>
         <div role="group" aria-label="Moment" style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", maxWidth: 640 }}>
           {MOMENTS.map(([label, name, k]) => (

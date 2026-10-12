@@ -166,8 +166,18 @@ uniform mat3 uRestNM;
 // the fitted camera's view at rest: how far from it this point sat (tested against the rig's depth map)
 uniform mat4 uRestMV;
 varying float vRestZ;
+// THE MIRROR (2026-10-12): the tile shows one side of the head; the far side is filled from the
+// near side's mirror image. The head is built symmetric about x = 0 (rest coordinates, uRestModel);
+// the mirrored point, projected by the fitted camera at rest (uRestV, uRestP), is where the
+// reference shows that point's twin: its screen spot (top-left origin), distance, normal
+uniform mat4 uRestModel, uRestV, uRestP;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
+// the lip's recess while the mouth moves (uActs.z: 0 at rest): the fitted heads' mouths are creases
+// with no lips, and a lip ring standing proud of the skin drew a pale crescent beside an open mouth.
+// Pushed back from the camera it stays only where the opening shows it
+uniform vec3 uActs; uniform float uRecess;
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
 // the (morphed) normal in the fitted camera's frame at rest: where the reference's light was fitted
 varying vec3 vRN;
@@ -182,9 +192,17 @@ void main(){
   #include <begin_vertex>
   #include <morphtarget_vertex>
   vec4 mv = modelViewMatrix * vec4(transformed,1.0);
+  mv.xyz += normalize(mv.xyz) * uRecess * clamp(uActs.z, 0.0, 1.0);
   vN = normalize(normalMatrix * objectNormal);
   vRN = uRestNM * objectNormal;
   vRestZ = -(uRestMV * vec4(transformed, 1.0)).z;
+  vec4 rp = uRestModel * vec4(transformed, 1.0);
+  vec4 mv0 = uRestV * vec4(-rp.x, rp.y, rp.z, 1.0);
+  vec4 mc = uRestP * mv0;
+  vMirZ = -mv0.z;
+  vMirUv = vec2(mc.x / mc.w * 0.5 + 0.5, 0.5 - mc.y / mc.w * 0.5);
+  vec3 rn = mat3(uRestModel) * objectNormal;
+  vMirN = mat3(uRestV) * vec3(-rn.x, rn.y, rn.z);
   vV = normalize(-mv.xyz);
   vMV = mv.xyz;
   vP = (modelMatrix * vec4(transformed,1.0)).xyz;
@@ -207,6 +225,9 @@ uniform vec3 uSeenRad; uniform float uSeenLum;
 // the rig's depth at rest (tools/face3d/fit/idmap, MODE=depth): view-space distance over [4.5, 10]
 uniform sampler2D uDepth; uniform float uHasDepth;
 varying float vRestZ;
+// the mirror (see VERT): on for skin and hair of a rig with a depth map
+uniform float uMirror;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -236,7 +257,9 @@ vec3 ramp(float w, float soft){
 }
 
 void main(){
-  vec3 n = normalize(vN); vec3 l = normalize(uL); vec3 v = normalize(vV);
+  // (front faces only are drawn; facing is kept for the mirror's normal)
+  float facing = 1.0;
+  vec3 n = normalize(vN) * facing; vec3 l = normalize(uL); vec3 v = normalize(vV);
   vec3 h = normalize(l + v);
   float d = dot(n, l);
   float w = d * 0.5 + 0.5;
@@ -267,7 +290,7 @@ void main(){
     // fitted light on a neutral surface (ratio 1) instead of a smeared texture
     // was this very surface what the reference showed at this spot? (a shadow-map style test
     // against the reference camera, softened over the 3x3 pixels around it)
-    float seen = 1.0;
+    float seen = 1.0, defr = 0.0;
     if (uPartId >= 0.0) {
       float layer = 0.0; vec2 puv = vUv;
       if (uLayered > 0.5) { layer = step(0.5, vUv.x); puv.x = vUv.x * 2.0 - layer; }
@@ -287,9 +310,30 @@ void main(){
         float z = 4.5 + texture2D(uDepth, puv).r * 5.5;
         seen *= mix(1.0, 1.0 - smoothstep(0.05, 0.12, vRestZ - z), uTurn);
       }
+      // DEFRINGE (2026-10-12, the face on a transparent ground): texels within 6 px of the backdrop
+      // carry the tile's backdrop colour in their anti-aliasing (claySun's yellow, felt's red, cel's
+      // blue rim round the hair; the tiles were upscaled about 2x, so the band is wide). They take
+      // the colour 11 px further in, from the same part's texels
+      if (uUseMap > 0.5) {
+        float nearBg = 0.0;
+        vec3 inner = vec3(0.0); float nIn = 0.0;
+        for (int i = 0; i < 8; i++) {
+          float a = float(i) * 0.785398;
+          vec2 d = vec2(cos(a), sin(a));
+          nearBg += step(texture2D(uIdMap, puv + d * 6.0 / uIdRes).r * 255.0, 0.5);
+          vec2 q = puv - d * 11.0 / uIdRes;
+          float ok = step(abs(floor(texture2D(uIdMap, q).r * 255.0 + 0.5) - want), 0.5)
+                   * step(0.5, texture2D(uIdMap, q - d * 6.0 / uIdRes).r * 255.0);
+          vec2 tq = vec2(uLayered > 0.5 ? (q.x + layer) * 0.5 : q.x, q.y);
+          vec3 c = uHasRaw > 0.5 ? texture2D(uMapRaw, tq).rgb : texture2D(uMap, tq).rgb;
+          inner += c * ok; nIn += ok;
+        }
+        if (nearBg > 0.5 && nIn > 0.5) { ratio = pow(inner / nIn, vec3(uTexGamma)) * uTexScale; defr = 1.0; }
+      }
       // texels on the reference's silhouette hold some backdrop (its anti-aliased edge): right at
       // rest, a coloured streak once a turn shows that surface from the side. Turned, a texel
-      // within 3 px of the backdrop is not trusted
+      // within 3 px of the backdrop is not trusted. (Only the backdrop: gating every part's edge
+      // drew a pale outline round the nose and the eye sockets at a small turn)
       if (uTurn > 0.0) {
         float bgHits = 0.0;
         for (int i = 0; i < 4; i++) {
@@ -325,6 +369,7 @@ void main(){
     // turned away from the fitted pose, surfaces that were edge-on at rest fade to plain clay too
     float turnGate = mix(1.0, smoothstep(0.3, 0.75, vSeen), uTurn);
     float trust = smoothstep(0.05, 0.35, seen) * smoothstep(0.0, 0.2, vSeen) * turnGate;
+    trust = max(trust, defr * (1.0 - uTurn)); // (a defringed edge texel is the part's own colour)
     // the light never drops below a floor (the texture maker uses the same one), so a
     // grazing edge keeps its colour instead of clipping to black
     // The texture is the reference's colour divided by the light it was fitted under, so the
@@ -335,7 +380,7 @@ void main(){
     // (At rest the two normals are the same.)
     float occ = pow(max(ao, 1e-3), uK);
     vec3 nl = uFlat > 0.0 ? normalize(mix(n, uFlatN, uFlat)) : n;
-    vec3 nr = normalize(vRN);
+    vec3 nr = normalize(vRN) * facing;
     if (uFlat > 0.0) nr = normalize(mix(nr, uFlatN, uFlat));
     vec3 litView = max(max(shEval(nl), 0.0) * occ, vec3(uFloor));
     vec3 litRest = max(max(shEval(nr), 0.0) * occ, vec3(uFloor));
@@ -350,7 +395,29 @@ void main(){
       vec3 rel = uRatioMean.x > 0.0 ? clamp(local / max(whole, vec3(1e-3)), 0.7, 1.4) : vec3(1.0);
       unseen = mix(unseen, uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel, uTurn);
     }
+    // the far side, from its mirror twin on the near side: where the twin was what the reference
+    // showed (its depth and part check out), its own texel lit by the fitted light at the
+    // mirrored normal, so the far side carries the near side's detail and shading. Only as the
+    // head turns (at rest the far side isn't in view, and the fit's rest is untouched)
+    if (uMirror > 0.5 && uTurn > 0.0) {
+      vec2 m = vMirUv;
+      float inside = step(0.0, m.x) * step(m.x, 1.0) * step(0.0, m.y) * step(m.y, 1.0);
+      // (two-sided: the fitted head is only nearly symmetric, and a twin that lands in front of the
+      // surface the reference showed (the near ear) is no twin either)
+      float twinSeen = inside * (1.0 - smoothstep(0.06, 0.15, abs(vMirZ - (4.5 + texture2D(uDepth, m).r * 5.5))));
+      float idv = floor(texture2D(uIdMap, m).r * 255.0 + 0.5);
+      twinSeen *= step(abs(idv - (uPartId * 2.0 + 1.0)), 0.5); // the twin on this part's front layer
+      vec2 tuv = vec2(uLayered > 0.5 ? m.x * 0.5 : m.x, m.y);
+      vec3 twin = pow(texture2D(uMap, tuv).rgb, vec3(uTexGamma)) * uTexScale;
+      vec3 nm = normalize(vMirN) * facing;
+      vec3 litTwin = max(max(shEval(nm), 0.0) * occ, vec3(uFloor));
+      unseen = mix(unseen, litTwin * twin, twinSeen * uTurn);
+    }
     col = mix(unseen, litRest * ratio, trust) * uTint;
+    // a defringed edge: the fitted light carries the backdrop's bounce at grazing normals (claySun's
+    // yellow, felt's red), so the edge takes the part's own colour, shaded by brightness only
+    if (defr > 0.5 && uSeenLum > 0.0)
+      col = mix(col, uSeenRad * clamp(lum(litRest) / uSeenLum, 0.25, 1.6) * clamp(ratio / max(whole, vec3(1e-3)), 0.7, 1.4) * uTint, 1.0 - uTurn);
     if (uIsEye > 0.5 && uUseMap < 0.5) {
       // a glossy bead (when there is no fitted texture): the dark base and a sharp window highlight up and to the left
       col = uBase + vec3(1.0) * pow(max(dot(n, normalize(vec3(-0.45, 0.6, 0.75))), 0.0), 220.0) * 1.6;

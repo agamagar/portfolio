@@ -200,7 +200,15 @@ deform(head, head_shape)
 _nx = P["nose_x"]
 nose = lock("Nose", [(_nx, -0.82, P["nose_rz"]), (_nx, -0.98, (P["nose_rz"] + P["nose_tz"]) * 0.45 + 0.02),
                      (_nx, P["nose_ty"] + 0.02, P["nose_tz"] + 0.12), (_nx, P["nose_ty"], P["nose_tz"])],
-            P["nose_r0"], P["nose_r1"], flat=1.0)
+            max(P["nose_r0"], 0.04), P["nose_r1"], flat=1.0)
+# the bridge: the nose's root reaches back into the skull, so the remesh always joins it to the face.
+# (2026-10-12: the nose starts at a fixed y = -0.82; a fit that made the head shallower (hose's
+# sy 0.64 puts the face near y = -0.65) left it hanging in front of the face, and one that drove
+# its root radius to nothing (hose: -0.008) pinched it off: either way a separate piece, a nose
+# that came away from the face as soon as the head turned)
+bridge = lock("NoseBridge", [(_nx, -0.35, P["nose_rz"] - 0.02), (_nx, -0.6, P["nose_rz"]), (_nx, -0.84, P["nose_rz"])],
+              0.06, max(P["nose_r0"], 0.06), flat=1.0)
+alae_bridge = [bridge]
 alae = []  # the reference nose is one clean wedge: no wings
 # the ears: big C ears set back on the sides, between eye and mouth height. Each is a
 # rim (a tube round a C open toward the face) around a shallow bowl, flared out at the back.
@@ -213,8 +221,14 @@ for sx in (-1, 1):
         z = zc + rz * math.sin(a)
         return (sx * (P["ear_x"] + P["ear_flare"] * max(0.0, y - yc + 0.14)), y, z)
     rim = lock(f"EarRim{sx}", [ear_pt(math.radians(a)) for a in (118, 75, 30, -15, -60, -100)], P["ear_r"], P["ear_r"] * 1.1, flat=1.0)
+    # (2026-10-12: the bowl is tilted WITH the rim's flare, x growing toward the back, which is a
+    # turn of -sx * atan(flare) about z; it was +sx, which sank the bowl into the skull and left the
+    # ear an empty ring: at rest the projected texture painted the skull behind it, but any turn
+    # showed daylight through the ear. Along the tilt it must also reach sqrt(1 + flare^2) times the
+    # rim's depth to meet the rim)
     bowl = ellipsoid(f"EarBowl{sx}", (sx * (P["ear_x"] + P["ear_flare"] * 0.2), yc + 0.07, zc),
-                     (P["ear_bowl"], P["ear_ry"] * 0.95, P["ear_rz"] * 0.93), rot=(0, 0, sx * math.degrees(math.atan(P["ear_flare"]))))
+                     (P["ear_bowl"], P["ear_ry"] * 0.95 * math.sqrt(1 + P["ear_flare"] ** 2), P["ear_rz"] * 0.93),
+                     rot=(0, 0, -sx * math.degrees(math.atan(P["ear_flare"]))))
 
     def inner_pt(a):
         y = yc + 0.03 + 0.12 * math.cos(a)
@@ -231,7 +245,7 @@ for sx in (-1, 1):
 
 # fuse: one surface, softened where the pieces meet (a sculptor's blend)
 obj_active(head)
-for o in [nose, *alae, *ears]:
+for o in [nose, *alae_bridge, *alae, *ears]:
     o.select_set(True)
 bpy.ops.object.join()
 rem = head.modifiers.new("remesh", "REMESH")
@@ -248,6 +262,22 @@ apply_all(head)
 # the ear's hollow: press the middle of each bowl in, inside the rim
 bm = bmesh.new()
 bm.from_mesh(head.data)
+# (and drop the remesh's loose specks, a few voxels each, so the head is one piece)
+_seen, _loose = set(), []
+for _v in bm.verts:
+    if _v.index in _seen:
+        continue
+    _part, _stack = [], [_v]
+    _seen.add(_v.index)
+    while _stack:
+        _x = _stack.pop(); _part.append(_x)
+        for _e in _x.link_edges:
+            _y = _e.other_vert(_x)
+            if _y.index not in _seen:
+                _seen.add(_y.index); _stack.append(_y)
+    if len(_part) < 50:
+        _loose += _part
+bmesh.ops.delete(bm, geom=_loose, context="VERTS")
 for v in bm.verts:
     for sx in (-1, 1):
         c = Vector((sx * (P["ear_x"] + 0.19), P["ear_yc"] + 0.07, P["ear_zc"]))

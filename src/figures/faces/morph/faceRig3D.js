@@ -139,6 +139,8 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uRatioMean: { value: new THREE.Vector3().fromArray(fit.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
           // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
           uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
+          uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 }, // (as FaceSV: the lip sinks while the mouth moves)
+          uRestModel: { value: new THREE.Matrix4() }, uRestV: { value: new THREE.Matrix4() }, uRestP: { value: new THREE.Matrix4() }, uMirror: { value: 0 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 },
