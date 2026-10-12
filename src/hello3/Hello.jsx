@@ -13,6 +13,7 @@ import MorphFace from "../MorphFace";
 // room's page capture waits for it (heroMorphGate.js)
 import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
+import { DEV, FLOOD_PEAK, FLOOD_RGB, flood } from "../figures/faces/morph/flood";
 import { warmIsReady } from "../scene/window/warmFlag";
 import { Check, Copy, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
@@ -559,7 +560,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // starts at the peak (p 0.3, = its mark) and resolves out of it (opacity up by 0.6, brightness, blur
     // and desaturation down by 1); the bloom fades under it (p 0.45-0.95). The skeleton and the content
     // are never both at strength: the hand-off happens inside the bright peak. Removed at the end.
-    let svg = null, front = null, frontStops = null, frontRect = null;
+    let svg = null, front = null, frontStops = null, frontRect = null, hazes = [];
     const lines = [];
     const dark = document.documentElement.classList.contains("dark");
     // rgba as arrays so the shimmer colours can run continuously into the bloom
@@ -567,12 +568,33 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // half the block contrast, a dimmer, wider, slower band; the face and the glow draw the eye
     const BASE = dark ? [255, 255, 255, 0.035] : [0, 0, 0, 0.032];
     const LIT = dark ? [255, 255, 255, 0.09] : [255, 255, 255, 0.5];
-    const BLOOM = dark ? [255, 238, 218, 0.5] : [255, 246, 236, 0.95];
-    const BLOOM_BIG = dark ? [255, 238, 218, 0.24] : [255, 246, 236, 0.8];
     const mix = (c0, c1, k) => c0.map((v, i) => v + (c1[i] - v) * k);
     const rgba = (c) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${c[3].toFixed(3)})`;
     const ss = (e0, e1, x) => { const u = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return u * u * (3 - 2 * u); };
     const TAN = Math.tan((20 * Math.PI) / 180);
+    // THE LIGHT IS THE CLAY'S (refine, 11 Oct; Agam: "the glow reveal can be more refined", "the glow reveal
+    // and the glow of the 3D morph face should be synced"). The face glows in its flat skin (#f2dcc6, flood.js)
+    // before the shading lands; the wave is that same light leaving the face, never pure white: its core is the
+    // skin lifted about halfway to white, its trailing falloff the skin itself, so it cools nowhere and warms as it
+    // lingers. The band's profile, in px from the core (d > 0 ahead of it, d < 0 behind):
+    //   core     a narrow gaussian (sigma 22 px): crisp, never a hard line
+    //   lead     a wider gaussian (sigma 36 px): the soft edge that arrives first, gone by ~110 px ahead
+    //   trail    a smoothstep falloff over 2.4 S (336 px): the light lingers on what it has printed
+    // All three have zero slope at the core and at their ends, and the ring is drawn with ~20 stops sampled
+    // from it, so the piecewise-linear gradient has no knees: the old four-stop ring's slope breaks were what
+    // read as bands (Mach bands). Skia dithers SVG gradients (measured: alternating 8-bit values row to row),
+    // which takes care of the quantisation on a pale ramp over a pale page.
+    const S = 140; // px: the band's unit (the old soft edge)
+    const WHITE = [255, 255, 255];
+    const CORE_RGB = mix(FLOOD_RGB, WHITE, dark ? 0.42 : 0.5), TAIL_RGB = FLOOD_RGB;
+    const CORE_A = dark ? 0.12 : 0.4, SIDE_A = dark ? 0.13 : 0.3;
+    const gauss = (d, sg) => Math.exp(-((d / sg) ** 2));
+    const LEAD = 0.8 * S, TRAIL = 2.4 * S;
+    const side = (d) => (d >= 0 ? gauss(d, 0.26 * S) : 1 - ss(0, TRAIL, -d));
+    const band = (d) => CORE_A * gauss(d, 0.16 * S) + SIDE_A * side(d); // alpha, peak CORE_A + SIDE_A
+    const bandRGB = (d) => (d >= 0 ? CORE_RGB : mix(CORE_RGB, TAIL_RGB, ss(0, 0.8 * S, -d)));
+    // denser at the core, where the profile turns
+    const BAND_D = [-2.4, -2.05, -1.7, -1.35, -1.05, -0.8, -0.58, -0.42, -0.3, -0.2, -0.12, -0.05, 0, 0.05, 0.12, 0.21, 0.32, 0.45, 0.6, 0.8].map((k) => k * S);
     if (glow && SKELETON) {
       const NS = "http://www.w3.org/2000/svg";
       svg = document.createElementNS(NS, "svg");
@@ -602,15 +624,30 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       // the front's light: ONE radial gradient ring on ONE rect over the hero's area (dev and prod), centred on the face
       front = document.createElementNS(NS, "radialGradient");
       front.setAttribute("id", "hello-front"); front.setAttribute("gradientUnits", "userSpaceOnUse"); front.setAttribute("r", "2");
-      const fl = dark ? BLOOM : BLOOM_BIG.map((v, i) => (i < 3 ? v : 0.6));
-      const lo = rgba([fl[0], fl[1], fl[2], 0]);
-      front.innerHTML = `<stop offset="0" stop-color="${lo}"/><stop offset="0" stop-color="${lo}"/><stop offset="0" stop-color="${rgba([fl[0], fl[1], fl[2], Math.min(0.34, fl[3])])}"/><stop offset="1" stop-color="${lo}"/>`;
+      // the centre stop, then one per sample of the band's profile (the light, above)
+      front.innerHTML = `<stop offset="0"/>` + BAND_D.map(() => `<stop offset="0"/>`).join("");
       frontStops = [...front.children];
       defs.appendChild(front);
       frontRect = document.createElementNS(NS, "rect");
       frontRect.setAttribute("x", "0"); frontRect.setAttribute("y", "0"); frontRect.setAttribute("width", String(Math.max(document.documentElement.clientWidth, 600))); frontRect.setAttribute("height", "2600");
       frontRect.setAttribute("fill", "url(#hello-front)"); frontRect.style.opacity = "0";
       svg.appendChild(frontRect);
+      // THE HAZE (Agam: "the glow reveal should be slightly distorted in the area where the elements are
+      // appearing"): a few displacement filters, lent to the elements the band's core is crossing. Low-frequency
+      // noise stretched across the line (a heat shimmer, not a wobble), one octave, sRGB so the noise's mean
+      // stays 0.5 (no net shift); mostly vertical (the x channel pulled to a third), since sideways shifts
+      // that change line to line read as tearing. Its scale follows the core (a gaussian of the element's
+      // distance to it), so the content settles out of the ripple into crisp rest and the filter is dropped
+      // once it is flat. Skia samples the displacement nearest-pixel, which steps glyph edges; a sub-pixel
+      // softening (at most 0.3 px, on the same curve, so 0 at rest) takes the steps out.
+      for (let i = 0; i < 6; i++) {
+        const f = document.createElementNS(NS, "filter");
+        f.setAttribute("id", `hello-haze-${i}`); f.setAttribute("x", "-6%"); f.setAttribute("y", "-30%"); f.setAttribute("width", "112%"); f.setAttribute("height", "160%");
+        f.setAttribute("color-interpolation-filters", "sRGB");
+        f.innerHTML = `<feTurbulence type="fractalNoise" baseFrequency="0.007 0.026" numOctaves="1" seed="${7 + i * 13}"/><feColorMatrix values="0.35 0 0 0 0.325  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0"/>`;
+        defs.appendChild(f);
+        hazes.push({ id: f.id, map: f.children[2], aa: f.children[3], L: null });
+      }
       document.body.appendChild(svg);
     }
     let T = 0; // the morph's latest t (0 while the face waves)
@@ -683,8 +720,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // first touches it (dmin, its nearest point) and where it has fully passed (dmax, its farthest point),
     // in page pixels; the element is revealed through a soft-edged circular mask as the front crosses it,
     // so big elements print in progressively across their area. Static geometry, recomputed with the layout.
-    const FRONT_SOFT = 140; // px: the width of the front's soft edge
-    let fx = 0, fy = 0, RMAX = 1, RTOT = 1;
+    let fx = 0, fy = 0, RMAX = 1, RTOT = 1, CEND = 1, rFace = 0, W0 = 0;
     function wavefront() {
       if (!lines.length) return;
       const fr = root.querySelector(".hello-hero__flyer")?.getBoundingClientRect();
@@ -707,6 +743,17 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       const RCORN = Math.max(Math.hypot(fx - vx0, fy - vy0), Math.hypot(vx1 - fx, fy - vy0), Math.hypot(fx - vx0, vy1 - fy), Math.hypot(vx1 - fx, vy1 - fy));
       RTOT = Math.max(RMAX, RCORN) + 40;
       waveRamp = buildRamp(Math.min(1, RMAX / RTOT));
+      CEND = RTOT + TRAIL * 0.5;
+      // THE LAUNCH IS THE FACE'S PEAK: the wave's clock runs from W0 to the moment the face's colour reaches its
+      // outline (DEV[1]), and W0 is solved so the core crosses the face's rim exactly at FLOOD_PEAK, when the
+      // face's pale glow is at its widest. Before that the front runs unseen inside the face (the ring's light is
+      // still 0), which is where the skeletons nearest the face clear. The rim: the clay grows to 1.21x across the
+      // morph, about 1.1x around the peak.
+      rFace = (Math.max(fr.width, fr.height) / 2) * 1.1;
+      const k = (rFace + PRE) / (CEND + PRE);
+      let lo = 0, hi = 1;
+      for (let i = 0; i < 28; i++) { const mid = (lo + hi) / 2; if (waveRamp(mid) < k) lo = mid; else hi = mid; }
+      W0 = (FLOOD_PEAK - lo * DEV[1]) / (1 - lo);
       if (front) { front.setAttribute("cx", fx.toFixed(1)); front.setAttribute("cy", fy.toFixed(1)); }
     }
     // THE WAVE'S OWN SPEED RAMP (Agam: "also add a speed ramp to it"): same construction as the face morph's RAMP
@@ -732,6 +779,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       };
     };
     let waveRamp = buildRamp(1);
+    const PRE = 300; // px: how far inside the face the front starts, unseen
     place();
     if (import.meta.env.DEV) window.__skel = lines; // dev only: the load QA diffs each block against its element
     window.addEventListener("resize", place);
@@ -794,15 +842,21 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       const deg = (Math.atan2(v[1], v[0]) * 180) / Math.PI;
       return Math.min(1, Math.max(0, deg / 30));
     };
-    // the front's radius on the morph's clock: it starts inside the face (so the nearest elements still get their
-    // shimmer's exit) and has passed the farthest element's edge by t = 0.56 (Agam: "the wave can be faster": ~60% of the time it took, done before the clay settles)
-    const PRE = 260;
-    const frontR = () => -PRE + (RTOT + FRONT_SOFT + PRE) * waveRamp(Math.min(1, Math.max(0, (T - 0.04) / 0.52)));
+    // the band's core, a radius about the face's centre, on the morph's clock (the launch, in wavefront())
+    const frontC = () => -PRE + (CEND + PRE) * waveRamp(Math.min(1, Math.max(0, (T - W0) / (DEV[1] - W0))));
+    // the light's strength, one curve for the face and the ring: it rises into the face's peak, then follows
+    // the face's own flood as it resolves (never below 40%), and thins out past the farthest element
+    const glowOf = (C) => ss(FLOOD_PEAK - 0.04, FLOOD_PEAK + 0.015, T) * (T <= FLOOD_PEAK ? 1 : 0.4 + 0.6 * flood(T)) * (1 - ss(RMAX + 0.5 * S, CEND, C));
+    // THE BEATS: shimmer, hush, light, content. While the face waves the skeletons shimmer; as the face starts
+    // to flood their sweep quiets (to a third by the peak: the page holds its breath for the face); each block
+    // then dissolves before the band's leading edge reaches it, so the light only ever meets the real content,
+    // and the content prints in behind the core.
     const light = () => {
       const W = document.documentElement.clientWidth, fadeIn = ss(0, 900, performance.now() - born);
       const bt = still ? -1 : beat();
-      const pulse = bt < 0 ? 1 : 0.6 + 0.8 * bt, widen = bt < 0 ? 1 : 1 + 0.35 * bt;
-      const R = still ? 0 : frontR();
+      const hush = 1 - 0.65 * ss(0.12, FLOOD_PEAK, T);
+      const pulse = (bt < 0 ? 1 : 0.6 + 0.8 * bt) * hush, widen = bt < 0 ? 1 : 1 + 0.35 * bt;
+      const C = still ? 0 : frontC();
       for (const L of lines) {
         if (L.dead) continue;
         const [x, y, w, h] = L.box, yc = y + h / 2;
@@ -813,10 +867,10 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           if (p >= 1) { L.r.remove(); L.dead = true; continue; }
           cx = x + w / 2; hw = W; cBase = cLit = BASE; op = fadeIn * (1 - ss(0.25, 0.6, p));
         } else {
-          // STRICTLY SEQUENTIAL: the block and its sweep are gone (within ~140 ms of the front's travel) 60px
-          // before the front touches the element; the front's light only ever meets the real content
-          if (R >= L.dmax + FRONT_SOFT) { L.r.remove(); L.dead = true; continue; }
-          const sh = 1 - ss(L.dmin - 200, L.dmin - 60, R);
+          // the block is gone by the time the band's leading edge (LEAD ahead of the core) is 30px off it
+          const lead = C + LEAD;
+          if (lead >= L.dmin) { L.r.remove(); L.dead = true; continue; }
+          const sh = 1 - ss(L.dmin - 150, L.dmin - 30, lead);
           cx = sweepX(yc); hw = W * 0.36 * widen;
           cBase = [BASE[0], BASE[1], BASE[2], BASE[3] * sh];
           cLit = [LIT[0], LIT[1], LIT[2], Math.min(1, LIT[3] * pulse) * sh];
@@ -826,35 +880,52 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         L.s[0].setAttribute("stop-color", rgba(cBase)); L.s[1].setAttribute("stop-color", rgba(cLit)); L.s[2].setAttribute("stop-color", rgba(cBase));
         L.r.style.opacity = op.toFixed(3);
       }
-      // the one band of light: a ring that peaks just behind the content's edge and fades past it
+      // the one band of light: the profile laid out about the core; inside the face's centre it holds the
+      // profile's value there. Its strength is the rect's opacity (one compositor property)
       if (front && !still) {
-        const edge = R, r = Math.max(2, edge + FRONT_SOFT * 0.3);
-        const o = (v) => Math.min(1, Math.max(0, v / r)).toFixed(4);
-        frontStops[1].setAttribute("offset", o(edge - FRONT_SOFT * 1.2)); frontStops[2].setAttribute("offset", o(edge - FRONT_SOFT * 0.45));
+        const r = Math.max(2, C + LEAD);
+        const at = (d) => Math.max(d, -C); // a stop behind the centre takes the centre's value
+        const st = (el, d) => { const dd = at(d); el.setAttribute("offset", Math.min(1, Math.max(0, (C + dd) / r)).toFixed(4)); el.setAttribute("stop-color", rgba([...bandRGB(dd), band(dd)])); };
+        st(frontStops[0], -C);
+        BAND_D.forEach((d, i) => st(frontStops[i + 1], d));
         front.setAttribute("r", r.toFixed(1));
-        frontRect.style.opacity = (1 - ss(0.5, 0.62, T)).toFixed(3);
+        frontRect.style.opacity = glowOf(C).toFixed(3);
       }
     };
-    // the content is PRINTED by the front: a soft circular mask centred on the face grows across each element
-    // as the front passes (its radius is the front's), so a big element appears progressively across its area.
-    // The pale flood on it resolves to colour as the front moves on. Cheap: a mask, no blur.
+    // the content is PRINTED by the band: a circular mask centred on the face, transparent just ahead of the
+    // core and opaque 0.6 S behind it, along a smoothstep (six stops, no knee at either end, so no mask edge or
+    // seam shows; every element shares the one centre, so neighbours print as one surface). On top, the light
+    // on it: brighter, a little desaturated and warmed toward the clay (sepia), a touch lower in contrast, by
+    // the band's strength where the element is (1 while the core is on it, then the trailing falloff over
+    // 1.1 S), the same px for a 14px link and a 300px card. Then the haze, then nothing.
     const MASK_PROPS = ["mask-image", "mask-size", "mask-position", "mask-repeat", "-webkit-mask-image", "-webkit-mask-size", "-webkit-mask-position", "-webkit-mask-repeat"];
     const unmask = (el) => { for (const k of MASK_PROPS) el.style.removeProperty(k); };
     const setMask = (el, img) => { el.style.setProperty("mask-image", img); el.style.setProperty("-webkit-mask-image", img); };
+    const PRINT = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, 1 - ss(0, 1, k)]);
+    const lend = (L) => { const z = hazes.find((q) => !q.L); if (z) { z.L = L; L.hz = z; } return z; };
+    const free = (L) => { if (L.hz) { L.hz.map.setAttribute("scale", "0"); L.hz.aa.setAttribute("stdDeviation", "0"); L.hz.L = null; L.hz = null; } };
     const content = () => {
-      const R = still ? 0 : frontR();
+      const C = still ? 0 : frontC(), g = still ? 0 : glowOf(C);
       for (const L of lines) {
         if (L.part || L.done) continue; // one write per element (the "Hello!" and "I'm Agam" blocks share one)
         const el = L.el;
         if (still) { const p = (T - L.p0) / L.D; if (p >= 0.3) el.style.opacity = ss(0.3, 0.6, p).toFixed(3); if (p >= 1) { el.style.removeProperty("opacity"); L.done = true; } continue; }
-        if (R >= L.dmax + FRONT_SOFT) { el.style.removeProperty("filter"); unmask(el); L.done = true; continue; }
-        if (R < L.dmin - 4) { if (!L.masked) { setMask(el, "linear-gradient(transparent, transparent)"); L.masked = true; } continue; } // not reached: fully hidden
-        // the front is crossing it: radius R about the face's centre, in the element's own coordinates
-        setMask(el, `radial-gradient(circle at ${(fx - L.ex).toFixed(1)}px ${(fy - L.ey).toFixed(1)}px, #000 ${Math.max(0, R - FRONT_SOFT).toFixed(1)}px, transparent ${Math.max(1, R).toFixed(1)}px)`);
+        if (C >= L.dmax + 1.15 * S) { free(L); el.style.removeProperty("filter"); unmask(el); L.done = true; continue; }
+        const e0 = C + 0.25 * S, e1 = C - 0.6 * S; // the print: transparent at e0, opaque at e1
+        if (e0 < L.dmin) { if (!L.masked) { setMask(el, "linear-gradient(transparent, transparent)"); L.masked = true; } continue; } // not reached: fully hidden
+        const at = `circle at ${(fx - L.ex).toFixed(1)}px ${(fy - L.ey).toFixed(1)}px`;
+        setMask(el, `radial-gradient(${at}, ${PRINT.map(([k, a]) => `rgba(0,0,0,${a.toFixed(3)}) ${Math.max(0, e1 + (e0 - e1) * k).toFixed(1)}px`).join(", ")})`);
         L.masked = true;
-        const I = 1 - ss(0, 1, (R - L.dmin) / Math.max(1, L.dmax + FRONT_SOFT - L.dmin)); // the pale flood, resolving as the front moves on
-        const B = L.big ? 0.45 : 1.2; // a light image would wash to white
-        el.style.filter = I > 0.01 ? `brightness(${(1 + B * I).toFixed(2)}) saturate(${(1 - 0.75 * I).toFixed(2)})` : "";
+        // the core's distance to the element (0 while it is on it; < 0 once it has passed)
+        const d = C < L.dmin ? L.dmin - C : C > L.dmax ? L.dmax - C : 0;
+        const I = g * (d >= 0 ? gauss(d, 0.26 * S) : 1 - ss(0, 1.1 * S, -d));
+        const hz = g * gauss(d, 0.3 * S); // the haze: the core's own gaussian, a little wider
+        const B = L.big ? 0.4 : 1.1; // a light image would wash to white
+        let f = "";
+        if (hz > 0.02 && (L.hz || lend(L))) { L.hz.map.setAttribute("scale", ((L.big ? 6 : 5) * hz).toFixed(2)); L.hz.aa.setAttribute("stdDeviation", (0.3 * hz).toFixed(3)); f = `url(#${L.hz.id}) `; }
+        else free(L);
+        if (I > 0.01) f += `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
+        el.style.filter = f;
       }
     };
     let next = 0, over = false, tm = 0, raf = 0, fb = 0;
@@ -875,7 +946,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       while (next < marks.length && marks[next][0] <= t) marks[next++][1].setAttribute("data-in", "");
       if (glow) { light(); content(); }
       // over when the morph lands, or every mark is in and every light has finished
-      if (t >= 1 || (next >= marks.length && lines.every((L) => L.dead))) done();
+      if (t >= 1 || (next >= marks.length && lines.every((L) => L.dead && (L.part || L.done)))) done();
     };
     window.addEventListener("heromorph:t", onT);
     // the light runs every frame from the first one: the sweep on the wall clock, the blooms on the
@@ -891,11 +962,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       cap = setTimeout(done, 9000);
       fb = setTimeout(() => {
         if (started) return;
-        const t0 = performance.now();
+        // no face to flood: the clock starts where the wave's own does (the launch, W0), so the page does not
+        // hold for a glow that never comes; reduced motion keeps the whole clock (its cross-fades ride p)
+        const t0 = performance.now(), ts = still || !glow ? 0 : Math.max(0, Math.min(0.6, W0 - 0.02));
         const tick = () => {
           if (over) return;
-          const u = Math.min(1, (performance.now() - t0) / 2600);
-          onT({ detail: u });
+          const u = Math.min(1, (performance.now() - t0) / (2600 * (1 - ts)));
+          onT({ detail: ts + (1 - ts) * u });
           if (!over) raf = requestAnimationFrame(tick);
         };
         tick();

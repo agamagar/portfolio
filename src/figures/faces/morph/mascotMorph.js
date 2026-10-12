@@ -16,6 +16,7 @@ import { createMorphRenderer, FW, FH } from "./morphRenderer";
 import * as THREE from "three";
 import { drawingCoverage, drawingField, halfFieldTexture, halfWarpTexture } from "./morphField";
 import handoff from "./handoff.json";
+import { devAt, devSAt } from "./flood";
 
 export const WIDTHS = { uBand: 25, uEarW: 23, uNoseW: 20, uMouthW: 23 };
 export const PHASES = [["draw", 0, 0.06], ["develop", 0.08, 0.78], ["fade", 0.1, 0.62], ["settle", 0.85, 1]];
@@ -23,7 +24,6 @@ const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const span = (t, a, b) => clamp01((t - a) / (b - a));
 const inOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
 const inOutQ = (x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
-const lerp = (a, b, k) => a + (b - a) * k;
 
 export function timeline(t, pose = handoff.pose) {
   const head = { yaw: pose.yaw, pitch: pose.pitch, keys: {} }; // held: no turn
@@ -35,11 +35,9 @@ export function timeline(t, pose = handoff.pose) {
   u.uField = fade > 0 ? 1 : 0;
   // the colour: the front from 360 px deep (past the head's deepest point, so the first colour
   // grows from nothing rather than appearing as a patch) out to the outline; the shading a
-  // little behind
-  const d = inOutQ(span(t, 0.08, 0.78));
-  u.uDev = t < 0.08 ? 1e4 : lerp(360, -2, d);
-  const ds = inOutQ(span(t, 0.12, 0.84));
-  u.uDevS = t < 0.12 ? 1e4 : lerp(350, -2, ds);
+  // little behind (flood.js: the page's light reads the same two fronts)
+  u.uDev = devAt(t);
+  u.uDevS = devSAt(t);
   return { pose: head, u };
 }
 
