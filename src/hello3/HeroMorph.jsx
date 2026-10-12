@@ -255,7 +255,7 @@ export default function HeroMorph({ ready }) {
       // the clay is here: the wave hand fades (heroMorph.css) and the head takes over with its
       // own emotes. Reduced motion: a still head, so the renderer goes
       wrap.dataset.clay = "on";
-      btn.hidden = false;
+      btn.hidden = !isDark();
       btn.setAttribute("aria-pressed", "false");
       if (m && !reduce) startEmotes(m, m.MR.renderer.domElement);
       else release();
@@ -271,7 +271,13 @@ export default function HeroMorph({ ready }) {
     // in-out ease leaves the head near the front most of the time, the camera pulls back as it
     // turns (faceRig3D's zoom), and a blur follows the angular speed. Preloaded on the first
     // hover or focus so the click is instant. Reduced motion: a quick crossfade, no turn.
+    // DARK ONLY (Agam, 2026-10-12: "disable the click face turn on light mode"): in the light theme
+    // the face is not a control at all (the button is hidden, so no cursor, no focus stop, nothing
+    // for a screen reader to announce), the remembered skin is clay, and a visitor who switches to
+    // light while the head is noir sees it crossfade back to clay. Hover emotes are unaffected.
+    const isDark = () => document.documentElement.classList.contains("dark");
     let style = styleNow, spinning = false, spinRaf = 0, liveP = null;
+    if (!isDark()) style = styleNow = "clay";
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     // the live renderer: the one the morph kept, or (reduced motion, a later mount) a still build
     const ensureLive = () => {
@@ -287,7 +293,7 @@ export default function HeroMorph({ ready }) {
         return mm;
       })().catch(() => { liveP = null; return null; }));
     };
-    const preload = () => { if (done) ensureLive().then((mm) => mm && mm.MR.loadNoir()).catch(() => {}); };
+    const preload = () => { if (done && isDark()) ensureLive().then((mm) => mm && mm.MR.loadNoir()).catch(() => {}); };
     const frameFor = (name) => (name === "noir" ? lastNoir : lastFrame);
     // the new head at rest: render it, cache its frame, hold it in the 2D canvas
     const settle = (mm, to) => {
@@ -304,8 +310,9 @@ export default function HeroMorph({ ready }) {
       blit(frameSrc);
       btn.setAttribute("aria-pressed", String(to === "noir"));
     };
-    const swap = async () => {
-      if (spinning || !done || !alive) return;
+    const swap = async (opts) => {
+      const toLight = opts?.toLight === true; // the theme went light while on noir: fade back, no turn
+      if (spinning || !done || !alive || (!isDark() && !toLight)) return;
       spinning = true;
       btn.setAttribute("aria-busy", "true");
       try {
@@ -316,7 +323,7 @@ export default function HeroMorph({ ready }) {
         if (!alive) return;
         if (em) { em.gen++; em.busy = true; } // an emote in flight stops; none starts meanwhile
         const glc = mm.MR.renderer.domElement;
-        if (reduce) {
+        if (reduce || toLight) {
           cv.style.transition = "opacity 140ms linear";
           cv.style.opacity = "0";
           await sleep(150);
@@ -355,8 +362,16 @@ export default function HeroMorph({ ready }) {
         if (!reduce) cv.style.opacity = "";
         btn.removeAttribute("aria-busy");
         if (em) em.busy = false;
+        syncTheme(); // the theme may have changed during a turn
       }
     };
+    const syncTheme = () => {
+      if (!done || !alive) return;
+      btn.hidden = !isDark();
+      if (!isDark() && style === "noir" && !spinning) swap({ toLight: true });
+    };
+    const themeObs = new MutationObserver(syncTheme);
+    themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     btn.addEventListener("click", swap);
     btn.addEventListener("focus", preload);
     wrap.addEventListener("mouseenter", preload, { once: true });
@@ -433,7 +448,7 @@ export default function HeroMorph({ ready }) {
           blit(frameSrc);
           done = true;
           wrap.dataset.clay = "on";
-          btn.hidden = false;
+          btn.hidden = !isDark();
           btn.setAttribute("aria-pressed", String(style === "noir"));
           raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => alive && show())));
           ro.observe(wrap);
@@ -525,6 +540,7 @@ export default function HeroMorph({ ready }) {
       cv.removeEventListener("contextrestored", onResize);
       em?.stop();
       cancelAnimationFrame(spinRaf);
+      themeObs.disconnect();
       btn.removeEventListener("click", swap);
       btn.removeEventListener("focus", preload);
       wrap.removeEventListener("mouseenter", preload);

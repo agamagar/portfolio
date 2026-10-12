@@ -49,6 +49,7 @@ import DjBooth from "./DjBooth";
 const ShaderCanvas = lazyRetry(() => import("../ShaderCanvas"));
 import { LIVING_SKY_DEFAULTS } from "../shaders/washes";
 import HelloNote from "../hello/HelloNote"; // the footnote on the sign-off (mv4fzaqd-ys0o8w)
+import BubbleShape from "./BubbleShape"; // each footer bubble as one continuous SVG shape (mv4zdmlv-88gvx4)
 import "../hello/hello.css";
 // NOT importing ../figures/ds/tokens.css here (mttji8hf): it carries an
 // @import of the Anek Gujarati variable font for the DS figures, which the
@@ -217,6 +218,29 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // the room button morphs between two widths (glass loader -> white "Enter the room"),
   // and CSS cannot animate to `auto`: measure both labels and publish their widths
   const roomBtnRef = useRef(null);
+  // A WARM ROOM THE GPU TOOK BACK (see sceneWarm.js watchLoss) or an entry that hangs: warm a
+  // fresh one (warmEpoch re-runs the warm-up effect); after a second failure, say so with a
+  // Retry (`stalled`) rather than leaving the loader up for ever
+  const [warmEpoch, setWarmEpoch] = useState(0);
+  const [stalled, setStalled] = useState(false);
+  const entryAttempts = useRef(0);
+  const rewarm = useCallback(async () => {
+    try {
+      (await import("../scene/window/sceneWarm.js")).dropWarmScene();
+    } catch {
+      /* nothing warm to drop */
+    }
+    setWarmState("idle");
+    setWarmEpoch((e) => e + 1);
+  }, []);
+  useEffect(() => {
+    const onLost = () => {
+      setWarmState("idle");
+      setWarmEpoch((e) => e + 1);
+    };
+    window.addEventListener("wscene-warm-lost", onLost);
+    return () => window.removeEventListener("wscene-warm-lost", onLost);
+  }, []);
   // the background warm-up on every load: after the load event, the hero's morph
   // (heroMorphGate.js, which also has its own time limit) and an idle moment, so it
   // never competes with the first paint, the morph or the reveal
@@ -272,7 +296,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     return () => {
       alive = false;
     };
-  }, [sceneAllowed, sceneLive, warmWanted]);
+  }, [sceneAllowed, sceneLive, warmWanted, warmEpoch]);
   const [entering, setEntering] = useState(false);
   // THE JOURNEY (annotation, Agam: "after clicking View ... use the load to transition into
   // the scroll button that lives in the three.js view"): ONE fixed pill is kept alive from
@@ -283,6 +307,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // exempts it from the page-hiding rules)
   const [journey, setJourney] = useState("idle");
   const going = journey === "idle" && (entering || (enterWanted && warmState === "ready"));
+  const uiReady = warmState === "ready" || stalled; // a stalled room shows the ready look, with "Retry"
   const roomBtnShown = sceneAllowed && warmState !== "failed" && journey !== "done" && (!sceneLive || entering);
   useLayoutEffect(() => {
     const b = roomBtnRef.current;
@@ -367,13 +392,20 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     }
     // scrolled away while it waited: it waits until they are back at the top
     if (enteringRef.current || window.scrollY >= 8) return;
+    // the warm room must still be alive: a lost GPU device would hand over into a blank screen
+    try {
+      if (!(await import("../scene/window/sceneWarm.js")).warmAlive()) return rewarm();
+    } catch {
+      /* the page builds its own the old way */
+    }
+    entryAttempts.current = 0;
     enteringRef.current = true;
     setEntering(true);
     const reduceNow = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     document.documentElement.classList.add("wscene-sky-out", "wscene-handover", "wscene-pill-flying"); // the room's own floater waits for the pill to land (windowScene.css)
     getLenis()?.stop(); // from here to the room, wheel input is swallowed
     setTimeout(() => setSceneLive(true), reduceNow ? 0 : 460);
-  }, []);
+  }, [rewarm]);
   useLayoutEffect(() => {
     if (!sceneLive || !enteringRef.current) return undefined;
     const root = document.documentElement;
@@ -463,7 +495,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         return;
       }
       try {
-        const { refreshWarmPoster } = await import("../scene/window/sceneWarm.js");
+        const { refreshWarmPoster, warmAlive } = await import("../scene/window/sceneWarm.js");
+        if (!warmAlive()) return rewarm(); // taken back by the GPU while it idled: warm a new one, the click stays queued
         await refreshWarmPoster();
       } catch {
         /* the warm-up's own copy stands */
@@ -477,7 +510,24 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       alive = false;
       clearTimeout(t);
     };
-  }, [enterWanted, warmState, entering, sceneLive, enterScene]);
+  }, [enterWanted, warmState, entering, sceneLive, enterScene, rewarm]);
+  // the watchdog: a click on a room that is "ready" but has not begun entering within 10 s,
+  // or on one still loading after 45 s, is retried once with a fresh warm-up, then given
+  // up with a Retry button (never the loader for ever)
+  useEffect(() => {
+    if (!enterWanted || entering || sceneLive || (warmState !== "ready" && warmState !== "loading")) return undefined;
+    const t = setTimeout(() => {
+      if (entryAttempts.current < 1) {
+        entryAttempts.current += 1;
+        rewarm();
+      } else {
+        entryAttempts.current = 0;
+        setEnterWanted(false);
+        setStalled(true);
+      }
+    }, warmState === "ready" ? 10000 : 45000);
+    return () => clearTimeout(t);
+  }, [enterWanted, entering, sceneLive, warmState, rewarm]);
   // a page that leaves before the hand-over KEEPS its warm engine (a module singleton in
   // sceneWarm.js): coming back finds it ready, with no loader and no rebuild
   // (annotation mv3v3k00-o9in87)
@@ -1074,18 +1124,18 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         <div
           ref={roomBtnRef}
           className="wscene-warm-pill"
-          data-state={journey === "landing" || journey === "handoff" ? journey : going ? "entering" : warmState === "ready" ? "ready" : enterWanted ? "queued" : "warming"}
-          aria-busy={warmState !== "ready" || going}
+          data-state={journey === "landing" || journey === "handoff" ? journey : going ? "entering" : uiReady ? "ready" : enterWanted ? "queued" : "warming"}
+          aria-busy={!uiReady || going}
           onPointerEnter={() => setWarmWanted(true)}
-          onClick={warmState === "ready" ? undefined : () => { setWarmWanted(true); setEnterWanted(true); }}
+          onClick={uiReady ? undefined : () => { setWarmWanted(true); setEnterWanted(true); }}
         >
           <span className="wscene-warm-pill__status" role="status" aria-live="polite">
-            <span className="wscene-warm-pill__label" data-on={warmState !== "ready" || undefined} aria-hidden={warmState === "ready"}>
-              Setting up the room
+            <span className="wscene-warm-pill__label" data-on={!uiReady || undefined} aria-hidden={uiReady}>
+              Setting up workspace
               <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
             </span>
-            <span className="wscene-warm-pill__label" data-on={(warmState === "ready" && !going && journey === "idle") || undefined} aria-hidden={!(warmState === "ready" && !going && journey === "idle")}>
-              The room is ready
+            <span className="wscene-warm-pill__label" data-on={(uiReady && !going && journey === "idle") || undefined} aria-hidden={!(uiReady && !going && journey === "idle")}>
+              {stalled ? "The room didn't load" : "The room is ready"}
             </span>
             {/* the landing: the room's "scroll" floater's own label and arrow (WindowSceneFolio.jsx) */}
             <span className="wscene-warm-pill__label" data-on={journey === "landing" || journey === "handoff" || undefined} aria-hidden="true">
@@ -1098,12 +1148,20 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           <button
             type="button"
             className="wscene-warm-pill__btn"
-            tabIndex={warmState === "ready" && !going && journey === "idle" ? 0 : -1}
-            aria-hidden={!(warmState === "ready" && !going && journey === "idle")}
+            tabIndex={uiReady && !going && journey === "idle" ? 0 : -1}
+            aria-hidden={!(uiReady && !going && journey === "idle")}
             onFocus={() => setWarmWanted(true)}
-            onClick={() => { setWarmWanted(true); setEnterWanted(true); }}
+            onClick={() => {
+              setWarmWanted(true);
+              if (stalled) {
+                setStalled(false);
+                entryAttempts.current = 0;
+                rewarm();
+              }
+              setEnterWanted(true);
+            }}
           >
-            <span className="wscene-warm-pill__btn-label">View</span>
+            <span className="wscene-warm-pill__btn-label">{stalled ? "Retry" : "View"}</span>
             {/* the loading state inside the white button once it is clicked */}
             <span className="wscene-warm-pill__btn-dots wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
           </button>
@@ -1324,6 +1382,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                   it has one too, and the delegated bubble reads the NEAREST
                   [data-tip] ancestor, so the button still says its own thing. */}
               <span className="hello-foot__bubble hello-foot__bubble--left" data-tip="Click to copy">
+                <BubbleShape side="left" />
                 <a className="hello-foot__bubble-link" href={`mailto:${EMAIL}`} aria-label={`Email ${EMAIL}`}>
                   <span className="hello-foot__bubble-icon"><Mail width={16} height={16} strokeWidth={1.7} aria-hidden /></span>
                   {/* mtry27ut: the typing indicator that plays before the text lands */}
@@ -1336,6 +1395,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             <Guard name="foot-illus"><FootIllus className="hello-foot__illus" /></Guard>
             <span className="hello-foot__msg hello-foot__msg--right">
               <span className="hello-foot__bubble hello-foot__bubble--right" data-tip="Click to copy">
+                <BubbleShape side="right" />
                 <a className="hello-foot__bubble-link" href={`tel:${PHONE_HREF}`} aria-label={`Call ${PHONE}`}>
                   <span className="hello-foot__bubble-icon"><Phone width={16} height={16} strokeWidth={1.7} aria-hidden /></span>
                   <span className="hello-foot__bubble-dots" aria-hidden><i /><i /><i /></span>
