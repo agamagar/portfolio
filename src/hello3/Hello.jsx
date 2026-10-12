@@ -31,6 +31,7 @@ import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- he
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
 import WorkGrid from "./WorkGrid";
 import LockedLink from "./LockedLink";
+import NewTag from "./NewTag";
 import { LOCKED, NEW, newestFirst } from "./workMeta";
 import SiteCursor from "./SiteCursor";
 import { Guard, lazyRetry } from "../ui/Guard"; // blank-page guards: a failing piece hides itself, never the page
@@ -1489,7 +1490,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
                 <span className="work__year">{r.year}</span>
                 <span className="work__title">
                   {r.org}
-                  {NEW.has(r.href) && <span className="new-tag">New</span>}
+                  {NEW.has(r.href) && <NewTag />}
                   <svg className="work__arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M7 17 17 7" />
                     <path d="M8 7h9v9" />

@@ -3,6 +3,7 @@ import Cursor from "../figures/ds/Cursor";
 import { useInViewLoop, useReducedMotion } from "../figures/ds/hooks";
 import HelloLink from "./HelloLink";
 import LockedLink from "./LockedLink";
+import NewTag from "./NewTag";
 import { LOCKED, NEW, newestFirst } from "./workMeta";
 import useLinkedSpotlight from "./useLinkedSpotlight";
 import FigmaPhone from "./FigmaPhone";
@@ -453,7 +454,7 @@ export default function WorkGrid({ onNavigate }) {
           const Card = LOCKED.has(c.href) ? LockedLink : HelloLink;
           return (
           <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top" } : { to: c.href, onNavigate })} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? (NEW.has(c.href) ? `${c.alt} (New)` : c.alt) : undefined}>
-            {NEW.has(c.href) && <span className="new-tag new-tag--card" aria-hidden>New</span>}
+            {NEW.has(c.href) && <NewTag corner />}
             {c.live === "caratlane" ? (
               <span className="wg__live" aria-hidden>
                 <FigmaPhone plate="pro17" className="wg__phone" screen={<ClipVideo clip={CARAT_CLIP} playing />} alt="" />
