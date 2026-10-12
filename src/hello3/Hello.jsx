@@ -14,7 +14,7 @@ import MorphFace from "../MorphFace";
 import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { FLOOD_RGB } from "../figures/faces/morph/flood";
-import { warmIsReady } from "../scene/window/warmFlag";
+import { warmIsReady, resetWarmStages, warmStageStart, warmStageEnd, warmSecondsLeft } from "../scene/window/warmFlag";
 import { Check, Copy, Lock, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
@@ -229,6 +229,16 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // Retry (`stalled`) rather than leaving the loader up for ever
   const [warmEpoch, setWarmEpoch] = useState(0);
   const [stalled, setStalled] = useState(false);
+  // the pill's countdown (whole seconds left, only ever counting down, from the warm-up's real
+  // stages; warmFlag.js), refreshed while the room is not ready
+  const [secsLeft, setSecsLeft] = useState(() => warmSecondsLeft());
+  useEffect(() => {
+    if (warmState === "ready") return undefined;
+    const tick = () => setSecsLeft(warmSecondsLeft());
+    tick();
+    const t = setInterval(tick, 250);
+    return () => clearInterval(t);
+  }, [warmState, warmEpoch]);
   const entryAttempts = useRef(0);
   const rewarm = useCallback(async () => {
     try {
@@ -284,8 +294,11 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     }
     let alive = true;
     setWarmState("loading");
+    resetWarmStages(); // the pill's countdown follows these stages (warmFlag.js)
+    warmStageStart("load");
     Promise.all([import("../scene/window/sceneWarm.js"), import("../scene/window/capture.js"), import("../scene/window/WindowSceneFolio")])
       .then(async ([{ warmScene, prepareWarmScene }, { parseCaptureParams }]) => {
+        warmStageEnd("load");
         if (!alive) return false;
         const opts = parseCaptureParams(window.location.search);
         const ok = await warmScene({ opts, theme: document.documentElement.classList.contains("dark") ? "dark" : "light" });
@@ -1314,8 +1327,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         >
           <span className="wscene-warm-pill__status" role="status" aria-live="polite">
             <span className="wscene-warm-pill__label" data-on={!uiReady || undefined} aria-hidden={uiReady}>
-              Setting up workspace
-              <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
+              <span className="wscene-warm-pill__count" aria-hidden="true">{secsLeft}</span>
+              <span className="wscene-warm-pill__sr">Getting the workspace ready, about {secsLeft} {secsLeft === 1 ? "second" : "seconds"}</span>
             </span>
             <span className="wscene-warm-pill__label" data-on={(uiReady && !going && journey === "idle") || undefined} aria-hidden={!(uiReady && !going && journey === "idle")}>
               {stalled ? "The room didn't load" : "The room is ready"}
@@ -1333,6 +1346,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             className="wscene-warm-pill__btn"
             tabIndex={uiReady && !going && journey === "idle" ? 0 : -1}
             aria-hidden={!(uiReady && !going && journey === "idle")}
+            aria-label={stalled ? "Retry setting up the workspace" : "Enter the workspace"}
             onFocus={() => setWarmWanted(true)}
             onClick={() => {
               setWarmWanted(true);
@@ -1344,7 +1358,15 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               setEnterWanted(true);
             }}
           >
-            <span className="wscene-warm-pill__btn-label">{stalled ? "Retry" : "View"}</span>
+            <span className="wscene-warm-pill__btn-label">
+              {stalled ? (
+                "Retry"
+              ) : (
+                <svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+                  <path d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z" />
+                </svg>
+              )}
+            </span>
             {/* the loading state inside the white button once it is clicked */}
             <span className="wscene-warm-pill__btn-dots wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
           </button>

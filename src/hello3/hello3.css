@@ -2512,3 +2512,11 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
   /* over a photo: a solid white pill with the light-theme link blue (5.2:1), on either theme */
   background: rgba(255, 255, 255, 0.94); color: #1a6fd0; box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.35); font-size: 12px; padding: 3px 11px 4px;
 }
+
+/* THE COUNTDOWN and the arrow button (Agam, 12 Oct): while the room warms the pill shows the
+   seconds left (real progress, warmFlag.js) in tabular figures, with a visually hidden
+   sentence for the live region; the white button holds an up arrow (the same as "Back to
+   the room"), named "Enter the workspace" for assistive tech. No ticking animation. */
+.wscene-warm-pill__count { font-variant-numeric: tabular-nums; min-width: 1ch; text-align: center; }
+.wscene-warm-pill__sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.wscene-warm-pill__btn-label svg { display: block; flex: none; }
