@@ -560,7 +560,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // starts at the peak (p 0.3, = its mark) and resolves out of it (opacity up by 0.6, brightness, blur
     // and desaturation down by 1); the bloom fades under it (p 0.45-0.95). The skeleton and the content
     // are never both at strength: the hand-off happens inside the bright peak. Removed at the end.
-    let svg = null, front = null, frontStops = null, frontRect = null, hazes = [], unprint = null, skg = null;
+    let svg = null, front = null, frontStops = null, frontRect = null, hazes = [], unprint = null, skg = null, catchG = null, nShape = 0;
     // the print's edge (see content()): content alpha along six stops from e1 (opaque) to e0 (transparent)
     const ssP = (k) => k * k * (3 - 2 * k);
     const PRINT = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => [k, 1 - ssP(k)]);
@@ -623,6 +623,18 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       skg = document.createElementNS(NS, "g");
       skg.setAttribute("mask", "url(#hello-unprint-m)");
       svg.appendChild(skg);
+      // THE LIGHT ONLY SHOWS ON THE ELEMENTS (Agam: "the glow reveal for the page should not have its edges
+      // visible, only when it interacts with the elements on the page"): the travelling band is masked to the
+      // union of the element shapes (the same bars and card boxes as the skeletons, by <use>, so every
+      // re-measure carries over). The wave itself is invisible on blank page; each element catches the light
+      // as it passes. The face still blooms on its own.
+      const cm = document.createElementNS(NS, "mask");
+      cm.setAttribute("id", "hello-catch"); cm.setAttribute("maskUnits", "userSpaceOnUse"); cm.style.maskType = "alpha";
+      cm.setAttribute("x", "0"); cm.setAttribute("y", "0"); cm.setAttribute("width", String(VW)); cm.setAttribute("height", "2600");
+      catchG = document.createElementNS(NS, "g");
+      catchG.setAttribute("fill", "#fff");
+      cm.appendChild(catchG);
+      defs.appendChild(cm);
       const mk = (el, part, m, w) => {
         const id = `hello-shim-${lines.length}`;
         const g = document.createElementNS(NS, "linearGradient");
@@ -651,7 +663,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       defs.appendChild(front);
       frontRect = document.createElementNS(NS, "rect");
       frontRect.setAttribute("x", "0"); frontRect.setAttribute("y", "0"); frontRect.setAttribute("width", String(Math.max(document.documentElement.clientWidth, 600))); frontRect.setAttribute("height", "2600");
-      frontRect.setAttribute("fill", "url(#hello-front)"); frontRect.style.opacity = "0";
+      frontRect.setAttribute("fill", "url(#hello-front)"); frontRect.setAttribute("mask", "url(#hello-catch)"); frontRect.style.opacity = "0";
       svg.appendChild(frontRect);
       // THE HAZE (Agam: "the glow reveal should be slightly distorted in the area where the elements are
       // appearing"): a few displacement filters, lent to the elements the band's core is crossing. Low-frequency
@@ -727,8 +739,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         L.box = [x, y, Math.max(0, w), Math.max(0, h)];
         const yc = (y + h / 2).toFixed(1);
         L.g.setAttribute("gradientTransform", `translate(0 ${yc}) skewX(-20) translate(0 ${-yc})`);
-        while (L.rects.length < shapes.length) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); L.r.appendChild(r); L.rects.push(r); }
-        while (L.rects.length > shapes.length) L.rects.pop().remove();
+        while (L.rects.length < shapes.length) {
+          const NSv = "http://www.w3.org/2000/svg", r = document.createElementNS(NSv, "rect"), u = document.createElementNS(NSv, "use");
+          r.id = `hello-sk-${nShape++}`; u.setAttribute("href", `#${r.id}`); catchG?.appendChild(u); r.u = u;
+          L.r.appendChild(r); L.rects.push(r);
+        }
+        while (L.rects.length > shapes.length) { const r = L.rects.pop(); r.u?.remove(); r.remove(); }
         shapes.forEach(([sx, sy, sw, sh, rx], i) => {
           const r = L.rects[i];
           r.setAttribute("x", sx.toFixed(1)); r.setAttribute("y", sy.toFixed(1)); r.setAttribute("width", Math.max(0, sw).toFixed(1)); r.setAttribute("height", Math.max(0, sh).toFixed(1)); r.setAttribute("rx", rx);
@@ -860,13 +876,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         if (still) {
           // reduced motion: a still block that cross-fades to the content
           const p = (T - L.p0) / L.D;
-          if (p >= 1) { L.r.remove(); L.dead = true; continue; }
+          if (p >= 1) { L.r.style.opacity = "0"; L.dead = true; continue; }
           cx = x + w / 2; hw = W; cBase = cLit = BASE; op = fadeIn * (1 - ss(0.25, 0.6, p));
         } else {
           // lead: the band's leading edge (LEAD ahead of the core). The block warms as it nears; the unprint
-          // mask (above) takes it away exactly where its content prints in; removed once fully printed over
+          // mask (above) takes it away exactly where its content prints in; hidden once fully printed over
           const lead = C + LEAD;
-          if (C - 0.95 * S >= L.dmax) { L.r.remove(); L.dead = true; continue; }
+          if (C - 0.95 * S >= L.dmax) { L.r.style.opacity = "0"; L.dead = true; continue; } // hidden, kept: its shape still catches the light
           const warm = ss(L.dmin - 2 * S, L.dmin, lead), sh = 1;
           cx = sweepX(yc); hw = W * 0.36 * widen;
           cBase = [...mix(BASE.slice(0, 3), CORE_RGB, warm), (BASE[3] + (SIDE_A * 0.45 - BASE[3]) * warm) * sh];
