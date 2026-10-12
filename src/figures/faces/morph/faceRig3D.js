@@ -119,7 +119,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uFloor: { value: lit.floor ?? 0.03 }, uTexScale: { value: lit.scale ?? 4 }, uTexGamma: { value: lit.gamma ?? 1 },
           uTint: { value: key === "MouthInner" ? (fit.mono ? new THREE.Vector3().setScalar(0.2) : new THREE.Vector3(0.32, 0.16, 0.14)) : new THREE.Vector3().setScalar(crease && !map ? 0.8 : 1) },
           uRestNM: { value: new THREE.Matrix3().setFromMatrix4(cam.matrixWorldInverse.clone().multiply(o.matrixWorld)) },
-          uIdMap: { value: idMap || blank }, uIdRes: { value: new THREE.Vector2(802, 862) },
+          uIdMap: { value: idMap || blank }, uIdRes: { value: new THREE.Vector2(802, 862) }, uTurnOnly: { value: 0 },
           uPartId: { value: fit.ids && idMap ? fit.ids.indexOf(o.name.startsWith("Lid") ? "Skin" : o.name) : -1 },
           uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
           uFlatN: { value: new THREE.Vector3().fromArray(fit.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit.lids?.[o.name] ? 0.85 : 0 },

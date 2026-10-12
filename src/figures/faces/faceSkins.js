@@ -39,7 +39,7 @@ export const SKINS = [
     // its own fitted rig (tools/face3d/fit/noir): the head under a fedora fitted to the noir
     // tile, with that tile's light and surface; the rain behind and the coat collar in
     // front are flat layers cut from the tile. Until the rig loads, the mode above draws it.
-    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", idmap: "/faces/idmap-noir.png", depth: "/faces/depth-noir.png", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
+    rig: { src: "/faces/face-noir.glb", fit: "/faces/fit-noir.json", idmap: "/faces/idmap-noir.png", turnOnly: true, depth: "/faces/depth-noir.png", plates: { back: "/faces/noir-back.webp", front: "/faces/noir-coat.webp" }, rain: true },
     outline: null,
   },
   {
@@ -132,7 +132,7 @@ export const SKINS = [
     props: ["Pin"],
     // its own fitted rig (tools/face3d/fit/tile, 2026-10-12): the clay form re-fitted to the riso tile,
     // with that tile's camera, light and surface, and its backdrop with the head painted out
-    rig: { src: "/faces/face-riso.glb", fit: "/faces/fit-riso.json", idmap: "/faces/idmap-riso.png", raw: "/faces/skin-raw-riso.png",
+    rig: { src: "/faces/face-riso.glb", fit: "/faces/fit-riso.json", idmap: "/faces/idmap-riso.png", depth: "/faces/depth-riso.png", raw: "/faces/skin-raw-riso.png",
       margins: "/faces/margins-riso.png", plates: { back: "/faces/riso-back.webp" } },
     outline: { ink: "#1b1a19", width: 1.4, small: 1, misreg: "#e0368f" },
   },
@@ -198,7 +198,7 @@ uniform vec3 uSH[9], uTint; uniform float uK, uUseMap, uIsEye, uFloor, uTexScale
 uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
 uniform sampler2D uMapRaw, uMargin; uniform float uHasRaw; uniform vec3 uActs;
 // which part the reference shows at each pixel (id = part * 2 + layer + 1), and who this is
-uniform sampler2D uIdMap; uniform float uPartId, uLayered; uniform vec2 uIdRes;
+uniform sampler2D uIdMap; uniform float uPartId, uLayered, uTurnOnly; uniform vec2 uIdRes;
 // the surface colour from every side: an albedo atlas baked from the turnaround views (tools/face3d/fit/mv)
 uniform sampler2D uMV; uniform float uHasMV;
 // what the reference shows of this part: its median colour (linear) and its light's mean luminance
@@ -277,6 +277,9 @@ void main(){
         hits += step(abs(idv - want), 0.5);
       }
       seen = hits / 9.0;
+      // a rig refined without an id map (noir: its map was made later, for turns) keeps its
+      // rest look: the map only gates a turned head
+      if (uTurnOnly > 0.5) seen = mix(1.0, seen, uTurn);
       // once turned, was this very point the one the reference showed, or something behind it?
       // (a shadow-map test against the rest depth: the far ear sits behind the face at the same
       // projected spot, both skin, which the id map alone can't tell apart). At rest: no effect
@@ -340,11 +343,12 @@ void main(){
     // the view light's brightness only; the fitted light's hue swings with direction, and read off
     // at a new normal it tinted a turned head orange or red)
     vec3 unseen = litView * local;
-    if (uSeenLum > 0.0 && uHasMV < 0.5) {
+    // (only as the head turns: at rest the fit's own refinement saw the plain blend)
+    if (uSeenLum > 0.0 && uHasMV < 0.5 && uTurn > 0.0) {
       // (the blur's variation about the part's colour, gently: on surface the reference never
       // saw it reads other parts' texels, and at full strength streaked noir's far ear)
       vec3 rel = uRatioMean.x > 0.0 ? clamp(local / max(whole, vec3(1e-3)), 0.7, 1.4) : vec3(1.0);
-      unseen = uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel;
+      unseen = mix(unseen, uSeenRad * clamp(lum(litView) / uSeenLum, 0.25, 1.6) * rel, uTurn);
     }
     col = mix(unseen, litRest * ratio, trust) * uTint;
     if (uIsEye > 0.5 && uUseMap < 0.5) {

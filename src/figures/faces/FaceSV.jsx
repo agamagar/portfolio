@@ -186,7 +186,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
                 : new THREE.Vector3().setScalar(crease && !map ? 0.8 : 1) },
               uRestNM: { value: new THREE.Matrix3().setFromMatrix4(rc.matrixWorldInverse.clone().multiply(o.matrixWorld)) },
               // the lids read the skin's texture, so they test against the skin's id
-              uIdMap: { value: idMap }, uIdRes: { value: new THREE.Vector2(802, 862) },
+              uIdMap: { value: idMap }, uIdRes: { value: new THREE.Vector2(802, 862) }, uTurnOnly: { value: files?.turnOnly ? 1 : 0 },
               uPartId: { value: fit?.ids && idMap ? fit.ids.indexOf(o.name.startsWith("Lid") ? "Skin" : o.name) : -1 },
               uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
