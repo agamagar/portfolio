@@ -41,8 +41,24 @@ export function quietMoment() {
   });
 }
 
+// THE WARM-UP'S HEARTBEAT (2026-10-13, the live site: "the room doesn't load on any
+// device"): the page's watchdog (Hello.jsx) used to give a queued click a fixed 10 s
+// (ready) or 45 s (loading) and then drop the warm room and start again. The click's
+// poster refresh (refreshWarmPoster: the media in the band, the fonts, the page's DOM
+// render) is instant on the dev server but fetches every image and clip from the CDN
+// on the live site, so it ran past 10 s, the watchdog threw away the finished room the
+// hand-over was about to enter, and the fresh warm-up then hit the 45 s limit too:
+// "The room didn't load". Every step of the warm-up and of the poster refresh now beats
+// here (each gated step, each compile batch, each asset the capture embeds), and the
+// watchdog only steps in when nothing has moved for its whole window: slow is not stuck.
+let beat = 0;
+const pulse = () => (beat = performance.now());
+export const warmBeat = () => beat;
+const step = () => quietMoment().then(pulse);
+
 export function warmScene({ opts, theme }) {
   if (warm) return warm.ready;
+  pulse();
   const host = document.createElement("div");
   host.className = "wscene__warm";
   host.setAttribute("aria-hidden", "true");
@@ -53,9 +69,10 @@ export function warmScene({ opts, theme }) {
   canvas.setAttribute("aria-hidden", "true");
   host.appendChild(canvas);
   document.body.appendChild(host);
-  const engine = createWindowEngine({ canvas, opts: { ...opts, gate: quietMoment }, theme });
+  const engine = createWindowEngine({ canvas, opts: { ...opts, gate: step }, theme });
   const ready = Promise.resolve(engine.ready)
     .then((ok) => {
+      pulse();
       if (warm) warm.ok = !!ok;
       engine.setActive(false); // warmed: nothing draws until the page takes it
       if (ok && warm) watchLoss(warm);
@@ -136,13 +153,13 @@ export function folioParams({ pFrom, sweepDeg }) {
 async function capturePoster(w) {
   const { engine } = w;
   const vw = window.innerWidth, vh = window.innerHeight;
-  await quietMoment();
+  await step();
   engine.resize(vw, vh);
   const rect = engine.screenRectAt(1);
   const root = document.querySelector(".hello");
   if (!rect || !root) return false;
   const dark = document.documentElement.classList.contains("dark");
-  await quietMoment(); // the capture is ~0.7 s of main-thread work: never mid-scroll
+  await step(); // the capture is ~0.7 s of main-thread work: never mid-scroll
   const { captureLanding } = await import("./livePoster.js");
   // the landing is the document's top on the plain page (no runway above it)
   const runway = { getBoundingClientRect: () => ({ bottom: -window.scrollY }) };
@@ -153,6 +170,7 @@ async function capturePoster(w) {
     bg: dark ? "#0e0e11" : "#ffffff",
     dpr: window.devicePixelRatio || 1,
     skip: ["hello-sky", "hello-sky__tip", "wscene-warm-pill", "sc"],
+    onProgress: pulse,
   });
   if (!top || warm !== w) return false;
   engine.setPoster(top, dark ? "dark" : "light");
@@ -165,10 +183,10 @@ export async function prepareWarmScene() {
   if (!warm || !warm.ok) return false;
   const w = warm;
   const { engine } = w;
-  await quietMoment();
+  await step();
   engine.resize(window.innerWidth, window.innerHeight);
   for (const patch of folioParams(FOLIO)) {
-    await quietMoment();
+    await step();
     await engine.setParams(patch);
   }
   if (warm !== w) return false;
@@ -178,11 +196,12 @@ export async function prepareWarmScene() {
   // to the room) allocate every full-size target and draw what the camera will see, one
   // quiet moment at a time; it ends parked on the first frame of the hand-over (p = 1)
   for (const p of [0.5, 0.75, 0.9, 0.97, 1]) {
-    await quietMoment();
+    await step();
     if (warm !== w) return false;
     engine.setScroll(p, 0);
     await engine.renderOnce();
   }
+  pulse();
   setWarmReady(true); // a page that remounts later finds the room ready (warmFlag.js)
   return true;
 }

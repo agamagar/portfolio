@@ -98,7 +98,9 @@ async function mediaReady(root, top, bottom, cap = 4000) {
   if (jobs.length) await Promise.race([Promise.all(jobs), wait(cap)]);
 }
 
-export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: extraSkip = [] }) {
+// onProgress (sceneWarm.js): called as each stage ends and as each asset is embedded:
+// the warm-up's heartbeat (a slow capture on the live site is working, not stuck)
+export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: extraSkip = [], onProgress }) {
   if (!root || !runway || !rect) return null;
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;
@@ -107,6 +109,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
   // fixed canvas), so in the clone the hero starts at the top, as it does on screen
   const landTop = runway.getBoundingClientRect().bottom + window.scrollY;
   await mediaReady(root, landTop, landTop + vh);
+  onProgress?.();
   // extraSkip (sceneWarm.js): the plain page's own sky band, its tooltip and the loader
   // pill, when the landing is captured from the plain page before the hand-over
   // ...and every fixed overlay among the root's own children (the site cursor `.sc`, the
@@ -120,6 +123,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
     return r.top + window.scrollY > landTop + vh + 40; // starts below the landing viewport
   };
   const cssText = await pageFontCss();
+  onProgress?.();
   // the root's sections as laid out on the page: where each box actually starts and
   // ends inside the root, measured, beside the margins its computed style reports
   const rb = root.getBoundingClientRect();
@@ -137,6 +141,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
     };
   });
   const shot = await domToCanvas(root, {
+    progress: onProgress ? () => onProgress() : undefined, // each embedded image, clip frame and font
     font: cssText ? { cssText } : undefined,
     width: vw,
     height: vh,
