@@ -2510,3 +2510,35 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
 
 /* the white button holds an up arrow (the same as "Back to the room"), named "Enter the workspace" for assistive tech (Agam, 12 Oct) */
 .wscene-warm-pill__btn-label svg { display: block; flex: none; }
+
+/* ---- PHONES: THE CAPTIONED CARD (Oct 2026, Agam: "don't need a collated list at the top; move
+   the year, title and subtitles just below each project visual card"). Under 720px the hero's
+   list is not rendered (Hello.jsx) and each card is a link (.wg__item) holding the visual
+   (.wg__card, every card rule unchanged) and its caption, in the list row's own type: the
+   title in Google Sans Flex 16/20 at 600, the year a step smaller (15px Google Sans Code, the
+   year ink), the line in the muted ink, laid out as the phone list row was (44px year column,
+   the line under the title). The whole block is the tap target. */
+.hello[data-page="3"] .wg__item { position: relative; display: grid; gap: 14px; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.hello[data-page="3"] .wg__cap {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; align-items: baseline;
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif; font-size: 16px; line-height: 20px; letter-spacing: 0;
+}
+.hello[data-page="3"] .wg__cap-year { font-family: "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 400; color: var(--muted-2, #6b6a63); }
+.hello[data-page="3"] .wg__cap-title { display: inline-flex; align-items: center; font-weight: 600; color: var(--fg); }
+.hello[data-page="3"] .wg__cap-line { grid-column: 2; font-weight: 400; color: var(--muted); }
+.hello[data-page="3"] .wg__cap .lock__badge { margin-left: 7px; }
+.hello[data-page="3"] .wg__item:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; }
+/* the NDA tooltip on a tap, over the top of the card as on desktop */
+.hello[data-page="3"] .wg__item.is-locked .lock__tip { left: 50%; top: 14px; translate: -50% -4px; }
+.hello[data-page="3"] .wg__item.is-locked:is(:hover, :focus-visible, [data-tip-open]) .lock__tip { translate: -50% 0; }
+/* a captioned card needs more air between projects than a bare card did; and with no list in
+   the hero, the links sit the hero's own 60px above the first card (the inner box's 48px bottom
+   padding was the room above the list) */
+@media (max-width: 720px) {
+  .hello[data-page="3"] .wg__grid { gap: 40px; }
+  .hello[data-page="3"] .hello-hero:not(:has(.hello-hero__table)) .hello-hero__inner { padding-bottom: 0; }
+}
+/* the load: the caption waits for its own data-in, like its card (the gates above, extended) */
+.hello[data-page="3"][data-seq][data-seq] .wg__cap:not([data-in]) { opacity: 0; translate: 0 14px; visibility: hidden; pointer-events: none; transition: none; }
+.hello[data-page="3"][data-seq][data-seq] .wg__cap[data-in] { opacity: 1; translate: 0 0; visibility: visible; pointer-events: auto; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1), translate 700ms cubic-bezier(0.22, 1, 0.36, 1); transition-delay: 0s; }
+.hello[data-page="3"][data-seq][data-seq][data-glow] .wg__cap:is(:not([data-in]), [data-in]) { translate: 0 0; transition: none; }

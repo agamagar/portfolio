@@ -2,7 +2,7 @@
 // sets --sap (0..1) on each scroll-assemble root; scrollAssemble.css turns it into the
 // same settle with calc(). A no-op where animation-timeline: view() is supported, and
 // under reduced motion. One passive scroll listener, rAF-throttled, visible roots only.
-const ROOTS = '.hello[data-page="3"] .wg__card, .hello[data-page="3"] .ap, .hello[data-page="3"] .hello-foot, .hello[data-page="3"] .sq';
+const ROOTS = '.hello[data-page="3"] .wg__card, .hello[data-page="3"] .ap, .hello[data-page="3"] .hello-foot, .hello[data-page="3"] .sq, .hello[data-page="3"] .wg__cap';
 
 export function scrollAssemble() {
   if (typeof window === "undefined" || !window.CSS || CSS.supports("animation-timeline: view()")) return () => {};

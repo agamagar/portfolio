@@ -53,9 +53,11 @@ let styleNow = "clay"; // which head the visit is on: a click on the head swaps 
 
 function canMorph() {
   try {
-    // a desktop device (a mouse or trackpad), whatever the window's width: Agam views the
-    // page in narrow panes too. Phones and tablets keep the drawing
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return false;
+    // PHONES MORPH TOO (Oct 2026, Agam: "add the reveal and load transition we made for the web"
+    // on mobile). It used to be desktop pointers only, and phones fell back to the drawing with
+    // the page's reveal on a plain clock and an end-bloom. The page's sweep runs on the morph's t
+    // (Hello.jsx, W0 -> W1), so phones and tablets now get it too, wherever the GPU is real (the
+    // software-WebGL guard below still keeps the drawing on those)
     const gl = document.createElement("canvas").getContext("webgl2");
     let ok = !!gl && !!gl.getExtension("EXT_color_buffer_float");
     // SOFTWARE WEBGL (SwiftShader, llvmpipe, a blocklisted GPU): the build and every frame run

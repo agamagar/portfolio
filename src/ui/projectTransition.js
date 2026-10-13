@@ -261,6 +261,7 @@ function sourceFor(to) {
   const el = lastPress.el && performance.now() - lastPress.at < 2000 ? lastPress.el : null;
   if (!el || el.getAttribute("href") !== to || !el.isConnected) return null;
   if (el.classList.contains("wg__card")) return el;
+  if (el.classList.contains("wg__item")) return el.querySelector(".wg__card"); // phones: the card's visual inside its captioned link
   const media = el.closest(".ap__card")?.querySelector(".ap__plate, video, img"); // a side quest: its plate
   return media || null;
 }
@@ -339,7 +340,7 @@ export async function runRouteTransition(from, to, commit) {
     if (shared) {
       dst = opening
         ? document.querySelector(".page--article .article__hero-board")
-        : document.querySelector(`.wg__card[data-project="${from}"]`);
+        : document.querySelector(`.wg__card[data-project="${from}"], .wg__item[data-project="${from}"] > .wg__card`);
       if (dst && inView(dst)) dst.style.viewTransitionName = "pt-hero";
       else dst = null;
     }
