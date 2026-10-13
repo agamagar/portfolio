@@ -231,6 +231,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   const [warmEpoch, setWarmEpoch] = useState(0);
   const [stalled, setStalled] = useState(false);
   const entryAttempts = useRef(0);
+  // the click's poster refresh in flight (the watchdog reads it: busy, not stuck)
+  const refreshing = useRef(false);
   const rewarm = useCallback(async () => {
     try {
       (await import("../scene/window/sceneWarm.js")).dropWarmScene();
@@ -504,9 +506,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       try {
         const { refreshWarmPoster, warmAlive } = await import("../scene/window/sceneWarm.js");
         if (!warmAlive()) return rewarm(); // taken back by the GPU while it idled: warm a new one, the click stays queued
+        refreshing.current = true;
         await refreshWarmPoster();
       } catch {
         /* the warm-up's own copy stands */
+      } finally {
+        refreshing.current = false;
       }
       if (!alive) return;
       if (window.scrollY >= 8) return go();
@@ -519,11 +524,20 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     };
   }, [enterWanted, warmState, entering, sceneLive, enterScene, rewarm]);
   // the watchdog: a click on a room that is "ready" but has not begun entering within 10 s,
-  // or on one still loading after 45 s, is retried once with a fresh warm-up, then given
-  // up with a Retry button (never the loader for ever)
+  // or on one still loading (or retaking its poster) with no progress for 45 s, is retried
+  // once with a fresh warm-up, then given up with a Retry button (never the loader for
+  // ever). It times STALLS, not work: the warm-up's heartbeat (sceneWarm.js warmBeat)
+  // restarts the clock. A fixed 10 s from the click dropped a finished room mid-refresh
+  // on the live site, where the refresh fetches from the CDN (2026-10-13)
   useEffect(() => {
     if (!enterWanted || entering || sceneLive || (warmState !== "ready" && warmState !== "loading")) return undefined;
-    const t = setTimeout(() => {
+    const armed = performance.now();
+    let beat = () => 0;
+    import("../scene/window/sceneWarm.js").then((m) => (beat = m.warmBeat)).catch(() => {});
+    const t = setInterval(() => {
+      const busy = warmState === "loading" || refreshing.current;
+      if (performance.now() - Math.max(armed, beat()) < (busy ? 45000 : 10000)) return;
+      clearInterval(t);
       if (entryAttempts.current < 1) {
         entryAttempts.current += 1;
         rewarm();
@@ -532,8 +546,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         setEnterWanted(false);
         setStalled(true);
       }
-    }, warmState === "ready" ? 10000 : 45000);
-    return () => clearTimeout(t);
+    }, 1000);
+    return () => clearInterval(t);
   }, [enterWanted, entering, sceneLive, warmState, rewarm]);
   // a page that leaves before the hand-over KEEPS its warm engine (a module singleton in
   // sceneWarm.js): coming back finds it ready, with no loader and no rebuild
