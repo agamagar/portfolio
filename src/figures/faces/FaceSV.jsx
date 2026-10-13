@@ -65,7 +65,8 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
     // trusts its projected texture only where the surface faced the camera squarely)
     // uActs: how much the eyes, brows and mouth are moving (0..1 each): their skin margins
     // fade from the reference's raw pixels to clean skin by that much
-    const shared = { uL: { value: lView }, uMode: { value: 0 }, uDot: { value: 7 * dpr }, uTurn: { value: 0 }, uActs: { value: new THREE.Vector3() } };
+    const shared = { uL: { value: lView }, uMode: { value: 0 }, uDot: { value: 7 * dpr }, uTurn: { value: 0 }, uActs: { value: new THREE.Vector3() },
+      uDefringe: { value: backdrop ? 0 : 1 } }; // (the edge clean-up for a transparent ground)
     let skin = skinById(skin0);
 
     const body = new THREE.Group(); // squash about the chin

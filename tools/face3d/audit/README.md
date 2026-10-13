@@ -58,3 +58,31 @@ in a 6 px band round the outline (a 6 px grow instead of 3 scored 1.35: no gain)
   ~0.7 MB of maps per skin), and that the meshopt decoder's WASM loads on Safari.
 - GPU memory: FaceSV now keeps the base rig plus the three most recent; worth a look in
   Safari's memory tools while cycling.
+
+## Round 2 (2026-10-12, later): gaps, the far side, transparency, motion
+
+| skin | round 1 | round 2 |
+| --- | --- | --- |
+| felt | 0.46 | 0.40 |
+| claySun | 0.57 | 0.59 |
+| stone | 0.64 | 0.58 |
+| pixel | 0.72 | 0.72 |
+| cel | 0.97 | 0.94 |
+| riso | 0.99 | 0.95 |
+| hose | 1.34 | 1.25 |
+
+Scored with the skin's backdrop drawn (`?ground` default in the harness), as the tile shows it.
+On the site the face is on a transparent ground and the silhouette is defringed (uDefringe), which
+deliberately departs from the tile's backdrop-tinted edge.
+
+See-through pixels inside the silhouette (motiongaps, 9 poses each): felt went from 284 (turned
+0.3) and 182 (nodding) to 0 to 2; stone from 267 and 135 to 0 to 1; hose from about 1000 in every
+pose (a hole through the ear even at rest) to 0 to 13, plus 305 px at a 0.7 turn, which is
+background seen between the nose and the brow (a real concavity, past every emote's turn budget).
+noir and clay keep their round-1 rigs (noir's pipeline has no refinement stage here; clay's rig
+is the hero's). Their ears still have the tunnel: rebuild them with the fixed build_head.
+
+Learned the hard way: never let a refinement run while the shader departs from what the scorer
+measures (the defringe was on during the first rebuild: its edge texels were "corrected" unseen,
+and every rig came out 0.5 to 1 worse), and never edit src while a pipeline's harness is
+rendering (Vite reloads mid-snapshot).
