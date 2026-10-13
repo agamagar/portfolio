@@ -4,35 +4,75 @@
     {
       "name": "portfolio-all",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev:all"],
+      "runtimeArgs": [
+        "run",
+        "dev:all"
+      ],
       "port": 5173,
       "autoPort": true
     },
     {
       "name": "portfolio",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5173,
       "autoPort": true
     },
     {
       "name": "portfolio-verify",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5175,
       "autoPort": true
     },
     {
       "name": "portfolio-lan",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--host", "--port", "5174", "--strictPort"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--host",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
       "port": 5174
     },
     {
       "name": "portfolio-mobile",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--host", "--port", "5199", "--strictPort"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--host",
+        "--port",
+        "5199",
+        "--strictPort"
+      ],
       "port": 5199
+    },
+    {
+      "name": "image-to-3d-mock",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "apps/image-to-3d",
+        "run",
+        "dev:mock",
+        "--",
+        "--port",
+        "5191",
+        "--strictPort"
+      ],
+      "port": 5191
     }
   ]
 }
