@@ -61,12 +61,14 @@
     },
     {
       "name": "image-to-3d-mock",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "env",
       "runtimeArgs": [
+        "ANTHROPIC_MOCK=fixtures",
+        "npm",
         "--prefix",
         "apps/image-to-3d",
         "run",
-        "dev:mock",
+        "dev",
         "--",
         "--port",
         "5191",
