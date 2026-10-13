@@ -1,0 +1,10 @@
+import { chromium } from "playwright-core";
+const url = process.argv[2];
+const b = await chromium.launch({ channel: "chrome", args: ["--ignore-gpu-blocklist"] });
+const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+await p.goto(url, { waitUntil: "load" });
+if (!url.includes("scene=off")) await p.waitForFunction(() => document.documentElement.dataset.wsceneDrawn, null, { timeout: 90000, polling: 500 }).catch(() => {});
+await p.waitForTimeout(8000);
+await p.evaluate(() => document.querySelector(".ap").scrollIntoView({ block: "center", behavior: "instant" })); await p.waitForTimeout(3000);
+console.log(await p.evaluate(() => [...document.querySelectorAll("video")].map((v) => { const r = v.getBoundingClientRect(); const inview = r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight; return `${v.src.split("/").pop().padEnd(28)} paused=${v.paused} ready=${v.readyState} ${v.videoWidth}x${v.videoHeight} shown=${Math.round(r.width)}x${Math.round(r.height)} inview=${inview} t=${v.currentTime.toFixed(1)} class=${v.className}`; }).join("\n")));
+await b.close();

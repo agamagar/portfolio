@@ -12,125 +12,150 @@ import {
 } from "react";
 import { Guard, StaticFallback, lazyRetry as lazy } from "./ui/Guard"; // chunk-retry lazy + blank-page guards
 import { flushSync } from "react-dom";
+// perf (11 Oct): figures load on demand. The home page and every other route used to carry all of them in the entry chunk
+function lazyFig(load) {
+  const L = lazy(load);
+  return function LazyFig(props) {
+    return (
+      <Suspense fallback={null}>
+        <L {...props} />
+      </Suspense>
+    );
+  };
+}
 import MorphFace from "./MorphFace";
 import TexturedBackground from "./TexturedBackground";
-import AgentWizardFigure from "./figures/AgentWizard";
-import AgentWizardCompare from "./figures/agentWizard/Compare";
-import AgentWizardFFF from "./figures/agentWizard/AgentWizardFFF";
-import StellaOnboarding from "./figures/onboarding/StellaOnboarding";
-import AnnotationDemo from "./figures/scaffold/AnnotationDemo";
-import SeqDemo from "./figures/systemExplainer/SeqDemo";
-import FanOutDemo from "./figures/systemExplainer/FanOutDemo";
-import TriageDemo from "./figures/systemExplainer/TriageDemo";
-import TradeOffDemo from "./figures/systemExplainer/TradeOffDemo";
-import BacktrackDemo from "./figures/systemExplainer/BacktrackDemo";
-import UpdateDemo from "./figures/systemExplainer/UpdateDemo";
-import RecoverDemo from "./figures/systemExplainer/RecoverDemo";
-import DecomposeDemo from "./figures/systemExplainer/DecomposeDemo";
-import SpineDemo from "./figures/systemExplainer/SpineDemo";
-import LoopDemo from "./figures/systemExplainer/LoopDemo";
-import WeighDemo from "./figures/systemExplainer/WeighDemo";
-import HedgeDemo from "./figures/systemExplainer/HedgeDemo";
-import WatchDemo from "./figures/systemExplainer/WatchDemo";
-import SystemSheet, { Ref } from "./figures/lab/SystemSheet";
-import ModesGuide from "./figures/lab/ModesGuide";
-import DeckPresets from "./figures/lab/DeckPresets";
-import FeedbackBench from "./figures/lab/FeedbackBench";
-import FaviconLab from "./figures/lab/FaviconLab";
-import AlongPathV1 from "./figures/lab/alongpath-v1/AlongPathV1";
-import TimelineVerticalV1 from "./figures/lab/timeline-v1/TimelineVerticalV1";
-import DetailV1 from "./figures/lab/DetailV1";
-import HandsSheet from "./figures/hands/HandsSheet";
-import MockupLab from "./figures/mockup/MockupLab";
-import IconShowcase from "./figures/zeptoPremium/IconShowcase";
-import BrickLab from "./figures/brickLab/BrickLab";
-import ShaderGallery from "./figures/shaders/ShaderGallery";
-import SkyLab from "./figures/sky/SkyLab";
-import ThreeLinesLab from "./figures/threeLines/ThreeLinesLab";
-import PixelMascotLab from "./figures/pixelMascot/PixelMascotLab";
-import FaceLab from "./figures/faces/FaceLab"; // /faces, the face-style playground (2026-10-08)
-import StellaLab from "./figures/stella/StellaLab";
-import Hello from "./hello/Hello";
+import "./figures/ds/ds.css"; // kept eager and first: its .ds-root rules must sit before the figure css that overrides them (as when Primitives was static)
+const AgentWizardFigure = lazyFig(() => import("./figures/AgentWizard"));
+const AgentWizardCompare = lazyFig(() => import("./figures/agentWizard/Compare"));
+const AgentWizardFFF = lazyFig(() => import("./figures/agentWizard/AgentWizardFFF"));
+const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
+const AnnotationDemo = lazyFig(() => import("./figures/scaffold/AnnotationDemo"));
+const SeqDemo = lazyFig(() => import("./figures/systemExplainer/SeqDemo"));
+const FanOutDemo = lazyFig(() => import("./figures/systemExplainer/FanOutDemo"));
+const TriageDemo = lazyFig(() => import("./figures/systemExplainer/TriageDemo"));
+const TradeOffDemo = lazyFig(() => import("./figures/systemExplainer/TradeOffDemo"));
+const BacktrackDemo = lazyFig(() => import("./figures/systemExplainer/BacktrackDemo"));
+const UpdateDemo = lazyFig(() => import("./figures/systemExplainer/UpdateDemo"));
+const RecoverDemo = lazyFig(() => import("./figures/systemExplainer/RecoverDemo"));
+const DecomposeDemo = lazyFig(() => import("./figures/systemExplainer/DecomposeDemo"));
+const SpineDemo = lazyFig(() => import("./figures/systemExplainer/SpineDemo"));
+const LoopDemo = lazyFig(() => import("./figures/systemExplainer/LoopDemo"));
+const WeighDemo = lazyFig(() => import("./figures/systemExplainer/WeighDemo"));
+const HedgeDemo = lazyFig(() => import("./figures/systemExplainer/HedgeDemo"));
+const WatchDemo = lazyFig(() => import("./figures/systemExplainer/WatchDemo"));
+import "./figures/lab/systemSheet.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const SystemSheet = lazyFig(() => import("./figures/lab/SystemSheet"));
+const Ref = lazyFig(() => import("./figures/lab/SystemSheet").then((m) => ({ default: m.Ref })));
+const ModesGuide = lazyFig(() => import("./figures/lab/ModesGuide"));
+const DeckPresets = lazyFig(() => import("./figures/lab/DeckPresets"));
+const FeedbackBench = lazyFig(() => import("./figures/lab/FeedbackBench"));
+const FaviconLab = lazyFig(() => import("./figures/lab/FaviconLab"));
+const AlongPathV1 = lazyFig(() => import("./figures/lab/alongpath-v1/AlongPathV1"));
+import "./hello/timeline.css"; // kept eager (see above)
+const TimelineVerticalV1 = lazyFig(() => import("./figures/lab/timeline-v1/TimelineVerticalV1"));
+const DetailV1 = lazyFig(() => import("./figures/lab/DetailV1"));
+const HandsSheet = lazyFig(() => import("./figures/hands/HandsSheet"));
+const MockupLab = lazyFig(() => import("./figures/mockup/MockupLab"));
+const IconShowcase = lazyFig(() => import("./figures/zeptoPremium/IconShowcase"));
+const BrickLab = lazyFig(() => import("./figures/brickLab/BrickLab"));
+const ShaderGallery = lazyFig(() => import("./figures/shaders/ShaderGallery"));
+const SkyLab = lazyFig(() => import("./figures/sky/SkyLab"));
+const ThreeLinesLab = lazyFig(() => import("./figures/threeLines/ThreeLinesLab"));
+const PixelMascotLab = lazyFig(() => import("./figures/pixelMascot/PixelMascotLab"));
+const FaceLab = lazyFig(() => import("./figures/faces/FaceLab")); // /faces, the face-style playground (2026-10-08)
+const StellaLab = lazyFig(() => import("./figures/stella/StellaLab"));
+import "./hello/hello.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const Hello = lazyFig(() => import("./hello/Hello"));
 import Hello3 from "./hello3/Hello";
-import StellaSim from "./figures/stella/StellaSim";
-import AwayReveal from "./figures/consumer/AwayReveal";
-import PhysicalSheet from "./figures/physicality/PhysicalSheet";
+import "./figures/ds/tokens.css"; // kept eager: the --ds-* tokens every ds figure reads (StellaSim used to bring them in)
+import "./figures/ds/components.css";
+import "./figures/ds/scaffold.css";
+const StellaSim = lazyFig(() => import("./figures/stella/StellaSim"));
+const AwayReveal = lazyFig(() => import("./figures/consumer/AwayReveal"));
+import "./figures/physicality/physicalSheet.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const PhysicalSheet = lazyFig(() => import("./figures/physicality/PhysicalSheet"));
 import "./figures/systemExplainer/skins.css";
-import ExecutionFlood from "./figures/concepts/ExecutionFlood";
-import CallJourney from "./figures/concepts/CallJourney";
-import DailyReport from "./figures/concepts/DailyReport";
-import FigmaToCode from "./figures/concepts/FigmaToCode";
-import EvolutionTimeline from "./figures/concepts/EvolutionTimeline";
-import DecisionEngine from "./figures/concepts/DecisionEngine";
-import OccasionWidget from "./figures/concepts/OccasionWidget";
-import BannerLab from "./figures/concepts/BannerLab";
-import CrossSellTable from "./figures/concepts/CrossSellTable";
+const ExecutionFlood = lazyFig(() => import("./figures/concepts/ExecutionFlood"));
+const CallJourney = lazyFig(() => import("./figures/concepts/CallJourney"));
+const DailyReport = lazyFig(() => import("./figures/concepts/DailyReport"));
+const FigmaToCode = lazyFig(() => import("./figures/concepts/FigmaToCode"));
+const EvolutionTimeline = lazyFig(() => import("./figures/concepts/EvolutionTimeline"));
+const DecisionEngine = lazyFig(() => import("./figures/concepts/DecisionEngine"));
+const OccasionWidget = lazyFig(() => import("./figures/concepts/OccasionWidget"));
+const BannerLab = lazyFig(() => import("./figures/concepts/BannerLab"));
+const CrossSellTable = lazyFig(() => import("./figures/concepts/CrossSellTable"));
 import { feedback, feedbackCoalesced } from "./ui/feedback";
 import { playCue } from "./ui/sound"; // mukuatqi: motion cues for the scroll-scene layers
 import HeroChips from "./hello3/HeroChips";
-import DesignFigure from "./figures/design/DesignFigure";
-import Whiteboard from "./figures/Whiteboard";
+import "./figures/design/design.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const DesignFigure = lazyFig(() => import("./figures/design/DesignFigure"));
+import "./figures/whiteboard.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const Whiteboard = lazyFig(() => import("./figures/Whiteboard"));
 import { SD_BOARDS } from "./figures/board/boards.scheduledDelivery"; // 11 Oct: whiteboards written by the board engine (src/figures/board)
 import ReelFigure, { ReelPresets, reels } from "./figures/reel/Reel";
-import CrossSellTree from "./figures/crosssell/CrossSellTree";
-import XsFramework from "./figures/crosssell/XsFramework";
-import XsTrips from "./figures/crosssell/XsTrips";
-import XsObjective from "./figures/crosssell/XsObjective";
-import XsDirections from "./figures/crosssell/XsDirections";
-import XsRail from "./figures/crosssell/XsRail";
-import XsWait from "./figures/crosssell/XsWait";
-import XsLedger from "./figures/crosssell/XsLedger";
-import XsWalk from "./figures/crosssell/XsWalk";
-import XsIntents from "./figures/crosssell/XsIntents";
-import XsNotebook from "./figures/crosssell/XsNotebook";
-import XsSecondPull from "./figures/crosssell/XsSecondPull";
-import XsReview from "./figures/crosssell/XsReview";
-import XsPairs from "./figures/crosssell/XsPairs";
-import XsCloud from "./figures/crosssell/XsCloud";
-import XsProjector from "./figures/crosssell/XsProjector";
-import XsMotion from "./figures/crosssell/XsMotion";
-import SchedUsers from "./figures/scheduled/SchedUsers";
+import "./figures/crosssell/crosssell.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const CrossSellTree = lazyFig(() => import("./figures/crosssell/CrossSellTree"));
+const XsFramework = lazyFig(() => import("./figures/crosssell/XsFramework"));
+const XsTrips = lazyFig(() => import("./figures/crosssell/XsTrips"));
+const XsObjective = lazyFig(() => import("./figures/crosssell/XsObjective"));
+const XsDirections = lazyFig(() => import("./figures/crosssell/XsDirections"));
+const XsRail = lazyFig(() => import("./figures/crosssell/XsRail"));
+const XsWait = lazyFig(() => import("./figures/crosssell/XsWait"));
+const XsLedger = lazyFig(() => import("./figures/crosssell/XsLedger"));
+const XsWalk = lazyFig(() => import("./figures/crosssell/XsWalk"));
+const XsIntents = lazyFig(() => import("./figures/crosssell/XsIntents"));
+const XsNotebook = lazyFig(() => import("./figures/crosssell/XsNotebook"));
+const XsSecondPull = lazyFig(() => import("./figures/crosssell/XsSecondPull"));
+const XsReview = lazyFig(() => import("./figures/crosssell/XsReview"));
+const XsPairs = lazyFig(() => import("./figures/crosssell/XsPairs"));
+const XsCloud = lazyFig(() => import("./figures/crosssell/XsCloud"));
+const XsProjector = lazyFig(() => import("./figures/crosssell/XsProjector"));
+const XsMotion = lazyFig(() => import("./figures/crosssell/XsMotion"));
+const SchedUsers = lazyFig(() => import("./figures/scheduled/SchedUsers"));
 import NarrationPlayer from "./prd/NarrationPlayer";
 import { scheduledCaseNarration } from "./prd/scheduledNarration";
 import { dasshCaseNarration } from "./prd/dasshCaseNarration";
 import "./prd/prd.css";
-import EdgeFloater from "./figures/jarvis/EdgeFloater";
-import EdgeCard from "./figures/jarvis/EdgeCard";
-import EdgeAltitudes from "./figures/jarvis/EdgeAltitudes";
-import EdgeOos from "./figures/jarvis/EdgeOos";
-import AwClarify from "./figures/awayAgent/AwClarify";
-import AwHome from "./figures/awayAgent/AwHome";
-import AwDeepSearch from "./figures/awayAgent/AwDeepSearch";
-import AwVet from "./figures/awayAgent/AwVet";
-import AwBook from "./figures/awayAgent/AwBook";
-import AwConfirm from "./figures/awayAgent/AwConfirm";
-import AwHub from "./figures/awayAgent/AwHub";
-import AwTransit from "./figures/awayAgent/AwTransit";
-import AwDisruption from "./figures/awayAgent/AwDisruption";
-import AwRecap from "./figures/awayAgent/AwRecap";
-import AwOnboard from "./figures/awayAgent/AwOnboard";
-import AwPreDep from "./figures/awayAgent/AwPreDep";
-import AwIntakeBrief from "./figures/awayAgent/AwIntakeBrief";
-import AwSearchFlow from "./figures/awayAgent/AwSearchFlow";
-import AwSmartPin from "./figures/awayAgent/AwSmartPin";
-import AwResultCard from "./figures/awayAgent/AwResultCard";
-import AwFareCards from "./figures/awayAgent/AwFareCards";
-import SchedDirections from "./figures/scheduled/SchedDirections";
-import SchedSinglePage from "./figures/scheduled/SchedSinglePage";
-import SchedStuckCart from "./figures/scheduled/SchedStuckCart";
-import SchedImpact from "./figures/scheduled/SchedImpact";
-import SchedSplit from "./figures/scheduled/SchedSplit";
-import SchedMoments from "./figures/scheduled/SchedMoments";
-import SchedCartStates from "./figures/scheduled/SchedCartStates";
-import SchedPageStates from "./figures/scheduled/SchedPageStates";
-import SchedDateSwitch from "./figures/scheduled/SchedDateSwitch";
-import SchedToggleDemo from "./figures/scheduled/SchedToggleDemo"; // mv59m6yi
-import SchedGtm from "./figures/scheduled/SchedGtm";
-import SchedExplorations from "./figures/scheduled/SchedExplorations";
-import SchedPostBooking from "./figures/scheduled/SchedPostBooking";
+const EdgeFloater = lazyFig(() => import("./figures/jarvis/EdgeFloater"));
+const EdgeCard = lazyFig(() => import("./figures/jarvis/EdgeCard"));
+const EdgeAltitudes = lazyFig(() => import("./figures/jarvis/EdgeAltitudes"));
+const EdgeOos = lazyFig(() => import("./figures/jarvis/EdgeOos"));
+const AwClarify = lazyFig(() => import("./figures/awayAgent/AwClarify"));
+const AwHome = lazyFig(() => import("./figures/awayAgent/AwHome"));
+const AwDeepSearch = lazyFig(() => import("./figures/awayAgent/AwDeepSearch"));
+const AwVet = lazyFig(() => import("./figures/awayAgent/AwVet"));
+const AwBook = lazyFig(() => import("./figures/awayAgent/AwBook"));
+const AwConfirm = lazyFig(() => import("./figures/awayAgent/AwConfirm"));
+const AwHub = lazyFig(() => import("./figures/awayAgent/AwHub"));
+const AwTransit = lazyFig(() => import("./figures/awayAgent/AwTransit"));
+const AwDisruption = lazyFig(() => import("./figures/awayAgent/AwDisruption"));
+const AwRecap = lazyFig(() => import("./figures/awayAgent/AwRecap"));
+const AwOnboard = lazyFig(() => import("./figures/awayAgent/AwOnboard"));
+const AwPreDep = lazyFig(() => import("./figures/awayAgent/AwPreDep"));
+import "./figures/awayAgent/awayAgent.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const AwIntakeBrief = lazyFig(() => import("./figures/awayAgent/AwIntakeBrief"));
+const AwSearchFlow = lazyFig(() => import("./figures/awayAgent/AwSearchFlow"));
+const AwSmartPin = lazyFig(() => import("./figures/awayAgent/AwSmartPin"));
+const AwResultCard = lazyFig(() => import("./figures/awayAgent/AwResultCard"));
+const AwFareCards = lazyFig(() => import("./figures/awayAgent/AwFareCards"));
+const SchedDirections = lazyFig(() => import("./figures/scheduled/SchedDirections"));
+const SchedSinglePage = lazyFig(() => import("./figures/scheduled/SchedSinglePage"));
+const SchedStuckCart = lazyFig(() => import("./figures/scheduled/SchedStuckCart"));
+const SchedImpact = lazyFig(() => import("./figures/scheduled/SchedImpact"));
+const SchedSplit = lazyFig(() => import("./figures/scheduled/SchedSplit"));
+import "./figures/scheduled/scheduled.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const SchedMoments = lazyFig(() => import("./figures/scheduled/SchedMoments"));
+const SchedCartStates = lazyFig(() => import("./figures/scheduled/SchedCartStates"));
+const SchedPageStates = lazyFig(() => import("./figures/scheduled/SchedPageStates"));
+const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
+const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
+const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
+const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
+const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner } from "./figures/scheduled/SchedGtmReal";
-import SchedRnR from "./figures/scheduled/SchedRnR";
-import SchedPageReal from "./figures/scheduled/SchedPageReal";
+const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
+const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
 import { scheduledDeck } from "./decks/scheduledDelivery.deck";
 import { awayAgentDeck } from "./decks/awayAgent.deck";
@@ -430,9 +455,9 @@ import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, 
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
 import { GlassLens } from "./ui/GlassLens";
 import { LoadRevealContext } from "./ui/loadReveal"; // muzdylub (8 Oct)
-import SchedInsight from "./figures/scheduled/SchedInsight";
+const SchedInsight = lazyFig(() => import("./figures/scheduled/SchedInsight"));
 import { Compass, Buildings, Handshake, Clock, Lightning, ShieldCheck } from "@phosphor-icons/react";
-import SchedUseCases from "./figures/scheduled/SchedUseCases";
+const SchedUseCases = lazyFig(() => import("./figures/scheduled/SchedUseCases"));
 import SchedRoleWireframes, { ROLE_STATS, STAT_ICON } from "./figures/scheduled/SchedRoleWireframes";
 import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
 import { windowSceneOn } from "./lib/sceneFlag";
