@@ -560,7 +560,7 @@ export default function WorkGrid({ onNavigate }) {
             );
           }
           return (
-          <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top" } : { to: c.href, onNavigate })} className={cls} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? (NEW.has(c.href) ? `${c.alt} (New)` : c.alt) : undefined}>
+          <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top", badge: false } : { to: c.href, onNavigate })} className={cls} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? (NEW.has(c.href) ? `${c.alt} (New)` : c.alt) : undefined}>
             {NEW.has(c.href) && <NewTag corner />}
             {visual(c)}
           </Card>
