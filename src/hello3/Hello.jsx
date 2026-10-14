@@ -32,7 +32,8 @@ import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars
 import WorkGrid from "./WorkGrid";
 import LockedLink from "./LockedLink";
 import NewTag from "./NewTag";
-import { LOCKED, NEW, newestFirst } from "./workMeta";
+import { LOCKED, NEW, PROJECT_ROWS, newestFirst } from "./workMeta";
+import usePhone from "./usePhone";
 import SiteCursor from "./SiteCursor";
 import { Guard, lazyRetry } from "../ui/Guard"; // blank-page guards: a failing piece hides itself, never the page
 // The REBUILT timeline, shared with /hello rather than forked (2026-08-07).
@@ -163,20 +164,12 @@ function ContactLines() {
 
 // No `detail` prop: /hello3 is always the card arrangement, so the branches
 // /hello0 needed are resolved here rather than carried as a flag.
-// mtqs5nvx: the five rows follow the five project cards below, in the same
-// order: year and organisation from the projects list, the line is each case's
-// own title (helloData / App.jsx). CaratLane has no case page, so its line is
-// the role's headline and it links to the list.
-const TIMELINE_ROWS = [
-  { year: "2025", org: "Zepto", line: "Scheduling on a 10-minute platform", href: "/work/scheduled-delivery" },
-  { year: "2026", org: "Away", line: "An agent that never takes the wheel", href: "/work/away-agent" },
-  { year: "2026", org: "Zepto", line: "The half of cross-sell nobody solved", href: "/work/cross-sell" },
-  { year: "2023", org: "CaratLane", line: "E-commerce for a jewelry brand" /* mtqs7lcx: shorter */, href: "/list" },
-  { year: "2019", org: "Toppr", line: "Joyful learning experiences for students", href: "/work/toppr" },
-];
+// mtqs5nvx: the rows follow the project cards below, in the same order. The
+// rows themselves live in workMeta.js (PROJECT_ROWS), shared with the cards'
+// phone captions.
 // mv58rul2: the whole list newest first (the order App.jsx's project list uses),
 // by year, then the project's date (workMeta.js); the cards below follow it
-const TIMELINE = newestFirst(TIMELINE_ROWS);
+const TIMELINE = newestFirst(PROJECT_ROWS);
 
 // see the sky note in the markup: a phone gets a wider canvas, sampled lower
 const SKY_NARROW = typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches;
@@ -556,6 +549,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   const sceneRun2 = useRef(null);
   const heroRef = useRef(null);
   const reduce = useReducedMotion();
+  // phones: no project list in the hero, the cards carry captions (usePhone.js, WorkGrid.jsx)
+  const phone = usePhone();
   const helloFlip = useHelloFlipStore(); // the stretchy "Hello" (HelloFlip.jsx)
   const { stage, skip } = useIntroStage(rootRef, { off: sceneWindow });
   // BACK TO THE ROOM (Agam: "give me a floater for scrolling up once I've already visited the
@@ -617,6 +612,9 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     const cards = q(".wg__card");
     // the last card's light has to finish by t = 1 (its window ends at m + 0.7 D, D = w + 0.08)
     add(cards, 0.0001, 0, 0.18);
+    // phones: each card's caption (year, title, line) is its own text block, printed by the same
+    // front a moment after its card (it sits just under it), shimmering as bars like the list rows did
+    add(q(".wg__cap"), 0.0001, 0, 0.18);
     add(q(".ap, .tlx, .hello-foot"), 0.9, 0);
     const glow = root.hasAttribute("data-glow");
     const still = reduce; // reduced motion: static blocks, no sweep, no bloom; each block cross-fades to its content
@@ -1481,6 +1479,9 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             custom table. Static rows for now: no href on the frame. */}
         {/* mtqrtgd3: the rows are real links with the list's hover configs (arrow
             slides in, siblings dim); hrefs by organisation until the frame has its own */}
+        {/* PHONES DROP THE LIST (Oct 2026, Agam: "don't need a collated list at the top"): each
+            work card carries its year, title and line instead (WorkGrid.jsx, the same rows) */}
+        {!phone && (
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
           {TIMELINE.map((r, i) => {
             const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
@@ -1504,6 +1505,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             );
           })}
         </div>
+        )}
       </section>
 
       {/* pin mtqremeh: the card grid from Figma 643:88426 replaces the phone marquee */}

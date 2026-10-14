@@ -4,7 +4,9 @@ import { useInViewLoop, useReducedMotion } from "../figures/ds/hooks";
 import HelloLink from "./HelloLink";
 import LockedLink from "./LockedLink";
 import NewTag from "./NewTag";
-import { LOCKED, NEW, newestFirst } from "./workMeta";
+import { Lock } from "iconoir-react";
+import { LOCKED, NEW, newestFirst, projectRow } from "./workMeta";
+import usePhone from "./usePhone";
 import useLinkedSpotlight from "./useLinkedSpotlight";
 import FigmaPhone from "./FigmaPhone";
 import ClipVideo from "../hello/ClipVideo";
@@ -444,90 +446,123 @@ function SlotTour() {
   );
 }
 
+// One card's visual: the export, or the live composition built from the frame's parts.
+// The same nodes at every width; on phones they sit in a wrapper with the caption.
+function visual(c) {
+  return (
+    c.live === "caratlane" ? (
+      <span className="wg__live" aria-hidden>
+        <FigmaPhone plate="pro17" className="wg__phone" screen={<ClipVideo clip={CARAT_CLIP} playing />} alt="" />
+      </span>
+    ) : c.live === "sched" ? (
+      <>
+        <span className="wg__badge wg__badge--sd-bg" aria-hidden><img src="/hello3/cards/sd-bg.png" alt="" draggable="false" /></span>
+        <span className="wg__live wg__live--over" aria-hidden>
+          <FigmaPhone
+            plate="pro17"
+            className="wg__phone wg__phone--sd-l"
+            screen={SCHED ? (
+              <>
+                <img className="wg__still" src={SCHED.screen} alt="" draggable="false" />
+                <ClipVideo clip={{ ...SCHED.clip, loop: true }} playing />
+              </>
+            ) : "/figures/scheduled/schedule-page-ui.png"}
+            alt=""
+          />
+          <FigmaPhone plate="pro17" className="wg__phone wg__phone--sd-r" screen={<ProtoScreen />} alt="" />
+        </span>
+      </>
+    ) : c.live === "away" ? (
+      <>
+        <span className="wg__badge wg__badge--away-logo" aria-hidden><img src="/hello3/cards/away-logo.png" alt="" draggable="false" /></span>
+        <span className="wg__live wg__live--over" aria-hidden>
+          <FigmaPhone plate="pro17" className="wg__phone wg__phone--away-l" screen={<ClipVideo clip={AWAY_CLIP} playing />} alt="" />
+          {/* mtrw7zcv "do a reveal animation for the right frame as
+              well": two clipped copies of the same screen, the region
+              above the search modal (0 to 30.5%, the frame's own split
+              at y 105.3 of 344.8) fading up first, then the modal
+              rising into place; a 5s loop in CSS (.wg__reveal). */}
+          <FigmaPhone
+            plate="pro17"
+            className="wg__phone wg__phone--away-r"
+            screen={<AwayReveal />}
+            alt=""
+          />
+        </span>
+      </>
+    ) : c.live === "toppr" ? (
+      <>
+        {/* mtr955dv "I see double phone frames": the export's own phone
+            showed around the live plate, so the export is gone. The
+            card is its gradient (CSS) plus the three badge groups
+            exported on their own (643:99563 / 99569 / 99575, at their
+            frame offsets), and the live phone. */}
+        {/* mtrcyd2p "build this on the website and bring them to life
+            how a cursor behaves": the three badges are now real
+            elements, a cursor arrow and a name pill each (Figma
+            643:99563 / 99569 / 99575: pill 30 tall, 12px Helvetica
+            Neue, 1.28 stroke, the arrow 14.5 with a white hairline),
+            and each one wanders its own short path in bursts with
+            holds, the way a live cursor does. The PNG exports stay in
+            public/hello3/cards as the record of the frame. */}
+        <CursorStory />
+        <span className="wg__live wg__live--over" aria-hidden>
+          <FigmaPhone
+            plate="pro17"
+            className="wg__phone wg__phone--toppr"
+            screen={TOPPR_SCROLL ? (
+              <>
+                <img className="wg__still" src={TOPPR_SCROLL.base} alt="" draggable="false" />
+                <ScrollBand scroll={TOPPR_SCROLL} reduce={false} playing />
+              </>
+            ) : undefined}
+            alt=""
+          />
+        </span>
+      </>
+    ) : (
+      <img src={c.src} alt={c.alt} width="666" height="432" loading="lazy" draggable="false" />
+    )
+  );
+}
+
 export default function WorkGrid({ onNavigate }) {
   const sectionRef = useRef(null);
   useLinkedSpotlight(sectionRef); // mv3mbvr7: the cards and the timeline rows dim together
+  const phone = usePhone();
   return (
     <section className="wg" aria-label="Selected work" ref={sectionRef}>
       <div className="wg__grid">
         {newestFirst(CARDS.filter((c) => !c.hidden)).map((c, i) => { // mv58rul2: same newest-first order as the timeline
           const Card = LOCKED.has(c.href) ? LockedLink : HelloLink;
-          return (
-          <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top" } : { to: c.href, onNavigate })} className={"wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "")} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? (NEW.has(c.href) ? `${c.alt} (New)` : c.alt) : undefined}>
-            {NEW.has(c.href) && <NewTag corner />}
-            {c.live === "caratlane" ? (
-              <span className="wg__live" aria-hidden>
-                <FigmaPhone plate="pro17" className="wg__phone" screen={<ClipVideo clip={CARAT_CLIP} playing />} alt="" />
+          const cls = "wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "");
+          const row = phone ? projectRow(c.href) : null;
+          // PHONES: THE CARD AND ITS CAPTION ARE ONE LINK (Oct 2026, Agam: "move the year, title
+          // and subtitles just below each project visual card"). The link is a wrapper (.wg__item)
+          // holding the visual, which keeps every .wg__card class and rule, and the caption, read
+          // from the timeline's own rows (workMeta.js PROJECT_ROWS). The lock and the New tag sit
+          // in the caption's title, as they do on the list row. Above 720px nothing changes.
+          if (row) {
+            const locked = LOCKED.has(c.href);
+            return (
+            <Card key={c.src} {...(locked ? { tip: "top", badge: false } : { to: c.href, onNavigate })} className="wg__item" style={{ "--i": i }} data-project={c.href}>
+              <span className={cls}>{visual(c)}</span>
+              <span className="wg__cap">
+                <span className="wg__cap-year">{row.year}</span>
+                <span className="wg__cap-title">
+                  {row.org}
+                  {NEW.has(c.href) && <NewTag />}
+                  {locked && <span className="lock__badge" aria-hidden><Lock width={14} height={14} strokeWidth={2} /></span>}
+                </span>
+                <span className="wg__cap-line">{row.line}</span>
               </span>
-            ) : c.live === "sched" ? (
-              <>
-                <span className="wg__badge wg__badge--sd-bg" aria-hidden><img src="/hello3/cards/sd-bg.png" alt="" draggable="false" /></span>
-                <span className="wg__live wg__live--over" aria-hidden>
-                  <FigmaPhone
-                    plate="pro17"
-                    className="wg__phone wg__phone--sd-l"
-                    screen={SCHED ? (
-                      <>
-                        <img className="wg__still" src={SCHED.screen} alt="" draggable="false" />
-                        <ClipVideo clip={{ ...SCHED.clip, loop: true }} playing />
-                      </>
-                    ) : "/figures/scheduled/schedule-page-ui.png"}
-                    alt=""
-                  />
-                  <FigmaPhone plate="pro17" className="wg__phone wg__phone--sd-r" screen={<ProtoScreen />} alt="" />
-                </span>
-              </>
-            ) : c.live === "away" ? (
-              <>
-                <span className="wg__badge wg__badge--away-logo" aria-hidden><img src="/hello3/cards/away-logo.png" alt="" draggable="false" /></span>
-                <span className="wg__live wg__live--over" aria-hidden>
-                  <FigmaPhone plate="pro17" className="wg__phone wg__phone--away-l" screen={<ClipVideo clip={AWAY_CLIP} playing />} alt="" />
-                  {/* mtrw7zcv "do a reveal animation for the right frame as
-                      well": two clipped copies of the same screen, the region
-                      above the search modal (0 to 30.5%, the frame's own split
-                      at y 105.3 of 344.8) fading up first, then the modal
-                      rising into place; a 5s loop in CSS (.wg__reveal). */}
-                  <FigmaPhone
-                    plate="pro17"
-                    className="wg__phone wg__phone--away-r"
-                    screen={<AwayReveal />}
-                    alt=""
-                  />
-                </span>
-              </>
-            ) : c.live === "toppr" ? (
-              <>
-                {/* mtr955dv "I see double phone frames": the export's own phone
-                    showed around the live plate, so the export is gone. The
-                    card is its gradient (CSS) plus the three badge groups
-                    exported on their own (643:99563 / 99569 / 99575, at their
-                    frame offsets), and the live phone. */}
-                {/* mtrcyd2p "build this on the website and bring them to life
-                    how a cursor behaves": the three badges are now real
-                    elements, a cursor arrow and a name pill each (Figma
-                    643:99563 / 99569 / 99575: pill 30 tall, 12px Helvetica
-                    Neue, 1.28 stroke, the arrow 14.5 with a white hairline),
-                    and each one wanders its own short path in bursts with
-                    holds, the way a live cursor does. The PNG exports stay in
-                    public/hello3/cards as the record of the frame. */}
-                <CursorStory />
-                <span className="wg__live wg__live--over" aria-hidden>
-                  <FigmaPhone
-                    plate="pro17"
-                    className="wg__phone wg__phone--toppr"
-                    screen={TOPPR_SCROLL ? (
-                      <>
-                        <img className="wg__still" src={TOPPR_SCROLL.base} alt="" draggable="false" />
-                        <ScrollBand scroll={TOPPR_SCROLL} reduce={false} playing />
-                      </>
-                    ) : undefined}
-                    alt=""
-                  />
-                </span>
-              </>
-            ) : (
-              <img src={c.src} alt={c.alt} width="666" height="432" loading="lazy" draggable="false" />
-            )}
+            </Card>
+            );
+          }
+          return (
+          <Card key={c.src} {...(LOCKED.has(c.href) ? { tip: "top" } : { to: c.href, onNavigate })} className={cls} style={{ "--i": i }} data-project={c.href} aria-label={c.live ? (NEW.has(c.href) ? `${c.alt} (New)` : c.alt) : undefined}>
+            {NEW.has(c.href) && <NewTag corner />}
+            {visual(c)}
           </Card>
           );
         })}

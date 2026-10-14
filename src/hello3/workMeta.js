@@ -17,6 +17,21 @@ const key = (href) => {
 };
 export const newestFirst = (items) => [...items].sort((a, b) => key(b.href) - key(a.href));
 
+// THE PROJECTS' ROWS (moved here from Hello.jsx, Oct 2026): year, organisation and
+// line for each case, read by the timeline list AND, on phones, by the caption under
+// each work card (WorkGrid.jsx), so the two can never say different things.
+// mtqs5nvx: year and organisation from the projects list, the line is each case's
+// own title (helloData / App.jsx). CaratLane has no case page, so its line is the
+// role's headline and it links to the list.
+export const PROJECT_ROWS = [
+  { year: "2025", org: "Zepto", line: "Scheduling on a 10-minute platform", href: "/work/scheduled-delivery" },
+  { year: "2026", org: "Away", line: "An agent that never takes the wheel", href: "/work/away-agent" },
+  { year: "2026", org: "Zepto", line: "The half of cross-sell nobody solved", href: "/work/cross-sell" },
+  { year: "2023", org: "CaratLane", line: "E-commerce for a jewelry brand" /* mtqs7lcx: shorter */, href: "/list" },
+  { year: "2019", org: "Toppr", line: "Joyful learning experiences for students", href: "/work/toppr" },
+];
+export const projectRow = (href) => PROJECT_ROWS.find((r) => r.href === href);
+
 // Shown but not openable: no link, no route prefetch, no project transition.
 export const LOCKED = new Set(["/work/away-agent", "/work/cross-sell"]);
 // the newest Zepto project carries a "New" tag (mv58rul2)
