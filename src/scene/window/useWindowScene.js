@@ -291,6 +291,11 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
     // width, so its grid sat elsewhere than the page's (2026-09-27): it now retries
     // with a backoff, and again when the tab comes back
     let posterTries = 0, posterPending = false;
+    // each capture's number: a capture takes a second or more (longer while lazy media
+    // decode), so during a window drag two overlap, and the older one finishing last
+    // put the page at a size the window no longer has back on the monitor, for good
+    // (mv845ves, 2026-10-14). Only the newest capture is applied
+    let posterGen = 0;
     const capturePoster = (delay = 350, force = false) => {
       if (!livePoster || opts.capture) return;
       // nothing to redo: the landing on the monitor was made at this very size (the
@@ -305,6 +310,8 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
           if (posterTries++ < 6) capturePoster(Math.min(8000, 1000 * 2 ** (posterTries - 1)));
         };
         if (document.hidden || !window.innerWidth || !window.innerHeight || !host.clientWidth) return retry();
+        const gen = ++posterGen;
+        const size = `${window.innerWidth}x${window.innerHeight}`; // what this capture is made for
         try {
           const rect = engine.screenRectAt(1);
           const root = host.closest(".hello") || host.parentElement;
@@ -314,10 +321,10 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
           const top = await captureLanding({ root, runway: run1, rect, bg, dpr });
           const foot = endRun ? root.querySelector(".hello-foot") : null;
           const end = foot ? await captureEnd({ el: foot, spacer: run2, rect, bg, dpr }) : null;
-          if (!alive) return;
+          if (!alive || gen !== posterGen) return; // a newer capture has started: it applies
           if (!top) return retry();
           livePosters.top = top;
-          posterSize = `${window.innerWidth}x${window.innerHeight}`;
+          posterSize = size;
           root.dataset.wscenePoster = "true"; // the monitor shows the live page: the hand-over scroll may start (Hello.jsx)
           livePosters.end = end || livePosters.end;
           posterTries = 0;
@@ -325,6 +332,7 @@ export function useWindowScene({ hostRef, run1Ref, run2Ref, heroRef, opts, reduc
           posterShown = null;
           decide();
         } catch (e) {
+          if (!alive || gen !== posterGen) return;
           console.warn("[window] live poster failed, retrying:", e?.message || e);
           retry();
         }

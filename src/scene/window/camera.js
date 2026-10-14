@@ -118,11 +118,20 @@ export function keyframes(P, { aspect, screen }) {
   const k0 = windowKey(P, aspect);
   // the reference
   const r = C.ref;
+  // Past 16:9 the reference's horizontal FOV leaves less and less of it vertically,
+  // shaved equally off the top and the bottom, and the monitor at the bottom of the
+  // frame went first: from about 1.9:1 the room showed only the top of a blank screen
+  // (mv845ves, 2026-10-14: "at certain widths the preview of the monitor breaks").
+  // There the camera tips down by half the vertical FOV it lost, so the frame's bottom
+  // edge (the desk, the monitor's page) stays where 16:9 has it and the crop comes off
+  // the ceiling. The reference pitches 5.7 deg up, so the verticals only straighten.
+  const wideFrom = r.wideFrom ?? 16 / 9;
+  const tip = aspect > wideFrom ? (fovForAspect(r.fovV, r.aspect, wideFrom) - fovForAspect(r.fovV, r.aspect, aspect)) / 2 : 0;
   const kRef = {
     t: r.at,
     pos: r.pos.map((v) => v * W),
     yaw: r.yaw,
-    pitch: r.pitch,
+    pitch: r.pitch - tip,
     roll: r.roll,
     fov: fovForAspect(r.fovV, r.aspect, aspect),
     focus: r.focus * W,
@@ -134,7 +143,17 @@ export function keyframes(P, { aspect, screen }) {
   const fovF = kRef.fov;
   const dF = coverDistance(screen.width, screen.height, fovF, aspect);
   const face = anglesOf([-n[0], -n[1], -n[2]]);
-  const at = (d) => [screen.center[0] + n[0] * d, screen.center[1] + n[1] * d, screen.center[2] + n[2] * d];
+  // A viewport wider than the screen sees a band of it (width-governed). Centred, the
+  // page's first viewport sat in the middle of the screen with bare ground above and
+  // below, and from the room, where the monitor's lower half runs off the frame on wide
+  // windows, the screen read as blank (mv845ves, 2026-10-14: "at certain widths the
+  // preview of the monitor breaks"; empty from about 1.9:1). The band is lifted to the
+  // screen's top edge, as a browser window sits, and livePoster.js fills the rest of
+  // the screen with the page below it. A taller viewport (height-governed) stays
+  // centred: its side bands are the page's own margins.
+  const lift = Math.max(0, (screen.height - screen.width / aspect) / 2);
+  const b = screen.bitangent || [0, 1, 0];
+  const at = (d) => [0, 1, 2].map((i) => screen.center[i] + n[i] * d + b[i] * lift);
   const kApp = { t: C.approach.at, pos: at(dF * C.approach.back), yaw: face.yaw, pitch: face.pitch, roll: 0, fov: fovF, focus: dF * C.approach.back, bokeh: 1 };
   const kFill = { t: 1, pos: at(dF), yaw: face.yaw, pitch: face.pitch, roll: 0, fov: fovF, focus: dF, bokeh: 1 };
 

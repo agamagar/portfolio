@@ -108,7 +108,12 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
   // the hero's top is the landing scroll; the filter drops the runway spacer (and the
   // fixed canvas), so in the clone the hero starts at the top, as it does on screen
   const landTop = runway.getBoundingClientRect().bottom + window.scrollY;
-  await mediaReady(root, landTop, landTop + vh);
+  // the page down to the screen's bottom edge, not just its first viewport: where the
+  // screen is taller than the viewport (a wide window, camera.js lifts the viewport to
+  // the screen's top) the rest of the screen shows the page that follows, the work
+  // grid, instead of bare ground (mv845ves). Its first vh is the landing, unchanged
+  const tall = Math.max(vh, Math.ceil(Math.max(rect.bl[1], rect.br[1])));
+  await mediaReady(root, landTop, landTop + tall);
   onProgress?.();
   // extraSkip (sceneWarm.js): the plain page's own sky band, its tooltip and the loader
   // pill, when the landing is captured from the plain page before the hand-over
@@ -120,7 +125,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
   const below = (el) => {
     if (el.nodeType !== 1 || el === root) return false;
     const r = el.getBoundingClientRect();
-    return r.top + window.scrollY > landTop + vh + 40; // starts below the landing viewport
+    return r.top + window.scrollY > landTop + tall + 40; // starts below the screen's reach
   };
   const cssText = await pageFontCss();
   onProgress?.();
@@ -144,7 +149,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
     progress: onProgress ? () => onProgress() : undefined, // each embedded image, clip frame and font
     font: cssText ? { cssText } : undefined,
     width: vw,
-    height: vh,
+    height: tall,
     scale,
     backgroundColor: bg,
     filter: (el) => !skip(el) && !below(el),
@@ -174,7 +179,7 @@ export async function captureLanding({ root, runway, rect, bg, dpr = 1, skip: ex
       }
     },
   });
-  return onScreen(shot, { rect, bg, scale, vw, vh });
+  return onScreen(shot, { rect, bg, scale, vw, vh: tall });
 }
 
 // The page's LAST screen (the folio page's ending): the element that fills it (the
@@ -218,8 +223,9 @@ export async function captureEnd({ el, spacer, rect, bg, dpr = 1 }) {
   return onScreen(view, { rect, bg, scale, vw, vh });
 }
 
-// a viewport-sized image onto the screen's texture: the quad the screen covers at
-// p = 1 (it can run past the canvas on two sides), the viewport placed where it sits
+// a viewport-wide image onto the screen's texture: the quad the screen covers at p = 1
+// (it can run past the canvas on two sides), the viewport placed where it sits; vh is
+// the image's own height (the landing runs on down the screen, see captureLanding)
 function onScreen(shot, { rect, bg, scale, vw, vh }) {
   const qw = Math.max(1, rect.tr[0] - rect.tl[0]);
   const qh = Math.max(1, rect.bl[1] - rect.tl[1]);
