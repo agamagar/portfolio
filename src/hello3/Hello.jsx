@@ -1309,7 +1309,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       {/* the way into the room (2026-10-11, opt-in): ONE glass container at the top
           centre, fading in a moment after load. While the room warms in the background it
           holds "Setting up the room" with the loader (a click anywhere on it queues the
-          entry); once ready the text turns to "The room is ready" and a solid white
+          entry); once ready the text turns to "Workspace is ready" (mv842avo) and a solid white
           "Enter the room" button grows in on its right (annotations mv3sf3jm-qb2htt,
           mv3u3h6m-4trwcm, mv3unisi-raj9d1). The status text is the polite live region.
           Both texts and the button's width are measured (roomBtnRef) so the morph tweens.
@@ -1331,7 +1331,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               <span className="wscene-nudge__dots" aria-hidden="true"><i /><i /><i /></span>
             </span>
             <span className="wscene-warm-pill__label" data-on={(uiReady && !going && journey === "idle") || undefined} aria-hidden={!(uiReady && !going && journey === "idle")}>
-              {stalled ? "The room didn't load" : "The room is ready"}
+              {stalled ? "Workspace didn't load" : "Workspace is ready"}
             </span>
             {/* the landing: the room's "scroll" floater's own label and arrow (WindowSceneFolio.jsx) */}
             <span className="wscene-warm-pill__label" data-on={journey === "landing" || journey === "handoff" || undefined} aria-hidden="true">
@@ -1346,7 +1346,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             className="wscene-warm-pill__btn"
             tabIndex={uiReady && !going && journey === "idle" ? 0 : -1}
             aria-hidden={!(uiReady && !going && journey === "idle")}
-            aria-label={stalled ? "Retry setting up the workspace" : "Enter the workspace"}
+            aria-label={stalled ? "Retry setting up workspace" : "Enter workspace"}
             onFocus={() => setWarmWanted(true)}
             onClick={() => {
               setWarmWanted(true);
@@ -1359,8 +1359,12 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             }}
           >
             <span className="wscene-warm-pill__btn-label">
+              {/* icons only, never a word: the button is a locked 1:1 square (mv840zms), so
+                  a stalled room shows a refresh glyph; the aria-label says "Retry" */}
               {stalled ? (
-                "Retry"
+                <svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+                  <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
+                </svg>
               ) : (
                 <svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
                   <path d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z" />

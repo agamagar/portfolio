@@ -72,7 +72,8 @@
 }
 
 /* the card grid: frame "109", 2 columns of 666 x 432, 60 around and between */
-.hello[data-page="3"] .wg { width: 100%; max-width: 1512px; margin: 0 auto; padding: 0 60px 60px; box-sizing: border-box; }
+/* the inline padding is the shared --home-inset (mv844xem, below): the corner nav lines up with these edges */
+.hello[data-page="3"] .wg { width: 100%; margin: 0 auto; padding: 0 var(--home-inset-r, 60px) 60px var(--home-inset-l, 60px); box-sizing: border-box; }
 .hello[data-page="3"] .wg__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 60px; }
 .hello[data-page="3"] .wg__card { display: block; overflow: hidden; border-radius: 0; }
 .hello[data-page="3"] .wg__card img { display: block; width: 100%; height: auto; }
@@ -121,7 +122,7 @@
   .hello[data-page="3"] .hello-hero__table .work__item { grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; }
   .hello[data-page="3"] .hello-hero__table .work__meta { grid-column: 2; white-space: normal; overflow: visible; text-overflow: clip; }
   .hello[data-page="3"] .hello-hero__table { padding: 32px 20px 0; }
-    .hello[data-page="3"] .wg { padding: 0 20px 40px; }
+    .hello[data-page="3"] .wg { padding-bottom: 40px; } /* the 20px sides come from --home-gutter */
   .hello[data-page="3"] .wg__grid { grid-template-columns: 1fr; gap: 20px; }
 }
 
@@ -825,8 +826,25 @@ html.dark .top-controls .hello-chips--top .hello-chip { --chip-bg: #1c1c20; --ch
    controls row sits at max(12px, 50% - --max/2), the article measure, while
    this page's content runs to a 60px gutter (.wg, the timeline table) and 20px
    under 900. The row takes the page's gutter on /portfolio. */
-body:has(.hello[data-page="3"]) .top-controls { right: 60px; }
-@media (max-width: 900px) { body:has(.hello[data-page="3"]) .top-controls { right: 20px; } }
+/* mv844xem (Agam, 14 Oct): "the nav icon should have a constraint, they should start
+   aligned with the bottom card container so they also have the same left and right
+   padding on the viewport". ONE inset drives the card grid's padding and every corner
+   floater, so they stay locked at every width: the gutter (60, 20 under 900), growing
+   once the 1392px grid is capped and centred (50% - 696 = the old 1512 max-width box
+   plus its 60 padding). It holds `50%` on purpose: resolved in .wg's padding it is half
+   the page width, in a fixed element's left/right half the viewport, and those are the
+   same box (both exclude a classic scrollbar), which 100vw would not be. Each side also
+   takes its safe-area inset, applied identically to the grid, so a notch in landscape
+   moves both together. */
+body:has(.hello[data-page="3"]) {
+  --home-gutter: 60px;
+  --home-inset: max(var(--home-gutter), calc(50% - 696px));
+  --home-inset-l: max(var(--home-inset), env(safe-area-inset-left));
+  --home-inset-r: max(var(--home-inset), env(safe-area-inset-right));
+}
+@media (max-width: 900px) { body:has(.hello[data-page="3"]) { --home-gutter: 20px; } }
+body:has(.hello[data-page="3"]) .top-controls { left: var(--home-inset-l); right: var(--home-inset-r); }
+body:has(.hello[data-page="3"]) .view-menu { left: var(--home-inset-l); }
 
 /* mtr8hc5e "on scroll the sky will be visible across": the sky band is fixed
    to the viewport on this page instead of absolute to the top of the document,
@@ -2076,7 +2094,7 @@ html.dark .hello[data-page="3"] .ap__cap .ap__cap-link { color: var(--fg); }
   transition: padding 460ms cubic-bezier(0.3, 0, 0, 1), translate 680ms cubic-bezier(0.3, 0, 0, 1), opacity 220ms ease;
 }
 .wscene-warm-pill:not([data-state="ready"]) { cursor: pointer; }
-.wscene-warm-pill[data-state="ready"] { padding: 0 6px 0 18px; }
+.wscene-warm-pill[data-state="ready"] { padding: 0 0 0 18px; } /* the end padding is the square button's own 6 px inset now (mv840zms) */
 /* the status text: both texts in one cell, the width tweens between their measured widths */
 .wscene-warm-pill__status {
   display: inline-grid;
@@ -2107,48 +2125,73 @@ html.dark .hello[data-page="3"] .ap__cap .ap__cap-link { color: var(--fg); }
    width until the room is ready, then it grows in on the container's right. A hairline
    and soft shadow keep it legible on the pale light-mode sky; the focus ring is the page
    ink (dark on light, white on dark) with a gap so it never merges with the white fill. */
+/* LOCKED 1:1 (mv840zms, Agam 14 Oct: "make the width equal to height and lock them so that
+   the ratio is always 1:1"): the button is a 44 px square hit area (the pill's own height)
+   and the white disc is its ::before, inset 6 px, so it is a 32 px circle in every state
+   (ready, entering, stalled), at every breakpoint and in either theme. It holds icons only
+   (the up arrow, or a refresh glyph when stalled), so nothing ever asks it to grow wider.
+   The pill's 6 px end padding now lives inside the button's inset, so the disc sits where
+   it always did. Width tweens 0 -> 44 to grow it in; overflow clips the disc meanwhile. */
 .wscene-warm-pill__btn {
+  --wp-btn: 44px;
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 0;
-  min-height: 32px;
+  height: var(--wp-btn);
   margin-left: 0;
   padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 999px;
   corner-shape: round;
-  background: #fff;
+  background: none;
   color: #0e0e11;
   font: 600 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
   white-space: nowrap;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
+  outline: none;
+  transition: width 460ms cubic-bezier(0.3, 0, 0, 1), margin-left 460ms cubic-bezier(0.3, 0, 0, 1), opacity 300ms ease 120ms, scale 150ms ease;
+}
+.wscene-warm-pill__btn::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: -1;
+  border-radius: 999px;
+  corner-shape: round;
+  background: #fff;
   box-shadow: 0 0 0 1px rgba(14, 14, 17, 0.14), 0 4px 12px rgba(14, 14, 17, 0.2);
-  transition: width 460ms cubic-bezier(0.3, 0, 0, 1), margin-left 460ms cubic-bezier(0.3, 0, 0, 1), opacity 300ms ease 120ms, background-color 150ms ease, scale 150ms ease;
+  transition: background-color 150ms ease;
 }
 .wscene-warm-pill[data-state="ready"] .wscene-warm-pill__btn {
-  width: calc(var(--lw-btn, 100px) + 32px);
-  margin-left: 14px;
+  width: var(--wp-btn);
+  aspect-ratio: 1;
+  margin-left: 8px; /* 8 + the 6 px inset = the 14 px gap to the text it always had */
   opacity: 1;
   pointer-events: auto;
 }
-.wscene-warm-pill__btn:hover { background: #f1f1f4; }
+.wscene-warm-pill__btn:hover::before { background-color: #f1f1f4; }
 .wscene-warm-pill__btn:active { scale: 0.97; }
-.wscene-warm-pill__btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+/* the ring hugs the disc: 2 px at a 3 px gap = 5 px, inside the 6 px inset, so overflow never clips it */
+.wscene-warm-pill__btn:focus-visible::before { outline: 2px solid var(--fg); outline-offset: 3px; }
 /* THE JOURNEY (Hello.jsx): click -> the white button turns into a loader and the text slides
    out, the container closing round it; the room swaps in under it; then it flies to the
    room's "scroll" floater's spot and becomes it, and the real floater takes over.
    --fly-y is the measured distance; the pill is fixed, so only a translate moves. */
 /* three classes, to beat `.wscene-warm-pill .wscene-nudge__dots { display: inline-flex }`: while hidden the dots took 18 px of the button and pushed the label off-centre */
 .wscene-warm-pill .wscene-warm-pill__btn-dots.wscene-nudge__dots { display: none; flex: none; align-items: center; opacity: 0; transition: opacity 240ms ease 200ms; }
-.wscene-warm-pill[data-state="entering"] { padding: 0 6px; }
+.wscene-warm-pill[data-state="entering"] { padding: 0; } /* the square button alone: a 44 px circle round the 32 px disc */
 .wscene-warm-pill[data-state="entering"] .wscene-warm-pill__status { width: 0; }
 .wscene-warm-pill[data-state="entering"] .wscene-warm-pill__label { translate: -14px 0; }
 .wscene-warm-pill[data-state="entering"] .wscene-warm-pill__btn {
-  width: calc(var(--lw-dots, 18px) + 32px);
+  width: var(--wp-btn);
+  aspect-ratio: 1;
   margin-left: 0;
   opacity: 1;
   pointer-events: none;
