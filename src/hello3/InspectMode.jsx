@@ -31,9 +31,13 @@ function selFor(el) {
 }
 
 // Measure everything the overlay draws. Pure DOM read; called on a rAF throttle.
+const getRoot = () => document.querySelector(".hello") || document.querySelector("article.article") || document.querySelector("main") || document.querySelector("#root");
+
 function measure(root) {
   const lines = [], bands = [], handles = [];
-  const sections = [...root.children].filter((e) => /^(SECTION|FOOTER)$/.test(e.tagName) && inFlow(e) && vis(e));
+  // Homepage (.hello): only SECTION/FOOTER children. Case pages and other roots: every in-flow block child.
+  const home = root.classList.contains("hello");
+  const sections = [...root.children].filter((e) => (home ? /^(SECTION|FOOTER)$/.test(e.tagName) : !/^(SCRIPT|STYLE)$/.test(e.tagName)) && inFlow(e) && vis(e));
   const addGap = (a, b, cont, many) => {
     const A = a.getBoundingClientRect(), B = b.getBoundingClientRect();
     const ox = Math.min(A.right, B.right) - Math.max(A.left, B.left), oy = Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top);
@@ -118,7 +122,7 @@ export default function InspectMode() {
 
   const refresh = () => {
     cancelAnimationFrame(raf.current);
-    raf.current = requestAnimationFrame(() => { const root = document.querySelector(".hello"); if (root) setModel(measure(root)); });
+    raf.current = requestAnimationFrame(() => { const root = getRoot(); if (root) setModel(measure(root)); });
   };
   useEffect(() => {
     if (!on) return;
@@ -130,7 +134,7 @@ export default function InspectMode() {
     const mv = (e) => {
       if (drag.current) return;
       const t = document.elementFromPoint(e.clientX, e.clientY);
-      const root = document.querySelector(".hello");
+      const root = getRoot();
       if (!t || !root || t === root || !root.contains(t) || t.closest("[data-inspect-ui]")) return setHover(null);
       setHover(hoverLines(t));
     };
