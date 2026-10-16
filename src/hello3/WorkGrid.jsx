@@ -52,6 +52,13 @@ const CARDS = [
   // HIDDEN FOR NOW (pin mtr8fkte, 07 Sep 2026): the cross-sell tile is kept
   // here but filtered out of the grid below; drop `hidden` to bring it back.
   { src: "/hello3/cards/card-3.png", href: "/work/cross-sell", alt: "Zepto Cross-Sell", hidden: true },
+  // ZepIris / OdinEye (Oct 2026): no usable art yet (the case figures are under 540 px wide), so the
+  // card is a neutral placeholder plate. Replace public/figures/zepiris/zepiris-card-placeholder.webp
+  // (1332 x 864) with the real visual.
+  { src: "/figures/zepiris/zepiris-card-placeholder.webp", href: "/work/zepiris", alt: "ZepIris: Zepto’s first open source platform" },
+  // Dassh (Oct 2026, Agam: "use this for the frame image"): Agam's slide, cropped to the card's
+  // 666 x 432 at 2x (public/figures/dassh/dassh-card.webp; the full 2000 x 1125 is dassh-frame.webp).
+  { src: "/figures/dassh/dassh-card.webp", href: "/work/dassh", alt: "Dassh: Stella, an AI recruiter" },
   // mtr8hvnw (07 Sep 2026): Toppr sits in the LEFT column of the second row, so it comes before CaratLane
   // LIVE (pin mtr90eb1 "add the toppr phone frame here"): the export stays as
   // the card (its badges and plate are in it) and the live phone sits exactly

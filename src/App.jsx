@@ -29,6 +29,7 @@ import "./figures/ds/ds.css"; // kept eager and first: its .ds-root rules must s
 const AgentWizardFigure = lazyFig(() => import("./figures/AgentWizard"));
 const AgentWizardCompare = lazyFig(() => import("./figures/agentWizard/Compare"));
 const AgentWizardFFF = lazyFig(() => import("./figures/agentWizard/AgentWizardFFF"));
+const DasshSlide = lazyFig(() => import("./figures/dassh/DasshSlide"));
 const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
 const AnnotationDemo = lazyFig(() => import("./figures/scaffold/AnnotationDemo"));
 const SeqDemo = lazyFig(() => import("./figures/systemExplainer/SeqDemo"));
@@ -680,6 +681,7 @@ const figures = {
   agentWizardCompare: AgentWizardCompare,
   agentWizardFff: AgentWizardFFF,
   stellaOnboarding: StellaOnboarding,
+  dasshSlide: DasshSlide, // the Dash slide, rebuilt in code (hero of /work/dassh)
   executionFlood: ExecutionFlood,
   callJourney: CallJourney,
   stellaSim: StellaSim,
@@ -3341,6 +3343,7 @@ const caseStudies = {
       "From pilots to a company",
       "Outcomes & reflection",
     ],
+    heroFig: "dasshSlide",
     cover: "Dassh",
     lead:
       "Dassh builds Stella, an AI recruiter that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, and keeping the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build the product from zero, the four experiences it ships as, the agent system underneath, including the conversation design of the calls Stella makes to real candidates, and the design system that turned Figma files into production code. Stella now runs live hiring for enterprises like Zydus Lifesciences and Increff. Over 2025 the work took it from zero to those pilots and, as the year closed, a ₹1.2 crore raise.",
