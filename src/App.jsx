@@ -163,6 +163,9 @@ import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
 import { topprDeck } from "./decks/toppr.deck";
 import Tooltips from "./ui/Tooltips";
+import { PRIVATE_SITE } from "./lib/site";
+import LockScreen from "./ui/LockScreen";
+import "./ui/lockScreen.css";
 import { runRouteTransition, installProjectIntent, configureProjectTransition, rememberScroll, savedScroll } from "./ui/projectTransition"; // project-transition (11 Oct): card-to-hero move + shimmer when slow
 import "./ui/projectTransition.css";
 
@@ -1755,7 +1758,10 @@ function SectionFigure({
   );
 }
 
-export const caseStudies = {
+// Public build: PRIVATE_SITE is a compile-time false, so this builder (the whole case
+// content, ~6.5k lines) and everything only it references drops out of the bundle.
+function buildCaseStudies() {
+const caseStudies = {
   toppr: {
     accent: "#2BB3A3",
     deck: topprDeck,
@@ -8324,6 +8330,9 @@ caseStudies["zepiris-prd"] = {
     "The requirements doc for ZepIris (codename OdinEye), Zepto's open-sourced face-authentication platform: the verified field research (NIST, ISO, ICAO, India's own deployments), the repo read closely, the 16-pattern Adaptive Capture layer, the motion spec, and the honesty ledger. Work in progress. Protected, enter the passcode, or request access.",
   passcode: "zepiris2026",
 };
+return caseStudies;
+}
+export const caseStudies = PRIVATE_SITE ? buildCaseStudies() : {};
 
 // What "ready" means for each case, for the hover/focus prefetch and the opening
 // beat (src/ui/projectTransition.js): its hero image or poster decoded, and the SD
@@ -9734,7 +9743,7 @@ function SecWrap({ on, stack, center, side, row, children }) {
   return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "") + (row ? " cs-sec--row" : "")}>{children}</div> : <>{children}</>;
 }
 
-export function CaseStudyBody({ cs }) {
+function CaseStudyBodyFull({ cs }) {
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
   // the plates row (mtmlg1wh); shared by the standalone render and the duo view
@@ -11233,6 +11242,12 @@ if (import.meta.env.VITE_PUBLIC_SITE === "1") {
   for (const cs of Object.values(caseStudies)) { delete cs.todo; stripNotes(cs); }
 }
 
+// Public build: null at compile time, so the case-study renderers (and the lazy figure and doc
+// chunks only they reach) are unreferenced and dropped. See src/lib/site.js.
+export const CaseStudyBody = PRIVATE_SITE ? CaseStudyBodyFull : () => null; // also read by the homepage detail drawer (hello/PhoneDetail3)
+const CaseStudyPage = PRIVATE_SITE ? CaseStudy : null;
+const LockedCaseStudyPage = PRIVATE_SITE ? LockedCaseStudy : null;
+
 export default function App() {
   const [rawPath, navigate] = useRoute();
   // 5 Oct (going live): the public build (VITE_PUBLIC_SITE=1, set in amplify.yml)
@@ -11243,10 +11258,10 @@ export default function App() {
   // product-design PDF is the only resume that ships
   const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
   const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
-  const isLab = path === "/lab";
+  const isLab = PRIVATE_SITE && path === "/lab";
   // The cross-sell decision tree, standalone and edge to edge (unlisted, like
   // /lab and /mockups). Same component as figure 1 of /work/cross-sell.
-  const isCrossSellTree = path === "/cross-sell-tree";
+  const isCrossSellTree = PRIVATE_SITE && path === "/cross-sell-tree";
   const isReelExport = path === "/reel-export";
   const isMockups = path === "/mockups";
   const isZeptoIcons = path === "/zepto-premium-icons";
@@ -11457,7 +11472,7 @@ export default function App() {
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
   const variant = isCrossSellTree || isLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
-  const accent = slug ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
+  const accent = slug && PRIVATE_SITE ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
   // an animation for when I scroll the nav elements disappears staggered").
@@ -11674,11 +11689,13 @@ export default function App() {
         <WritingPage onBack={() => navigate("/")} />
       ) : slug === "resume" ? (
         <ResumeViewer />
+      ) : slug && !PRIVATE_SITE ? (
+        <LockScreen slug={slug} />
       ) : slug ? (
         caseStudies[slug] && caseStudies[slug].locked ? (
-          <LockedCaseStudy cs={caseStudies[slug]} slug={slug} />
+          <LockedCaseStudyPage cs={caseStudies[slug]} slug={slug} />
         ) : (
-          <CaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
+          <CaseStudyPage slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
         )
       ) : isPortfolio ? (
         <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>

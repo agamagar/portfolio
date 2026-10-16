@@ -1,0 +1,36 @@
+/* Public-site lock screen (src/ui/LockScreen.jsx). Glass card on the page ground,
+   serif title, tokens from index.css; light and dark follow html.dark. */
+.lockscreen {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; align-content: center; justify-items: center; gap: 28px;
+  padding: 72px 16px 56px;
+  background: var(--bg); color: var(--fg);
+}
+.lockscreen__card {
+  width: min(520px, 100%); overflow: hidden;
+  border-radius: 28px; corner-shape: round;
+  background: var(--glass-film); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge), 0 24px 60px -30px rgba(0, 0, 0, 0.35);
+}
+.lockscreen__visual { position: relative; aspect-ratio: 666 / 432; overflow: hidden; background: var(--hover); }
+.lockscreen__visual img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85); }
+.lockscreen__visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, var(--bg) 135%); opacity: 0.55; }
+.lockscreen__badge {
+  position: absolute; z-index: 1; right: 14px; top: 14px;
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  background: var(--glass-film-hover); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge); color: var(--fg);
+}
+.lockscreen__body { padding: 24px 28px 28px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.lockscreen__eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lockscreen__title { margin: 0; font-family: var(--font-serif); font-weight: 450; font-size: clamp(26px, 5.4vw, 34px); line-height: 1.12; letter-spacing: -0.01em; text-wrap: balance; }
+.lockscreen__line { margin: 0 0 6px; font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 42ch; text-wrap: pretty; }
+.lockscreen__cta {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px;
+  background: var(--fg); color: var(--bg); text-decoration: none;
+  font: 500 14px/1 "Google Sans Flex", "Inter", -apple-system, sans-serif;
+  transition: opacity 160ms ease;
+}
+.lockscreen__cta:hover { opacity: 0.86; }
+.lockscreen__cta:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+@media (max-width: 480px) { .lockscreen__body { padding: 20px 20px 22px; } .lockscreen__cta { width: 100%; justify-content: center; } }

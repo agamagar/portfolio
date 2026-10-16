@@ -1,3 +1,4 @@
+import { PRIVATE_SITE } from "../lib/site";
 // WHAT THE TIMELINE AND THE CARDS SHARE (mv58rul2, 12 Oct 2026).
 // One date per project (dd/mm from the projects list in App.jsx; CaratLane has
 // no month, only its year), and the one sort both lists use: NEWEST FIRST, the
@@ -33,7 +34,8 @@ export const PROJECT_ROWS = [
 export const projectRow = (href) => PROJECT_ROWS.find((r) => r.href === href);
 
 // Shown but not openable: no link, no route prefetch, no project transition.
-export const LOCKED = new Set(["/work/away-agent", "/work/cross-sell"]);
+// The public site (src/lib/site.js) locks every /work/ project; the private build only the two NDA ones.
+export const LOCKED = PRIVATE_SITE ? new Set(["/work/away-agent", "/work/cross-sell"]) : { has: (href) => typeof href === "string" && href.startsWith("/work/") };
 // the newest Zepto project carries a "New" tag (mv58rul2)
 export const NEW = new Set(["/work/scheduled-delivery"]);
 export const LOCK_COPY = "Awaiting approval: shared under NDA";
