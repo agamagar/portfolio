@@ -82,8 +82,8 @@ export async function saveItem(req: Request, d: Deps): Promise<Response> {
     passes: num(body.passes, 0, 10) ?? 0,
     costUsd: num(body.costUsd, 0, 1000) ?? 0,
     triangles: num(body.triangles, 0, 1e8) ?? 0,
-    files: { source: files.source?.url, glb: files.model.url, thumb: files.thumb.url, spec: specFile.url },
-    sizes: { glb: files.model.size, source: files.source?.size, thumb: files.thumb.size },
+    files: { source: files.source?.url, left: files.left?.url, right: files.right?.url, glb: files.model.url, thumb: files.thumb.url, spec: specFile.url },
+    sizes: { glb: files.model.size, source: files.source?.size, left: files.left?.size, right: files.right?.size, thumb: files.thumb.size },
   };
   await mutateIndex(store, (items) => [item, ...items.filter((i) => i.id !== id)]);
   return json({ item }, 201);
@@ -124,15 +124,18 @@ export async function deleteItem(req: Request, d: Deps): Promise<Response> {
 
 // --- uploads ---------------------------------------------------------------
 
-const UPLOADS: Record<string, { types: Record<string, (b: Uint8Array) => boolean>; max: number }> = {
-  source: {
-    types: {
-      "image/jpeg": (b) => b[0] === 0xff && b[1] === 0xd8,
-      "image/png": isPng,
-      "image/webp": (b) => ascii(b, 0, 4) === "RIFF" && ascii(b, 8, 12) === "WEBP",
-    },
-    max: 4_000_000,
+const SOURCE_RULE = {
+  types: {
+    "image/jpeg": (b: Uint8Array) => b[0] === 0xff && b[1] === 0xd8,
+    "image/png": (b: Uint8Array) => isPng(b),
+    "image/webp": (b: Uint8Array) => ascii(b, 0, 4) === "RIFF" && ascii(b, 8, 12) === "WEBP",
   },
+  max: 4_000_000,
+};
+const UPLOADS: Record<string, { types: Record<string, (b: Uint8Array) => boolean>; max: number }> = {
+  source: SOURCE_RULE,
+  left: SOURCE_RULE,
+  right: SOURCE_RULE,
   thumb: { types: { "image/png": isPng, "image/jpeg": (b) => b[0] === 0xff && b[1] === 0xd8 }, max: 2_000_000 },
   model: { types: { "model/gltf-binary": (b) => ascii(b, 0, 4) === "glTF" }, max: 4_200_000 },
 };
@@ -152,7 +155,7 @@ export async function upload(req: Request, d: Deps): Promise<Response> {
   const id = uuid(url.searchParams.get("id"));
   const name = url.searchParams.get("name") ?? "";
   const rule = UPLOADS[name];
-  if (!rule) throw new HttpError(400, "name must be source, thumb or model", "bad_name");
+  if (!rule) throw new HttpError(400, "name must be source, left, right, thumb or model", "bad_name");
   const type = (req.headers.get("content-type") ?? "").split(";")[0].trim();
   const check = rule.types[type];
   if (!check) throw new HttpError(415, `${name} must be ${Object.keys(rule.types).join(", ")}`, "bad_content_type");

@@ -665,6 +665,76 @@ textarea.code {
   margin: 0;
 }
 
+.view-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.view-slot {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  border-radius: var(--radius);
+  border: 1.5px dashed var(--field-border);
+  background: color-mix(in srgb, var(--field) 70%, transparent);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.view-slot.dragging {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.view-slot.has-image {
+  border-style: solid;
+}
+.view-slot-main {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  overflow: hidden;
+}
+.view-slot-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.view-slot-empty {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+.view-slot-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.view-slot-name {
+  display: grid;
+  line-height: 1.25;
+}
+.view-slot-foot .muted {
+  font-weight: 400;
+  font-size: 11.5px;
+}
+.source-views {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px;
+}
+
 .model-cards {
   display: grid;
   gap: 6px;

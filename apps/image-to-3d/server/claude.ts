@@ -71,6 +71,20 @@ export interface CallOutcome<T> {
 
 const MAX_ATTEMPTS = 2;
 
+export type ViewName = "front" | "left" | "right";
+export interface ViewImage {
+  view: ViewName;
+  image: ImageInput;
+}
+
+/** Each view is a text label followed by its image; the last image carries the cache breakpoint. */
+function viewBlocks(views: ViewImage[]): BetaContentBlockParam[] {
+  return views.flatMap((v, i): BetaContentBlockParam[] => [
+    { type: "text", text: `${v.view[0].toUpperCase()}${v.view.slice(1)} view${views.length > 1 ? ` (${i + 1} of ${views.length})` : ""}:` },
+    imageBlock(v.image, i === views.length - 1),
+  ]);
+}
+
 function imageBlock(img: ImageInput, cache = false): BetaContentBlockParam {
   return {
     type: "image",
@@ -214,7 +228,7 @@ async function structuredCall<T>(opts: {
 }
 
 export interface SpecRequest {
-  image: ImageInput;
+  views: ViewImage[];
   style: Style;
   model: ModelId;
   effort: Effort;
@@ -229,7 +243,7 @@ export function createSpec(api: MessagesApi, req: SpecRequest, hooks: CallHooks 
     system: SYSTEM_PROMPT,
     schema: REFINE_JSON_SCHEMA,
     maxTokens: 32000,
-    content: [imageBlock(req.image, true), { type: "text", text: createInstruction(req.style, req.notes) }],
+    content: [...viewBlocks(req.views), { type: "text", text: createInstruction(req.style, req.notes, req.views.length) }],
     parse: (text) => {
       const { result, warnings } = parseRefine(text, { style: req.style });
       return { value: { ...result, score: 0, critique: "", changes: [] }, warnings };
@@ -247,9 +261,10 @@ export function refineSpec(api: MessagesApi, req: SpecRequest & { render: ImageI
     schema: REFINE_JSON_SCHEMA,
     maxTokens: 32000,
     content: [
-      imageBlock(req.image, true), // same first block as createSpec → shared cached prefix
+      ...viewBlocks(req.views), // same leading blocks as createSpec → shared cached prefix
+      { type: "text", text: "Current render:" },
       imageBlock(req.render),
-      { type: "text", text: refineInstruction(req.style, req.pass, req.specJson, req.notes) },
+      { type: "text", text: refineInstruction(req.style, req.pass, req.specJson, req.notes, req.views.length) },
     ],
     parse: (text) => {
       const { result, warnings } = parseRefine(text, { style: req.style });

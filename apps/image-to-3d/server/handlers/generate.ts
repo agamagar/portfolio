@@ -19,11 +19,11 @@ import { requireApi, requireStore, type Deps } from "../deps.js";
 import { clientIp, HttpError, json, ndjson, readJson } from "../http.js";
 import * as v from "../validate.js";
 
-const MAX_BODY = 12_000_000;
+const MAX_BODY = 18_000_000; // up to three views
 
 function nextCallCeiling(model: ModelId): number {
   // the high end of a single call, so one request can't blow far past the cap
-  return estimateGeneration({ model, passes: 0, imageWidth: 1024, imageHeight: 1024 }).high;
+  return estimateGeneration({ model, passes: 0, imageWidth: 1024, imageHeight: 1024, views: 3 }).high;
 }
 
 export async function generate(req: Request, d: Deps): Promise<Response> {
@@ -35,7 +35,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
 
   const mode = body.mode === "refine" ? "refine" : "create";
   const base = {
-    image: v.imageInput(body.image, "image"),
+    views: v.viewImages(body),
     style: v.style(body.style),
     model: v.model(body.model),
     effort: v.effort(body.effort),
@@ -85,7 +85,7 @@ export async function judge(req: Request, d: Deps): Promise<Response> {
   const store = requireStore(d);
   d.claudeLimiter.check(`claude:${clientIp(req)}`);
   const body = await readJson<Record<string, unknown>>(req, MAX_BODY);
-  const image = v.imageInput(body.image, "image");
+  const image = v.viewImages(body)[0].image;
   const render = v.imageInput(body.render, "render");
   await assertBudget(store, d.env.dailyBudgetUsd, 0.01);
   const out = await judgeRender(api, { image, render }, { onCost: (usd) => recordSpend(store, usd).catch(() => {}) });

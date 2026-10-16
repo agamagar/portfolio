@@ -1,6 +1,6 @@
 import { EFFORTS, isModelId, DEFAULT_MODEL, type Effort, type ModelId } from "../shared/models.js";
 import { STYLES, type Style } from "../shared/spec.js";
-import type { ImageInput } from "./claude.js";
+import type { ImageInput, ViewImage } from "./claude.js";
 import { HttpError } from "./http.js";
 
 const MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
@@ -15,6 +15,19 @@ export function imageInput(v: unknown, field: string): ImageInput {
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(o.data)) throw new HttpError(400, `${field} is not valid base64`, "bad_image");
   if (!magicMatches(o.data, o.mediaType)) throw new HttpError(400, `${field} content doesn't match ${o.mediaType}`, "bad_image");
   return { data: o.data, mediaType: o.mediaType as ImageInput["mediaType"] };
+}
+
+/**
+ * The reference views of the subject. `images: {front, left?, right?}`; the old
+ * single `image` field is still accepted as the front view.
+ */
+export function viewImages(body: Record<string, unknown>): ViewImage[] {
+  const o = (body.images ?? {}) as Record<string, unknown>;
+  const front = o.front ?? body.image;
+  const out: ViewImage[] = [{ view: "front", image: imageInput(front, "front image") }];
+  if (o.left != null) out.push({ view: "left", image: imageInput(o.left, "left image") });
+  if (o.right != null) out.push({ view: "right", image: imageInput(o.right, "right image") });
+  return out;
 }
 
 function magicMatches(b64: string, type: string): boolean {

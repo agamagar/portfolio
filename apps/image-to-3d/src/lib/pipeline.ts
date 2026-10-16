@@ -44,7 +44,7 @@ export interface PipelineState {
 
 export interface PipelineOptions {
   stage: Stage;
-  image: ImagePayload;
+  images: { front: ImagePayload; left?: ImagePayload; right?: ImagePayload };
   style: Style;
   model: ModelId;
   effort: Effort;
@@ -115,7 +115,7 @@ export async function runPipeline(opts: PipelineOptions, emit: (s: PipelineState
     return { n: state.versions.length + 1, spec, score: null, critique: "", changes: [], preview, warnings: shown.warnings, triangles: shown.stats.triangles };
   };
 
-  const common = { image: opts.image, style: opts.style, model: opts.model, effort: opts.effort, notes: opts.notes };
+  const common = { images: opts.images, style: opts.style, model: opts.model, effort: opts.effort, notes: opts.notes };
   let current = "spec";
   try {
     // 1. create
@@ -171,7 +171,7 @@ export async function runPipeline(opts: PipelineOptions, emit: (s: PipelineState
     if (opts.passes > 0 && last.score === null) {
       current = "judge";
       step("judge", "active");
-      const j = await api.judge(opts.image, dataUrlToPayload(last.preview));
+      const j = await api.judge(opts.images.front, dataUrlToPayload(last.preview));
       state.costUsd += j.costUsd;
       last.score = j.score;
       last.critique = j.critique;

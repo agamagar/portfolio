@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "../App";
 import { EFFORTS, estimateGeneration, formatUsd, MODEL_IDS, MODELS, type Effort, type ModelId } from "../../shared/models";
 import { STYLE_LABELS, STYLES, type Style } from "../../shared/spec";
@@ -12,6 +12,69 @@ import { runPipeline, type PipelineState } from "../lib/pipeline";
 import { navigate } from "../lib/router";
 import type { Stage } from "../three/stage";
 
+const VIEWS = ["front", "left", "right"] as const;
+type View = (typeof VIEWS)[number];
+type Views = Record<View, PreparedImage | null>;
+const VIEW_LABELS: Record<View, string> = { front: "Front", left: "Left", right: "Right" };
+
+function ViewSlot(props: { view: View; image: PreparedImage | null; disabled: boolean; onFile: (f: File | undefined) => void; onRemove: () => void }) {
+  const { view, image, disabled } = props;
+  const input = useRef<HTMLInputElement>(null);
+  const [over, setOver] = useState(false);
+  const label = VIEW_LABELS[view];
+  return (
+    <div
+      className={`view-slot${over ? " dragging" : ""}${image ? " has-image" : ""}`}
+      data-testid={`slot-${view}`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setOver(true);
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setOver(false);
+        if (!disabled) props.onFile(e.dataTransfer.files[0]);
+      }}
+    >
+      <button type="button" className="view-slot-main" onClick={() => input.current?.click()} disabled={disabled} aria-label={image ? `Replace ${label.toLowerCase()} view` : `Choose ${label.toLowerCase()} view`}>
+        {image ? (
+          <img src={image.url} alt={`${label} view`} />
+        ) : (
+          <span className="view-slot-empty">
+            <Icon name="image" size={22} />
+            <span>Drop or choose</span>
+          </span>
+        )}
+      </button>
+      <div className="view-slot-foot">
+        <span className="view-slot-name">
+          {label}
+          <span className="muted">{view === "front" ? "required" : "optional"}</span>
+        </span>
+        {image && (
+          <button type="button" className="icon-btn" onClick={props.onRemove} disabled={disabled} aria-label={`Remove ${label.toLowerCase()} view`} title="Remove">
+            <Icon name="x" size={14} />
+          </button>
+        )}
+      </div>
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        tabIndex={-1}
+        aria-label={`${label} view file`}
+        data-testid={view === "front" ? "file-input" : `file-input-${view}`}
+        onChange={(e) => {
+          props.onFile(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
+}
+
 const EFFORT_LABELS: Record<Effort, string> = { low: "Low", medium: "Medium", high: "High" };
 
 export function CreatePage() {
@@ -19,11 +82,11 @@ export function CreatePage() {
   const toast = useToast();
   const stageRef = useRef<Stage | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
 
-  const [image, setImage] = useState<PreparedImage | null>(null);
+  const [views, setViews] = useState<Views>({ front: null, left: null, right: null });
   const [imageError, setImageError] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const image = views.front;
+  const viewList = VIEWS.map((v) => views[v]).filter((x): x is PreparedImage => !!x);
   const [notes, setNotes] = useState("");
   const [style, setStyle] = useState<Style>("clay");
   const [model, setModel] = useState<ModelId>("claude-opus-5-5");
@@ -36,18 +99,24 @@ export function CreatePage() {
   const shown = run?.versions[run.shownIndex] ?? null;
 
   useEffect(() => () => abortRef.current?.abort(), []);
-  useEffect(() => () => void (image && URL.revokeObjectURL(image.url)), [image]);
+  const viewsRef = useRef(views);
+  viewsRef.current = views;
+  useEffect(() => () => VIEWS.forEach((v) => viewsRef.current[v] && URL.revokeObjectURL(viewsRef.current[v]!.url)), []);
 
   const estimate = useMemo(
-    () => (image ? estimateGeneration({ model, passes, imageWidth: image.width, imageHeight: image.height }) : null),
-    [image, model, passes],
+    () => (image ? estimateGeneration({ model, passes, imageWidth: image.width, imageHeight: image.height, views: viewList.length }) : null),
+    [image, viewList.length, model, passes],
   );
 
-  const takeFile = useCallback(async (file: File | undefined) => {
+  const takeFile = useCallback(async (view: View, file: File | undefined) => {
     if (!file) return;
     setImageError(null);
     try {
-      setImage(await prepareImage(file));
+      const next = await prepareImage(file);
+      setViews((cur) => {
+        if (cur[view]) URL.revokeObjectURL(cur[view]!.url);
+        return { ...cur, [view]: next };
+      });
     } catch (err) {
       setImageError(err instanceof Error ? err.message : String(err));
     }
@@ -57,11 +126,19 @@ export function CreatePage() {
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
       const file = [...(e.clipboardData?.files ?? [])].find((f) => f.type.startsWith("image/"));
-      if (file && !running) void takeFile(file);
+      if (!file || running) return;
+      const view = VIEWS.find((v) => !viewsRef.current[v]) ?? "front";
+      void takeFile(view, file);
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
   }, [takeFile, running]);
+
+  const removeView = (view: View) =>
+    setViews((cur) => {
+      if (cur[view]) URL.revokeObjectURL(cur[view]!.url);
+      return { ...cur, [view]: null };
+    });
 
   const start = async () => {
     const stage = stageRef.current;
@@ -69,7 +146,7 @@ export function CreatePage() {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     const final = await runPipeline(
-      { stage, image: image.payload, style, model, effort, notes, passes, signal: ctrl.signal },
+      { stage, images: { front: image.payload, left: views.left?.payload, right: views.right?.payload }, style, model, effort, notes, passes, signal: ctrl.signal },
       (s) => setRun(s),
     );
     void refresh();
@@ -102,12 +179,6 @@ export function CreatePage() {
     }
   };
 
-  const onDrop = (e: DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    if (!running) void takeFile(e.dataTransfer.files[0]);
-  };
-
   const ready = session.apiConfigured && session.storage;
 
   return (
@@ -117,41 +188,22 @@ export function CreatePage() {
           New model
         </h1>
 
-        <div
-          className={`dropzone${dragging ? " dragging" : ""}${image ? " has-image" : ""}`}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-        >
-          {image ? (
-            <img src={image.url} alt="Source image" />
-          ) : (
-            <div className="dropzone-empty">
-              <Icon name="image" size={28} />
-              <p>
-                <strong>Drop an image</strong>, paste one, or
-              </p>
-            </div>
-          )}
-          <button type="button" className="btn small" onClick={() => fileInput.current?.click()} disabled={running}>
-            <Icon name="upload" size={16} /> {image ? "Replace image" : "Choose a file"}
-          </button>
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            tabIndex={-1}
-            aria-label="Source image"
-            data-testid="file-input"
-            onChange={(e) => {
-              void takeFile(e.target.files?.[0]);
-              e.target.value = "";
-            }}
-          />
+        <div className="field">
+          <span className="field-label" id="views-label">
+            Reference views <span className="muted">(front required, sides help depth)</span>
+          </span>
+          <div className="view-slots" role="group" aria-labelledby="views-label">
+            {VIEWS.map((v) => (
+              <ViewSlot
+                key={v}
+                view={v}
+                image={views[v]}
+                disabled={running}
+                onFile={(f) => void takeFile(v, f)}
+                onRemove={() => removeView(v)}
+              />
+            ))}
+          </div>
         </div>
         {imageError && (
           <p className="error-text" role="alert">
@@ -351,6 +403,7 @@ export function CreatePage() {
             const thumb = dataUrlToBlob(stage.snapshot(512, "image/png", false));
             await Promise.all([
               api.upload(id, "source", image.blob),
+              ...(["left", "right"] as const).flatMap((v) => (views[v] ? [api.upload(id, v, views[v]!.blob)] : [])),
               api.upload(id, "model", new Blob([glb], { type: "model/gltf-binary" })),
               api.upload(id, "thumb", thumb),
             ]);
@@ -456,7 +509,7 @@ function SaveDialog({
           <input id="save-title" value={title} maxLength={80} required onChange={(e) => setTitle(e.target.value)} />
         </div>
         <TagInput tags={tags} onChange={setTags} />
-        <p className="muted small">Saves the spec, a GLB export, a thumbnail and the source image.</p>
+        <p className="muted small">Saves the spec, a GLB export, a thumbnail and the source views.</p>
         {error && (
           <p className="error-text" role="alert">
             {error}

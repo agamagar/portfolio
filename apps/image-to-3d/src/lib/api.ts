@@ -36,8 +36,8 @@ export interface LibraryItem {
   passes: number;
   costUsd: number;
   triangles: number;
-  files: { source?: string; glb?: string; thumb?: string; spec?: string };
-  sizes: { glb?: number; source?: number; thumb?: number };
+  files: { source?: string; left?: string; right?: string; glb?: string; thumb?: string; spec?: string };
+  sizes: { glb?: number; source?: number; left?: number; right?: number; thumb?: number };
 }
 
 export interface ImagePayload {
@@ -82,7 +82,7 @@ export const api = {
   save: (body: Record<string, unknown>) => request<{ item: LibraryItem }>("/api/library", jsonInit("POST", body)),
   patch: (id: string, patch: { title?: string; tags?: string[] }) => request<{ item: LibraryItem }>("/api/library", jsonInit("PATCH", { id, ...patch })),
   remove: (id: string) => request<{ ok: true }>(`/api/library?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
-  upload: (id: string, name: "source" | "thumb" | "model", body: Blob) =>
+  upload: (id: string, name: "source" | "left" | "right" | "thumb" | "model", body: Blob) =>
     request<{ url: string; size: number }>(`/api/upload?id=${id}&name=${name}`, {
       method: "PUT",
       headers: { "content-type": body.type },
@@ -119,7 +119,7 @@ export type GenerateResult = Extract<GenerateEvent, { type: "result" }>;
 
 export interface GenerateBody {
   mode: "create" | "refine";
-  image: ImagePayload;
+  images: { front: ImagePayload; left?: ImagePayload; right?: ImagePayload };
   style: Style;
   model: ModelId;
   effort: Effort;

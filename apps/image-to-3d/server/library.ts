@@ -15,8 +15,8 @@ export interface LibraryItem {
   passes: number;
   costUsd: number;
   triangles: number;
-  files: { source?: string; glb?: string; thumb?: string; spec?: string };
-  sizes: { glb?: number; source?: number; thumb?: number };
+  files: { source?: string; left?: string; right?: string; glb?: string; thumb?: string; spec?: string };
+  sizes: { glb?: number; source?: number; left?: number; right?: number; thumb?: number };
 }
 
 interface IndexDoc {

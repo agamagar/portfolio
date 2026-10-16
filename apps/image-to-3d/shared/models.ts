@@ -100,9 +100,11 @@ export function estimateGeneration(opts: {
   passes: number;
   imageWidth: number;
   imageHeight: number;
+  /** number of reference views sent (front + sides), default 1 */
+  views?: number;
   renderSize?: number;
 }): { low: number; high: number } {
-  const img = imageTokens(opts.imageWidth, opts.imageHeight);
+  const img = imageTokens(opts.imageWidth, opts.imageHeight) * Math.max(1, opts.views ?? 1);
   const render = imageTokens(opts.renderSize ?? 768, opts.renderSize ?? 768);
   const range = (k: 0 | 1) => {
     const first: Usage = {

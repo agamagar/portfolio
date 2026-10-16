@@ -185,10 +185,16 @@ export function ViewerPage({ id }: { id: string }) {
         </dl>
 
         {item.files.source && (
-          <figure className="source-figure">
-            <img src={item.files.source} alt={`Source image for ${item.title}`} />
-            <figcaption className="muted small">Source image</figcaption>
-          </figure>
+          <div className="source-views">
+            {([["source", "Front"], ["left", "Left"], ["right", "Right"]] as const).map(([k, label]) =>
+              item.files[k] ? (
+                <figure className="source-figure" key={k}>
+                  <img src={item.files[k]} alt={`${label} source view for ${item.title}`} />
+                  <figcaption className="muted small">{k === "source" && !item.files.left && !item.files.right ? "Source image" : `${label} view`}</figcaption>
+                </figure>
+              ) : null,
+            )}
+          </div>
         )}
 
         <div className="actions stack">

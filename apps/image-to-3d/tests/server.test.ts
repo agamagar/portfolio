@@ -159,8 +159,31 @@ describe("generate (scripted Claude)", () => {
     expect(params.betas).toEqual(["server-side-fallback-2026-07-01"]);
     expect(params.tool_choice).toBeUndefined();
     const content = params.messages[0].content;
-    expect(content[0]).toMatchObject({ type: "image", cache_control: { type: "ephemeral" } });
-    expect(content[1].text).toMatch(/^CREATE/);
+    expect(content[0].text).toBe("Front view:");
+    expect(content[1]).toMatchObject({ type: "image", cache_control: { type: "ephemeral" } });
+    expect(content[2].text).toMatch(/^CREATE/);
+  });
+
+  it("sends front, left and right as labelled image blocks, caching up to the last view", async () => {
+    const { api, calls } = scripted([fixtureMessage("create.toadstool.json")]);
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    const body = { ...createBody, image: undefined, images: { front: IMAGE, left: IMAGE, right: IMAGE } };
+    const evs = await events(await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", body, cookie)));
+    expect(evs.at(-1)).toMatchObject({ type: "result" });
+    const content = (calls[0] as any).messages[0].content;
+    expect(content.map((b: any) => b.text ?? b.type).slice(0, 6)).toEqual(["Front view (1 of 3):", "image", "Left view (2 of 3):", "image", "Right view (3 of 3):", "image"]);
+    expect(content[1].cache_control).toBeUndefined();
+    expect(content[5].cache_control).toEqual({ type: "ephemeral" });
+    expect(content[6].text).toMatch(/3 views/);
+  });
+
+  it("rejects a bad side image", async () => {
+    const d = deps({ api: scripted([fixtureMessage("create.toadstool.json")]).api });
+    const cookie = await signIn(d);
+    const body = { ...createBody, image: undefined, images: { front: IMAGE, left: { data: "AAAA", mediaType: "image/png" } } };
+    const res = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", body, cookie));
+    expect(res.status).toBe(400);
   });
 
   it("does not request server-side fallbacks on Haiku", async () => {
@@ -184,8 +207,8 @@ describe("generate (scripted Claude)", () => {
     expect(result.attempts).toBe(2);
     expect(calls).toHaveLength(2);
     const retryContent = (calls[1] as any).messages[0].content;
-    expect(retryContent.slice(0, 2)).toEqual((calls[0] as any).messages[0].content); // same cached prefix
-    expect(retryContent[2].text).toMatch(/could not be used/);
+    expect(retryContent.slice(0, 3)).toEqual((calls[0] as any).messages[0].content); // same cached prefix
+    expect(retryContent[3].text).toMatch(/could not be used/);
     // both attempts are billed and recorded against the daily budget
     expect(await spentToday(d.store!)).toBeCloseTo(result.costUsd, 5);
   });
