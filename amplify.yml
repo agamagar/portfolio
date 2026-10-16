@@ -1,5 +1,5 @@
 # AWS Amplify Hosting build (5 Oct 2026, going live).
-# The public build serves the home page and case studies only (VITE_PUBLIC_SITE),
+# Two sites, one file: the VITE_SITE env var picks which (see below). The public build serves the home page and case studies only (VITE_PUBLIC_SITE),
 # then drops lab-only folders from the output. Single-page-app routing needs one
 # rewrite rule in the Amplify console (see Claude/2026-10-05_go-live.md).
 version: 1
@@ -16,7 +16,11 @@ frontend:
     build:
       commands:
         - nvm use 20
+        # VITE_SITE (Amplify env var, per branch): "private" on the private branch, which opens
+        # every case study; unset or "public" everywhere else, where every project is locked and
+        # the case content is not bundled. See docs/private-site.md.
         - VITE_PUBLIC_SITE=1 npm run build
+        - if [ "$VITE_SITE" != "private" ]; then node tools/prune-public.mjs dist; fi
         - rm -rf dist/dj dist/ekam-content-system dist/shader-viewer dist/feedback-voice-harness.html dist/mobile-check.html dist/data/sd dist/data/sd_slot_availability_daily_2026.csv
   artifacts:
     baseDirectory: dist
