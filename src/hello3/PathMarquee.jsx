@@ -30,6 +30,23 @@ const wrap = (v) => ((v % 100) + 100) % 100;
 // Snap to a step. Used on every depth property so the DOM is only touched when
 // the value crosses a step, instead of on every frame for a sub-pixel change.
 const quant = (v, step) => Math.round(v / step) * step;
+// cubic-bezier(x1, y1, x2, y2) as a function of x in 0..1 (bisection on x)
+const bezier = (x1, y1, x2, y2) => {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const X = (t) => ((ax * t + bx) * t + cx) * t;
+  const Y = (t) => ((ay * t + by) * t + cy) * t;
+  return (x) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let lo = 0, hi = 1, t = x;
+    for (let i = 0; i < 24; i++) { if (X(t) > x) hi = t; else lo = t; t = (lo + hi) / 2; }
+    return Y(t);
+  };
+};
+// The auto-drag runs once per page load, not once per mount: coming back to the
+// homepage from a case study should not replay a demo the visitor has seen.
+let demoPlayed = false;
 
 export default function PathMarquee({
   children,
@@ -61,6 +78,12 @@ export default function PathMarquee({
   /** the hop between two cards is a damped spring on the run's shared position:
    *  { zeta, omega (rad/s) }. zeta < 1 gives a small floaty overshoot. */
   spring = { zeta: 0.7, omega: 2 * Math.PI, lead: 0.12 },
+  /** carousel only: an AUTO-DRAG the first time the run scrolls into view
+   *  (mv847jvw), showing that the cards can be dragged. { cards, ms, ease,
+   *  threshold }: travel about `cards` cards, the target swept over `ms` on the
+   *  `ease` cubic-bezier and chased by `spring`, starting once `threshold` of the
+   *  run is on screen and the page has stopped scrolling. Off when unset. */
+  demo,
   /** carousel clock, for a progress ring (mv3pitov): called as ("rest", { dwell, step }),
    *  ("travel", { step }), ("hold") when the clock stops and ("resume") when it restarts */
   onCycle,
@@ -131,6 +154,8 @@ export default function PathMarquee({
   dwellForRef.current = dwellFor;
   const springRef = useRef(spring);
   springRef.current = spring;
+  const demoRef = useRef(demo);
+  demoRef.current = demo;
   // the rest's clock, kept across the carousel effect's re-runs so that Pause
   // and Play carry on where the rest left off instead of restarting it
   const dwellState = useRef(null); // { item, total, remaining }
@@ -736,6 +761,82 @@ export default function PathMarquee({
     };
     start();
 
+    // THE AUTO-DRAG (mv847jvw, Agam: "when I reach this section on scroll this
+    // section should do an auto drag so we show the flow of the widget, and speed
+    // ramp it"). It is a hop, like travel() below, over SEVERAL cards: the same
+    // spring on the same shared position, but chasing a target that is swept over
+    // `ms` on a speed-ramped curve (slow take-off, a fast middle, a long landing)
+    // instead of the hop's quick eased step. The spring's lag rounds the ramp's
+    // corners and lands with a small overshoot onto the card that was `cards`
+    // steps away, which then rests exactly as after a hop (dwell, ring, video,
+    // sound gates all unchanged). The distance is measured like the hop's, card
+    // progress to the rest position, so it is exact for any spacing, and it is
+    // measured from wherever the run is, so a demo that starts mid-hop still
+    // lands on a card. Returns a cancel that leaves the run where it is.
+    ui.current.demo = (onDone) => {
+      if (stopped) return null;
+      const cfg = demoRef.current;
+      const items = itemRefs.current.filter(Boolean).slice(0, shown);
+      const as = items.map((el) => el.getAnimations()[0]);
+      const prog = (a) => a?.effect?.getComputedTiming().progress;
+      const home = ui.current.restP;
+      const dur = as[0]?.effect?.getTiming().duration;
+      if (!cfg || !(dur > 0) || typeof home !== "number" || as.some((a) => typeof prog(a) !== "number")) return null;
+      const dir = direction === "reverse" ? -1 : 1;
+      // forward distance from each card to the rest position, nearest first
+      const ds = as.map((a) => ((((home - prog(a)) * dir) % 1) + 1) % 1).filter((x) => x > 1e-4).sort((a, b) => a - b);
+      const gap = (spread / count) % 1 || ds[0];
+      // the first card at least `cards` card-gaps away (a demo that starts mid-hop
+      // does not end up shorter than asked)
+      const L = ds.find((x) => x >= (cfg.cards - 0.5) * gap) ?? ds[ds.length - 1];
+      if (!(L > 0 && L < 1)) return null;
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+      dwellState.current = null;
+      setFocus(false);
+      ui.current.held = true;
+      cycle("travel", { step: stepMs });
+      as.forEach((a) => a.pause());
+      const t0 = as.map((a) => Number(a.currentTime) || 0);
+      const ramp = bezier(...cfg.ease);
+      const { zeta, omega } = springRef.current;
+      let xs = 0, vs = 0, tms = 0;
+      const sim = (ms) => {
+        let r = ms / 1000;
+        while (r > 1e-9) {
+          const h = Math.min(0.004, r);
+          tms += h * 1000;
+          vs += (omega * omega * (ramp(tms / cfg.ms) - xs) - 2 * zeta * omega * vs) * h;
+          xs += vs * h;
+          r -= h;
+        }
+      };
+      const put = (s01) => {
+        const delta = L * s01 * dir * dur;
+        as.forEach((a, i) => { a.currentTime = (((t0[i] + delta) % dur) + dur) % dur; });
+      };
+      let live_ = true;
+      let last = performance.now();
+      const step = (now) => {
+        if (stopped) { if (live_) { live_ = false; onDone?.(); } return; }
+        if (!live_) return;
+        if (ui.current.dragging) { live_ = false; onDone?.(); return; } // a drag took it (dragStart cleared the clocks)
+        sim(Math.min(250, now - last)); // real elapsed time, as in the hop
+        last = now;
+        const settled = tms > cfg.ms && Math.abs(1 - xs) < 0.0015 && Math.abs(vs) < 0.02;
+        if (settled || tms > cfg.ms + 3000) { live_ = false; put(1); hold(); onDone?.(); return; }
+        put(xs);
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      return () => {
+        if (!live_) return false;
+        live_ = false;
+        cancelAnimationFrame(raf);
+        return true;
+      };
+    };
+
     // A DRAG TAKES THE RUN, AND HANDS IT BACK SNAPPED. dragStart stops the
     // carousel's own clocks (rest timer, hop spring, watch loop) so nothing
     // fights the pointer; dragEnd glides every card to the nearest card-at-
@@ -789,6 +890,7 @@ export default function PathMarquee({
     return () => {
       ui.current.dragStart = null;
       ui.current.dragEnd = null;
+      ui.current.demo = null;
       stopped = true;
       clearTimeout(timer);
       cancelAnimationFrame(raf);
@@ -796,6 +898,66 @@ export default function PathMarquee({
       ui.current.held = false;
     };
   }, [carousel, playing, dwell, reduce, speed, spread, count, shown, d]);
+
+  // WHEN THE AUTO-DRAG PLAYS: once per page load, the first time `threshold` of
+  // the run is on screen AND the page has stopped scrolling. Waiting for the
+  // scroll to settle matters twice over: a demo that runs while the page is still
+  // moving is half missed, and the wheel or touch that is still scrolling the page
+  // would cancel it on its first frame. Any real press, wheel, touch or key during
+  // the demo cancels it where it is and hands the run to the drag's own snap, so
+  // nothing jumps and a press that turns into a drag simply carries on from there.
+  // Synthetic events (the site cursor's tour) are not the visitor and are ignored.
+  const playingRef = useRef(playing);
+  playingRef.current = playing;
+  useEffect(() => {
+    if (!demo || !carousel || reduce || demoPlayed) return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const wrap_ = wrapRef.current;
+    if (!wrap_) return undefined;
+    const threshold = demo.threshold ?? 0.4;
+    const IDLE_MS = 300; // quiet time after the last scroll, wheel or touch move
+    let seen = false, idle = 0, retry = 0, cancel = null;
+    const INPUTS = ["pointerdown", "wheel", "touchstart", "keydown"];
+    const SCROLLS = ["scroll", "wheel", "touchmove"];
+    const unlisten = () => INPUTS.forEach((t) => window.removeEventListener(t, onInput, true));
+    function onInput(e) {
+      if (!e.isTrusted) return;
+      unlisten();
+      if (cancel?.()) { wrap_.dataset.demo = "cancelled"; ui.current.dragEnd?.(); }
+      cancel = null;
+    }
+    const fire = () => {
+      idle = 0;
+      if (demoPlayed || !seen || document.hidden || !playingRef.current || ui.current.dragging) return;
+      // data-demo is for the QA scripts: running, then done or cancelled
+      cancel = ui.current.demo?.(() => { unlisten(); cancel = null; if (wrap_.dataset.demo === "running") wrap_.dataset.demo = "done"; }) || null;
+      if (!cancel) { if (retry++ < 20) idle = setTimeout(fire, 250); return; }
+      wrap_.dataset.demo = "running";
+      demoPlayed = true;
+      io.disconnect();
+      SCROLLS.forEach((t) => window.removeEventListener(t, arm, true));
+      INPUTS.forEach((t) => window.addEventListener(t, onInput, { capture: true, passive: true }));
+    };
+    function arm() {
+      clearTimeout(idle);
+      if (seen) idle = setTimeout(fire, IDLE_MS);
+    }
+    const io = new IntersectionObserver(([e]) => {
+      seen = e.isIntersecting && e.intersectionRatio >= threshold - 0.001;
+      arm();
+    }, { threshold: [0, threshold] });
+    io.observe(wrap_);
+    // a wheel or touch move counts as scrolling even before the page moves (Lenis
+    // eases the window after the wheel, and a notch can land between frames)
+    SCROLLS.forEach((t) => window.addEventListener(t, arm, { capture: true, passive: true }));
+    return () => {
+      io.disconnect();
+      clearTimeout(idle);
+      SCROLLS.forEach((t) => window.removeEventListener(t, arm, true));
+      unlisten();
+      cancel?.();
+    };
+  }, [demo, carousel, reduce]);
 
   // Hover changes SPEED, and playbackRate is the whole mechanism. It is eased
   // rather than set, because a run that changes pace instantly reads as a

@@ -537,6 +537,14 @@ const SNAP = {
   // overshoot. omega (rad/s) sets the pace: lower = slower and floatier.
   // lead is the time constant of the eased-in target the spring chases.
   spring: { zeta: 0.68, omega: 5.5, lead: 0.12 }, // lead (s): how softly the take-off eases in; 0 = a hard kick
+  // THE AUTO-DRAG (mv847jvw): once per load, when 40% of the run is on screen and
+  // the scroll has settled, the run travels two cards by itself, so the flow (the
+  // wave, the depth, the parting, the snap) is shown rather than waited for. The
+  // target sweeps over 1.4 s on a phi ease-in-out (1/phi, 0, 1 - 1/phi, 1): slow
+  // take-off, fast middle, long landing; the hop's spring chases it, which rounds
+  // the ramp and lands with a ~2% overshoot. Measured: peak speed ~1 s in, settled
+  // on the card at ~2.2 s. Any press, wheel, touch or key cancels it.
+  demo: { cards: 2, ms: 1400, ease: [1 / PHI, 0, 1 - 1 / PHI, 1], threshold: 0.4 },
 };
 // cubic-bezier(x1, y1, x2, y2) as a function of x in 0..1 (Newton + bisection)
 function bezier(x1, y1, x2, y2) {
@@ -1451,6 +1459,7 @@ export default function AlongPath({ reduce, modeTwo }) {
           onCycle={onCycle}
           dwellFor={dwellFor}
           spring={SNAP.spring}
+          demo={SNAP.demo}
           className="ap__run"
         >
           {/* Each plate is wrapped in a CARD container (annotation msbodd5p) so
