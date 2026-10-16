@@ -1078,9 +1078,14 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
         // the glyphs' alpha and is clipped to the element's box by its print mask, so nothing spills onto the
         // page), resolving to its true colour as the front moves on
         if (I > 0.01 && dark) {
-          const big = L.big, r = big ? 0 : 7 * I;
-          f += `brightness(${(1 + (big ? 0.3 : 0.9) * I).toFixed(3)}) saturate(${(1 - (big ? 0.45 : 0.75) * I).toFixed(3)}) sepia(${((big ? 0.3 : 0.5) * I).toFixed(3)})` + (r > 0.3 ? ` drop-shadow(0 0 ${r.toFixed(1)}px rgba(${CORE_RGB.map((v) => v | 0).join(",")},${(0.8 * I).toFixed(3)}))` : "");
-        } else if (I > 0.01) f += `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})`;
+          const big = L.big, r = big ? 0 : 10 * I;
+          f += `brightness(${(1 + (big ? 0.3 : 0.9) * I).toFixed(3)}) saturate(${(1 - (big ? 0.45 : 0.75) * I).toFixed(3)}) sepia(${((big ? 0.3 : 0.5) * I).toFixed(3)})` + (r > 0.3 ? ` drop-shadow(0 0 ${(r * 0.3).toFixed(1)}px rgba(${CORE_RGB.map((v) => v | 0).join(",")},${(0.7 * I).toFixed(3)})) drop-shadow(0 0 ${r.toFixed(1)}px rgba(${CORE_RGB.map((v) => v | 0).join(",")},${(0.95 * I).toFixed(3)}))` : "");
+        } else if (I > 0.01) {
+          // LIGHT: the same contact glow, a warm bloom hugging the glyphs / the pill's edge (the element's own
+          // alpha shapes it); cards (big) have no edge to hug, they only lift
+          const r = L.big ? 0 : 10 * I, W = FLOOD_RGB.join(",");
+          f += `brightness(${(1 + B * I).toFixed(3)}) saturate(${(1 - 0.6 * I).toFixed(3)}) sepia(${(0.14 * I).toFixed(3)}) contrast(${(1 - 0.08 * I).toFixed(3)})` + (r > 0.3 ? ` drop-shadow(0 0 ${(r * 0.3).toFixed(1)}px rgba(${W},${(0.55 * I).toFixed(3)})) drop-shadow(0 0 ${r.toFixed(1)}px rgba(${W},${(0.9 * I).toFixed(3)}))` : "");
+        }
         el.style.filter = f;
       }
     };
