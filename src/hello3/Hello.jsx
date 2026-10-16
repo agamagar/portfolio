@@ -1136,6 +1136,11 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       launch(true); // the first morph frame starts the sweep's clock (no-op after that)
     };
     window.addEventListener("heromorph:t", onT);
+    // the morph says it is not coming: the light leaves on its own timer now
+    // (a child effect runs before this one's arm: an early "none" waits for it)
+    let armed = false, noneSeen = false;
+    const onNone = () => { noneSeen = true; if (armed && M === 0) { clearTimeout(fb); launch(); } };
+    window.addEventListener("heromorph:none", onNone);
     // the skeletons' shimmer runs every frame from the first one, on the wall clock
     let pre = 0, cap = 0;
     const frame = () => { if (over) return; if (T < 0) light(); pre = requestAnimationFrame(frame); };
@@ -1145,9 +1150,14 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     armRef.current = () => {
       place();
       cap = setTimeout(done, 12000);
-      fb = setTimeout(() => { if (M === 0) launch(); }, 1500);
+      // the reveal never runs ahead of the morph: while the morph's build is still loading (a slow chunk) the
+      // page waits under its skeletons for the first "heromorph:t". "heromorph:none" is the early way out;
+      // this is only the backstop for a build that never answers
+      fb = setTimeout(() => { if (M === 0) launch(); }, 6000);
+      armed = true;
+      if (noneSeen && M === 0) { clearTimeout(fb); launch(); }
     };
-    return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
+    return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); window.removeEventListener("heromorph:none", onNone); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
   }, [seq]);
   // the wave has ended: the safety timers and the plain-clock fallback start now
   useEffect(() => { if (stage === "reveal") armRef.current?.(); }, [stage]);

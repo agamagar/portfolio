@@ -26,6 +26,9 @@ import { DURATION, ramp } from "../figures/faces/morph/flood";
 import { settleHeroMorph } from "./heroMorphGate";
 import "./heroMorph.css";
 
+// "no morph is coming": the page's reveal (Hello.jsx) waits for the morph's clock, and only this lets it
+// fall back to its own timer early (a repeat visit, reduced motion, no WebGL, a failed build)
+const noMorph = () => window.dispatchEvent(new CustomEvent("heromorph:none"));
 const BEAT = 0; // the morph starts the moment the wave ends (the page then reveals in step with it: Hello.jsx, "heromorph:t")
 const PREROLL = 120; // ms on frame 0 before the morph's clock starts (the SVG swaps out in it)
 const SWAP = 80; // ms after the first draw: the canvas is on screen by then
@@ -135,7 +138,7 @@ export default function HeroMorph({ ready }) {
         .then((m) => (b.m = m));
       b.p.catch(() => {});
       build.current = b;
-    }, 600);
+    }, 250);
     return () => {
       clearTimeout(id);
       if (build.current === b) build.current = null;
@@ -151,6 +154,7 @@ export default function HeroMorph({ ready }) {
     const wrap = boxEl?.parentElement;
     const svg = wrap?.querySelector("svg.header__avatar");
     if (!svg || !canMorph()) {
+      noMorph();
       settleHeroMorph();
       return undefined;
     }
@@ -214,6 +218,7 @@ export default function HeroMorph({ ready }) {
       btn.hidden = true;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, cv.width, cv.height);
+      noMorph();
       settleHeroMorph();
     };
     const release = () => {
@@ -453,6 +458,7 @@ export default function HeroMorph({ ready }) {
           btn.setAttribute("aria-pressed", String(style === "noir"));
           raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => alive && show())));
           ro.observe(wrap);
+          noMorph();
           settleHeroMorph();
           if (!reduce) {
             // the emotes need the live head: the one shared build (ensureLive, a still render of
@@ -497,6 +503,7 @@ export default function HeroMorph({ ready }) {
         layout();
         ro.observe(wrap);
         if (still) {
+          noMorph();
           finish();
           raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => alive && show())));
           return;
