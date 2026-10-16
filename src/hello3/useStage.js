@@ -43,7 +43,8 @@ const NEXT = { center: "reveal", rise: "settle", settle: "reveal" };
 // under the arrival and ends just as the page reaches rest (rise + settle land the
 // reveal at ~3.25 s, the wave ends at 3.1 s). Derived from MORPH_SEQUENCE, so it
 // follows the wave if that is retimed.
-const CENTER_HOLD = MORPH_SEQUENCE.holdEnd; // the whole wave, alone (Agam: reveal in sync with the morph that follows it)
+const MORPH_EARLY = 500; // Agam 16 Oct: "the face morph needs to start at a slightly earlier time" (overlaps the wave's last half-second)
+const CENTER_HOLD = MORPH_SEQUENCE.holdEnd - MORPH_EARLY; // the wave, alone (Agam: reveal in sync with the morph that follows it)
 
 // Resolved once the intro has reached rest (or was never played). Heavy work that is
 // not part of the intro (the tab icon, main.jsx) waits on it so it never lands on the
