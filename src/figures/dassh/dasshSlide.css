@@ -1,48 +1,13 @@
 /* Dash slide figure: a 2000 x 1125 stage scaled as one unit (DasshSlide.jsx). */
-.ds { position: relative; width: 100%; overflow: hidden; border-radius: 12px; background: #f6f5f2; --ds-ink: #1e1919; --ds-blue: #0061fe; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-.ds__stage { position: absolute; top: 0; left: 0; width: 2000px; height: 1125px; transform-origin: 0 0; color: var(--ds-ink); background: #f6f5f2; }
-.ds svg { display: block; flex: none; }
-.ds__left { position: absolute; inset: 0 auto 0 0; width: 913px; padding: 0 0 0 102px; }
-.ds__top { position: absolute; top: 0; left: 0; display: flex; align-items: center; height: 62px; font-size: 22px; }
-.ds__logo { width: 62px; height: 62px; background: var(--ds-blue); display: grid; place-items: center; margin-right: 40px; }
-.ds__crumb { display: flex; gap: 22px; } .ds__crumb i { font-style: normal; color: #b4afa8; }
-.ds__lockup { position: absolute; top: 140px; left: 94px; display: flex; align-items: center; gap: 4px; font-size: 38px; letter-spacing: -.02em; }
-.ds__lockup b { font-weight: 600; } .ds__lockup em { font-style: normal; color: var(--ds-blue); font-weight: 400; }
-.ds__h { position: absolute; top: 202px; left: 102px; margin: 0; width: 800px; font-size: 48px; line-height: 1; font-weight: 700; letter-spacing: -.015em; }
-.ds__intro { position: absolute; top: 270px; left: 102px; margin: 0; width: 700px; font-size: 25px; line-height: 31.5px; color: #3a3635; }
-.ds__secs { position: absolute; top: 436px; left: 102px; width: 640px; }
-.ds__sec { margin-bottom: 14px; } .ds__sec h4 { margin: 0 0 6px; font-size: 21px; font-weight: 500; color: var(--ds-blue); }
-.ds__sec p { margin: 0; font-size: 20px; line-height: 24px; color: #3a3635; } .ds__sec b { color: var(--ds-ink); font-weight: 600; }
+.ds { position: relative; width: 100%; overflow: hidden; border-radius: 12px; background: #f6f5f2; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.ds__stage { position: absolute; top: 0; left: 0; width: 2000px; height: 1125px; transform-origin: 0 0; color: #1e1919; background: #f6f5f2; }
+.ds__left { position: absolute; inset: 0 auto 0 0; width: 913px; }
+.ds__h { position: absolute; top: 205px; left: 102px; margin: 0; width: 800px; font-size: 56px; line-height: 1; font-weight: 700; letter-spacing: -.015em; }
+.ds__intro { position: absolute; top: 290px; left: 102px; margin: 0; width: 700px; font-size: 25px; line-height: 31.5px; color: #3a3635; }
+.ds__secs { position: absolute; top: 460px; left: 102px; width: 660px; }
+.ds__sec { margin-bottom: 18px; } .ds__sec h4 { margin: 0 0 6px; font-size: 21px; font-weight: 500; color: #0061fe; }
+.ds__sec p { margin: 0; font-size: 20px; line-height: 24px; color: #3a3635; } .ds__sec b { color: #1e1919; font-weight: 600; }
 .ds__right { position: absolute; inset: 0 0 0 913px; background: #1b1918; }
-.ds__card { position: absolute; left: -43px; top: 191px; width: 982px; height: 594px; background: #fff; box-shadow: 0 8px 40px rgba(0,0,0,.35); display: flex; overflow: hidden; border-radius: 4px 0 0 4px; }
-.ds__rail { width: 70px; border-right: 1px solid #e8e5e0; display: flex; flex-direction: column; align-items: center; gap: 18px; padding-top: 24px; color: #5b5651; font-size: 28px; }
-.ds__rail > svg:not(:first-child) { width: 26px; height: 26px; } .ds__plus { width: 26px; height: 26px; border: 1px solid #bbb6af; border-radius: 6px; display: grid; place-items: center; font-size: 20px; margin-top: 10px; }
-.ds__rail hr { width: 26px; border: 0; border-top: 1px solid #e8e5e0; margin: 6px 0; }
-.ds__app { width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; color: #fff; font: 600 17px system-ui; }
-.ds__grid { margin-top: 18px; } .ds__grid svg { width: 24px; height: 24px; } .ds__me { width: 28px; height: 28px; border-radius: 50%; background: #6b4a3a; margin-top: 14px; }
-.ds__main { flex: 1; position: relative; padding: 22px 0 0 52px; }
-.ds__search { height: 52px; width: 810px; border: 1px solid #dcd8d2; border-radius: 6px; display: flex; align-items: center; padding: 0 22px; gap: 24px; font-size: 19px; }
-.ds__search svg { width: 20px; height: 20px; color: #5b5651; } .ds__search span { flex: 1; } .ds__search svg:last-child { width: 22px; height: 22px; color: #1e1919; margin-right: 8px; }
-.ds__chips { display: flex; gap: 14px; margin-top: 44px; }
-.ds__chips span { height: 33px; padding: 0 14px; background: #f1efec; border-radius: 17px; display: flex; align-items: center; gap: 8px; font-size: 16px; }
-.ds__chips svg { width: 16px; height: 16px; }
-.ds__results { margin-top: 36px; } .ds__res { display: flex; gap: 26px; margin-bottom: 44px; height: 116px; }
-.ds__file { position: relative; width: 52px; height: 52px; border: 1px solid #e3dfd9; border-radius: 8px; display: grid; place-items: center; flex: none; margin-top: 4px; }
-.ds__file svg { width: 26px; height: 26px; } .ds__badge { position: absolute; right: -6px; bottom: -6px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #fff; box-shadow: inset 0 0 0 5px #3a7be8; }
-.ds__badge[data-k="doc"], .ds__badge[data-k="sheet"] { box-shadow: inset 0 0 0 5px #3aa66a; }
-.ds__res h5 { margin: 0; font-size: 17px; font-weight: 600; } .ds__res p { margin: 10px 0 0; font-size: 16px; line-height: 24px; color: #8a857f; width: 420px; max-height: 48px; overflow: hidden; } .ds__res p b { color: var(--ds-ink); font-weight: 600; }
-.ds__meta { margin-top: 6px; font-size: 16px; color: #8a857f; display: flex; align-items: center; } .ds__meta i { width: 4px; height: 4px; border-radius: 50%; background: #8a857f; margin: 0 12px; }
-.ds__meta u { text-decoration: underline; margin-left: 4px; } .ds__av { width: 18px; height: 18px; border-radius: 50%; background: #b9a07a; margin-right: 8px; }
-.ds__ans { position: absolute; left: 595px; top: 371px; width: 366px; height: 631px; background: #fff; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.4); padding: 24px 21px 0; font-size: 16px; }
-.ds__ans-h { font-weight: 600; display: flex; gap: 12px; align-items: center; } .ds__ans-h em { font: 12px system-ui; background: #eceae6; color: #6b665f; padding: 2px 7px; border-radius: 4px; }
-.ds__q { display: flex; align-items: flex-start; gap: 8px; margin-top: 34px; font-weight: 600; line-height: 20px; } .ds__q span { flex: 1; } .ds__q em { font: 600 11px system-ui; background: #1e1919; color: #fff; border-radius: 10px; padding: 3px 8px; margin-top: 2px; }
-.ds__q svg { width: 16px; height: 16px; margin-top: 2px; }
-.ds__q--c { border-top: 1px solid #e8e5e0; padding-top: 22px; margin-top: 22px; }
-.ds__a { margin: 34px 0 0; line-height: 24px; font-size: 15.5px; }
-.ds__src { display: inline-flex; align-items: center; gap: 12px; margin-top: 30px; border: 1px solid #dcd8d2; border-radius: 4px; padding: 10px 14px; font-size: 14px; }
-.ds__help { margin-top: 28px; font-size: 14px; color: #8a857f; display: flex; flex-direction: column; gap: 14px; }
-.ds__help div { display: flex; gap: 16px; align-items: center; color: #1e1919; } .ds__help svg { width: 20px; height: 20px; } .ds__help b { flex: 1; }
-.ds__cursor { position: absolute; left: 220px; top: 392px; transition: transform .6s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-.ds:hover .ds__cursor { transform: translate(-26px, -40px); }
-.ds__num { position: absolute; right: 38px; bottom: 28px; font-size: 28px; color: #8a857f; }
-@media (prefers-reduced-motion: reduce) { .ds__cursor { transition: none; } }
+.ds__slot { position: absolute; display: block; object-fit: cover; background: #fff; }
+.ds__slot--large { left: 27px; top: 191px; width: 913px; height: 594px; border-radius: 6px 0 0 6px; box-shadow: 0 8px 40px rgba(0,0,0,.35); }
+.ds__slot--small { left: 594px; top: 371px; width: 366px; height: 632px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
