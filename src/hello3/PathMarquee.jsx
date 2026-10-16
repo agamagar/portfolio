@@ -30,6 +30,22 @@ const wrap = (v) => ((v % 100) + 100) % 100;
 // Snap to a step. Used on every depth property so the DOM is only touched when
 // the value crosses a step, instead of on every frame for a sub-pixel change.
 const quant = (v, step) => Math.round(v / step) * step;
+// runs that have already played their scroll-in demo drag this page visit (by
+// `autoDrag.id`), so a re-mount after a route change does not replay it
+const demoed = new Set();
+// THE DEMO DRAG'S RAMP, normalised 0..1 -> 0..1. Its velocity is a sin^2 bell
+// that peaks at 1/phi^2 of the way through (the snap's golden ratio): a quick,
+// soft take-off with zero speed AND zero acceleration, a fast middle, then the
+// longer 1/phi share spent easing out to a stop. Closed form, so every frame
+// reads the exact position for its real elapsed time.
+const PHI = (1 + Math.sqrt(5)) / 2;
+const RAMP_PEAK = 1 / PHI ** 2;
+const ramp = (t) => {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  const a = RAMP_PEAK, w = 1 - a;
+  return t < a ? t - (a / Math.PI) * Math.sin((Math.PI * t) / a) : t + (w / Math.PI) * Math.sin((Math.PI * (t - a)) / w);
+};
 
 export default function PathMarquee({
   children,
@@ -61,6 +77,10 @@ export default function PathMarquee({
   /** the hop between two cards is a damped spring on the run's shared position:
    *  { zeta, omega (rad/s) }. zeta < 1 gives a small floaty overshoot. */
   spring = { zeta: 0.7, omega: 2 * Math.PI, lead: 0.12 },
+  /** carousel only: when the run first scrolls into view, play a demo drag
+   *  through `cards` cards, speed-ramped over `ms` (then the spring settles it),
+   *  once per page visit per `id`. Any input cancels it. Off under reduce. */
+  autoDrag,
   /** carousel clock, for a progress ring (mv3pitov): called as ("rest", { dwell, step }),
    *  ("travel", { step }), ("hold") when the clock stops and ("resume") when it restarts */
   onCycle,
@@ -786,7 +806,83 @@ export default function PathMarquee({
       raf = requestAnimationFrame(step);
     };
 
+    // THE DEMO DRAG (Agam, mv847jvw: "when I reach this section on scroll this
+    // section should do an auto drag so we show the flow of the widget, and
+    // speed ramp it"). It is a drag the run plays on itself: dragStart takes
+    // the run from the carousel's clocks, every animation's time moves by one
+    // shared amount (so x, the wave, depth and the parting all follow, exactly
+    // as under a finger), and it lands through hold() like any hop, so the
+    // focus, the per-card play-through and the audio rule are the carousel's
+    // own. The position is the same damped spring as the hop (springRef),
+    // chasing a target that follows `ramp` to exactly `cards` cards on: ease in,
+    // fast middle, ease out, then the spring's small overshoot and settle.
+    // Returns a cancel that hands the run back from wherever it is through the
+    // drag's own snap (dragEnd), so nothing jumps.
+    ui.current.demo = ({ cards = 2, ms = 1400 } = {}) => {
+      if (stopped || !playing) return null;
+      const rest = restItem();
+      const items = itemRefs.current.filter(Boolean).slice(0, shown);
+      const as = items.map((el) => el.getAnimations()[0]);
+      const idx = rest ? items.indexOf(rest) : -1;
+      const prog = (a) => a?.effect?.getComputedTiming().progress;
+      const dur = as[0]?.effect?.getTiming().duration;
+      if (idx < 0 || !(dur > 0) || as.some((a) => typeof prog(a) !== "number")) return null;
+      const dir = direction === "reverse" ? -1 : 1;
+      const pr = prog(as[idx]);
+      // how far upstream each card is from the resting one; the card `cards`
+      // places back is where the run lands, exact for any spacing or trim
+      const ahead = as
+        .map((a, i) => ({ i, f: ((((pr - prog(a)) * dir) % 1) + 1) % 1 }))
+        .filter((c) => c.f > 1e-4)
+        .sort((x, y) => x.f - y.f);
+      const goal = ahead[Math.min(ahead.length, Math.max(1, Math.round(cards))) - 1];
+      if (!goal) return null;
+      ui.current.dragStart();
+      as.forEach((a) => a.pause());
+      // the demo's state on the run, for QA and for styling if ever wanted
+      const tag = (st) => { if (wrapRef.current) wrapRef.current.dataset.demo = st; };
+      tag("running");
+      const t0 = as.map((a) => Number(a.currentTime) || 0);
+      const { zeta, omega } = springRef.current;
+      let x = 0, v = 0, tms = 0, done = false;
+      let last = performance.now();
+      const put = (s01) => {
+        const delta = goal.f * s01 * dir * dur;
+        as.forEach((a, i) => { a.currentTime = (((t0[i] + delta) % dur) + dur) % dur; });
+      };
+      const step = (now) => {
+        if (stopped || done) return;
+        const dt = Math.min(250, now - last); // real elapsed time, clamped as in the hop so a stalled tab does not warp it
+        last = now;
+        // 4 ms substeps, as in the hop, so the spring is the same whatever the frame rate
+        for (let r = dt; r > 1e-9; r -= 4) {
+          const h = Math.min(4, r) / 1000;
+          tms += h * 1000;
+          v += (omega * omega * (ramp(tms / ms) - x) - 2 * zeta * omega * v) * h;
+          x += v * h;
+        }
+        if ((tms > ms && Math.abs(1 - x) < 0.0015 && Math.abs(v) < 0.02) || tms > ms + 3000) {
+          done = true;
+          put(1);
+          tag("done");
+          hold(false, items[goal.i]);
+          return;
+        }
+        put(x);
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      return () => {
+        if (done || stopped) return;
+        done = true;
+        cancelAnimationFrame(raf);
+        tag("cancelled");
+        ui.current.dragEnd?.();
+      };
+    };
+
     return () => {
+      ui.current.demo = null;
       ui.current.dragStart = null;
       ui.current.dragEnd = null;
       stopped = true;
@@ -796,6 +892,59 @@ export default function PathMarquee({
       ui.current.held = false;
     };
   }, [carousel, playing, dwell, reduce, speed, spread, count, shown, d]);
+
+  // THE DEMO DRAG'S TRIGGER: the first time about 40% of the run is on screen,
+  // once per page visit. It waits for a rest (a hop in flight finishes first,
+  // so the demo always takes off from still), and never runs under reduced
+  // motion. Input cancels it at once: a press, a touch or a key anywhere, or a
+  // SIDEWAYS wheel. A vertical wheel does not: that is the page scroll (and its
+  // trackpad momentum, which keeps firing for a second after the fingers lift)
+  // that brought the visitor here, and cancelling on it would mean a wheel user
+  // never sees the demo at all.
+  const autoId = autoDrag ? autoDrag.id || "run" : "";
+  useEffect(() => {
+    if (!autoId || !carousel || reduce || demoed.has(autoId)) return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const el = wrapRef.current;
+    if (!el) return undefined;
+    const opts = autoDrag;
+    let raf = 0, tries = 0, cancel = null, armed = false;
+    const off = () => {
+      for (const t of ["pointerdown", "touchstart", "keydown"]) window.removeEventListener(t, onInput, true);
+      window.removeEventListener("wheel", onWheel, true);
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      off();
+      const c = cancel;
+      cancel = null;
+      c?.();
+    };
+    const onInput = () => { demoed.add(autoId); stop(); };
+    const onWheel = (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) onInput(); };
+    const go = () => {
+      if (demoed.has(autoId)) return;
+      // a rest is the run held still with its dwell clock going
+      const resting = ui.current.held && dwellState.current && ui.current.demo;
+      if (!resting) { if (tries++ < 600) raf = requestAnimationFrame(go); return; }
+      demoed.add(autoId);
+      cancel = ui.current.demo(opts);
+      if (!cancel) { off(); return; }
+      // finished on its own: drop the listeners once the landing has happened
+      const watch = () => { if (dwellState.current && !ui.current.dragging) { cancel = null; off(); } else raf = requestAnimationFrame(watch); };
+      raf = requestAnimationFrame(() => { raf = requestAnimationFrame(watch); });
+    };
+    const io = new IntersectionObserver(([e]) => {
+      if (armed || !e.isIntersecting || e.intersectionRatio < (opts.threshold ?? 0.4)) return;
+      armed = true;
+      io.disconnect();
+      for (const t of ["pointerdown", "touchstart", "keydown"]) window.addEventListener(t, onInput, { capture: true, passive: true });
+      window.addEventListener("wheel", onWheel, { capture: true, passive: true });
+      go();
+    }, { threshold: [0, opts.threshold ?? 0.4] });
+    io.observe(el);
+    return () => { io.disconnect(); stop(); };
+  }, [autoId, carousel, reduce]);
 
   // Hover changes SPEED, and playbackRate is the whole mechanism. It is eased
   // rather than set, because a run that changes pace instantly reads as a

@@ -537,6 +537,13 @@ const SNAP = {
   // overshoot. omega (rad/s) sets the pace: lower = slower and floatier.
   // lead is the time constant of the eased-in target the spring chases.
   spring: { zeta: 0.68, omega: 5.5, lead: 0.12 }, // lead (s): how softly the take-off eases in; 0 = a hard kick
+  // THE SCROLL-IN DEMO DRAG (mv847jvw, Agam: "when I reach this section on
+  // scroll this section should do an auto drag so we show the flow of the
+  // widget, and speed ramp it"). Two cards on, the ramp peaking at 1/phi^2 of
+  // `ms`, then the hop's spring above settles it: about 2.2 s door to door.
+  // Fires once per visit at 40% of the run on screen; any press, tap, key or
+  // sideways wheel hands it straight back (PathMarquee).
+  demo: { id: "side-quests", cards: 2, ms: 1400, threshold: 0.4 },
 };
 // cubic-bezier(x1, y1, x2, y2) as a function of x in 0..1 (Newton + bisection)
 function bezier(x1, y1, x2, y2) {
@@ -1451,6 +1458,7 @@ export default function AlongPath({ reduce, modeTwo }) {
           onCycle={onCycle}
           dwellFor={dwellFor}
           spring={SNAP.spring}
+          autoDrag={SNAP.demo}
           className="ap__run"
         >
           {/* Each plate is wrapped in a CARD container (annotation msbodd5p) so
