@@ -338,6 +338,7 @@ const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
 // the window scene's header controls (sky and look), only while the scene is on
 import FontSwitch from "./ui/FontSwitch";
 import ViewMenu from "./ui/ViewMenu";
+import HeroSwitch from "./ui/HeroSwitch";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
 // The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
 // so its chunk never reaches any other page. See src/scene/window/.
@@ -11583,6 +11584,7 @@ export default function App() {
         {/* the eye (bottom-left) holds everything else: font, view mode, the room's Look and Outside */}
         <ViewMenu feedback={feedback}>
           <FontSwitch i={0} feedback={feedback} />
+          {(path === "/" || path === "/portfolio") && <HeroSwitch i={0} feedback={feedback} />}
           {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
             <Suspense fallback={null}>
               <SceneControls i={0} feedback={feedback} />
