@@ -1,0 +1,26 @@
+/* ContextCursor.jsx: the visitor's morphing cursor. Fine pointers only (the component never
+   starts elsewhere, so html.cx-on is only ever set on them). */
+html.cx-on, html.cx-on * { cursor: none !important; }
+.cx {
+  position: fixed; left: 0; top: 0; z-index: 2147483000;
+  pointer-events: none; will-change: transform;
+  --cx-ink: #111; --cx-on-ink: #fff; --cx-blue: #1a6fd0;
+}
+html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111; }
+.cx__svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.55; stroke-width: 1; transition: fill 180ms linear, stroke 180ms linear, stroke-opacity 180ms linear; }
+.cx__g1, .cx__g2 { stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.cx__label {
+  position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; color: #fff;
+  font: 500 12px/14px "Google Sans Flex", Inter, -apple-system, sans-serif; letter-spacing: 0.01em;
+}
+/* rings: transparent body, ink stroke */
+.cx[data-s="link"] .cx__body, .cx[data-s="drag"] .cx__body, .cx[data-s="rotate"] .cx__body { fill: color-mix(in srgb, var(--cx-ink) 8%, transparent); stroke: var(--cx-ink); stroke-opacity: 0.9; stroke-width: 1.5; }
+.cx[data-s="drag"] .cx__label, .cx[data-s="rotate"] .cx__label { color: var(--cx-ink); }
+.cx[data-s="rotate"] .cx__g1, .cx[data-s="rotate"] .cx__g2 { stroke: var(--cx-ink); }
+/* solid blue pills and discs (the site's link blue, white on it) */
+.cx[data-s="ext"] .cx__body, .cx[data-s="view"] .cx__body, .cx[data-s="play"] .cx__body, .cx[data-s="up"] .cx__body { fill: var(--cx-blue); stroke: none; }
+.cx[data-s="lock"] .cx__body { fill: #3a3a40; stroke: none; }
+.cx[data-s="grab"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; }
+.cx[data-s="text"] .cx__body { stroke: none; }
+@media (hover: none), (pointer: coarse) { .cx { display: none; } }
