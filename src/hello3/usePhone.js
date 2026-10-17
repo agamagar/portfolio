@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 // or under 720px the hero's project list is not rendered and each work card carries
 // its own caption. Read synchronously on the first render, so the reveal (Hello.jsx),
 // which measures the page once on mount, sees the phone layout from the start.
-export const PHONE_QUERY = "(max-width: 720px)";
+// Tablets too (Oct 2026, Agam: "in the tablet mode also, bring the title, year and the
+// company name below the image card"): the query now runs to 1024px, so iPad portrait and
+// landscape get the captioned cards and no hero list.
+export const PHONE_QUERY = "(max-width: 1024px)";
 const match = () => typeof window !== "undefined" && !!window.matchMedia?.(PHONE_QUERY).matches;
 
 export default function usePhone() {

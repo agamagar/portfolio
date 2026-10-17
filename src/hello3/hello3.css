@@ -2577,7 +2577,7 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
 /* a captioned card needs more air between projects than a bare card did; and with no list in
    the hero, the links sit the hero's own 60px above the first card (the inner box's 48px bottom
    padding was the room above the list) */
-@media (max-width: 720px) {
+@media (max-width: 1024px) {
   .hello[data-page="3"] .wg__grid { gap: 40px; }
   .hello[data-page="3"] .hello-hero:not(:has(.hello-hero__table)) .hello-hero__inner { padding-bottom: 0; }
 }
