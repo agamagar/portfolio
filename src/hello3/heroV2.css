@@ -30,7 +30,7 @@
 /* v2 has no lockup, so the links sit 12 under the tagline like the frame's 24 gap */
 .hello[data-page="3"] .hv2 + .hello-hero__links { margin-top: 28px; }
 /* the project list starts level with the headline text, not the face above it (Agam): drop it by the face block (height + margins + gap; margin, since the load sequence pins translate to 0) so it follows the face size */
-@media (min-width: 1101px) { .hello[data-page="3"]:has(.hv2) .hello-hero__table { margin-top: calc(var(--hv2-face-h) + 12px); } }
+@media (min-width: 1101px) { .hello[data-page="3"]:has(.hv2) .hello-hero__table { margin-top: calc(var(--hv2-face-h) - 6px); } }
 @media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 32px; } }
 @media (max-width: 720px) {
   .hello[data-page="3"] .hv2__head { margin-left: -10px; }
