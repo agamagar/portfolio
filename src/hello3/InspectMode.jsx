@@ -347,8 +347,8 @@ export default function InspectMode() {
 
   return (
     <>
-      <button {...ui} onClick={() => setOn((v) => !v)} style={{ position: "fixed", left: 12, bottom: 12, zIndex: Z + 5, font, padding: "8px 10px", borderRadius: 999, border: "1px solid #0003", background: on ? HAND : "#111", color: "#fff", cursor: "pointer", opacity: on ? 1 : 0.55 }}>
-        Inspect{n ? ` · ${n}` : ""} <span style={{ opacity: 0.6 }}>⇧I</span>
+      <button {...ui} type="button" className="theme-toggle" onClick={() => setOn((v) => !v)} aria-label="Inspect (Shift+I)" aria-pressed={on} title={`Inspect (⇧I)${n ? ` · ${n} edits` : ""}`} style={{ position: "fixed", left: 16, bottom: 16, zIndex: Z + 5, cursor: "pointer", color: on ? HAND : undefined, boxShadow: on ? `0 0 0 2px ${HAND}` : undefined }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="12" cy="12" r="6" /><path d="M12 2v5M12 17v5M2 12h5M17 12h5" /></svg>
       </button>
       {on && (
         <div {...ui} style={{ position: "fixed", inset: 0, zIndex: Z, pointerEvents: "none" }}>
