@@ -1279,7 +1279,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   }, [reduce, measure]);
 
   return (
-    <div className="hello" ref={rootRef} data-page="3" data-stage={stage} data-seq={seq ? "" : undefined} data-glow={seq && GLOW_IN ? "" : undefined} data-reduce={reduce ? "true" : undefined} data-waving={waving ? "true" : undefined} data-scene={sceneWindow ? "window" : undefined}>
+    <div className="hello" ref={rootRef} data-page="3" data-hv2bal={new URLSearchParams(window.location.search).get("hv2bal") === "b" ? "b" : undefined} data-stage={stage} data-seq={seq ? "" : undefined} data-glow={seq && GLOW_IN ? "" : undefined} data-reduce={reduce ? "true" : undefined} data-waving={waving ? "true" : undefined} data-scene={sceneWindow ? "window" : undefined}>
       {/* Figma node 1:4: a full-bleed sky across the top, dissolved into the page
           by a very large blurred white ellipse. Reproduced as the LIVE shader
           rather than the pasted screenshot, and the dissolve as a mask rather

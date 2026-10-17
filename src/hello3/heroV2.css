@@ -29,8 +29,23 @@
 @keyframes hv2-in { from { opacity: 0; } }
 /* v2 has no lockup, so the links sit 12 under the tagline like the frame's 24 gap */
 .hello[data-page="3"] .hv2 + .hello-hero__links { margin-top: 28px; }
-/* the project list starts level with the headline text, not the face above it (Agam): drop it by the face block (height + margins + gap; margin, since the load sequence pins translate to 0) so it follows the face size */
-@media (min-width: 1101px) { .hello[data-page="3"]:has(.hv2) .hello-hero__table { margin-top: calc(var(--hv2-face-h) - 6px); } }
+/* Optical balance (Agam, "aligning them absolutely has resulted in an imbalance"): the pair is one grid on the
+   card grid's edges (--home-inset), the list is its natural width pinned to the right edge, a generous gutter
+   between. A (default): both columns centred, so the list's visual centre meets the headline block's.
+   B (?hv2bal=b): list top-aligned to the headline cap height, offset by the face block (--hv2-face-h). */
+@media (min-width: 1101px) {
+  .hello[data-page="3"]:has(.hv2) .hello-hero {
+    max-width: none;
+    box-sizing: border-box;
+    padding: 0 var(--home-inset-r, 60px) 60px var(--home-inset-l, 60px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 37rem);
+    column-gap: 96px;
+    align-items: center;
+  }
+  .hello[data-page="3"]:has(.hv2) .hello-hero__inner { padding: 0; }
+  .hello[data-page="3"]:has(.hv2) .hello-hero__table { padding: 0; margin: 0; justify-self: end; width: 100%; }
+  .hello[data-page="3"][data-hv2bal="b"]:has(.hv2) .hello-hero__table { position: relative; top: calc(var(--hv2-face-h) + 4px); }
+}
 @media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 32px; } }
 @media (max-width: 720px) {
   .hello[data-page="3"] .hv2__head { margin-left: -10px; }
