@@ -38,8 +38,12 @@ const span = (t, a, b) => clamp01((t - a) / (b - a));
 const inOutQ = (x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
 const lerp = (a, b, k) => a + (b - a) * k;
 
-export const DEV = [0.08, 0.78]; // the flat colour's front, 360 px deep to the outline
-export const DEV_S = [0.12, 0.84]; // the shading's front, a little behind
+// 17 Oct: "the face glow reveal is lagging behind the page reveal, start it earlier". The fronts used to start at
+// 0.08 / 0.12, so the glow only showed (flood >= 0.1) at t 0.21, ~0.1 t after the page's first element (t 0.12).
+// Now the flat colour's front starts before t 0 (it has already moved when the clock starts) and the glow is
+// visible by t 0.116: with the page's first element, never after it. Same end state, same finish.
+export const DEV = [-0.04, 0.74]; // the flat colour's front, 360 px deep to the outline
+export const DEV_S = [0, 0.84]; // the shading's front, a little behind
 export const devAt = (t) => (t < DEV[0] ? 1e4 : lerp(360, -2, inOutQ(span(t, DEV[0], DEV[1]))));
 export const devSAt = (t) => (t < DEV_S[0] ? 1e4 : lerp(350, -2, inOutQ(span(t, DEV_S[0], DEV_S[1]))));
 // the clay's flat skin (morphRenderer's uFlatSkin, #f2dcc6): the colour the face glows in
