@@ -22,8 +22,9 @@
 // the visit shows the clay still from the cached last frame.
 import { useEffect, useRef } from "react";
 import { FACE_VIEWBOX } from "../faceMorph";
-import { DURATION, ramp } from "../figures/faces/morph/flood";
+import { DURATION, ramp, flood } from "../figures/faces/morph/flood";
 import { settleHeroMorph } from "./heroMorphGate";
+import { mark } from "./morphDebug";
 import "./heroMorph.css";
 
 // "no morph is coming": the page's reveal (Hello.jsx) waits for the morph's clock, and only this lets it
@@ -135,10 +136,10 @@ export default function HeroMorph({ ready }) {
       const svg = boxRef.current?.parentElement?.querySelector("svg.header__avatar");
       b.p = import("../figures/faces/morph/mascotMorph")
         .then(({ createMascotMorph }) => createMascotMorph(b.gl, { clear: true, ink: svg ? getComputedStyle(svg).color : undefined }))
-        .then((m) => (b.m = m));
+        .then((m) => { mark("build_ready"); return (b.m = m); });
       b.p.catch(() => {});
       build.current = b;
-    }, 250);
+    }, 0);
     return () => {
       clearTimeout(id);
       if (build.current === b) build.current = null;
@@ -514,20 +515,29 @@ export default function HeroMorph({ ready }) {
         // content lands a frame or two after it is drawn. The ramp's quick start leaves the
         // timeline's own opening only ~80 ms, so the pre-roll carries the swap instead.)
         blit(gl);
-        // the page's reveal rides this clock (Hello.jsx): "heromorph:t" carries the timeline's t (0..1)
-        const tell = (v) => window.dispatchEvent(new CustomEvent("heromorph:t", { detail: v }));
-        tell(0);
+        // the page's reveal rides this clock (Hello.jsx): "heromorph:t" carries the timeline's t (0..1) of the frame
+        // that is ON SCREEN. The GPU draws a frame after the call that submits it, so a t is told one rAF after its
+        // frame was drawn and blitted (the next callback runs once that frame has been presented), never at the
+        // moment it is submitted: the page can only ever trail the face's pixels, not lead them
+        const tell = (v) => {
+          if (v >= 0.1) mark("morph_t0.1"); if (v >= 0.5) mark("morph_t0.5"); if (v >= 1) mark("morph_t1");
+          if (flood(v) >= 0.1) mark("face_glow_onset");
+          window.dispatchEvent(new CustomEvent("heromorph:t", { detail: v }));
+        };
+        mark("morph_first_frame");
         const t1 = performance.now(), t0 = t1 + PREROLL;
+        let shown = 0; // the t of the frame drawn last callback (frame 0, the drawing itself, to begin with)
         const step = () => {
           if (!alive || !m) return;
+          tell(shown); // that frame has been presented by now
           const now = performance.now();
           t = ramp(Math.min(1, Math.max(0, now - t0) / DURATION));
           if (now - t1 >= SWAP && !wrap.dataset.morph) show();
-          tell(t);
-          if (t >= 1) { finish(); return; }
+          if (t >= 1) { finish(); raf = requestAnimationFrame(() => { tell(1); }); return; }
           m.render(t);
           frame(grow(t));
           blit(gl);
+          shown = t;
           raf = requestAnimationFrame(step);
         };
         raf = requestAnimationFrame(step);

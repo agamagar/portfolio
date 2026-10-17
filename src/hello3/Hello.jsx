@@ -13,6 +13,7 @@ import MorphFace from "../MorphFace";
 // room's page capture waits for it (heroMorphGate.js)
 import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
+import { mark } from "./morphDebug";
 import { FLOOD_RGB } from "../figures/faces/morph/flood";
 import { warmIsReady } from "../scene/window/warmFlag";
 import { Check, Copy, Lock, Mail, Phone } from "iconoir-react";
@@ -1106,7 +1107,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       if (over) return;
       T = tied ? Math.min(1, (M - W0) / (W1 - W0)) : Math.min(1, (performance.now() - waveAt) / (still ? 2600 : WAVE_MS));
       if (import.meta.env.DEV) (window.__fr ||= []).push([Math.round(performance.now()), T < 0 ? null : Math.round(frontC()), +M.toFixed(3)]); // dev only: the load QA plots the front
-      while (next < marks.length && marks[next][0] <= T) marks[next++][1].setAttribute("data-in", "");
+      if (T >= 0) mark("reveal_T0");
+      while (next < marks.length && marks[next][0] <= T) { marks[next++][1].setAttribute("data-in", ""); mark("first_data_in"); if (next === marks.length) mark("last_data_in"); }
       if (glow && T >= 0) { light(); content(); }
       if (T >= 1 && (!glow || lines.every((L) => L.dead && (L.part || L.done)))) { done(); return; }
       if (T >= 1 && performance.now() - waveAt > (still ? 2600 : WAVE_MS) + 600) { done(); return; } // a last element's tail, then stop
@@ -1122,6 +1124,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
       // no hold between the morph landing and the light leaving (it used to wait BLOOM_IN = 320 ms with nothing
       // moving): the front starts at the clay's rim on the same frame, and the bloom swells under it
       waveAt = performance.now();
+      cap = setTimeout(done, 12000); // the sequence ends 12 s after the light leaves, whatever happened to it
       // the face's own flood is the bloom: the separate end-bloom only plays when there is no morph to flood
       const face = !still && glow && !withMorph ? root.querySelector(".hello-hero__flyer .header__avatar-wrap") : null;
       if (face?.animate) {
@@ -1154,18 +1157,18 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // the face blooms as it is and the light leaves now
     armRef.current = () => {
       place();
-      cap = setTimeout(done, 12000);
-      // the reveal never runs ahead of the morph: while the morph's build is still loading (a slow chunk) the
-      // page waits under its skeletons for the first "heromorph:t". "heromorph:none" is the early way out;
-      // this is only the backstop for a build that never answers
-      fb = setTimeout(() => { if (M === 0) launch(); }, 6000);
+      // THE REVEAL NEVER RUNS ON ITS OWN CLOCK: its T is the morph's t of the frame on screen ("heromorph:t"),
+      // so with a slow build (shader compile, the 10 MB GLB) the whole page holds at its shimmer until the
+      // morph's first frame. The one way out is "heromorph:none" (no WebGL, reduced motion, a repeat visit, a failed
+      // build), which fires at once. This timer is only the backstop for a build that never answers at all
+      fb = setTimeout(() => { if (M === 0) launch(); }, 15000);
       armed = true;
       if (noneSeen && M === 0) { clearTimeout(fb); launch(); }
     };
     return () => { over = true; armRef.current = null; cancelAnimationFrame(pre); ro.disconnect(); document.fonts?.removeEventListener?.("loadingdone", replace); cancelAnimationFrame(placeQueued); window.removeEventListener("resize", place); svg?.remove(); window.removeEventListener("heromorph:t", onT); window.removeEventListener("heromorph:none", onNone); clearTimeout(fb); clearTimeout(cap); clearTimeout(tm); cancelAnimationFrame(raf); };
   }, [seq]);
   // the wave has ended: the safety timers and the plain-clock fallback start now
-  useEffect(() => { if (stage === "reveal") armRef.current?.(); }, [stage]);
+  useEffect(() => { if (stage === "reveal") { mark("stage_reveal"); armRef.current?.(); } }, [stage]);
   // the intro plays over a hero nobody sees yet (it is inside the monitor): skip it
   useEffect(() => {
     if (sceneWindow) skip();

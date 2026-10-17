@@ -18,6 +18,22 @@
          index.css, which in dev arrives with the JS: every open flashed white for
          ~0.3 s. Same values as the --bg tokens. -->
     <style>html { background: #fff; } html.dark { background: #0e0e11; color-scheme: dark; }</style>
+    <!-- The hero morph's face (10 MB GLB, fit, textures) is the long pole of the intro: the morph builds a beat after
+         the page mounts and the page's reveal waits for its first frame. Requested here, at parse time, so it is
+         already in the cache when the build asks (same URLs as faceRig3D's defaults). Desktop, motion allowed only:
+         phones and reduced motion never build it. -->
+    <script>
+      try {
+        if (innerWidth > 720 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          [["fetch", "/faces/face.glb"], ["fetch", "/faces/fit.json"], ["image", "/faces/idmap.png"], ["image", "/faces/skin-raw.png"], ["image", "/faces/margins-clay.png"], ["image", "/faces/skin-clean.png"]].forEach(function (a) {
+            var l = document.createElement("link");
+            l.rel = "preload"; l.as = a[0]; l.href = a[1];
+            l.crossOrigin = "anonymous"; // three's loaders request in CORS mode: a preload must match it to be used
+            document.head.appendChild(l);
+          });
+        }
+      } catch (e) {}
+    </script>
     <!-- The serif and heading font picks (lib/serifFont.js, keys "serif-font" and "hero-font") are
          applied before first paint, and their Google fonts requested here only when not Newsreader. -->
     <script>
