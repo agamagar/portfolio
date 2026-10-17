@@ -542,7 +542,7 @@ const SNAP = {
   // take-off, fast middle, long landing; the hop's spring chases it, which rounds
   // the ramp and lands with a ~2% overshoot. Measured: peak speed ~1 s in, settled
   // on the card at ~2.2 s. Any press, wheel, touch or key cancels it.
-  demo: { cards: 2, ms: 1400, ease: [1 / PHI, 0, 1 - 1 / PHI, 1], threshold: 0.4 },
+  demo: { cards: 5, ms: 3200, ease: [1 / PHI, 0, 1 - 1 / PHI, 1], threshold: 0.4 },
 };
 // cubic-bezier(x1, y1, x2, y2) as a function of x in 0..1 (Newton + bisection)
 function bezier(x1, y1, x2, y2) {
