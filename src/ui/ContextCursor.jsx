@@ -34,7 +34,7 @@ const G = {
 // state -> target shape. label null = none. w:null = fit the label.
 const S = {
   dot: { w: 10, h: 10, r: 5, g: "none" },
-  link: { w: 34, h: 34, r: 17, g: "none" },
+  link: { w: 26, h: 26, r: 13, g: "none" },
   ext: { w: 34, h: 34, r: 17, g: "ext" },
   view: { w: null, h: 34, r: 17, g: "view", label: "View" },
   lock: { w: null, h: 34, r: 17, g: "lock", label: "Locked" },
