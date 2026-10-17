@@ -1,8 +1,9 @@
 /* Hero v2 (Figma 1586:14452): face (74 x 80), tagline in the serif at 36 / -0.02em, then the shared
    links row. Everything else (the two columns, the links, the timeline) is v1's hero CSS in hello3.css. */
+.hello[data-page="3"] { --hv2-face-h: 80px; }
 .hello[data-page="3"] .hv2 { width: 100%; }
 .hello[data-page="3"] .hv2__head { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-weight: 400; }
-.hello[data-page="3"] .hv2__face { position: relative; display: block; width: 74px; height: 80px; margin: 4px 0; }
+.hello[data-page="3"] .hv2__face { position: relative; display: block; width: 74px; height: var(--hv2-face-h); margin: 4px 0; }
 /* the 40 px avatar scaled to the frame's 74 px (v1's flight scale does not apply: no glide in v2) */
 .hello[data-page="3"][data-stage] .hv2__flyer { position: absolute; left: 0; top: 0; width: 40px; transform: scale(1.85); transform-origin: 0 0; transition: none; }
 .hello[data-page="3"] .hv2__flyer .header__avatar-wrap { margin: 0; }
@@ -28,10 +29,13 @@
 @keyframes hv2-in { from { opacity: 0; } }
 /* v2 has no lockup, so the links sit 12 under the tagline like the frame's 24 gap */
 .hello[data-page="3"] .hv2 + .hello-hero__links { margin-top: 28px; }
+/* the project list starts level with the headline text, not the face above it (Agam): drop it by the face block (height + its margins + the column gap) so it follows the face size */
+@media (min-width: 1101px) { .hello[data-page="3"]:has(.hv2) .hello-hero__table { translate: 0 calc(48px + var(--hv2-face-h) + 12px); } }
 @media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 32px; } }
 @media (max-width: 720px) {
   .hello[data-page="3"] .hv2__head { margin-left: -10px; }
   .hello[data-page="3"] .hv2__tagline { font-size: 28px; padding: 8px 0; max-width: none; }
-  .hello[data-page="3"] .hv2__face { width: 59px; height: 64px; }
+  .hello[data-page="3"] { --hv2-face-h: 64px; }
+  .hello[data-page="3"] .hv2__face { width: 59px; }
   .hello[data-page="3"][data-stage] .hv2__flyer { transform: scale(1.48); }
 }
