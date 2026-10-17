@@ -288,23 +288,10 @@ function DwellVideo({ plate, onOpen }) {
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(e.currentTarget); } }}
     >
       <video ref={ref} className="ap__plate" src={plate.video} poster={plate.poster} muted loop playsInline autoPlay preload="metadata" aria-label={plate.alt} data-audio-src={plate.full || undefined} />
-      {/* the live-audio indicator (12 Oct 2026): shown while this card's sound is playing */}
-      {plate.full && (
-        <svg className="ap__speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M11 5 6 9H3v6h3l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" />
-        </svg>
-      )}
-      {/* THE SOUND HINT (12 Oct 2026, Agam heard nothing): the site's sound is OFF by
-          default and the browser refuses audio before a click or key, so while this
-          card rests and its sound cannot play, a small pill says why and one click
-          fixes it (turns the site sound on, which is also the gesture the
-          browser wants). Shown by audioSync through data-audio-hint. */}
-      {plate.full && (
-        <span className="ap__audio-hint" role="button" tabIndex={-1} onClick={(e) => { e.stopPropagation(); window.dispatchEvent(new CustomEvent("ap-sound-hint")); }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M11 5 6 9H3v6h3l5 4z" /><path d="m16 9 5 6M21 9l-5 6" /></svg>
-          <span className="ap__audio-hint-t" />
-        </span>
-      )}
+      {/* 17 Oct 2026 (mvcd1px4, "remove audio control from inside this card"): no speaker
+          icon or sound pill inside the card. Audio still follows in view + centred with
+          the fade (audioSync); the site's sound toggle and the section's sound button
+          stay outside the card. */}
     </article>
   );
 }
