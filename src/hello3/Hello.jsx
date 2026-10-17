@@ -26,7 +26,7 @@ import RoleTooltip from "./RoleTooltip";
 import GreetingMark from "./GreetingMark";
 import { HelloFlipControl, HelloFlipLayer, HelloFlipSr, useHelloFlipStore } from "./HelloFlip";
 import HelloLink from "./HelloLink";
-import HeroV2 from "./HeroV2";
+import HeroV2, { HERO_V2_ROWS } from "./HeroV2";
 import { useHeroVersion } from "./heroVersions";
 import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
@@ -1511,7 +1511,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             work card carries its year, title and line instead (WorkGrid.jsx, the same rows) */}
         {!phone && (
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
-          {TIMELINE.map((r, i) => {
+          {heroV === "v2" && HERO_V2_ROWS.map((r, i) => (
+            <div className="work__item" role="listitem" key={i} style={{ "--i": i }}>
+              <span className="work__main"><span className="work__year">{r.year}</span><span className="work__title">{r.org}</span></span>
+              <span className="work__meta">{r.line}</span>
+            </div>
+          ))}
+          {heroV !== "v2" && TIMELINE.map((r, i) => {
             const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
             const rowProps = LOCKED.has(r.href) ? { badge: false } : { to: r.href, onNavigate };
             return (

@@ -10,6 +10,16 @@ import "./heroV2.css";
 
 export const HERO_V2_TAGLINE = "Agam is a designer who builds for people product and technology";
 
+// the frame's right column, word for word (Figma 1586:14452)
+const L = "Also a VR Enthusiast and an Amateur Researcher";
+export const HERO_V2_ROWS = [
+  { year: "2026", org: "Zepto", line: L },
+  { year: "2026", org: "Zepto", line: L },
+  { year: "2026", org: "Away", line: L },
+  { year: "2026", org: "CaratLane", line: L },
+  { year: "2026", org: "Toppr", line: L },
+];
+
 export default function HeroV2({ flyerRef, stage, reduce, replayId, replayGreeting }) {
   return (
     <div className="hv2">
