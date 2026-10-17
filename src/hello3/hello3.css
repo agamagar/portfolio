@@ -844,7 +844,7 @@ body:has(.hello[data-page="3"]) {
 }
 @media (max-width: 900px) { body:has(.hello[data-page="3"]) { --home-gutter: 20px; } }
 body:has(.hello[data-page="3"]) .top-controls { left: var(--home-inset-l); right: var(--home-inset-r); }
-body:has(.hello[data-page="3"]) .view-menu { left: var(--home-inset-l); }
+body:has(.hello[data-page="3"]) .view-menu { left: max(20px, env(safe-area-inset-left)); }
 
 /* mtr8hc5e "on scroll the sky will be visible across": the sky band is fixed
    to the viewport on this page instead of absolute to the top of the document,
