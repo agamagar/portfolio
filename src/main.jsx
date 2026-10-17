@@ -52,6 +52,9 @@ const QaNotes = import.meta.env.DEV ? React.lazy(() => import("./ui/QaNotes.jsx"
 // Inspect mode (12 Oct): dev-only spacing redlines + draggers, src/hello3/InspectMode.jsx (Shift+I)
 const InspectMode = import.meta.env.DEV ? React.lazy(() => import("./hello3/InspectMode.jsx")) : null;
 
+// the visitor's morphing cursor (src/ui/ContextCursor.jsx), fine pointers only
+const ContextCursor = React.lazy(() => import("./ui/ContextCursor.jsx"));
+
 const Agentation = import.meta.env.DEV
   ? React.lazy(() =>
       import("agentation").then((m) => ({ default: m.Agentation }))
@@ -67,6 +70,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <Guard name="app" fallback={<StaticFallback />}><App /></Guard>
     </React.StrictMode>
+    <Guard name="context-cursor"><React.Suspense fallback={null}><ContextCursor /></React.Suspense></Guard>
     {QaNotes && (
       <Guard name="qa-notes"><React.Suspense fallback={null}>
         <QaNotes />
