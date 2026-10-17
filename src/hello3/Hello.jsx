@@ -27,6 +27,8 @@ import RoleTooltip from "./RoleTooltip";
 import GreetingMark from "./GreetingMark";
 import { HelloFlipControl, HelloFlipLayer, HelloFlipSr, useHelloFlipStore } from "./HelloFlip";
 import HelloLink from "./HelloLink";
+import HeroV2, { HERO_V2_ROWS } from "./HeroV2";
+import { useHeroVersion } from "./heroVersions";
 import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
@@ -553,6 +555,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
   // phones: no project list in the hero, the cards carry captions (usePhone.js, WorkGrid.jsx)
   const phone = usePhone();
   const helloFlip = useHelloFlipStore(); // the stretchy "Hello" (HelloFlip.jsx)
+  const heroV = useHeroVersion(); // the eye menu's Hero switch (heroVersions.js)
   const { stage, skip } = useIntroStage(rootRef, { off: sceneWindow });
   // BACK TO THE ROOM (Agam: "give me a floater for scrolling up once I've already visited the
   // three.js view and am on the main landing page"): in the room's layout the plain page is
@@ -608,7 +611,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // [mark, element, glow width in t]: at the mark the element's content starts to resolve out of its light
     const add = (els, from, step, w = 0) => els.forEach((el, i) => marks.push([from + i * step, el, w]));
     add(q(".hello-hero__mark-art"), 0.0001, 0, 0.3);
-    add(q(".hello-hero__link"), 0.0001, 0, 0.25);
+    add(q(".hello-hero__link, .hv2__tagline"), 0.0001, 0, 0.25);
     add(q(".hello-hero__table .work__item"), 0.0001, 0, 0.25);
     const cards = q(".wg__card");
     // the last card's light has to finish by t = 1 (its window ends at m + 0.7 D, D = w + 0.08)
@@ -1429,6 +1432,10 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               opposite ends of it. The badge holds its final position from the
               first painted frame, so the intro is the words arriving around it
               rather than the face travelling. */}
+          {heroV === "v2" ? (
+            <HeroV2 flyerRef={flyerRef} stage={stage} reduce={reduce} replayId={replayId} replayGreeting={replayGreeting} />
+          ) : (
+          <>
           <h1 className="hello-hero__greet" onClick={stage === "reveal" ? undefined : skip} data-calm aria-labelledby="hello-hero-title">
             {/* The words, for anything that reads rather than looks. The mark
                 below is outlines and carries no text at all, so this is the only
@@ -1485,6 +1492,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               placement="top"). mtu561mm brings the first two back here, in the
               shape they had before the chips: blue text with a north-east
               arrow, which says "this leaves the page" without a box. */}
+          </>
+          )}
           <div className="hello-hero__links">
             {LINKS.map((l, i) => (
               <HelloLink key={l.href} to={l.href} blank onNavigate={onNavigate} className="hello-hero__link hello-hero__link--out" style={{ "--i": i }}>
@@ -1505,7 +1514,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             work card carries its year, title and line instead (WorkGrid.jsx, the same rows) */}
         {!phone && (
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
-          {TIMELINE.map((r, i) => {
+          {heroV === "v2" && HERO_V2_ROWS.map((r, i) => (
+            <div className="work__item" role="listitem" key={i} style={{ "--i": i }}>
+              <span className="work__main"><span className="work__year">{r.year}</span><span className="work__title">{r.org}</span></span>
+              <span className="work__meta">{r.line}</span>
+            </div>
+          ))}
+          {heroV !== "v2" && TIMELINE.map((r, i) => {
             const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
             const rowProps = LOCKED.has(r.href) ? { badge: false } : { to: r.href, onNavigate };
             return (

@@ -1,0 +1,37 @@
+/* Hero v2 (Figma 1586:14452): face (74 x 80), tagline in the serif at 36 / -0.02em, then the shared
+   links row. Everything else (the two columns, the links, the timeline) is v1's hero CSS in hello3.css. */
+.hello[data-page="3"] .hv2 { width: 100%; }
+.hello[data-page="3"] .hv2__head { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-weight: 400; }
+.hello[data-page="3"] .hv2__face { position: relative; display: block; width: 74px; height: 80px; margin: 4px 0; }
+/* the 40 px avatar scaled to the frame's 74 px (v1's flight scale does not apply: no glide in v2) */
+.hello[data-page="3"][data-stage] .hv2__flyer { position: absolute; left: 0; top: 0; width: 40px; transform: scale(1.85); transform-origin: 0 0; transition: none; }
+.hello[data-page="3"] .hv2__flyer .header__avatar-wrap { margin: 0; }
+.hello[data-page="3"] .hv2__flyer .header__wave { translate: -3px -15px; }
+.hello[data-page="3"] .hv2__flyer .header__avatar-wrap > .header__wave { transition: filter 400ms var(--m3-effects-default, ease); }
+.hello[data-page="3"] .hv2__flyer .header__avatar-wrap[data-clay="on"] > .header__wave { filter: opacity(0); }
+.hello[data-page="3"] .hv2__tagline {
+  display: block;
+  padding: 12px 0;
+  max-width: 34rem;
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+/* the load sequence (Hello.jsx adds .hv2__tagline to its marks; the same gate as .hello-hero__link) */
+.hello[data-page="3"][data-seq][data-seq] .hv2__tagline:not([data-in]) { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
+.hello[data-page="3"][data-seq][data-seq] .hv2__tagline[data-in] { opacity: 1; visibility: visible; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.hello[data-page="3"]:not([data-seq]) .hv2__tagline { animation: hv2-in 600ms var(--m3-effects-default, ease) both; }
+@keyframes hv2-in { from { opacity: 0; } }
+/* v2 has no lockup, so the links sit 12 under the tagline like the frame's 24 gap */
+.hello[data-page="3"] .hv2 + .hello-hero__links { margin-top: 12px; }
+@media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 32px; } }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hv2__head { margin-left: -10px; }
+  .hello[data-page="3"] .hv2__tagline { font-size: 28px; padding: 8px 0; max-width: none; }
+  .hello[data-page="3"] .hv2__face { width: 59px; height: 64px; }
+  .hello[data-page="3"][data-stage] .hv2__flyer { transform: scale(1.48); }
+}
