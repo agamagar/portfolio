@@ -64,6 +64,12 @@ const PLATES = [
     // The id comes from this file's own earlier note on the plate; YouTube's
     // oEmbed confirms it is "Follow that idea" by Agam Agarwal.
     cap: { line: "Follow that idea: a hand-drawn animation ending on Uncollab", title: "Follow that idea", type: "Animation", cta: { label: "Watch on YouTube", to: "https://www.youtube.com/watch?v=tatZlX0d4do" } } },
+  // 17 Oct 2026, Agam: "add this to the side quest flow". The Config India 2026
+  // recap video (1200x1200, 26 s, AAC). Same pattern as the hand-drawn clip: a silent
+  // 640px loop for the card, the full 1200px file (with its audio) for the sound
+  // and the cinema. Caption carries only the title; nothing else is known.
+  { video: "/figures/marquee/config-india-60.mp4", full: "/figures/marquee/config-india-full.mp4", poster: "/figures/marquee/config-india-poster.png", alt: "Config India 2026 recap", aspect: "1 / 1", dwell: true,
+    cap: { line: "Config India 2026 recap", title: "Config India 2026 recap", type: "Video" } },
   { src: "/figures/marquee/state-3.png", alt: "Away: deep search running", hidden: true }, // mtrx258e (08 Sep 2026): hidden, kept
   { src: "/figures/marquee/dassh-stella-system.png", alt: "Dassh: Stella, constructed", aspect: "1478 / 1080", hidden: true }, // mtrx1xxd: hidden, kept
   { src: "/figures/marquee/sched-cart-confirmed.png", alt: "Zepto: cart, slot confirmed", hidden: true }, // mtrx44o3: hidden, kept
@@ -155,7 +161,9 @@ const MODE2_W = 1200;
 // assumes: these plates are all landscape, and measured against a portrait
 // the 16:9 cards came out 1.54 cells wide and two of them side by side
 // overlapped by 56px. (Superseded below: every card is 4:3 now.)
-// EVERY CARD 4:3 (11 Oct 2026, Agam: "in the shapes Rectangle mode, make all
+// EVERY CARD SQUARE (17 Oct 2026, Agam: "make all cards square"): 1:1 at the same area the
+// 4:3 boxes had (side = sqrt(3/4) of the cell), media cover-cropped from the centre.
+// (Was: EVERY CARD 4:3, 11 Oct 2026, Agam: "in the shapes Rectangle mode, make all
 // of them 4:3"), replacing the equal-area-by-own-aspect rule above: one box
 // for every plate, the full cell wide (Size = the cell = the card's width, so
 // 240 -> 240 x 180 in the run's units), media cropped to cover from the centre
@@ -163,7 +171,7 @@ const MODE2_W = 1200;
 // that same area, so REF_ASPECT is 4:3 and its side is sqrt(3/4) of the cell.
 const REF_ASPECT = 4 / 3;
 function cardStyle() {
-  return { aspectRatio: "4 / 3", "--ap-opt": 1 };
+  return { aspectRatio: "1 / 1", "--ap-opt": "var(--ap-opt-square, 0.8660)" };
 }
 
 // The app's router is App.jsx's pushState + popstate listener; AlongPath is
