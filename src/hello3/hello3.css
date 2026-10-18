@@ -2586,8 +2586,8 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
 .hello[data-page="3"][data-seq][data-seq] .wg__cap[data-in] { opacity: 1; translate: 0 0; visibility: visible; pointer-events: auto; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1), translate 700ms cubic-bezier(0.22, 1, 0.36, 1); transition-delay: 0s; }
 .hello[data-page="3"][data-seq][data-seq][data-glow] .wg__cap:is(:not([data-in]), [data-in]) { translate: 0 0; transition: none; }
 
-/* the social-proof chip under the Config India caption (17 Oct 2026): a dark X notification crop */
-.hello[data-page="3"] .ap__cap-chip { display: block; width: min(300px, 70vw); max-width: none; flex: none; height: auto; margin-top: 14px; border-radius: 12px; border: 1px solid var(--line); background: #000; }
+/* the social-proof chip above the Config India caption text (17 Oct 2026): a dark X notification crop */
+.hello[data-page="3"] .ap__cap-chip { display: block; width: min(300px, 70vw); max-width: none; flex: none; height: auto; margin: 0 0 14px; border-radius: 12px; border: 1px solid var(--line); background: #000; }
 @media (max-width: 720px) {
   /* the sound / pause buttons sit under the caption on a phone: the chip clears them */
   .hello[data-page="3"] .ap__cap-chip { width: min(250px, 64vw); margin-top: 82px; }

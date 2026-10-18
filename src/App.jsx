@@ -1068,7 +1068,7 @@ function RoleScopeMap({ s, i }) {
         <span className="rv-map__me"><b>Lead designer</b><small>end to end</small></span>
         <ul className="rv-map__cols">
           {ROLE_PARTNERS.map((p) => <li key={p} className="rv-map__node">{p}</li>)}
-          <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.join(", ")}</li>
+          <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.map((f) => <span key={f} className="rv-map__fn">{f}</span>)}</li>
         </ul>
       </div>
       {/* mv5iv45m (12 Oct, "there were three metrics with icons and small descriptions: bring them back"): the stats are
@@ -2113,6 +2113,7 @@ const caseStudies = {
     // Editorial intro spread (ui/EditorialSpread), straight under the header. Copy is the case's own:
     // title, the Context & problem TL;DR and its two paragraphs.
     spreadIntro: {
+      hide: true, // mvdrkxb8 (Agam, "hide this"): the intro spread is hidden; delete this line to bring it back
       label: "Introduction",
       headline: ["Bringing", "Schedule", "Delivery", "to a 10-min", "Delivery", { text: "Platform", upright: true, dx: 3 }],
       lead: "Not every order is urgent. Some people wanted their groceries later. And an app built only for ten minutes had nowhere to put them.",
@@ -10334,7 +10335,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}
-          {cs.spreadIntro && <EditorialSpread {...cs.spreadIntro} />}
+          {cs.spreadIntro && !cs.spreadIntro.hide && <EditorialSpread {...cs.spreadIntro} />}
           </>) : (<>
           {cs.headFacts ? (
           // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
