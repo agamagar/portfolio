@@ -33,7 +33,7 @@ export default defineConfig(({ command }) => ({
   // server) wins; without it Vite keeps its default 5173
   // fs.allow: a worktree's node_modules is a symlink into the main checkout; Vite serves the real path
   // (/@fs/...) and 403s it as outside the root, which broke the Stack Sans font on :5173 (18 Oct 2026).
-  server: { host: "127.0.0.1", fs: { allow: [".", dirname(realpathSync("node_modules"))] }, ...(process.env.PORT ? { port: Number(process.env.PORT), strictPort: true } : {}) },
+  server: { host: "127.0.0.1", fs: { allow: [".", (() => { try { return dirname(realpathSync("node_modules")); } catch { return "."; } })()] }, ...(process.env.PORT ? { port: Number(process.env.PORT), strictPort: true } : {}) },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
