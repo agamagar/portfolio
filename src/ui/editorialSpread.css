@@ -1,0 +1,88 @@
+/* EditorialSpread. Sizes are cqw of the .es container so the panel scales as
+   one unit. Display face: Stack Sans Headline (the site's heaviest display
+   face, wght 700 max, not condensed; the reference is extra-bold condensed). */
+.es {
+  --es-from: var(--es-from-l, #f4edff); --es-to: var(--es-to-l, #cdb4ff); --es-ink: var(--es-ink-l, #1a1033);
+  container-type: inline-size;
+  width: 100%;
+  margin: 2.5rem 0;
+}
+:root.dark .es {
+  --es-from: var(--es-from-dark, #1c1530); --es-to: var(--es-to-dark, #3b2a72); --es-ink: var(--es-ink-dark, #f1eaff);
+}
+.es__panel {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1.6cqw;
+  background: linear-gradient(180deg, var(--es-from), var(--es-to));
+  color: var(--es-ink);
+}
+.es__panel > * { position: absolute; margin: 0; }
+.es__label {
+  left: 2.1cqw; top: 2.6cqw;
+  font: 800 1.35cqw/1 var(--type-display-family);
+  letter-spacing: -0.02em; text-transform: uppercase;
+}
+.es__headline {
+  left: 9cqw; bottom: 3cqw; width: 41cqw;
+  font: 700 5.2cqw/0.86 "Stack Sans Headline Variable", var(--type-display-family);
+  letter-spacing: -0.045em; text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.es__block { display: block; transform: rotate(var(--es-rot)); transform-origin: 0 100%; margin-bottom: 1cqw; }
+.es__line { display: block; }
+.es__line--own {
+  transform: translateX(var(--es-dx, 0)) rotate(var(--es-line-rot, 0deg)); transform-origin: 0 100%;
+  align-self: flex-end;
+}
+.es__lead {
+  left: 60cqw; top: 8.4cqw; width: 33cqw;
+  font: 700 2.3cqw/0.98 "Stack Sans Headline Variable", var(--type-display-family);
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.es__img {
+  left: 52.7cqw; top: 21.5cqw; width: 11.5cqw; height: auto;
+  border-radius: 0.8cqw;
+  filter: drop-shadow(0 1cqw 1.6cqw rgb(0 0 0 / 0.18));
+}
+.es__body {
+  left: 75.7cqw; top: 22cqw; width: 21.5cqw;
+  font: 400 1.18cqw/1.22 var(--type-body-family, Inter, system-ui, sans-serif);
+  text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty;
+}
+.es__body p { margin: 0 0 1.3em; }
+.es__mark {
+  left: 3cqw; bottom: 2.4cqw;
+  font: 700 1.5cqw/1 "Stack Sans Headline Variable", var(--type-display-family);
+  letter-spacing: -0.03em;
+}
+
+/* Desktop: the article column is ~800px, too narrow for the 16:9 spread to read as one
+   unit, so the panel breaks out of it, centred, up to 1100px, clear of the left rail. */
+@media (min-width: 1100px) {
+  .es { width: min(1100px, calc(100vw - 420px)); position: relative; left: 50%; transform: translateX(-50%); }
+}
+
+/* Tablet: one column, headline still rotated. Phone (< 720px): rotation dropped. */
+@container (max-width: 900px) {
+  .es__panel { aspect-ratio: auto; display: flex; flex-direction: column; gap: 6cqw; padding: 5cqw 5cqw 6cqw; }
+  .es__panel > * { position: static; }
+  .es__label { font-size: 2cqw; }
+  .es__headline { width: auto; font-size: 11cqw; padding: 4cqw 0 2cqw 12cqw; }
+  .es__lead { width: auto; font-size: 4.6cqw; line-height: 1.02; }
+  .es__img { width: min(34cqw, 100%); align-self: center; border-radius: 1.6cqw; }
+  .es__body { width: auto; font-size: max(15px, 2.1cqw); line-height: 1.4; }
+  .es__mark { font-size: 2.6cqw; }
+}
+@container (max-width: 720px) {
+  .es__block, .es__line--own { transform: none; }
+  .es__headline { font-size: 12.5cqw; padding: 0; }
+  .es__line--own { align-self: flex-start; }
+  .es__label { font-size: 3.2cqw; }
+  .es__lead { font-size: 6.4cqw; }
+  .es__body { font-size: 15px; }
+  .es__mark { font-size: 4cqw; }
+  .es__panel { border-radius: 4cqw; }
+}

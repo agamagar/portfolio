@@ -10,6 +10,7 @@ import {
   Fragment,
   Suspense,
 } from "react";
+import EditorialSpread from "./ui/EditorialSpread"; // reusable magazine-style intro spread (SD case)
 import { Guard, StaticFallback, lazyRetry as lazy } from "./ui/Guard"; // chunk-retry lazy + blank-page guards
 import { flushSync } from "react-dom";
 // perf (11 Oct): figures load on demand. The home page and every other route used to carry all of them in the entry chunk
@@ -2080,6 +2081,20 @@ const caseStudies = {
     // node 559-7888 ("convert this to this"). Was: "Bringing scheduled delivery
     // to a 10-minute platform".
     title: "Bringing Schedule\nDelivery to a 10-min delivery platform", // mtpdtjwt: forced break before Delivery
+    // Editorial intro spread (ui/EditorialSpread), straight under the header. Copy is the case's own:
+    // title, the Context & problem TL;DR and its two paragraphs.
+    spreadIntro: {
+      label: "Introduction",
+      headline: ["Bringing", "Schedule", "Delivery", "to a 10-min", "Delivery", { text: "Platform", upright: true, dx: 3 }],
+      lead: "Not every order is urgent. Some people wanted their groceries later. And an app built only for ten minutes had nowhere to put them.",
+      image: { src: "/figures/scheduled/sched-pg-default.png", alt: "The Schedule Delivery page on Zepto's app" },
+      body: [
+        "Zepto's whole promise is speed: groceries at your door in ten minutes. But not every need is urgent. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had nowhere to put them.",
+        "Scheduled Delivery let people order anything on Zepto for a one-hour slot of their choosing, without spending the trust that ten minutes had earned.",
+      ],
+      mark: "Zepto",
+      theme: { from: "#f6f0ff", to: "#c9adff", ink: "#1a1033", darkFrom: "#17112b", darkTo: "#3a2872", darkInk: "#f1eaff" },
+    },
     headFacts: [
       { label: "Organisation", value: "Zepto" },
       { label: "Timeline", value: "5 Months" },
@@ -10309,6 +10324,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}
+          {cs.spreadIntro && <EditorialSpread {...cs.spreadIntro} />}
           </>) : (<>
           {cs.headFacts ? (
           // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
