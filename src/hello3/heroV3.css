@@ -1,0 +1,18 @@
+/* Hero v3: v1's lockup with the copy "Hi, / I'm Agam" (live text, GreetingMark copy) and a tagline under it. */
+.hello[data-page="3"] .hv3__tag {
+  margin: 20px 0 0;
+  max-width: 24rem;
+  font-family: "Prociono", var(--font-serif); /* same face as the v2 headline; heroV2.css loads it */
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  text-wrap: balance;
+}
+.hello[data-page="3"] .hv3__tag + .hello-hero__links { margin-top: 24px; }
+.hello[data-page="3"][data-seq][data-seq] .hv3__tag:not([data-in]) { opacity: 0; visibility: hidden; transition: none; }
+.hello[data-page="3"][data-seq][data-seq] .hv3__tag[data-in] { opacity: 1; visibility: visible; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.hello[data-page="3"]:not([data-seq]) .hv3__tag { animation: hv3-in 600ms var(--m3-effects-default, ease) both; }
+@keyframes hv3-in { from { opacity: 0; } }
+@media (max-width: 1024px) { .hello[data-page="3"] .hv3__tag { font-size: 22px; } }
+@media (max-width: 720px) { .hello[data-page="3"] .hv3__tag { font-size: 20px; max-width: none; } }

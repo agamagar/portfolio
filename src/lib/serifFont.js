@@ -74,11 +74,14 @@ export function subscribeHero(f) { heroListeners.add(f); return () => heroListen
 // Fit live text to the drawn lockup: size so the cap height is the outline's 34.2 units, and
 // compress (never stretch) a line that comes out wider than the drawn one.
 const CAP = 34.2, HELLO_W = 124.1, NAME_W = 208;
-export async function fitHero(id) {
-  const s = SERIFS.find((x) => x.id === id);
+export const HERO_SANS = '"Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif';
+export async function fitHero(id, words = null) {
+  // words: another greeting ({ hello, name }), set at its natural width (no stretch to the drawn "Hello!" span)
+  const W = words || { hello: "Hello!", name: "I\u2019m Agam" };
+  const s = SERIFS.find((x) => x.id === id) || (words ? { stack: HERO_SANS } : null); // another greeting in the default hero: the site sans
   if (!s) return null;
   const fam = s.stack.split(",")[0];
-  try { await document.fonts.load(`700 40px ${fam}`, "Hello! I\u2019m Agam"); } catch { /* fall back to metrics as they are */ }
+  try { await document.fonts.load(`700 40px ${fam}`, `${W.hello} ${W.name}`); } catch { /* fall back to metrics as they are */ }
   const c = document.createElement("canvas").getContext("2d");
   c.font = `700 100px ${s.stack}`;
   const fs = CAP / (c.measureText("H").actualBoundingBoxAscent / 100);
@@ -87,13 +90,13 @@ export async function fitHero(id) {
   // and width differences between fonts leave no gap beside the face. "Hello!" spans the drawn
   // H..! ink (62.9164..187); a narrower word gets tracking, a wider one is compressed.
   const ink = (t) => { const m = c.measureText(t); return { l: m.actualBoundingBoxLeft, w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, adv: m.width }; };
-  const h = ink("Hello!"), n = ink("I\u2019m Agam");
-  const hello = h.w > HELLO_W ? { len: h.adv * (HELLO_W / h.w), ls: 0 } : { len: null, ls: (HELLO_W - h.w) / 5 };
+  const h = ink(W.hello), n = ink(W.name);
+  const hello = words ? { len: null, ls: 0 } : h.w > HELLO_W ? { len: h.adv * (HELLO_W / h.w), ls: 0 } : { len: null, ls: (HELLO_W - h.w) / 5 };
   const hs = hello.len ? HELLO_W / h.w : 1, ns = n.w > NAME_W ? NAME_W / n.w : 1;
   // where this font's "!" is centred, against the drawn one (181.7): the drag handle that replaces the "!"
   // on hover (HelloFlip.jsx) is drawn there, so it lands on the live glyph, not on the outline's place
   const bang = ink("!");
-  const hx = 62.9164 + h.l * hs;
+  const hx = 62.9164 + h.l * hs + (words ? 9 : 0); // another greeting: a gap from the face
   const bAdv = hello.len ? bang.adv * hs : bang.adv;
   const hEnd = hx + (hello.len ?? h.adv + 6 * hello.ls) - (hello.len ? 0 : hello.ls);
   const bangDx = hEnd - bAdv / 2 - 181.7;

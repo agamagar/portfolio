@@ -28,7 +28,7 @@ import GreetingMark from "./GreetingMark";
 import { HelloFlipControl, HelloFlipLayer, HelloFlipSr, useHelloFlipStore } from "./HelloFlip";
 import HelloLink from "./HelloLink";
 import HeroV2, { HERO_V2_ROWS } from "./HeroV2";
-import { useHeroVersion } from "./heroVersions";
+import { useHeroVersion, HERO_V3_COPY, HERO_V3_TAG } from "./heroVersions";
 import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
 import PhoneMarquee from "./PhoneMarquee"; // eslint-disable-line no-unused-vars -- replaced by WorkGrid (pin mtqremeh), kept for the swap back
@@ -65,6 +65,7 @@ import "../hello/hello.css";
 // each token's literal as its fallback, so it renders the system's values
 // (popup #1f1f22, popup text #f3f3f3, focus ring, state duration) unchanged.
 import "./hello3.css";
+import "./heroV3.css"; // v3 tagline (after hello3.css so it can override)
 import "./scrollAssemble.css"; // scroll-driven assemble of the sections below the hero
 import "./scrollAssemble"; // fallback driver (no-op where view() timelines exist)
 // The window scene (three r186), behind ?scene=window until approved: see
@@ -611,7 +612,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // [mark, element, glow width in t]: at the mark the element's content starts to resolve out of its light
     const add = (els, from, step, w = 0) => els.forEach((el, i) => marks.push([from + i * step, el, w]));
     add(q(".hello-hero__mark-art"), 0.0001, 0, 0.3);
-    add(q(".hello-hero__link, .hv2__tagline"), 0.0001, 0, 0.25);
+    add(q(".hello-hero__link, .hv2__tagline, .hv3__tag"), 0.0001, 0, 0.25);
     add(q(".hello-hero__table .work__item"), 0.0001, 0, 0.25);
     const cards = q(".wg__card");
     // the last card's light has to finish by t = 1 (its window ends at m + 0.7 D, D = w + 0.08)
@@ -1440,7 +1441,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             {/* The words, for anything that reads rather than looks. The mark
                 below is outlines and carries no text at all, so this is the only
                 place the greeting exists as language. */}
-            <HelloFlipSr store={helloFlip} rest={GREETING[1]} />
+            {heroV === "v3" ? <span className="hello-hero__sr" id="hello-hero-title">{HERO_V3_COPY.hello} {HERO_V3_COPY.name}</span> : <HelloFlipSr store={helloFlip} rest={GREETING[1]} />}
 
             {/* not aria-hidden: the face is a button once it is clay (HeroMorph); everything else in
                 it (the drawing, the wave, the canvas) hides itself */}
@@ -1476,10 +1477,13 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               </span>
             </span>
 
-            <Guard name="greeting-mark"><GreetingMark className="hello-hero__mark-art" helloLayer={<Guard name="hello-flip"><HelloFlipLayer store={helloFlip} ready={stage === "reveal"} reduce={reduce} /></Guard>} /></Guard>
+            {heroV === "v3"
+              ? <Guard name="greeting-mark"><GreetingMark className="hello-hero__mark-art" copy={HERO_V3_COPY} /></Guard>
+              : <Guard name="greeting-mark"><GreetingMark className="hello-hero__mark-art" helloLayer={<Guard name="hello-flip"><HelloFlipLayer store={helloFlip} ready={stage === "reveal"} reduce={reduce} /></Guard>} /></Guard>}
           </h1>
           {/* the stretchy Hello's keyboard slider and its polite announcer: outside the h1 so the heading stays words */}
-          <Guard name="hello-flip-control"><HelloFlipControl store={helloFlip} /></Guard>
+          {heroV !== "v3" && <Guard name="hello-flip-control"><HelloFlipControl store={helloFlip} /></Guard>}
+          {heroV === "v3" && <p className="hv3__tag">{HERO_V3_TAG}</p>}
 
           {/* Figma node 643:88426, frame "107" (07 Sep 2026, pin mtqremeh): the
               credentials paragraph is gone; the greeting keeps the two links

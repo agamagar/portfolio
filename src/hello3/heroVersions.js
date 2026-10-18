@@ -6,6 +6,7 @@ import { useSyncExternalStore } from "react";
 export const HERO_VERSIONS = [
   { id: "v1", label: "v1", note: "Hello! I'm Agam" },
   { id: "v2", label: "v2", note: "Tagline + small face" },
+  { id: "v3", label: "v3", note: "Hi, I'm Agam + tagline" },
 ];
 const KEY = "hero-version";
 const DEFAULT = "v1";
@@ -41,3 +42,7 @@ export function setHeroVersion(id) {
 
 const subscribe = (l) => { listeners.add(l); return () => listeners.delete(l); };
 export const useHeroVersion = () => useSyncExternalStore(subscribe, getHeroVersion, () => DEFAULT);
+
+// v3's copy: the greeting is two lines in v1's lockup (the face sits beside line one), then the tagline
+export const HERO_V3_COPY = { hello: "Hi,", name: "I\u2019m Agam" };
+export const HERO_V3_TAG = "Designing at the intersection of people and tech";
