@@ -39,3 +39,13 @@
   .hello[data-page="3"] .hv4__t--p.hv4__t--a, .hello[data-page="3"] .hv4__t--p.hv4__t--d { grid-column: 1 / -1; }
   .hello[data-page="3"] .hello-hero.hello-hero--v4 { padding-top: 72px; }
 }
+
+/* v5: the same headline ranged left on the card grid's inset (60 px, 20 on phones); the face is a middle track
+   (auto) and the right words start right after it */
+.hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__inner { align-items: flex-start; text-align: left; padding: 0 60px; }
+.hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__links { justify-content: flex-start; }
+.hello[data-page="3"] .hv4--left { justify-content: flex-start; }
+.hello[data-page="3"] .hv4--left .hv4__head { grid-template-columns: auto auto 1fr; }
+.hello[data-page="3"] .hv4--left .hv4__t--a, .hello[data-page="3"] .hv4--left .hv4__t--d { text-align: left; }
+.hello[data-page="3"] .hv4--left .hv4__t--bl, .hello[data-page="3"] .hv4--left .hv4__t--cl { text-align: left; }
+@media (max-width: 720px) { .hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__inner { padding: 0 20px; } .hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__links { margin-left: 0; } }

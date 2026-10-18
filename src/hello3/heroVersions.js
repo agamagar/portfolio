@@ -8,6 +8,7 @@ export const HERO_VERSIONS = [
   { id: "v2", label: "v2", note: "Tagline + small face" },
   { id: "v3", label: "v3", note: "Hi, I'm Agam + tagline" },
   { id: "v4", label: "v4", note: "Centred, face in the text" },
+  { id: "v5", label: "v5", note: "Left, face in the text" },
 ];
 const KEY = "hero-version";
 const DEFAULT = "v1";

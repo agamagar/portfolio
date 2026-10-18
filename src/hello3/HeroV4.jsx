@@ -15,18 +15,20 @@ export const HERO_V4_COPY = "Hello! I’m Agam, a designer at the intersection o
 // breaks picked by measured width so the two sides of the face balance (B: 434|603, 261|361; A: 217|460, 261|361)
 const WIDE = ["Hello! I’m Agam, a", "designer at", "the intersection", "of play", "and tech.", ""];
 const PHONE = ["Hello! I’m Agam, a designer", "at the", "intersection", "of play", "and tech.", ""];
+// v5 (left-aligned): the left words are one width on both rows (434 | 427) so the face sits at one x
+const WIDE_LEFT = ["Hello! I’m Agam, a", "designer at", "the intersection", "of play and", "tech.", ""];
 const AREAS = ["a", "bl", "br", "cl", "cr", "d"];
 
 const Segs = ({ words, kind }) => words.map((w, i) => w && (
   <span key={kind + i} className={`hv4__t hv4__t--${kind} hv4__t--${AREAS[i]}`} aria-hidden>{w}</span>
 ));
 
-export default function HeroV4({ flyerRef, stage, reduce, replayId, replayGreeting }) {
+export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId, replayGreeting }) {
   return (
-    <div className="hv4">
+    <div className={left ? "hv4 hv4--left" : "hv4"}>
       <h1 className="hv4__head" data-calm aria-labelledby="hello-hero-title">
         <span className="hello-hero__sr" id="hello-hero-title">{HERO_V4_COPY}</span>
-        <Segs words={WIDE} kind="w" />
+        <Segs words={left ? WIDE_LEFT : WIDE} kind="w" />
         <Segs words={PHONE} kind="p" />
         <span className="hv4__face">
           <span className="hello-hero__flyer hv4__flyer" ref={flyerRef}>
