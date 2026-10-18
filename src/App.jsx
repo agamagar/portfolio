@@ -2460,26 +2460,7 @@ const caseStudies = {
         },
         figure: "The promise on the lock screen: a date, a one-hour window, and a scooter that has to make it true.",
       },
-      {
-        // Annotation mtmi98gy: the breaker. mtmqq4xn: moved up one, now before One cart, many hubs.
-        // Figma Portfolio 2026 node 315-29388.
-        // mujqp1k6 (27 Sep): no longer a breaker; its own section, copy via the
-        // writing harness (Sauer, gate 0/0), the cards below it.
-        h: "Schedule means different things to different people. Even how they say it.", // mukw91sk (28 Sep); was "Two ways to say it"
-        nav: "Two ways to say it", // the side index keeps the short name
-        stack: true, // mukvym27 + mukvyska (28 Sep): the text sits below the heading
-        group: "Problem",
-        // mv59g9e3 (12 Oct): heading left, subheading right, in the other sections' type (the subheading is the section statement, .article__tldr)
-        tldr: "India is a diverse place, and it shows even in one word. One group says shed-yool. Another says sked-jool.",
-        rowHead: true,
-        p: [
-          // "Either way, the word asks the same thing of someone: to wait. So the work was making that wait feel safe, however you say it.", // mukwb44m (28 Sep): removed
-        ],
-        // mtmk4qua: coded, so the faces move (PronCards); the flat export stays
-        // at /figures/scheduled/pronunciation.png.
-        // mukvom35 (28 Sep): the cards live INSIDE the section frame now, under the explanation
-        figIn: "pronCards",
-      },
+      // mvds2tn2 (Agam, "remove"): the "Schedule means different things to different people" pronunciation section is removed from the page
       // 27 Sep, Figma 273:5430: stock stacked crate on crate, the tiered hubs the section explains
       // mukupuxq + mukvosrs (28 Sep): the crates breaker removed at Agam's request
       // { breaker: true, image: "/figures/scheduled/photos/crates-greens.webp" },
