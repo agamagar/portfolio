@@ -1,0 +1,45 @@
+/* PhoneControls: a glass pill on the bottom edge of a phone screen (ui/PhoneControls.jsx).
+   Hidden at rest on desktop, so the frames look as they did; shown on hover and focus.
+   On touch it is always there, subtle. --pc-s undoes a scaled ancestor (ds-fit). */
+.pc {
+  position: absolute; left: 50%; bottom: 3.2%; z-index: 40;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  width: max-content; max-width: var(--pc-w, 248px);
+  padding: 4px; border-radius: 999px; corner-shape: round;
+  transform: translate(-50%, calc(-1 * var(--pc-lift, 0px))) scale(var(--pc-s, 1)); transform-origin: 50% 100%;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(0, 0, 0, 0.06), 0 6px 16px -8px rgba(0, 0, 0, 0.4);
+  color: #3b1a7a;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--m3-dur-effects-fast, 150ms) var(--m3-effects-fast, ease);
+}
+.pc-host:hover > .pc, .pc-host:focus-within > .pc, .pc-host:hover .pc, .pc-host:focus-within .pc { opacity: 1; pointer-events: auto; }
+@media (hover: none) { .pc { opacity: 0.72; pointer-events: auto; } }
+.pc__btn {
+  flex: 0 0 auto; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 999px; corner-shape: round;
+  display: inline-flex; align-items: center; justify-content: center; background: transparent; color: inherit; cursor: pointer;
+  transition: transform var(--m3-dur-spatial-fast, 150ms) var(--m3-spatial-standard-fast, ease), background-color var(--m3-dur-effects-fast, 150ms) ease;
+}
+.pc__btn:hover { background: rgba(255, 255, 255, 0.45); }
+.pc__btn:active { transform: scale(0.88); background: rgba(255, 255, 255, 0.6); }
+.pc__btn:focus-visible, .pc__scrub:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
+.pc__scrub {
+  flex: 1 1 64px; min-width: 48px; height: 28px; margin: 0 4px; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; border-radius: 999px;
+}
+.pc__scrub::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(to right, currentColor var(--pc-p, 0%), rgba(59, 26, 122, 0.22) var(--pc-p, 0%)); }
+.pc__scrub::-moz-range-track { height: 4px; border-radius: 999px; background: rgba(59, 26, 122, 0.22); }
+.pc__scrub::-moz-range-progress { height: 4px; border-radius: 999px; background: currentColor; }
+.pc__scrub::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 50%; background: currentColor; border: 0; }
+.pc__scrub::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: currentColor; border: 0; }
+:root.dark .pc { background: rgba(30, 24, 48, 0.66); color: #efe9ff; }
+:root.dark .pc__btn:hover { background: rgba(255, 255, 255, 0.14); }
+:root.dark .pc__scrub::-webkit-slider-runnable-track { background: linear-gradient(to right, currentColor var(--pc-p, 0%), rgba(239, 233, 255, 0.25) var(--pc-p, 0%)); }
+/* paused loops: freeze every CSS animation in the figure too */
+[data-pp-paused] *, [data-pp-paused] *::before, [data-pp-paused] *::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .pc, .pc__btn { transition: none; } }
+
+/* expand on a live frame: its container goes full screen and its content is zoomed up (the UA forbids a transform on a full screen element) */
+.pc-fs:fullscreen { display: grid; place-items: center; background: #0b0a10; overflow: hidden; margin: 0; padding: 0; }
+.pc-fs:fullscreen::backdrop { background: #0b0a10; }
+.pc-fs:fullscreen > * { zoom: var(--pc-fs-k, 1); }

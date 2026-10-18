@@ -13,6 +13,7 @@
 // loops, wait()/alive() gating); useReducedMotion holds a static frame.
 import { useState, useEffect, useCallback } from "react";
 import { useReducedMotion, useInViewLoop } from "../ds/hooks";
+import PhoneControls from "../../ui/PhoneControls";
 import Cursor from "../ds/Cursor";
 import BrandPageReel from "./BrandPageReel";
 import { useFitContain } from "./fit";
@@ -96,6 +97,7 @@ function SchedDeliveryReel({ surface = "inline" }) {
     >
       <div className="reel-root" ref={frameRef}>
         <div className="reel-stage">
+          <PhoneControls label="Schedule reel" />
           <div className="reel-cam" style={{ transform: `translate(0px, ${cam.ty}px) scale(${cam.s})` }}>
             <div className="reel-ph">
               <div className="reel-ph__screen">

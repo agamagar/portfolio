@@ -39,7 +39,7 @@ export function collectExpandables() {
 // the copy of a figure, wrapped in copies of its ancestors
 function buildClone(el) {
   const fig = el.cloneNode(true);
-  fig.querySelectorAll(".exp__btn, script, iframe, canvas, video:not([data-exp-ok])").forEach((n) => n.remove());
+  fig.querySelectorAll(".exp__btn, .pc, script, iframe, canvas, video:not([data-exp-ok])").forEach((n) => n.remove());
   fig.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
   fig.querySelectorAll("img").forEach((n) => { n.removeAttribute("loading"); n.loading = "eager"; n.removeAttribute("srcset"); });
   // scroll-driven scenes (.sscene) keep their layers in whatever scroll state the page was last in

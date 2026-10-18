@@ -3,6 +3,7 @@
 // motion, fit-to-container scaling, play-on-view sequencing) stays consistent.
 // See Claude/animation-base-layer.md.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { registerPlayback, emitter } from "../../ui/phonePlayback";
 
 // Reactive `prefers-reduced-motion: reduce`.
 export function useReducedMotion() {
@@ -114,25 +115,47 @@ export function useInViewLoop(enabled, run, { threshold = 0.35 } = {}) {
   runRef.current = run;
   useEffect(() => {
     const el = ref.current;
-    if (!enabled || !el) return;
-    let timers = [];
+    if (!el) return undefined;
+    // Phone controls (ui/phonePlayback): the loop is pausable and restartable. `wait`
+    // keeps each timer's remaining time, so a pause freezes the beat and a play resumes it.
+    let pend = [];
     let running = false;
     let alive = false;
-    const wait = (ms) => new Promise((r) => timers.push(setTimeout(r, ms)));
-    const clearAll = () => { timers.forEach(clearTimeout); timers = []; };
+    let paused = false;
+    let started = false; // the viewer pressed play (so the loop may run although `enabled` is false)
+    let visible = false;
+    let gen = 0;
+    const { subscribe, emit } = emitter();
+    const arm = (p) => { p.t0 = Date.now(); p.id = setTimeout(() => { pend = pend.filter((x) => x !== p); p.r(); }, p.left); };
+    const wait = (ms) => new Promise((r) => { const p = { r, left: ms }; pend.push(p); if (!paused) arm(p); });
+    const freeze = () => pend.forEach((p) => { clearTimeout(p.id); p.left -= Date.now() - p.t0; });
+    const thaw = () => pend.forEach(arm);
+    const clearAll = () => { pend.forEach((p) => clearTimeout(p.id)); pend = []; };
+    const begin = () => {
+      if (running) return;
+      running = true; alive = true; const g = ++gen;
+      Promise.resolve(runRef.current({ wait, alive: () => alive && g === gen }));
+    };
+    const halt = () => { running = false; alive = false; clearAll(); };
+    const mark = () => { if (paused) el.setAttribute("data-pp-paused", ""); else el.removeAttribute("data-pp-paused"); };
+    const ctl = {
+      kind: "loop", subscribe,
+      getState: () => ({ playing: running && !paused, ended: false, time: 0, duration: 0, seekable: false }),
+      play: () => { started = true; paused = false; mark(); if (running) thaw(); else begin(); emit(); },
+      pause: () => { if (paused || !running) return; paused = true; freeze(); mark(); emit(); },
+      restart: () => { started = true; halt(); paused = false; mark(); begin(); emit(); },
+    };
+    const unreg = registerPlayback(el, ctl);
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && !running) {
-          running = true; alive = true;
-          Promise.resolve(runRef.current({ wait, alive: () => alive }));
-        } else if (!e.isIntersecting && running) {
-          running = false; alive = false; clearAll();
-        }
+        visible = e.isIntersecting;
+        if (visible && !running && !paused && (enabled || started)) { begin(); emit(); }
+        else if (!visible && running && !paused) { halt(); emit(); }
       },
       { threshold }
     );
     io.observe(el);
-    return () => { alive = false; running = false; clearAll(); io.disconnect(); };
+    return () => { halt(); unreg(); el.removeAttribute("data-pp-paused"); io.disconnect(); };
   }, [enabled, threshold]);
   return ref;
 }

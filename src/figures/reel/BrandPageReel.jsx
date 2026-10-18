@@ -25,6 +25,8 @@
 // animation evaluated at the same instants.
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "../ds/hooks";
+import { usePhonePlayback } from "../../ui/phonePlayback";
+import PhoneControls from "../../ui/PhoneControls";
 import { useFitContain } from "./fit";
 import "./brandPage.css";
 
@@ -269,33 +271,45 @@ function BrandPageReel({ surface = "inline" }) {
   };
 
   // Live clock: rAF while on screen, restarting from the lead-in on re-entry.
-  // Reduced motion parks the figure on beat one, fully settled.
+  // Reduced motion parks the figure on beat one, fully settled (play stays available).
+  // Phone controls (ui/phonePlayback): the clock is one pure function of `elapsed`,
+  // so this timeline pauses, restarts and seeks. The reel loops, so time is elapsed mod DURATION.
+  const clock = useRef({ elapsed: 0, running: false, userPaused: false });
+  const emit = usePhonePlayback(fitRef, {
+    getState: () => { const c = clock.current; return { playing: c.running && !c.userPaused, ended: false, time: (c.elapsed % DURATION) / 1000, duration: DURATION / 1000, seekable: true }; },
+    play: () => clock.current.go?.(true),
+    pause: () => clock.current.go?.(false),
+    restart: () => { clock.current.elapsed = 0; clock.current.go?.(true); },
+    seek: (sec) => clock.current.seekTo?.(sec * 1000),
+  });
   useEffect(() => {
-    if (surface === "export") return;
-    if (reduce) { apply(LEAD + IN + DELAYS[2]); return; }
+    if (surface === "export") return undefined;
+    const c = clock.current;
+    c.userPaused = reduce; c.elapsed = 0;
+    if (reduce) apply(LEAD + IN + DELAYS[2]);
     const host = fitRef.current;
-    if (!host) return;
-    let raf = 0, t0 = 0, running = false;
+    if (!host) return undefined;
+    let raf = 0, t0 = 0, visible = false;
+    const stop = () => { c.running = false; cancelAnimationFrame(raf); };
     const tick = (now) => {
-      if (!running) return;
-      apply(LEAD + (now - t0));
+      if (!c.running) return;
+      c.elapsed = now - t0;
+      apply(LEAD + c.elapsed);
       raf = requestAnimationFrame(tick);
     };
+    const start = () => { if (c.running) return; c.running = true; t0 = performance.now() - c.elapsed; raf = requestAnimationFrame(tick); };
+    c.go = (on) => { c.userPaused = !on; if (on) { apply(LEAD + c.elapsed); start(); } else stop(); emit(); };
+    c.seekTo = (ms) => { c.elapsed = Math.max(0, Math.min(DURATION, ms)); t0 = performance.now() - c.elapsed; apply(LEAD + c.elapsed); emit(); };
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && !running) {
-          running = true;
-          t0 = performance.now();
-          raf = requestAnimationFrame(tick);
-        } else if (!e.isIntersecting && running) {
-          running = false;
-          cancelAnimationFrame(raf);
-        }
+        visible = e.isIntersecting;
+        if (visible && !c.running && !c.userPaused) { c.elapsed = 0; start(); emit(); }
+        else if (!visible && c.running) { stop(); emit(); }
       },
       { threshold: 0.35 }
     );
     io.observe(host);
-    return () => { running = false; cancelAnimationFrame(raf); io.disconnect(); };
+    return () => { stop(); io.disconnect(); c.go = c.seekTo = undefined; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduce, surface]);
 
@@ -323,6 +337,7 @@ function BrandPageReel({ surface = "inline" }) {
     <div className="reel-fit" data-surface={surface} ref={fitRef}>
       <div className="reel-root bpr-root" ref={frameRef}>
         <div className="bpr-stage">
+          {surface !== "export" && <PhoneControls label="Brand page reel" />}
           <div className="bpr-cam" ref={(n) => (el.current.cam = n)}>
             <div className="reel-ph bpr-ph">
               <div className="reel-ph__screen">

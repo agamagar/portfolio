@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PhoneControls from "../../ui/PhoneControls";
 import "./schedToggleDemo.css";
 
 // mv59m6yi (12 Oct): the Instant -> Scheduled toggle, shown as Agam's own screen
@@ -16,7 +17,7 @@ export default function SchedToggleDemo() {
     const v = vid.current, w = wrap.current; if (!v || !w) return undefined;
     v.setAttribute("muted", ""); // a cloned video (the expand view) keeps it muted
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const io = new IntersectionObserver(([e]) => { if (!ok) return; if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause(); }, { threshold: 0.35 });
+    const io = new IntersectionObserver(([e]) => { if (!ok) return; if (e.isIntersecting && !reduce && !v.dataset.ppUser) v.play().catch(() => {}); else v.pause(); }, { threshold: 0.35 });
     io.observe(w);
     return () => io.disconnect();
   }, [ok]);
@@ -26,6 +27,7 @@ export default function SchedToggleDemo() {
         <video ref={vid} className="std__video" src={DEMO_SRC} muted loop playsInline preload="metadata" data-exp-ok="" hidden={!ok}
           aria-label="The delivery mode toggle switching from Instant to Scheduled"
           onLoadedData={() => setOk(true)} onError={() => setOk(false)} />
+        {ok && <PhoneControls label="Delivery toggle demo" />}
         {!ok && (
           <div className="std__ph" role="note">
             <svg viewBox="0 0 120 240" width="120" height="240" aria-hidden="true"><rect x="3" y="3" width="114" height="234" rx="22" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.5" /></svg>

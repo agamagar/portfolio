@@ -10,6 +10,7 @@
 //   <PhoneMock angle="front" width={300}><LiveComponent /></PhoneMock>
 
 import { MOCK_PRESET_MAP, MOCK_PRESETS } from "./mockPresets";
+import PhoneControls from "../../ui/PhoneControls";
 import "./phoneMock.css";
 
 export default function PhoneMock({
@@ -22,6 +23,7 @@ export default function PhoneMock({
   gloss = true,
   status = false,  // overlay a status bar (leave off if your screenshot already has one)
   time = "9:41",
+  controls = true,    // the shared playback bar (ui/PhoneControls)
   interactive = true, // hover eases the phone toward front-on for inspection
   className = "",
   style,
@@ -93,6 +95,7 @@ export default function PhoneMock({
               )}
 
               {gloss && <div className="pm-gloss" aria-hidden="true" />}
+              {controls && <PhoneControls label="Phone" />}
             </div>
           </div>
         </div>
