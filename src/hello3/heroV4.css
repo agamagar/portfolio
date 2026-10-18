@@ -1,0 +1,41 @@
+/* Hero v4: one centred column (the timeline is not rendered), the headline as a 3-column grid. --fs is the
+   type size as a bare number so the face can be sized from it: two lines of 0.95 leading (1.9 fs) tall,
+   and the 40 px avatar scaled to that (scale = fs * 0.0442). */
+.hello[data-page="3"] .hello-hero.hello-hero--v4 { grid-template-columns: minmax(0, 1fr); justify-items: center; min-height: 0; padding-top: 96px; }
+.hello[data-page="3"] .hello-hero.hello-hero--v4 .hello-hero__inner { grid-column: 1 / -1; align-items: center; padding: 0 20px; width: 100%; text-align: center; }
+.hello[data-page="3"] .hello-hero.hello-hero--v4 .hello-hero__links { justify-content: center; margin-top: 40px; }
+.hello[data-page="3"] .hv4 { --fs: 88; width: 100%; display: flex; justify-content: center; }
+.hello[data-page="3"] .hv4__head {
+  margin: 0; font-weight: 600; font-size: calc(var(--fs) * 1px); line-height: 0.95; letter-spacing: -0.045em;
+  font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif; color: var(--fg);
+  display: grid; grid-template-columns: 1fr auto 1fr; column-gap: 0.18em; align-items: center;
+}
+.hello[data-page="3"] .hv4__t { display: block; white-space: nowrap; }
+.hello[data-page="3"] .hv4__t--a, .hello[data-page="3"] .hv4__t--d { grid-column: 1 / -1; text-align: center; }
+.hello[data-page="3"] .hv4__t--bl, .hello[data-page="3"] .hv4__t--cl { grid-column: 1; text-align: right; }
+.hello[data-page="3"] .hv4__t--br, .hello[data-page="3"] .hv4__t--cr { grid-column: 3; text-align: left; }
+.hello[data-page="3"] .hv4__t--a { grid-row: 1; }
+.hello[data-page="3"] .hv4__t--bl, .hello[data-page="3"] .hv4__t--br { grid-row: 2; }
+.hello[data-page="3"] .hv4__t--cl, .hello[data-page="3"] .hv4__t--cr { grid-row: 3; }
+.hello[data-page="3"] .hv4__t--d { grid-row: 4; }
+.hello[data-page="3"] .hv4__t--p { display: none; }
+.hello[data-page="3"] .hv4__face { grid-column: 2; grid-row: 2 / 4; position: relative; display: block; width: calc(var(--fs) * 1.77px); height: calc(var(--fs) * 1.91px); }
+.hello[data-page="3"][data-stage] .hv4__flyer { position: absolute; left: 0; top: 0; width: 40px; transform: scale(calc(var(--fs) * 0.0442)); transform-origin: 0 0; transition: none; }
+.hello[data-page="3"] .hv4__flyer .header__avatar-wrap { margin: 0; }
+.hello[data-page="3"] .hv4__flyer .header__wave { translate: -3px -15px; }
+.hello[data-page="3"] .hv4__flyer .header__avatar-wrap > .header__wave { transition: filter 400ms var(--m3-effects-default, ease); }
+.hello[data-page="3"] .hv4__flyer .header__avatar-wrap[data-clay="on"] > .header__wave { filter: opacity(0); }
+/* the load sequence: the segments wait for their data-in like the links */
+.hello[data-page="3"][data-seq][data-seq] .hv4__t:not([data-in]) { opacity: 0; visibility: hidden; transition: none; }
+.hello[data-page="3"][data-seq][data-seq] .hv4__t[data-in] { opacity: 1; visibility: visible; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.hello[data-page="3"]:not([data-seq]) .hv4__t { animation: hv4-in 600ms var(--m3-effects-default, ease) both; }
+@keyframes hv4-in { from { opacity: 0; } }
+@media (max-width: 1279px) { .hello[data-page="3"] .hv4 { --fs: 76; } }
+@media (max-width: 1023px) { .hello[data-page="3"] .hv4 { --fs: 60; } }
+@media (max-width: 720px) {
+  .hello[data-page="3"] .hv4 { --fs: 29; }
+  .hello[data-page="3"] .hv4__t--w { display: none; }
+  .hello[data-page="3"] .hv4__t--p { display: block; }
+  .hello[data-page="3"] .hv4__t--p.hv4__t--a, .hello[data-page="3"] .hv4__t--p.hv4__t--d { grid-column: 1 / -1; }
+  .hello[data-page="3"] .hello-hero.hello-hero--v4 { padding-top: 72px; }
+}
