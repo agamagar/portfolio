@@ -523,8 +523,8 @@ function seeded(n) {
 //  - STAGGER (neighbours reacting 1/phi^2 later) is NOT applied: a lag on the
 //    layout needs per-card state and reopens the landing discontinuity that
 //    round 13 removed.
-const PHI = (1 + Math.sqrt(5)) / 2;
-const SNAP = {
+export const PHI = (1 + Math.sqrt(5)) / 2;
+export const SNAP = {
   zoneIn: 1,
   zoneOut: PHI,
   easeIn: [1 / PHI ** 2, 0, 1 / PHI ** 3, 1],

@@ -22,7 +22,7 @@ import "./contextCursor.css";
 
 // glyphs: two polylines of 5 points (x,y)*5 each; "z" collapses to the centre
 const Z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const G = {
+export const G = {
   none: [Z, Z],
   ext: [[-4, 4, 4, -4, -1, -4, 4, -4, 4, 1], Z],
   view: [[-4, 4, 4, -4, -1, -4, 4, -4, 4, 1], Z],
@@ -32,7 +32,7 @@ const G = {
   lock: [[-4, -1, 4, -1, 4, 5, -4, 5, -4, -1], [-2.5, -1, -2.5, -3.5, 0, -5, 2.5, -3.5, 2.5, -1]],
 };
 // state -> target shape. label null = none. w:null = fit the label.
-const S = {
+export const S = {
   dot: { w: 10, h: 10, r: 5, g: "none" },
   link: { w: 26, h: 26, r: 13, g: "none" },
   ext: { w: 34, h: 34, r: 17, g: "ext" },
