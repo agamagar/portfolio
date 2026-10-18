@@ -66,6 +66,7 @@ const CACHE_MS = 15 * 60 * 1000; // Open-Meteo updates every 15min; asking faste
 // A FAILED fetch is cached too (so a dead network is not hammered), but only
 // briefly: at 15 minutes one transient Open-Meteo blip pinned the fallback sky
 // for a quarter of an hour.
+const STALE_MS = 6 * 60 * 60 * 1000; // a live reading this old still builds the sky on a return visit
 const CACHE_FAIL_MS = 2 * 60 * 1000;
 
 // --- whose sky -----------------------------------------------------------------
@@ -477,21 +478,43 @@ export async function fetchSky(opts = {}) {
   } catch {
     /* no cache, no problem */
   }
-  if (!inflight[mode]) {
-    inflight[mode] = loadSky(mode)
-      .then((data) => {
-        try {
-          sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), ttl: data.live ? CACHE_MS : CACHE_FAIL_MS, data }));
-        } catch {
-          /* private mode */
-        }
-        return data;
-      })
-      .finally(() => {
-        delete inflight[mode];
-      });
+  const refresh = () => {
+    if (!inflight[mode]) {
+      inflight[mode] = loadSky(mode)
+        .then((data) => {
+          const rec = JSON.stringify({ at: Date.now(), ttl: data.live ? CACHE_MS : CACHE_FAIL_MS, data });
+          try {
+            sessionStorage.setItem(key, rec);
+          } catch {
+            /* private mode */
+          }
+          // the next visit (a new tab has an empty sessionStorage) starts from this one
+          try {
+            if (data.live) localStorage.setItem(key, rec);
+          } catch {
+            /* private mode */
+          }
+          return data;
+        })
+        .finally(() => {
+          delete inflight[mode];
+        });
+    }
+    return inflight[mode];
+  };
+  // STALE WHILE REVALIDATE (room cache, 2026-10-18): the room's warm-up used to wait for the
+  // forecast on every visit (up to its 2.5 s limit). A live reading from the last visit,
+  // under STALE_MS old, is good enough to build the sky with; a fresh one is fetched behind it.
+  try {
+    const old = JSON.parse(localStorage.getItem(key) || "null");
+    if (old && old.data && old.data.live && Date.now() - old.at < STALE_MS) {
+      refresh().catch(() => {});
+      return old.data;
+    }
+  } catch {
+    /* no stale copy */
   }
-  return inflight[mode];
+  return refresh();
 }
 
 // --- where the sun actually is -----------------------------------------------

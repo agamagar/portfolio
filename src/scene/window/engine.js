@@ -364,7 +364,10 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   // loop-2 perf lane's evidence for where the 1.8 s hook-to-ready goes
   const tStart = performance.now();
   const startup = {};
-  const mark = (k) => (startup[k] = +(performance.now() - tStart).toFixed(1));
+  const mark = (k) => {
+    startup[k] = +(performance.now() - tStart).toFixed(1);
+    try { performance.mark("room:" + k); } catch { /* no User Timing */ }
+  };
 
   // r186's WebGL2 backend throws when EXT_texture_filter_anisotropic is missing
   // (Safari 26.2 on ?backend=webgl2 lost both posters to it, 2026-09-27)
