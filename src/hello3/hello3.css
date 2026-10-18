@@ -1169,7 +1169,7 @@ body:has(.hello[data-page="3"]) .view-menu { left: max(20px, env(safe-area-inset
    0 -> 360 deg with the carousel's own clock (AlongPath drives the dashoffset
    with one WAAPI animation; nothing here animates). It sits just outside the
    button, starts at 12 o'clock and runs clockwise. */
-.hello[data-page="3"] .ap__ring { position: absolute; inset: -5px; width: calc(100% + 10px); height: calc(100% + 10px); rotate: -90deg; pointer-events: none; overflow: visible; }
+.hello[data-page="3"] .ap__ring { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); rotate: -90deg; /* mvdovfxo: the ring sits inside the button, not around it */ pointer-events: none; overflow: visible; }
 .hello[data-page="3"] .ap__ring circle { fill: none; stroke-width: 2; }
 .hello[data-page="3"] .ap__ring-track { stroke: color-mix(in srgb, var(--fg) 14%, transparent); }
 .hello[data-page="3"] .ap__ring-fill { stroke: var(--fg); stroke-linecap: butt; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
