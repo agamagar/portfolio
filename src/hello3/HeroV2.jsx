@@ -8,7 +8,7 @@ import HeroMorph from "./HeroMorph";
 import { Guard } from "../ui/Guard";
 import "./heroV2.css";
 
-export const HERO_V2_TAGLINE = "Agam is a designer who builds for people product and technology";
+export const HERO_V2_TAGLINE = "Hello! I’m Agam, a designer at the intersection of play and tech.";
 
 // the frame's right column, word for word (Figma 1586:14452)
 const L = "Also a VR Enthusiast and an Amateur Researcher";
