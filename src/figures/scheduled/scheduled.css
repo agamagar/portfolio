@@ -2050,3 +2050,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mv5iv45c: the team emoji before each name: same size as the name, on the text baseline, a hair of space */
 .dio__emoji { font-size: 1em; line-height: 1; margin-right: 0.45em; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .rwf--left > .sin__icon { margin-left: 7.94%; } /* the icon starts on the label's left edge */
+
+/* mvds1idb (Agam): the Leading with design panels' list items read left-aligned, not centred */
+.page--article .article__body .rwf-run .rwf [id^="lwd-panel"] .rwf__list li,
+.page--article .article__body .rwf-run .rwf [id^="lwd-panel"] .rwf__list li :is(.rwf__n, .rwf__what, .rwf__detail) { text-align: left; justify-self: start; }
