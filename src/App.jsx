@@ -1049,7 +1049,11 @@ function RoleEditorial({ s }) {
 // functions hang under it as four equal columns. mv3opydb / mv3orhii ("add this
 // to option 3 as well"): the role statement, and the stats with their lines
 // from the role card, in an outlined box.
+// the layouts the three metrics have had: the icon rows (current), the outlined box (mv3orhii), the role card's foot (Option 2),
+// the editorial list (Option 1), the My role frame's icon-left rows (mv56uy5f) and the first scope map's bare numbers
+const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 function RoleScopeMap({ s, i }) {
+  const [view, setView] = useState("icons");
   // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
   // "Option 3" tag, no dashed box, and its label carries the section's heading id for the index and scroll-spy.
   // mv5939z4: the outlined stats box and mv58by9f's icon rows are parked (roleFrame.hideMapStats); mv5931ha: the
@@ -1070,19 +1074,43 @@ function RoleScopeMap({ s, i }) {
       {/* mv5iv45m (12 Oct, "there were three metrics with icons and small descriptions: bring them back"): the stats are
           back (roleFrame.hideMapStats is off) as the icon rows, centred under the map, three across. The outlined
           box that repeated the same numbers stays parked (roleFrame.hideMapFoot). */}
+      {/* mvdrzgct (18 Oct, "bring all the variations of these 3 things along with a toggle"): the three metrics in every
+          layout this section has had, switchable; "Icons" is the default and the one the public page shows. The
+          toggle is dev / preview only. */}
       {!s.roleFrame.hideMapStats && (
         <>
-          {s.roleFrame.hideMapFoot !== false && null}
-          {s.roleFrame.hideMapFoot === false && (
+          {!import.meta.env.PROD && (
+            <div className="fig-toggle rv-map__toggle" role="group" aria-label="Metrics layout">
+              {STAT_VIEWS.map(([k, label]) => (
+                <button key={k} type="button" className={"fig-toggle__btn" + (view === k ? " is-active" : "")} aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
+              ))}
+            </div>
+          )}
+          {view === "icons" || view === "left" ? (
+            <dl className={"rv-map__rows " + (view === "icons" ? "rv-map__rows--center" : "rv-map__rows--left")}>
+              {ROLE_STATS.map(([big, small]) => { const I = STAT_ICON[big]; return (
+                <div key={big}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}<dt>{big}</dt><dd>{small}</dd></div>
+              ); })}
+            </dl>
+          ) : view === "box" ? (
             <dl className="rv-map__foot">
               {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
             </dl>
+          ) : view === "card" ? (
+            <div className="rv-card rv-card--bare">
+              <dl className="rv-card__foot">
+                {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
+              </dl>
+            </div>
+          ) : view === "editorial" ? (
+            <dl className="rv-ed__stats rv-map__editorial">
+              {ROLE_STATS.map(([big, small]) => <div key={big}><dt>{big}</dt><dd>{small}</dd></div>)}
+            </dl>
+          ) : (
+            <dl className="rv-map__nums">
+              {ROLE_STATS.map(([big]) => <div key={big}><dt>{big}</dt></div>)}
+            </dl>
           )}
-          <dl className="rv-map__rows">
-            {ROLE_STATS.map(([big, small]) => { const I = STAT_ICON[big]; return (
-              <div key={big}>{I && <span className="role-frame__icon" aria-hidden><I weight="fill" /></span>}<dt>{big}</dt><dd>{small}</dd></div>
-            ); })}
-          </dl>
         </>
       )}
     </div>
