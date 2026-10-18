@@ -3331,8 +3331,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
 .article__plate:not(.article__plate--wide) .article__plate-video--fig { aspect-ratio: 1392 / 862; padding: 6% 8% 0; }
 .article__plate:not(.article__plate--wide) .gtmr-one .gtmr-one__phone { width: 62%; }
 /* (specificity matches the narrow-slot rule below and comes later, so stacking wins) */
-.article__plates--stack .article__plate:not(.article__plate--wide) .article__plate-video--fig { aspect-ratio: 2 / 1; padding: 11% 5% 0; } /* mtmqr1or: phone sits lower */
-.article__plates--stack .article__plate:not(.article__plate--wide) .gtmr-one .gtmr-one__phone { width: min(380px, 46%); }
+/* mvdsl37c (Agam): a stacked plate takes the default plate height (1392 / 862), the same as its neighbour; the 2 / 1 + lowered-phone override is retired */
 .article__plate-video--fig > * { width: 100%; }
 /* mtmlw3gz: inside the purple plate the figure frame is transparent, no dark
    ground, no frame chrome; the plate is the ground */
