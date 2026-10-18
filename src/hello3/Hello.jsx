@@ -28,6 +28,7 @@ import GreetingMark from "./GreetingMark";
 import { HelloFlipControl, HelloFlipLayer, HelloFlipSr, useHelloFlipStore } from "./HelloFlip";
 import HelloLink from "./HelloLink";
 import HeroV2, { HERO_V2_ROWS } from "./HeroV2";
+import HeroV4 from "./HeroV4";
 import { useHeroVersion, HERO_V3_COPY, HERO_V3_TAG } from "./heroVersions";
 import { LINKS } from "../hello/helloData";
 import HeroChips from "./HeroChips"; // eslint-disable-line no-unused-vars -- hero row parked (mtr6evtb), see the comment in the hero
@@ -612,7 +613,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // [mark, element, glow width in t]: at the mark the element's content starts to resolve out of its light
     const add = (els, from, step, w = 0) => els.forEach((el, i) => marks.push([from + i * step, el, w]));
     add(q(".hello-hero__mark-art"), 0.0001, 0, 0.3);
-    add(q(".hello-hero__link, .hv2__tagline, .hv3__tag"), 0.0001, 0, 0.25);
+    add(q(".hello-hero__link, .hv2__tagline, .hv3__tag, .hv4__t"), 0.0001, 0, 0.25);
     add(q(".hello-hero__table .work__item"), 0.0001, 0, 0.25);
     const cards = q(".wg__card");
     // the last card's light has to finish by t = 1 (its window ends at m + 0.7 D, D = w + 0.08)
@@ -1424,7 +1425,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           viewport's top, so the page starts from its very top. The content is held
           back until then (html[data-wscene-landed], windowScene.css) */}
       {sceneWindow && <div className="hello-scene-run" ref={sceneRun1} aria-hidden />}
-      <section className="hello-hero" ref={heroRef}>
+      <section className={heroV === "v4" ? "hello-hero hello-hero--v4" : "hello-hero"} ref={heroRef}>
         <div className="hello-hero__inner">
           {/* Figma: Portfolio 2026, node 9:1955. The greeting is two RIGHT-ranged
               lines with the face badge pinned to the left of line one. Line two
@@ -1433,7 +1434,9 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               opposite ends of it. The badge holds its final position from the
               first painted frame, so the intro is the words arriving around it
               rather than the face travelling. */}
-          {heroV === "v2" ? (
+          {heroV === "v4" ? (
+            <HeroV4 flyerRef={flyerRef} stage={stage} reduce={reduce} replayId={replayId} replayGreeting={replayGreeting} />
+          ) : heroV === "v2" ? (
             <HeroV2 flyerRef={flyerRef} stage={stage} reduce={reduce} replayId={replayId} replayGreeting={replayGreeting} />
           ) : (
           <>
@@ -1482,7 +1485,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               : <Guard name="greeting-mark"><GreetingMark className="hello-hero__mark-art" helloLayer={<Guard name="hello-flip"><HelloFlipLayer store={helloFlip} ready={stage === "reveal"} reduce={reduce} /></Guard>} /></Guard>}
           </h1>
           {/* the stretchy Hello's keyboard slider and its polite announcer: outside the h1 so the heading stays words */}
-          {heroV !== "v3" && <Guard name="hello-flip-control"><HelloFlipControl store={helloFlip} /></Guard>}
+          {heroV !== "v3" && heroV !== "v4" && <Guard name="hello-flip-control"><HelloFlipControl store={helloFlip} /></Guard>}
           {heroV === "v3" && <p className="hv3__tag">{HERO_V3_TAG}</p>}
 
           {/* Figma node 643:88426, frame "107" (07 Sep 2026, pin mtqremeh): the
@@ -1516,7 +1519,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             slides in, siblings dim); hrefs by organisation until the frame has its own */}
         {/* PHONES DROP THE LIST (Oct 2026, Agam: "don't need a collated list at the top"): each
             work card carries its year, title and line instead (WorkGrid.jsx, the same rows) */}
-        {!phone && (
+        {!phone && heroV !== "v4" && (
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
           {heroV === "v2" && HERO_V2_ROWS.map((r, i) => (
             <div className="work__item" role="listitem" key={i} style={{ "--i": i }}>
@@ -1524,7 +1527,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               <span className="work__meta">{r.line}</span>
             </div>
           ))}
-          {heroV !== "v2" && TIMELINE.map((r, i) => {
+          {heroV !== "v2" && heroV !== "v4" && TIMELINE.map((r, i) => {
             const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
             const rowProps = LOCKED.has(r.href) ? { badge: false } : { to: r.href, onNavigate };
             return (
