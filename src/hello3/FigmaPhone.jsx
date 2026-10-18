@@ -1,3 +1,4 @@
+import PhoneControls from "../ui/PhoneControls";
 // The device from the Figma file, not a coded approximation of one.
 //
 // Figma: Portfolio 2026, node 6:1710 ("Apple Pay - Dark - iPhone"). Its Bezel
@@ -80,6 +81,7 @@ export default function FigmaPhone({
   width = 269,
   className = "",
   style,
+  controls = false, // the shared playback bar; off on the homepage cards (they are links)
   plate, // undefined = the original 6:1710 plate; "pro17" = the Bezel frame plate
   ...rest
 }) {
@@ -127,6 +129,7 @@ export default function FigmaPhone({
             the top. Drawn above the content and under the frame. */}
         {P?.island ? <span className="fp__island" aria-hidden /> : null}
       </div>
+      {controls && <PhoneControls label={alt || "Phone"} />}
       {/* the plate is decoration; the screen carries the meaning */}
       <img className="fp__frame" src={P ? P.src : PHONE_FRAME_SRC} alt="" aria-hidden draggable="false" />
     </div>

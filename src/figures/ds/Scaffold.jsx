@@ -4,6 +4,7 @@
 // See Claude/animation-base-layer.md (preset: information-sensitive scaffold + §11 FFF).
 import { useState, useEffect, useRef } from "react";
 import { useReducedMotion } from "./hooks";
+import PhoneControls from "../../ui/PhoneControls";
 import "./scaffold.css";
 
 // FFF count: the one real number of a beat, tweened on value change (the load-
@@ -78,7 +79,7 @@ export function AppWindow({ url = "localhost:3000", title, rail = true, children
 // glyphs), an optional app header (back + title), the screen, and a home
 // indicator. `.ds-phone__screen` is the positioned ancestor — render FocalOutline
 // / Caption inside `children` and offset them against it (like AppWindow's main).
-export function PhoneWindow({ time = "9:41", title, back = true, screenRef, className, children }) {
+export function PhoneWindow({ time = "9:41", title, back = true, screenRef, className, controls = true, children }) {
   return (
     <div className={`ds-phone${className ? ` ${className}` : ""}`}>
       <div className="ds-phone__status">
@@ -93,6 +94,7 @@ export function PhoneWindow({ time = "9:41", title, back = true, screenRef, clas
       )}
       <div className="ds-phone__screen" ref={screenRef}>{children}</div>
       <span className="ds-phone__home" />
+      {controls && <PhoneControls label={title || "Phone"} />}
     </div>
   );
 }

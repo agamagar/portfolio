@@ -9,14 +9,16 @@
 //
 // For an element that already has the screen's proportions (a 360x780 plate),
 // the CSS utility `.ibz` paints the same bezel around it as an ::after.
+import PhoneControls from "../../ui/PhoneControls";
 export const IPHONE_FRAME_SRC = "/figures/frames/iphone-17-pro.png";
 
-export default function IphoneFrame({ screen, alt = "", width, className = "", style, children, ...rest }) {
+export default function IphoneFrame({ screen, alt = "", width, className = "", style, children, controls = true, ...rest }) {
   return (
     <div className={"ifr " + className} style={{ width, ...style }} {...rest}>
       <div className="ifr__screen">
         {screen ? <img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : children}
       </div>
+      {controls && <PhoneControls label={alt || "Phone"} />}
       <img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
     </div>
   );

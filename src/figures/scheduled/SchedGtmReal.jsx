@@ -1,6 +1,7 @@
 import { useFitScale } from "../ds/hooks";
 import LayerMap from "../ds/LayerMap";
 import schedulePageLayers from "./schedulePageLayers";
+import PhoneControls from "../../ui/PhoneControls";
 import "./scheduled.css";
 
 // Design Mode: the EXACT schedule-page screen, plated pixel-for-pixel from the
@@ -21,6 +22,7 @@ export function SchedGtmRealOne() {
             <div className="gtmr-region">
               <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
             </div>
+            <PhoneControls label="Schedule page" />
           </div>
         </div>
         <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
@@ -50,6 +52,7 @@ export function SchedGtmCartOne() {
         <div className="article__plate-screen">
           <div className="gtmr-device gtmr-device--bare">
             <img className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
+            <PhoneControls label="Cart page" />
           </div>
         </div>
         <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
@@ -68,6 +71,7 @@ export default function SchedGtmReal() {
               8205-78448) with the "Introducing scheduled delivery" banner in place */}
           <div className="gtmr-device ibz">
             <img className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
+            <PhoneControls label="Cart page" />
           </div>
           <div className="gtmr-device ibz">
             <img className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
@@ -75,6 +79,7 @@ export default function SchedGtmReal() {
               <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
             </div>
             <LayerMap layers={schedulePageLayers} label="Schedule page layers" />
+            <PhoneControls label="Schedule page" />
           </div>
         </div>
       </div>

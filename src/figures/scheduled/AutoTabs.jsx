@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { animate } from "motion/react";
 import { CursorPointer as IconCursor } from "iconoir-react";
 import { useInViewLoop, useReducedMotion, spring } from "../ds/hooks";
+import PhoneControls from "../../ui/PhoneControls";
 import { IPHONE_FRAME_SRC } from "../ds/IphoneFrame";
 
 const SCREENS = { today: "/figures/scheduled/auto/today.png", tomorrow: "/figures/scheduled/auto/tomorrow.png" };
@@ -67,6 +68,7 @@ export default function AutoTabs() {
           )}
         </div>
         <img className="article__plate-bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
+        <PhoneControls label="Schedule tabs demo" />
       </div>
     </div>
   );
