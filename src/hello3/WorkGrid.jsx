@@ -349,7 +349,7 @@ function AwayReveal() {
   return (
     <span className="wg__reveal" ref={ref}>
       <img className="wg__reveal-top" src="/hello3/cards/away-screen-right.png" alt="" draggable="false" />
-      <img className="wg__reveal-modal" src="/hello3/cards/away-screen-right.png" alt="" draggable="false" />
+      {/* Agam: "remove the Away card's search": the search modal that rose into place is gone, the heading above it stays */}
     </span>
   );
 }
