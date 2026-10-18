@@ -15,8 +15,8 @@
   display: block;
   padding: 12px 0;
   max-width: 38rem;
-  font-family: "Prociono", var(--font-serif); /* Agam: the headline is Prociono, 8px bigger (36 -> 44) */
-  font-size: 44px;
+  font-family: "Prociono", var(--font-serif); /* Agam: the headline is Prociono, 36px */
+  font-size: 36px;
   font-weight: 400;
   line-height: normal;
   letter-spacing: -0.02em;
@@ -47,10 +47,10 @@
   .hello[data-page="3"]:has(.hv2) .hello-hero__table { padding: 0; margin: 0; justify-self: end; width: 100%; }
   .hello[data-page="3"][data-hv2bal="b"]:has(.hv2) .hello-hero__table { position: relative; top: calc(var(--hv2-face-h) + 4px); }
 }
-@media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 40px; } }
+@media (max-width: 1024px) { .hello[data-page="3"] .hv2__tagline { font-size: 32px; } }
 @media (max-width: 720px) {
   .hello[data-page="3"] .hv2__head { margin-left: -10px; }
-  .hello[data-page="3"] .hv2__tagline { font-size: 36px; padding: 8px 0; max-width: none; }
+  .hello[data-page="3"] .hv2__tagline { font-size: 28px; padding: 8px 0; max-width: none; }
   .hello[data-page="3"] { --hv2-face-h: 64px; }
   .hello[data-page="3"] .hv2__face { width: 59px; }
   .hello[data-page="3"][data-stage] .hv2__flyer { transform: scale(1.48); }
