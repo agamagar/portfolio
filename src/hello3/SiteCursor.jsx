@@ -156,18 +156,51 @@ export default function SiteCursor() {
     };
     groups = [rows, bang];
 
-    // ---- resting
-    // PARKED (Agam, 12 Oct): after the tour it glides to the top-left corner of the viewport
-    // and stays there (position: fixed, so it does not follow the scroll), drifting a little.
+    // ---- resting: PERCHED on the 3D face (Agam, 18 Oct); a click on the face changes its style and sends
+    // the cursor off to follow the visitor's pointer (below). With no face (other hero versions) it parks
+    // top-left as before.
     const PARK = [30, 30];
-    const restTick = () => {
+    const perch = () => {
+      const r = document.querySelector(".hero-morph__cv")?.getBoundingClientRect();
+      return r && r.width > 20 && r.height > 20 ? [r.left + r.width * 0.78, r.top + r.height * 0.04 - 6] : PARK;
+    };
+    const restTick = (dt) => {
       if (!A) {
         A = true;
-        queue = [{ k: "wait", ms: rnd(500, 900) }, { k: "move", to: () => PARK }];
+        queue = [{ k: "wait", ms: rnd(500, 900) }, { k: "move", to: perch }];
         return;
       }
-      if (!queue.length) { cp.x = PARK[0]; cp.y = PARK[1]; }
+      if (!queue.length) { const q = perch(), k = 1 - Math.exp(-dt / 140); cp.x += (q[0] - cp.x) * k; cp.y += (q[1] - cp.y) * k; }
     };
+
+    // ---- following: a springy, slightly underdamped pursuit of the pointer, kept 26-32 px off it (more
+    // when the visitor's own cursor is a wide pill) so it never covers what they point at
+    const WIDE = { view: 46, lock: 52, drag: 38, ext: 8, link: 4 };
+    const vel = { x: 0, y: 0 };
+    let lastMove = 0;
+    const followTick = (dt) => {
+      if (ptr.x < -900) return;
+      const cx = document.querySelector(".cx")?.dataset.s;
+      const tx = ptr.x + 26 + (WIDE[cx] || 0), ty = ptr.y + 20;
+      const W = 7.5, Z = 0.55;
+      let left = Math.min(dt, 0.1);
+      while (left > 1e-6) {
+        const h = Math.min(1 / 120, left); left -= h;
+        vel.x += (W * W * (tx - cp.x) - 2 * Z * W * vel.x) * h; vel.y += (W * W * (ty - cp.y) - 2 * Z * W * vel.y) * h;
+        cp.x += vel.x * h; cp.y += vel.y * h;
+      }
+      if (vt - lastMove > 20000) toPerch(); // nobody has moved for 20 s: back to the face
+    };
+    const activate = () => {
+      if (mode === "tour") { settle(); queue = []; groups = []; cur = null; }
+      queue = []; cur = null; mode = "follow"; lastMove = vt;
+      el.setAttribute("data-rest", ""); el.setAttribute("data-follow", "");
+      vel.x = 0; vel.y = -520; // a small hop as it lets go of the face
+    };
+    function toPerch() {
+      mode = "rest"; el.removeAttribute("data-follow"); cur = null; A = true;
+      queue = [{ k: "move", to: perch }];
+    }
 
     // ---- one human move: curved cubic, ballistic profile, Fitts-ish time, overshoot + corrections
     const begin = (st) => {
@@ -213,6 +246,7 @@ export default function SiteCursor() {
       if (dead) return;
       const dt = Math.min(120, now - last || 16); last = now; vt += dt;
       if (!cur) advance();
+      if (el.dataset.mode !== mode) el.dataset.mode = mode;
       if (cur) {
         if (cur.k === "wait") { if (vt - cur.t0 >= cur.ms) cur = null; }
         else if (cur.k === "move") {
@@ -222,9 +256,10 @@ export default function SiteCursor() {
           if (t >= 1) cur = null;
         }
       }
-      if (mode === "rest" && !cur) restTick();
+      if (mode === "rest" && !cur) restTick(dt);
+      else if (mode === "follow") followTick(dt / 1000);
       // idle drift only while it is waiting; a pointer-shy nudge away from the real pointer
-      still += ((cur && cur.k === "move" ? 0 : 1) - still) * 0.04;
+      still += ((mode === "follow" || (cur && cur.k === "move") ? 0 : 1) - still) * 0.04;
       let tx = 0, ty = 0;
       if (mode === "rest") {
         const dx = cp.x - ptr.x, dy = cp.y - ptr.y, d = Math.hypot(dx, dy) || 1;
@@ -237,13 +272,17 @@ export default function SiteCursor() {
     const start = () => { last = performance.now(); raf = requestAnimationFrame(frame); };
     const onVis = () => { cancelAnimationFrame(raf); if (!document.hidden && !dead) start(); };
     const onMove = (e) => {
-      ptr.x = e.clientX; ptr.y = e.clientY;
+      ptr.x = e.clientX; ptr.y = e.clientY; if (e.isTrusted) lastMove = vt;
       if (mode === "tour" && e.isTrusted && Math.hypot(e.clientX - cp.x, e.clientY - cp.y) < 160) toRest();
+    };
+    const onClick = (e) => { // the face's own button (HeroMorph) swaps its style; hidden in light mode, so no click arrives there
+      if (!e.isTrusted || !el.hasAttribute("data-live") || !e.target.closest?.(".hero-morph__btn, .hero-morph__cv")) return;
+      if (mode === "follow") toPerch(); else activate();
     };
     const onTouch = (e) => { if (mode === "tour" && e.isTrusted) toRest(); };
     const onKey = (e) => {
       if (!e.isTrusted) return;
-      if (e.key === "Escape") { write(false); leave(); }
+      if (e.key === "Escape") { if (mode === "follow") toPerch(); else { write(false); leave(); } }
       else if (mode === "tour" && !["Shift", "Control", "Alt", "Meta"].includes(e.key)) toRest();
     };
 
@@ -263,6 +302,7 @@ export default function SiteCursor() {
     window.addEventListener("pointerdown", onTouch, { passive: true });
     window.addEventListener("wheel", onTouch, { passive: true });
     window.addEventListener("keydown", onKey);
+    document.addEventListener("click", onClick, true);
     document.addEventListener("visibilitychange", onVis);
     return () => {
       dead = true; cancelAnimationFrame(raf); clearTimeout(timer); settle();
@@ -270,6 +310,7 @@ export default function SiteCursor() {
       window.removeEventListener("pointerdown", onTouch);
       window.removeEventListener("wheel", onTouch);
       window.removeEventListener("keydown", onKey);
+      document.removeEventListener("click", onClick, true);
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [on]);
