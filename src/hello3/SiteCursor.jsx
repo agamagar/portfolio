@@ -32,9 +32,14 @@ const O_STEP = 29.3; // HelloFlip's o to o, in its viewBox units
 
 const read = () => {
   try { if (/[?&]cursor=1\b/.test(location.search)) { sessionStorage.removeItem(KEY); localStorage.removeItem(KEY); } } catch { /* ignore */ }
-  try { return sessionStorage.getItem(KEY) === "1" || localStorage.getItem(KEY) === "1"; } catch { return false; }
+  try {
+    if (sessionStorage.getItem(KEY) === "1") return true;
+    // the x hides it for 3 days, not for ever (a forgotten x once left it gone for good: 18 Oct)
+    const t = Number(localStorage.getItem(KEY)); // legacy "1" reads as 1 ms since 1970: long expired
+    return t > 1 && Date.now() - t < 3 * 864e5;
+  } catch { return false; }
 };
-const write = (forever) => { try { (forever ? localStorage : sessionStorage).setItem(KEY, "1"); } catch { /* private mode */ } };
+const write = (forever) => { try { (forever ? localStorage : sessionStorage).setItem(KEY, forever ? String(Date.now()) : "1"); } catch { /* private mode */ } };
 
 // a soft pop when it joins, only if the site's sound toggle is on and the browser has
 // already had a user gesture (otherwise audio would be blocked): silent no-op, no errors
