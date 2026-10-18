@@ -8783,3 +8783,19 @@ html .page--article .article__body .rv--final .rv-map__rows dt { white-space: no
 @media (max-width: 700px) { .rv--final .rv-map__rows { grid-template-columns: 1fr; } }
 .rv--final .rv-map__rows > div { align-self: start; align-items: start; }
 .rv--final .rv-map__rows { align-items: start; }
+
+/* mvdrzgct: the metrics' alternative layouts under the final My role */
+.rv-map__toggle { align-self: center; margin: 2rem auto 0; display: flex; width: fit-content; max-width: 100%; flex-wrap: wrap; justify-content: center; }
+html .page--article .article__body .rv dl.rv-map__rows, .rv-map__editorial, .rv-map__nums, .rv--final .rv-card--bare { margin-top: 1.5rem; }
+/* centred (the default) is scoped to the centre variant; the left variant keeps the base icon-left rows */
+.rv--final .rv-map__rows--left { grid-template-columns: minmax(0, 1fr); text-align: left; }
+.rv--final .rv-map__rows--left > div { grid-template-columns: 44px minmax(0, 1fr); justify-items: stretch; align-items: center; }
+.rv--final .rv-map__rows--left > div > .role-frame__icon { grid-row: 1 / span 2; }
+.rv--final .rv-map__rows--left > div > dt, .rv--final .rv-map__rows--left > div > dd { grid-column: 2; }
+.rv-card--bare { padding: 0; }
+.rv-card--bare .rv-card__foot { margin: 0; border-top: 0; }
+.rv-map__editorial { border-top: 1px solid var(--rv-rule); }
+.rv-map__nums { display: flex; justify-content: center; gap: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rv-rule); }
+html .page--article .article__body .rv-map__nums dt { font-size: 1.5rem; font-weight: 300; }
+@media (max-width: 700px) { .rv-map__nums { gap: 1rem; justify-content: space-between; } html .page--article .article__body .rv-map__nums dt { font-size: 1.125rem; white-space: nowrap; } }
+html .page--article .article__body .rv-card--bare dl.rv-card__foot { margin: 0; }
