@@ -2007,6 +2007,10 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mv5iv45e: the draw-on icon above the label takes the page ink (the insight figure's own colours) */
 .rwf--left .sin__icon--draw { color: #33095e; }
 :root.dark .rwf--left .sin__icon--draw { color: #b69cea; }
+/* the article's "span inherits" rule (.page--article .article__body .rwf-run .rwf :is(..span..)) out-ranked the two
+   above and left this icon the body's grey-white; match its chain so the system purple wins (Agam, 18 Oct 2026) */
+.page--article .article__body .rwf-run .rwf.rwf--left span.sin__icon--draw { color: #33095e; }
+:root.dark .page--article .article__body .rwf-run .rwf.rwf--left span.sin__icon--draw { color: #b69cea; }
 .rwf--left { row-gap: 2rem; }
 .rwf--left > .rwf__tag, .rwf--left > .sin__icon { margin: 0; }
 
