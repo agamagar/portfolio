@@ -540,7 +540,7 @@ export default function WorkGrid({ onNavigate }) {
   return (
     <section className="wg" aria-label="Selected work" ref={sectionRef}>
       <div className="wg__grid">
-        {newestFirst(CARDS.filter((c) => !c.hidden)).map((c, i) => { // mv58rul2: same newest-first order as the timeline
+        {[...newestFirst(CARDS.filter((c) => !c.hidden))].sort((x, y) => (y.href === "/work/scheduled-delivery") - (x.href === "/work/scheduled-delivery")).map((c, i) => { // newest-first, except Schedule leads the cards (Agam, 18 Oct 2026); stable sort keeps the rest in order
           const Card = LOCKED.has(c.href) ? LockedLink : HelloLink;
           const cls = "wg__card" + (c.live ? " wg__card--live wg__card--" + c.live : "");
           const row = phone ? projectRow(c.href) : null;
