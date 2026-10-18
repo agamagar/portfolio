@@ -2224,7 +2224,7 @@ const caseStudies = {
         // mv2l6ub3 (10 Oct): "below this there were 2 other container like this", the
         // row is back: the banner phone (mukx11r8 had moved it to The go-to-market,
         // where it also stays) and the live prototype (mukx078o / muky1muk had parked it).
-        platesStack: false,
+        platesStack: true, // mvdsfhsn (Agam): the two plates one below the other, each a full image slot (was side by side)
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
           {
