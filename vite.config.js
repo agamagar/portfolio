@@ -4,6 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import inspectOverrides from "./tools/inspect-overrides-plugin.mjs";
 import scrollHover from "./tools/postcss-scroll-hover.mjs";
 import { fileURLToPath, URL } from "node:url";
+import { realpathSync } from "node:fs";
+import { dirname } from "node:path";
 
 // Public build (VITE_SITE unset or "public"): mark the lazy() component declarations pure, so a
 // lazy chunk that only a private case study references is dropped instead of emitted. The
@@ -29,7 +31,9 @@ export default defineConfig(({ command }) => ({
   // refused connections (2026-09-27); browsers still reach it as localhost
   // PORT (set by the desktop app's preview when 5173 is taken by another chat's
   // server) wins; without it Vite keeps its default 5173
-  server: { host: "127.0.0.1", ...(process.env.PORT ? { port: Number(process.env.PORT), strictPort: true } : {}) },
+  // fs.allow: a worktree's node_modules is a symlink into the main checkout; Vite serves the real path
+  // (/@fs/...) and 403s it as outside the root, which broke the Stack Sans font on :5173 (18 Oct 2026).
+  server: { host: "127.0.0.1", fs: { allow: [".", dirname(realpathSync("node_modules"))] }, ...(process.env.PORT ? { port: Number(process.env.PORT), strictPort: true } : {}) },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
