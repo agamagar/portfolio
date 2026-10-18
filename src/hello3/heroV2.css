@@ -63,3 +63,5 @@
 .hello[data-page="3"] .hv2__bang-trail { position: absolute; inset: 0; pointer-events: none; }
 .hello[data-page="3"] .hv2__bang-mark { position: absolute; left: 0; top: 0; opacity: 0; will-change: transform, opacity; transform-origin: 50% 60%; }
 html.hv2-grabbing, html.hv2-grabbing * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+/* the "!" glyph is 8 px wide: a grabbable target around it (overlay, no layout) */
+.hello[data-page="3"] .hv2__bang::before { content: ""; position: absolute; inset: -8px -18px; }
