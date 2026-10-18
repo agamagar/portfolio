@@ -42,7 +42,7 @@ const S = {
   grab: { w: 22, h: 22, r: 11, g: "none" },
   play: { w: 44, h: 44, r: 22, g: "play" },
   text: { w: 2, h: 24, r: 1, g: "none" },
-  rotate: { w: null, h: 34, r: 17, g: "rotate", label: "Rotate" },
+  rotate: { w: 44, h: 44, r: 22, g: "rotate" },
   up: { w: 44, h: 44, r: 22, g: "up" },
 };
 const PAD_L = 12; // label pills: glyph slot + gap on the left when a glyph is present
@@ -60,7 +60,7 @@ function resolve(t, down, x, y) {
   if (t.closest("input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable=true]")) return { s: "text" };
   if (t.closest(".is-locked")) return { s: "lock" };
   if (t.closest(".hf__bang")) return { s: down ? "grab" : "drag" };
-  if (t.closest(".hero-morph__btn, .hero-morph__cv") || hit(".hero-morph__cv", x, y)) return { s: "rotate", label: "Switch" }; // the 3D face: click cycles its style
+  if (t.closest(".hero-morph__btn, .hero-morph__cv") || hit(".hero-morph__cv", x, y)) return { s: "rotate" }; // the 3D face: the glyph only, no text
   if (t.closest(".wscene-warm-pill__btn") || hit(".wscene-warm-pill__btn", x, y)) return { s: "up" };
   if (t.closest(".sq__track")) return { s: down ? "grab" : "drag" };
   if (t.closest("[data-project], .wg__card, .work__item")) return { s: "view" };
