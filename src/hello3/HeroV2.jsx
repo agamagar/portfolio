@@ -6,8 +6,10 @@
 import MorphFace from "../MorphFace";
 import HeroMorph from "./HeroMorph";
 import { Guard } from "../ui/Guard";
+import BangDrag from "./BangDrag";
 import "./heroV2.css";
 
+// the headline splits around its first "!", which is the drag handle (BangDrag.jsx)
 export const HERO_V2_TAGLINE = "Hello! I’m Agam, a designer at the intersection of play and tech.";
 
 // the frame's right column, word for word (Figma 1586:14452)
@@ -23,7 +25,7 @@ export const HERO_V2_ROWS = [
 export default function HeroV2({ flyerRef, stage, reduce, replayId, replayGreeting }) {
   return (
     <div className="hv2">
-      <h1 className="hv2__head" data-calm id="hello-hero-title">
+      <h1 className="hv2__head" data-calm aria-labelledby="hello-hero-title">
         <span className="hv2__face">
           <span className="hello-hero__flyer hv2__flyer" ref={flyerRef}>
             <span className="header__avatar-wrap" onMouseEnter={replayGreeting}>
@@ -37,7 +39,13 @@ export default function HeroV2({ flyerRef, stage, reduce, replayId, replayGreeti
             </span>
           </span>
         </span>
-        <span className="hv2__tagline">{HERO_V2_TAGLINE}</span>
+        {/* the words once, for anything that reads; the visible copy hides itself except the handle */}
+        <span className="hello-hero__sr" id="hello-hero-title">{HERO_V2_TAGLINE}</span>
+        <span className="hv2__tagline">
+          <span aria-hidden>{HERO_V2_TAGLINE.slice(0, HERO_V2_TAGLINE.indexOf("!"))}</span>
+          <BangDrag reduce={reduce} />
+          <span aria-hidden>{HERO_V2_TAGLINE.slice(HERO_V2_TAGLINE.indexOf("!") + 1)}</span>
+        </span>
       </h1>
     </div>
   );

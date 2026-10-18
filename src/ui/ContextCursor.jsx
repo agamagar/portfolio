@@ -59,7 +59,7 @@ function resolve(t, down, x, y) {
   if (t.closest("video")) { const v = t.closest("video"); return { s: "play", label: v.paused ? "Play" : "Pause" }; }
   if (t.closest("input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable=true]")) return { s: "text" };
   if (t.closest(".is-locked")) return { s: "lock" };
-  if (t.closest(".hf__bang")) return { s: down ? "grab" : "drag" };
+  if (t.closest(".hf__bang, .hv2__bang")) return { s: down ? "grab" : "drag" };
   if (t.closest(".hero-morph__btn, .hero-morph__cv") || hit(".hero-morph__cv", x, y)) return { s: "rotate" }; // the 3D face: the glyph only, no text
   if (t.closest(".wscene-warm-pill__btn") || hit(".wscene-warm-pill__btn", x, y)) return { s: "up" };
   if (t.closest(".sq__track")) return { s: down ? "grab" : "drag" };
