@@ -1278,8 +1278,10 @@ function SplitSection({ s, i }) {
             <p className="article__postit">
               <span className="article__tldr-label">TL;DR</span>
               {Array.isArray(s.tldr) ? s.tldr.map((t, k) => <span className="tldr-b" key={k}>{t}</span>) : s.tldr}
+              {/* mvdsldsl (hover broken): the flap lives IN the paper, so it sits on the paper's real bottom-right corner;
+                  as a child of the wrap it landed on the wrap's corner, and the stacked layout collapses the wrap (max-height 0) */}
+              <span className="article__postit-curl" aria-hidden />
             </p>
-            <span className="article__postit-curl" aria-hidden />
           </div>
         )}
       </div>
