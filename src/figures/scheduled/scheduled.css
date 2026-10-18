@@ -1516,11 +1516,11 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    Filled, rounded, 18px, in the slide purple (#5b3fd1, 7.0:1 on white as a
    non-text mark; dark #b69cea). */
 .rwf-glass .tlx__rail-detail-bullets:has(li[data-icon]) { list-style: none; padding-left: 0; gap: 0.35rem; }
-.rwf-glass .tlx__rail-detail-bullets li[data-icon] { display: flex; align-items: flex-start; gap: 0.45rem; }
+.rwf-glass .tlx__rail-detail-bullets li[data-icon] { display: flex; align-items: center; gap: 0.6rem; }
 .rwf-glass .tlx__rail-detail-icon {
-  font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 18px; line-height: 1;
+  font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 30px; line-height: 1; /* mvds04yi: much bigger (was 18) */
   letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; flex: none;
-  -webkit-font-smoothing: antialiased; font-feature-settings: "liga"; color: #5b3fd1; translate: 0 -1px;
+  -webkit-font-smoothing: antialiased; font-feature-settings: "liga"; color: #5b3fd1;
 }
 :root.dark .rwf-glass .tlx__rail-detail-icon { color: #b69cea; }
 /* the slide rule that sets Stack Sans on every span outranked the icon font;
