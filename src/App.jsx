@@ -47,6 +47,7 @@ const WeighDemo = lazyFig(() => import("./figures/systemExplainer/WeighDemo"));
 const HedgeDemo = lazyFig(() => import("./figures/systemExplainer/HedgeDemo"));
 const WatchDemo = lazyFig(() => import("./figures/systemExplainer/WatchDemo"));
 import "./figures/lab/systemSheet.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
+const SystemPage = PRIVATE_SITE ? lazyFig(() => import("./system/SystemPage")) : null; // /system, the live design-system page (dev + private only; the public build never bundles it)
 const SystemSheet = lazyFig(() => import("./figures/lab/SystemSheet"));
 const Ref = lazyFig(() => import("./figures/lab/SystemSheet").then((m) => ({ default: m.Ref })));
 const ModesGuide = lazyFig(() => import("./figures/lab/ModesGuide"));
@@ -11279,6 +11280,7 @@ export default function App() {
   const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
   const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
   const isLab = PRIVATE_SITE && path === "/lab";
+  const isSystem = PRIVATE_SITE && path === "/system"; // unlisted, like /lab: not in any nav
   // The cross-sell decision tree, standalone and edge to edge (unlisted, like
   // /lab and /mockups). Same component as figure 1 of /work/cross-sell.
   const isCrossSellTree = PRIVATE_SITE && path === "/cross-sell-tree";
@@ -11491,7 +11493,7 @@ export default function App() {
   // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
-  const variant = isCrossSellTree || isLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
+  const variant = isCrossSellTree || isLab || isSystem || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug && PRIVATE_SITE ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
@@ -11625,6 +11627,8 @@ export default function App() {
         <Hello onNavigate={navigate} detail="card" />
       ) : isHello3 ? (
         <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
+      ) : isSystem && SystemPage ? (
+        <Guard name="system-page"><SystemPage theme={theme} onToggleTheme={toggleTheme} /></Guard>
       ) : isLab ? (
         <>
           {/* the tab icon at a size its motion can be judged (7 Oct) */}
