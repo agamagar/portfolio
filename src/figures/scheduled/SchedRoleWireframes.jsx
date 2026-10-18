@@ -94,28 +94,25 @@ const SLIDES = [
   },
   {
     tag: "Timeline management",
-    // mv58e69r + mv58e13o (12 Oct, "remove"): the whole slide is parked (its "Ship first, measure first, iterate
-    // later" heading, the two stacked rollout charts, the legend and source note go with it). Not deleted: delete
-    // this line to bring it back.
-    hidden: true,
+    // mv58e69r + mv58e13o (12 Oct, "remove") parked this slide; 18 Oct, "bring back all the detail text we removed,
+    // timelines": it is back, with the four timeline points (cut 28 Sep) and the M1 measures line. The 28 Sep title
+    // ("Scoping M1 small was the timeline decision.") stays replaced by the newer heading below.
     stack: true, // mukuo5m5 (28 Sep): vertical, label over title over charts, so the graphs get the width
-    // title: "Scoping M1 small was the timeline decision.", // mukpqnci (28 Sep): removed at Agam's request, uncomment to restore
-    // mukpqxg3 (28 Sep): the four points commented out at Agam's request, uncomment to restore
-    // kind: "list",
-    // items: [
-    // ["Ship narrow first", "M1 shipped deliberately narrow in late October so the full multi-shipment version could follow in mid-November."],
-    // ["Two directions in parallel", "Two directions ran in parallel early, so the choice was made on evidence, not on the first idea."],
-    // ["A checklist for what was missing", "A pending-screens checklist (6 Jan) kept the returns work honest about what was still missing."],
-    // // Agam, 27 Sep
-    // ["Dates set together", "The PMs owned the dates, set together with design, so the timeline could be managed from day one."],
-    // ],
+    kind: "list",
+    items: [
+      ["Ship narrow first", "M1 shipped deliberately narrow in late October so the full multi-shipment version could follow in mid-November."],
+      ["Two directions in parallel", "Two directions ran in parallel early, so the choice was made on evidence, not on the first idea."],
+      ["A checklist for what was missing", "A pending-screens checklist (6 Jan) kept the returns work honest about what was still missing."],
+      // Agam, 27 Sep
+      ["Dates set together", "The PMs owned the dates, set together with design, so the timeline could be managed from day one."],
+    ],
     // mujvibm1 (27 Sep): the section now shows SPEED, all as graphs: pilot ->
     // first measured month -> full rollout -> scale (sdReport ROLLOUT/MONTHLY)
     speed: true,
     // mukp2jed + mukpqnci (28 Sep): with "Scoping M1 small..." removed, this is the slide's only heading, so it leads
     title: "Ship first, measure first, iterate later.",
     // Agam, 27 Sep: what M1 was set to measure, with the case study's numbers
-    // measures: "What M1 was set to measure: cancellations, average order value, and the time slots people ordered in.", // mukpxjmx (28 Sep): removed at Agam's request, uncomment to restore
+    measures: "What M1 was set to measure: cancellations, average order value, and the time slots people ordered in.", // mukpxjmx (28 Sep) removed it; restored 18 Oct
     // charts: true, (mujvibm1: the cancellation / order value / slot charts were swapped for the speed charts)
   },
   {
