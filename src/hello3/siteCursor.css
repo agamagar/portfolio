@@ -44,5 +44,14 @@
 .sc__x:hover { opacity: 1; background: #111; }
 .sc[data-morph] .sc__arrow, .sc[data-morph] .sc__tag { opacity: 0; transition: opacity 120ms linear; } /* the page's dragger pill stands in (HelloDragger.jsx) */
 .sc__arrow, .sc__tag { transition-property: scale, opacity; }
+/* hovering: the whole cursor turns glass (frosted, translucent, a light rim), arrow and tag alike */
+.sc__arrow, .sc__tag { transition-property: scale, opacity, fill, background, backdrop-filter, box-shadow, color; transition-duration: 200ms; }
+.sc[data-hover] .sc__arrow { fill: rgba(255, 255, 255, 0.16); stroke: rgba(255, 255, 255, 0.85); stroke-width: 0.9; filter: drop-shadow(0 1px 4px rgba(26, 111, 208, 0.35)); }
+.sc[data-hover] .sc__tag {
+  background: rgba(255, 255, 255, 0.14); color: #fff;
+  -webkit-backdrop-filter: blur(10px) saturate(1.6); backdrop-filter: blur(10px) saturate(1.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 14px rgba(26, 111, 208, 0.25);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
 @media (hover: none), (pointer: coarse) { .sc { display: none; } }
 @media (prefers-reduced-motion: reduce) { .sc { transition: none; } }

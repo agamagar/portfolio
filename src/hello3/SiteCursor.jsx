@@ -247,6 +247,9 @@ export default function SiteCursor() {
       const dt = Math.min(120, now - last || 16); last = now; vt += dt;
       if (!cur) advance();
       if (el.dataset.mode !== mode) el.dataset.mode = mode;
+      // glass while it hovers something: the row the demo is on, or a link/button/row under the real pointer
+      const hov = !!over || (mode === "follow" && !!document.elementFromPoint(cp.x, cp.y)?.closest("a, button, [data-project]"));
+      if (el.hasAttribute("data-hover") !== hov) el.toggleAttribute("data-hover", hov);
       if (cur) {
         if (cur.k === "wait") { if (vt - cur.t0 >= cur.ms) cur = null; }
         else if (cur.k === "move") {
