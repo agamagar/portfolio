@@ -1052,8 +1052,9 @@ function RoleEditorial({ s }) {
 // the layouts the three metrics have had: the icon rows (current), the outlined box (mv3orhii), the role card's foot (Option 2),
 // the editorial list (Option 1), the My role frame's icon-left rows (mv56uy5f) and the first scope map's bare numbers
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
+const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
 function RoleScopeMap({ s, i }) {
-  const [view, setView] = useState("icons");
+  const [view, setView] = useState("left"); // mvdvotz9 (Agam): "Icon left" is the default
   // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
   // "Option 3" tag, no dashed box, and its label carries the section's heading id for the index and scroll-spy.
   // mv5939z4: the outlined stats box and mv58by9f's icon rows are parked (roleFrame.hideMapStats); mv5931ha: the
@@ -1079,7 +1080,7 @@ function RoleScopeMap({ s, i }) {
           toggle is dev / preview only. */}
       {!s.roleFrame.hideMapStats && (
         <>
-          {!import.meta.env.PROD && (
+          {SHOW_STAT_TOGGLE && !import.meta.env.PROD && (
             <div className="fig-toggle rv-map__toggle" role="group" aria-label="Metrics layout">
               {STAT_VIEWS.map(([k, label]) => (
                 <button key={k} type="button" className={"fig-toggle__btn" + (view === k ? " is-active" : "")} aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>

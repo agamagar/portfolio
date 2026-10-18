@@ -8505,9 +8505,11 @@ html .page--article .article__body .rv-ed__partners li { font-size: 1.125rem; li
 .rv-map__node { position: relative; display: flex; align-items: center; justify-content: center; padding: 0.85rem 0.9rem; border-radius: 12px; border: 1px solid var(--rv-rule); text-align: center; }
 .rv-map__node::before { content: ""; position: absolute; bottom: 100%; left: 50%; width: 1px; height: calc(var(--rv-drop) + 1px); background: var(--rv-accent); opacity: 0.6; }
 html .page--article .article__body .rv-map__node { font-size: 0.9375rem; line-height: 1.35; }
-/* mvdrc38c (Agam): the functions are separate boxes under the one spoke, not a comma list in one box */
+/* mvdrc38c (Agam): the functions are separate boxes under the one spoke, not a comma list in one box.
+   mvdvoekq: each is styled exactly like the other boxes in the row; mvdvpl57: every box's border is the connectors' purple */
 html .page--article .article__body .rv-map__node--fns { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0.5rem; padding: 0; border: 0; background: none; }
-html .page--article .article__body .rv-map__fn { display: block; padding: 0.6rem 0.9rem; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--rv-accent) 30%, transparent); background: color-mix(in srgb, var(--rv-accent) 12%, transparent); text-align: center; }
+html .page--article .article__body .rv-map__fn { display: flex; align-items: center; justify-content: center; padding: 0.85rem 0.9rem; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--rv-accent) 60%, transparent); text-align: center; }
+html .page--article .article__body .rv-map__node:not(.rv-map__node--fns) { border-color: color-mix(in srgb, var(--rv-accent) 60%, transparent); }
 /* mv3orhii: the role card's stat foot, as an outlined box: three equal cells,
    hairline dividers, the radius clipping the cells so no edge doubles up */
 .rv-map__foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rv-rule); border-radius: 16px; corner-shape: round; overflow: hidden; }
