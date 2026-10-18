@@ -2050,3 +2050,61 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mv5iv45c: the team emoji before each name: same size as the name, on the text baseline, a hair of space */
 .dio__emoji { font-size: 1em; line-height: 1; margin-right: 0.45em; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .rwf--left > .sin__icon { margin-left: 7.94%; } /* the icon starts on the label's left edge */
+
+/* ===== SD type scale =====
+   One set of roles for every text style on the Scheduled Delivery page (tokens: --sd-* in
+   src/index.css :root, shown on /system). Mock UI (phone screens, Zepto replicas, chart svg
+   text) keeps its own internal type; only the text around it follows the scale. The My role
+   scope map (.rv*) is excluded on purpose. Size steps down at <=1024 and <=720. */
+@media (max-width: 1024px) { :root { --sd-h2-size: 24px; --sd-h3-size: 19px; --sd-stat-size: 36px; } }
+@media (max-width: 720px)  { :root { --sd-h2-size: 22px; --sd-h3-size: 18px; --sd-stat-size: 32px; --sd-lead-size: 16px; --sd-cap-size: 13px; } }
+
+/* h2: section headings, slide titles, the one-line section summary */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(h2:not([class^="rv"]), .rwf__title, p.article__tldr, .sscene__title, .smo__title, p.iq__question, p.suc__lead, p.suc__persona, p.sin__line, h2.role-frame__label) {
+  font-family: var(--sd-ssh); font-size: var(--sd-h2-size); font-weight: var(--sd-h2-wt); line-height: var(--sd-h2-lh); letter-spacing: var(--sd-h2-ls);
+}
+/* h3: kickers above a title, quotes, defined terms */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(p.rwf__tag, .rsty__quote, p.article__term-t, p.iq__label, p.suc__label, p.sin__label, span.sin__aid, h3:not(.rwf__title)) {
+  font-family: var(--sd-ssh); font-size: var(--sd-h3-size); font-weight: var(--sd-h3-wt); line-height: var(--sd-h3-lh); letter-spacing: var(--sd-h3-ls);
+}
+/* item: the bold line that leads a list row */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(.rwf__what, .rwf__gname) {
+  font-family: var(--sd-ssh); font-size: var(--sd-item-size); font-weight: var(--sd-item-wt); line-height: var(--sd-item-lh); letter-spacing: var(--sd-item-ls);
+}
+/* stat: big numbers */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(.rsty__stat-v, .cpr__n, .rex__big, .rwf__list .rwf__n, ol.rwf__list span.rwf__n) {
+  font-family: var(--sd-ssh); font-size: var(--sd-stat-size); font-weight: var(--sd-stat-wt); line-height: var(--sd-stat-lh); letter-spacing: var(--sd-stat-ls);
+}
+/* lead */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(p.rwf__lead, .tldr-b, .cpr__now, .cpr__now ins, .cpr__sr) {
+  font-family: var(--sd-gsf); font-size: var(--sd-lead-size); font-weight: var(--sd-lead-wt); line-height: var(--sd-lead-lh); letter-spacing: 0;
+}
+/* body */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(p, .cs-sec li, .article__todo li, .rsty__step-t, mark.squiggle, .rsty__stat-l, .article__split-main p):not([class^="rv"]):not(.rwf__tag):not(.rwf__lead):not(.article__tldr):not([class*="__title"]):not([class*="__label"]):not([class*="__question"]):not([class*="__lead"]):not([class*="__persona"]):not([class*="__line"]):not([class*="__mark"]):not([class*="__big"]):not([class*="stat-v"]):not(.rsty__quote):not(.article__term-t):not(.article__divider):not(.rex__note):not(.cpr__src):not(.msty__src):not(.rsty__stat-n):not(.cpr__now):not([class^="es"]) {
+  font-family: var(--sd-gsf); font-size: var(--sd-body-size); font-weight: var(--sd-body-wt); line-height: var(--sd-body-lh); letter-spacing: 0;
+}
+/* small: list rows and details inside slides */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-run .rwf :is(li, dd, dt, .rwf__detail) {
+  font-family: var(--sd-gsf); font-size: var(--sd-body-size); font-weight: var(--sd-body-wt); line-height: var(--sd-body-lh); letter-spacing: 0;
+}
+/* caption: figure captions and notes under a figure */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(figcaption, .article__divider, .cpr__src, .msty__src, .rex__note, .rsty__stat-n, span.rex__legend span, .rex__hint, .rex__lbl, .sdc__hkey, .sdc__hval, .sdc__cmp-label, .dio__who, .dio__who em, .dio__who b) {
+  font-family: var(--sd-gsf); font-size: var(--sd-cap-size); font-weight: var(--sd-cap-wt); line-height: var(--sd-cap-lh); letter-spacing: 0;
+}
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .dio__who b { font-weight: 600; }
+/* label: small caps-style tags, counts, tab and toggle text */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(.tlx__rail-tag, .dio__count, button.fig-toggle__btn, .rwf-months__m, .article__tldr-label, .tlx__rail-year) {
+  font-family: var(--sd-gsf); font-size: var(--sd-label-size); font-weight: var(--sd-label-wt); line-height: var(--sd-label-lh); letter-spacing: var(--sd-label-ls); text-transform: uppercase;
+}
+/* control: tabs and chips you press or read as a pill */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body :is(button.rwf-tabs__tab, .dio__tag) {
+  font-family: var(--sd-gsf); font-size: var(--sd-cap-size); font-weight: 500; line-height: 1.2; letter-spacing: 0;
+}
+/* step number in the slide header: label size */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf__main > .rwf__n {
+  font-family: var(--sd-ssh); font-size: var(--sd-label-size); font-weight: var(--sd-label-wt); line-height: var(--sd-label-lh); letter-spacing: var(--sd-label-ls);
+}
+/* slide list numbers and in-section list rows outrank the slide chrome rules above */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-run .rwf ol.rwf__list li > span.rwf__n {
+  font-family: var(--sd-ssh); font-size: var(--sd-stat-size); font-weight: var(--sd-stat-wt); line-height: var(--sd-stat-lh); letter-spacing: var(--sd-stat-ls);
+}

@@ -116,6 +116,20 @@
   --type-display-measure: 22ch;
   --type-display-gap: 0.5rem 0 2rem;
 
+  /* SCHEDULED DELIVERY TYPE SCALE: nine roles, one family/size/weight/leading/tracking
+     each, per breakpoint. Applied in scheduled.css ("SD type scale"); documented on /system.
+     SSH = Stack Sans Headline (headings, numbers), GSF = Google Sans Flex (article text). */
+  --sd-ssh: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
+  --sd-gsf: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif;
+  --sd-h2-size: 26px;   --sd-h2-wt: 300; --sd-h2-lh: 1.3;  --sd-h2-ls: 0;
+  --sd-h3-size: 20px;   --sd-h3-wt: 400; --sd-h3-lh: 1.35; --sd-h3-ls: 0;
+  --sd-item-size: 16px; --sd-item-wt: 500; --sd-item-lh: 1.35; --sd-item-ls: 0;
+  --sd-stat-size: 40px; --sd-stat-wt: 300; --sd-stat-lh: 1.05; --sd-stat-ls: -0.01em;
+  --sd-lead-size: 17px; --sd-lead-wt: 400; --sd-lead-lh: 1.5;
+  --sd-body-size: 15px; --sd-body-wt: 400; --sd-body-lh: 1.5;  /* floor for reading text is 15px */
+  --sd-cap-size: 14px;  --sd-cap-wt: 400; --sd-cap-lh: 1.4;
+  --sd-label-size: 12px; --sd-label-wt: 600; --sd-label-lh: 1.3; --sd-label-ls: 0.06em;
+
   /* NEW scroll/parallax scalars (unitless quantities, not curves or durations) */
   --ds-scrub-smoothing-factor: 0.15; /* lerp per rAF tick for scroll-film catch-up */
   --ds-parallax-back: 0.25;  /* background plane rate */
