@@ -55,3 +55,11 @@
   .hello[data-page="3"] .hv2__face { width: 59px; }
   .hello[data-page="3"][data-stage] .hv2__flyer { transform: scale(1.48); }
 }
+
+/* the draggable "!" (BangDrag.jsx): overlays only, the text never reflows */
+.hello[data-page="3"] .hv2__bang-root { position: relative; display: inline-block; }
+.hello[data-page="3"] .hv2__bang { display: inline-block; position: relative; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; transform-origin: 50% 60%; will-change: transform; border-radius: 4px; outline: none; }
+.hello[data-page="3"] .hv2__bang:focus-visible { box-shadow: 0 0 0 2px var(--fg); }
+.hello[data-page="3"] .hv2__bang-trail { position: absolute; inset: 0; pointer-events: none; }
+.hello[data-page="3"] .hv2__bang-mark { position: absolute; left: 0; top: 0; opacity: 0; will-change: transform, opacity; transform-origin: 50% 60%; }
+html.hv2-grabbing, html.hv2-grabbing * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
