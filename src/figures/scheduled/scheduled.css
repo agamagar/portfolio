@@ -2115,3 +2115,18 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mvds282z: the explorations view toggle sits above the board */
 .expl-views { width: 100%; }
 .expl-views__toggle { margin: 0 auto 1rem; display: flex; width: fit-content; }
+
+/* mvdsm4n7 (Agam, "make these 2x"): the moments tags at TWICE the size, the pin circle and its emoji (the label keeps its
+   size). One var; the pin keeps its centre on the photo spot (negative margin of half the growth). */
+.smo__collage { --smo-pin: calc((4.6cqw + 8px) * 2); }
+.smo__collage .smo__pill {
+  height: var(--smo-pin); min-width: var(--smo-pin); max-width: var(--smo-pin);
+  border-radius: calc(var(--smo-pin) / 2);
+  margin: calc(var(--smo-pin) / -4) 0 0 calc(var(--smo-pin) / -4);
+  padding-left: calc((var(--smo-pin) - 3em) / 2);
+}
+.smo__collage .smo__pill[data-on] { max-width: 44cqw; }
+.smo__collage .smo__pill--tl { border-top-left-radius: 1px; }
+.smo__collage .smo__pill--tr { border-top-right-radius: 1px; }
+.smo__collage .smo__pill--br { border-bottom-right-radius: 1px; }
+.smo__collage .smo__pill .smo__emoji--anim { width: 3em; height: 3em; }
