@@ -42,7 +42,7 @@ const FW = 802, FH = 862;
 // its own size and place; the clay ends 1.21 times as big, grown out from the face's right edge
 // (by the greeting), and 6 screen px further right. The canvas starts exactly on the drawing
 // and grows into that framing across the morph (grow, below).
-const CLAY_SCALE = 1.21, CLAY_NUDGE = 6;
+const CLAY_SCALE = 1.089, CLAY_NUDGE = 6; // 1.21 * 0.9: the 3D face 10% smaller (Agam, 18 Oct 2026), same origin; the 2D drawing (g 0) is untouched
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const inOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
 // SPEED RAMP (Agam, 2026-10-11: "the 3D face reveal should be speed ramped"): one remap of the
@@ -194,7 +194,7 @@ export default function HeroMorph({ ready }) {
       cv.width = Math.round(box.w * res);
       cv.height = Math.round(box.h * res);
     };
-    // g 0: exactly the drawing's framing; g 1: the clay's (1.21 from the right edge, 6px right)
+    // g 0: exactly the drawing's framing; g 1: the clay's (1.089 from the right edge, 6px right)
     let gNow = 0;
     const frame = (g) => {
       gNow = g;
