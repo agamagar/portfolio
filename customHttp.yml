@@ -1,0 +1,32 @@
+# Amplify Hosting response headers (picked up from the repo root).
+# /assets/** are Vite's content-hashed files (name changes whenever content does), so they are
+# immutable for a year. The room's own files in public/ (window-scene posters, landing stills,
+# room/pets.glb, faces/*.glb) keep their names, so they cannot be immutable: a week fresh,
+# then served stale for a month while the browser revalidates behind it (and public/sw.js
+# does the same from its cache, so a return visit never waits on them).
+# index.html and sw.js must always revalidate, or a deploy would not be seen.
+customHeaders:
+  - pattern: '/assets/**'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=31536000, immutable'
+  - pattern: '/window-scene/**'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=604800, stale-while-revalidate=2592000'
+  - pattern: '/room/**'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=604800, stale-while-revalidate=2592000'
+  - pattern: '/faces/**'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=604800, stale-while-revalidate=2592000'
+  - pattern: '/sw.js'
+    headers:
+      - key: Cache-Control
+        value: 'no-cache'
+  - pattern: '/index.html'
+    headers:
+      - key: Cache-Control
+        value: 'no-cache'

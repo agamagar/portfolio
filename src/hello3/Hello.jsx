@@ -256,7 +256,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     // a few seconds of grace after the morph, so the first moments of the page (and a
     // first look or screenshot of it) are not competing with the engine's build; a click
     // or hover on the button starts it sooner
-    const WARM_GRACE_MS = 4000;
+    const WARM_GRACE_MS = 1200;
     const start = () => {
       if (!alive) return;
       timer = setTimeout(() => {

@@ -14,7 +14,8 @@
 // the room): useWindowScene adopts the warm canvas and engine (takeWarmScene) instead
 // of building its own and resizes it to the viewport. Nothing is compiled twice.
 
-import { createWindowEngine } from "./engine.js";
+import { createWindowEngine, POSTERS } from "./engine.js";
+import { landingPosterUrl } from "./landingPoster.js";
 import { setWarmReady } from "./warmFlag.js";
 
 let warm = null; // { host, canvas, engine, ready: Promise<boolean>, ok }
@@ -56,9 +57,32 @@ const pulse = () => (beat = performance.now());
 export const warmBeat = () => beat;
 const step = () => quietMoment().then(pulse);
 
+// The room's service worker (public/sw.js): registered once the warm-up begins (the home page
+// is idle by then), told which room files to store so the click finds them on disk. Production
+// only (the dev server's files change under it). Never blocks, never throws.
+function registerRoomCache(theme) {
+  try {
+    if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
+    const urls = [
+      landingPosterUrl({ w: window.innerWidth, h: window.innerHeight, theme, search: window.location.search }),
+      POSTERS.light,
+      POSTERS.dark,
+    ];
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => navigator.serviceWorker.ready)
+      .then((reg) => reg.active?.postMessage({ type: "precache", urls }))
+      .catch(() => {});
+  } catch {
+    /* no service worker here */
+  }
+}
+
 export function warmScene({ opts, theme }) {
   if (warm) return warm.ready;
   pulse();
+  performance.mark("room:warm-start");
+  registerRoomCache(theme);
   const host = document.createElement("div");
   host.className = "wscene__warm";
   host.setAttribute("aria-hidden", "true");
@@ -202,6 +226,7 @@ export async function prepareWarmScene() {
     await engine.renderOnce();
   }
   pulse();
+  performance.mark("room:prepared");
   setWarmReady(true); // a page that remounts later finds the room ready (warmFlag.js)
   return true;
 }
