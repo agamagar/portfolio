@@ -11,6 +11,7 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
 .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.55; stroke-width: 1; transition: fill 180ms linear, stroke 180ms linear, stroke-opacity 180ms linear; }
 .cx__g1, .cx__g2 { stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .cx__label {
+  max-width: 180px; overflow: hidden; text-overflow: ellipsis;
   position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; color: #fff;
   font: 500 12px/14px "Google Sans Flex", Inter, -apple-system, sans-serif; letter-spacing: 0.01em;
 }
@@ -22,7 +23,21 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
 .cx[data-s="drag"] .cx__label, .cx[data-s="rotate"] .cx__label { color: var(--cx-on-ink); }
 .cx[data-s="rotate"] .cx__g1, .cx[data-s="rotate"] .cx__g2 { stroke: var(--cx-on-ink); }
 .cx[data-s="drag"] .cx__body, .cx[data-s="rotate"] .cx__body, .cx[data-s="text"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; stroke-width: 1; }
-.cx[data-s="link"] .cx__body, .cx[data-s="ext"] .cx__body, .cx[data-s="view"] .cx__body, .cx[data-s="play"] .cx__body, .cx[data-s="up"] .cx__body { fill: var(--cx-blue); stroke: rgba(255, 255, 255, 0.7); stroke-opacity: 1; stroke-width: 1; }
+/* action states: white, slightly glassy (Agam, 18 Oct: "turn white, slightly glassy"). The glass is an
+   HTML layer (backdrop-filter cannot be applied to an SVG rect) sized by the same springs; the SVG body
+   goes clear. Ink glyph and label inside. */
+.cx__glass {
+  position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
+  corner-shape: round; /* the site squircles every radius (index.css); the cursor is a true pill */
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(10px) saturate(1.7); backdrop-filter: blur(10px) saturate(1.7);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.28);
+  transition: opacity 160ms linear;
+}
+.cx[data-s="link"] .cx__glass, .cx[data-s="ext"] .cx__glass, .cx[data-s="view"] .cx__glass, .cx[data-s="play"] .cx__glass, .cx[data-s="up"] .cx__glass { opacity: 1; }
+.cx[data-s="link"] .cx__body, .cx[data-s="ext"] .cx__body, .cx[data-s="view"] .cx__body, .cx[data-s="play"] .cx__body, .cx[data-s="up"] .cx__body { fill: transparent; stroke: none; filter: none; }
+.cx[data-s="link"] .cx__g1, .cx[data-s="ext"] .cx__g1, .cx[data-s="view"] .cx__g1, .cx[data-s="play"] .cx__g1, .cx[data-s="up"] .cx__g1 { stroke: #111; }
+.cx[data-s="link"] .cx__label, .cx[data-s="ext"] .cx__label, .cx[data-s="view"] .cx__label, .cx[data-s="play"] .cx__label, .cx[data-s="up"] .cx__label { color: #111; }
 .cx[data-s="lock"] .cx__body { fill: #3a3a40; stroke: rgba(255, 255, 255, 0.55); stroke-opacity: 1; stroke-width: 1; }
 .cx[data-s="grab"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; }
 @media (hover: none), (pointer: coarse) { .cx { display: none; } }

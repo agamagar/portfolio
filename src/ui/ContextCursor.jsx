@@ -76,14 +76,15 @@ export default function ContextCursor() {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return undefined;
     const el = root.current;
     if (!el) return undefined;
-    const body = el.querySelector(".cx__body"), p1 = el.querySelector(".cx__g1"), p2 = el.querySelector(".cx__g2"), lab = el.querySelector(".cx__label");
+    const glass = el.querySelector(".cx__glass"), body = el.querySelector(".cx__body"), p1 = el.querySelector(".cx__g1"), p2 = el.querySelector(".cx__g2"), lab = el.querySelector(".cx__label");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const KEYS = ["x", "y", "w", "h", "r", "sc", "ga", "g2a", "la", ...Array.from({ length: 20 }, (_, i) => "p" + i)];
     const V = {}, T = {}, D = {};
     KEYS.forEach((k) => { V[k] = 0; T[k] = 0; D[k] = 0; });
     V.w = T.w = 10; V.h = T.h = 10; V.r = T.r = 5;
     let raf = 0, last = 0, shown = false, down = false, state = "dot", lstate = "", mx = 0, my = 0, native = false;
-    const widths = {};
+    let widths = {};
+    document.fonts?.ready?.then(() => { widths = {}; }); // text measured before the web font loaded is wrong
     const measure = (text) => {
       if (widths[text] == null) { lab.textContent = text; widths[text] = lab.offsetWidth; }
       return widths[text];
@@ -97,6 +98,9 @@ export default function ContextCursor() {
       body.setAttribute("x", (-w / 2).toFixed(2)); body.setAttribute("y", (-h / 2).toFixed(2));
       body.setAttribute("width", w.toFixed(2)); body.setAttribute("height", h.toFixed(2));
       body.setAttribute("rx", Math.max(0, Math.min(V.r, w / 2, h / 2)).toFixed(2));
+      glass.style.width = w.toFixed(1) + "px"; glass.style.height = h.toFixed(1) + "px";
+      glass.style.transform = `translate3d(${(-w / 2).toFixed(1)}px,${(-h / 2).toFixed(1)}px,0)`;
+      glass.style.borderRadius = Math.max(0, Math.min(V.r, w / 2, h / 2)).toFixed(1) + "px";
       const gx = lstate ? -(w / 2) + PAD_L + 2 : 0;
       const pts = (o) => { let s = ""; for (let i = 0; i < 5; i++) s += (V["p" + (o + i * 2)] + gx).toFixed(2) + "," + V["p" + (o + i * 2 + 1)].toFixed(2) + " "; return s; };
       p1.setAttribute("points", pts(0)); p2.setAttribute("points", pts(10));
@@ -127,8 +131,10 @@ export default function ContextCursor() {
       const hasG = sp.g !== "none";
       lstate = text;
       if (text) lab.textContent = text;
-      T.w = sp.w ?? Math.round(measure(text) + (hasG ? PAD_L + 14 + 8 : 28));
-      T.h = sp.h; T.r = sp.r;
+      // a label sizes the pill to its text (measured once per string, capped at 180 px by the CSS
+      // ellipsis); height stays constant and the radius a full pill. No label: the state's own size.
+      if (text) { T.w = Math.round(measure(text) + (hasG ? PAD_L + 14 + 8 : 28)); T.h = 34; T.r = 17; }
+      else { T.w = sp.w; T.h = sp.h; T.r = sp.r; }
       for (let i = 0; i < 10; i++) { T["p" + i] = gl[0][i]; T["p" + (10 + i)] = gl[1][i]; }
       T.ga = hasG ? 1 : 0; T.g2a = gl[1] !== Z ? 1 : 0; T.la = text ? 1 : 0;
       kick();
@@ -175,6 +181,7 @@ export default function ContextCursor() {
   }, []);
   return (
     <div className="cx" ref={root} aria-hidden="true" data-s="dot">
+      <span className="cx__glass" />
       <svg className="cx__svg" width="1" height="1" overflow="visible">
         <rect className="cx__body" />
         <polyline className="cx__g1" fill="none" />
