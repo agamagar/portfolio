@@ -2436,7 +2436,7 @@ const caseStudies = {
         ul: [
           { t: "One-hour slots, on shaky ground", icon: "clock", d: "Every slot was an hour wide, and early on, slot availability itself was unreliable." },
           { t: "Booked and live, side by side", icon: "live", d: "Pre-booked orders still had to go out through the peak windows, while live 10-minute demand kept flowing." },
-          { t: "A promise kept, every time", icon: "promise", d: "A 6–7pm slot had to mean 6–7pm. Behind the hour a user picked sat a fulfilment window of about ninety minutes, margin for the dark store, and we kept tuning it against real conditions." },
+          { t: "Keeping the slot", icon: "promise", d: "A 6–7pm slot had to mean 6–7pm. Behind it sat a fulfilment window of about ninety minutes, with margin for the dark store, tuned against real conditions." },
         ],
         // 5 Oct: the reach explorer lived here; mv56y336 (12 Oct) moved it to Context & problem (figNext there)
         // Annotation mtmh8tov: the availability tape moved to Impact.
