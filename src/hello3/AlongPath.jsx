@@ -41,7 +41,7 @@ const PLATES = [
   // OdinEye. Transcoded on the way in: the source was HEVC, which Chrome will
   // not play, and 3600x2012 / 3.9MB for a card that renders ~135px wide.
   // Now H.264 yuv420p at 800px, 75KB.
-  { video: "/figures/marquee/odineye-60.mp4", poster: "/figures/marquee/odineye-poster.png", alt: "OdinEye", aspect: "800 / 448", cap: { line: "ZepIris: Zepto’s open-source face authentication for frontline teams", title: "Zepto’s first open-source platform", year: 2026, type: "Video", role: "Led design end to end", text: "ZepIris, Zepto’s in-house face authentication for frontline teams, open-sourced to create pre-IPO buzz.", metric: "100% hub coverage", cta: { label: "Read the case study", to: "/work/zepiris" } } },
+  { video: "/figures/marquee/odineye-60.mp4", audio: "/figures/marquee/odineye-groove.m4a", audioAlt: "/figures/marquee/odineye-groove.mp3", poster: "/figures/marquee/odineye-poster.png", alt: "OdinEye", aspect: "800 / 448", cap: { line: "ZepIris: Zepto’s open-source face authentication for frontline teams", title: "Zepto’s first open-source platform", year: 2026, type: "Video", role: "Led design end to end", text: "ZepIris, Zepto’s in-house face authentication for frontline teams, open-sourced to create pre-IPO buzz.", metric: "100% hub coverage", cta: { label: "Read the case study", to: "/work/zepiris" } } },
   // mtrx14ur (08 Sep 2026): the slot-picker still is now a YouTube embed,
   // https://www.youtube.com/watch?v=tatZlX0d4do, playing muted on loop in
   // the card (the run is a marquee, so it autoplays like the video plates and
@@ -290,7 +290,7 @@ function DwellVideo({ plate, onOpen }) {
       aria-label={`Play ${plate.alt}`}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(e.currentTarget); } }}
     >
-      <video ref={ref} className="ap__plate" src={plate.video} poster={plate.poster} muted loop playsInline autoPlay preload="metadata" aria-label={plate.alt} data-audio-src={plate.full || undefined} />
+      <video ref={ref} className="ap__plate" src={plate.video} poster={plate.poster} muted loop playsInline autoPlay preload="metadata" aria-label={plate.alt} data-audio-src={plate.audio || plate.full || undefined} data-audio-alt={plate.audioAlt || undefined} />
       {/* 17 Oct 2026 (mvcd1px4, "remove audio control from inside this card"): no speaker
           icon or sound pill inside the card. Audio still follows in view + centred with
           the fade (audioSync); the site's sound toggle and the section's sound button
@@ -685,9 +685,19 @@ export default function AlongPath({ reduce, modeTwo }) {
   // on (<html data-sound>, the top-right toggle), the visitor has interacted
   // (autoplay policy; before that play() is refused and we stay silent, no
   // errors), the card is resting and not held (hover / Pause / keyboard focus),
-  // the section is on screen and the tab visible. It fades in and out over 300 ms.
+  // the section is on screen and the tab visible. It fades in and out over 400 ms. (OdinEye, 18 Oct 2026: an original French-house loop, tools/audio/odineye_groove.py, 16 bars = 4 clips, kept in phase modulo the clip.)
   const audioCtl = useRef({ el: null, drift: 0, src: "", want: false, rest: false, held: false, seen: true, interacted: false, blocked: false, vol: 0, fade: 0, card: null }).current;
   const audioSync = useRef(null);
+  // how far the track runs ahead of the picture, in seconds, taken MODULO the clip: a
+  // track of several clips (OdinEye's groove is 4 x 8.7 s = 16 bars) stays in phase with
+  // the looping clip without being dragged back to its first clip
+  const phaseOff = (a) => {
+    const v = a.card?.querySelector("video");
+    const P = v?.duration;
+    if (!v || !Number.isFinite(P) || P <= 0 || !Number.isFinite(v.currentTime)) return null;
+    const d = (a.el.currentTime - v.currentTime) % P;
+    return d > P / 2 ? d - P : d < -P / 2 ? d + P : d;
+  };
   audioSync.current = () => {
     const a = audioCtl;
     if (!a.el) return;
@@ -707,18 +717,18 @@ export default function AlongPath({ reduce, modeTwo }) {
     const target = go ? 1 : 0;
     if (go && a.el.paused) {
       // start in step with the picture (the track loads later than the plate)
-      const vt = a.card?.querySelector("video")?.currentTime;
-      if (Number.isFinite(vt)) { try { a.el.currentTime = vt; } catch { /* not seekable yet */ } }
+      const d = phaseOff(a);
+      if (d !== null) { try { a.el.currentTime = Math.max(0, a.el.currentTime - d); } catch { /* not seekable yet */ } }
     }
     if (go && a.el.paused) a.el.play().catch(() => { /* refused: say so on the card, retry on the next gesture */ a.blocked = true; a.card?.removeAttribute("data-audio-live"); audioSync.current?.(); });
     // while live, keep the track within 0.2 s of the picture (play start latency
     // and buffering let it trail by a few tenths)
     clearInterval(a.drift);
     if (go) a.drift = setInterval(() => {
-      const vt = a.card?.querySelector("video")?.currentTime;
-      if (Number.isFinite(vt) && !a.el.paused && Math.abs(a.el.currentTime - vt) > 0.2) { try { a.el.currentTime = vt + 0.05; } catch { /* ignore */ } }
+      const d = phaseOff(a);
+      if (d !== null && !a.el.paused && Math.abs(d) > 0.2) { try { a.el.currentTime = Math.max(0, a.el.currentTime - d + 0.05); } catch { /* ignore */ } }
     }, 500);
-    const t0 = performance.now(), v0 = a.el.volume, dur = 300;
+    const t0 = performance.now(), v0 = a.el.volume, dur = 400;
     a.fade = setInterval(() => {
       const k = Math.min(1, (performance.now() - t0) / dur);
       try { a.el.volume = Math.max(0, Math.min(1, v0 + (target - v0) * k)); } catch { /* ignore */ }
@@ -793,10 +803,11 @@ export default function AlongPath({ reduce, modeTwo }) {
       restVideo.current = v;
       // sound: a rest on the audio-bearing plate starts its track from 0 (or
       // carries on after a hold), silent unless every condition in audioSync holds
-      const src = v?.dataset.audioSrc || "";
+      let src = v?.dataset.audioSrc || "";
       setCardHasAudio(!!src);
       if (src) {
-        if (!audioCtl.el) { audioCtl.el = new Audio(); audioCtl.el.preload = "auto"; audioCtl.el.volume = 0; }
+        if (!audioCtl.el) { audioCtl.el = new Audio(); audioCtl.el.preload = "auto"; audioCtl.el.volume = 0; audioCtl.el.loop = true; }
+        if (v.dataset.audioAlt && !audioCtl.el.canPlayType("audio/mp4")) src = v.dataset.audioAlt; // no AAC: the mp3 twin
         if (audioCtl.src !== src) { audioCtl.el.src = src; audioCtl.src = src; }
         // seek the PICTURE first: the audio aligns to the video's clock when it starts
         if (!info.resumed) { try { v.currentTime = 0; audioCtl.el.currentTime = 0; } catch { /* not loaded yet: starts from 0 anyway */ } }
