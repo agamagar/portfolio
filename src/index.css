@@ -8494,7 +8494,7 @@ html .page--article .article__body .rv-ed__partners li { font-size: 1.125rem; li
    drops to a bar that spans the four column centres, and a stub drops into each
    of the four equal columns (three relationships + the functions). */
 .rv-map__tree { --rv-gap: 1rem; --rv-drop: 1.5rem; display: flex; flex-direction: column; align-items: center; margin-top: 2.25rem; }
-.rv-map__me { position: relative; display: grid; place-items: center; gap: 0.15rem; padding: 1.1rem 1.6rem; border-radius: 999px; background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
+.rv-map__me { position: relative; display: grid; place-items: center; gap: 0.15rem; padding: 1.1rem 1.6rem; border-radius: 12px; /* mvdrcemt: the same radius as the boxes below */ background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
 .rv-map__me::after { content: ""; position: absolute; top: 100%; left: 50%; width: 1px; height: var(--rv-drop); background: var(--rv-accent); opacity: 0.6; }
 .rv-map__me b { font-weight: 500; font-size: 1.125rem; } .rv-map__me small { font-size: 0.75rem; opacity: 0.85; }
 :root.dark .rv-map__me { color: #1a1030; }
@@ -8504,7 +8504,9 @@ html .page--article .article__body .rv-ed__partners li { font-size: 1.125rem; li
 .rv-map__node { position: relative; display: flex; align-items: center; justify-content: center; padding: 0.85rem 0.9rem; border-radius: 12px; border: 1px solid var(--rv-rule); text-align: center; }
 .rv-map__node::before { content: ""; position: absolute; bottom: 100%; left: 50%; width: 1px; height: calc(var(--rv-drop) + 1px); background: var(--rv-accent); opacity: 0.6; }
 html .page--article .article__body .rv-map__node { font-size: 0.9375rem; line-height: 1.35; }
-html .page--article .article__body .rv-map__node--fns { background: color-mix(in srgb, var(--rv-accent) 12%, transparent); border-color: color-mix(in srgb, var(--rv-accent) 30%, transparent); }
+/* mvdrc38c (Agam): the functions are separate boxes under the one spoke, not a comma list in one box */
+html .page--article .article__body .rv-map__node--fns { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0.5rem; padding: 0; border: 0; background: none; }
+html .page--article .article__body .rv-map__fn { display: block; padding: 0.6rem 0.9rem; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--rv-accent) 30%, transparent); background: color-mix(in srgb, var(--rv-accent) 12%, transparent); text-align: center; }
 /* mv3orhii: the role card's stat foot, as an outlined box: three equal cells,
    hairline dividers, the radius clipping the cells so no edge doubles up */
 .rv-map__foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rv-rule); border-radius: 16px; corner-shape: round; overflow: hidden; }
@@ -8797,3 +8799,19 @@ html .page--article .article__body .rv--final .rv-map__rows dt { white-space: no
 @media (max-width: 700px) { .rv--final .rv-map__rows { grid-template-columns: 1fr; } }
 .rv--final .rv-map__rows > div { align-self: start; align-items: start; }
 .rv--final .rv-map__rows { align-items: start; }
+
+/* mvdrzgct: the metrics' alternative layouts under the final My role */
+.rv-map__toggle { align-self: center; margin: 2rem auto 0; display: flex; width: fit-content; max-width: 100%; flex-wrap: wrap; justify-content: center; }
+html .page--article .article__body .rv dl.rv-map__rows, .rv-map__editorial, .rv-map__nums, .rv--final .rv-card--bare { margin-top: 1.5rem; }
+/* centred (the default) is scoped to the centre variant; the left variant keeps the base icon-left rows */
+.rv--final .rv-map__rows--left { grid-template-columns: minmax(0, 1fr); text-align: left; }
+.rv--final .rv-map__rows--left > div { grid-template-columns: 44px minmax(0, 1fr); justify-items: stretch; align-items: center; }
+.rv--final .rv-map__rows--left > div > .role-frame__icon { grid-row: 1 / span 2; }
+.rv--final .rv-map__rows--left > div > dt, .rv--final .rv-map__rows--left > div > dd { grid-column: 2; }
+.rv-card--bare { padding: 0; }
+.rv-card--bare .rv-card__foot { margin: 0; border-top: 0; }
+.rv-map__editorial { border-top: 1px solid var(--rv-rule); }
+.rv-map__nums { display: flex; justify-content: center; gap: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rv-rule); }
+html .page--article .article__body .rv-map__nums dt { font-size: 1.5rem; font-weight: 300; }
+@media (max-width: 700px) { .rv-map__nums { gap: 1rem; justify-content: space-between; } html .page--article .article__body .rv-map__nums dt { font-size: 1.125rem; white-space: nowrap; } }
+html .page--article .article__body .rv-card--bare dl.rv-card__foot { margin: 0; }

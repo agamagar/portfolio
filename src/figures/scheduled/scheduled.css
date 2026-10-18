@@ -2108,3 +2108,10 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-run .rwf ol.rwf__list li > span.rwf__n {
   font-family: var(--sd-ssh); font-size: var(--sd-stat-size); font-weight: var(--sd-stat-wt); line-height: var(--sd-stat-lh); letter-spacing: var(--sd-stat-ls);
 }
+/* mvds1idb (Agam): the Leading with design panels' list items read left-aligned, not centred */
+.page--article .article__body .rwf-run .rwf [id^="lwd-panel"] .rwf__list li,
+.page--article .article__body .rwf-run .rwf [id^="lwd-panel"] .rwf__list li :is(.rwf__n, .rwf__what, .rwf__detail) { text-align: left; justify-self: start; }
+
+/* mvds282z: the explorations view toggle sits above the board */
+.expl-views { width: 100%; }
+.expl-views__toggle { margin: 0 auto 1rem; display: flex; width: fit-content; }

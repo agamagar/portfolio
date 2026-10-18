@@ -243,6 +243,8 @@ function WallLabel({ cap }) {
   );
   return (
     <div className="ap__cap" style={{ "--cap-k": 1 + 0.1 * n }} aria-description={facts || undefined}>
+      {/* mvdqolwe (Agam): the notification chip sits ABOVE the caption text */}
+      {cap.chip && <img className="ap__cap-chip" src={cap.chip.src} alt={cap.chip.alt} width={cap.chip.w} height={cap.chip.h} loading="lazy" decoding="async" />}
       {cap.cta ? (
         <a
           className="ap__cap-line ap__cap-link hello-hero__link--out"
@@ -262,7 +264,6 @@ function WallLabel({ cap }) {
       ) : (
         <p className="ap__cap-line">{body}</p>
       )}
-      {cap.chip && <img className="ap__cap-chip" src={cap.chip.src} alt={cap.chip.alt} width={cap.chip.w} height={cap.chip.h} loading="lazy" decoding="async" />}
     </div>
   );
 }

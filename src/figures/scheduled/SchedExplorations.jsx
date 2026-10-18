@@ -41,14 +41,16 @@ const ROWS = [
   ] },
 ];
 
-export default function SchedExplorations() {
+function ExplorationsBoard({ view }) {
   const dark = useSiteDark();
   const reduce = useReducedMotion();
-  const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
+  const animated = view === "board";
+  const [beat0, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
+  const beat = animated ? beat0 : ROWS.length + 1; // the other views show every verdict at once
   // mtmrkaos: scales up to the full article column (816 / 660 = 1.24)
   const { fitRef, frameRef } = useFitScale(660, 1.3);
 
-  const loopRef = useInViewLoop(!reduce, async ({ wait, alive }) => {
+  const loopRef = useInViewLoop(!reduce && animated, async ({ wait, alive }) => {
     while (alive()) {
       setBeat(0); await wait(900); if (!alive()) break;
       for (let i = 0; i < ROWS.length && alive(); i++) { setBeat(i + 1); await wait(1050); }
@@ -67,7 +69,19 @@ export default function SchedExplorations() {
               <span className="sd-board__title">What we explored, before converging</span>
               <span className="sd-board__count">{ROWS.length} factors</span>
             </div>
-            {ROWS.map((row, i) => (
+            {view === "verdict" ? (
+              // mvds282z: the same chips regrouped by how each direction ended
+              Object.keys(TAG).map((v) => (
+                <div className="expl-row" key={v}>
+                  <span className="expl-label">{TAG[v]}</span>
+                  <div className="expl-chips">
+                    {ROWS.flatMap((row) => row.chips.filter((c) => c.v === v).map((c) => (
+                      <span className="expl-chip" key={row.label + c.t} data-on="true" data-v={c.v}>{row.label}: {c.t}</span>
+                    )))}
+                  </div>
+                </div>
+              ))
+            ) : ROWS.map((row, i) => (
               <div className="expl-row" key={row.label}>
                 <span className="expl-label">{row.label}</span>
                 <div className="expl-chips">
@@ -85,6 +99,27 @@ export default function SchedExplorations() {
             </div>
           </div>
       </div>
+    </div>
+  );
+}
+
+// mvds282z (18 Oct, "bring all variations of this in toggle"): the board has had one design (the animated board, which
+// builds row by row and loops); there is no earlier version in the history. The toggle adds two more views of the same
+// data: the board standing still with every verdict shown, and the chips regrouped by verdict. Dev / preview only; the
+// animated board is the default and what the public page shows.
+const VIEWS = [["board", "Board"], ["still", "Still"], ["verdict", "By verdict"]];
+export default function SchedExplorations() {
+  const [view, setView] = useState("board");
+  return (
+    <div className="expl-views">
+      {!import.meta.env.PROD && (
+        <div className="fig-toggle expl-views__toggle" role="group" aria-label="Explorations layout">
+          {VIEWS.map(([k, label]) => (
+            <button key={k} type="button" className={"fig-toggle__btn" + (view === k ? " is-active" : "")} aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
+          ))}
+        </div>
+      )}
+      <ExplorationsBoard key={view === "board" ? "board" : "static"} view={view} />
     </div>
   );
 }
