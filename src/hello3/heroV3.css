@@ -9,7 +9,9 @@
   color: var(--muted);
   text-wrap: balance;
 }
-.hello[data-page="3"] .hv3__tag + .hello-hero__links { margin-top: 24px; }
+/* Agam: Resume | LinkedIn sit above the tagline (flex order; the DOM keeps tag first), the three lines one group */
+.hello[data-page="3"] .hello-hero__inner:has(.hv3__tag) .hello-hero__links { order: 1; margin-top: 26px; }
+.hello[data-page="3"] .hello-hero__inner:has(.hv3__tag) .hv3__tag { order: 2; margin-top: 16px; }
 .hello[data-page="3"][data-seq][data-seq] .hv3__tag:not([data-in]) { opacity: 0; visibility: hidden; transition: none; }
 .hello[data-page="3"][data-seq][data-seq] .hv3__tag[data-in] { opacity: 1; visibility: visible; transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1); }
 .hello[data-page="3"]:not([data-seq]) .hv3__tag { animation: hv3-in 600ms var(--m3-effects-default, ease) both; }
