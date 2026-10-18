@@ -1,6 +1,7 @@
 // Blank-page smoke gate. Run after every edit:  node tools/qa-smoke.mjs  (dev server on :5173, or QA_URL=...)
 // Headless Chromium only. Fails (exit 1) on any pageerror / console error, empty #root,
-// missing hero or heading, no work cards, or a blank (near-uniform) screenshot.
+// missing hero or heading, no work cards, a blank (near-uniform) screenshot, or a broken font
+// (a font request that 4xx/5xx/fails, or an h1 whose first family has FontFaces but none loaded).
 import { chromium } from "playwright";
 
 const BASE = process.env.QA_URL || "http://localhost:5173";
@@ -24,6 +25,9 @@ async function attempt(path, check, post) {
   p.on("console", (m) => { if (m.type() === "error" && !ignored(m.text())) errs.push("console: " + m.text().slice(0, 300)); });
   p.on("requestfailed", (r) => { if (/\.(jsx?|css|mjs)(\?|$)/.test(r.url())) errs.push("chunk failed: " + r.url()); });
   const bad = (m) => real.push(`${path}: ${m}`);
+  const FONT = /\.(woff2?|ttf|otf)(\?|$)|fonts\.(googleapis|gstatic)\.com/i;
+  p.on("response", (r) => { if (FONT.test(r.url()) && r.status() >= 400) errs.push(`font ${r.status()}: ${r.url().slice(0, 140)}`); });
+  p.on("requestfailed", (r) => { if (FONT.test(r.url()) && !/ABORTED/.test(r.failure()?.errorText || "")) errs.push("font request failed: " + r.url().slice(0, 140)); });
   try {
     await p.goto(BASE + path, { waitUntil: "domcontentloaded", timeout: 45000 });
     // poll (not a fixed wait) until React has put content in #root
@@ -32,6 +36,17 @@ async function attempt(path, check, post) {
     lap("loaded " + path);
     await check(p, bad);
     lap("checked " + path);
+    // FONTS: wait (max 3 s) for document.fonts.ready, then the h1's first family must not be a declared
+    // face that failed to load (the Stack Sans 403, 18 Oct 2026, fell back to Inter silently)
+    const fontBad = await p.evaluate(async () => {
+      await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 3000))]);
+      const h = document.querySelector("h1"); if (!h) return "";
+      const fam = getComputedStyle(h).fontFamily.split(",")[0].trim().replace(/^["']|["']$/g, "");
+      const faces = [...document.fonts].filter((f) => f.family.replace(/^["']|["']$/g, "") === fam);
+      if (faces.length && !faces.some((f) => f.status === "loaded")) return `h1 font "${fam}" not loaded (${[...new Set(faces.map((f) => f.status))].join(",")})`;
+      return "";
+    }).catch(() => "");
+    if (fontBad) bad(fontBad);
     await p.waitForTimeout(1500);
     const shot = await p.screenshot({ type: "jpeg", quality: 40, timeout: 30000 });
     lap("shot " + path);
