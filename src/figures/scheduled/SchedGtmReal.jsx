@@ -19,6 +19,8 @@ export function SchedGtmRealOne() {
         <div className="article__plate-screen">
           <div className="gtmr-device gtmr-device--bare">
             <img className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
+            {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}
+            <span className="gtmr-scrim" aria-hidden />
             <div className="gtmr-region">
               <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
             </div>
