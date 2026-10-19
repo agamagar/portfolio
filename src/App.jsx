@@ -157,6 +157,7 @@ const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
@@ -732,6 +733,7 @@ const figures = {
   schedPostBooking: SchedPostBooking,
   schedGtmReal: SchedGtmReal,
   schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
+  schedCartPageFlat: SchedCartPageFlat, // mvf9leyc
   schedGtmBanner: SchedGtmBanner, // mv56yxug: the banner animation alone, full view
   schedGtmTooltipOne: SchedGtmTooltipOne, // Figma 2:4306: cart with the Scheduled order tooltip
   schedGtmCartOne: SchedGtmCartOne, // muky9xug: the cart screen alone
@@ -2532,8 +2534,9 @@ const caseStudies = {
         h: "The whole cart, top to bottom",
         group: "Problem",
         tldr: "Every one of those constructs lives on one page. Scroll it end to end and you see how much the cart already carries before scheduling asks for room.",
-        still: "/figures/scheduled/cart-page-full.webp",
-        stillParallax: "long",
+        // mvf9leyc (19 Oct, "put this entire page out, annotate different parts of the page"): laid out flat at full height with
+        // numbered callouts (it was the export scrolling inside a phone: still + stillParallax "long", kept in git history)
+        fig: "schedCartPageFlat",
         figBare: true,
         figure: "The full cart page, top to bottom.",
         divider: true,
