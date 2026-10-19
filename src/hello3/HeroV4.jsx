@@ -28,6 +28,9 @@ const N = WORDS.length;
 // metrics as ratios of the font size (heroV4.css: line-height 1.15, face 2.14 x 2.3)
 const LH = 1.15, FW = 2.14, FH = 2.3, SPACE = 0.25, GAP = 0.3, TOL = 0.6;
 const DRAG_PX = 6, LONG_PRESS = 350;
+// the ripple: characters within RANGE px of the face's centre are pushed away (PUSH px at the face, squared falloff),
+// tilted and scaled, with the face's velocity added; each one springs back to rest
+const RANGE = 180, PUSH = 22, TILT = 14, GROW = 0.14, VEL = 0.012, SK = 240, SC = 2 * Math.sqrt(240) * 0.55;
 const SLOT_KEY = "hv4-slot";
 
 const readSlot = () => {
@@ -123,14 +126,20 @@ function gapPoints(L, widths, fs) {
 
 export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId, replayGreeting }) {
   const head = useRef(null), face = useRef(null), live = useRef(null);
-  const S = useRef({ g: 6, hints: true, widths: null, L: null, fs: 36, drag: null, suppress: false, raf: 0 }).current;
+  const S = useRef({ chars: null, act: new Set(), st: null, rip: 0, fc: { x: 0, y: 0, vx: 0, vy: 0, on: false }, g: 6, hints: true, widths: null, L: null, fs: 36, drag: null, suppress: false, raf: 0 }).current;
   const wordEls = () => [...head.current.querySelectorAll(".hv4__t")];
 
   // ---- layout: measure (once, and on font load / resize), place ----
   const place = (animate, mode = "animate") => {
     const h = head.current; if (!h) return;
     const els = wordEls();
-    if (!S.widths) S.widths = els.map((e) => e.offsetWidth);
+    if (!S.widths) {
+      S.widths = els.map((e) => e.offsetWidth);
+      // each character's centre inside its word, read once here (never in a frame)
+      S.chars = els.flatMap((e, wi) => [...e.children].map((c) => ({ el: c, wi, dx: c.offsetLeft + c.offsetWidth / 2 })));
+      S.st = new Float32Array(S.chars.length * 8); // per char: ox oy rot sc, then their velocities
+      S.chars.forEach((_, k) => { S.st[k * 8 + 3] = 1; });
+    }
     S.fs = parseFloat(getComputedStyle(h).fontSize) || 36;
     const room = h.parentElement.clientWidth || 600;
     const phone = window.matchMedia("(max-width: 720px)").matches;
@@ -171,6 +180,41 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     if (mode !== "live" && live.current) live.current.textContent = g >= N ? "Face moved to the end" : `Face moved before “${WORDS[g]}”`;
   };
 
+  // ---- the ripple (one rAF while dragging, then until every spring has settled; no layout reads) ----
+  const ripple = (now) => {
+    S.rip = 0;
+    const m = S.ripT ? Math.min(0.05, (now - S.ripT) / 1000) : 0.016; S.ripT = now;
+    const L = S.L, fc = S.fc, st = S.st; if (!L || !st) return;
+    const fcx = fc.x + FW * S.fs / 2, fcy = fc.y + FH * S.fs / 2, lh = LH * S.fs;
+    const speed = Math.hypot(fc.vx, fc.vy);
+    S.chars.forEach((c, k) => {
+      const b = k * 8, p = L.pos[c.wi];
+      let tx = 0, ty = 0, tr = 0, ts = 1;
+      if (fc.on) {
+        const dx = p.x + c.dx - fcx, dy = p.y + lh / 2 - fcy, dist = Math.hypot(dx, dy);
+        if (dist < RANGE) {
+          const s = (1 - dist / RANGE) ** 2, ux = dx / (dist || 1), uy = dy / (dist || 1);
+          tx = ux * s * PUSH + fc.vx * s * VEL * 12; ty = uy * s * PUSH + fc.vy * s * VEL * 12;
+          tr = (ux >= 0 ? 1 : -1) * s * TILT * (0.5 + Math.min(1, speed / 900) * 0.5); ts = 1 + s * GROW;
+        }
+      }
+      const rest = !tx && !ty && !tr && ts === 1;
+      if (rest && !S.act.has(k)) return;
+      S.act.add(k);
+      const tg = [tx, ty, tr, ts];
+      let still = rest;
+      for (let j = 0; j < 4; j++) {
+        const v = st[b + 4 + j] + (SK * (tg[j] - st[b + j]) - SC * st[b + 4 + j]) * m;
+        st[b + 4 + j] = v; st[b + j] += v * m;
+        if (Math.abs(v) > 0.02 || Math.abs(st[b + j] - tg[j]) > 0.02) still = false;
+      }
+      if (still) { S.act.delete(k); c.el.style.transform = ""; return; }
+      c.el.style.transform = `translate(${st[b].toFixed(2)}px, ${st[b + 1].toFixed(2)}px) rotate(${st[b + 2].toFixed(2)}deg) scale(${st[b + 3].toFixed(3)})`;
+    });
+    if (fc.on || S.act.size) S.rip = requestAnimationFrame(ripple); else S.ripT = 0;
+  };
+  const kickRipple = () => { if (!reduce && !S.rip) { S.ripT = 0; S.rip = requestAnimationFrame(ripple); } };
+
   // ---- drag ----
   // the face's centre -> the closest gap (measured against its top row's middle). The current gap must lose by 10 px
   // to be left, so a reflow under a still pointer cannot flip-flop
@@ -188,7 +232,10 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     const d = S.drag; if (!d) return;
     const dt = Math.min(0.05, (now - (d.last || now)) / 1000); d.last = now;
     const k = reduce ? 1 : 1 - Math.exp(-dt / 0.045); // follows the pointer with a short spring-like lag
+    const px = d.x, py = d.y;
     d.x += (d.tx - d.x) * k; d.y += (d.ty - d.y) * k;
+    if (dt > 0) { S.fc.vx += ((d.x - px) / dt - S.fc.vx) * 0.4; S.fc.vy += ((d.y - py) / dt - S.fc.vy) * 0.4; }
+    S.fc.x = d.x; S.fc.y = d.y;
     face.current.style.transform = `translate(${d.x.toFixed(1)}px, ${d.y.toFixed(1)}px) scale(${reduce ? 1 : 1.06})`;
     if (Math.abs(d.tx - d.x) > 0.3 || Math.abs(d.ty - d.y) > 0.3) S.raf = requestAnimationFrame(frame);
   };
@@ -202,12 +249,15 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     d.pts = gapPoints(S.L, S.widths, S.fs); // measured at drag start, and again after each reflow
     d.x = d.tx = S.L.face.x; d.y = d.ty = S.L.face.y; d.fx = S.L.face.x; d.fy = S.L.face.y; d.last = performance.now();
     d.p0 = { x: e.clientX, y: e.clientY };
+    S.fc.on = true; S.fc.x = d.x; S.fc.y = d.y; S.fc.vx = S.fc.vy = 0;
+    kickRipple();
   };
   const end = (cancel) => {
     const d = S.drag; if (!d) return;
     clearTimeout(d.timer);
     S.drag = null;
     if (!d.active) return;
+    S.fc.on = false; S.fc.vx = S.fc.vy = 0; // the springs carry the characters home
     cancelAnimationFrame(S.raf); S.raf = 0;
     head.current.classList.remove("hv4--drag");
     document.documentElement.classList.remove("hv4-grabbing");
@@ -236,7 +286,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
       moveTo(hit.g, "live");
       d.pts = gapPoints(S.L, S.widths, S.fs);
     }
-    kick();
+    kick(); kickRipple();
   };
   const onKey = (e) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
@@ -250,7 +300,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     <div className={left ? "hv4 hv4--left" : "hv4"}>
       <h1 className="hv4__head" ref={head} data-calm aria-labelledby="hello-hero-title">
         <span className="hello-hero__sr" id="hello-hero-title">{HERO_V4_COPY}</span>
-        {WORDS.map((w, i) => <span key={i} className="hv4__t" aria-hidden>{w}</span>)}
+        {WORDS.map((w, i) => <span key={i} className="hv4__t" aria-hidden>{[...w].map((c, j) => <span key={j} className="hv4__c">{c}</span>)}</span>)}
         <span
           className="hv4__face"
           ref={face}
