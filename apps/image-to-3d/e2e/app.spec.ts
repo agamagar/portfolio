@@ -79,16 +79,14 @@ test("the access gate blocks strangers", async () => {
   await expect(page.getByRole("heading", { name: "New model" })).toBeVisible();
 });
 
-test("security headers: page CSP and the sandbox worker's stricter CSP", async () => {
+test("security headers: page CSP, and no model-written-code worker in the public bundle", async () => {
   const res = await page.request.get("/");
   expect(res.headers()["content-security-policy"]).toContain("script-src 'self'");
   expect(res.headers()["content-security-policy"]).not.toContain("unsafe-eval");
   const html = await res.text();
   const js = /src="(\/assets\/index-[^"]+\.js)"/.exec(html)![1];
   const bundle = await (await page.request.get(js)).text();
-  const worker = /assets\/sandbox\.worker-[A-Za-z0-9_-]+\.js/.exec(bundle)![0];
-  const w = await page.request.get(`/${worker}`);
-  expect(w.headers()["content-security-policy"]).toBe("default-src 'none'; script-src 'self' 'unsafe-eval'");
+  expect(bundle).not.toMatch(/sandbox\.worker/);
 });
 
 test("generate: image → spec → model, with two compare-and-fix passes", async () => {
@@ -116,11 +114,11 @@ test("generate: image → spec → model, with two compare-and-fix passes", asyn
   await expect(page.getByLabel("Title")).toHaveValue("Toadstool in a pot");
 });
 
-test("custom snippet parts run in the sandbox worker (the robot's gear)", async () => {
+test("model-written custom parts are dropped (the robot fixture still carries a gear)", async () => {
   await page.getByRole("link", { name: "Create", exact: true }).click();
   await generate({ file: "robot", notes: "a toy robot", style: "Toon", passes: 1 });
   await page.locator(".notes summary").click();
-  await expect(page.locator(".notes")).not.toContainText("Custom part");
+  await expect(page.locator(".notes")).toContainText("model-written code is not run");
   await save();
 });
 

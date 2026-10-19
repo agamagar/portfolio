@@ -8,7 +8,7 @@ describe("parseSpec", () => {
   it("accepts every fixture answer", () => {
     for (const name of ["create.toadstool.json", "refine.toadstool.1.json", "refine.toadstool.2.json", "create.robot.json", "refine.robot.1.json"]) {
       const { result, warnings } = parseRefine(fixtureAnswer(name));
-      expect(warnings).toEqual([]);
+      expect(warnings.filter((w) => !/custom part/.test(w))).toEqual([]);
       expect(result.spec.parts.length).toBeGreaterThan(5);
     }
   });
@@ -140,5 +140,28 @@ describe("sandboxed snippets", () => {
 
   it("rejects geometry with coordinates far outside the model", () => {
     expect(() => runSnippet(THREE, "const g = new THREE.BoxGeometry(1,1,1); g.translate(1000,0,0); return g;")).toThrow(/range/);
+  });
+});
+
+describe("model-written code is off in the public build", () => {
+  it("LIMITS.customParts is 0 and customParts is not in the schema offered to Claude", async () => {
+    const { LIMITS, SPEC_JSON_SCHEMA, REFINE_JSON_SCHEMA } = await import("../shared/spec");
+    expect(LIMITS.customParts).toBe(0);
+    expect(JSON.stringify(SPEC_JSON_SCHEMA)).not.toMatch(/customParts|BufferGeometry/);
+    expect(JSON.stringify(REFINE_JSON_SCHEMA)).not.toMatch(/customParts/);
+  });
+
+  it("the prompt no longer asks for code", async () => {
+    const { SYSTEM_PROMPT } = await import("../server/prompts");
+    expect(String(SYSTEM_PROMPT)).not.toMatch(/customParts|BufferGeometry/);
+  });
+
+  it("parseSpec drops customParts a model wrote anyway, with a warning", async () => {
+    const { parseSpec } = await import("../shared/spec");
+    const raw = fixtureAnswer("create.robot.json").spec;
+    expect(raw.customParts.length).toBeGreaterThan(0);
+    const { spec, warnings } = parseSpec(raw);
+    expect(spec.customParts).toEqual([]);
+    expect(warnings.join(" ")).toMatch(/model-written code is not run/);
   });
 });

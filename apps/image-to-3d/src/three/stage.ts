@@ -3,7 +3,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import type { Spec, Style } from "../../shared/spec";
 import { buildLights, buildModel, disposeObject, frameCamera, type BuildResult } from "./builder";
-import { buildCustomGeometries } from "./sandbox";
 
 export interface ShowResult {
   warnings: string[];
@@ -77,7 +76,16 @@ export class Stage {
 
   /** Build and show a spec. Custom snippet parts run in the sandbox worker first. */
   async show(spec: Spec, opts: { style?: Style; keepView?: boolean } = {}): Promise<ShowResult> {
-    const { geometries, errors } = await buildCustomGeometries(spec.customParts);
+    // Model-written code only ever runs behind the dev flag; in a production build this branch is
+    // compiled out and the worker is not shipped.
+    let geometries: Map<string, THREE.BufferGeometry> | undefined;
+    let customErrors: string[] = [];
+    if (import.meta.env.DEV && import.meta.env.VITE_ALLOW_CUSTOM_PARTS === "1" && spec.customParts?.length) {
+      const { buildCustomGeometries } = await import("./sandbox");
+      const built = await buildCustomGeometries(spec.customParts);
+      geometries = built.geometries;
+      customErrors = built.errors;
+    } else if (spec.customParts?.length) spec = { ...spec, customParts: [] };
     if (this.disposed) return { warnings: [], stats: { meshes: 0, triangles: 0, parts: 0, mirrored: 0, custom: 0 } };
     const result = buildModel(spec, { style: opts.style, customGeometries: geometries });
     this.clearModel();
@@ -94,7 +102,7 @@ export class Stage {
 
     if (!opts.keepView) this.resetView();
     this.dirty = true;
-    return { warnings: [...errors.map((e) => `Custom part ${e}`), ...result.warnings], stats: result.stats };
+    return { warnings: [...customErrors.map((e) => `Custom part ${e}`), ...result.warnings], stats: result.stats };
   }
 
   resetView() {

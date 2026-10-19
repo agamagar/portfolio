@@ -41,8 +41,8 @@ When more than one view is given, each is labelled "Front view", "Left view" or 
 4. Overlap parts slightly (5-15% of their size) so the model reads as one object with no visible gaps. Eyes sit partly inside the head, not floating in front of it.
 5. Infer the hidden sides plausibly and note your assumptions in notes.
 6. pose: describe the pose and use adjustments for gestures you'd like to tweak separately (head tilt, a raised arm). Leave adjustments empty if the rest pose already matches.
-7. customParts: only when no combination of primitives can express a form (e.g. a twisted ribbon, a gear with teeth, a spiral shell). Each is the BODY of a function (THREE, params) => THREE.BufferGeometry that runs in an isolated worker: use only THREE geometry and math classes (BufferGeometry, Float32BufferAttribute, Vector2/3, Shape, Curve classes, LatheGeometry, TubeGeometry, ExtrudeGeometry, ParametricGeometry is NOT available). No DOM, no network, no timers, no globals, no imports, no string-built property access. Keep it under 60 lines and 20k vertices, end with return geometry;. Leave customParts empty in almost every spec.
-8. Limits: at most ${LIMITS.parts} parts, ${LIMITS.materials} materials, ${LIMITS.customParts} custom parts, ${LIMITS.profilePoints} profile points, ${LIMITS.pathPoints} path points. Coordinates within ±${LIMITS.maxExtent}.
+7. Use only the listed primitives. Do not write code: there is no way to run it, so express every form as a combination of primitives.
+8. Limits: at most ${LIMITS.parts} parts, ${LIMITS.materials} materials, ${LIMITS.profilePoints} profile points, ${LIMITS.pathPoints} path points. Coordinates within ±${LIMITS.maxExtent}.
 
 # Output
 

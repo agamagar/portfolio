@@ -144,7 +144,7 @@ describe("buildModel", () => {
 
   it("uses sandbox geometry for custom parts, or a placeholder with a warning", () => {
     const custom = { id: "gear", name: "Gear", description: "", code: "return null", parentId: "", position: [0, 0, 0] as [number, number, number], rotation: [0, 0, 0] as [number, number, number], scale: [1, 1, 1] as [number, number, number], materialId: "m" };
-    const spec = miniSpec([p("a", { type: "sphere", radius: 0.5 })], { customParts: [custom] });
+    const spec = miniSpec([p("a", { type: "sphere", radius: 0.5 })], { customParts: [custom] }); // builder-level only; parseSpec drops these
     const missing = buildModel(spec);
     expect(missing.warnings.join(" ")).toMatch(/gear/);
     expect(missing.stats.custom).toBe(0);
