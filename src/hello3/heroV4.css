@@ -55,13 +55,14 @@
   .hello[data-page="3"] .hello-hero.hello-hero--v4 .hello-hero__table { padding: 0; margin: 0; justify-self: end; width: 100%; }
 }
 
-/* the drag (BangDrag-free): the face lifts, a caret marks the gap it will land in, the words and the face
-   then FLIP to the new layout (transforms only) */
+/* the drag: the face lifts and tracks the pointer; the slot and the words re-wrap live around it (a 130 ms FLIP,
+   transforms only); on release the face settles into the slot */
 .hello[data-page="3"] .hv4__head:not([data-ready]) .hv4__t, .hello[data-page="3"] .hv4__head:not([data-ready]) .hv4__face { visibility: hidden; }
 .hello[data-page="3"] .hv4__head.hv4--animate .hv4__t, .hello[data-page="3"] .hv4__head.hv4--animate .hv4__face { transition: transform 620ms cubic-bezier(0.2, 1.12, 0.3, 1) !important; }
+.hello[data-page="3"] .hv4__head.hv4--live .hv4__t { transition: transform 130ms ease-out !important; }
+.hello[data-page="3"] .hv4__head.hv4--settle .hv4__face { transition: transform 260ms cubic-bezier(0.2, 1, 0.3, 1) !important; }
 .hello[data-page="3"] .hv4__head.hv4--drag .hv4__face { transition: none !important; cursor: grabbing; z-index: 2; }
 .hello[data-page="3"] .hv4__face::before { content: ""; position: absolute; inset: 10% 8% -4% 8%; border-radius: 50%; background: radial-gradient(closest-side, rgb(0 0 0 / 0.28), transparent); filter: blur(8px); opacity: 0; transition: opacity 160ms ease; pointer-events: none; }
 .hello[data-page="3"] .hv4__head.hv4--drag .hv4__face::before { opacity: 1; }
-.hello[data-page="3"] .hv4__caret { position: absolute; left: -1.5px; top: 0; width: 3px; height: calc(var(--fs) * 1.15px); border-radius: 2px; background: var(--link, #1a6fd0); opacity: 0; pointer-events: none; transition: opacity 120ms ease; }
 html.hv4-grabbing, html.hv4-grabbing * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
 @media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .hv4__head .hv4__t, .hello[data-page="3"] .hv4__head .hv4__face { transition: none !important; } }
