@@ -8661,6 +8661,11 @@ html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
 .qa-pill__n--fixed { background: rgba(31, 157, 97, 0.22); color: #7fe0ae; }
 .qa-pill__n--note { background: rgba(91, 108, 255, 0.24); color: #b6bdff; }
 .qa-pill__state { padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
+/* mvfwh7v7: the QA toggle is a round glass button (theme-toggle) at the old pill's spot, bottom centre; the open count is a badge */
+.qa-circle { position: fixed; left: 50%; bottom: 16px; translate: -50% 0; z-index: 2147482001; cursor: pointer; }
+.qa-circle[aria-pressed="true"] { box-shadow: 0 0 0 2px #e8930c; color: #ffc46b; }
+.qa-circle__n { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; box-sizing: border-box; background: #e8930c; color: #1a1205; font: 700 10px/16px "Google Sans Flex", Inter, sans-serif; text-align: center; }
+@media (max-width: 700px) { .qa-circle { bottom: 70px; } }
 @media (max-width: 700px) { .qa-pill__n--note { display: none; } .qa-pill { bottom: 70px; } .qa-pin__card { width: min(280px, 80vw); } }
 /* 11 Oct: the reply field on each QA card */
 .qa-pin__card { pointer-events: none; }

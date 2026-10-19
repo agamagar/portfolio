@@ -178,12 +178,14 @@ export default function QaNotes() {
 
   return (
     <>
-      <button type="button" className="qa-pill" onClick={() => setOn((v) => !v)} aria-pressed={on}>
-        <b>QA</b>
-        <span className="qa-pill__n qa-pill__n--open">{count("open")} open</span>
-        <span className="qa-pill__n qa-pill__n--fixed">{count("fixed")} fixed</span>
-        <span className="qa-pill__n qa-pill__n--note">{count("note")} notes</span>
-        <span className="qa-pill__state">{on ? "Hide" : "Show"}</span>
+      {/* mvfwh7v7 (Agam, "make this a circular button as well"): an icon-only round glass button like the eye and Inspect ones; the open count rides as a badge */}
+      <button
+        type="button" className="theme-toggle qa-circle" onClick={() => setOn((v) => !v)} aria-pressed={on}
+        aria-label={`QA notes: ${count("open")} open, ${count("fixed")} fixed, ${count("note")} notes (${on ? "hide" : "show"})`}
+        title={`QA · ${count("open")} open · ${count("fixed")} fixed · ${count("note")} notes`}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 21V4" /><path d="M5 5h11l-2 4 2 4H5" /></svg>
+        {count("open") > 0 && <span className="qa-circle__n" aria-hidden>{count("open")}</span>}
       </button>
       {on && (
         <div className="qa-layer" aria-label="QA notes">
