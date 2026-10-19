@@ -36,7 +36,14 @@ function useBannerScroll(on) {
       raf = requestAnimationFrame(tick);
     };
     set(1);
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(tick); }, { threshold: 0.05 });
+    // mvfwgfv5 (Agam, "auto play this timed with scroll"): the video plays when the phone scrolls into view, from its start, and
+    // rests when it leaves (a pause chosen on the control bar is respected); it no longer plays unseen off-screen
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting && e.intersectionRatio >= 0.4;
+      const v = vid.current;
+      if (visible) { if (v.dataset.ppUser !== "1") { v.currentTime = 0; v.play()?.catch?.(() => {}); } if (!raf) raf = requestAnimationFrame(tick); }
+      else if (v.dataset.ppUser !== "1") v.pause();
+    }, { threshold: [0, 0.4, 0.7] });
     io.observe(root.current);
     return () => { io.disconnect(); if (raf) cancelAnimationFrame(raf); };
   }, [on]);
@@ -50,7 +57,7 @@ export function SchedGtmRealOne({ dim = false }) {
   // sits in the cutout, the bezel rides on top
   const IMG = "/figures/scheduled/schedule-page-ui.png";
   const ALT = "The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid.";
-  const video = <video ref={motion ? vid : undefined} className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />;
+  const video = <video ref={motion ? vid : undefined} className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay={!motion} muted loop playsInline preload="auto" />; // motion: started by useBannerScroll when scrolled into view
   return (
     <div className="gtmr-one">
       <div className="article__plate-phone gtmr-one__phone">
