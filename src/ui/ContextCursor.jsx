@@ -18,6 +18,7 @@
 // track -> drag (grabbing while pressed), project cards and rows -> view, external links ->
 // ext, other links/buttons -> link.
 import { useEffect, useRef } from "react";
+import { STATES, STATE_NAMES, RULES, ALIAS, INSPECT_SEL, FS } from "./cursorStates";
 import "./contextCursor.css";
 
 // glyphs: two polylines of 5 points (x,y)*5 each; "z" collapses to the centre
@@ -34,82 +35,88 @@ export const G = {
 // state -> target shape. label null = none. w:null = fit the label.
 export const S = {
   dot: { w: 10, h: 10, r: 5, g: "none" },
-  // the organic arrow scenarios (shape drawn from FIG, no pill)
-  arrow: { w: 0, h: 0, r: 0, g: "none", org: "arrow" },
-  hover: { w: 0, h: 0, r: 0, g: "none", org: "hover" },
-  scroll: { w: 0, h: 0, r: 0, g: "none", org: "scroll" },
-  link: { w: 26, h: 26, r: 13, g: "none" },
-  ext: { w: 34, h: 34, r: 17, g: "ext" },
-  view: { w: null, h: 34, r: 17, g: "view", label: "View" },
-  lock: { w: null, h: 34, r: 17, g: "lock", label: "Locked" },
-  drag: { w: null, h: 34, r: 17, g: "none", label: "Drag" },
-  grab: { w: 22, h: 22, r: 11, g: "none" },
-  play: { w: 44, h: 44, r: 22, g: "play" },
-  text: { w: 2, h: 24, r: 1, g: "none" },
-  rotate: { w: 44, h: 44, r: 22, g: "rotate" },
-  up: { w: 44, h: 44, r: 22, g: "up" },
+  // the glass pill: only where a label is needed (data-cursor-label)
+  pill: { w: 26, h: 26, r: 13, g: "none" },
+  // every other state is an organic shape from cursorStates.js (blended outlines, no pill)
+  ...Object.fromEntries(STATE_NAMES.map((n) => [n, { w: 0, h: 0, r: 0, g: STATES[n].glyph || "none", org: n }])),
 };
 const PAD_L = 12; // label pills: glyph slot + gap on the left when a glyph is present
 
-const EXT = (a) => a.target === "_blank" || (a.host && a.host !== location.host);
 const hit = (sel, x, y) => { const n = document.querySelector(sel); if (!n) return false; const r = n.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; };
 function resolve(t, down, x, y) {
+  if (document.documentElement.matches(INSPECT_SEL)) return { s: "inspect" };
   if (!(t instanceof Element)) return { s: "arrow" };
   const xe = t.closest("[data-cursor]");
   if (xe) {
-    const s = xe.getAttribute("data-cursor");
-    return { s: s === "link" ? "hover" : S[s] ? s : "arrow", label: xe.getAttribute("data-cursor-label") || undefined };
+    const label = xe.getAttribute("data-cursor-label") || undefined;
+    if (label) return { s: "pill", label };
+    const n = xe.getAttribute("data-cursor") || "";
+    return { s: S[ALIAS[n] || n] ? ALIAS[n] || n : "arrow" };
   }
-  if (t.closest("video")) { const v = t.closest("video"); return { s: "play", label: v.paused ? "Play" : "Pause" }; }
-  if (t.closest("input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable=true]")) return { s: "text" };
-  if (t.closest(".is-locked")) return { s: "lock" };
-  if (t.closest(".hf__bang, .hv2__bang")) return { s: down ? "grab" : "drag" };
-  if (t.closest(".hero-morph__btn, .hero-morph__cv") || hit(".hero-morph__cv", x, y)) return { s: "rotate" }; // the 3D face: the glyph only, no text
-  if (t.closest(".wscene-warm-pill__btn") || hit(".wscene-warm-pill__btn", x, y)) return { s: "up" };
-  if (t.closest(".sq__track")) return { s: down ? "grab" : "drag" };
-  if (t.closest("[data-project], .wg__card, .work__item")) return { s: "view" };
-  const a = t.closest("a[href]");
-  if (a) return { s: EXT(a) ? "ext" : "hover" };
-  if (t.closest("button, [role=button], [role=link], summary, label, select")) return { s: "hover" };
+  const ctx = { down };
+  for (const r of RULES) {
+    const el = t.closest(r.sel);
+    if (el) return { s: r.s(ctx, el) };
+    if (r.rect && hit(r.rect, x, y)) return { s: r.s(ctx, document.querySelector(r.rect)) };
+  }
   return { s: "arrow" };
 }
 
-
-// AGAM'S ORGANIC CURSOR (Figma Portfolio-2026, section 1647:5325, three 360 x 360 scenarios): DEFAULT is a
-// chunky rounded pointer arrow; HOVER the same arrow with its tail swept into one curve; SCROLL splits it into
-// two opposed spikes. They are morphed as outlines: each is sampled once into NPT evenly spaced points
-// (starting at the tip, same winding), so any blend of the three is just a weighted sum of point arrays, with
-// every weight on its own spring (gentle overshoot = the organic feel). Coordinates are relative to each
-// shape's hotspot (the arrow tip; the centre for scroll) and scaled by FS to cursor size.
-const FIG = {
-  arrow: "M153.852 295.071L56.2051 73.7915C51.755 63.707 62.1147 53.4612 72.1494 58.0224L292.058 157.981C302.471 162.714 300.987 177.948 289.857 180.583L201.5 201.5L176.406 293.388C173.43 304.287 158.413 305.408 153.852 295.071Z",
-  hover: "M152.321 264.257L88.4511 88.6154C84.9417 78.9648 94.3869 69.6512 103.987 73.2956L276.28 138.699C287.068 142.795 286.423 158.268 275.332 161.452L254.132 167.539C223.556 176.316 198.981 199.118 187.941 228.952L174.853 264.321C170.975 274.8 156.139 274.758 152.321 264.257Z",
-  top: "M129.673 156.103L171.224 44.3109C173.171 39.074 180.491 38.8391 182.769 43.9406L231.643 153.383C233.695 157.976 228.687 162.52 224.314 160.033C197.756 144.927 165.067 145.538 139.093 161.627L137.571 162.57C133.202 165.276 127.882 160.921 129.673 156.103Z",
-  bot: "M231.162 215.447L185.914 316.491C183.696 321.444 176.649 321.399 174.494 316.419L130.382 214.471C128.379 209.843 133.528 205.39 137.82 208.038C163.556 223.921 195.913 224.474 222.176 209.478L223.651 208.636C228.131 206.078 233.271 210.738 231.162 215.447Z",
-};
-const NPT = 72, FS = 0.075;
-function outline(svg, d, start, hot) {
-  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+// THE MORPH (see cursorStates.js): every state part is sampled ONCE into NPT points that correspond between all
+// shapes, so any blend is a plain weighted sum with no shards. The parameter is (angle swept around the centroid)
+// plus a little arc length: for star-shaped parts that is the angular sampling (arrow <-> scroll morph cleanly),
+// and parts with notches (the double arrows) still keep their notches because arc length keeps advancing where the
+// angle doubles back. All start at the west direction, all wind the same way. Coordinates are px about the hotspot.
+export const NPT = 96;
+const NSVG = "http://www.w3.org/2000/svg";
+const wrap = (a) => { while (a > Math.PI) a -= 2 * Math.PI; while (a <= -Math.PI) a += 2 * Math.PI; return a; };
+function samplePart(svg, d, scale, hot) {
+  const p = document.createElementNS(NSVG, "path");
   p.setAttribute("d", d); svg.appendChild(p);
-  const L = p.getTotalLength();
-  let pts = Array.from({ length: NPT }, (_, i) => { const q = p.getPointAtLength((L * i) / NPT); return [q.x, q.y]; });
+  const L = p.getTotalLength(), M = 300;
+  let xs = new Float32Array(M), ys = new Float32Array(M), cx = 0, cy = 0;
+  for (let i = 0; i < M; i++) { const q = p.getPointAtLength((L * i) / M); xs[i] = q.x; ys[i] = q.y; cx += q.x; cy += q.y; }
   svg.removeChild(p);
-  let area = 0; // one winding for every shape, so points correspond
-  for (let i = 0; i < NPT; i++) { const a = pts[i], b = pts[(i + 1) % NPT]; area += a[0] * b[1] - b[0] * a[1]; }
-  if (area < 0) pts.reverse();
-  let k = 0, best = 1e9; // rotate to start at the tip
-  pts.forEach((q, i) => { const dd = (q[0] - start[0]) ** 2 + (q[1] - start[1]) ** 2; if (dd < best) { best = dd; k = i; } });
-  pts = pts.slice(k).concat(pts.slice(0, k));
+  cx /= M; cy /= M;
+  let ang = Array.from(xs, (x, i) => Math.atan2(ys[i] - cy, x - cx)), sweep = 0;
+  for (let i = 0; i < M; i++) sweep += wrap(ang[(i + 1) % M] - ang[i]);
+  let idx = Array.from({ length: M }, (_, i) => i);
+  if (sweep < 0) idx.reverse(); // one winding for every shape
+  ang = idx.map((i) => ang[i]);
+  const X = idx.map((i) => xs[i]), Y = idx.map((i) => ys[i]);
+  let s0 = 0, best = 1e9; // start where the point's angle is closest to west (-pi); the farther one on ties
+  for (let i = 0; i < M; i++) { const e = Math.abs(wrap(ang[i] + Math.PI)) - Math.hypot(X[i] - cx, Y[i] - cy) * 1e-4; if (e < best) { best = e; s0 = i; } }
+  const U = new Float32Array(M + 1);
+  for (let j = 0; j < M; j++) {
+    const i = (s0 + j) % M, n = (s0 + j + 1) % M;
+    U[j + 1] = U[j] + Math.abs(wrap(ang[n] - ang[i])) + 0.04 * Math.hypot(X[n] - X[i], Y[n] - Y[i]);
+  }
   const out = new Float32Array(NPT * 2);
-  pts.forEach((q, i) => { out[i * 2] = (q[0] - hot[0]) * FS; out[i * 2 + 1] = (q[1] - hot[1]) * FS; });
+  let j = 0;
+  for (let k = 0; k < NPT; k++) {
+    const u = (U[M] * k) / NPT;
+    while (j < M - 1 && U[j + 1] < u) j++;
+    const t = (u - U[j]) / Math.max(1e-6, U[j + 1] - U[j]), i = (s0 + j) % M, n = (s0 + j + 1) % M;
+    out[k * 2] = (X[i] + (X[n] - X[i]) * t - hot[0]) * scale;
+    out[k * 2 + 1] = (Y[i] + (Y[n] - Y[i]) * t - hot[1]) * scale;
+  }
   return out;
 }
-function buildShapes(svg) {
-  const A = outline(svg, FIG.arrow, [62, 62], [62, 62]), Hh = outline(svg, FIG.hover, [92, 75], [92, 75]);
-  const T = outline(svg, FIG.top, [177, 41], [180, 180]), B = outline(svg, FIG.bot, [180, 318], [180, 180]);
-  const mid = (P) => { let x = 0, y = 0; for (let i = 0; i < NPT; i++) { x += P[i * 2]; y += P[i * 2 + 1]; } const o = new Float32Array(NPT * 2); for (let i = 0; i < NPT; i++) { o[i * 2] = x / NPT; o[i * 2 + 1] = y / NPT; } return o; };
-  // the second blob of the arrow shapes is a point inside the arrow: it grows into the lower spike on scroll
-  return { arrow: [A, mid(A)], hover: [Hh, mid(Hh)], scroll: [T, B] };
+export function buildShapes(svg) {
+  const out = {};
+  for (const n of STATE_NAMES) {
+    const st = STATES[n];
+    const ds = st.fig ? st.fig.parts : st.parts, scale = st.fig ? FS : 1, hot = st.fig ? st.fig.hot : [0, 0];
+    const a = samplePart(svg, ds[0], scale, hot);
+    let b;
+    if (ds[1]) b = samplePart(svg, ds[1], scale, hot);
+    else { // a second blob that is a point at the first one's centre: it can grow out of nothing
+      let x = 0, y = 0; for (let i = 0; i < NPT; i++) { x += a[i * 2]; y += a[i * 2 + 1]; }
+      b = new Float32Array(NPT * 2); for (let i = 0; i < NPT; i++) { b[i * 2] = x / NPT; b[i * 2 + 1] = y / NPT; }
+    }
+    out[n] = [a, b];
+  }
+  return out;
 }
 
 export default function ContextCursor() {
@@ -119,9 +126,13 @@ export default function ContextCursor() {
     const el = root.current;
     if (!el) return undefined;
     const glass = el.querySelector(".cx__glass"), body = el.querySelector(".cx__body"), p1 = el.querySelector(".cx__g1"), p2 = el.querySelector(".cx__g2"), lab = el.querySelector(".cx__label"), orgG = el.querySelector(".cx__org"), orgP = el.querySelector(".cx__arrow");
-    const SH = buildShapes(el.querySelector(".cx__svg"));
+    let SH = null; // built once, in idle time (~16k path measurements), or on the first paint that needs it
+    const svgEl = el.querySelector(".cx__svg");
+    const ensure = () => SH || (SH = buildShapes(svgEl));
+    const idleBuild = window.requestIdleCallback ? window.requestIdleCallback(ensure, { timeout: 2500 }) : setTimeout(ensure, 600);
+    const NAMES = STATE_NAMES;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const KEYS = ["x", "y", "w", "h", "r", "sc", "ga", "g2a", "la", "wa", "wh", "ws", "aa", "lean", "st", ...Array.from({ length: 20 }, (_, i) => "p" + i)];
+    const KEYS = ["x", "y", "w", "h", "r", "sc", "ga", "g2a", "la", ...STATE_NAMES.map((n) => "w_" + n), "aa", "lean", "st", ...Array.from({ length: 20 }, (_, i) => "p" + i)];
     const V = {}, T = {}, D = {};
     KEYS.forEach((k) => { V[k] = 0; T[k] = 0; D[k] = 0; });
     V.w = T.w = 10; V.h = T.h = 10; V.r = T.r = 5;
@@ -152,12 +163,15 @@ export default function ContextCursor() {
       lab.style.transform = `translate3d(${(gx + 9).toFixed(1)}px,-50%,0)`;
       // the organic arrow: a weighted sum of the three outlines (weights are springs), leaning and
       // stretching a little with pointer speed; skipped entirely when it is not the visible shape
-      if (V.aa > 0.01 || T.aa > 0) {
+      if ((V.aa > 0.01 || T.aa > 0) && ensure()) {
+        const act = []; // only the states with weight right now (usually one or two)
+        for (const n of NAMES) { const w = V["w_" + n]; if (w > 0.004 || w < -0.004) act.push([SH[n], w]); }
         let d = "";
         for (let sub = 0; sub < 2; sub++) {
-          const a = SH.arrow[sub], h = SH.hover[sub], c = SH.scroll[sub];
           for (let i = 0; i < NPT * 2; i += 2) {
-            d += (i ? "L" : "M") + (V.wa * a[i] + V.wh * h[i] + V.ws * c[i]).toFixed(2) + " " + (V.wa * a[i + 1] + V.wh * h[i + 1] + V.ws * c[i + 1]).toFixed(2);
+            let x = 0, y = 0;
+            for (let j = 0; j < act.length; j++) { const P = act[j][0][sub], w = act[j][1]; x += w * P[i]; y += w * P[i + 1]; }
+            d += (i ? "L" : "M") + x.toFixed(2) + " " + y.toFixed(2);
           }
           d += "Z";
         }
@@ -183,7 +197,7 @@ export default function ContextCursor() {
       const sp = S[s];
       state = s;
       el.setAttribute("data-s", s);
-      const text = label || sp.label || "";
+      const text = label || "";
       const gl = G[sp.g];
       const hasG = sp.g !== "none";
       lstate = text;
@@ -194,7 +208,10 @@ export default function ContextCursor() {
       else { T.w = sp.w; T.h = sp.h; T.r = sp.r; }
       for (let i = 0; i < 10; i++) { T["p" + i] = gl[0][i]; T["p" + (10 + i)] = gl[1][i]; }
       T.ga = hasG ? 1 : 0; T.g2a = gl[1] !== Z ? 1 : 0; T.la = text ? 1 : 0;
-      T.wa = sp.org === "arrow" ? 1 : 0; T.wh = sp.org === "hover" ? 1 : 0; T.ws = sp.org === "scroll" ? 1 : 0; T.aa = sp.org ? 1 : 0;
+      for (const n of NAMES) T["w_" + n] = sp.org === n ? 1 : 0;
+      T.aa = sp.org ? 1 : 0;
+      if (sp.org) el.setAttribute("data-org", ""); else el.removeAttribute("data-org");
+      if (STATES[sp.org]?.spin) el.setAttribute("data-spin", ""); else el.removeAttribute("data-spin");
       kick();
     };
     let key = "", scrolling = false, scrollT = 0, calmT = 0, lx = 0, ly = 0, lt = 0;
@@ -244,7 +261,7 @@ export default function ContextCursor() {
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("touchstart", onTouch, { passive: true });
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(st);
+      cancelAnimationFrame(raf); cancelAnimationFrame(st); if (window.cancelIdleCallback) window.cancelIdleCallback(idleBuild);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);

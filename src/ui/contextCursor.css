@@ -15,23 +15,15 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
   position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; color: #fff;
   font: 500 12px/14px "Google Sans Flex", Inter, -apple-system, sans-serif; letter-spacing: 0.01em;
 }
-/* EVERY state is a solid fill (Agam, 17 Oct: "cursor should always stay filled"): ink for the
-   neutral states (dot, drag, face, grab, caret), link blue for actions, charcoal for locked.
-   A hairline edge in the opposite ink and a soft shadow keep any fill legible on light, dark
-   and photographic backgrounds. Glyphs and labels sit inside in the contrasting colour. */
+/* LABEL PILL (data-cursor-label only): true glass, a nearly clear film with a strong frost, a crisp rim and a soft
+   shadow. The glass is an HTML layer (backdrop-filter cannot go on an SVG rect) sized by the same springs.
+   Every other state is an organic solid shape drawn into .cx__arrow (see cursorStates.js). */
 .cx__body { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35)); }
-.cx[data-s="drag"] .cx__label, .cx[data-s="rotate"] .cx__label { color: var(--cx-on-ink); }
-.cx[data-s="rotate"] .cx__g1, .cx[data-s="rotate"] .cx__g2 { stroke: var(--cx-on-ink); }
-.cx[data-s="drag"] .cx__body, .cx[data-s="rotate"] .cx__body, .cx[data-s="text"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; stroke-width: 1; }
-/* action states: white, slightly glassy (Agam, 18 Oct: "turn white, slightly glassy"). The glass is an
-   HTML layer (backdrop-filter cannot be applied to an SVG rect) sized by the same springs; the SVG body
-   goes clear. Ink glyph and label inside. */
+.cx[data-s="dot"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; stroke-width: 1; }
+.cx[data-org] .cx__body, .cx[data-s="pill"] .cx__body { opacity: 0; }
 .cx__glass {
   position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
   corner-shape: round; /* the site squircles every radius (index.css); the cursor is a true pill */
-  /* TRUE GLASS (Agam, 19 Oct: "fully glass"): a nearly clear film, strong frost (blur + saturate, set once and
-     never animated; only opacity and the box size move), a crisp rim (bright top edge, darker bottom edge,
-     faint ring all round, the same recipe as the nav pills' --glass-edge) and a soft drop shadow. */
   background: rgba(255, 255, 255, 0.11);
   -webkit-backdrop-filter: blur(18px) saturate(1.9); backdrop-filter: blur(18px) saturate(1.9);
   box-shadow:
@@ -42,21 +34,19 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
     0 8px 22px rgba(0, 0, 0, 0.26);
   transition: opacity 160ms linear;
 }
-.cx[data-s="link"] .cx__glass, .cx[data-s="ext"] .cx__glass, .cx[data-s="view"] .cx__glass, .cx[data-s="play"] .cx__glass, .cx[data-s="up"] .cx__glass { opacity: 1; }
-.cx[data-s="link"] .cx__body, .cx[data-s="ext"] .cx__body, .cx[data-s="view"] .cx__body, .cx[data-s="play"] .cx__body, .cx[data-s="up"] .cx__body { fill: transparent; stroke: none; filter: none; }
-.cx[data-s="lock"] .cx__body { fill: #3a3a40; stroke: rgba(255, 255, 255, 0.55); stroke-opacity: 1; stroke-width: 1; }
-.cx[data-s="grab"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; }
+.cx[data-s="pill"] .cx__glass { opacity: 1; }
+.cx[data-s="pill"] .cx__label { color: var(--cx-ink); text-shadow: 0 0 6px var(--cx-halo), 0 0 2px var(--cx-halo), 0 1px 1px var(--cx-halo); }
+/* glyphs inside the solid organic shapes use the contrast ink */
+.cx[data-org] .cx__g1, .cx[data-org] .cx__g2 { stroke: var(--cx-on-ink); }
 @media (hover: none), (pointer: coarse) { .cx { display: none; } }
-/* glyph and label on the glass: the theme's ink with a soft halo of the opposite tone, so they read over
-   any background, bright photo or dark page (static filter and shadow, nothing animated) */
-.cx[data-s="link"] .cx__g1, .cx[data-s="ext"] .cx__g1, .cx[data-s="view"] .cx__g1, .cx[data-s="play"] .cx__g1, .cx[data-s="up"] .cx__g1 { stroke: var(--cx-ink); filter: drop-shadow(0 0 2px var(--cx-halo)) drop-shadow(0 0 1px var(--cx-halo)); }
-.cx[data-s="link"] .cx__label, .cx[data-s="ext"] .cx__label, .cx[data-s="view"] .cx__label, .cx[data-s="play"] .cx__label, .cx[data-s="up"] .cx__label { color: var(--cx-ink); text-shadow: 0 0 6px var(--cx-halo), 0 0 2px var(--cx-halo), 0 1px 1px var(--cx-halo); }
 
-/* Agam's organic arrow (Figma 1647:5325): the pill body is hidden in the arrow scenarios; the arrow is the
-   theme's ink with a hairline of the opposite tone and a soft shadow, and breathes (compositor-only CSS
-   scale about the hotspot, so it costs no JS and nothing while the pointer is still). */
-.cx[data-s="arrow"] .cx__body, .cx[data-s="hover"] .cx__body, .cx[data-s="scroll"] .cx__body { opacity: 0; }
-.cx__arrow { fill: var(--cx-ink); stroke: none; filter: drop-shadow(0 0 0.7px var(--cx-on-ink)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
+/* THE ORGANIC SHAPE (Agam's Figma 1647:5325 and the registry): the theme's ink with a hairline of the opposite
+   tone and a soft shadow; it breathes (compositor-only CSS scale about the hotspot, nothing in JS) or, for the
+   busy state, turns. */
+.cx__arrow { fill: var(--cx-ink); fill-rule: evenodd; stroke: none; filter: drop-shadow(0 0 0.7px var(--cx-on-ink)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
+.cx[data-s="disabled"] .cx__arrow { opacity: 0.6; }
 .cx__org-in { transform-origin: 0 0; animation: cx-breathe 3.8s ease-in-out infinite; }
+.cx[data-spin] .cx__org-in { animation: cx-spin 900ms linear infinite; }
 @keyframes cx-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-@media (prefers-reduced-motion: reduce) { .cx__org-in { animation: none; } }
+@keyframes cx-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .cx__org-in, .cx[data-spin] .cx__org-in { animation: none; } }
