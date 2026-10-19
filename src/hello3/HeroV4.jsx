@@ -6,8 +6,11 @@
 // (layoutHeadline). That is what makes a reserved two-line slot at ANY word gap possible (CSS cannot flow
 // words around a box that sits mid-paragraph), and it makes the reflow animation free: a drop sets new
 // transforms and a CSS transition (the FLIP) carries every word and the face to them.
-//  - the word widths are measured once (and again on a font load or a resize), never during a drag
-//  - a drag only moves the face (transform) and a caret at the nearest word gap; the reflow runs once, on drop
+//  - the word widths are measured once (and again on a font load or a resize), never during a drag; the gap points are
+//    cached per layout (recomputed only after a reflow, 12 words)
+//  - while dragging, the face tracks the pointer (transform) and its reserved slot moves LIVE to the nearest word gap:
+//    the reflow runs only when that gap changes (a light 130 ms FLIP keeps the re-wrap from jittering); on release the
+//    face settles into the slot (260 ms)
 //  - a click (under 6 px of travel) is untouched: the face's own button (HeroMorph) gets it, style swap and all
 //  - keyboard: arrow keys on the focused face move it a word; touch: long-press, then drag
 //  - the slot is remembered for the visit (sessionStorage); reduced motion: no springs, the layout snaps
@@ -119,12 +122,12 @@ function gapPoints(L, widths, fs) {
 }
 
 export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId, replayGreeting }) {
-  const head = useRef(null), face = useRef(null), caret = useRef(null), live = useRef(null);
+  const head = useRef(null), face = useRef(null), live = useRef(null);
   const S = useRef({ g: 6, hints: true, widths: null, L: null, fs: 36, drag: null, suppress: false, raf: 0 }).current;
   const wordEls = () => [...head.current.querySelectorAll(".hv4__t")];
 
   // ---- layout: measure (once, and on font load / resize), place ----
-  const place = (animate) => {
+  const place = (animate, mode = "animate") => {
     const h = head.current; if (!h) return;
     const els = wordEls();
     if (!S.widths) S.widths = els.map((e) => e.offsetWidth);
@@ -136,11 +139,12 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     h.style.width = room + "px";
     h.style.height = S.L.height + "px";
     if (animate && !reduce) {
-      h.classList.add("hv4--animate");
-      clearTimeout(S.t); S.t = setTimeout(() => h.classList.remove("hv4--animate"), 800);
+      const cls = mode === "live" ? "hv4--live" : "hv4--animate";
+      h.classList.add(cls);
+      clearTimeout(S[cls]); S[cls] = setTimeout(() => h.classList.remove(cls), mode === "live" ? 220 : 800);
     }
     els.forEach((e, k) => { e.style.transform = `translate(${S.L.pos[k].x.toFixed(1)}px, ${S.L.pos[k].y.toFixed(1)}px)`; });
-    face.current.style.transform = `translate(${S.L.face.x.toFixed(1)}px, ${S.L.face.y.toFixed(1)}px)`;
+    if (!S.drag?.active) face.current.style.transform = `translate(${S.L.face.x.toFixed(1)}px, ${S.L.face.y.toFixed(1)}px)`; // a dragged face follows the pointer
     h.dataset.ready = "";
   };
   // a version's default slot: before "the" (phones: before "intersection"), unless the visitor moved it this visit
@@ -160,18 +164,24 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     return () => { off = true; cancelAnimationFrame(raf); ro.disconnect(); };
   }, [left, reduce]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const moveTo = (g) => {
+  const moveTo = (g, mode) => {
     g = Math.max(0, Math.min(N, g));
     S.hints = false; S.g = g; saveSlot(g);
-    place(true);
-    if (live.current) live.current.textContent = g >= N ? "Face moved to the end" : `Face moved before “${WORDS[g]}”`;
+    place(true, mode);
+    if (mode !== "live" && live.current) live.current.textContent = g >= N ? "Face moved to the end" : `Face moved before “${WORDS[g]}”`;
   };
 
   // ---- drag ----
-  const nearest = (cx, cy) => { // the face's centre -> the closest gap (its top row's middle)
-    const lh = LH * S.fs; let best = null, bd = Infinity;
-    for (const p of S.drag.pts) { const d = (p.x - cx) ** 2 + ((p.y - (cy - lh / 2)) * 1.4) ** 2; if (d < bd) { bd = d; best = p; } }
-    return best;
+  // the face's centre -> the closest gap (measured against its top row's middle). The current gap must lose by 10 px
+  // to be left, so a reflow under a still pointer cannot flip-flop
+  const nearest = (cx, cy) => {
+    const lh = LH * S.fs; let best = null, bd = Infinity, cur = Infinity;
+    for (const p of S.drag.pts) {
+      const d = Math.hypot(p.x - cx, (p.y - (cy - lh / 2)) * 1.4);
+      if (d < bd) { bd = d; best = p; }
+      if (p.g === S.g && d < cur) cur = d;
+    }
+    return best && (best.g === S.g || bd + 10 < cur) ? best : null;
   };
   const frame = (now) => {
     S.raf = 0;
@@ -187,8 +197,9 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     const d = S.drag; d.active = true;
     face.current.setPointerCapture?.(d.id);
     head.current.classList.add("hv4--drag");
+    S.hints = false; // from here the headline wraps freely
     document.documentElement.classList.add("hv4-grabbing");
-    d.pts = gapPoints(S.L, S.widths, S.fs); // measured once, at drag start
+    d.pts = gapPoints(S.L, S.widths, S.fs); // measured at drag start, and again after each reflow
     d.x = d.tx = S.L.face.x; d.y = d.ty = S.L.face.y; d.fx = S.L.face.x; d.fy = S.L.face.y; d.last = performance.now();
     d.p0 = { x: e.clientX, y: e.clientY };
   };
@@ -200,10 +211,11 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     cancelAnimationFrame(S.raf); S.raf = 0;
     head.current.classList.remove("hv4--drag");
     document.documentElement.classList.remove("hv4-grabbing");
-    caret.current.style.opacity = "0";
     S.suppress = true; setTimeout(() => { S.suppress = false; }, 60); // the click the browser sends after a drag
-    if (cancel || d.g === undefined) { place(true); return; }
-    moveTo(d.g);
+    // the face settles into the slot it has been holding open
+    const h = head.current; h.classList.add("hv4--settle"); setTimeout(() => h.classList.remove("hv4--settle"), 320);
+    saveSlot(S.g);
+    place(false);
   };
   const onDown = (e) => {
     if (e.button > 0 || S.drag) return;
@@ -220,10 +232,9 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     }
     d.tx = d.fx + (e.clientX - d.p0.x); d.ty = d.fy + (e.clientY - d.p0.y);
     const hit = nearest(d.tx + FW * S.fs / 2, d.ty + FH * S.fs / 2);
-    if (hit) {
-      d.g = hit.g;
-      caret.current.style.transform = `translate(${hit.x.toFixed(1)}px, ${(hit.y - LH * S.fs / 2).toFixed(1)}px)`;
-      caret.current.style.opacity = "1";
+    if (hit && hit.g !== S.g) { // the slot jumps to the new gap and the words re-wrap around it, now
+      moveTo(hit.g, "live");
+      d.pts = gapPoints(S.L, S.widths, S.fs);
     }
     kick();
   };
@@ -240,7 +251,6 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
       <h1 className="hv4__head" ref={head} data-calm aria-labelledby="hello-hero-title">
         <span className="hello-hero__sr" id="hello-hero-title">{HERO_V4_COPY}</span>
         {WORDS.map((w, i) => <span key={i} className="hv4__t" aria-hidden>{w}</span>)}
-        <span className="hv4__caret" ref={caret} aria-hidden />
         <span
           className="hv4__face"
           ref={face}
@@ -250,7 +260,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
           onPointerCancel={() => end(true)}
           onKeyDown={onKey}
           onClickCapture={onClickCapture}
-          title="Drag me anywhere in the text"
+          title="Drag me through the text"
         >
           <span className="hello-hero__flyer hv4__flyer" ref={flyerRef}>
             <span className="header__avatar-wrap" onMouseEnter={replayGreeting}>
