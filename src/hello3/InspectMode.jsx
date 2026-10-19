@@ -242,7 +242,7 @@ export default function InspectMode() {
   // mvez5rrf: in Elements mode an embedded iframe (the Figma prototype phone) must not swallow the click that selects it
   useEffect(() => {
     const h = document.documentElement, st = document.createElement("style");
-    st.textContent = "html[data-inspect-el] iframe { pointer-events: none !important; }";
+    st.textContent = "html[data-inspect-el] iframe { pointer-events: none !important; }\n" + PHONE_FRAMES.split(",").map((x) => "html[data-inspect-el] " + x.trim()).join(", ") + " { pointer-events: auto !important; }"; // phone frames can be clicked even where the page made them click-through
     document.head.appendChild(st);
     if (on && mode === "elements") h.setAttribute("data-inspect-el", ""); else h.removeAttribute("data-inspect-el");
     return () => { h.removeAttribute("data-inspect-el"); st.remove(); };
