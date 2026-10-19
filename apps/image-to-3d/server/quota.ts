@@ -94,18 +94,21 @@ interface Job {
   uid: string;
   refines: number;
   judges: number;
+  /** SHA-256 of each moderated (re-encoded) image of this job. Refines may only reuse these. */
+  approved: string[];
 }
 
-export async function openJob(kv: Kv, user: User): Promise<string> {
+export async function openJob(kv: Kv, user: User, approved: string[] = []): Promise<string> {
   const id = randomBytes(12).toString("base64url");
-  await setJson(kv, `job:${id}`, { uid: user.id, refines: 0, judges: 0 } satisfies Job, { ttlSec: 3 * 3600 });
+  await setJson(kv, `job:${id}`, { uid: user.id, refines: 0, judges: 0, approved } satisfies Job, { ttlSec: 3 * 3600 });
   return id;
 }
 
-export async function spendJob(kv: Kv, user: User, id: unknown, kind: "refines" | "judges", max: number): Promise<void> {
+export async function spendJob(kv: Kv, user: User, id: unknown, kind: "refines" | "judges", max: number, hashes?: string[]): Promise<void> {
   const key = typeof id === "string" && /^[A-Za-z0-9_-]{16}$/.test(id) ? `job:${id}` : null;
   const job = key ? await getJson<Job>(kv, key) : null;
   if (!key || !job || job.uid !== user.id) throw new HttpError(400, "That generation has expired. Start a new one.", "bad_job");
+  if (hashes && !hashes.every((h) => job.approved.includes(h))) throw new HttpError(400, "The images changed since this generation started. Start a new one.", "bad_job");
   if (job[kind] >= max) throw new HttpError(400, "That generation has no passes left.", "bad_job");
   // not atomic across racing calls, but the per-user in-flight lock serialises a user's requests
   await setJson(kv, key, { ...job, [kind]: job[kind] + 1 }, { ttlSec: 3 * 3600 });

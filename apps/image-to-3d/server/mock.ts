@@ -5,7 +5,8 @@
  * mock replays them as the same stream events the SDK yields, so the server
  * code path is identical to production. Never active in production (env.ts).
  *
- * Fixture names: create.<subject>.json, refine.<subject>.<pass>.json, judge.<subject>.json
+ * Fixture names: moderate.allow.json / moderate.block.json (the latter when the note says
+ * "moderation-test-block"), create.<subject>.json, refine.<subject>.<pass>.json, judge.<subject>.json
  * The subject is chosen by a keyword in the user's notes, else the default.
  */
 import { readdirSync, readFileSync } from "node:fs";
@@ -25,10 +26,12 @@ function textOf(params: BetaMessageStreamParams): { system: string; user: string
 
 export function pickFixture(files: string[], params: BetaMessageStreamParams): string {
   const { system, user } = textOf(params);
-  const subjects = [...new Set(files.map((f) => f.split(".")[1]).filter(Boolean))];
+  const subjects = [...new Set(files.filter((f) => !f.startsWith("moderate.")).map((f) => f.split(".")[1]).filter(Boolean))];
   const notes = /Notes from the user[^"]*"""([\s\S]*?)"""/.exec(user)?.[1]?.toLowerCase() ?? "";
   const subject = subjects.find((s) => notes.includes(s)) ?? (subjects.includes(DEFAULT_SUBJECT) ? DEFAULT_SUBJECT : subjects[0]);
   if (system.startsWith("You compare a 3D render")) return `judge.${subject}.json`;
+  // moderation: a note containing the test phrase is blocked, everything else is allowed
+  if (system.startsWith("You are a content-safety reviewer")) return user.toLowerCase().includes("moderation-test-block") ? "moderate.block.json" : "moderate.allow.json";
   const pass = /COMPARE AND FIX, pass (\d+)/.exec(user)?.[1];
   if (pass) {
     const available = files

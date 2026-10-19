@@ -300,6 +300,14 @@ function write(name, msg) {
   console.log("wrote", name);
 }
 
+// moderation pre-check (Haiku): one allow, one block
+for (const [name, answer] of [
+  ["allow", { verdict: "allow", category: "none", reason: "An everyday object." }],
+  ["block", { verdict: "block", category: "weapon", reason: "It shows a realistic weapon." }],
+]) {
+  write(`moderate.${name}.json`, message({ id: `msg_01Fixture${name}ModerateImageTo3d`, model: "claude-haiku-5-5", thinking: "Checking the image against each rule.", answer, usage: { input: 1180, output: 96 } }));
+}
+
 let n = 0;
 const msgId = () => `msg_01Fixture${String(++n).padStart(4, "0")}ImageTo3d`;
 

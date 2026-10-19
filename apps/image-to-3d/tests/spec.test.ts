@@ -165,3 +165,13 @@ describe("model-written code is off in the public build", () => {
     expect(warnings.join(" ")).toMatch(/model-written code is not run/);
   });
 });
+
+describe("moderation result", () => {
+  it("has a strict schema, and a block without a category still blocks", async () => {
+    const { parseModeration, MODERATION_JSON_SCHEMA } = await import("../shared/spec");
+    expect(JSON.stringify(MODERATION_JSON_SCHEMA)).toMatch(/real_person_face/);
+    expect(parseModeration('{"verdict":"allow","category":"none","reason":"ok"}').verdict).toBe("allow");
+    expect(parseModeration('{"verdict":"block","category":"none","reason":"no"}')).toMatchObject({ verdict: "block", category: "other" });
+    expect(() => parseModeration('{"verdict":"maybe"}')).toThrow();
+  });
+});

@@ -17,6 +17,7 @@ import { assertBudget, recordSpend } from "../budget.js";
 import { createSpec, judgeRender, refineSpec, type CallHooks } from "../claude.js";
 import { requireApi, requireKv, requireStore, type Deps } from "../deps.js";
 import { clientIp, HttpError, json, ndjson, readJson } from "../http.js";
+import { assertNotLocked, imageHash, moderateViews } from "../moderation.js";
 import { acquireSlot, assertUserBudget, lockUser, openJob, recordUserSpend, reserveModel, spendJob } from "../quota.js";
 import * as v from "../validate.js";
 
@@ -61,18 +62,26 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
   };
   let refund: (() => Promise<void>) | null = null;
   let currentJob = "";
+  const hooksForCost: Pick<CallHooks, "onCost"> = {
+    onCost: (usd) => Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(() => {}, (e) => console.error("[image-to-3d] spend not recorded", e)),
+  };
   try {
     releases.push(await lockUser(kv, user));
     if (mode === "create") {
+      await assertNotLocked(kv, user);
       refund = await reserveModel(d.env, kv, user); // 1 model, however many views
-      currentJob = await openJob(kv, user);
     } else {
-      await spendJob(kv, user, body.jobId, "refines", d.env.maxRefinePasses);
+      await spendJob(kv, user, body.jobId, "refines", d.env.maxRefinePasses, base.views.map((x) => imageHash(x.image.data)));
       currentJob = String(body.jobId);
     }
     await assertUserBudget(d.env, kv, user, nextCallCeiling(base.model));
     releases.push(await acquireSlot(d.env, kv));
     await assertBudget(store, d.env.dailyBudgetUsd, nextCallCeiling(base.model));
+    if (mode === "create") {
+      // strict pre-check: nothing reaches the big model until every image is allowed
+      const approved = await moderateViews(api, kv, user, base.views, base.notes, { ...hooksForCost, signal: req.signal });
+      currentJob = await openJob(kv, user, approved);
+    }
   } catch (err) {
     await refund?.();
     await finish();
@@ -87,11 +96,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
         onThinking: (text) => send({ type: "thinking", text }),
         onProgress: (outputChars) => send({ type: "progress", outputChars }),
         onRetry: (attempt, reason) => send({ type: "retry", attempt, reason }),
-        onCost: (usd) =>
-          Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(
-            () => {},
-            (e) => console.error("[image-to-3d] spend not recorded", e),
-          ),
+        onCost: hooksForCost.onCost,
         signal: req.signal,
       };
       const out = refine ? await refineSpec(api, { ...base, ...refine }, hooks) : await createSpec(api, base, hooks);
@@ -128,7 +133,7 @@ export async function judge(req: Request, d: Deps): Promise<Response> {
   const render = await v.imageInput(body.render, "render");
   const unlock = await lockUser(kv, user);
   try {
-    await spendJob(kv, user, body.jobId, "judges", 1);
+    await spendJob(kv, user, body.jobId, "judges", 1, [imageHash(image.data)]);
     await assertUserBudget(d.env, kv, user, 0.01);
     await assertBudget(store, d.env.dailyBudgetUsd, 0.01);
     const out = await judgeRender(api, { image, render }, { onCost: (usd) => Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(() => {}, () => {}) });

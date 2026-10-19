@@ -39,6 +39,8 @@ export const DEFAULT_MODEL: ModelId = "claude-opus-5-5";
 export const DRAFT_MODEL: ModelId = "claude-haiku-5-5";
 /** Scoring a finished render is a simple comparison: always use the cheap model. */
 export const JUDGE_MODEL: ModelId = "claude-haiku-5-5";
+/** The safety pre-check on every image: cheap, fast, and strict. */
+export const MODERATION_MODEL: ModelId = "claude-haiku-5-5";
 
 export const EFFORTS = ["low", "medium", "high"] as const;
 export type Effort = (typeof EFFORTS)[number];

@@ -19,6 +19,7 @@ import { getSession, logout, postSession } from "../server/handlers/session";
 import { route } from "../server/http";
 import { MemoryKv } from "../server/kv";
 import { fixtureMessagesApi, messageToEvents } from "../server/mock";
+import { imageHash } from "../server/moderation";
 import { assertUserBudget } from "../server/quota";
 import { RateLimiter } from "../server/rateLimit";
 import { FsStore } from "../server/store/fsStore";
@@ -35,13 +36,25 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-/** Scripted fake: returns the given messages in order and records every request. */
-function scripted(messages: BetaMessage[]) {
+const isModeration = (p: BetaMessageStreamParams) => JSON.stringify(p.system).includes("content-safety reviewer");
+
+/**
+ * Scripted fake: returns the given messages in order and records every request. Moderation
+ * pre-checks are answered separately (allow, unless `moderation` says otherwise) and recorded in modCalls.
+ */
+function scripted(messages: BetaMessage[], moderation: (p: BetaMessageStreamParams, n: number) => string = () => "moderate.allow.json") {
   const calls: BetaMessageStreamParams[] = [];
+  const modCalls: BetaMessageStreamParams[] = [];
   const api: MessagesApi = {
     stream(params): MessageStreamLike {
-      calls.push(structuredClone(params));
-      const msg = messages[Math.min(calls.length - 1, messages.length - 1)];
+      let msg: BetaMessage;
+      if (isModeration(params)) {
+        modCalls.push(structuredClone(params));
+        msg = fixtureMessage(moderation(params, modCalls.length));
+      } else {
+        calls.push(structuredClone(params));
+        msg = messages[Math.min(calls.length - 1, messages.length - 1)];
+      }
       const events = messageToEvents(msg);
       return {
         async *[Symbol.asyncIterator]() {
@@ -51,7 +64,7 @@ function scripted(messages: BetaMessage[]) {
       };
     },
   };
-  return { api, calls };
+  return { api, calls, modCalls };
 }
 
 function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps {
@@ -236,8 +249,10 @@ describe("generate (scripted Claude)", () => {
     const retryContent = (calls[1] as any).messages[0].content;
     expect(retryContent.slice(0, 3)).toEqual((calls[0] as any).messages[0].content); // same cached prefix
     expect(retryContent[3].text).toMatch(/could not be used/);
-    // both attempts are billed and recorded against the daily budget
-    expect(await spentToday(d.store!)).toBeCloseTo(result.costUsd, 5);
+    // both attempts are billed and recorded against the daily budget, plus the tiny moderation call
+    const spent = await spentToday(d.store!);
+    expect(spent).toBeGreaterThan(result.costUsd);
+    expect(spent - result.costUsd).toBeLessThan(0.001);
   });
 
   it("gives up after two unusable answers with a clear error", async () => {
@@ -474,6 +489,7 @@ function gated() {
   const api: MessagesApi = {
     stream(params) {
       const s = inner.stream(params);
+      if (isModeration(params)) return s; // the pre-check isn't held, only the main call
       return {
         async *[Symbol.asyncIterator]() {
           await gate;
@@ -629,5 +645,111 @@ describe("quotas", () => {
     } finally {
       delete process.env.VERCEL;
     }
+  });
+});
+
+describe("moderation", () => {
+  const gen = (d: Deps) => route((r) => generate(r, d));
+  const post = (d: Deps, body: unknown, cookie: string) => gen(d)(jsonReq("POST", "/api/generate", body, cookie));
+  const logs = async () => {
+    const { sink } = await import("../server/log");
+    const lines: string[] = [];
+    const orig = sink.write;
+    sink.write = (l) => lines.push(l);
+    return { lines, restore: () => (sink.write = orig) };
+  };
+
+  it("checks every image with Haiku before the main model, and the note with the first", async () => {
+    const { api, calls, modCalls } = scripted([fixtureMessage("create.toadstool.json")]);
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    await events(await post(d, { ...createBody, image: undefined, images: { front: IMAGE, left: IMAGE, right: IMAGE }, notes: "a mushroom" }, cookie));
+    expect(modCalls).toHaveLength(3);
+    expect(calls).toHaveLength(1);
+    expect(modCalls[0].model).toBe("claude-haiku-5-5");
+    expect(JSON.stringify(modCalls[0].messages)).toContain("a mushroom");
+    expect(JSON.stringify(modCalls[1].messages)).not.toContain("a mushroom");
+    expect(JSON.stringify(modCalls[0].output_config)).toMatch(/verdict/);
+  });
+
+  it("blocks with a 422 and a reason, never calls the main model, refunds the quota, and logs only a hash", async () => {
+    const { api, calls } = scripted([fixtureMessage("create.toadstool.json")], () => "moderate.block.json");
+    const d = deps({ api }, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    const l = await logs();
+    try {
+      const res = await post(d, createBody, cookie);
+      expect(res.status).toBe(422);
+      const body = await res.json();
+      expect(body.code).toBe("moderation_blocked");
+      expect(body.error).toMatch(/weapons/);
+      expect(calls).toHaveLength(0);
+      const { imageInput } = await import("../server/validate");
+      const hash = imageHash((await imageInput(IMAGE, "x")).data);
+      const line = l.lines.map((x) => JSON.parse(x)).find((x) => x.event === "moderation_block");
+      expect(line).toMatchObject({ userId: expect.any(String), category: "weapon", imageHash: hash });
+      expect(l.lines.join("\n")).not.toContain(PNG_B64.slice(0, 60));
+      expect(JSON.stringify(line)).not.toMatch(/"image"|base64/);
+    } finally {
+      l.restore();
+    }
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(0);
+  });
+
+  it("refuses a repeat of a blocked image without another model call", async () => {
+    const { api, modCalls } = scripted([fixtureMessage("create.toadstool.json")], (_p, n) => (n === 1 ? "moderate.block.json" : "moderate.allow.json"));
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    expect((await post(d, createBody, cookie)).status).toBe(422);
+    expect(modCalls).toHaveLength(1);
+    const again = await post(d, createBody, cookie);
+    expect(again.status).toBe(422);
+    expect(modCalls).toHaveLength(1);
+  });
+
+  it("locks an account out for the day after three blocks", async () => {
+    const { api } = scripted([fixtureMessage("create.toadstool.json")], () => "moderate.block.json");
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    for (let i = 0; i < 3; i++) expect((await post(d, createBody, cookie)).status).toBe(422);
+    const res = await post(d, createBody, cookie);
+    expect(res.status).toBe(403);
+    expect((await res.json()).code).toBe("moderation_locked");
+  });
+
+  it("treats a model refusal on the pre-check as a block", async () => {
+    const refusal = { ...fixtureMessage("moderate.allow.json"), stop_reason: "refusal" } as BetaMessage;
+    const api: MessagesApi = {
+      stream: (p) => {
+        const msg = isModeration(p) ? refusal : fixtureMessage("create.toadstool.json");
+        return { async *[Symbol.asyncIterator]() { yield* messageToEvents(msg); }, finalMessage: async () => msg };
+      },
+    };
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    expect((await post(d, createBody, cookie)).status).toBe(422);
+  });
+
+  it("only lets refinements reuse the images that were approved", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const created = (await events(await post(d, createBody, cookie))).find((e) => e.type === "result")!;
+    const refine = { ...createBody, mode: "refine", jobId: created.jobId, pass: 1, spec: created.spec, render: IMAGE };
+    const swapped = await post(d, { ...refine, image: { data: readFileSync(path.join(IMAGES, "robot.png")).toString("base64"), mediaType: "image/png" } }, cookie);
+    expect(swapped.status).toBe(400);
+    expect((await swapped.json()).code).toBe("bad_job");
+    await events(await post(d, refine, cookie)); // the original image is fine
+  });
+
+  it("mock mode blocks a note containing the test phrase", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    expect((await post(d, { ...createBody, notes: "moderation-test-block" }, cookie)).status).toBe(422);
+    // (a blocked image stays blocked by hash, so the allowed request uses a different one)
+    const other = { data: readFileSync(path.join(IMAGES, "robot.png")).toString("base64"), mediaType: "image/png" };
+    const ok = await post(d, { ...createBody, image: other }, cookie);
+    expect(ok.status).toBe(200);
+    await ok.text();
   });
 });

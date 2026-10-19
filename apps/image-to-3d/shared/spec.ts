@@ -320,6 +320,16 @@ export const JudgeSchema = z.object({
 });
 export type JudgeResult = z.output<typeof JudgeSchema>;
 
+export const MODERATION_CATEGORIES = ["none", "sexual", "minors", "real_person_face", "graphic_violence", "weapon", "hate_symbol", "other"] as const;
+export type ModerationCategory = (typeof MODERATION_CATEGORIES)[number];
+
+export const ModerationSchema = z.object({
+  verdict: z.enum(["allow", "block"]).describe("allow only if the image clearly passes every rule"),
+  category: z.enum(MODERATION_CATEGORIES).describe("The rule that applies; none when allowed"),
+  reason: text(200, "One short, neutral sentence for the user; never describe explicit content"),
+});
+export type ModerationResult = z.output<typeof ModerationSchema>;
+
 // ---------------------------------------------------------------------------
 // semantic validation (beyond shape): returns warnings, repairs what it can,
 // throws SpecError only when the result would be unbuildable.
@@ -355,6 +365,14 @@ export function parseRefine(input: unknown, opts: { style?: Style } = {}) {
   if (!res.success) throw new SpecError("The refinement did not match the schema", formatZodIssues(res.error));
   const { spec, warnings } = repairSpec(res.data.spec, opts);
   return { result: { ...res.data, spec }, warnings };
+}
+
+export function parseModeration(input: unknown): ModerationResult {
+  const raw = typeof input === "string" ? safeJson(input) : input;
+  const res = ModerationSchema.safeParse(raw);
+  if (!res.success) throw new SpecError("The moderation result did not match the schema", formatZodIssues(res.error));
+  // a block with no category is still a block
+  return res.data.verdict === "block" && res.data.category === "none" ? { ...res.data, category: "other" } : res.data;
 }
 
 export function parseJudge(input: unknown): JudgeResult {
@@ -543,3 +561,4 @@ function dropCustomParts(node: unknown): void {
   }
   for (const v of Object.values(o)) dropCustomParts(v);
 }
+export const MODERATION_JSON_SCHEMA = toStructuredOutputSchema(ModerationSchema);
