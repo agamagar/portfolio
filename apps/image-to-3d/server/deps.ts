@@ -18,6 +18,9 @@ export interface Deps {
   /** Per-IP limit on Claude-backed requests. */
   claudeLimiter: { check(key: string): void | Promise<void> };
   loginLimiter: RateLimiter;
+  /** Per-IP limits on the public (signed-out) routes. */
+  publicLimiter: { check(key: string): void | Promise<void> };
+  reportLimiter: { check(key: string): void | Promise<void> };
 }
 
 let cached: Deps | null = null;
@@ -45,6 +48,8 @@ export function getDeps(): Deps {
     api,
     claudeLimiter: kv ? new KvRateLimiter(kv, env.rateLimitPerMinute) : new RateLimiter(env.rateLimitPerMinute),
     loginLimiter: new RateLimiter(8),
+    publicLimiter: kv ? new KvRateLimiter(kv, 60) : new RateLimiter(60),
+    reportLimiter: kv ? new KvRateLimiter(kv, 5, 3600) : new RateLimiter(5, 3600_000),
   };
   return cached;
 }

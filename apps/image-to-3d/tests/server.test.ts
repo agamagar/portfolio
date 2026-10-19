@@ -75,6 +75,8 @@ function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps 
     api: fixtureMessagesApi(FIXTURES, 0),
     claudeLimiter: new RateLimiter(100),
     loginLimiter: new RateLimiter(100),
+    publicLimiter: new RateLimiter(100),
+    reportLimiter: new RateLimiter(100),
     ...over,
   };
 }
@@ -405,7 +407,7 @@ describe("library", () => {
     expect(jpg.toString("latin1")).toContain("secret-owner");
     const res = await route((r) => upload(r, d))(put(cookie, "source", "image/jpeg", new Uint8Array(jpg)));
     expect(res.status).toBe(201);
-    const [file] = await d.store!.list(`i3d/items/${id}/source`);
+    const [file] = (await d.store!.list(`i3d/users/`)).filter((f) => f.pathname.includes(`/items/${id}/source`));
     expect(Buffer.from(await d.store!.read(file)).toString("latin1")).not.toContain("secret-owner");
     const wide = await sharp({ create: { width: 4100, height: 8, channels: 3, background: "#fff" } }).png().toBuffer();
     expect((await route((r) => upload(r, d))(put(cookie, "left", "image/png", new Uint8Array(wide)))).status).toBe(413);
@@ -427,7 +429,8 @@ describe("library", () => {
     expect(saved.status).toBe(201);
     const { item } = await saved.json();
     expect(item.tags).toEqual(["mushroom", "pot"]);
-    expect(item.files.glb).toMatch(/model-[0-9a-f]+\.glb$/);
+    expect(item.files.glb).toMatch(/^\/api\/file\?p=/);
+    expect(new URL(item.files.glb, BASE).searchParams.get("p")).toMatch(/^i3d\/users\/[0-9a-f]+\/items\/.+\/model-[0-9a-f]+\.glb$/);
     expect(item.style).toBe("felt");
 
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
@@ -444,7 +447,7 @@ describe("library", () => {
     expect(del.status).toBe(200);
     const after = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(after.items).toEqual([]);
-    expect(await d.store!.list(`i3d/items/${id}/`)).toEqual([]);
+    expect((await d.store!.list(`i3d/users/`)).filter((f) => f.pathname.includes(`/items/${id}/`))).toEqual([]);
   });
 
   it("rejects uploads whose bytes don't match their type, unknown names and bad ids", async () => {
@@ -474,7 +477,7 @@ describe("library", () => {
     await route((r) => upload(r, d))(put(cookie, "thumb", "image/png", PNG));
     await route((r) => saveItem(r, d))(jsonReq("POST", "/api/library", { id, spec: fixtureSpec("create.robot.json") }, cookie));
     for (let i = 0; i < 8; i++) await route((r) => patchItem(r, d))(jsonReq("PATCH", "/api/library", { id, title: `t${i}` }, cookie));
-    const versions = await d.store!.list("i3d/index/");
+    const versions = (await d.store!.list("i3d/users/")).filter((f) => f.pathname.includes("/index/"));
     expect(versions.length).toBeLessThanOrEqual(5);
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(list.items[0].title).toBe("t7");

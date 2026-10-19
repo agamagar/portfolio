@@ -5,33 +5,84 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/generate.ts": { "maxDuration": 300 },
-    "api/judge.ts": { "maxDuration": 120 },
-    "api/library.ts": { "maxDuration": 30 },
-    "api/upload.ts": { "maxDuration": 30 },
-    "api/session.ts": { "maxDuration": 10 }
+    "api/generate.ts": {
+      "maxDuration": 300
+    },
+    "api/judge.ts": {
+      "maxDuration": 120
+    },
+    "api/library.ts": {
+      "maxDuration": 30
+    },
+    "api/upload.ts": {
+      "maxDuration": 30
+    },
+    "api/session.ts": {
+      "maxDuration": 10
+    },
+    "api/auth.ts": {
+      "maxDuration": 15
+    },
+    "api/file.ts": {
+      "maxDuration": 15
+    },
+    "api/shared.ts": {
+      "maxDuration": 15
+    },
+    "api/cron.ts": {
+      "maxDuration": 120
+    }
   },
-  "rewrites": [{ "source": "/((?!api/|assets/|files/|favicon\\.svg).*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!api/|assets/|files/|favicon\\.svg).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/((?!assets/sandbox\\.worker).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.public.blob.vercel-storage.com; connect-src 'self'; worker-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
+        }
       ]
     },
     {
       "source": "/assets/sandbox\\.worker-(.*)\\.js",
       "headers": [
-        { "key": "Content-Security-Policy", "value": "default-src 'none'; script-src 'self' 'unsafe-eval'" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; script-src 'self' 'unsafe-eval'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 3 * * *"
     }
   ]
 }

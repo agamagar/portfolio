@@ -152,7 +152,7 @@ test("library: grid, search and tag filters", async () => {
   await page.emulateMedia({ colorScheme: "light" });
 });
 
-test("viewer: style switch, rename, tags, embed snippet, GLB", async () => {
+test("viewer: style switch, rename, tags, share link, GLB", async () => {
   await page.getByRole("link", { name: /Toy robot/ }).click();
   await expect(page.getByLabel("Title")).toHaveValue("Toy robot");
 
@@ -170,10 +170,19 @@ test("viewer: style switch, rename, tags, embed snippet, GLB", async () => {
   await page.getByLabel("Tags").press("Enter");
   await expect(page.locator(".tag-input .chip", { hasText: "favourite" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Copy embed snippet" }).click();
-  const clip = await page.evaluate(() => navigator.clipboard.readText());
-  expect(clip).toContain("<model-viewer");
-  expect(clip).toMatch(/\/files\/i3d\/items\/[0-9a-f-]{36}\/model-[0-9a-f]+\.glb/);
+  // share by link: a public, read-only page with a report link (opened in a signed-out context)
+  await page.getByRole("button", { name: "Share by link" }).click();
+  const shareUrl = await page.getByLabel("Share link").inputValue();
+  expect(shareUrl).toMatch(/\/s\/[A-Za-z0-9_-]{20,32}$/);
+  const guest = await page.context().browser()!.newContext({ baseURL: new URL(shareUrl).origin });
+  const gp = await guest.newPage();
+  await gp.goto(shareUrl);
+  await expect(gp.getByRole("heading", { name: "Toy robot" })).toBeVisible();
+  await expect(gp.getByRole("link", { name: "Download GLB" })).toHaveAttribute("href", /^\/api\/file\?p=/);
+  await gp.getByRole("button", { name: "Report this model" }).click();
+  await gp.getByRole("dialog").getByRole("button", { name: "Send report" }).click();
+  await expect(gp.getByRole("status").filter({ hasText: "Thanks" })).toBeVisible();
+  await guest.close();
 
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download GLB/ }).click()]);
   expect(readFileSync((await download.path())!).subarray(0, 4).toString("latin1")).toBe("glTF");

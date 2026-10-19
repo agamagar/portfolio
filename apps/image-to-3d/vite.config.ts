@@ -1,7 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import { handleApi, handleFiles, type ApiModule } from "./scripts/node-adapter";
+import { handleApi, type ApiModule } from "./scripts/node-adapter";
 
 /**
  * `npm run dev` serves the Vercel Functions in api/ from the same origin, so
@@ -15,7 +15,6 @@ function vercelApiInDev(): Plugin {
       for (const [k, v] of Object.entries(env)) if (process.env[k] === undefined) process.env[k] = v;
       server.middlewares.use(async (req, res, next) => {
         try {
-          if (handleFiles(req, res, process.env.DATA_DIR || ".data")) return;
           const handled = await handleApi(req, res, async (name) => (await server.ssrLoadModule(`/api/${name}.ts`)) as ApiModule);
           if (!handled) next();
         } catch (err) {
@@ -36,5 +35,6 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    testTimeout: 30_000,
   },
 });

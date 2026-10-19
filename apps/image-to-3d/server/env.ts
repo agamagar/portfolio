@@ -24,6 +24,10 @@ export interface Env {
   dailyUserUsd: number;
   /** Global dollar cap per UTC day, all users. */
   dailyBudgetUsd: number;
+  /** Models a user can keep in the library at once. */
+  maxItemsPerUser: number;
+  /** Shared secret Vercel Cron sends as a bearer token to /api/cron. */
+  cronSecret: string | undefined;
   /** Generation requests running at once across the whole deployment. */
   maxConcurrent: number;
   rateLimitPerMinute: number;
@@ -67,6 +71,8 @@ export function readEnv(e: Record<string, string | undefined> = process.env): En
     mockAuth: !isProduction && (mock === "fixtures" || flag(e.MOCK_AUTH)),
     monthlyModels: Math.round(number(e.MONTHLY_MODELS, 5, 0, 1000)),
     dailyUserUsd: number(e.DAILY_USER_USD, 2, 0, 1000),
+    maxItemsPerUser: Math.round(number(e.MAX_ITEMS_PER_USER, 50, 1, 10_000)),
+    cronSecret: e.CRON_SECRET || undefined,
     maxConcurrent: Math.round(number(e.MAX_CONCURRENT, 4, 1, 64)),
     dailyBudgetUsd: number(e.DAILY_BUDGET_USD, 5, 0, 10_000),
     rateLimitPerMinute: number(e.RATE_LIMIT_PER_MINUTE, 12, 1, 600),

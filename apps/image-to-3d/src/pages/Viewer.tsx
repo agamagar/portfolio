@@ -11,12 +11,6 @@ import { Link, navigate } from "../lib/router";
 import type { Stage } from "../three/stage";
 import { slug } from "./Create";
 
-export function embedSnippet(glbUrl: string, title: string): string {
-  const abs = new URL(glbUrl, location.origin).href;
-  return `<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
-<model-viewer src="${abs}" alt="${title.replace(/"/g, "&quot;")}" camera-controls auto-rotate shadow-intensity="0.6" style="width:100%;height:480px;background:transparent"></model-viewer>`;
-}
-
 export function ViewerPage({ id }: { id: string }) {
   const { session } = useSession();
   const toast = useToast();
@@ -58,7 +52,7 @@ export function ViewerPage({ id }: { id: string }) {
   }, [stage, spec, style, id, toast]);
 
   const patch = useCallback(
-    async (p: { title?: string; tags?: string[] }) => {
+    async (p: { title?: string; tags?: string[]; shared?: boolean }) => {
       if (!item) return;
       try {
         const r = await api.patch(item.id, p);
@@ -102,7 +96,7 @@ export function ViewerPage({ id }: { id: string }) {
     );
   }
 
-  const snippet = item.files.glb ? embedSnippet(item.files.glb, item.title) : "";
+  const shareUrl = item.shareToken ? `${location.origin}/s/${item.shareToken}` : "";
 
   return (
     <div className="viewer-layout">
@@ -208,28 +202,49 @@ export function ViewerPage({ id }: { id: string }) {
           )}
         </div>
 
-        {snippet && (
+        {canEdit && (
           <div className="field">
-            <label className="field-label" htmlFor="embed">
-              Embed
-            </label>
-            <textarea id="embed" className="mono code" readOnly rows={4} value={snippet} onFocus={(e) => e.target.select()} />
-            <button
-              type="button"
-              className="btn small"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(snippet);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1600);
-                } catch {
-                  toast("Couldn't copy: select the snippet and copy it manually", "error");
-                }
-              }}
-            >
-              <Icon name={copied ? "check" : "copy"} size={16} /> {copied ? "Copied" : "Copy embed snippet"}
-            </button>
+            <span className="field-label">Sharing</span>
+            {shareUrl ? (
+              <>
+                <input id="share-url" aria-label="Share link" className="mono code" readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
+                <p className="muted small">Anyone with this link can view and download the model (not your photos). Others can report it.</p>
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="btn small"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(shareUrl);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1600);
+                      } catch {
+                        toast("Couldn't copy: select the link and copy it manually", "error");
+                      }
+                    }}
+                  >
+                    <Icon name={copied ? "check" : "copy"} size={16} /> {copied ? "Copied" : "Copy link"}
+                  </button>
+                  <button type="button" className="btn small" onClick={() => void patch({ shared: false })}>
+                    Stop sharing
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="muted small">Private. Only you can open this model.</p>
+                <button type="button" className="btn small" onClick={() => void patch({ shared: true })}>
+                  <Icon name="link" size={16} /> Share by link
+                </button>
+              </>
+            )}
           </div>
+        )}
+
+        {item.expiresAt && (
+          <p className="muted small">
+            Photos are deleted 24 hours after upload; this model is deleted on {new Date(item.expiresAt).toLocaleDateString()}. Download the GLB to keep it.
+          </p>
         )}
 
         {spec && (

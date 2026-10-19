@@ -7,6 +7,7 @@ import { Link, navigate, useRoute } from "./lib/router";
 import { CreatePage } from "./pages/Create";
 import { LibraryPage } from "./pages/Library";
 import { LoginPage } from "./pages/Login";
+import { SharedPage } from "./pages/Shared";
 import { ViewerPage } from "./pages/Viewer";
 
 interface SessionCtx {
@@ -34,9 +35,11 @@ export function App() {
   }, [refresh]);
 
   useEffect(() => {
-    const titles = { create: "Create", library: "Library", viewer: "Model", notFound: "Not found" } as const;
+    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", notFound: "Not found" } as const;
     document.title = `${titles[route.name]} · Image to 3D`;
   }, [route.name]);
+
+  if (route.name === "shared") return <SharedPage token={route.token} />; // public: no sign-in
 
   if (!session) {
     return (

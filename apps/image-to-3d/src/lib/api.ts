@@ -40,6 +40,16 @@ export interface LibraryItem {
   triangles: number;
   files: { source?: string; left?: string; right?: string; glb?: string; thumb?: string; spec?: string };
   sizes: { glb?: number; source?: number; left?: number; right?: number; thumb?: number };
+  /** Set while the model is shared by link: /s/<token>. */
+  shareToken?: string;
+  /** When the model, and its source photos, are deleted. */
+  expiresAt?: string;
+  sourcesExpireAt?: string;
+}
+
+export interface SharedModel {
+  item: { id: string; title: string; tags: string[]; style: Style; triangles: number; createdAt: string; expiresAt: string; files: { glb?: string; thumb?: string } };
+  spec: Spec | null;
 }
 
 export interface ImagePayload {
@@ -83,10 +93,14 @@ export const api = {
   library: () => request<{ items: LibraryItem[] }>("/api/library"),
   item: (id: string) => request<{ item: LibraryItem; spec: Spec | null }>(`/api/library?id=${encodeURIComponent(id)}`),
   save: (body: Record<string, unknown>) => request<{ item: LibraryItem }>("/api/library", jsonInit("POST", body)),
-  patch: (id: string, patch: { title?: string; tags?: string[] }) => request<{ item: LibraryItem }>("/api/library", jsonInit("PATCH", { id, ...patch })),
+  patch: (id: string, patch: { title?: string; tags?: string[]; shared?: boolean }) => request<{ item: LibraryItem }>("/api/library", jsonInit("PATCH", { id, ...patch })),
   remove: (id: string) => request<{ ok: true }>(`/api/library?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
+  removeAll: () => request<{ ok: true; deleted: number }>("/api/library?all=1", { method: "DELETE" }),
+  deleteAccount: (confirm: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { action: "delete-account", confirm })),
+  shared: (token: string) => request<SharedModel>(`/api/shared?t=${encodeURIComponent(token)}`),
+  report: (token: string, reason: string, details: string) => request<{ ok: true }>("/api/shared", jsonInit("POST", { t: token, reason, details })),
   upload: (id: string, name: "source" | "left" | "right" | "thumb" | "model", body: Blob) =>
-    request<{ url: string; size: number }>(`/api/upload?id=${id}&name=${name}`, {
+    request<{ size: number }>(`/api/upload?id=${id}&name=${name}`, {
       method: "PUT",
       headers: { "content-type": body.type },
       body,

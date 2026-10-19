@@ -9,7 +9,8 @@ import { clearCookie, currentUser, guardConfigured, requireUser, sessionCookie, 
 import { spentToday } from "../budget.js";
 import type { Deps } from "../deps.js";
 import { clientIp, HttpError, json, readJson } from "../http.js";
-import { createSession, destroySession, hasConsented, recordConsent, SESSION_TTL_S, signInOrSignUp, TERMS_VERSION, type User } from "../users.js";
+import { wipeUserData } from "./library.js";
+import { createSession, deleteUser, destroySession, hasConsented, recordConsent, SESSION_TTL_S, signInOrSignUp, TERMS_VERSION, type User } from "../users.js";
 
 export function publicUser(u: User) {
   return { id: u.id, email: u.email, name: u.name, role: u.role, consented: hasConsented(u) };
@@ -47,11 +48,19 @@ export async function getSession(req: Request, d: Deps): Promise<Response> {
 export async function postSession(req: Request, d: Deps): Promise<Response> {
   d.loginLimiter.check(`login:${clientIp(req)}`);
   guardConfigured(d);
-  const body = await readJson<{ action?: unknown; email?: unknown; name?: unknown; invite?: unknown }>(req, 4096);
+  const body = await readJson<{ action?: unknown; email?: unknown; name?: unknown; invite?: unknown; confirm?: unknown }>(req, 4096);
 
   if (body.action === "consent") {
     const user = await requireUser(d, req);
     return json({ user: publicUser(await recordConsent(d.env, d.kv!, user)) });
+  }
+  if (body.action === "delete-account") {
+    // everything the user stored, their account and every session; irreversible
+    const user = await requireUser(d, req);
+    if (body.confirm !== user.email) throw new HttpError(400, "Type your email address to confirm.", "confirm_required");
+    await wipeUserData(d, user);
+    await deleteUser(d.kv!, user);
+    return json({ ok: true }, 200, { "set-cookie": clearCookie(req) });
   }
   if (body.action === "mock") {
     if (!d.env.mockAuth) throw new HttpError(404, "Not found", "not_found");
