@@ -61,6 +61,23 @@ export function SchedGtmCartOne() {
   );
 }
 
+// Figma "Tooltip Option 71" (2:4306): the cart with the Scheduled order tooltip on the Schedule button
+export function SchedGtmTooltipOne() {
+  return (
+    <div className="gtmr-one">
+      <div className="article__plate-phone gtmr-one__phone">
+        <div className="article__plate-screen">
+          <div className="gtmr-device gtmr-device--bare">
+            <img className="gtmr-plate" src="/figures/scheduled/gtm-tooltip-plate.webp" alt="The Zepto cart with a Scheduled order tooltip on the Schedule button: Plan your deliveries, Choose a time slot." />
+            <PhoneControls label="Cart tooltip" />
+          </div>
+        </div>
+        <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
+      </div>
+    </div>
+  );
+}
+
 export default function SchedGtmReal() {
   const { fitRef, frameRef } = useFitScale(790, 1.0);
   return (
