@@ -156,7 +156,7 @@ const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDem
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
-import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import SchedGtmReal, { SchedGtmRealOne, SchedGtmRealOneDim, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
 import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
 import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
@@ -734,6 +734,7 @@ const figures = {
   schedPostBooking: SchedPostBooking,
   schedGtmReal: SchedGtmReal,
   schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
+  schedGtmRealOneDim: SchedGtmRealOneDim, // the same with the black scrim (mvf9oumy, only in The go-to-market)
   schedCartPageFlat: SchedCartPageFlat, // mvf9leyc
   schedGtmBanner: SchedGtmBanner, // mv56yxug: the banner animation alone, full view
   schedGtmTooltipOne: SchedGtmTooltipOne, // Figma 2:4306: cart with the Scheduled order tooltip
@@ -2675,7 +2676,7 @@ const caseStudies = {
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
             {
-              fig: "schedGtmRealOne", // mvf9lysf (Agam, "bring back the phone"): the whole phone again (mv56yxug had cut it to schedGtmBanner, the animation alone, with fill)
+              fig: "schedGtmRealOneDim", // mvf9lysf (Agam, "bring back the phone"): the whole phone again (mv56yxug had cut it to schedGtmBanner, the animation alone, with fill)
               figBare: true,
               bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
               alt: "The go-to-market banner animation: a sweeping clock and slot chips popping in.",

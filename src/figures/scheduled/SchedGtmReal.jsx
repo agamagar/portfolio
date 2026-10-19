@@ -10,7 +10,7 @@ import "./scheduled.css";
 
 // mtmm2p84: `single` = one phone, no frame chrome, for the plate under the
 // parallax in the "in motion" section; the outer plate is the container.
-export function SchedGtmRealOne() {
+export function SchedGtmRealOne({ dim = false }) {
   // mtmovxez: the same real bezel as the prototype plate; the screen plate
   // sits in the cutout, the bezel rides on top
   return (
@@ -20,7 +20,7 @@ export function SchedGtmRealOne() {
           <div className="gtmr-device gtmr-device--bare">
             <img className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
             {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}
-            <span className="gtmr-scrim" aria-hidden />
+            {dim && <span className="gtmr-scrim" aria-hidden />}
             <div className="gtmr-region">
               <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
             </div>
@@ -32,6 +32,9 @@ export function SchedGtmRealOne() {
     </div>
   );
 }
+
+// mvfbhuoa: the plate in "The go-to-market" keeps the black scrim (dim); the one under Context and objective has none
+export const SchedGtmRealOneDim = () => <SchedGtmRealOne dim />;
 
 // mv56yxug (12 Oct, "we don't need to show the whole thing, just the animation in its full view"):
 // the go-to-market plate shows the banner animation ALONE, at the plate's width
