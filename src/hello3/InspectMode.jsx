@@ -263,7 +263,10 @@ export default function InspectMode() {
     const click = (e) => {
       if (!swallow(e)) return;
       const t = e.target; if (t === document.body || t === document.documentElement) return;
-      setSel(null); setSelEl(e.shiftKey && t.parentElement && t.parentElement !== document.body ? t.parentElement : t);
+      // mvez5rrf (Agam, "controls to move the phone up and down"): a click inside a phone frame selects the FRAME, so its
+      // Margin T (negative allowed, drag handle or field) moves the whole phone up and down inside its plate
+      const phone = !e.shiftKey && t.closest?.(".gtmr-one__phone, .article__plate-phone, .fp");
+      setSel(null); setSelEl(phone || (e.shiftKey && t.parentElement && t.parentElement !== document.body ? t.parentElement : t));
     };
     const evs = ["pointerdown", "pointerup", "mousedown", "mouseup", "dblclick", "contextmenu"];
     evs.forEach((n) => window.addEventListener(n, swallow, true));
