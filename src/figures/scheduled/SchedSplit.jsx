@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import "./scheduled.css";
+import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
 
 // Design Mode: the cart conundrum — one order, many hubs. The real split cart
 // (Schedule Order Handoff, node 9381:17371): "Order split in 2 shipments" with
@@ -37,6 +38,7 @@ export default function SchedSplit() {
             <div className="slotreal-screen">
               <img className="slotreal-img" src={SCREEN} alt="The cart with an Expect multiple deliveries banner and an Order split in 2 shipments header." draggable={false} data-on="true" />
             </div>
+            <PhoneControls label="Split shipments" />
           </div>
 
           <div className="sd-rail">

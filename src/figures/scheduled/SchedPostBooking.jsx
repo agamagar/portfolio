@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
+import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
 
 // Design Mode: after you book — the scheduled order's real post-booking life
 // (Schedule Order Handoff, page "M1 Dev Ready"):
@@ -71,6 +72,7 @@ export default function SchedPostBooking() {
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
             </div>
+            <PhoneControls label="After booking" />
           </div>
 
           <div className="sd-rail">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
+import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
 
 // Design Mode: the real Today <-> Tomorrow date switch (Schedule Order Handoff,
 // section 40000019:69582). Today is PARTIAL — earlier windows have passed, 11
@@ -71,6 +72,7 @@ export default function SchedDateSwitch() {
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
             </div>
+            <PhoneControls label="Day switch" />
           </div>
 
           <div className="sd-rail">

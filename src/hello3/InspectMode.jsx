@@ -136,6 +136,8 @@ function measureEl(el) {
 }
 
 const tagCls = (el) => el.tagName.toLowerCase() + (el.classList[0] ? "." + el.classList[0] : "");
+// every phone-frame family on the site (Scheduled Delivery included): a click inside one selects the whole frame
+const PHONE_FRAMES = ".gtmr-one__phone, .article__plate-phone, .fp, .gtmr-device, .slotreal-device, .rnr-device, .sp__phone, .ds-phone, .ifr";
 const propNow = (el, prop) => {
   const cs = getComputedStyle(el);
   if (prop === "line-height") return cs.lineHeight === "normal" ? Math.round(px(cs.fontSize) * 12) / 10 : px(cs.lineHeight);
@@ -265,7 +267,7 @@ export default function InspectMode() {
       const t = e.target; if (t === document.body || t === document.documentElement) return;
       // mvez5rrf (Agam, "controls to move the phone up and down"): a click inside a phone frame selects the FRAME, so its
       // Margin T (negative allowed, drag handle or field) moves the whole phone up and down inside its plate
-      const phone = !e.shiftKey && t.closest?.(".gtmr-one__phone, .article__plate-phone, .fp");
+      const phone = !e.shiftKey && t.closest?.(PHONE_FRAMES);
       setSel(null); setSelEl(phone || (e.shiftKey && t.parentElement && t.parentElement !== document.body ? t.parentElement : t));
     };
     const evs = ["pointerdown", "pointerup", "mousedown", "mouseup", "dblclick", "contextmenu"];

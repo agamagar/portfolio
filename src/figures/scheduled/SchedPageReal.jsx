@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
+import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
 
 // "One scroll across midnight" — the real Schedule states inside the real device
 // frame (Schedule Order Handoff, section 40000019:69582), driven by the glass
@@ -78,6 +79,7 @@ export default function SchedPageReal() {
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
             </div>
+            <PhoneControls label="Slot page" />
           </div>
 
           <div className="sd-rail">
