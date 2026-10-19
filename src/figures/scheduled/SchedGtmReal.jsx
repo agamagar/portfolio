@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useFitScale } from "../ds/hooks";
 import LayerMap from "../ds/LayerMap";
 import schedulePageLayers from "./schedulePageLayers";
@@ -10,20 +11,64 @@ import "./scheduled.css";
 
 // mtmm2p84: `single` = one phone, no frame chrome, for the plate under the
 // parallax in the "in motion" section; the outer plate is the container.
+// mvfbhuoa (Agam): on the plain plate (no scrim) the phone's UI scrolls: the page starts scrolled down (the banner under the
+// header), eases up so the banner animation moves into focus, holds there while it plays, then eases back and loops.
+// The status bar + header stay put (the pan layer is clipped below them); the pan is driven off the video's own clock, so it
+// loops with the animation, pauses with the phone control bar, sleeps off-screen and stays still under reduced motion.
+const SCROLL_PCT = 18;   // how far the page is scrolled down at rest, % of the screen height
+const SCROLL_IN = 0.14, SCROLL_OUT = 0.84; // fractions of the video's loop
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+function useBannerScroll(on) {
+  const root = useRef(null), pan = useRef(null), vid = useRef(null);
+  useEffect(() => {
+    if (!on || !root.current || !pan.current || !vid.current) return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { pan.current.style.transform = "translateY(0)"; return undefined; }
+    let raf = 0, visible = false;
+    const set = (k) => { pan.current.style.transform = `translateY(${(-SCROLL_PCT * k).toFixed(3)}%)`; };
+    const tick = () => {
+      raf = 0; if (!visible) return;
+      const v = vid.current, d = v.duration;
+      if (d && isFinite(d)) {
+        const p = (v.currentTime % d) / d;
+        const k = p < SCROLL_IN ? 1 - ease(p / SCROLL_IN) : p < SCROLL_OUT ? 0 : ease((p - SCROLL_OUT) / (1 - SCROLL_OUT));
+        set(k);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    set(1);
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(tick); }, { threshold: 0.05 });
+    io.observe(root.current);
+    return () => { io.disconnect(); if (raf) cancelAnimationFrame(raf); };
+  }, [on]);
+  return { root, pan, vid };
+}
+
 export function SchedGtmRealOne({ dim = false }) {
+  const motion = !dim;
+  const { root, pan, vid } = useBannerScroll(motion);
   // mtmovxez: the same real bezel as the prototype plate; the screen plate
   // sits in the cutout, the bezel rides on top
+  const IMG = "/figures/scheduled/schedule-page-ui.png";
+  const ALT = "The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid.";
+  const video = <video ref={motion ? vid : undefined} className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />;
   return (
     <div className="gtmr-one">
       <div className="article__plate-phone gtmr-one__phone">
         <div className="article__plate-screen">
-          <div className="gtmr-device gtmr-device--bare">
-            <img className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
+          <div className="gtmr-device gtmr-device--bare" ref={root}>
+            <img className="gtmr-plate" src={IMG} alt={ALT} />
             {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}
             {dim && <span className="gtmr-scrim" aria-hidden />}
-            <div className="gtmr-region">
-              <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
-            </div>
+            {motion ? (
+              <div className="gtmr-scroll" aria-hidden>
+                <div className="gtmr-pan" ref={pan}>
+                  <img className="gtmr-plate" src={IMG} alt="" draggable="false" />
+                  <div className="gtmr-region">{video}</div>
+                </div>
+              </div>
+            ) : (
+              <div className="gtmr-region">{video}</div>
+            )}
             <PhoneControls label="Schedule page" />
           </div>
         </div>

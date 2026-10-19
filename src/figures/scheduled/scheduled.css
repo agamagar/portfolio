@@ -2174,3 +2174,8 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 @media (max-width: 700px) { .ig { padding: 0 8%; } .ig__bar { width: 100%; grid-template-columns: 1fr; row-gap: 0.4rem; } }
 html .page--article .article__body .ig ul.ig__bars { padding: 0; margin: 0; list-style: none; }
 html .page--article .article__body .ig ul.ig__bars > li::before, html .page--article .article__body .ig ul.ig__bars > li::marker { content: none; }
+
+/* mvfbhuoa: the scrolling UI on the plain banner phone. .gtmr-scroll is clipped below the status bar + header (they stay put);
+   .gtmr-pan carries the image and the video and is translated by SchedGtmReal.jsx (useBannerScroll) */
+.gtmr-one .gtmr-scroll { position: absolute; inset: 0; clip-path: inset(13.2% 0 0 0); border-radius: 13.7% / 6.3%; overflow: hidden; }
+.gtmr-one .gtmr-pan { position: absolute; inset: 0; will-change: transform; }
