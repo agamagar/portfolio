@@ -51,6 +51,43 @@ function lensMap() {
 }
 const LENS = 0.62; // lens diameter, as a fraction of the orb
 
+// Bubble clips (public/figures/scheduled/use-cases/<key>.webm + .mp4). Only the
+// KEYS are read here (the glob is lazy, nothing is fetched), so a clip that has
+// not been dropped in yet costs nothing and the photo shows exactly as before.
+const CLIPS = new Set(Object.keys(import.meta.glob("/public/figures/scheduled/use-cases/*.webm", { query: "?url" }))
+  .map((k) => k.split("/").pop().replace(/\.webm$/, "")));
+const REDUCED = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Decorative loop over the photo: plays only while on screen and the tab is
+// visible; the photo is the poster and stays underneath until the first frame.
+// No per-frame JS: the browser decodes, we only toggle play/pause.
+function BubbleVideo({ name, style }) {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    let vis = false;
+    const sync = () => {
+      if (vis && !document.hidden) v.play().catch(() => {});
+      else v.pause();
+    };
+    const io = new IntersectionObserver(([e]) => { vis = e.isIntersecting; sync(); }, { threshold: 0.1 });
+    io.observe(v);
+    document.addEventListener("visibilitychange", sync);
+    return () => { io.disconnect(); document.removeEventListener("visibilitychange", sync); v.pause(); };
+  }, []);
+  const base = `/figures/scheduled/use-cases/${name}`;
+  return (
+    <video ref={ref} className={"suc__video" + (on ? " is-on" : "")} muted loop playsInline preload="metadata" tabIndex={-1}
+      poster={`/figures/scheduled/moments/${name}-v2.webp`} aria-hidden draggable="false" disablePictureInPicture
+      disableRemotePlayback onPlaying={() => setOn(true)} style={style}>
+      <source src={`${base}.webm`} type="video/webm" />
+      <source src={`${base}.mp4`} type="video/mp4" />
+    </video>
+  );
+}
+
 function Orb({ id, sp, delay }) {
   const feRef = useRef(null);
   const [map, setMap] = useState(null);
@@ -83,6 +120,7 @@ function Orb({ id, sp, delay }) {
       </svg>
       <span className="suc__bubble" style={{ animationDelay: `${delay}s` }}>
         <img src={`/figures/scheduled/moments/${sp[3]}-v2.webp`} alt="" draggable="false" style={{ filter: `url(#${id})` }} />
+        {CLIPS.has(sp[3]) && !REDUCED && <BubbleVideo name={sp[3]} style={{ filter: `url(#${id})` }} />}
       </span>
     </span>
   );

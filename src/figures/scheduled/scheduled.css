@@ -888,13 +888,15 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
   animation: suc-bubble-float 9s ease-in-out infinite alternate, suc-bubble-breathe 4.6s ease-in-out infinite alternate;
   pointer-events: none;
 }
-.suc__bubble img {
+.suc__bubble img, .suc__bubble video {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: 50% 45%;
   scale: 1.12; filter: saturate(1.15) brightness(1.08);
   border-radius: 50%; corner-shape: round;
   z-index: -1;
 }
+.suc__bubble video { opacity: 0; z-index: -1; pointer-events: none; }
+.suc__bubble video.is-on { opacity: 1; }
 .suc__bubble::after {
   content: ""; position: absolute; inset: 0; border-radius: 50%; corner-shape: round;
   background: conic-gradient(from 0deg, #ff9ad5, #ffe29a, #9affc9, #9ad8ff, #c79aff, #ff9ad5);
@@ -999,7 +1001,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .suc__frame--persona .suc__drag .suc__bubble { position: absolute; inset: 0; width: 100%; height: 100%; left: 0; top: 0; }
 .suc__frame--persona .suc__drag:hover { scale: 1.06; filter: drop-shadow(0 0 18px rgba(150, 116, 219, 0.55)); }
 .suc__frame--persona .suc__drag.is-held { cursor: grabbing; z-index: 5; scale: 1.1; filter: drop-shadow(0 14px 26px rgba(40, 10, 90, 0.45)); }
-.suc__frame--persona .suc__drag img { pointer-events: none; }
+.suc__frame--persona .suc__drag img, .suc__frame--persona .suc__drag video { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .suc__frame--persona .suc__drag { transition: none; } }
 /* mujp7hem: no scale change on the orbs (hover or held). Hover keeps only the
    soft glow; the "glass" is the lens distortion that follows the pointer. */
