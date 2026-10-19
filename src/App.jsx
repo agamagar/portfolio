@@ -157,6 +157,7 @@ const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
 import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
@@ -2853,6 +2854,20 @@ const caseStudies = {
           "82.5% arrived inside the booked hour in August, down from 92.6% in February. The bigger miss is cancellation: 27.4% against about 11% for instant.",
           "Appliances rose from 21% of scheduled GMV in June to 54% in September (1 to 21 Sep), and an appliance order is cancelled 34.4% of the time against 26.6% for the rest.",
         ],
+        // mvf9un9o (19 Oct, "make a copy of this but follow this layout to summarise the impact"): the Impact section, kept, and
+        // an "Impact at a glance" after it in the layout of Agam's reference (headline with one word highlighted, three
+        // bars, a source). Numbers only from the bullets above: 1.72% peak share, ₹1,452 v ₹543, 82.5% in the booked hour
+        // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances 21% (Jun) to 54% (1 to 21 Sep, a partial month).
+        glance: {
+          label: "Impact at a glance",
+          head: ["A small slice of Zepto’s orders, and each one worth almost ", "three", " times an instant one."],
+          bars: [
+            { v: 82.5, d: "of scheduled orders arrived inside the booked hour in August 2026, down from 92.6% in February" },
+            { v: 54, d: "of scheduled GMV was appliances by September, up from 21% in June (1 to 21 Sep, a partial month) [CONFIRM]" },
+            { v: 27.4, d: "of scheduled orders were cancelled in August 2026, against about 11% for instant" },
+          ],
+          source: "Source: Zepto’s own order records, every order booked with a delivery slot, 10 October 2025 to 21 September 2026",
+        },
         // mukx8uu0 (28 Sep): "hide all this explanation info for now", the prose and
         // bullets are parked (underscored); drop the underscores to restore
         _p: [
@@ -10112,6 +10127,7 @@ function CaseStudyBodyFull({ cs }) {
           {/* mtmlg1wh: a row of horizontal plates under the figure; a plate
               without a src is a placeholder waiting for a Figma node */}
           {s.plates && !s.platesToggle && renderPlates(s)}
+          {s.glance && <SchedImpactGlance g={s.glance} />}
           {s.divider && (
             <p className="article__divider" aria-hidden>
               · · ·

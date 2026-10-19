@@ -2159,3 +2159,18 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
   .cpf__list { display: grid; }
   .cpf { --cpf-w: min(340px, 100%); }
 }
+
+/* mvf9un9o: Impact at a glance (SchedImpactGlance): a big bold headline with one word in a purple block, three purple bars
+   each with a huge figure and a short caption, a source line. The site's purple (#9674db bars, #5b3fd1 mark), the display type. */
+.ig { margin: 4rem 0 2rem; padding: 0 7.94%; display: grid; gap: 2rem; }
+.page--article .article__body .ig h3.ig__head { margin: 0; max-width: 24ch; font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); font-weight: 700; font-size: clamp(1.75rem, 3.6vw, 2.5rem); line-height: 1.12; letter-spacing: -0.01em; color: var(--fg); }
+.ig__mark { background: #5b3fd1; color: #fff; padding: 0 0.15em; border-radius: 4px; corner-shape: round; }
+.ig__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ig__bar { width: var(--w); min-width: 0; display: grid; grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr); align-items: center; column-gap: 1.25rem; padding: 0.9rem 1.4rem; border-radius: 6px; corner-shape: round; background: #9674db; color: #1a1030; }
+.ig__num { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); font-weight: 600; font-size: clamp(2.25rem, 5.4vw, 3.75rem); line-height: 1; letter-spacing: -0.02em; }
+.ig__desc { font-size: 0.875rem; line-height: 1.35; }
+.page--article .article__body .ig p.ig__source { margin: -0.75rem 0 0; font-size: 0.75rem; color: var(--muted); }
+.ig__source u { text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+@media (max-width: 700px) { .ig { padding: 0 8%; } .ig__bar { width: 100%; grid-template-columns: 1fr; row-gap: 0.4rem; } }
+html .page--article .article__body .ig ul.ig__bars { padding: 0; margin: 0; list-style: none; }
+html .page--article .article__body .ig ul.ig__bars > li::before, html .page--article .article__body .ig ul.ig__bars > li::marker { content: none; }
