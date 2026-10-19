@@ -2671,8 +2671,7 @@ const caseStudies = {
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
             {
-              fig: "schedGtmBanner", // mv56yxug (12 Oct): the animation alone, in its full view (was schedGtmRealOne, the whole phone)
-              fill: true,
+              fig: "schedGtmRealOne", // mvf9lysf (Agam, "bring back the phone"): the whole phone again (mv56yxug had cut it to schedGtmBanner, the animation alone, with fill)
               figBare: true,
               bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
               alt: "The go-to-market banner animation: a sweeping clock and slot chips popping in.",
@@ -2684,7 +2683,8 @@ const caseStudies = {
           // muky18to (28 Sep): the schedule-page figure moved INTO this box from the section figure
           // muky60th removed the schedule page; muky9xug (28 Sep): only the RIGHT screen
           // was meant, so the box keeps the cart (the screen muky18to picked)
-          { fig: "schedGtmCartOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with the Introducing scheduled delivery banner" },
+          // mvf9m3w8 (Agam, "remove this"): the cart plate is removed; restore by uncommenting
+          // { fig: "schedGtmCartOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with the Introducing scheduled delivery banner" },
           { fig: "schedGtmTooltipOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with a Scheduled order tooltip on the Schedule button" },
         ],
         divider: true,
