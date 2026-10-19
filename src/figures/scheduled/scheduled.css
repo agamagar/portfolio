@@ -2129,3 +2129,6 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mvf9oumy (Agam): the banner phone's schedule page sits under a black scrim (the cart plate on its right is dimmed the same way),
    so the animation in its region is the only fully lit part */
 .gtmr-one .gtmr-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.62); border-radius: 13.7% / 6.3%; pointer-events: none; }
+
+/* mvf9pqcv (Agam, "remove these from the entire page"): the "· · ·" dividers between sections are hidden on the Scheduled Delivery case */
+.page--article[data-case="scheduled-delivery"] .article__body p.article__divider { display: none; }
