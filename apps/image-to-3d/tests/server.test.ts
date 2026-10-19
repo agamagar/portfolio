@@ -81,14 +81,16 @@ function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps 
   };
 }
 
-async function signIn(d: Deps, email = "ada@example.com", invite?: string): Promise<string> {
+async function signIn(d: Deps, email = "ada@example.com", invite?: string, consent = true): Promise<string> {
   const res = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "mock", email, invite }));
   expect(res.status).toBe(200);
   const cookie = res.headers.get("set-cookie")!;
   expect(cookie).toMatch(/HttpOnly/);
   expect(cookie).toMatch(/SameSite=Lax/);
   expect(cookie).toMatch(/Secure/);
-  return cookie.split(";")[0];
+  const c = cookie.split(";")[0];
+  if (consent) expect((await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "consent" }, c))).status).toBe(200);
+  return c;
 }
 
 function jsonReq(method: string, url: string, body?: unknown, cookie?: string, extra: Record<string, string> = {}) {
@@ -754,5 +756,26 @@ describe("moderation", () => {
     const ok = await post(d, { ...createBody, image: other }, cookie);
     expect(ok.status).toBe(200);
     await ok.text();
+  });
+});
+
+describe("consent", () => {
+  it("every data route refuses a signed-in user until they agree to the current Terms", async () => {
+    const d = deps();
+    const cookie = await signIn(d, "new@example.com", undefined, false);
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json();
+    expect(me.authenticated).toBe(true);
+    expect(me.user.consented).toBe(false);
+    const gen = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody, cookie));
+    expect(gen.status).toBe(403);
+    expect((await gen.json()).code).toBe("consent_required");
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(403);
+    expect((await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", {}, cookie))).status).toBe(403);
+    // agreeing opens everything and is recorded with the version
+    const ok = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "consent" }, cookie));
+    expect((await ok.json()).user.consented).toBe(true);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(200);
+    const stored = JSON.parse((await d.kv!.get((await d.kv!.keys("user:"))[0]))!);
+    expect(stored.consent.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

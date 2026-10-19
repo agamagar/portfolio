@@ -1,10 +1,12 @@
 import { useSyncExternalStore, type AnchorHTMLAttributes, type MouseEvent } from "react";
 
-export type Route = { name: "create" } | { name: "library" } | { name: "viewer"; id: string } | { name: "shared"; token: string } | { name: "notFound" };
+export type Route = { name: "create" } | { name: "library" } | { name: "viewer"; id: string } | { name: "shared"; token: string } | { name: "terms" } | { name: "privacy" } | { name: "notFound" };
 
 function parse(pathname: string): Route {
   if (pathname === "/" || pathname === "") return { name: "create" };
   if (pathname === "/library") return { name: "library" };
+  if (pathname === "/terms") return { name: "terms" };
+  if (pathname === "/privacy") return { name: "privacy" };
   const m = /^\/m\/([0-9a-f-]{36})\/?$/.exec(pathname);
   if (m) return { name: "viewer", id: m[1] };
   const sh = /^\/s\/([A-Za-z0-9_-]{20,32})\/?$/.exec(pathname);

@@ -36,6 +36,7 @@ export async function getSession(req: Request, d: Deps): Promise<Response> {
     locked: !configured,
     auth: { google: !!d.env.googleClientId, mock: d.env.mockAuth, inviteRequired: d.env.inviteRequired },
     termsVersion: TERMS_VERSION,
+    contactEmail: d.env.contactEmail ?? null,
     storage: d.store?.kind ?? null,
     apiConfigured: !!d.api,
     mock: d.env.mock === "fixtures",
@@ -51,12 +52,12 @@ export async function postSession(req: Request, d: Deps): Promise<Response> {
   const body = await readJson<{ action?: unknown; email?: unknown; name?: unknown; invite?: unknown; confirm?: unknown }>(req, 4096);
 
   if (body.action === "consent") {
-    const user = await requireUser(d, req);
+    const user = await requireUser(d, req, { consent: false });
     return json({ user: publicUser(await recordConsent(d.env, d.kv!, user)) });
   }
   if (body.action === "delete-account") {
     // everything the user stored, their account and every session; irreversible
-    const user = await requireUser(d, req);
+    const user = await requireUser(d, req, { consent: false });
     if (body.confirm !== user.email) throw new HttpError(400, "Type your email address to confirm.", "confirm_required");
     await wipeUserData(d, user);
     await deleteUser(d.kv!, user);

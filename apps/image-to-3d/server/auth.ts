@@ -48,16 +48,16 @@ export async function currentUser(d: Deps, req: Request): Promise<User | null> {
   return userForSession(d.env, d.kv!, sessionToken(req));
 }
 
-/** Requires a signed-in user. `consent: true` also requires agreement to the current Terms. */
+/** Requires a signed-in user. Agreement to the current Terms and Privacy Policy is required unless `consent: false` (used by the consent, sign-out and account-deletion routes). */
 export async function requireUser(d: Deps, req: Request, opts: { consent?: boolean } = {}): Promise<User> {
   const user = await currentUser(d, req);
   if (!user) throw new HttpError(401, "Sign in to continue.", "unauthenticated");
-  if (opts.consent === true && !hasConsented(user)) throw new HttpError(403, "Agree to the Terms and Privacy Policy to continue.", "consent_required");
+  if (opts.consent !== false && !hasConsented(user)) throw new HttpError(403, "Agree to the Terms and Privacy Policy to continue.", "consent_required");
   return user;
 }
 
 export async function requireAdmin(d: Deps, req: Request): Promise<User> {
-  const user = await requireUser(d, req);
+  const user = await requireUser(d, req, { consent: false });
   if (user.role !== "admin") throw new HttpError(403, "Admins only.", "forbidden");
   return user;
 }

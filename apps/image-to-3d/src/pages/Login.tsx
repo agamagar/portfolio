@@ -80,6 +80,9 @@ export function LoginPage({ session, onSignedIn }: { session: Session; onSignedI
                 </button>
               </form>
             )}
+            <p className="muted small">
+              By continuing you'll be asked to agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy policy</a>.
+            </p>
           </>
         )}
       </div>

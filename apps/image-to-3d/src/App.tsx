@@ -5,6 +5,7 @@ import { Spinner, ThemeToggle, ToastProvider } from "./components/ui";
 import { api, type Session } from "./lib/api";
 import { Link, navigate, useRoute } from "./lib/router";
 import { CreatePage } from "./pages/Create";
+import { ConsentPage, PrivacyPage, TermsPage } from "./pages/Legal";
 import { LibraryPage } from "./pages/Library";
 import { LoginPage } from "./pages/Login";
 import { SharedPage } from "./pages/Shared";
@@ -35,7 +36,7 @@ export function App() {
   }, [refresh]);
 
   useEffect(() => {
-    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", notFound: "Not found" } as const;
+    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", terms: "Terms", privacy: "Privacy", notFound: "Not found" } as const;
     document.title = `${titles[route.name]} · Image to 3D`;
   }, [route.name]);
 
@@ -59,7 +60,11 @@ export function App() {
     );
   }
 
+  if (route.name === "terms") return <TermsPage session={session} />;
+  if (route.name === "privacy") return <PrivacyPage session={session} onChanged={refresh} />;
   if (!session.authenticated) return <LoginPage session={session} onSignedIn={refresh} />;
+
+  if (session.user && !session.user.consented) return <ConsentPage session={session} onDone={refresh} />;
 
   return (
     <Ctx.Provider value={{ session, refresh }}>
@@ -83,6 +88,9 @@ export function App() {
             </div>
           )}
         </main>
+        <footer className="site-footer muted small">
+          <Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link>
+        </footer>
       </ToastProvider>
     </Ctx.Provider>
   );

@@ -17,6 +17,7 @@ export interface Session {
   locked: boolean;
   auth: { google: boolean; mock: boolean; inviteRequired: boolean };
   termsVersion: string;
+  contactEmail: string | null;
   quota: { monthly: { used: number; limit: number | null; resetsAt: string }; daily: { spentUsd: number; limitUsd: number } } | null;
   storage: "blob" | "fs" | null;
   apiConfigured: boolean;

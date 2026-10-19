@@ -51,7 +51,9 @@ const req = (method: string, url: string, body?: unknown, cookie?: string, extra
 
 async function signIn(d: Deps, email: string): Promise<string> {
   const res = await route((r) => postSession(r, d))(req("POST", "/api/session", { action: "mock", email }));
-  return res.headers.get("set-cookie")!.split(";")[0];
+  const cookie = res.headers.get("set-cookie")!.split(";")[0];
+  await route((r) => postSession(r, d))(req("POST", "/api/session", { action: "consent" }, cookie));
+  return cookie;
 }
 const uid = async (d: Deps, cookie: string) => (await (await getSession(req("GET", "/api/session", undefined, cookie), d)).json()).user.id as string;
 

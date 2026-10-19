@@ -77,7 +77,26 @@ test("the access gate blocks strangers, and a new account needs an invite code",
   await page.screenshot({ path: `${SHOTS}/login.png` });
   await page.getByLabel(/^Invite code/).fill("beta-e2e");
   await page.getByRole("button", { name: "Sign in" }).click();
+
+  // nothing works until the Terms and Privacy policy are agreed to
+  await expect(page.getByRole("heading", { name: "One last thing" })).toBeVisible();
+  expect((await page.request.get("/api/library")).status()).toBe(403);
+  const cont = page.getByRole("button", { name: "Continue" });
+  await expect(cont).toBeDisabled();
+  await page.getByRole("checkbox").check();
+  await page.screenshot({ path: `${SHOTS}/consent.png` });
+  await cont.click();
   await expect(page.getByRole("heading", { name: "New model" })).toBeVisible();
+});
+
+test("Terms and Privacy are public pages", async () => {
+  await page.getByRole("link", { name: "Privacy" }).click();
+  await expect(page.getByRole("heading", { name: "Privacy policy" })).toBeVisible();
+  await expect(page.getByText("deleted 24 hours after upload")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Delete my account" })).toBeVisible();
+  await page.goto("/terms");
+  await expect(page.getByRole("heading", { name: "Terms of use" })).toBeVisible();
+  await page.goto("/");
 });
 
 test("security headers: page CSP, and no model-written-code worker in the public bundle", async () => {
