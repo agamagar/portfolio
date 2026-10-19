@@ -12,7 +12,7 @@
  */
 import { estimateGeneration, type ModelId } from "../../shared/models.js";
 import { SpecSchema } from "../../shared/spec.js";
-import { requireAuth } from "../auth.js";
+import { requireUser } from "../auth.js";
 import { assertBudget, recordSpend } from "../budget.js";
 import { createSpec, judgeRender, refineSpec, type CallHooks } from "../claude.js";
 import { requireApi, requireStore, type Deps } from "../deps.js";
@@ -27,7 +27,7 @@ function nextCallCeiling(model: ModelId): number {
 }
 
 export async function generate(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const api = requireApi(d);
   const store = requireStore(d);
   d.claudeLimiter.check(`claude:${clientIp(req)}`);
@@ -80,7 +80,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
 }
 
 export async function judge(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const api = requireApi(d);
   const store = requireStore(d);
   d.claudeLimiter.check(`claude:${clientIp(req)}`);

@@ -8,15 +8,10 @@
  *   PUT    /api/upload?id=…&name=… → raw file body (source image, GLB, thumbnail)
  */
 import { parseSpec, SpecError, STYLES, type Style } from "../../shared/spec.js";
-import { requireAuth } from "../auth.js";
+import { requireUser } from "../auth.js";
 import { requireStore, type Deps } from "../deps.js";
 import { HttpError, json, readBody, readJson } from "../http.js";
 import { itemFiles, itemPrefix, mutateIndex, readIndex, UUID_RE, type LibraryItem } from "../library.js";
-
-/** Reads are gated too, unless PUBLIC_GALLERY=true makes the gallery read-only public. */
-function requireRead(req: Request, d: Deps) {
-  if (!d.env.publicGallery) requireAuth(d.env, req);
-}
 
 function uuid(v: unknown): string {
   if (typeof v !== "string" || !UUID_RE.test(v)) throw new HttpError(400, "id must be a UUID v4", "bad_id");
@@ -33,7 +28,7 @@ function cleanTitle(v: unknown, fallback = "Untitled"): string {
 }
 
 export async function getLibrary(req: Request, d: Deps): Promise<Response> {
-  requireRead(req, d);
+  await requireUser(d, req);
   const store = requireStore(d);
   const id = new URL(req.url).searchParams.get("id");
   const { doc } = await readIndex(store);
@@ -49,7 +44,7 @@ export async function getLibrary(req: Request, d: Deps): Promise<Response> {
 }
 
 export async function saveItem(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const store = requireStore(d);
   const body = await readJson<Record<string, unknown>>(req, 2_000_000);
   const id = uuid(body.id);
@@ -90,7 +85,7 @@ export async function saveItem(req: Request, d: Deps): Promise<Response> {
 }
 
 export async function patchItem(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const store = requireStore(d);
   const body = await readJson<Record<string, unknown>>(req, 16_000);
   const id = uuid(body.id);
@@ -112,7 +107,7 @@ export async function patchItem(req: Request, d: Deps): Promise<Response> {
 }
 
 export async function deleteItem(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const store = requireStore(d);
   const id = uuid(new URL(req.url).searchParams.get("id"));
   let found = false;
@@ -149,7 +144,7 @@ function isPng(b: Uint8Array) {
 }
 
 export async function upload(req: Request, d: Deps): Promise<Response> {
-  requireAuth(d.env, req);
+  await requireUser(d, req);
   const store = requireStore(d);
   const url = new URL(req.url);
   const id = uuid(url.searchParams.get("id"));

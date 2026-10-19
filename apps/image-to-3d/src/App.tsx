@@ -56,9 +56,7 @@ export function App() {
     );
   }
 
-  const gated = session.passwordRequired && !session.authenticated;
-  const publicRead = session.publicGallery && (route.name === "library" || route.name === "viewer");
-  if (gated && !publicRead) return <LoginPage locked={session.locked} onSignedIn={refresh} />;
+  if (!session.authenticated) return <LoginPage session={session} onSignedIn={refresh} />;
 
   return (
     <Ctx.Provider value={{ session, refresh }}>
@@ -123,7 +121,7 @@ function Header() {
           </span>
         )}
         <ThemeToggle />
-        {session.passwordRequired && session.authenticated && (
+        {session.authenticated && (
           <button
             type="button"
             className="icon-btn"

@@ -13,9 +13,10 @@ export class ApiError extends Error {
 
 export interface Session {
   authenticated: boolean;
-  passwordRequired: boolean;
+  user: { id: string; email: string; name: string; role: "user" | "admin"; consented: boolean } | null;
   locked: boolean;
-  publicGallery: boolean;
+  auth: { google: boolean; mock: boolean; inviteRequired: boolean };
+  termsVersion: string;
   storage: "blob" | "fs" | null;
   apiConfigured: boolean;
   mock: boolean;
@@ -74,7 +75,8 @@ const jsonInit = (method: string, body: unknown): RequestInit => ({
 
 export const api = {
   session: () => request<Session>("/api/session"),
-  login: (password: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { password })),
+  mockLogin: (email: string, invite: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { action: "mock", email, invite })),
+  consent: () => request<{ ok?: true }>("/api/session", jsonInit("POST", { action: "consent" })),
   logout: () => request<{ ok: true }>("/api/session", { method: "DELETE" }),
 
   library: () => request<{ items: LibraryItem[] }>("/api/library"),

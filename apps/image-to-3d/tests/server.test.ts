@@ -15,8 +15,9 @@ import type { Deps } from "../server/deps";
 import { readEnv } from "../server/env";
 import { generate, judge } from "../server/handlers/generate";
 import { deleteItem, getLibrary, patchItem, saveItem, upload } from "../server/handlers/library";
-import { getSession, login } from "../server/handlers/session";
+import { getSession, logout, postSession } from "../server/handlers/session";
 import { route } from "../server/http";
+import { MemoryKv } from "../server/kv";
 import { fixtureMessagesApi, messageToEvents } from "../server/mock";
 import { RateLimiter } from "../server/rateLimit";
 import { FsStore } from "../server/store/fsStore";
@@ -54,8 +55,9 @@ function scripted(messages: BetaMessage[]) {
 
 function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps {
   return {
-    env: readEnv({ APP_PASSWORD: "open sesame", DAILY_BUDGET_USD: "5", ...env }),
+    env: readEnv({ MOCK_AUTH: "1", DAILY_BUDGET_USD: "5", ...env }),
     store: new FsStore(dir),
+    kv: new MemoryKv(),
     api: fixtureMessagesApi(FIXTURES, 0),
     claudeLimiter: new RateLimiter(100),
     loginLimiter: new RateLimiter(100),
@@ -63,12 +65,12 @@ function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps 
   };
 }
 
-async function signIn(d: Deps): Promise<string> {
-  const res = await route((r) => login(r, d))(jsonReq("POST", "/api/session", { password: "open sesame" }));
+async function signIn(d: Deps, email = "ada@example.com", invite?: string): Promise<string> {
+  const res = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "mock", email, invite }));
   expect(res.status).toBe(200);
   const cookie = res.headers.get("set-cookie")!;
   expect(cookie).toMatch(/HttpOnly/);
-  expect(cookie).toMatch(/SameSite=Strict/);
+  expect(cookie).toMatch(/SameSite=Lax/);
   expect(cookie).toMatch(/Secure/);
   return cookie.split(";")[0];
 }
@@ -107,20 +109,44 @@ describe("access gate", () => {
     expect((await route((r) => saveItem(r, d))(jsonReq("POST", "/api/library", {}))).status).toBe(401);
   });
 
-  it("rejects a wrong password and a forged cookie", async () => {
+  it("rejects a forged or signed-out cookie", async () => {
     const d = deps();
-    const bad = await route((r) => login(r, d))(jsonReq("POST", "/api/session", { password: "nope" }));
-    expect(bad.status).toBe(401);
-    const forged = "i3d_session=9999999999.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    const forged = "i3d_session=" + "A".repeat(43);
     expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, forged))).status).toBe(401);
+    const cookie = await signIn(d);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(200);
+    const out = await logout(jsonReq("DELETE", "/api/session", undefined, cookie), d);
+    expect(out.headers.get("set-cookie")).toMatch(/Max-Age=0/);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(401);
   });
 
-  it("fails closed in production when APP_PASSWORD is missing", async () => {
-    const d = deps({}, { APP_PASSWORD: "", VERCEL_ENV: "production" });
-    const res = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody));
-    expect(res.status).toBe(503);
-    const s = await (await getSession(jsonReq("GET", "/api/session"), d)).json();
-    expect(s.locked).toBe(true);
+  it("stores only a hash of the session token", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const token = cookie.split("=")[1];
+    for (const k of await d.kv!.keys("")) expect(k).not.toContain(token);
+    expect(JSON.stringify([...(await d.kv!.keys("sess:"))])).toMatch(/sess:[0-9a-f]{64}/);
+  });
+
+  it("fails closed in production without Google, a session secret or durable storage", async () => {
+    const prod = { VERCEL_ENV: "production", GOOGLE_CLIENT_ID: "x", GOOGLE_CLIENT_SECRET: "y", SESSION_SECRET: "z" };
+    for (const [over, kv] of [
+      [{ GOOGLE_CLIENT_ID: "" }, new MemoryKv()],
+      [{ SESSION_SECRET: "" }, new MemoryKv()],
+      [{}, null],
+    ] as const) {
+      const d = deps({ kv }, { ...prod, ...over });
+      const res = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody));
+      expect(res.status).toBe(503);
+      expect((await (await getSession(jsonReq("GET", "/api/session"), d)).json()).locked).toBe(true);
+    }
+  });
+
+  it("mock sign-in is unavailable in production", async () => {
+    const d = deps({}, { VERCEL_ENV: "production", MOCK_AUTH: "1", GOOGLE_CLIENT_ID: "x", SESSION_SECRET: "z" });
+    expect(d.env.mockAuth).toBe(false);
+    const res = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "mock", email: "a@b.co" }));
+    expect(res.status).toBe(404);
   });
 
   it("never exposes the API key in the session payload", async () => {
@@ -416,12 +442,5 @@ describe("library", () => {
     expect(versions.length).toBeLessThanOrEqual(5);
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(list.items[0].title).toBe("t7");
-  });
-
-  it("PUBLIC_GALLERY opens reads but not writes", async () => {
-    const d = deps({}, { PUBLIC_GALLERY: "true" });
-    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library"))).status).toBe(200);
-    expect((await route((r) => patchItem(r, d))(jsonReq("PATCH", "/api/library", { id, title: "x" }))).status).toBe(401);
-    expect((await route((r) => deleteItem(r, d))(jsonReq("DELETE", `/api/library?id=${id}`))).status).toBe(401);
   });
 });

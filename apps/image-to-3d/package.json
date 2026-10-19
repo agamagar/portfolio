@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "dev:mock": "ANTHROPIC_MOCK=fixtures APP_PASSWORD=${APP_PASSWORD:-letmein} vite",
+    "dev:mock": "ANTHROPIC_MOCK=fixtures vite",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",

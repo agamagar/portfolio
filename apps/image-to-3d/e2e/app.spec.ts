@@ -34,7 +34,7 @@ test.afterAll(() => {
 
 async function generate(opts: { file: string; notes?: string; style: string; passes: number; screenshotMidway?: string }) {
   await page.getByTestId("file-input").setInputFiles(IMG(opts.file));
-  await expect(page.getByAltText("Source image")).toBeVisible();
+  await expect(page.getByAltText("Front view")).toBeVisible();
   if (opts.notes !== undefined) await page.getByLabel("What is it?").fill(opts.notes);
   await page.getByRole("radio", { name: opts.style }).click();
   const passes = page.locator("#passes");
@@ -65,17 +65,18 @@ async function save(title?: string) {
   await expect(page.locator(".details")).toBeVisible();
 }
 
-test("the access gate blocks strangers", async () => {
+test("the access gate blocks strangers, and a new account needs an invite code", async () => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Image → 3D" })).toBeVisible();
   const api = await page.request.get("/api/library");
   expect(api.status()).toBe(401);
-  await page.getByLabel("Password").fill("wrong");
-  await page.getByRole("button", { name: "Unlock" }).click();
-  await expect(page.getByRole("alert")).toContainText("isn't right");
+  await page.getByLabel(/^Email/).fill("ada@example.com");
+  await page.getByLabel(/^Invite code/).fill("wrong-code");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert")).toContainText("invite code");
   await page.screenshot({ path: `${SHOTS}/login.png` });
-  await page.getByLabel("Password").fill("e2e-password");
-  await page.getByRole("button", { name: "Unlock" }).click();
+  await page.getByLabel(/^Invite code/).fill("beta-e2e");
+  await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { name: "New model" })).toBeVisible();
 });
 
@@ -193,6 +194,6 @@ test("delete removes the model and its files", async () => {
 
 test("signing out locks the app again", async () => {
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByLabel("Password")).toBeVisible();
+  await expect(page.getByLabel(/^Email/)).toBeVisible();
   expect((await page.request.get("/api/library")).status()).toBe(401);
 });

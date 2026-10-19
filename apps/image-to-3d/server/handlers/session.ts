@@ -1,37 +1,65 @@
-import { checkPassword, clearCookie, isAuthenticated, sessionCookie } from "../auth.js";
+/**
+ * GET    /api/session  → what the client needs to render: who is signed in, auth options, limits
+ * POST   /api/session  {action:"mock", email, name?, invite?}  local-only sign-in
+ *                      {action:"consent"}                       agree to the current Terms + Privacy
+ * DELETE /api/session  → sign out
+ */
+import { clearCookie, currentUser, guardConfigured, requireUser, sessionCookie, sessionToken } from "../auth.js";
 import { spentToday } from "../budget.js";
 import type { Deps } from "../deps.js";
 import { clientIp, HttpError, json, readJson } from "../http.js";
+import { createSession, destroySession, hasConsented, recordConsent, SESSION_TTL_S, signInOrSignUp, TERMS_VERSION, type User } from "../users.js";
 
-/** GET: what the client needs to render (auth state, limits, storage). Never secrets. */
+export function publicUser(u: User) {
+  return { id: u.id, email: u.email, name: u.name, role: u.role, consented: hasConsented(u) };
+}
+
 export async function getSession(req: Request, d: Deps): Promise<Response> {
-  const authed = isAuthenticated(d.env, req);
+  const configured = (() => {
+    try {
+      guardConfigured(d);
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  const user = configured ? await currentUser(d, req) : null;
   let spent: number | null = null;
-  if (authed && d.store) spent = await spentToday(d.store).catch(() => null);
+  if (user && d.store && d.kv) spent = await spentToday(d.store).catch(() => null);
   return json({
-    authenticated: authed,
-    passwordRequired: !!d.env.appPassword || d.env.isProduction,
-    locked: d.env.isProduction && !d.env.appPassword,
-    publicGallery: d.env.publicGallery,
+    authenticated: !!user,
+    user: user ? publicUser(user) : null,
+    locked: !configured,
+    auth: { google: !!d.env.googleClientId, mock: d.env.mockAuth, inviteRequired: d.env.inviteRequired },
+    termsVersion: TERMS_VERSION,
     storage: d.store?.kind ?? null,
     apiConfigured: !!d.api,
     mock: d.env.mock === "fixtures",
     maxRefinePasses: d.env.maxRefinePasses,
-    budget: authed ? { spentUsd: spent, limitUsd: d.env.dailyBudgetUsd } : null,
+    // the global daily dollar cap is only shown to admins; users see their own quota (see quota.ts)
+    budget: user?.role === "admin" ? { spentUsd: spent, limitUsd: d.env.dailyBudgetUsd } : null,
   });
 }
 
-export async function login(req: Request, d: Deps): Promise<Response> {
+export async function postSession(req: Request, d: Deps): Promise<Response> {
   d.loginLimiter.check(`login:${clientIp(req)}`);
-  const body = await readJson<{ password?: unknown }>(req, 4096);
-  if (!d.env.appPassword) {
-    if (d.env.isProduction) throw new HttpError(503, "APP_PASSWORD is not set on the server, so the app is locked.", "not_configured");
-    return json({ ok: true, open: true });
+  guardConfigured(d);
+  const body = await readJson<{ action?: unknown; email?: unknown; name?: unknown; invite?: unknown }>(req, 4096);
+
+  if (body.action === "consent") {
+    const user = await requireUser(d, req);
+    return json({ user: publicUser(await recordConsent(d.env, d.kv!, user)) });
   }
-  if (!checkPassword(d.env, body.password)) throw new HttpError(401, "That password isn't right.", "bad_password");
-  return json({ ok: true }, 200, { "set-cookie": sessionCookie(d.env, req) });
+  if (body.action === "mock") {
+    if (!d.env.mockAuth) throw new HttpError(404, "Not found", "not_found");
+    const { user } = await signInOrSignUp(d.env, d.kv!, { email: String(body.email ?? ""), name: String(body.name ?? ""), invite: body.invite });
+    const token = await createSession(d.kv!, user.id);
+    return json({ ok: true, user: publicUser(user) }, 200, { "set-cookie": sessionCookie(req, token, SESSION_TTL_S) });
+  }
+  throw new HttpError(400, "Unknown action", "bad_request");
 }
 
-export async function logout(req: Request): Promise<Response> {
+export async function logout(req: Request, d: Deps): Promise<Response> {
+  if (d.kv) await destroySession(d.kv, sessionToken(req)).catch(() => {});
   return json({ ok: true }, 200, { "set-cookie": clearCookie(req) });
 }
