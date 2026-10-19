@@ -4,9 +4,9 @@ html.cx-on, html.cx-on * { cursor: none !important; }
 .cx {
   position: fixed; left: 0; top: 0; z-index: 2147483000;
   pointer-events: none; will-change: transform;
-  --cx-ink: #111; --cx-on-ink: #fff; --cx-blue: #1a6fd0;
+  --cx-ink: #111; --cx-on-ink: #fff; --cx-blue: #1a6fd0; --cx-halo: rgba(255, 255, 255, 0.85);
 }
-html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111; }
+html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111; --cx-halo: rgba(0, 0, 0, 0.8); }
 .cx__svg { position: absolute; left: 0; top: 0; overflow: visible; }
 .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.55; stroke-width: 1; transition: fill 180ms linear, stroke 180ms linear, stroke-opacity 180ms linear; }
 .cx__g1, .cx__g2 { stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
@@ -29,15 +29,25 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
 .cx__glass {
   position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
   corner-shape: round; /* the site squircles every radius (index.css); the cursor is a true pill */
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(10px) saturate(1.7); backdrop-filter: blur(10px) saturate(1.7);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.28);
+  /* TRUE GLASS (Agam, 19 Oct: "fully glass"): a nearly clear film, strong frost (blur + saturate, set once and
+     never animated; only opacity and the box size move), a crisp rim (bright top edge, darker bottom edge,
+     faint ring all round, the same recipe as the nav pills' --glass-edge) and a soft drop shadow. */
+  background: rgba(255, 255, 255, 0.11);
+  -webkit-backdrop-filter: blur(18px) saturate(1.9); backdrop-filter: blur(18px) saturate(1.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 8px 22px rgba(0, 0, 0, 0.26);
   transition: opacity 160ms linear;
 }
 .cx[data-s="link"] .cx__glass, .cx[data-s="ext"] .cx__glass, .cx[data-s="view"] .cx__glass, .cx[data-s="play"] .cx__glass, .cx[data-s="up"] .cx__glass { opacity: 1; }
 .cx[data-s="link"] .cx__body, .cx[data-s="ext"] .cx__body, .cx[data-s="view"] .cx__body, .cx[data-s="play"] .cx__body, .cx[data-s="up"] .cx__body { fill: transparent; stroke: none; filter: none; }
-.cx[data-s="link"] .cx__g1, .cx[data-s="ext"] .cx__g1, .cx[data-s="view"] .cx__g1, .cx[data-s="play"] .cx__g1, .cx[data-s="up"] .cx__g1 { stroke: #111; }
-.cx[data-s="link"] .cx__label, .cx[data-s="ext"] .cx__label, .cx[data-s="view"] .cx__label, .cx[data-s="play"] .cx__label, .cx[data-s="up"] .cx__label { color: #111; }
 .cx[data-s="lock"] .cx__body { fill: #3a3a40; stroke: rgba(255, 255, 255, 0.55); stroke-opacity: 1; stroke-width: 1; }
 .cx[data-s="grab"] .cx__body { fill: var(--cx-ink); stroke: var(--cx-on-ink); stroke-opacity: 0.6; }
 @media (hover: none), (pointer: coarse) { .cx { display: none; } }
+/* glyph and label on the glass: the theme's ink with a soft halo of the opposite tone, so they read over
+   any background, bright photo or dark page (static filter and shadow, nothing animated) */
+.cx[data-s="link"] .cx__g1, .cx[data-s="ext"] .cx__g1, .cx[data-s="view"] .cx__g1, .cx[data-s="play"] .cx__g1, .cx[data-s="up"] .cx__g1 { stroke: var(--cx-ink); filter: drop-shadow(0 0 2px var(--cx-halo)) drop-shadow(0 0 1px var(--cx-halo)); }
+.cx[data-s="link"] .cx__label, .cx[data-s="ext"] .cx__label, .cx[data-s="view"] .cx__label, .cx[data-s="play"] .cx__label, .cx[data-s="up"] .cx__label { color: var(--cx-ink); text-shadow: 0 0 6px var(--cx-halo), 0 0 2px var(--cx-halo), 0 1px 1px var(--cx-halo); }
