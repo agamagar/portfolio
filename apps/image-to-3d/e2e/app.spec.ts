@@ -32,9 +32,17 @@ test.afterAll(() => {
   expect(pageErrors, "no uncaught page errors").toEqual([]);
 });
 
-async function generate(opts: { file: string; notes?: string; style: string; passes: number; screenshotMidway?: string }) {
+async function generate(opts: { file: string; left?: string; right?: string; notes?: string; style: string; passes: number; screenshotMidway?: string }) {
   await page.getByTestId("file-input").setInputFiles(IMG(opts.file));
   await expect(page.getByAltText("Front view")).toBeVisible();
+  if (opts.left) {
+    await page.getByTestId("file-input-left").setInputFiles(IMG(opts.left));
+    await expect(page.getByAltText("Left view")).toBeVisible();
+  }
+  if (opts.right) {
+    await page.getByTestId("file-input-right").setInputFiles(IMG(opts.right));
+    await expect(page.getByAltText("Right view")).toBeVisible();
+  }
   if (opts.notes !== undefined) await page.getByLabel("What is it?").fill(opts.notes);
   await page.getByRole("radio", { name: opts.style }).click();
   const passes = page.locator("#passes");
@@ -196,7 +204,7 @@ test("viewer: style switch, rename, tags, share link, GLB", async () => {
   const guest = await page.context().browser()!.newContext({ baseURL: new URL(shareUrl).origin });
   const gp = await guest.newPage();
   await gp.goto(shareUrl);
-  await expect(gp.getByRole("heading", { name: "Toy robot" })).toBeVisible();
+  await expect(gp.getByRole("heading", { name: "Wind-up robot" })).toBeVisible();
   await expect(gp.getByRole("link", { name: "Download GLB" })).toHaveAttribute("href", /^\/api\/file\?p=/);
   await gp.getByRole("button", { name: "Report this model" }).click();
   await gp.getByRole("dialog").getByRole("button", { name: "Send report" }).click();
@@ -218,6 +226,35 @@ test("delete removes the model and its files", async () => {
   await dialog.getByRole("button", { name: "Delete" }).click();
   await page.waitForURL(/\/library$/);
   await expect(page.getByRole("list", { name: "Models" }).locator("li")).toHaveCount(2);
+});
+
+const TINY_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+
+test("moderation: a blocked request stops before the main model and doesn't use up a model", async () => {
+  await page.goto("/");
+  const pill = page.getByTitle(/Models you've made this month/);
+  await expect(pill).toContainText("3 / 4");
+  await page.getByTestId("file-input").setInputFiles({ name: "tiny.png", mimeType: "image/png", buffer: TINY_PNG });
+  await expect(page.getByAltText("Front view")).toBeVisible();
+  await page.getByLabel("What is it?").fill("moderation-test-block");
+  await page.getByRole("button", { name: /Generate/ }).click();
+  await expect(page.getByRole("alert")).toContainText("doesn't accept");
+  await page.reload();
+  await expect(pill).toContainText("3 / 4");
+});
+
+test("three views count as one model, then the monthly limit stops the next one", async () => {
+  await page.goto("/");
+  await generate({ file: "toadstool", left: "robot", right: "robot", notes: "toadstool", style: "Clay", passes: 0 });
+  await page.screenshot({ path: `${SHOTS}/three-views.png` });
+  await expect(page.getByTitle(/Models you've made this month/)).toContainText("4 / 4");
+
+  await page.reload();
+  await page.getByTestId("file-input").setInputFiles(IMG("robot"));
+  await expect(page.getByAltText("Front view")).toBeVisible();
+  await page.getByRole("button", { name: /Generate/ }).click();
+  await expect(page.getByRole("alert")).toContainText("free models");
+  await page.screenshot({ path: `${SHOTS}/quota-hit.png` });
 });
 
 test("signing out locks the app again", async () => {

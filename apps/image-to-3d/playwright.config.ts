@@ -33,6 +33,7 @@ export default defineConfig({
       ANTHROPIC_MOCK: "fixtures",
       MOCK_DELAY_MS: "6",
       INVITE_CODES: "beta-e2e",
+      MONTHLY_MODELS: "4",
       ADMIN_EMAILS: "admin@example.com",
       DATA_DIR: ".data-e2e",
       DAILY_BUDGET_USD: "20",
