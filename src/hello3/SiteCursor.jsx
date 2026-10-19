@@ -87,8 +87,9 @@ export default function SiteCursor() {
 
     // visual only: micro-jitter, a slow idle drift while it waits, and the pointer-shy offset
     const paint = () => {
-      const j = Math.sin(vt / 137) * 0.45 + Math.sin(vt / 47 + 1.3) * 0.25;
-      const k = Math.cos(vt / 119 + 0.6) * 0.45 + Math.sin(vt / 53) * 0.25;
+      const live = mode === "follow"; // static while parked: no jitter, no drift
+      const j = live ? Math.sin(vt / 137) * 0.45 + Math.sin(vt / 47 + 1.3) * 0.25 : 0;
+      const k = live ? Math.cos(vt / 119 + 0.6) * 0.45 + Math.sin(vt / 53) * 0.25 : 0;
       const dx = Math.sin(vt / 1900) * 2.6 * still, dy = Math.cos(vt / 2300 + 1) * 2 * still;
       el.style.transform = `translate3d(${(cp.x + j + dx + ev.x).toFixed(2)}px,${(cp.y + k + dy + ev.y).toFixed(2)}px,0)`;
     };
@@ -152,7 +153,7 @@ export default function SiteCursor() {
         { k: "wait", ms: rnd(700, 1100) },
       ];
     };
-    groups = [rows, bang];
+    groups = []; // 19 Oct 2026 (Agam): no demo tour; the cursor stays parked on the face until it is clicked (rows/bang kept for reference)
 
     // ---- resting: PERCHED on the 3D face (Agam, 18 Oct); a click on the face changes its style and sends
     // the cursor off to follow the visitor's pointer (below). With no face (other hero versions) it parks
@@ -260,9 +261,9 @@ export default function SiteCursor() {
       if (mode === "rest" && !cur) restTick(dt);
       else if (mode === "follow") followTick(dt / 1000);
       // idle drift only while it is waiting; a pointer-shy nudge away from the real pointer
-      still += ((mode === "follow" || (cur && cur.k === "move") ? 0 : 1) - still) * 0.04;
+      still = 0; // no idle drift (parked is static, following is the pointer's)
       let tx = 0, ty = 0;
-      if (mode === "rest") {
+      if (false) { // the pointer-shy nudge: off, the parked cursor does not move
         const dx = cp.x - ptr.x, dy = cp.y - ptr.y, d = Math.hypot(dx, dy) || 1;
         if (d < 170) { const m = (170 - d) * 0.3; tx = (dx / d) * m; ty = (dy / d) * m; }
       }
@@ -322,7 +323,7 @@ export default function SiteCursor() {
       <svg className="sc__arrow" viewBox="0 0 16 16" width="18" height="18">
         <path d="M2 1.5 L2 14.2 L5.6 10.8 L8.1 15 L10.3 13.9 L7.9 9.8 L12.8 9.8 Z" />
       </svg>
-      <span className="sc__tag">Agam</span>
+      <span className="sc__tag"><span className="sc__t-rest">Click to activate</span><span className="sc__t-live">Agam</span></span>
     </div>
   );
 }
