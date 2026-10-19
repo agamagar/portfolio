@@ -420,6 +420,16 @@ export default function InspectMode() {
                   {fs.filter(([, p]) => !/gap/.test(p) || /flex|grid/.test(getComputedStyle(selEl).display)).map(([l, p, mn]) => (
                     <Field key={p} label={l} value={propNow(selEl, p)} min={mn ?? 0} onSet={(v) => setProp(selEl, p, v, mn ?? 0)} />
                   ))}
+              {/* Move: top / left offset for anything positioned (relative or absolute). Phone frames inside a centred flex stage
+                  (slot-real devices, coded phones) ignore a negative margin, but a relative offset always moves them. */}
+              {getComputedStyle(selEl).position !== "static" && (
+                <div style={{ marginBottom: 6 }}>
+                  <div style={{ opacity: 0.5, margin: "4px 0 2px" }}>Move</div>
+                  {[["Y", "top"], ["X", "left"]].map(([l, p]) => (
+                    <Field key={p} label={l} value={propNow(selEl, p)} min={-1e4} onSet={(v) => setProp(selEl, p, v, -1e4)} />
+                  ))}
+                </div>
+              )}
                 </div>
               ))}
             </div>
