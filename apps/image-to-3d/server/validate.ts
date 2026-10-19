@@ -2,31 +2,40 @@ import { EFFORTS, isModelId, DEFAULT_MODEL, type Effort, type ModelId } from "..
 import { STYLES, type Style } from "../shared/spec.js";
 import type { ImageInput, ViewImage } from "./claude.js";
 import { HttpError } from "./http.js";
+import { IMAGE_LIMITS, sanitizeImage } from "./images.js";
 
 const MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
-/** base64 of a ~3.75 MB image. Claude's own per-image limit is 5 MB; the client downsizes to ~1 MB anyway. */
-const MAX_IMAGE_B64 = 5_000_000;
+/** base64 length of the largest accepted upload (5 MB), checked before decoding anything. */
+const MAX_IMAGE_B64 = Math.ceil((IMAGE_LIMITS.maxBytes * 4) / 3) + 4;
 
-export function imageInput(v: unknown, field: string): ImageInput {
+/** Validates a base64 image from the client and returns the sanitised (re-encoded, metadata-free) copy. */
+export async function imageInput(v: unknown, field: string): Promise<ImageInput> {
   const o = v as { data?: unknown; mediaType?: unknown } | null;
   if (!o || typeof o.data !== "string" || typeof o.mediaType !== "string") throw new HttpError(400, `${field} is missing`, "bad_request");
   if (!(MEDIA_TYPES as readonly string[]).includes(o.mediaType)) throw new HttpError(400, `${field} must be JPEG, PNG, WebP or GIF`, "bad_image");
-  if (o.data.length > MAX_IMAGE_B64) throw new HttpError(413, `${field} is too large (max ~3.7 MB)`, "too_large");
+  if (o.data.length > MAX_IMAGE_B64) throw new HttpError(413, `${field} is larger than 5 MB`, "too_large");
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(o.data)) throw new HttpError(400, `${field} is not valid base64`, "bad_image");
   if (!magicMatches(o.data, o.mediaType)) throw new HttpError(400, `${field} content doesn't match ${o.mediaType}`, "bad_image");
-  return { data: o.data, mediaType: o.mediaType as ImageInput["mediaType"] };
+  const clean = await sanitizeImage(Buffer.from(o.data, "base64"), field);
+  return { data: clean.bytes.toString("base64"), mediaType: clean.mediaType };
 }
 
 /**
  * The reference views of the subject. `images: {front, left?, right?}`; the old
- * single `image` field is still accepted as the front view.
+ * single `image` field is still accepted as the front view. At most three images,
+ * and no keys other than front, left and right.
  */
-export function viewImages(body: Record<string, unknown>): ViewImage[] {
+export async function viewImages(body: Record<string, unknown>): Promise<ViewImage[]> {
   const o = (body.images ?? {}) as Record<string, unknown>;
+  if (typeof o !== "object" || Array.isArray(o)) throw new HttpError(400, "images must be an object with front, left and right", "bad_request");
+  const extra = Object.keys(o).filter((k) => !["front", "left", "right"].includes(k));
+  if (extra.length || Object.keys(o).length > IMAGE_LIMITS.maxImages) {
+    throw new HttpError(400, `Send at most ${IMAGE_LIMITS.maxImages} images: front, left and right`, "too_many_images");
+  }
   const front = o.front ?? body.image;
-  const out: ViewImage[] = [{ view: "front", image: imageInput(front, "front image") }];
-  if (o.left != null) out.push({ view: "left", image: imageInput(o.left, "left image") });
-  if (o.right != null) out.push({ view: "right", image: imageInput(o.right, "right image") });
+  const out: ViewImage[] = [{ view: "front", image: await imageInput(front, "front image") }];
+  if (o.left != null) out.push({ view: "left", image: await imageInput(o.left, "left image") });
+  if (o.right != null) out.push({ view: "right", image: await imageInput(o.right, "right image") });
   return out;
 }
 

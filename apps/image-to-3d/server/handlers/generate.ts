@@ -20,7 +20,7 @@ import { clientIp, HttpError, json, ndjson, readJson } from "../http.js";
 import { acquireSlot, assertUserBudget, lockUser, openJob, recordUserSpend, reserveModel, spendJob } from "../quota.js";
 import * as v from "../validate.js";
 
-const MAX_BODY = 18_000_000; // up to three views
+const MAX_BODY = 24_000_000; // up to three 5 MB views (base64) plus the render
 
 function nextCallCeiling(model: ModelId): number {
   // the high end of a single call, so one request can't blow far past the cap
@@ -37,13 +37,13 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
 
   const mode = body.mode === "refine" ? "refine" : "create";
   const base = {
-    views: v.viewImages(body),
+    views: await v.viewImages(body),
     style: v.style(body.style),
     model: v.model(body.model),
     effort: v.effort(body.effort),
     notes: v.notes(body.notes),
   };
-  let refine: { render: ReturnType<typeof v.imageInput>; specJson: string; pass: number } | null = null;
+  let refine: { render: Awaited<ReturnType<typeof v.imageInput>>; specJson: string; pass: number } | null = null;
   if (mode === "refine") {
     const pass = Number(body.pass);
     if (!Number.isInteger(pass) || pass < 1 || pass > d.env.maxRefinePasses) {
@@ -51,7 +51,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
     }
     const parsed = SpecSchema.safeParse(body.spec);
     if (!parsed.success) throw new HttpError(400, "spec is not a valid spec", "bad_spec");
-    refine = { render: v.imageInput(body.render, "render"), specJson: JSON.stringify(parsed.data), pass };
+    refine = { render: await v.imageInput(body.render, "render"), specJson: JSON.stringify(parsed.data), pass };
   }
 
   // limits, cheapest first. Each acquired resource is released in `finish` (or on a throw here).
@@ -124,8 +124,8 @@ export async function judge(req: Request, d: Deps): Promise<Response> {
   const kv = requireKv(d);
   await d.claudeLimiter.check(`claude:${clientIp(req)}`);
   const body = await readJson<Record<string, unknown>>(req, MAX_BODY);
-  const image = v.viewImages(body)[0].image;
-  const render = v.imageInput(body.render, "render");
+  const image = (await v.viewImages(body))[0].image;
+  const render = await v.imageInput(body.render, "render");
   const unlock = await lockUser(kv, user);
   try {
     await spendJob(kv, user, body.jobId, "judges", 1);

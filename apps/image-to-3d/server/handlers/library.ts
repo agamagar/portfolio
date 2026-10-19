@@ -11,6 +11,7 @@ import { parseSpec, SpecError, STYLES, type Style } from "../../shared/spec.js";
 import { requireUser } from "../auth.js";
 import { requireStore, type Deps } from "../deps.js";
 import { HttpError, json, readBody, readJson } from "../http.js";
+import { IMAGE_LIMITS, sanitizeImage } from "../images.js";
 import { itemFiles, itemPrefix, mutateIndex, readIndex, UUID_RE, type LibraryItem } from "../library.js";
 
 function uuid(v: unknown): string {
@@ -125,7 +126,7 @@ const SOURCE_RULE = {
     "image/png": (b: Uint8Array) => isPng(b),
     "image/webp": (b: Uint8Array) => ascii(b, 0, 4) === "RIFF" && ascii(b, 8, 12) === "WEBP",
   },
-  max: 4_000_000,
+  max: IMAGE_LIMITS.maxBytes,
 };
 const UPLOADS: Record<string, { types: Record<string, (b: Uint8Array) => boolean>; max: number }> = {
   source: SOURCE_RULE,
@@ -156,6 +157,14 @@ export async function upload(req: Request, d: Deps): Promise<Response> {
   if (!check) throw new HttpError(415, `${name} must be ${Object.keys(rule.types).join(", ")}`, "bad_content_type");
   const body = await readBody(req, rule.max);
   if (body.byteLength < 12 || !check(body)) throw new HttpError(400, `${name} content doesn't match ${type}`, "bad_file");
-  const file = await store.put(`${itemPrefix(id)}${name}.${EXT[type]}`, body, type, { randomSuffix: true });
+  // images are re-encoded (metadata stripped, size checked); the GLB is stored as is
+  let data: Uint8Array = body;
+  let storedType = type;
+  if (name !== "model") {
+    const clean = await sanitizeImage(body, name);
+    data = clean.bytes;
+    storedType = clean.mediaType;
+  }
+  const file = await store.put(`${itemPrefix(id)}${name}.${EXT[storedType]}`, data, storedType, { randomSuffix: true });
   return json({ url: file.url, size: file.size }, 201);
 }

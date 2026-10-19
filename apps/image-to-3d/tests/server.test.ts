@@ -379,6 +379,26 @@ describe("library", () => {
     return new Request(`${BASE}/api/upload?id=${itemId}&name=${name}`, { method: "PUT", headers: { cookie, "content-type": type }, body });
   }
 
+  it("re-encodes uploaded images (EXIF stripped) and refuses oversized ones", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const sharp = (await import("sharp")).default;
+    const jpg = await sharp({ create: { width: 32, height: 32, channels: 3, background: "#369" } })
+      .withExif({ IFD0: { Copyright: "secret-owner" } })
+      .jpeg()
+      .toBuffer();
+    expect(jpg.toString("latin1")).toContain("secret-owner");
+    const res = await route((r) => upload(r, d))(put(cookie, "source", "image/jpeg", new Uint8Array(jpg)));
+    expect(res.status).toBe(201);
+    const [file] = await d.store!.list(`i3d/items/${id}/source`);
+    expect(Buffer.from(await d.store!.read(file)).toString("latin1")).not.toContain("secret-owner");
+    const wide = await sharp({ create: { width: 4100, height: 8, channels: 3, background: "#fff" } }).png().toBuffer();
+    expect((await route((r) => upload(r, d))(put(cookie, "left", "image/png", new Uint8Array(wide)))).status).toBe(413);
+    const junk = new Uint8Array(40).fill(1);
+    junk.set([0xff, 0xd8]);
+    expect((await route((r) => upload(r, d))(put(cookie, "right", "image/jpeg", junk))).status).toBe(400);
+  });
+
   it("upload → save → list → get → rename → delete", async () => {
     const d = deps();
     const cookie = await signIn(d);
@@ -445,6 +465,29 @@ describe("library", () => {
     expect(list.items[0].title).toBe("t7");
   });
 });
+
+/** A fake Claude that holds every call until release() is called, to observe in-flight limits. */
+function gated() {
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  const inner = scripted([fixtureMessage("create.toadstool.json")]).api;
+  const api: MessagesApi = {
+    stream(params) {
+      const s = inner.stream(params);
+      return {
+        async *[Symbol.asyncIterator]() {
+          await gate;
+          yield* s;
+        },
+        finalMessage: async () => {
+          await gate;
+          return s.finalMessage();
+        },
+      };
+    },
+  };
+  return { api, release };
+}
 
 describe("quotas", () => {
   const gen = (d: Deps) => route((r) => generate(r, d));
@@ -518,12 +561,14 @@ describe("quotas", () => {
   });
 
   it("allows one in-flight generation per user", async () => {
-    const d = deps();
+    const g = gated();
+    const d = deps({ api: g.api });
     const cookie = await signIn(d);
-    const first = await post(d, createBody, cookie); // the stream isn't read yet, so it holds the lock
+    const first = await post(d, createBody, cookie); // Claude is still working, so the lock is held
     const second = await post(d, createBody, cookie);
     expect(second.status).toBe(409);
     expect((await second.json()).code).toBe("in_flight");
+    g.release();
     await events(first);
     const third = await post(d, createBody, cookie); // the lock is released when the stream ends
     expect(third.status).toBe(200);
@@ -531,7 +576,8 @@ describe("quotas", () => {
   });
 
   it("answers 'busy, retry' when every global slot is taken, and frees slots after a run", async () => {
-    const d = deps({}, { MAX_CONCURRENT: "1" });
+    const g = gated();
+    const d = deps({ api: g.api }, { MAX_CONCURRENT: "1" });
     const a = await signIn(d, "a@example.com");
     const b = await signIn(d, "b@example.com");
     const first = await post(d, createBody, a);
@@ -539,6 +585,7 @@ describe("quotas", () => {
     expect(busy.status).toBe(503);
     expect(busy.headers.get("retry-after")).toBe("10");
     expect((await busy.json()).code).toBe("busy");
+    g.release();
     await events(first);
     const retry = await post(d, createBody, b);
     expect(retry.status).toBe(200);
