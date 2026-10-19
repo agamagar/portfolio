@@ -57,6 +57,9 @@ const InspectMode = import.meta.env.DEV ? React.lazy(() => import("./hello3/Insp
 // the visitor's morphing cursor (src/ui/ContextCursor.jsx), fine pointers only
 const ContextCursor = React.lazy(() => import("./ui/ContextCursor.jsx"));
 
+// dev only: /?cursors=1 shows every cursor state side by side (src/ui/CursorSheet.jsx)
+const CursorSheet = import.meta.env.DEV && /[?&]cursors=1\b/.test(window.location.search) ? React.lazy(() => import("./ui/CursorSheet.jsx")) : null;
+
 const Agentation = import.meta.env.DEV
   ? React.lazy(() =>
       import("agentation").then((m) => ({ default: m.Agentation }))
@@ -73,6 +76,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Guard name="app" fallback={<StaticFallback />}><App /></Guard>
     </React.StrictMode>
     <Guard name="context-cursor"><React.Suspense fallback={null}><ContextCursor /></React.Suspense></Guard>
+    {CursorSheet && <Guard name="cursor-sheet"><React.Suspense fallback={null}><CursorSheet /></React.Suspense></Guard>}
     {QaNotes && (
       <Guard name="qa-notes"><React.Suspense fallback={null}>
         <QaNotes />
