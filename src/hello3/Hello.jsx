@@ -1519,7 +1519,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             slides in, siblings dim); hrefs by organisation until the frame has its own */}
         {/* PHONES DROP THE LIST (Oct 2026, Agam: "don't need a collated list at the top"): each
             work card carries its year, title and line instead (WorkGrid.jsx, the same rows) */}
-        {!phone && heroV !== "v4" && heroV !== "v5" && (
+        {!phone && (
         <div className="hello-hero__table work work--timeline" role="list" aria-label="Timeline" data-calm>
           {heroV === "v2" && HERO_V2_ROWS.map((r, i) => (
             <div className="work__item" role="listitem" key={i} style={{ "--i": i }}>
@@ -1527,7 +1527,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
               <span className="work__meta">{r.line}</span>
             </div>
           ))}
-          {heroV !== "v2" && heroV !== "v4" && heroV !== "v5" && TIMELINE.map((r, i) => {
+          {heroV !== "v2" && TIMELINE.map((r, i) => {
             const Row = LOCKED.has(r.href) ? LockedLink : HelloLink; // mv58rul2: awaiting NDA approval, shown but not openable
             const rowProps = LOCKED.has(r.href) ? { badge: false } : { to: r.href, onNavigate };
             return (

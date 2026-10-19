@@ -49,3 +49,21 @@
 .hello[data-page="3"] .hv4--left .hv4__t--a, .hello[data-page="3"] .hv4--left .hv4__t--d { text-align: left; }
 .hello[data-page="3"] .hv4--left .hv4__t--bl, .hello[data-page="3"] .hv4--left .hv4__t--cl { text-align: left; }
 @media (max-width: 720px) { .hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__inner { padding: 0 20px; } .hello[data-page="3"] .hello-hero.hello-hero--left .hello-hero__links { margin-left: 0; } }
+
+/* mvf4idjw (Agam, "use the same serif font and size as the other version and keep the emoji small too, bring back the
+   project list"): v4 / v5 take v2's type (Prociono 400, 36 / 32 / 28) and a face of v2's size, spanning the two lines it
+   sits in; the project list is back in the right column, on the same grid as v2 (card-grid edges, 37rem list, 96px gutter). */
+.hello[data-page="3"] .hv4 { --fs: 36; }
+@media (max-width: 1024px) { .hello[data-page="3"] .hv4 { --fs: 32; } }
+@media (max-width: 720px) { .hello[data-page="3"] .hv4 { --fs: 28; } }
+.hello[data-page="3"] .hv4__head { font-family: "Prociono", var(--font-serif); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; }
+.hello[data-page="3"] .hv4__face { width: calc(var(--fs) * 2.14px); height: calc(var(--fs) * 2.3px); }
+.hello[data-page="3"][data-stage] .hv4__flyer { transform: scale(calc(var(--fs) * 0.0532)); }
+@media (min-width: 1101px) {
+  .hello[data-page="3"] .hello-hero.hello-hero--v4 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 37rem); column-gap: 96px; align-items: center; justify-items: stretch;
+    max-width: none; box-sizing: border-box; min-height: min(600px, 39.7vw); padding: 0 var(--home-inset-r, 60px) 60px var(--home-inset-l, 60px);
+  }
+  .hello[data-page="3"] .hello-hero.hello-hero--v4 .hello-hero__inner { grid-column: 1; padding: 0; width: auto; }
+  .hello[data-page="3"] .hello-hero.hello-hero--v4 .hello-hero__table { padding: 0; margin: 0; justify-self: end; width: 100%; }
+}
