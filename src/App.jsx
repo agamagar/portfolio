@@ -156,7 +156,7 @@ const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDem
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
-import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner } from "./figures/scheduled/SchedGtmReal";
+import SchedGtmReal, { SchedGtmRealOne, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
@@ -733,6 +733,7 @@ const figures = {
   schedGtmReal: SchedGtmReal,
   schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
   schedGtmBanner: SchedGtmBanner, // mv56yxug: the banner animation alone, full view
+  schedGtmTooltipOne: SchedGtmTooltipOne, // Figma 2:4306: cart with the Scheduled order tooltip
   schedGtmCartOne: SchedGtmCartOne, // muky9xug: the cart screen alone
   schedRnR: SchedRnR,
   schedPageReal: SchedPageReal,
@@ -2683,6 +2684,7 @@ const caseStudies = {
           // muky60th removed the schedule page; muky9xug (28 Sep): only the RIGHT screen
           // was meant, so the box keeps the cart (the screen muky18to picked)
           { fig: "schedGtmCartOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with the Introducing scheduled delivery banner" },
+          { fig: "schedGtmTooltipOne", figBare: true, bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)", alt: "The Zepto cart with a Scheduled order tooltip on the Schedule button" },
         ],
         divider: true,
       },
