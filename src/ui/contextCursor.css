@@ -51,3 +51,12 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
    any background, bright photo or dark page (static filter and shadow, nothing animated) */
 .cx[data-s="link"] .cx__g1, .cx[data-s="ext"] .cx__g1, .cx[data-s="view"] .cx__g1, .cx[data-s="play"] .cx__g1, .cx[data-s="up"] .cx__g1 { stroke: var(--cx-ink); filter: drop-shadow(0 0 2px var(--cx-halo)) drop-shadow(0 0 1px var(--cx-halo)); }
 .cx[data-s="link"] .cx__label, .cx[data-s="ext"] .cx__label, .cx[data-s="view"] .cx__label, .cx[data-s="play"] .cx__label, .cx[data-s="up"] .cx__label { color: var(--cx-ink); text-shadow: 0 0 6px var(--cx-halo), 0 0 2px var(--cx-halo), 0 1px 1px var(--cx-halo); }
+
+/* Agam's organic arrow (Figma 1647:5325): the pill body is hidden in the arrow scenarios; the arrow is the
+   theme's ink with a hairline of the opposite tone and a soft shadow, and breathes (compositor-only CSS
+   scale about the hotspot, so it costs no JS and nothing while the pointer is still). */
+.cx[data-s="arrow"] .cx__body, .cx[data-s="hover"] .cx__body, .cx[data-s="scroll"] .cx__body { opacity: 0; }
+.cx__arrow { fill: var(--cx-ink); stroke: none; filter: drop-shadow(0 0 0.7px var(--cx-on-ink)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
+.cx__org-in { transform-origin: 0 0; animation: cx-breathe 3.8s ease-in-out infinite; }
+@keyframes cx-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .cx__org-in { animation: none; } }
