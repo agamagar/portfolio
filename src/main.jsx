@@ -60,6 +60,9 @@ const ContextCursor = React.lazy(() => import("./ui/ContextCursor.jsx"));
 // dev only: /?cursors=1 shows every cursor state side by side (src/ui/CursorSheet.jsx)
 const CursorSheet = import.meta.env.DEV && /[?&]cursors=1\b/.test(window.location.search) ? React.lazy(() => import("./ui/CursorSheet.jsx")) : null;
 
+// the Agam cursor as a guide on case-study pages once activated on the home page (src/hello3/GuideHost.jsx)
+const GuideHost = React.lazy(() => import("./hello3/GuideHost.jsx"));
+
 const Agentation = import.meta.env.DEV
   ? React.lazy(() =>
       import("agentation").then((m) => ({ default: m.Agentation }))
@@ -77,6 +80,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </React.StrictMode>
     <Guard name="context-cursor"><React.Suspense fallback={null}><ContextCursor /></React.Suspense></Guard>
     {CursorSheet && <Guard name="cursor-sheet"><React.Suspense fallback={null}><CursorSheet /></React.Suspense></Guard>}
+    <Guard name="guide-host"><React.Suspense fallback={null}><GuideHost /></React.Suspense></Guard>
     {QaNotes && (
       <Guard name="qa-notes"><React.Suspense fallback={null}>
         <QaNotes />

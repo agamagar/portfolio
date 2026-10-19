@@ -23,6 +23,7 @@
 import { useEffect, useRef, useState } from "react";
 import { introRevealed } from "./useStage";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
+import { createGuide, noise } from "./siteGuide";
 import "./siteCursor.css";
 
 const KEY = "agam-site-cursor-dismissed";
@@ -67,7 +68,12 @@ const pev = (el, type, x, y, extra) => el.dispatchEvent(new PointerEvent(type, {
 }));
 const onScreen = (r) => r && r.width > 4 && r.bottom > 60 && r.top < window.innerHeight - 60;
 
-export default function SiteCursor() {
+const FLAG = "agam-cursor-active"; // set while the face has activated it; case pages (GuideHost) pick it up
+const flag = (on) => { try { if (on) sessionStorage.setItem(FLAG, "1"); else sessionStorage.removeItem(FLAG); } catch { /* private mode */ } };
+
+// caseMode: mounted by GuideHost on /work/* pages after the visitor activated it on the home page: no tour, no
+// face, it simply carries on as the guide (and leaves instead of returning to a perch)
+export default function SiteCursor({ caseMode = false } = {}) {
   const [on, setOn] = useState(() => {
     if (typeof window === "undefined" || read()) return false;
     const m = window.matchMedia;
@@ -105,12 +111,13 @@ export default function SiteCursor() {
       if (over) { pev(over, "pointerout", cp.x, cp.y, { relatedTarget: null }); over = null; }
     };
     const leave = () => {
+      flag(false);
       dead = true; settle(); cancelAnimationFrame(raf);
       el.setAttribute("data-leave", "");
       timer = window.setTimeout(() => setOn(false), 500);
     };
     const toRest = () => { // hand the page back: release everything, then just keep company
-      settle(); queue = []; groups = []; cur = null; A = null; mode = "rest";
+      settle(); queue = []; groups = []; cur = null; A = null; mode = "rest"; restSettled = false;
       el.setAttribute("data-rest", ""); nextAt = vt + 2500;
     };
 
@@ -159,6 +166,7 @@ export default function SiteCursor() {
     // the cursor off to follow the visitor's pointer (below). With no face (other hero versions) it parks
     // top-left as before.
     const PARK = [30, 30];
+    let restSettled = false; // parked and still: the loop goes to sleep (wake() on scroll, resize, click, key, pointer)
     const perch = () => {
       const r = document.querySelector(".hero-morph__cv")?.getBoundingClientRect();
       return r && r.width > 20 && r.height > 20 ? [r.left + r.width * 0.78, r.top + r.height * 0.04 - 6] : PARK;
@@ -169,35 +177,91 @@ export default function SiteCursor() {
         queue = [{ k: "wait", ms: rnd(500, 900) }, { k: "move", to: perch }];
         return;
       }
-      if (!queue.length) { const q = perch(), k = 1 - Math.exp(-dt / 140); cp.x += (q[0] - cp.x) * k; cp.y += (q[1] - cp.y) * k; }
+      if (!queue.length) {
+        const q = perch(), k = 1 - Math.exp(-dt / 140);
+        cp.x += (q[0] - cp.x) * k; cp.y += (q[1] - cp.y) * k;
+        if (Math.abs(q[0] - cp.x) + Math.abs(q[1] - cp.y) < 0.25) { cp.x = q[0]; cp.y = q[1]; restSettled = true; }
+      }
     };
 
-    // ---- following: a springy, slightly underdamped pursuit of the pointer, kept 26-32 px off it (more
-    // when the visitor's own cursor is a wide pill) so it never covers what they point at
-    const WIDE = { view: 46, lock: 52, drag: 38, ext: 8, link: 4 };
+    // ---- the GUIDE (Agam, 19 Oct: "follow me around randomly, not closely ... guide someone to the important
+    // parts"). Activated by the face, it has three phases:
+    //   loose   wanders 120-260 px from the pointer on slow Perlin noise, with glancing pauses, never on the pointer;
+    //   travel  a human arc (the same move machinery as the tour) to the highest-priority visible [data-guide] target;
+    //   orbit   a slow ellipse around that target's edge, pausing at corners, the pill showing the target's label.
+    // It releases when the target leaves the view or the pointer has been far away for a while, rests 6 s, and a
+    // target it just left is skipped for 20 s (siteGuide.js), plus a 3 s minimum dwell: no ping-pong.
+    const guide = createGuide();
+    const labEl = el.querySelector(".sc__t-live");
+    let tagW = 80; // the pill's width, measured when the label changes (not per frame), so it is kept inside the viewport
+    const setLabel = (txt) => { if (labEl.textContent !== txt) { labEl.textContent = txt; tagW = labEl.parentElement.offsetWidth || 80; } };
+    let gmode = "loose", cap = null, capAt = 0, coolUntil = 0, farSince = 0, decideAt = 0;
+    let nt = 0, holdUntil = 0, nextHold = 0, th = 0, thPause = 0, corner = 0;
     const vel = { x: 0, y: 0 };
     let lastMove = 0;
-    const followTick = (dt) => {
-      if (ptr.x < -900) return;
-      const cx = document.querySelector(".cx")?.dataset.s;
-      const tx = ptr.x + 26 + (WIDE[cx] || 0), ty = ptr.y + 20;
-      const W = 7.5, Z = 0.55;
+    const clampPt = (x, y) => [Math.max(24, Math.min(window.innerWidth - 24 - tagW, x)), Math.max(24, Math.min(window.innerHeight - 24, y))];
+    const orbitGeom = () => { // the visible slice of the target, so a tall visual is orbited where it can be seen
+      const r = guide.rect(cap), l = Math.max(r.l, 16), t = Math.max(r.t, 16), rr = Math.min(r.r, window.innerWidth - 16), b = Math.min(r.b, window.innerHeight - 16);
+      return { cx: (l + rr) / 2, cy: (t + b) / 2, rx: Math.min((rr - l) / 2 + 30, window.innerWidth / 2 - 30), ry: Math.min((b - t) / 2 + 30, window.innerHeight / 2 - 30) };
+    };
+    const orbitPt = (a) => { const g = orbitGeom(); return clampPt(g.cx + g.rx * Math.cos(a), g.cy + g.ry * Math.sin(a)); };
+    const release = (why) => {
+      if (cap) cap.rel = vt;
+      gmode = "loose"; cap = null; coolUntil = vt + 6000; farSince = 0; queue = []; cur = null; setLabel("Agam");
+    };
+    const capture = (t) => {
+      if (cap) cap.rel = vt;
+      cap = t; capAt = vt; gmode = "travel"; farSince = 0; setLabel(t.label || "Agam");
+      const g = orbitGeom(); th = Math.atan2(cp.y - g.cy, cp.x - g.cx); // arrive on the side it is already on
+      queue = [{ k: "move", to: () => orbitPt(th) }]; cur = null; vel.x = vel.y = 0;
+    };
+    const decide = () => {
+      if (gmode === "loose") { if (vt > coolUntil) { const b = guide.best(vt); if (b) capture(b); } return; }
+      if (!guide.isVisible(cap)) { release("left view"); return; }
+      const g = orbitGeom();
+      if (Math.hypot(ptr.x - g.cx, ptr.y - g.cy) > 950) { if (!farSince) farSince = vt; else if (vt - farSince > 5000) { release("pointer far"); return; } } else farSince = 0;
+      if (vt - capAt > 3000) { const b = guide.best(vt); if (b && b !== cap && b.pr > cap.pr) capture(b); }
+    };
+    const chase = (tx, ty, dt, W, Z) => {
       let left = Math.min(dt, 0.1);
       while (left > 1e-6) {
         const h = Math.min(1 / 120, left); left -= h;
         vel.x += (W * W * (tx - cp.x) - 2 * Z * W * vel.x) * h; vel.y += (W * W * (ty - cp.y) - 2 * Z * W * vel.y) * h;
         cp.x += vel.x * h; cp.y += vel.y * h;
       }
-      if (vt - lastMove > 20000) toPerch(); // nobody has moved for 20 s: back to the face
+    };
+    const followTick = (dt) => {
+      if (vt - lastMove > 20000) { toPerch(); return; } // nobody has moved for 20 s: back to the face
+      if (vt - decideAt > 250) { decideAt = vt; decide(); }
+      if (gmode === "travel") { if (!cur && !queue.length) { gmode = "orbit"; corner = 0; thPause = 0; } return; }
+      if (gmode === "orbit") {
+        if (vt > thPause) {
+          const prev = th; th += ((Math.PI * 2) / 22) * dt; // one slow lap every ~22 s
+          const c = (Math.floor(prev / (Math.PI / 2) + 0.5) + 0.5) * (Math.PI / 2); // the diagonal corners
+          if (prev < c && th >= c && Math.random() < 0.6) thPause = vt + rnd(900, 1500); // a pause at a corner
+        }
+        const q = orbitPt(th); chase(q[0], q[1], dt, 3.4, 0.95); return;
+      }
+      // loose: wander around the pointer, slowly, with glancing pauses
+      if (ptr.x < -900) return;
+      if (vt > holdUntil) { nt += dt; if (vt > nextHold) { holdUntil = vt + rnd(1000, 2000); nextHold = holdUntil + rnd(5000, 9000); } }
+      const ang = noise(nt * 0.09) * Math.PI * 1.6 + 0.6, rad = 190 + noise(nt * 0.12 + 40) * 70; // 120..260 px
+      const q = clampPt(ptr.x + Math.cos(ang) * rad, ptr.y + Math.sin(ang) * rad);
+      chase(q[0], q[1], dt, 2.0, 0.95);
     };
     const activate = () => {
       if (mode === "tour") { settle(); queue = []; groups = []; cur = null; }
       queue = []; cur = null; mode = "follow"; lastMove = vt;
+      gmode = "loose"; cap = null; coolUntil = vt + 3000; nt = Math.random() * 100; nextHold = vt + 4000; holdUntil = 0; setLabel("Agam");
+      guide.start(); flag(true);
       el.setAttribute("data-rest", ""); el.setAttribute("data-follow", "");
       vel.x = 0; vel.y = -520; // a small hop as it lets go of the face
     };
     function toPerch() {
-      mode = "rest"; el.removeAttribute("data-follow"); cur = null; A = true;
+      if (caseMode) { guide.stop(); leave(); return; } // no face on a case page: it just leaves
+      flag(false);
+      guide.stop(); setLabel("Agam");
+      mode = "rest"; restSettled = false; el.removeAttribute("data-follow"); cur = null; A = true;
       queue = [{ k: "move", to: perch }];
     }
 
@@ -234,7 +298,7 @@ export default function SiteCursor() {
         if (!queue.length) {
           const g = groups.shift();
           if (g) { const q = g(); if (q) queue = q; continue; }
-          if (mode === "tour") { mode = "rest"; el.setAttribute("data-rest", ""); nextAt = vt + 1500; }
+          if (mode === "tour") { mode = "rest"; restSettled = false; el.setAttribute("data-rest", ""); nextAt = vt + 1500; }
           return;
         }
         begin(queue.shift());
@@ -246,7 +310,8 @@ export default function SiteCursor() {
       if (dead) return;
       const dt = Math.min(120, now - last || 16); last = now; vt += dt;
       if (!cur) advance();
-      if (el.dataset.mode !== mode) el.dataset.mode = mode;
+      const md = mode === "follow" ? "follow-" + gmode : mode; // (gmode is declared with the guide below)
+      if (el.dataset.mode !== md) el.dataset.mode = md;
       // glass while it hovers something: the row the demo is on, or a link/button/row under the real pointer
       // (elementFromPoint is a hit test that flushes style and layout: only when the tip has moved
       // or 120 ms have passed, not on every frame of a cursor that is following the pointer)
@@ -276,20 +341,25 @@ export default function SiteCursor() {
       }
       ev.x += (tx - ev.x) * 0.06; ev.y += (ty - ev.y) * 0.06;
       paint();
-      if (!dead) raf = requestAnimationFrame(frame);
+      // parked and settled: no more frames until something wakes it (one rAF only while there is motion)
+      if (!dead) raf = mode === "rest" && !cur && !queue.length && restSettled ? 0 : requestAnimationFrame(frame);
     };
-    const start = () => { last = performance.now(); raf = requestAnimationFrame(frame); };
-    const onVis = () => { cancelAnimationFrame(raf); if (!document.hidden && !dead) start(); };
+    const start = () => { if (raf) return; last = performance.now(); raf = requestAnimationFrame(frame); };
+    const wake = () => { if (!raf && !dead && el.hasAttribute("data-live")) { restSettled = false; start(); } };
+    const onVis = () => { cancelAnimationFrame(raf); raf = 0; if (!document.hidden && !dead) start(); };
     const onMove = (e) => {
+      wake();
       ptr.x = e.clientX; ptr.y = e.clientY; if (e.isTrusted) lastMove = vt;
       if (mode === "tour" && e.isTrusted && Math.hypot(e.clientX - cp.x, e.clientY - cp.y) < 160) toRest();
     };
-    const onClick = (e) => { // the face's own button (HeroMorph) swaps its style; hidden in light mode, so no click arrives there
+    const onClick = (e) => {
+      wake(); // the face's own button (HeroMorph) swaps its style; hidden in light mode, so no click arrives there
       if (!e.isTrusted || !el.hasAttribute("data-live") || !e.target.closest?.(".hero-morph__btn, .hero-morph__cv")) return;
       if (mode === "follow") toPerch(); else activate();
     };
     const onTouch = (e) => { if (mode === "tour" && e.isTrusted) toRest(); };
     const onKey = (e) => {
+      wake();
       if (!e.isTrusted) return;
       if (e.key === "Escape") { if (mode === "follow") toPerch(); else { write(false); leave(); } }
       else if (mode === "tour" && !["Shift", "Control", "Alt", "Meta"].includes(e.key)) toRest();
@@ -300,6 +370,9 @@ export default function SiteCursor() {
       new Promise((r) => setTimeout(r, 7000)),
     ]).then(() => {
       if (dead) return;
+      if (caseMode) { // already activated on the home page: straight into the guide
+        el.setAttribute("data-live", ""); place(window.innerWidth + 40, -40); start(); activate(); return;
+      }
       timer = window.setTimeout(() => {
         if (dead) return;
         el.setAttribute("data-live", ""); pop();
@@ -308,14 +381,18 @@ export default function SiteCursor() {
       }, APPEAR_AFTER);
     });
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("scroll", wake, { passive: true, capture: true });
+    window.addEventListener("resize", wake, { passive: true });
     window.addEventListener("pointerdown", onTouch, { passive: true });
     window.addEventListener("wheel", onTouch, { passive: true });
     window.addEventListener("keydown", onKey);
     document.addEventListener("click", onClick, true);
     document.addEventListener("visibilitychange", onVis);
     return () => {
-      dead = true; cancelAnimationFrame(raf); clearTimeout(timer); settle();
+      dead = true; cancelAnimationFrame(raf); clearTimeout(timer); settle(); guide.stop();
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", wake, { capture: true });
+      window.removeEventListener("resize", wake);
       window.removeEventListener("pointerdown", onTouch);
       window.removeEventListener("wheel", onTouch);
       window.removeEventListener("keydown", onKey);
