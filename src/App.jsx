@@ -2287,6 +2287,7 @@ const caseStudies = {
       {
         h: "Context & problem",
         split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
+        hideSplit: true, // mvf5jlfu (Agam, "remove"): the heading, post-it and text block is hidden (the figure below stays); delete this line to bring it back
         splitStack: true, // mv4h2fqo (12 Oct, "make this a vertical layout"): heading + note on top, the text below, full width
         // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a circle over a modelled city and
         // watch instant, schedule-only and nothing recount, with the 11 PM store closures one tap away.
@@ -9909,7 +9910,7 @@ function CaseStudyBodyFull({ cs }) {
               · · ·
             </p>
           )}
-          {s.split && <SplitSection s={s} i={i} />}
+          {s.split && (s.hideSplit ? <span id={`sec-${i}`} aria-hidden /> : <SplitSection s={s} i={i} />)}
           {s.roleWireframes && s.roleWireframesFirst && !s.roleWireframesOnly && <SchedRoleWireframes only={s.roleWireframesFirst} />}
           {s.roleFrame && !s.roleFrame.hideFrame && <RoleFrame s={s} i={i} />}
           {s.roleFrame?.options && (<>{!s.roleFrame.hideEditorial && <RoleEditorial s={s} />}<RoleScopeMap s={s} i={i} />{!s.roleFrame.hideCard && <RoleCard s={s} />}</>)}
