@@ -16,9 +16,9 @@
 // SAFETY: demos send no clicks and leave nothing changed (settle() releases the hover and,
 // mid-drag, returns the "!" to its start before the pointerup). During the tour any REAL
 // (isTrusted) pointer move near the cursor, press, wheel or key stops the demos (settled)
-// and it goes straight to resting. Esc hides it for the visit (sessionStorage), the small x
-// for good (localStorage). One rAF loop on a virtual clock (stops while the tab is hidden),
-// transforms only, pointer-events: none (only the x takes the pointer), aria-hidden,
+// and it goes straight to resting. Esc hides it for the visit (sessionStorage); the small x
+// (for good) was removed, 19 Oct 2026. One rAF loop on a virtual clock (stops while the tab is hidden),
+// transforms only, pointer-events: none, aria-hidden,
 // desktop pointer only, not rendered under reduced motion. Synthetic events: pointerId 77.
 import { useEffect, useRef, useState } from "react";
 import { introRevealed } from "./useStage";
@@ -74,8 +74,6 @@ export default function SiteCursor() {
     return m("(hover: hover) and (pointer: fine)").matches && !m("(prefers-reduced-motion: reduce)").matches;
   });
   const root = useRef(null);
-  const forever = useRef(() => {});
-  forever.current = () => { write(true); setOn(false); };
 
   useEffect(() => {
     if (!on) return undefined;
@@ -266,7 +264,7 @@ export default function SiteCursor() {
       let tx = 0, ty = 0;
       if (mode === "rest") {
         const dx = cp.x - ptr.x, dy = cp.y - ptr.y, d = Math.hypot(dx, dy) || 1;
-        if (d < 170 && !el.querySelector(".sc__x:hover")) { const m = (170 - d) * 0.3; tx = (dx / d) * m; ty = (dy / d) * m; }
+        if (d < 170) { const m = (170 - d) * 0.3; tx = (dx / d) * m; ty = (dy / d) * m; }
       }
       ev.x += (tx - ev.x) * 0.06; ev.y += (ty - ev.y) * 0.06;
       paint();
@@ -325,7 +323,6 @@ export default function SiteCursor() {
         <path d="M2 1.5 L2 14.2 L5.6 10.8 L8.1 15 L10.3 13.9 L7.9 9.8 L12.8 9.8 Z" />
       </svg>
       <span className="sc__tag">Agam</span>
-      <button type="button" className="sc__x" tabIndex={-1} title="Hide me for good" onClick={() => forever.current()}>×</button>
     </div>
   );
 }
