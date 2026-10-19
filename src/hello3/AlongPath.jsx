@@ -10,6 +10,7 @@
 // filler, and everything here is licensed because it is Agam's own.
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import FigmaPhone from "./FigmaPhone"; // mvey62s4: the Dylan Field screenshot inside an iPhone mock
 import { createPortal } from "react-dom";
 import { lockBackgroundScroll } from "../ui/smoothScroll";
 // mttx7x50 follow-up ("icons still look off"): the rings and the cinema close
@@ -71,7 +72,7 @@ const PLATES = [
   { video: "/figures/marquee/config-india-60.mp4", full: "/figures/marquee/config-india-full.mp4", poster: "/figures/marquee/config-india-poster.png", alt: "Config India 2026 recap", aspect: "1 / 1", dwell: true,
     // the X notification under the caption (17 Oct 2026): Dylan Field liking the post, cropped
     // from the screenshot, 920 px wide for a 300 px chip. Text is whatever the crop shows.
-    cap: { line: "Config India 2026 recap", title: "Config India 2026 recap", type: "Video", chip: { src: "/figures/marquee/config-india-dylan-like.webp", alt: "Dylan Field liked your post: @zoink thanks for hosting!", w: 920, h: 241 } } },
+    cap: { line: "Config India 2026 recap", title: "Config India 2026 recap", type: "Video", chip: { src: "/figures/marquee/config-india-dylan-full.webp", alt: "Dylan Field liked your post: @zoink thanks for hosting!", w: 920, h: 2000 } } },
   { src: "/figures/marquee/state-3.png", alt: "Away: deep search running", hidden: true }, // mtrx258e (08 Sep 2026): hidden, kept
   { src: "/figures/marquee/dassh-stella-system.png", alt: "Dassh: Stella, constructed", aspect: "1478 / 1080", hidden: true }, // mtrx1xxd: hidden, kept
   { src: "/figures/marquee/sched-cart-confirmed.png", alt: "Zepto: cart, slot confirmed", hidden: true }, // mtrx44o3: hidden, kept
@@ -244,7 +245,7 @@ function WallLabel({ cap }) {
   return (
     <div className="ap__cap" style={{ "--cap-k": 1 + 0.1 * n }} aria-description={facts || undefined}>
       {/* mvdqolwe (Agam): the notification chip sits ABOVE the caption text */}
-      {cap.chip && <img className="ap__cap-chip" src={cap.chip.src} alt={cap.chip.alt} width={cap.chip.w} height={cap.chip.h} loading="lazy" decoding="async" />}
+      {cap.chip && <FigmaPhone plate="pro17" className="ap__cap-phone" width={150} screen={cap.chip.src} alt={cap.chip.alt} />}
       {cap.cta ? (
         <a
           className="ap__cap-line ap__cap-link hello-hero__link--out"
