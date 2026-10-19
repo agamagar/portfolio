@@ -8357,7 +8357,7 @@ html.dark.glass-lens .article__hero-replay,
 .article__body ul.article__terms > li > .role-frame__icon { grid-row: 1 / span 2; }
 .article__body ul.article__terms > li > p { grid-column: 2; }
 /* mv598hzr (12 Oct): in a stacked section the terms sit in one row of equal columns (stack below 700px) */
-.article__body .cs-sec--stack ul.article__terms { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; align-items: start; }
+.article__body .cs-sec--stack ul.article__terms { grid-template-columns: 1fr; gap: 1.75rem; align-items: start; } /* mvf5m473 (Agam): the items stack vertically (were three across) */
 @media (max-width: 700px) { .article__body .cs-sec--stack ul.article__terms { grid-template-columns: 1fr; gap: 1.25rem; } }
 .article__body ul.article__terms > li::before, .article__body ul.article__terms > li::marker { content: none; }
 .page--article .article__body .article__terms p.article__term-t { font-size: 1.2rem; font-weight: 300; line-height: 1.3; color: var(--fg); margin: 0 0 0.3rem; }
