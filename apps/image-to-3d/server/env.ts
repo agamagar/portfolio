@@ -26,6 +26,10 @@ export interface Env {
   dailyBudgetUsd: number;
   /** Shown on the Terms and Privacy pages as the contact for reports and data requests. */
   contactEmail: string | undefined;
+  /** POST target for spend alerts, Slack-compatible ({text}). Secret. */
+  alertWebhookUrl: string | undefined;
+  /** Percent of the daily cap at which to alert, once each per day. */
+  alertThresholds: number[];
   /** Models a user can keep in the library at once. */
   maxItemsPerUser: number;
   /** Shared secret Vercel Cron sends as a bearer token to /api/cron. */
@@ -74,6 +78,8 @@ export function readEnv(e: Record<string, string | undefined> = process.env): En
     monthlyModels: Math.round(number(e.MONTHLY_MODELS, 5, 0, 1000)),
     dailyUserUsd: number(e.DAILY_USER_USD, 2, 0, 1000),
     contactEmail: e.CONTACT_EMAIL || undefined,
+    alertWebhookUrl: e.ALERT_WEBHOOK_URL || undefined,
+    alertThresholds: list(e.ALERT_THRESHOLDS || "50,80,100").map(Number).filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => a - b),
     maxItemsPerUser: Math.round(number(e.MAX_ITEMS_PER_USER, 50, 1, 10_000)),
     cronSecret: e.CRON_SECRET || undefined,
     maxConcurrent: Math.round(number(e.MAX_CONCURRENT, 4, 1, 64)),

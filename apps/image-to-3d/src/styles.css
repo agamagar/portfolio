@@ -1334,3 +1334,40 @@ textarea.code {
 .site-footer a {
   color: inherit;
 }
+
+/* Admin */
+.admin {
+  display: grid;
+  gap: 1.25rem;
+}
+.admin .card {
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+}
+.admin h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+.table .bar {
+  height: 0.6rem;
+  min-width: 2px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.admin .row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}

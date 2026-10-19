@@ -5,6 +5,7 @@ import { Spinner, ThemeToggle, ToastProvider } from "./components/ui";
 import { api, type Session } from "./lib/api";
 import { Link, navigate, useRoute } from "./lib/router";
 import { CreatePage } from "./pages/Create";
+import { AdminPage } from "./pages/Admin";
 import { ConsentPage, PrivacyPage, TermsPage } from "./pages/Legal";
 import { LibraryPage } from "./pages/Library";
 import { LoginPage } from "./pages/Login";
@@ -36,7 +37,7 @@ export function App() {
   }, [refresh]);
 
   useEffect(() => {
-    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", terms: "Terms", privacy: "Privacy", notFound: "Not found" } as const;
+    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", admin: "Admin", terms: "Terms", privacy: "Privacy", notFound: "Not found" } as const;
     document.title = `${titles[route.name]} · Image to 3D`;
   }, [route.name]);
 
@@ -76,6 +77,7 @@ export function App() {
         <main id="main" tabIndex={-1}>
           {route.name === "create" && <CreatePage />}
           {route.name === "library" && <LibraryPage />}
+          {route.name === "admin" && (session.user?.role === "admin" ? <AdminPage /> : <p className="page muted">Admins only.</p>)}
           {route.name === "viewer" && <ViewerPage id={route.id} />}
           {route.name === "notFound" && (
             <div className="center-screen">
@@ -116,6 +118,11 @@ function Header() {
         <Link href="/" aria-current={route.name === "create" ? "page" : undefined}>
           <Icon name="sparkle" size={16} /> Create
         </Link>
+        {session.user?.role === "admin" && (
+          <Link href="/admin" aria-current={route.name === "admin" ? "page" : undefined}>
+            <Icon name="grid" size={16} /> Admin
+          </Link>
+        )}
         <Link href="/library" aria-current={route.name === "library" || route.name === "viewer" ? "page" : undefined}>
           <Icon name="grid" size={16} /> Library
         </Link>

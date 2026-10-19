@@ -10,6 +10,7 @@ import { requireKv, requireStore, type Deps } from "../deps.js";
 import { clientIp, HttpError, json, readJson } from "../http.js";
 import { getJson, setJson } from "../kv.js";
 import { MODEL_TTL_MS, presentItem, readIndex } from "../library.js";
+import { notify } from "../alerts.js";
 import { log } from "../log.js";
 import type { ShareDoc } from "./library.js";
 
@@ -64,6 +65,7 @@ export async function reportShared(req: Request, d: Deps): Promise<Response> {
   if (fresh && (await kv.incr(`report-count:${t}`, 1, { ttlSec: 90 * 86400 })) >= AUTO_TAKEDOWN_REPORTS) {
     await takeDown(d, t, share);
     takenDown = true;
+    await notify(d.env, `A shared model was taken down after ${AUTO_TAKEDOWN_REPORTS} reports (reason: ${reason}).`);
   }
   return json({ ok: true, takenDown }, 201);
 }

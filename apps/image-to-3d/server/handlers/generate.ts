@@ -13,12 +13,14 @@
 import { estimateGeneration, type ModelId } from "../../shared/models.js";
 import { SpecSchema } from "../../shared/spec.js";
 import { requireUser } from "../auth.js";
-import { assertBudget, recordSpend } from "../budget.js";
+import { assertBudget } from "../budget.js";
 import { createSpec, judgeRender, refineSpec, type CallHooks } from "../claude.js";
 import { requireApi, requireKv, requireStore, type Deps } from "../deps.js";
 import { clientIp, HttpError, json, ndjson, readJson } from "../http.js";
 import { assertNotLocked, imageHash, moderateViews } from "../moderation.js";
-import { acquireSlot, assertUserBudget, lockUser, openJob, recordUserSpend, reserveModel, spendJob } from "../quota.js";
+import { recordCharge } from "../alerts.js";
+import { log } from "../log.js";
+import { acquireSlot, assertUserBudget, lockUser, openJob, reserveModel, spendJob } from "../quota.js";
 import * as v from "../validate.js";
 
 const MAX_BODY = 24_000_000; // up to three 5 MB views (base64) plus the render
@@ -55,6 +57,8 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
     refine = { render: await v.imageInput(body.render, "render"), specJson: JSON.stringify(parsed.data), pass };
   }
 
+  const t0 = Date.now();
+  const fields = { userId: user.id, mode, model: base.model, views: base.views.length };
   // limits, cheapest first. Each acquired resource is released in `finish` (or on a throw here).
   const releases: (() => Promise<void>)[] = [];
   const finish = async () => {
@@ -63,7 +67,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
   let refund: (() => Promise<void>) | null = null;
   let currentJob = "";
   const hooksForCost: Pick<CallHooks, "onCost"> = {
-    onCost: (usd) => Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(() => {}, (e) => console.error("[image-to-3d] spend not recorded", e)),
+    onCost: (usd) => recordCharge(d, user, usd),
   };
   try {
     releases.push(await lockUser(kv, user));
@@ -83,6 +87,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
       currentJob = await openJob(kv, user, approved);
     }
   } catch (err) {
+    log("generate_rejected", { ...fields, code: err instanceof HttpError ? err.code : "internal", status: err instanceof HttpError ? err.status : 500, ms: Date.now() - t0 }, err instanceof HttpError && err.status < 500 ? "info" : "error");
     await refund?.();
     await finish();
     throw err;
@@ -101,6 +106,7 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
       };
       const out = refine ? await refineSpec(api, { ...base, ...refine }, hooks) : await createSpec(api, base, hooks);
       ok = true;
+      log("generate", { ...fields, jobId: currentJob, costUsd: out.costUsd, attempts: out.attempts, resultModel: out.model, ms: Date.now() - t0 });
       send({
         type: "result",
         mode,
@@ -115,6 +121,9 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
         model: out.model,
         attempts: out.attempts,
       });
+    } catch (err) {
+      log("generate_failed", { ...fields, jobId: currentJob, code: err instanceof HttpError ? err.code : "internal", ms: Date.now() - t0 }, "error");
+      throw err;
     } finally {
       if (!ok) await refund?.();
       await finish();
@@ -136,7 +145,7 @@ export async function judge(req: Request, d: Deps): Promise<Response> {
     await spendJob(kv, user, body.jobId, "judges", 1, [imageHash(image.data)]);
     await assertUserBudget(d.env, kv, user, 0.01);
     await assertBudget(store, d.env.dailyBudgetUsd, 0.01);
-    const out = await judgeRender(api, { image, render }, { onCost: (usd) => Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(() => {}, () => {}) });
+    const out = await judgeRender(api, { image, render }, { onCost: (usd) => recordCharge(d, user, usd) });
     return json({ score: out.result.score, critique: out.result.critique, usage: out.usage, costUsd: out.costUsd, model: out.model });
   } finally {
     await unlock();

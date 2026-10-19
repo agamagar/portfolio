@@ -48,6 +48,15 @@ export interface LibraryItem {
   sourcesExpireAt?: string;
 }
 
+export interface AdminSummary {
+  today: { usd: number; limitUsd: number; pct: number };
+  days: { day: string; usd: number; calls: number }[];
+  users: { id: string; email: string; role: string; createdAt: string; modelsThisMonth: number; usdToday: number; blocksToday: number }[];
+  reports: { id: string; token: string; itemId: string; reason: string; details: string; at: string }[];
+  invites: { code: string; maxUses: number; uses: number; note: string; createdAt: string }[];
+  alerts: { webhook: boolean; thresholds: number[] };
+}
+
 export interface SharedModel {
   item: { id: string; title: string; tags: string[]; style: Style; triangles: number; createdAt: string; expiresAt: string; files: { glb?: string; thumb?: string } };
   spec: Spec | null;
@@ -98,6 +107,8 @@ export const api = {
   remove: (id: string) => request<{ ok: true }>(`/api/library?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
   removeAll: () => request<{ ok: true; deleted: number }>("/api/library?all=1", { method: "DELETE" }),
   deleteAccount: (confirm: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { action: "delete-account", confirm })),
+  admin: () => request<AdminSummary>("/api/admin"),
+  adminAction: (body: Record<string, unknown>) => request<{ code?: string; ok?: true }>("/api/admin", jsonInit("POST", body)),
   shared: (token: string) => request<SharedModel>(`/api/shared?t=${encodeURIComponent(token)}`),
   report: (token: string, reason: string, details: string) => request<{ ok: true }>("/api/shared", jsonInit("POST", { t: token, reason, details })),
   upload: (id: string, name: "source" | "left" | "right" | "thumb" | "model", body: Blob) =>

@@ -25,7 +25,7 @@ function scrub(v: unknown, depth = 0): unknown {
 export type LogLevel = "info" | "warn" | "error";
 
 /** The sink is swappable so tests can read what was logged. */
-export const sink: { write: (line: string) => void } = { write: (line) => console.log(line) };
+export const sink: { write: (line: string) => void } = { write: (line) => !process.env.VITEST && console.log(line) };
 
 export function log(event: string, fields: Record<string, unknown> = {}, level: LogLevel = "info"): void {
   sink.write(JSON.stringify({ t: new Date().toISOString(), level, event, ...(scrub(fields) as object) }));

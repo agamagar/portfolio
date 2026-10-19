@@ -1,3 +1,5 @@
+import { log } from "./log.js";
+
 export class HttpError extends Error {
   constructor(
     readonly status: number,
@@ -8,6 +10,8 @@ export class HttpError extends Error {
     super(message);
   }
 }
+
+const logError = (event: string, f: Record<string, unknown>) => log(event, f, "error");
 
 const SECURITY_HEADERS = {
   "cache-control": "no-store",
@@ -22,8 +26,11 @@ export function json(data: unknown, status = 200, headers: Record<string, string
 }
 
 export function errorResponse(err: unknown): Response {
-  if (err instanceof HttpError) return json({ error: err.message, code: err.code }, err.status, err.headers);
-  console.error("[image-to-3d] unhandled", err);
+  if (err instanceof HttpError) {
+    if (err.status >= 500) logError("http_error", { status: err.status, code: err.code });
+    return json({ error: err.message, code: err.code }, err.status, err.headers);
+  }
+  logError("unhandled", { error: err instanceof Error ? `${err.name}: ${err.message}` : String(err) });
   return json({ error: "Something went wrong on the server.", code: "internal" }, 500);
 }
 
