@@ -241,13 +241,20 @@ export default function SiteCursor() {
       }
     };
 
+    const hit = { x: NaN, y: NaN, at: 0, over: false };
     const frame = (now) => {
       if (dead) return;
       const dt = Math.min(120, now - last || 16); last = now; vt += dt;
       if (!cur) advance();
       if (el.dataset.mode !== mode) el.dataset.mode = mode;
       // glass while it hovers something: the row the demo is on, or a link/button/row under the real pointer
-      const hov = !!over || (mode === "follow" && !!document.elementFromPoint(cp.x, cp.y)?.closest("a, button, [data-project]"));
+      // (elementFromPoint is a hit test that flushes style and layout: only when the tip has moved
+      // or 120 ms have passed, not on every frame of a cursor that is following the pointer)
+      if (mode === "follow" && (cp.x !== hit.x || cp.y !== hit.y || vt - hit.at > 120)) {
+        hit.x = cp.x; hit.y = cp.y; hit.at = vt;
+        hit.over = !!document.elementFromPoint(cp.x, cp.y)?.closest("a, button, [data-project]");
+      }
+      const hov = !!over || (mode === "follow" && hit.over);
       if (el.hasAttribute("data-hover") !== hov) el.toggleAttribute("data-hover", hov);
       if (cur) {
         if (cur.k === "wait") { if (vt - cur.t0 >= cur.ms) cur = null; }

@@ -274,6 +274,7 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
   let loopOn = false;
   let waiters = [];
   let frameNo = 0;
+  if (import.meta.env?.DEV) (window.__roomDbg ||= []).push(() => ({ active, loopOn, waiters: waiters.length, frameNo, disposed }));
   // the sky's mean light (linear, plate units): skyAvg is what this frame uses;
   // live, it eases toward the latest reading (skyAvgTarget) so a new reading never
   // pops the room's light; capture mode takes each reading as it lands
@@ -1073,6 +1074,21 @@ export function createWindowEngine({ canvas, opts, theme = "light" }) {
     if (!renderer || on === loopOn) return;
     loopOn = on;
     renderer.setAnimationLoop(on ? tick : null);
+    // three's own frame loop (nodeFrame.update + info reset) keeps requesting a frame at the
+    // display rate for the renderer's whole life, even with no user loop: a warm room that
+    // draws nothing still woke the page 60x a second. Stop it with the loop; frames drawn on
+    // demand run nodeFrame.update themselves. Restarted with a null callback so `tick` still
+    // first runs on the next frame, as before.
+    const a = renderer._animation;
+    if (a?.stop && a?.start) {
+      if (!on) a.stop();
+      else if (a._requestId == null) {
+        const cb = a._animationLoop;
+        a._animationLoop = null;
+        a.start();
+        a._animationLoop = cb;
+      }
+    }
   }
   // Start-up frames drawn directly on a timer, not on requestAnimationFrame: Safari
   // gave this page almost no animation frames while it judged the tab hidden (1 in
