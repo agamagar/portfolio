@@ -2587,8 +2587,11 @@ html.dark .hello[data-page="3"] .lock__tip { background: rgba(24, 24, 30, 0.9); 
 .hello[data-page="3"][data-seq][data-seq][data-glow] .wg__cap:is(:not([data-in]), [data-in]) { translate: 0 0; transition: none; }
 
 /* the social-proof chip above the Config India caption text (17 Oct 2026): a dark X notification crop */
+/* mvey62s4: the full screenshot in an iPhone mock (FigmaPhone), above the caption text */
+.hello[data-page="3"] .ap__cap-phone { flex: none; margin: 0 0 18px; }
 .hello[data-page="3"] .ap__cap-chip { display: block; width: min(300px, 70vw); max-width: none; flex: none; height: auto; margin: 0 0 14px; border-radius: 12px; border: 1px solid var(--line); background: #000; }
 @media (max-width: 720px) {
   /* the sound / pause buttons sit under the caption on a phone: the chip clears them */
   .hello[data-page="3"] .ap__cap-chip { width: min(250px, 64vw); margin-top: 82px; }
+  .hello[data-page="3"] .ap__cap-phone { margin-top: 82px; } /* clears the sound / pause buttons */
 }
