@@ -108,11 +108,12 @@ function ExplorationsBoard({ view }) {
 // data: the board standing still with every verdict shown, and the chips regrouped by verdict. Dev / preview only; the
 // animated board is the default and what the public page shows.
 const VIEWS = [["board", "Board"], ["still", "Still"], ["verdict", "By verdict"]];
+const SHOW_EXPL_TOGGLE = false; // mvf5mv2m (Agam, "hide this"): the layout tabs are hidden; set true to bring them back
 export default function SchedExplorations() {
   const [view, setView] = useState("board");
   return (
     <div className="expl-views">
-      {!import.meta.env.PROD && (
+      {SHOW_EXPL_TOGGLE && !import.meta.env.PROD && (
         <div className="fig-toggle expl-views__toggle" role="group" aria-label="Explorations layout">
           {VIEWS.map(([k, label]) => (
             <button key={k} type="button" className={"fig-toggle__btn" + (view === k ? " is-active" : "")} aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
