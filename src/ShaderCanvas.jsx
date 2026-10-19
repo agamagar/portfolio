@@ -213,19 +213,27 @@ export default function ShaderCanvas({
       gl.viewport(0, 0, w, h);
       return true;
     };
-    const ro = new ResizeObserver(resize);
+    // size comes from the observer only: reading clientWidth every frame forced a layout
+    // (and a style recalc) per frame, ~0.9% of a core for a canvas that never changes size
+    const ro = new ResizeObserver(() => {
+      if (resize()) needsDraw = true;
+    });
     ro.observe(parent);
     resize();
 
-    // One rAF for the component's lifetime — never cancelled, only gated by the
-    // `visible` flag, so the loop can't get permanently stopped.
+    // The loop runs only while the box is on screen: off-screen it ends (no per-frame
+    // wake-up for a sky nobody sees) and kick() restarts it when the box comes back or a
+    // lost context is restored. kick() never stacks a second loop (raf is the guard).
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
     const frame = (now) => {
-      raf = requestAnimationFrame(frame);
+      raf = 0;
       if (!visible || gl.isContextLost()) {
         lastNow = null;
         return;
       }
-      if (resize()) needsDraw = true;
+      raf = requestAnimationFrame(frame);
       // a pinned tod is read every frame (a preview toggle must not wait up to a
       // second to take), the wall clock once a second
       if (clock && (todRef.current !== null || now - lastTodAt > 1000)) {
@@ -256,7 +264,7 @@ export default function ShaderCanvas({
     };
 
     // only draw while the box is on screen
-    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting), {
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, {
       threshold: 0,
     });
     io.observe(parent);
@@ -287,11 +295,12 @@ export default function ShaderCanvas({
       buildGL();
       canvas.width = 0; // force resize() to re-apply size + viewport
       needsDraw = true;
+      kick();
     };
     canvas.addEventListener("webglcontextlost", onContextLost, false);
     canvas.addEventListener("webglcontextrestored", onContextRestored, false);
 
-    raf = requestAnimationFrame(frame);
+    kick();
 
     return () => {
       cancelAnimationFrame(raf);

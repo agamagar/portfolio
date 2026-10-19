@@ -38,11 +38,31 @@ export function startSmoothScroll() {
     // up and eased rather than fought - Lenis's default behaviour, stated.
     autoResize: true,
   });
+  // The frame loop sleeps when the page is at rest (no glide running, nothing scrolling for 30
+  // frames) and wakes on anything that can start one: wheel, touch, keys, a native scroll, a resize,
+  // a hash change, or a programmatic lenis.scrollTo. Same motion as before; an idle page no
+  // longer takes a callback every frame. On wake the clock is reset to one frame back so the first
+  // step is a normal 16 ms one, not the whole sleep.
+  let rafId = 0, calm = 0;
   const raf = (t) => {
+    rafId = 0;
     lenis.raf(t);
-    requestAnimationFrame(raf);
+    calm = lenis.isScrolling || lenis.animate?.isRunning ? 0 : calm + 1;
+    if (calm < 30) rafId = requestAnimationFrame(raf);
   };
-  requestAnimationFrame(raf);
+  const wake = () => {
+    calm = 0;
+    if (rafId || !lenis) return;
+    lenis.time = performance.now() - 16.7;
+    rafId = requestAnimationFrame(raf);
+  };
+  const wakeEvents = ["wheel", "touchstart", "touchmove", "keydown", "pointerdown", "scroll", "resize", "hashchange", "popstate"];
+  wakeEvents.forEach((n) => window.addEventListener(n, wake, { passive: true, capture: true }));
+  for (const m of ["scrollTo", "start", "stop"]) {
+    const orig = lenis[m].bind(lenis);
+    lenis[m] = (...a) => { const r = orig(...a); wake(); return r; };
+  }
+  wake();
   return lenis;
 }
 

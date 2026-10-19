@@ -511,6 +511,20 @@ export default function PathMarquee({
     let timer = 0;
     let raf = 0;
     let stopped = false;
+    // THE CADENCE SLEEPS OFF-SCREEN. The rest clock, the hop spring and the watch loop used to keep
+    // going while the run was far below the fold: a rAF per frame writing currentTime on every
+    // card (a style recalc each), a getBoundingClientRect per card per frame in the watch, and the
+    // card videos restarted as each took the centre. Now each parks when the run leaves the
+    // screen and picks up where it stopped when it returns (the dwell clock only counts time
+    // on screen, so a card still gets its full rest).
+    let inView = true;
+    let parked = null; // the loop to restart when the run is back on screen
+    const park = (fn) => { parked = fn; };
+    const wrapIo = new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      if (inView && parked) { const f = parked; parked = null; f(); }
+    }, { threshold: 0 });
+    if (wrapRef.current) wrapIo.observe(wrapRef.current);
 
     // STOP ON THE CENTRE, NOT ON A CLOCK. A fixed `stepMs` was the obvious
     // implementation and it drifted: measured, three successive rests landed
@@ -579,12 +593,12 @@ export default function PathMarquee({
         const kbd = wrap && wrap.contains(document.activeElement) && document.activeElement.matches(":focus-visible");
         // the browser's own :hover as well as the item events (one run missed a freeze with events alone)
         const hov = ui.current.hovering || !!wrap?.matches(":hover");
-        const f = (hov && hoverModeRef.current === "pause") || kbd || document.hidden;
+        const f = (hov && hoverModeRef.current === "pause") || kbd || document.hidden || !inView;
         if (f !== frozen) { frozen = f; cycle(f ? "hold" : "resume"); }
         if (!f) st.remaining -= now - last;
         last = now;
         if (st.remaining <= 0) { dwellState.current = null; travel(); return; }
-        timer = setTimeout(tick, 50);
+        timer = setTimeout(tick, inView ? 50 : 250);
       };
       // a rest reached under a "Stop" hover is held from its first frame
       if ((ui.current.hovering || wrapRef.current?.matches(":hover")) && hoverModeRef.current === "pause") { frozen = true; cycle("hold"); }
@@ -675,6 +689,7 @@ export default function PathMarquee({
       const step = (now) => {
         if (stopped) return;
         if (ui.current.dragging) { ui.current.held = false; return travelLegacy(); }
+        if (!inView) { park(() => { last = performance.now(); raf = requestAnimationFrame(step); }); return; }
         const dt = Math.min(250, now - last); // real elapsed time (a stalled tab must not warp the hop)
         last = now;
         const frozen = (ui.current.hovering || wrapRef.current?.matches(":hover")) && hoverModeRef.current === "pause";
@@ -691,7 +706,7 @@ export default function PathMarquee({
       setFocus(false);
       ui.current.held = false;
       cycle("travel", { step: stepMs });
-      live().forEach((a) => a.play());
+      if (inView) live().forEach((a) => a.play()); // off-screen the marquee's own observer plays them on return
       // start from the resting card's own gap: from Infinity the very first frame
       // read as "closing in", phase 1 began at once, and the run stopped one frame
       // after it started, so the wave sat still (annotation muju7nci)
@@ -706,6 +721,11 @@ export default function PathMarquee({
       let lastT = performance.now();
       const watch = () => {
         if (stopped) return;
+        if (!inView) {
+          clearTimeout(timer);
+          park(() => { lastT = performance.now(); prev = nearestGap(); raf = requestAnimationFrame(watch); timer = setTimeout(hold, duration); });
+          return;
+        }
         const now = performance.now();
         const frame = now - lastT;
         lastT = now;
@@ -790,6 +810,7 @@ export default function PathMarquee({
       // does not end up shorter than asked)
       const L = ds.find((x) => x >= (cfg.cards - 0.5) * gap) ?? ds[ds.length - 1];
       if (!(L > 0 && L < 1)) return null;
+      parked = null;
       clearTimeout(timer);
       cancelAnimationFrame(raf);
       dwellState.current = null;
@@ -843,6 +864,7 @@ export default function PathMarquee({
     // centre position (a short ease with a little overshoot, like the hop) and
     // then rests there exactly as after a hop, so the auto-run carries on.
     ui.current.dragStart = () => {
+      parked = null;
       clearTimeout(timer);
       cancelAnimationFrame(raf);
       dwellState.current = null;
@@ -892,6 +914,7 @@ export default function PathMarquee({
       ui.current.dragEnd = null;
       ui.current.demo = null;
       stopped = true;
+      wrapIo.disconnect();
       clearTimeout(timer);
       cancelAnimationFrame(raf);
       setFocus(false);
