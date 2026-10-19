@@ -24,6 +24,8 @@ import { useEffect, useRef, useState } from "react";
 import { introRevealed } from "./useStage";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { createGuide, noise } from "./siteGuide";
+import { headlineEnd, headlineEl } from "./lineEnd";
+import { subscribeHeroVersion } from "./heroVersions";
 import "./siteCursor.css";
 
 const KEY = "agam-site-cursor-dismissed";
@@ -167,10 +169,28 @@ export default function SiteCursor({ caseMode = false } = {}) {
     // top-left as before.
     const PARK = [30, 30];
     let restSettled = false; // parked and still: the loop goes to sleep (wake() on scroll, resize, click, key, pointer)
+    // PERCH: the very end of the hero headline's last line (lineEnd.js), cached in page coordinates and re-measured
+    // when it can have moved: resize, font load, hero version switch, and any change inside the headline (the v4/v5
+    // live re-wrap while the face is dragged). With no headline yet it falls back to beside the face, then the corner.
+    let eol = null, eolDirty = true, obsEl = null, ro = null, mo = null;
+    const dirty = () => { eolDirty = true; wake(); };
+    const watch = () => {
+      const c = headlineEl();
+      if (c === obsEl) return;
+      ro?.disconnect(); mo?.disconnect(); obsEl = c;
+      if (!c) return;
+      ro = new ResizeObserver(dirty); ro.observe(c);
+      mo = new MutationObserver(dirty); mo.observe(c, { subtree: true, childList: true, attributes: true, attributeFilter: ["style", "class"] });
+    };
     const perch = () => {
+      if (eolDirty) { watch(); eol = headlineEnd(); eolDirty = false; }
+      if (eol) return [eol[0] - window.scrollX, eol[1] - window.scrollY];
       const r = document.querySelector(".hero-morph__cv")?.getBoundingClientRect();
       return r && r.width > 20 && r.height > 20 ? [r.left + r.width * 0.78, r.top + r.height * 0.04 - 6] : PARK;
     };
+    const offVersion = subscribeHeroVersion(() => setTimeout(dirty, 120)); // the new hero mounts a beat later
+    window.addEventListener("resize", dirty, { passive: true });
+    document.fonts?.ready?.then(dirty);
     const restTick = (dt) => {
       if (!A) {
         A = true;
@@ -390,6 +410,7 @@ export default function SiteCursor({ caseMode = false } = {}) {
     document.addEventListener("visibilitychange", onVis);
     return () => {
       dead = true; cancelAnimationFrame(raf); clearTimeout(timer); settle(); guide.stop();
+      offVersion(); ro?.disconnect(); mo?.disconnect(); window.removeEventListener("resize", dirty);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("scroll", wake, { capture: true });
       window.removeEventListener("resize", wake);

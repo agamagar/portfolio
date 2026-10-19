@@ -43,6 +43,7 @@ export function setHeroVersion(id) {
 }
 
 const subscribe = (l) => { listeners.add(l); return () => listeners.delete(l); };
+export const subscribeHeroVersion = subscribe;
 export const useHeroVersion = () => useSyncExternalStore(subscribe, getHeroVersion, () => DEFAULT);
 
 // v3's copy: the greeting is two lines in v1's lockup (the face sits beside line one), then the tagline
