@@ -19,6 +19,7 @@ import { getSession, logout, postSession } from "../server/handlers/session";
 import { route } from "../server/http";
 import { MemoryKv } from "../server/kv";
 import { fixtureMessagesApi, messageToEvents } from "../server/mock";
+import { assertUserBudget } from "../server/quota";
 import { RateLimiter } from "../server/rateLimit";
 import { FsStore } from "../server/store/fsStore";
 import { SYSTEM_PROMPT } from "../server/prompts";
@@ -55,7 +56,7 @@ function scripted(messages: BetaMessage[]) {
 
 function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps {
   return {
-    env: readEnv({ MOCK_AUTH: "1", DAILY_BUDGET_USD: "5", ...env }),
+    env: readEnv({ MOCK_AUTH: "1", DAILY_BUDGET_USD: "5", MONTHLY_MODELS: "100", ...env }),
     store: new FsStore(dir),
     kv: new MemoryKv(),
     api: fixtureMessagesApi(FIXTURES, 0),
@@ -337,7 +338,7 @@ describe("fixture flow (real-shaped responses through the full server path)", ()
     let spec = created.spec;
     const scores: number[] = [];
     for (const pass of [1, 2]) {
-      const res = (await events(await gen(jsonReq("POST", "/api/generate", { ...createBody, mode: "refine", pass, spec, render: IMAGE }, cookie)))).find(
+      const res = (await events(await gen(jsonReq("POST", "/api/generate", { ...createBody, mode: "refine", jobId: created.jobId, pass, spec, render: IMAGE }, cookie)))).find(
         (e) => e.type === "result",
       )!;
       expect(res.usage.cache_read_input_tokens).toBeGreaterThan(0);
@@ -348,7 +349,7 @@ describe("fixture flow (real-shaped responses through the full server path)", ()
     expect(scores).toEqual([6.2, 8.4]);
     expect(spec.parts.length).toBe(17);
 
-    const j = await (await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE }, cookie))).json();
+    const j = await (await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE, jobId: created.jobId }, cookie))).json();
     expect(j.score).toBe(8.8);
     expect(j.model).toBe("claude-haiku-5-5");
 
@@ -442,5 +443,144 @@ describe("library", () => {
     expect(versions.length).toBeLessThanOrEqual(5);
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(list.items[0].title).toBe("t7");
+  });
+});
+
+describe("quotas", () => {
+  const gen = (d: Deps) => route((r) => generate(r, d));
+  const post = (d: Deps, body: unknown, cookie: string, extra: Record<string, string> = {}) => gen(d)(jsonReq("POST", "/api/generate", body, cookie, extra));
+
+  it("allows MONTHLY_MODELS creates, then 429s with a clear code; refines don't count", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "2" });
+    const cookie = await signIn(d);
+    const r1 = (await events(await post(d, createBody, cookie))).find((e) => e.type === "result")!;
+    // two refine passes on the first model are free
+    for (const pass of [1, 2]) await events(await post(d, { ...createBody, mode: "refine", jobId: r1.jobId, pass, spec: r1.spec, render: IMAGE }, cookie));
+    await events(await post(d, createBody, cookie));
+    const third = await post(d, createBody, cookie);
+    expect(third.status).toBe(429);
+    expect((await third.json()).code).toBe("quota_exceeded");
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json();
+    expect(me.quota.monthly).toMatchObject({ used: 2, limit: 2 });
+  });
+
+  it("a three-view job counts as one model", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    const res = await post(d, { ...createBody, image: undefined, images: { front: IMAGE, left: IMAGE, right: IMAGE } }, cookie);
+    expect((await events(res)).find((e) => e.type === "result")).toBeTruthy();
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(1);
+  });
+
+  it("each user has their own count, and admins are unlimited", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "1", ADMIN_EMAILS: "boss@example.com" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const boss = await signIn(d, "boss@example.com");
+    await events(await post(d, createBody, a));
+    expect((await post(d, createBody, a)).status).toBe(429);
+    await events(await post(d, createBody, b));
+    await events(await post(d, createBody, boss));
+    await events(await post(d, createBody, boss));
+  });
+
+  it("a failed create is refunded", async () => {
+    const { api } = scripted([{ ...fixtureMessage("create.toadstool.json"), stop_reason: "refusal" } as BetaMessage]);
+    const d = deps({ api }, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    await events(await post(d, createBody, cookie));
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(0);
+  });
+
+  it("refine and judge need a job that this user's create opened", async () => {
+    const { api, calls } = scripted([fixtureMessage("create.toadstool.json")]);
+    const d = deps({ api });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const spec = fixtureSpec("create.toadstool.json");
+    const refine = { ...createBody, mode: "refine", pass: 1, spec, render: IMAGE };
+    expect((await post(d, refine, a)).status).toBe(400);
+    expect((await post(d, { ...refine, jobId: "AAAAAAAAAAAAAAAA" }, a)).status).toBe(400);
+    expect((await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE }, a))).status).toBe(400);
+    const job = (await events(await post(d, createBody, a))).find((e) => e.type === "result")!.jobId;
+    expect((await post(d, { ...refine, jobId: job }, b)).status).toBe(400); // someone else's job
+    const n = calls.length;
+    await events(await post(d, { ...refine, jobId: job }, a));
+    expect(calls.length).toBe(n + 1);
+    // MAX_REFINE_PASSES bounds the passes per job
+    const d2 = deps({}, { MAX_REFINE_PASSES: "1" });
+    const c = await signIn(d2);
+    const j2 = (await events(await post(d2, createBody, c))).find((e) => e.type === "result")!.jobId;
+    await events(await post(d2, { ...refine, jobId: j2 }, c));
+    expect((await post(d2, { ...refine, jobId: j2 }, c)).status).toBe(400);
+  });
+
+  it("allows one in-flight generation per user", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const first = await post(d, createBody, cookie); // the stream isn't read yet, so it holds the lock
+    const second = await post(d, createBody, cookie);
+    expect(second.status).toBe(409);
+    expect((await second.json()).code).toBe("in_flight");
+    await events(first);
+    const third = await post(d, createBody, cookie); // the lock is released when the stream ends
+    expect(third.status).toBe(200);
+    await third.text();
+  });
+
+  it("answers 'busy, retry' when every global slot is taken, and frees slots after a run", async () => {
+    const d = deps({}, { MAX_CONCURRENT: "1" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const first = await post(d, createBody, a);
+    const busy = await post(d, createBody, b);
+    expect(busy.status).toBe(503);
+    expect(busy.headers.get("retry-after")).toBe("10");
+    expect((await busy.json()).code).toBe("busy");
+    await events(first);
+    const retry = await post(d, createBody, b);
+    expect(retry.status).toBe(200);
+    await retry.text();
+    // the failed attempt didn't use up b's quota: only the one run counted
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, b), d)).json()).quota;
+    expect(q.monthly.used).toBe(1);
+  });
+
+  it("caps each user's daily compute and tracks it per user", async () => {
+    const d = deps({}, { DAILY_USER_USD: "0.05" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    expect((await post(d, createBody, a)).status).toBe(429); // the worst-case next call already doesn't fit
+    expect((await post(d, createBody, b)).status).toBe(429);
+    const roomy = deps({ kv: d.kv }, { DAILY_USER_USD: "3" });
+    const ra = await post(roomy, createBody, a);
+    await events(ra);
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, a), roomy)).json();
+    expect(me.quota.daily.spentUsd).toBeGreaterThan(0.1);
+    const other = await (await getSession(jsonReq("GET", "/api/session", undefined, b), roomy)).json();
+    expect(other.quota.daily.spentUsd).toBe(0);
+    await expect(assertUserBudget(roomy.env, roomy.kv!, { id: "x" } as never, 99)).rejects.toMatchObject({ code: "user_budget_exceeded" });
+  });
+
+  it("limits per IP across instances (kv-backed) using x-vercel-forwarded-for on Vercel", async () => {
+    const kv = new MemoryKv();
+    const { KvRateLimiter } = await import("../server/rateLimit");
+    const a = new KvRateLimiter(kv, 2);
+    const b = new KvRateLimiter(kv, 2); // another instance, same Kv
+    await a.check("ip1");
+    await b.check("ip1");
+    await expect(a.check("ip1")).rejects.toMatchObject({ status: 429 });
+    await a.check("ip2");
+    const { clientIp } = await import("../server/http");
+    const req = new Request("https://x.test", { headers: { "x-vercel-forwarded-for": "198.51.100.9", "x-forwarded-for": "6.6.6.6" } });
+    expect(clientIp(req)).toBe("198.51.100.9");
+    process.env.VERCEL = "1";
+    try {
+      expect(clientIp(new Request("https://x.test", { headers: { "x-forwarded-for": "6.6.6.6" } }))).toBe("unknown");
+    } finally {
+      delete process.env.VERCEL;
+    }
   });
 });

@@ -1,4 +1,5 @@
 import { HttpError } from "./http.js";
+import type { Kv } from "./kv.js";
 
 /**
  * Sliding-window limiter, in memory. On Vercel each warm instance keeps its own
@@ -28,5 +29,26 @@ export class RateLimiter {
 
   private gc(since: number) {
     for (const [k, v] of this.hits) if (!v.some((t) => t > since)) this.hits.delete(k);
+  }
+}
+
+/**
+ * Fixed-window limiter in the Kv, so the limit holds across serverless instances.
+ * One counter per (key, window); the counter expires with its window.
+ */
+export class KvRateLimiter {
+  constructor(
+    private kv: Kv,
+    private limit: number,
+    private windowSec = 60,
+  ) {}
+
+  async check(key: string, now = Date.now()): Promise<void> {
+    const win = Math.floor(now / (this.windowSec * 1000));
+    const n = await this.kv.incr(`rl:${key}:${win}`, 1, { ttlSec: this.windowSec * 2 });
+    if (n > this.limit) {
+      const retry = Math.max(1, Math.ceil(((win + 1) * this.windowSec * 1000 - now) / 1000));
+      throw new HttpError(429, `Too many requests. Try again in ${retry}s.`, "rate_limited", { "retry-after": String(retry) });
+    }
   }
 }

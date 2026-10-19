@@ -115,7 +115,13 @@ function Header() {
             Fixtures
           </span>
         )}
-        {session.authenticated && limit !== undefined && (
+        {session.quota && (
+          <span className="pill mono" title={`Models you've made this month${session.quota.monthly.limit === null ? " (no limit for admins)" : `, of ${session.quota.monthly.limit} free. Resets on the 1st (UTC).`}`}>
+            {session.quota.monthly.used}
+            {session.quota.monthly.limit === null ? "" : ` / ${session.quota.monthly.limit}`} models this month
+          </span>
+        )}
+        {session.budget && limit !== undefined && (
           <span className="pill mono" title="Claude API spend today (UTC) against DAILY_BUDGET_USD">
             {spent === null || spent === undefined ? "—" : formatUsd(spent)} / {formatUsd(limit)} today
           </span>

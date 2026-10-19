@@ -17,6 +17,7 @@ export interface Session {
   locked: boolean;
   auth: { google: boolean; mock: boolean; inviteRequired: boolean };
   termsVersion: string;
+  quota: { monthly: { used: number; limit: number | null; resetsAt: string }; daily: { spentUsd: number; limitUsd: number } } | null;
   storage: "blob" | "fs" | null;
   apiConfigured: boolean;
   mock: boolean;
@@ -91,8 +92,8 @@ export const api = {
       body,
     }),
 
-  judge: (image: ImagePayload, render: ImagePayload) =>
-    request<{ score: number; critique: string; usage: Usage; costUsd: number; model: string }>("/api/judge", jsonInit("POST", { image, render })),
+  judge: (image: ImagePayload, render: ImagePayload, jobId: string) =>
+    request<{ score: number; critique: string; usage: Usage; costUsd: number; model: string }>("/api/judge", jsonInit("POST", { image, render, jobId })),
 };
 
 // --- streaming generation -----------------------------------------------------
@@ -105,6 +106,8 @@ export type GenerateEvent =
   | {
       type: "result";
       mode: "create" | "refine";
+      /** Issued by the create; the refines and the judge must send it back. */
+      jobId: string;
       score: number | null;
       critique: string;
       changes: string[];
@@ -129,6 +132,7 @@ export interface GenerateBody {
   render?: ImagePayload;
   spec?: Spec;
   pass?: number;
+  jobId?: string;
 }
 
 /** POST /api/generate and read the NDJSON event stream until a result or error. */

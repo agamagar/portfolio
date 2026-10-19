@@ -18,7 +18,14 @@ export interface Env {
   inviteRequired: boolean;
   /** Local-only email sign-in with no password. Never on in production. */
   mockAuth: boolean;
+  /** Free models per user per calendar month (UTC). Admins are unlimited. */
+  monthlyModels: number;
+  /** Per-user cap on compute per UTC day. */
+  dailyUserUsd: number;
+  /** Global dollar cap per UTC day, all users. */
   dailyBudgetUsd: number;
+  /** Generation requests running at once across the whole deployment. */
+  maxConcurrent: number;
   rateLimitPerMinute: number;
   maxRefinePasses: number;
   /** "fixtures" swaps the Anthropic client for recorded responses. Ignored in production. */
@@ -58,6 +65,9 @@ export function readEnv(e: Record<string, string | undefined> = process.env): En
     inviteCodes,
     inviteRequired: e.INVITE_REQUIRED === undefined || e.INVITE_REQUIRED === "" ? isProduction || inviteCodes.length > 0 : flag(e.INVITE_REQUIRED),
     mockAuth: !isProduction && (mock === "fixtures" || flag(e.MOCK_AUTH)),
+    monthlyModels: Math.round(number(e.MONTHLY_MODELS, 5, 0, 1000)),
+    dailyUserUsd: number(e.DAILY_USER_USD, 2, 0, 1000),
+    maxConcurrent: Math.round(number(e.MAX_CONCURRENT, 4, 1, 64)),
     dailyBudgetUsd: number(e.DAILY_BUDGET_USD, 5, 0, 10_000),
     rateLimitPerMinute: number(e.RATE_LIMIT_PER_MINUTE, 12, 1, 600),
     maxRefinePasses: Math.round(number(e.MAX_REFINE_PASSES, 3, 0, 3)),

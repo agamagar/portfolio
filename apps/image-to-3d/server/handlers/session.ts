@@ -4,6 +4,7 @@
  *                      {action:"consent"}                       agree to the current Terms + Privacy
  * DELETE /api/session  → sign out
  */
+import { quotaView } from "../quota.js";
 import { clearCookie, currentUser, guardConfigured, requireUser, sessionCookie, sessionToken } from "../auth.js";
 import { spentToday } from "../budget.js";
 import type { Deps } from "../deps.js";
@@ -26,7 +27,9 @@ export async function getSession(req: Request, d: Deps): Promise<Response> {
   const user = configured ? await currentUser(d, req) : null;
   let spent: number | null = null;
   if (user && d.store && d.kv) spent = await spentToday(d.store).catch(() => null);
+  const quota = user && d.kv ? await quotaView(d.env, d.kv, user).catch(() => null) : null;
   return json({
+    quota,
     authenticated: !!user,
     user: user ? publicUser(user) : null,
     locked: !configured,

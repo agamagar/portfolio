@@ -4,7 +4,7 @@ import { realMessagesApi, type MessagesApi } from "./claude.js";
 import { readEnv, type Env } from "./env.js";
 import { FileKv, UpstashKv, type Kv } from "./kv.js";
 import { HttpError } from "./http.js";
-import { RateLimiter } from "./rateLimit.js";
+import { KvRateLimiter, RateLimiter } from "./rateLimit.js";
 import { BlobStore } from "./store/blobStore.js";
 import { FsStore } from "./store/fsStore.js";
 import type { Store } from "./store/types.js";
@@ -15,7 +15,8 @@ export interface Deps {
   /** Accounts, sessions, quotas. null only on a serverless host with no Upstash configured. */
   kv: Kv | null;
   api: MessagesApi | null;
-  claudeLimiter: RateLimiter;
+  /** Per-IP limit on Claude-backed requests. */
+  claudeLimiter: { check(key: string): void | Promise<void> };
   loginLimiter: RateLimiter;
 }
 
@@ -42,7 +43,7 @@ export function getDeps(): Deps {
     store,
     kv,
     api,
-    claudeLimiter: new RateLimiter(env.rateLimitPerMinute),
+    claudeLimiter: kv ? new KvRateLimiter(kv, env.rateLimitPerMinute) : new RateLimiter(env.rateLimitPerMinute),
     loginLimiter: new RateLimiter(8),
   };
   return cached;

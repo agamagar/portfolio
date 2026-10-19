@@ -15,8 +15,9 @@ import { SpecSchema } from "../../shared/spec.js";
 import { requireUser } from "../auth.js";
 import { assertBudget, recordSpend } from "../budget.js";
 import { createSpec, judgeRender, refineSpec, type CallHooks } from "../claude.js";
-import { requireApi, requireStore, type Deps } from "../deps.js";
+import { requireApi, requireKv, requireStore, type Deps } from "../deps.js";
 import { clientIp, HttpError, json, ndjson, readJson } from "../http.js";
+import { acquireSlot, assertUserBudget, lockUser, openJob, recordUserSpend, reserveModel, spendJob } from "../quota.js";
 import * as v from "../validate.js";
 
 const MAX_BODY = 18_000_000; // up to three views
@@ -27,10 +28,11 @@ function nextCallCeiling(model: ModelId): number {
 }
 
 export async function generate(req: Request, d: Deps): Promise<Response> {
-  await requireUser(d, req);
+  const user = await requireUser(d, req);
   const api = requireApi(d);
   const store = requireStore(d);
-  d.claudeLimiter.check(`claude:${clientIp(req)}`);
+  const kv = requireKv(d);
+  await d.claudeLimiter.check(`claude:${clientIp(req)}`);
   const body = await readJson<Record<string, unknown>>(req, MAX_BODY);
 
   const mode = body.mode === "refine" ? "refine" : "create";
@@ -51,43 +53,87 @@ export async function generate(req: Request, d: Deps): Promise<Response> {
     if (!parsed.success) throw new HttpError(400, "spec is not a valid spec", "bad_spec");
     refine = { render: v.imageInput(body.render, "render"), specJson: JSON.stringify(parsed.data), pass };
   }
-  await assertBudget(store, d.env.dailyBudgetUsd, nextCallCeiling(base.model));
+
+  // limits, cheapest first. Each acquired resource is released in `finish` (or on a throw here).
+  const releases: (() => Promise<void>)[] = [];
+  const finish = async () => {
+    for (const r of releases.reverse()) await r();
+  };
+  let refund: (() => Promise<void>) | null = null;
+  let currentJob = "";
+  try {
+    releases.push(await lockUser(kv, user));
+    if (mode === "create") {
+      refund = await reserveModel(d.env, kv, user); // 1 model, however many views
+      currentJob = await openJob(kv, user);
+    } else {
+      await spendJob(kv, user, body.jobId, "refines", d.env.maxRefinePasses);
+      currentJob = String(body.jobId);
+    }
+    await assertUserBudget(d.env, kv, user, nextCallCeiling(base.model));
+    releases.push(await acquireSlot(d.env, kv));
+    await assertBudget(store, d.env.dailyBudgetUsd, nextCallCeiling(base.model));
+  } catch (err) {
+    await refund?.();
+    await finish();
+    throw err;
+  }
 
   return ndjson(async (send) => {
-    send({ type: "status", stage: mode === "create" ? "analysing" : "comparing" });
-    const hooks: CallHooks = {
-      onThinking: (text) => send({ type: "thinking", text }),
-      onProgress: (outputChars) => send({ type: "progress", outputChars }),
-      onRetry: (attempt, reason) => send({ type: "retry", attempt, reason }),
-      onCost: (usd) => recordSpend(store, usd).catch((e) => console.error("[image-to-3d] spend not recorded", e)),
-      signal: req.signal,
-    };
-    const out = refine ? await refineSpec(api, { ...base, ...refine }, hooks) : await createSpec(api, base, hooks);
-    send({
-      type: "result",
-      mode,
-      score: refine ? out.result.score : null,
-      critique: out.result.critique,
-      changes: out.result.changes,
-      spec: out.result.spec,
-      warnings: out.warnings,
-      usage: out.usage,
-      costUsd: out.costUsd,
-      model: out.model,
-      attempts: out.attempts,
-    });
+    let ok = false;
+    try {
+      send({ type: "status", stage: mode === "create" ? "analysing" : "comparing" });
+      const hooks: CallHooks = {
+        onThinking: (text) => send({ type: "thinking", text }),
+        onProgress: (outputChars) => send({ type: "progress", outputChars }),
+        onRetry: (attempt, reason) => send({ type: "retry", attempt, reason }),
+        onCost: (usd) =>
+          Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(
+            () => {},
+            (e) => console.error("[image-to-3d] spend not recorded", e),
+          ),
+        signal: req.signal,
+      };
+      const out = refine ? await refineSpec(api, { ...base, ...refine }, hooks) : await createSpec(api, base, hooks);
+      ok = true;
+      send({
+        type: "result",
+        mode,
+        jobId: currentJob,
+        score: refine ? out.result.score : null,
+        critique: out.result.critique,
+        changes: out.result.changes,
+        spec: out.result.spec,
+        warnings: out.warnings,
+        usage: out.usage,
+        costUsd: out.costUsd,
+        model: out.model,
+        attempts: out.attempts,
+      });
+    } finally {
+      if (!ok) await refund?.();
+      await finish();
+    }
   });
 }
 
 export async function judge(req: Request, d: Deps): Promise<Response> {
-  await requireUser(d, req);
+  const user = await requireUser(d, req);
   const api = requireApi(d);
   const store = requireStore(d);
-  d.claudeLimiter.check(`claude:${clientIp(req)}`);
+  const kv = requireKv(d);
+  await d.claudeLimiter.check(`claude:${clientIp(req)}`);
   const body = await readJson<Record<string, unknown>>(req, MAX_BODY);
   const image = v.viewImages(body)[0].image;
   const render = v.imageInput(body.render, "render");
-  await assertBudget(store, d.env.dailyBudgetUsd, 0.01);
-  const out = await judgeRender(api, { image, render }, { onCost: (usd) => recordSpend(store, usd).catch(() => {}) });
-  return json({ score: out.result.score, critique: out.result.critique, usage: out.usage, costUsd: out.costUsd, model: out.model });
+  const unlock = await lockUser(kv, user);
+  try {
+    await spendJob(kv, user, body.jobId, "judges", 1);
+    await assertUserBudget(d.env, kv, user, 0.01);
+    await assertBudget(store, d.env.dailyBudgetUsd, 0.01);
+    const out = await judgeRender(api, { image, render }, { onCost: (usd) => Promise.all([recordSpend(store, usd), recordUserSpend(kv, user, usd)]).then(() => {}, () => {}) });
+    return json({ score: out.result.score, critique: out.result.critique, usage: out.usage, costUsd: out.costUsd, model: out.model });
+  } finally {
+    await unlock();
+  }
 }

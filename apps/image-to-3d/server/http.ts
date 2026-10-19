@@ -75,7 +75,15 @@ export async function readBody(req: Request, maxBytes: number): Promise<Uint8Arr
   return out;
 }
 
+/**
+ * The caller's IP. On Vercel, x-vercel-forwarded-for is set by the edge and can't be spoofed by
+ * the client, so it wins. x-forwarded-for / x-real-ip are only trusted off Vercel (local dev,
+ * tests), where there is no edge to overwrite them.
+ */
 export function clientIp(req: Request): string {
+  const vercel = req.headers.get("x-vercel-forwarded-for");
+  if (vercel) return vercel.split(",")[0].trim();
+  if (process.env.VERCEL) return "unknown";
   const fwd = req.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0].trim();
   return req.headers.get("x-real-ip") ?? "local";
