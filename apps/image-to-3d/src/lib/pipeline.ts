@@ -144,7 +144,7 @@ export async function runPipeline(opts: PipelineOptions, emit: (s: PipelineState
       step(current, "active");
       const prev = state.versions[state.versions.length - 1];
       const res = await generate(
-        { mode: "refine", ...common, pass, spec: prev.spec, render: dataUrlToPayload(prev.preview) },
+        { mode: "refine", ...common, jobId: created.jobId, pass, spec: prev.spec, render: dataUrlToPayload(prev.preview) },
         onEvent,
         opts.signal,
       );
@@ -171,7 +171,7 @@ export async function runPipeline(opts: PipelineOptions, emit: (s: PipelineState
     if (opts.passes > 0 && last.score === null) {
       current = "judge";
       step("judge", "active");
-      const j = await api.judge(opts.images.front, dataUrlToPayload(last.preview));
+      const j = await api.judge(opts.images.front, dataUrlToPayload(last.preview), created.jobId);
       state.costUsd += j.costUsd;
       last.score = j.score;
       last.critique = j.critique;

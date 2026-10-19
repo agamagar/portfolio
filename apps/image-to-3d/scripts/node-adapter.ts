@@ -5,8 +5,6 @@
  */
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
-import { createReadStream, statSync } from "node:fs";
-import path from "node:path";
 
 export type ApiModule = Partial<Record<"GET" | "POST" | "PUT" | "PATCH" | "DELETE", (req: Request) => Promise<Response>>>;
 
@@ -60,37 +58,5 @@ export async function handleApi(req: IncomingMessage, res: ServerResponse, load:
   const abort = new AbortController();
   res.on("close", () => !res.writableFinished && abort.abort());
   await sendWebResponse(res, await fn(toWebRequest(req, abort)));
-  return true;
-}
-
-const TYPES: Record<string, string> = {
-  ".glb": "model/gltf-binary",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".webp": "image/webp",
-  ".json": "application/json",
-};
-
-/** Serves the local FsStore at /files/* (Vercel Blob URLs replace this in production). */
-export function handleFiles(req: IncomingMessage, res: ServerResponse, dataDir: string): boolean {
-  const url = new URL(req.url ?? "/", "http://x");
-  if (!url.pathname.startsWith("/files/")) return false;
-  const root = path.resolve(dataDir);
-  const abs = path.resolve(root, decodeURIComponent(url.pathname.slice("/files/".length)));
-  if (!abs.startsWith(root + path.sep)) {
-    res.statusCode = 400;
-    res.end();
-    return true;
-  }
-  try {
-    const s = statSync(abs);
-    res.setHeader("content-type", TYPES[path.extname(abs)] ?? "application/octet-stream");
-    res.setHeader("content-length", s.size);
-    res.setHeader("access-control-allow-origin", "*");
-    createReadStream(abs).pipe(res);
-  } catch {
-    res.statusCode = 404;
-    res.end();
-  }
   return true;
 }

@@ -32,9 +32,17 @@ test.afterAll(() => {
   expect(pageErrors, "no uncaught page errors").toEqual([]);
 });
 
-async function generate(opts: { file: string; notes?: string; style: string; passes: number; screenshotMidway?: string }) {
+async function generate(opts: { file: string; left?: string; right?: string; notes?: string; style: string; passes: number; screenshotMidway?: string }) {
   await page.getByTestId("file-input").setInputFiles(IMG(opts.file));
-  await expect(page.getByAltText("Source image")).toBeVisible();
+  await expect(page.getByAltText("Front view")).toBeVisible();
+  if (opts.left) {
+    await page.getByTestId("file-input-left").setInputFiles(IMG(opts.left));
+    await expect(page.getByAltText("Left view")).toBeVisible();
+  }
+  if (opts.right) {
+    await page.getByTestId("file-input-right").setInputFiles(IMG(opts.right));
+    await expect(page.getByAltText("Right view")).toBeVisible();
+  }
   if (opts.notes !== undefined) await page.getByLabel("What is it?").fill(opts.notes);
   await page.getByRole("radio", { name: opts.style }).click();
   const passes = page.locator("#passes");
@@ -65,30 +73,48 @@ async function save(title?: string) {
   await expect(page.locator(".details")).toBeVisible();
 }
 
-test("the access gate blocks strangers", async () => {
+test("the access gate blocks strangers, and a new account needs an invite code", async () => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Image → 3D" })).toBeVisible();
   const api = await page.request.get("/api/library");
   expect(api.status()).toBe(401);
-  await page.getByLabel("Password").fill("wrong");
-  await page.getByRole("button", { name: "Unlock" }).click();
-  await expect(page.getByRole("alert")).toContainText("isn't right");
+  await page.getByLabel(/^Email/).fill("ada@example.com");
+  await page.getByLabel(/^Invite code/).fill("wrong-code");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert")).toContainText("invite code");
   await page.screenshot({ path: `${SHOTS}/login.png` });
-  await page.getByLabel("Password").fill("e2e-password");
-  await page.getByRole("button", { name: "Unlock" }).click();
+  await page.getByLabel(/^Invite code/).fill("beta-e2e");
+  await page.getByRole("button", { name: "Sign in" }).click();
+
+  // nothing works until the Terms and Privacy policy are agreed to
+  await expect(page.getByRole("heading", { name: "One last thing" })).toBeVisible();
+  expect((await page.request.get("/api/library")).status()).toBe(403);
+  const cont = page.getByRole("button", { name: "Continue" });
+  await expect(cont).toBeDisabled();
+  await page.getByRole("checkbox").check();
+  await page.screenshot({ path: `${SHOTS}/consent.png` });
+  await cont.click();
   await expect(page.getByRole("heading", { name: "New model" })).toBeVisible();
 });
 
-test("security headers: page CSP and the sandbox worker's stricter CSP", async () => {
+test("Terms and Privacy are public pages", async () => {
+  await page.getByRole("link", { name: "Privacy" }).click();
+  await expect(page.getByRole("heading", { name: "Privacy policy" })).toBeVisible();
+  await expect(page.getByText("deleted 24 hours after upload")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Delete my account" })).toBeVisible();
+  await page.goto("/terms");
+  await expect(page.getByRole("heading", { name: "Terms of use" })).toBeVisible();
+  await page.goto("/");
+});
+
+test("security headers: page CSP, and no model-written-code worker in the public bundle", async () => {
   const res = await page.request.get("/");
   expect(res.headers()["content-security-policy"]).toContain("script-src 'self'");
   expect(res.headers()["content-security-policy"]).not.toContain("unsafe-eval");
   const html = await res.text();
   const js = /src="(\/assets\/index-[^"]+\.js)"/.exec(html)![1];
   const bundle = await (await page.request.get(js)).text();
-  const worker = /assets\/sandbox\.worker-[A-Za-z0-9_-]+\.js/.exec(bundle)![0];
-  const w = await page.request.get(`/${worker}`);
-  expect(w.headers()["content-security-policy"]).toBe("default-src 'none'; script-src 'self' 'unsafe-eval'");
+  expect(bundle).not.toMatch(/sandbox\.worker/);
 });
 
 test("generate: image → spec → model, with two compare-and-fix passes", async () => {
@@ -116,11 +142,11 @@ test("generate: image → spec → model, with two compare-and-fix passes", asyn
   await expect(page.getByLabel("Title")).toHaveValue("Toadstool in a pot");
 });
 
-test("custom snippet parts run in the sandbox worker (the robot's gear)", async () => {
+test("model-written custom parts are dropped (the robot fixture still carries a gear)", async () => {
   await page.getByRole("link", { name: "Create", exact: true }).click();
   await generate({ file: "robot", notes: "a toy robot", style: "Toon", passes: 1 });
   await page.locator(".notes summary").click();
-  await expect(page.locator(".notes")).not.toContainText("Custom part");
+  await expect(page.locator(".notes")).toContainText("model-written code is not run");
   await save();
 });
 
@@ -153,7 +179,7 @@ test("library: grid, search and tag filters", async () => {
   await page.emulateMedia({ colorScheme: "light" });
 });
 
-test("viewer: style switch, rename, tags, embed snippet, GLB", async () => {
+test("viewer: style switch, rename, tags, share link, GLB", async () => {
   await page.getByRole("link", { name: /Toy robot/ }).click();
   await expect(page.getByLabel("Title")).toHaveValue("Toy robot");
 
@@ -171,10 +197,19 @@ test("viewer: style switch, rename, tags, embed snippet, GLB", async () => {
   await page.getByLabel("Tags").press("Enter");
   await expect(page.locator(".tag-input .chip", { hasText: "favourite" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Copy embed snippet" }).click();
-  const clip = await page.evaluate(() => navigator.clipboard.readText());
-  expect(clip).toContain("<model-viewer");
-  expect(clip).toMatch(/\/files\/i3d\/items\/[0-9a-f-]{36}\/model-[0-9a-f]+\.glb/);
+  // share by link: a public, read-only page with a report link (opened in a signed-out context)
+  await page.getByRole("button", { name: "Share by link" }).click();
+  const shareUrl = await page.getByLabel("Share link").inputValue();
+  expect(shareUrl).toMatch(/\/s\/[A-Za-z0-9_-]{20,32}$/);
+  const guest = await page.context().browser()!.newContext({ baseURL: new URL(shareUrl).origin });
+  const gp = await guest.newPage();
+  await gp.goto(shareUrl);
+  await expect(gp.getByRole("heading", { name: "Wind-up robot" })).toBeVisible();
+  await expect(gp.getByRole("link", { name: "Download GLB" })).toHaveAttribute("href", /^\/api\/file\?p=/);
+  await gp.getByRole("button", { name: "Report this model" }).click();
+  await gp.getByRole("dialog").getByRole("button", { name: "Send report" }).click();
+  await expect(gp.getByRole("status").filter({ hasText: "Thanks" })).toBeVisible();
+  await guest.close();
 
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download GLB/ }).click()]);
   expect(readFileSync((await download.path())!).subarray(0, 4).toString("latin1")).toBe("glTF");
@@ -193,8 +228,37 @@ test("delete removes the model and its files", async () => {
   await expect(page.getByRole("list", { name: "Models" }).locator("li")).toHaveCount(2);
 });
 
+const TINY_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+
+test("moderation: a blocked request stops before the main model and doesn't use up a model", async () => {
+  await page.goto("/");
+  const pill = page.getByTitle(/Models you've made this month/);
+  await expect(pill).toContainText("3 / 4");
+  await page.getByTestId("file-input").setInputFiles({ name: "tiny.png", mimeType: "image/png", buffer: TINY_PNG });
+  await expect(page.getByAltText("Front view")).toBeVisible();
+  await page.getByLabel("What is it?").fill("moderation-test-block");
+  await page.getByRole("button", { name: /Generate/ }).click();
+  await expect(page.getByRole("alert")).toContainText("doesn't accept");
+  await page.reload();
+  await expect(pill).toContainText("3 / 4");
+});
+
+test("three views count as one model, then the monthly limit stops the next one", async () => {
+  await page.goto("/");
+  await generate({ file: "toadstool", left: "robot", right: "robot", notes: "toadstool", style: "Clay", passes: 0 });
+  await page.screenshot({ path: `${SHOTS}/three-views.png` });
+  await expect(page.getByTitle(/Models you've made this month/)).toContainText("4 / 4");
+
+  await page.reload();
+  await page.getByTestId("file-input").setInputFiles(IMG("robot"));
+  await expect(page.getByAltText("Front view")).toBeVisible();
+  await page.getByRole("button", { name: /Generate/ }).click();
+  await expect(page.getByRole("alert")).toContainText("free models");
+  await page.screenshot({ path: `${SHOTS}/quota-hit.png` });
+});
+
 test("signing out locks the app again", async () => {
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByLabel("Password")).toBeVisible();
+  await expect(page.getByLabel(/^Email/)).toBeVisible();
   expect((await page.request.get("/api/library")).status()).toBe(401);
 });

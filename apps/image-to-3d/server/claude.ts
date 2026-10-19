@@ -18,19 +18,22 @@ import type {
   BetaMessageStreamParams,
   BetaRawMessageStreamEvent,
 } from "@anthropic-ai/sdk/resources/beta/messages/messages";
-import { costOf, JUDGE_MODEL, MODELS, type Effort, type ModelId, type Usage } from "../shared/models.js";
+import { costOf, JUDGE_MODEL, MODELS, MODERATION_MODEL, type Effort, type ModelId, type Usage } from "../shared/models.js";
 import {
   JUDGE_JSON_SCHEMA,
+  MODERATION_JSON_SCHEMA,
   parseJudge,
+  parseModeration,
   parseRefine,
   REFINE_JSON_SCHEMA,
   SpecError,
   type JudgeResult,
+  type ModerationResult,
   type RefineResult,
   type Style,
 } from "../shared/spec.js";
 import { HttpError } from "./http.js";
-import { createInstruction, JUDGE_SYSTEM_PROMPT, refineInstruction, retryNote, SYSTEM_PROMPT } from "./prompts.js";
+import { createInstruction, JUDGE_SYSTEM_PROMPT, MODERATION_SYSTEM_PROMPT, refineInstruction, retryNote, SYSTEM_PROMPT } from "./prompts.js";
 
 export interface MessageStreamLike extends AsyncIterable<BetaRawMessageStreamEvent> {
   finalMessage(): Promise<BetaMessage>;
@@ -289,6 +292,23 @@ export function judgeRender(api: MessagesApi, req: { image: ImageInput; render: 
       imageBlock(req.render),
     ],
     parse: (text) => ({ value: parseJudge(text), warnings: [] }),
+    hooks,
+  });
+}
+
+export function moderateImage(api: MessagesApi, req: { image: ImageInput; note: string }, hooks: CallHooks = {}) {
+  return structuredCall<ModerationResult>({
+    api,
+    model: MODERATION_MODEL,
+    effort: "low",
+    system: MODERATION_SYSTEM_PROMPT,
+    schema: MODERATION_JSON_SCHEMA,
+    maxTokens: 2000,
+    content: [
+      imageBlock(req.image),
+      { type: "text", text: req.note ? `User's note about the image:\n"""${req.note}"""\nReview the image and the note.` : "Review the image." },
+    ],
+    parse: (text) => ({ value: parseModeration(text), warnings: [] }),
     hooks,
   });
 }

@@ -5,8 +5,11 @@ import { Spinner, ThemeToggle, ToastProvider } from "./components/ui";
 import { api, type Session } from "./lib/api";
 import { Link, navigate, useRoute } from "./lib/router";
 import { CreatePage } from "./pages/Create";
+import { AdminPage } from "./pages/Admin";
+import { ConsentPage, PrivacyPage, TermsPage } from "./pages/Legal";
 import { LibraryPage } from "./pages/Library";
 import { LoginPage } from "./pages/Login";
+import { SharedPage } from "./pages/Shared";
 import { ViewerPage } from "./pages/Viewer";
 
 interface SessionCtx {
@@ -34,9 +37,11 @@ export function App() {
   }, [refresh]);
 
   useEffect(() => {
-    const titles = { create: "Create", library: "Library", viewer: "Model", notFound: "Not found" } as const;
+    const titles = { create: "Create", library: "Library", viewer: "Model", shared: "Shared model", admin: "Admin", terms: "Terms", privacy: "Privacy", notFound: "Not found" } as const;
     document.title = `${titles[route.name]} · Image to 3D`;
   }, [route.name]);
+
+  if (route.name === "shared") return <SharedPage token={route.token} />; // public: no sign-in
 
   if (!session) {
     return (
@@ -56,9 +61,11 @@ export function App() {
     );
   }
 
-  const gated = session.passwordRequired && !session.authenticated;
-  const publicRead = session.publicGallery && (route.name === "library" || route.name === "viewer");
-  if (gated && !publicRead) return <LoginPage locked={session.locked} onSignedIn={refresh} />;
+  if (route.name === "terms") return <TermsPage session={session} />;
+  if (route.name === "privacy") return <PrivacyPage session={session} onChanged={refresh} />;
+  if (!session.authenticated) return <LoginPage session={session} onSignedIn={refresh} />;
+
+  if (session.user && !session.user.consented) return <ConsentPage session={session} onDone={refresh} />;
 
   return (
     <Ctx.Provider value={{ session, refresh }}>
@@ -70,6 +77,7 @@ export function App() {
         <main id="main" tabIndex={-1}>
           {route.name === "create" && <CreatePage />}
           {route.name === "library" && <LibraryPage />}
+          {route.name === "admin" && (session.user?.role === "admin" ? <AdminPage /> : <p className="page muted">Admins only.</p>)}
           {route.name === "viewer" && <ViewerPage id={route.id} />}
           {route.name === "notFound" && (
             <div className="center-screen">
@@ -82,6 +90,9 @@ export function App() {
             </div>
           )}
         </main>
+        <footer className="site-footer muted small">
+          <Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link>
+        </footer>
       </ToastProvider>
     </Ctx.Provider>
   );
@@ -107,6 +118,11 @@ function Header() {
         <Link href="/" aria-current={route.name === "create" ? "page" : undefined}>
           <Icon name="sparkle" size={16} /> Create
         </Link>
+        {session.user?.role === "admin" && (
+          <Link href="/admin" aria-current={route.name === "admin" ? "page" : undefined}>
+            <Icon name="grid" size={16} /> Admin
+          </Link>
+        )}
         <Link href="/library" aria-current={route.name === "library" || route.name === "viewer" ? "page" : undefined}>
           <Icon name="grid" size={16} /> Library
         </Link>
@@ -117,13 +133,19 @@ function Header() {
             Fixtures
           </span>
         )}
-        {session.authenticated && limit !== undefined && (
+        {session.quota && (
+          <span className="pill mono" title={`Models you've made this month${session.quota.monthly.limit === null ? " (no limit for admins)" : `, of ${session.quota.monthly.limit} free. Resets on the 1st (UTC).`}`}>
+            {session.quota.monthly.used}
+            {session.quota.monthly.limit === null ? "" : ` / ${session.quota.monthly.limit}`} models this month
+          </span>
+        )}
+        {session.budget && limit !== undefined && (
           <span className="pill mono" title="Claude API spend today (UTC) against DAILY_BUDGET_USD">
             {spent === null || spent === undefined ? "—" : formatUsd(spent)} / {formatUsd(limit)} today
           </span>
         )}
         <ThemeToggle />
-        {session.passwordRequired && session.authenticated && (
+        {session.authenticated && (
           <button
             type="button"
             className="icon-btn"

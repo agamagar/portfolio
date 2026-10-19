@@ -1,13 +1,43 @@
 /** Every environment variable the server reads, in one place. Documented in README.md and .env.example. */
 export interface Env {
   anthropicApiKey: string | undefined;
-  appPassword: string | undefined;
+  /** Signs session-adjacent values (OAuth state, file links). Required in production. */
   sessionSecret: string | undefined;
   blobToken: string | undefined;
+  upstashUrl: string | undefined;
+  upstashToken: string | undefined;
+  googleClientId: string | undefined;
+  googleClientSecret: string | undefined;
+  /** Public origin, e.g. https://3d.agamagarwal.com. Used for the OAuth redirect; defaults to the request origin. */
+  publicUrl: string | undefined;
+  /** Emails that are admins and skip the invite gate. */
+  adminEmails: string[];
+  /** Static invite codes (comma separated), in addition to codes an admin creates. */
+  inviteCodes: string[];
+  /** New accounts need an invite code. Default: on in production, off in local dev. */
+  inviteRequired: boolean;
+  /** Local-only email sign-in with no password. Never on in production. */
+  mockAuth: boolean;
+  /** Free models per user per calendar month (UTC). Admins are unlimited. */
+  monthlyModels: number;
+  /** Per-user cap on compute per UTC day. */
+  dailyUserUsd: number;
+  /** Global dollar cap per UTC day, all users. */
   dailyBudgetUsd: number;
+  /** Shown on the Terms and Privacy pages as the contact for reports and data requests. */
+  contactEmail: string | undefined;
+  /** POST target for spend alerts, Slack-compatible ({text}). Secret. */
+  alertWebhookUrl: string | undefined;
+  /** Percent of the daily cap at which to alert, once each per day. */
+  alertThresholds: number[];
+  /** Models a user can keep in the library at once. */
+  maxItemsPerUser: number;
+  /** Shared secret Vercel Cron sends as a bearer token to /api/cron. */
+  cronSecret: string | undefined;
+  /** Generation requests running at once across the whole deployment. */
+  maxConcurrent: number;
   rateLimitPerMinute: number;
   maxRefinePasses: number;
-  publicGallery: boolean;
   /** "fixtures" swaps the Anthropic client for recorded responses. Ignored in production. */
   mock: "fixtures" | null;
   mockDelayMs: number;
@@ -20,18 +50,43 @@ function number(v: string | undefined, fallback: number, lo: number, hi: number)
   return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : fallback;
 }
 
+const list = (v: string | undefined, lower = false) =>
+  (v ?? "")
+    .split(",")
+    .map((s) => (lower ? s.trim().toLowerCase() : s.trim()))
+    .filter(Boolean);
+
+const flag = (v: string | undefined) => v === "true" || v === "1";
+
 export function readEnv(e: Record<string, string | undefined> = process.env): Env {
   const isProduction = e.VERCEL_ENV === "production" || (e.NODE_ENV === "production" && !!e.VERCEL);
+  const mock = !isProduction && e.ANTHROPIC_MOCK === "fixtures" ? "fixtures" : null;
+  const inviteCodes = list(e.INVITE_CODES);
   return {
     anthropicApiKey: e.ANTHROPIC_API_KEY || undefined,
-    appPassword: e.APP_PASSWORD || undefined,
     sessionSecret: e.SESSION_SECRET || undefined,
     blobToken: e.BLOB_READ_WRITE_TOKEN || undefined,
+    upstashUrl: e.UPSTASH_REDIS_REST_URL || e.KV_REST_API_URL || undefined,
+    upstashToken: e.UPSTASH_REDIS_REST_TOKEN || e.KV_REST_API_TOKEN || undefined,
+    googleClientId: e.GOOGLE_CLIENT_ID || undefined,
+    googleClientSecret: e.GOOGLE_CLIENT_SECRET || undefined,
+    publicUrl: e.PUBLIC_URL ? e.PUBLIC_URL.replace(/\/+$/, "") : undefined,
+    adminEmails: list(e.ADMIN_EMAILS, true),
+    inviteCodes,
+    inviteRequired: e.INVITE_REQUIRED === undefined || e.INVITE_REQUIRED === "" ? isProduction || inviteCodes.length > 0 : flag(e.INVITE_REQUIRED),
+    mockAuth: !isProduction && (mock === "fixtures" || flag(e.MOCK_AUTH)),
+    monthlyModels: Math.round(number(e.MONTHLY_MODELS, 5, 0, 1000)),
+    dailyUserUsd: number(e.DAILY_USER_USD, 2, 0, 1000),
+    contactEmail: e.CONTACT_EMAIL || undefined,
+    alertWebhookUrl: e.ALERT_WEBHOOK_URL || undefined,
+    alertThresholds: list(e.ALERT_THRESHOLDS || "50,80,100").map(Number).filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => a - b),
+    maxItemsPerUser: Math.round(number(e.MAX_ITEMS_PER_USER, 50, 1, 10_000)),
+    cronSecret: e.CRON_SECRET || undefined,
+    maxConcurrent: Math.round(number(e.MAX_CONCURRENT, 4, 1, 64)),
     dailyBudgetUsd: number(e.DAILY_BUDGET_USD, 5, 0, 10_000),
     rateLimitPerMinute: number(e.RATE_LIMIT_PER_MINUTE, 12, 1, 600),
     maxRefinePasses: Math.round(number(e.MAX_REFINE_PASSES, 3, 0, 3)),
-    publicGallery: e.PUBLIC_GALLERY === "true" || e.PUBLIC_GALLERY === "1",
-    mock: !isProduction && e.ANTHROPIC_MOCK === "fixtures" ? "fixtures" : null,
+    mock,
     mockDelayMs: number(e.MOCK_DELAY_MS, 12, 0, 1000),
     dataDir: e.DATA_DIR || ".data",
     isProduction,

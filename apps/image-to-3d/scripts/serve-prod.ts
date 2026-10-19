@@ -10,7 +10,7 @@ import { createServer } from "node:http";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { handleApi, handleFiles, type ApiModule } from "./node-adapter";
+import { handleApi, type ApiModule } from "./node-adapter";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
@@ -32,7 +32,6 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? "/", "http://x");
     for (const rule of vercel.headers) if (re(rule.source).test(url.pathname)) for (const h of rule.headers) res.setHeader(h.key, h.value);
-    if (handleFiles(req, res, process.env.DATA_DIR || ".data")) return;
     if (await handleApi(req, res, async (name) => {
       const file = path.join(root, "api", `${name}.ts`);
       return existsSync(file) ? ((await import(pathToFileURL(file).href)) as ApiModule) : null;

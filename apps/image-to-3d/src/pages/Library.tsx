@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { STYLE_LABELS } from "../../shared/spec";
 import { Icon } from "../components/Icon";
-import { ScoreBadge, Spinner } from "../components/ui";
+import { Dialog, ScoreBadge, Spinner, useToast } from "../components/ui";
 import { api, type LibraryItem } from "../lib/api";
 import { Link } from "../lib/router";
 
@@ -10,6 +10,9 @@ export function LibraryPage() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     api
@@ -47,6 +50,11 @@ export function LibraryPage() {
           </label>
           <input id="search" type="search" placeholder="Search titles and tags" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
+        {items && items.length > 0 && (
+          <button type="button" className="btn danger small" onClick={() => setConfirmAll(true)}>
+            <Icon name="trash" size={16} /> Delete all
+          </button>
+        )}
       </div>
 
       {allTags.length > 0 && (
@@ -114,6 +122,35 @@ export function LibraryPage() {
           </li>
         ))}
       </ul>
+
+      <Dialog open={confirmAll} onClose={() => setConfirmAll(false)} title="Delete every model?">
+        <p className="muted">This permanently removes all {items?.length ?? 0} of your models, with their GLBs, thumbnails, photos and share links. It can't be undone.</p>
+        <div className="dialog-actions">
+          <button type="button" className="btn" onClick={() => setConfirmAll(false)} disabled={busy}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn danger"
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              try {
+                await api.removeAll();
+                setItems([]);
+                setConfirmAll(false);
+                toast("Everything deleted");
+              } catch (e) {
+                toast(e instanceof Error ? e.message : String(e), "error");
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            {busy ? "Deleting…" : "Delete all"}
+          </button>
+        </div>
+      </Dialog>
     </div>
   );
 }

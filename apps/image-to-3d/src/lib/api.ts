@@ -13,9 +13,12 @@ export class ApiError extends Error {
 
 export interface Session {
   authenticated: boolean;
-  passwordRequired: boolean;
+  user: { id: string; email: string; name: string; role: "user" | "admin"; consented: boolean } | null;
   locked: boolean;
-  publicGallery: boolean;
+  auth: { google: boolean; mock: boolean; inviteRequired: boolean };
+  termsVersion: string;
+  contactEmail: string | null;
+  quota: { monthly: { used: number; limit: number | null; resetsAt: string }; daily: { spentUsd: number; limitUsd: number } } | null;
   storage: "blob" | "fs" | null;
   apiConfigured: boolean;
   mock: boolean;
@@ -38,6 +41,25 @@ export interface LibraryItem {
   triangles: number;
   files: { source?: string; left?: string; right?: string; glb?: string; thumb?: string; spec?: string };
   sizes: { glb?: number; source?: number; left?: number; right?: number; thumb?: number };
+  /** Set while the model is shared by link: /s/<token>. */
+  shareToken?: string;
+  /** When the model, and its source photos, are deleted. */
+  expiresAt?: string;
+  sourcesExpireAt?: string;
+}
+
+export interface AdminSummary {
+  today: { usd: number; limitUsd: number; pct: number };
+  days: { day: string; usd: number; calls: number }[];
+  users: { id: string; email: string; role: string; createdAt: string; modelsThisMonth: number; usdToday: number; blocksToday: number }[];
+  reports: { id: string; token: string; itemId: string; reason: string; details: string; at: string }[];
+  invites: { code: string; maxUses: number; uses: number; note: string; createdAt: string }[];
+  alerts: { webhook: boolean; thresholds: number[] };
+}
+
+export interface SharedModel {
+  item: { id: string; title: string; tags: string[]; style: Style; triangles: number; createdAt: string; expiresAt: string; files: { glb?: string; thumb?: string } };
+  spec: Spec | null;
 }
 
 export interface ImagePayload {
@@ -74,23 +96,30 @@ const jsonInit = (method: string, body: unknown): RequestInit => ({
 
 export const api = {
   session: () => request<Session>("/api/session"),
-  login: (password: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { password })),
+  mockLogin: (email: string, invite: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { action: "mock", email, invite })),
+  consent: () => request<{ ok?: true }>("/api/session", jsonInit("POST", { action: "consent" })),
   logout: () => request<{ ok: true }>("/api/session", { method: "DELETE" }),
 
   library: () => request<{ items: LibraryItem[] }>("/api/library"),
   item: (id: string) => request<{ item: LibraryItem; spec: Spec | null }>(`/api/library?id=${encodeURIComponent(id)}`),
   save: (body: Record<string, unknown>) => request<{ item: LibraryItem }>("/api/library", jsonInit("POST", body)),
-  patch: (id: string, patch: { title?: string; tags?: string[] }) => request<{ item: LibraryItem }>("/api/library", jsonInit("PATCH", { id, ...patch })),
+  patch: (id: string, patch: { title?: string; tags?: string[]; shared?: boolean }) => request<{ item: LibraryItem }>("/api/library", jsonInit("PATCH", { id, ...patch })),
   remove: (id: string) => request<{ ok: true }>(`/api/library?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
+  removeAll: () => request<{ ok: true; deleted: number }>("/api/library?all=1", { method: "DELETE" }),
+  deleteAccount: (confirm: string) => request<{ ok: true }>("/api/session", jsonInit("POST", { action: "delete-account", confirm })),
+  admin: () => request<AdminSummary>("/api/admin"),
+  adminAction: (body: Record<string, unknown>) => request<{ code?: string; ok?: true }>("/api/admin", jsonInit("POST", body)),
+  shared: (token: string) => request<SharedModel>(`/api/shared?t=${encodeURIComponent(token)}`),
+  report: (token: string, reason: string, details: string) => request<{ ok: true }>("/api/shared", jsonInit("POST", { t: token, reason, details })),
   upload: (id: string, name: "source" | "left" | "right" | "thumb" | "model", body: Blob) =>
-    request<{ url: string; size: number }>(`/api/upload?id=${id}&name=${name}`, {
+    request<{ size: number }>(`/api/upload?id=${id}&name=${name}`, {
       method: "PUT",
       headers: { "content-type": body.type },
       body,
     }),
 
-  judge: (image: ImagePayload, render: ImagePayload) =>
-    request<{ score: number; critique: string; usage: Usage; costUsd: number; model: string }>("/api/judge", jsonInit("POST", { image, render })),
+  judge: (image: ImagePayload, render: ImagePayload, jobId: string) =>
+    request<{ score: number; critique: string; usage: Usage; costUsd: number; model: string }>("/api/judge", jsonInit("POST", { image, render, jobId })),
 };
 
 // --- streaming generation -----------------------------------------------------
@@ -103,6 +132,8 @@ export type GenerateEvent =
   | {
       type: "result";
       mode: "create" | "refine";
+      /** Issued by the create; the refines and the judge must send it back. */
+      jobId: string;
       score: number | null;
       critique: string;
       changes: string[];
@@ -127,6 +158,7 @@ export interface GenerateBody {
   render?: ImagePayload;
   spec?: Spec;
   pass?: number;
+  jobId?: string;
 }
 
 /** POST /api/generate and read the NDJSON event stream until a result or error. */

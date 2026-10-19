@@ -15,9 +15,12 @@ import type { Deps } from "../server/deps";
 import { readEnv } from "../server/env";
 import { generate, judge } from "../server/handlers/generate";
 import { deleteItem, getLibrary, patchItem, saveItem, upload } from "../server/handlers/library";
-import { getSession, login } from "../server/handlers/session";
+import { getSession, logout, postSession } from "../server/handlers/session";
 import { route } from "../server/http";
+import { MemoryKv } from "../server/kv";
 import { fixtureMessagesApi, messageToEvents } from "../server/mock";
+import { imageHash } from "../server/moderation";
+import { assertUserBudget } from "../server/quota";
 import { RateLimiter } from "../server/rateLimit";
 import { FsStore } from "../server/store/fsStore";
 import { SYSTEM_PROMPT } from "../server/prompts";
@@ -33,13 +36,25 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-/** Scripted fake: returns the given messages in order and records every request. */
-function scripted(messages: BetaMessage[]) {
+const isModeration = (p: BetaMessageStreamParams) => JSON.stringify(p.system).includes("content-safety reviewer");
+
+/**
+ * Scripted fake: returns the given messages in order and records every request. Moderation
+ * pre-checks are answered separately (allow, unless `moderation` says otherwise) and recorded in modCalls.
+ */
+function scripted(messages: BetaMessage[], moderation: (p: BetaMessageStreamParams, n: number) => string = () => "moderate.allow.json") {
   const calls: BetaMessageStreamParams[] = [];
+  const modCalls: BetaMessageStreamParams[] = [];
   const api: MessagesApi = {
     stream(params): MessageStreamLike {
-      calls.push(structuredClone(params));
-      const msg = messages[Math.min(calls.length - 1, messages.length - 1)];
+      let msg: BetaMessage;
+      if (isModeration(params)) {
+        modCalls.push(structuredClone(params));
+        msg = fixtureMessage(moderation(params, modCalls.length));
+      } else {
+        calls.push(structuredClone(params));
+        msg = messages[Math.min(calls.length - 1, messages.length - 1)];
+      }
       const events = messageToEvents(msg);
       return {
         async *[Symbol.asyncIterator]() {
@@ -49,28 +64,33 @@ function scripted(messages: BetaMessage[]) {
       };
     },
   };
-  return { api, calls };
+  return { api, calls, modCalls };
 }
 
 function deps(over: Partial<Deps> = {}, env: Record<string, string> = {}): Deps {
   return {
-    env: readEnv({ APP_PASSWORD: "open sesame", DAILY_BUDGET_USD: "5", ...env }),
+    env: readEnv({ MOCK_AUTH: "1", DAILY_BUDGET_USD: "5", MONTHLY_MODELS: "100", ...env }),
     store: new FsStore(dir),
+    kv: new MemoryKv(),
     api: fixtureMessagesApi(FIXTURES, 0),
     claudeLimiter: new RateLimiter(100),
     loginLimiter: new RateLimiter(100),
+    publicLimiter: new RateLimiter(100),
+    reportLimiter: new RateLimiter(100),
     ...over,
   };
 }
 
-async function signIn(d: Deps): Promise<string> {
-  const res = await route((r) => login(r, d))(jsonReq("POST", "/api/session", { password: "open sesame" }));
+async function signIn(d: Deps, email = "ada@example.com", invite?: string, consent = true): Promise<string> {
+  const res = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "mock", email, invite }));
   expect(res.status).toBe(200);
   const cookie = res.headers.get("set-cookie")!;
   expect(cookie).toMatch(/HttpOnly/);
-  expect(cookie).toMatch(/SameSite=Strict/);
+  expect(cookie).toMatch(/SameSite=Lax/);
   expect(cookie).toMatch(/Secure/);
-  return cookie.split(";")[0];
+  const c = cookie.split(";")[0];
+  if (consent) expect((await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "consent" }, c))).status).toBe(200);
+  return c;
 }
 
 function jsonReq(method: string, url: string, body?: unknown, cookie?: string, extra: Record<string, string> = {}) {
@@ -107,20 +127,44 @@ describe("access gate", () => {
     expect((await route((r) => saveItem(r, d))(jsonReq("POST", "/api/library", {}))).status).toBe(401);
   });
 
-  it("rejects a wrong password and a forged cookie", async () => {
+  it("rejects a forged or signed-out cookie", async () => {
     const d = deps();
-    const bad = await route((r) => login(r, d))(jsonReq("POST", "/api/session", { password: "nope" }));
-    expect(bad.status).toBe(401);
-    const forged = "i3d_session=9999999999.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    const forged = "i3d_session=" + "A".repeat(43);
     expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, forged))).status).toBe(401);
+    const cookie = await signIn(d);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(200);
+    const out = await logout(jsonReq("DELETE", "/api/session", undefined, cookie), d);
+    expect(out.headers.get("set-cookie")).toMatch(/Max-Age=0/);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(401);
   });
 
-  it("fails closed in production when APP_PASSWORD is missing", async () => {
-    const d = deps({}, { APP_PASSWORD: "", VERCEL_ENV: "production" });
-    const res = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody));
-    expect(res.status).toBe(503);
-    const s = await (await getSession(jsonReq("GET", "/api/session"), d)).json();
-    expect(s.locked).toBe(true);
+  it("stores only a hash of the session token", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const token = cookie.split("=")[1];
+    for (const k of await d.kv!.keys("")) expect(k).not.toContain(token);
+    expect(JSON.stringify([...(await d.kv!.keys("sess:"))])).toMatch(/sess:[0-9a-f]{64}/);
+  });
+
+  it("fails closed in production without Google, a session secret or durable storage", async () => {
+    const prod = { VERCEL_ENV: "production", GOOGLE_CLIENT_ID: "x", GOOGLE_CLIENT_SECRET: "y", SESSION_SECRET: "z" };
+    for (const [over, kv] of [
+      [{ GOOGLE_CLIENT_ID: "" }, new MemoryKv()],
+      [{ SESSION_SECRET: "" }, new MemoryKv()],
+      [{}, null],
+    ] as const) {
+      const d = deps({ kv }, { ...prod, ...over });
+      const res = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody));
+      expect(res.status).toBe(503);
+      expect((await (await getSession(jsonReq("GET", "/api/session"), d)).json()).locked).toBe(true);
+    }
+  });
+
+  it("mock sign-in is unavailable in production", async () => {
+    const d = deps({}, { VERCEL_ENV: "production", MOCK_AUTH: "1", GOOGLE_CLIENT_ID: "x", SESSION_SECRET: "z" });
+    expect(d.env.mockAuth).toBe(false);
+    const res = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "mock", email: "a@b.co" }));
+    expect(res.status).toBe(404);
   });
 
   it("never exposes the API key in the session payload", async () => {
@@ -209,8 +253,10 @@ describe("generate (scripted Claude)", () => {
     const retryContent = (calls[1] as any).messages[0].content;
     expect(retryContent.slice(0, 3)).toEqual((calls[0] as any).messages[0].content); // same cached prefix
     expect(retryContent[3].text).toMatch(/could not be used/);
-    // both attempts are billed and recorded against the daily budget
-    expect(await spentToday(d.store!)).toBeCloseTo(result.costUsd, 5);
+    // both attempts are billed and recorded against the daily budget, plus the tiny moderation call
+    const spent = await spentToday(d.store!);
+    expect(spent).toBeGreaterThan(result.costUsd);
+    expect(spent - result.costUsd).toBeLessThan(0.001);
   });
 
   it("gives up after two unusable answers with a clear error", async () => {
@@ -311,7 +357,7 @@ describe("fixture flow (real-shaped responses through the full server path)", ()
     let spec = created.spec;
     const scores: number[] = [];
     for (const pass of [1, 2]) {
-      const res = (await events(await gen(jsonReq("POST", "/api/generate", { ...createBody, mode: "refine", pass, spec, render: IMAGE }, cookie)))).find(
+      const res = (await events(await gen(jsonReq("POST", "/api/generate", { ...createBody, mode: "refine", jobId: created.jobId, pass, spec, render: IMAGE }, cookie)))).find(
         (e) => e.type === "result",
       )!;
       expect(res.usage.cache_read_input_tokens).toBeGreaterThan(0);
@@ -322,7 +368,7 @@ describe("fixture flow (real-shaped responses through the full server path)", ()
     expect(scores).toEqual([6.2, 8.4]);
     expect(spec.parts.length).toBe(17);
 
-    const j = await (await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE }, cookie))).json();
+    const j = await (await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE, jobId: created.jobId }, cookie))).json();
     expect(j.score).toBe(8.8);
     expect(j.model).toBe("claude-haiku-5-5");
 
@@ -352,6 +398,26 @@ describe("library", () => {
     return new Request(`${BASE}/api/upload?id=${itemId}&name=${name}`, { method: "PUT", headers: { cookie, "content-type": type }, body });
   }
 
+  it("re-encodes uploaded images (EXIF stripped) and refuses oversized ones", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const sharp = (await import("sharp")).default;
+    const jpg = await sharp({ create: { width: 32, height: 32, channels: 3, background: "#369" } })
+      .withExif({ IFD0: { Copyright: "secret-owner" } })
+      .jpeg()
+      .toBuffer();
+    expect(jpg.toString("latin1")).toContain("secret-owner");
+    const res = await route((r) => upload(r, d))(put(cookie, "source", "image/jpeg", new Uint8Array(jpg)));
+    expect(res.status).toBe(201);
+    const [file] = (await d.store!.list(`i3d/users/`)).filter((f) => f.pathname.includes(`/items/${id}/source`));
+    expect(Buffer.from(await d.store!.read(file)).toString("latin1")).not.toContain("secret-owner");
+    const wide = await sharp({ create: { width: 4100, height: 8, channels: 3, background: "#fff" } }).png().toBuffer();
+    expect((await route((r) => upload(r, d))(put(cookie, "left", "image/png", new Uint8Array(wide)))).status).toBe(413);
+    const junk = new Uint8Array(40).fill(1);
+    junk.set([0xff, 0xd8]);
+    expect((await route((r) => upload(r, d))(put(cookie, "right", "image/jpeg", junk))).status).toBe(400);
+  });
+
   it("upload → save → list → get → rename → delete", async () => {
     const d = deps();
     const cookie = await signIn(d);
@@ -365,7 +431,8 @@ describe("library", () => {
     expect(saved.status).toBe(201);
     const { item } = await saved.json();
     expect(item.tags).toEqual(["mushroom", "pot"]);
-    expect(item.files.glb).toMatch(/model-[0-9a-f]+\.glb$/);
+    expect(item.files.glb).toMatch(/^\/api\/file\?p=/);
+    expect(new URL(item.files.glb, BASE).searchParams.get("p")).toMatch(/^i3d\/users\/[0-9a-f]+\/items\/.+\/model-[0-9a-f]+\.glb$/);
     expect(item.style).toBe("felt");
 
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
@@ -382,7 +449,7 @@ describe("library", () => {
     expect(del.status).toBe(200);
     const after = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(after.items).toEqual([]);
-    expect(await d.store!.list(`i3d/items/${id}/`)).toEqual([]);
+    expect((await d.store!.list(`i3d/users/`)).filter((f) => f.pathname.includes(`/items/${id}/`))).toEqual([]);
   });
 
   it("rejects uploads whose bytes don't match their type, unknown names and bad ids", async () => {
@@ -412,16 +479,303 @@ describe("library", () => {
     await route((r) => upload(r, d))(put(cookie, "thumb", "image/png", PNG));
     await route((r) => saveItem(r, d))(jsonReq("POST", "/api/library", { id, spec: fixtureSpec("create.robot.json") }, cookie));
     for (let i = 0; i < 8; i++) await route((r) => patchItem(r, d))(jsonReq("PATCH", "/api/library", { id, title: `t${i}` }, cookie));
-    const versions = await d.store!.list("i3d/index/");
+    const versions = (await d.store!.list("i3d/users/")).filter((f) => f.pathname.includes("/index/"));
     expect(versions.length).toBeLessThanOrEqual(5);
     const list = await (await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).json();
     expect(list.items[0].title).toBe("t7");
   });
+});
 
-  it("PUBLIC_GALLERY opens reads but not writes", async () => {
-    const d = deps({}, { PUBLIC_GALLERY: "true" });
-    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library"))).status).toBe(200);
-    expect((await route((r) => patchItem(r, d))(jsonReq("PATCH", "/api/library", { id, title: "x" }))).status).toBe(401);
-    expect((await route((r) => deleteItem(r, d))(jsonReq("DELETE", `/api/library?id=${id}`))).status).toBe(401);
+/** A fake Claude that holds every call until release() is called, to observe in-flight limits. */
+function gated() {
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  const inner = scripted([fixtureMessage("create.toadstool.json")]).api;
+  const api: MessagesApi = {
+    stream(params) {
+      const s = inner.stream(params);
+      if (isModeration(params)) return s; // the pre-check isn't held, only the main call
+      return {
+        async *[Symbol.asyncIterator]() {
+          await gate;
+          yield* s;
+        },
+        finalMessage: async () => {
+          await gate;
+          return s.finalMessage();
+        },
+      };
+    },
+  };
+  return { api, release };
+}
+
+describe("quotas", () => {
+  const gen = (d: Deps) => route((r) => generate(r, d));
+  const post = (d: Deps, body: unknown, cookie: string, extra: Record<string, string> = {}) => gen(d)(jsonReq("POST", "/api/generate", body, cookie, extra));
+
+  it("allows MONTHLY_MODELS creates, then 429s with a clear code; refines don't count", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "2" });
+    const cookie = await signIn(d);
+    const r1 = (await events(await post(d, createBody, cookie))).find((e) => e.type === "result")!;
+    // two refine passes on the first model are free
+    for (const pass of [1, 2]) await events(await post(d, { ...createBody, mode: "refine", jobId: r1.jobId, pass, spec: r1.spec, render: IMAGE }, cookie));
+    await events(await post(d, createBody, cookie));
+    const third = await post(d, createBody, cookie);
+    expect(third.status).toBe(429);
+    expect((await third.json()).code).toBe("quota_exceeded");
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json();
+    expect(me.quota.monthly).toMatchObject({ used: 2, limit: 2 });
+  });
+
+  it("a three-view job counts as one model", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    const res = await post(d, { ...createBody, image: undefined, images: { front: IMAGE, left: IMAGE, right: IMAGE } }, cookie);
+    expect((await events(res)).find((e) => e.type === "result")).toBeTruthy();
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(1);
+  });
+
+  it("each user has their own count, and admins are unlimited", async () => {
+    const d = deps({}, { MONTHLY_MODELS: "1", ADMIN_EMAILS: "boss@example.com" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const boss = await signIn(d, "boss@example.com");
+    await events(await post(d, createBody, a));
+    expect((await post(d, createBody, a)).status).toBe(429);
+    await events(await post(d, createBody, b));
+    await events(await post(d, createBody, boss));
+    await events(await post(d, createBody, boss));
+  });
+
+  it("a failed create is refunded", async () => {
+    const { api } = scripted([{ ...fixtureMessage("create.toadstool.json"), stop_reason: "refusal" } as BetaMessage]);
+    const d = deps({ api }, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    await events(await post(d, createBody, cookie));
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(0);
+  });
+
+  it("refine and judge need a job that this user's create opened", async () => {
+    const { api, calls } = scripted([fixtureMessage("create.toadstool.json")]);
+    const d = deps({ api });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const spec = fixtureSpec("create.toadstool.json");
+    const refine = { ...createBody, mode: "refine", pass: 1, spec, render: IMAGE };
+    expect((await post(d, refine, a)).status).toBe(400);
+    expect((await post(d, { ...refine, jobId: "AAAAAAAAAAAAAAAA" }, a)).status).toBe(400);
+    expect((await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", { image: IMAGE, render: IMAGE }, a))).status).toBe(400);
+    const job = (await events(await post(d, createBody, a))).find((e) => e.type === "result")!.jobId;
+    expect((await post(d, { ...refine, jobId: job }, b)).status).toBe(400); // someone else's job
+    const n = calls.length;
+    await events(await post(d, { ...refine, jobId: job }, a));
+    expect(calls.length).toBe(n + 1);
+    // MAX_REFINE_PASSES bounds the passes per job
+    const d2 = deps({}, { MAX_REFINE_PASSES: "1" });
+    const c = await signIn(d2);
+    const j2 = (await events(await post(d2, createBody, c))).find((e) => e.type === "result")!.jobId;
+    await events(await post(d2, { ...refine, jobId: j2 }, c));
+    expect((await post(d2, { ...refine, jobId: j2 }, c)).status).toBe(400);
+  });
+
+  it("allows one in-flight generation per user", async () => {
+    const g = gated();
+    const d = deps({ api: g.api });
+    const cookie = await signIn(d);
+    const first = await post(d, createBody, cookie); // Claude is still working, so the lock is held
+    const second = await post(d, createBody, cookie);
+    expect(second.status).toBe(409);
+    expect((await second.json()).code).toBe("in_flight");
+    g.release();
+    await events(first);
+    const third = await post(d, createBody, cookie); // the lock is released when the stream ends
+    expect(third.status).toBe(200);
+    await third.text();
+  });
+
+  it("answers 'busy, retry' when every global slot is taken, and frees slots after a run", async () => {
+    const g = gated();
+    const d = deps({ api: g.api }, { MAX_CONCURRENT: "1" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    const first = await post(d, createBody, a);
+    const busy = await post(d, createBody, b);
+    expect(busy.status).toBe(503);
+    expect(busy.headers.get("retry-after")).toBe("10");
+    expect((await busy.json()).code).toBe("busy");
+    g.release();
+    await events(first);
+    const retry = await post(d, createBody, b);
+    expect(retry.status).toBe(200);
+    await retry.text();
+    // the failed attempt didn't use up b's quota: only the one run counted
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, b), d)).json()).quota;
+    expect(q.monthly.used).toBe(1);
+  });
+
+  it("caps each user's daily compute and tracks it per user", async () => {
+    const d = deps({}, { DAILY_USER_USD: "0.05" });
+    const a = await signIn(d, "a@example.com");
+    const b = await signIn(d, "b@example.com");
+    expect((await post(d, createBody, a)).status).toBe(429); // the worst-case next call already doesn't fit
+    expect((await post(d, createBody, b)).status).toBe(429);
+    const roomy = deps({ kv: d.kv }, { DAILY_USER_USD: "3" });
+    const ra = await post(roomy, createBody, a);
+    await events(ra);
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, a), roomy)).json();
+    expect(me.quota.daily.spentUsd).toBeGreaterThan(0.1);
+    const other = await (await getSession(jsonReq("GET", "/api/session", undefined, b), roomy)).json();
+    expect(other.quota.daily.spentUsd).toBe(0);
+    await expect(assertUserBudget(roomy.env, roomy.kv!, { id: "x" } as never, 99)).rejects.toMatchObject({ code: "user_budget_exceeded" });
+  });
+
+  it("limits per IP across instances (kv-backed) using x-vercel-forwarded-for on Vercel", async () => {
+    const kv = new MemoryKv();
+    const { KvRateLimiter } = await import("../server/rateLimit");
+    const a = new KvRateLimiter(kv, 2);
+    const b = new KvRateLimiter(kv, 2); // another instance, same Kv
+    await a.check("ip1");
+    await b.check("ip1");
+    await expect(a.check("ip1")).rejects.toMatchObject({ status: 429 });
+    await a.check("ip2");
+    const { clientIp } = await import("../server/http");
+    const req = new Request("https://x.test", { headers: { "x-vercel-forwarded-for": "198.51.100.9", "x-forwarded-for": "6.6.6.6" } });
+    expect(clientIp(req)).toBe("198.51.100.9");
+    process.env.VERCEL = "1";
+    try {
+      expect(clientIp(new Request("https://x.test", { headers: { "x-forwarded-for": "6.6.6.6" } }))).toBe("unknown");
+    } finally {
+      delete process.env.VERCEL;
+    }
+  });
+});
+
+describe("moderation", () => {
+  const gen = (d: Deps) => route((r) => generate(r, d));
+  const post = (d: Deps, body: unknown, cookie: string) => gen(d)(jsonReq("POST", "/api/generate", body, cookie));
+  const logs = async () => {
+    const { sink } = await import("../server/log");
+    const lines: string[] = [];
+    const orig = sink.write;
+    sink.write = (l) => lines.push(l);
+    return { lines, restore: () => (sink.write = orig) };
+  };
+
+  it("checks every image with Haiku before the main model, and the note with the first", async () => {
+    const { api, calls, modCalls } = scripted([fixtureMessage("create.toadstool.json")]);
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    await events(await post(d, { ...createBody, image: undefined, images: { front: IMAGE, left: IMAGE, right: IMAGE }, notes: "a mushroom" }, cookie));
+    expect(modCalls).toHaveLength(3);
+    expect(calls).toHaveLength(1);
+    expect(modCalls[0].model).toBe("claude-haiku-5-5");
+    expect(JSON.stringify(modCalls[0].messages)).toContain("a mushroom");
+    expect(JSON.stringify(modCalls[1].messages)).not.toContain("a mushroom");
+    expect(JSON.stringify(modCalls[0].output_config)).toMatch(/verdict/);
+  });
+
+  it("blocks with a 422 and a reason, never calls the main model, refunds the quota, and logs only a hash", async () => {
+    const { api, calls } = scripted([fixtureMessage("create.toadstool.json")], () => "moderate.block.json");
+    const d = deps({ api }, { MONTHLY_MODELS: "1" });
+    const cookie = await signIn(d);
+    const l = await logs();
+    try {
+      const res = await post(d, createBody, cookie);
+      expect(res.status).toBe(422);
+      const body = await res.json();
+      expect(body.code).toBe("moderation_blocked");
+      expect(body.error).toMatch(/weapons/);
+      expect(calls).toHaveLength(0);
+      const { imageInput } = await import("../server/validate");
+      const hash = imageHash((await imageInput(IMAGE, "x")).data);
+      const line = l.lines.map((x) => JSON.parse(x)).find((x) => x.event === "moderation_block");
+      expect(line).toMatchObject({ userId: expect.any(String), category: "weapon", imageHash: hash });
+      expect(l.lines.join("\n")).not.toContain(PNG_B64.slice(0, 60));
+      expect(JSON.stringify(line)).not.toMatch(/"image"|base64/);
+    } finally {
+      l.restore();
+    }
+    const q = (await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json()).quota;
+    expect(q.monthly.used).toBe(0);
+  });
+
+  it("refuses a repeat of a blocked image without another model call", async () => {
+    const { api, modCalls } = scripted([fixtureMessage("create.toadstool.json")], (_p, n) => (n === 1 ? "moderate.block.json" : "moderate.allow.json"));
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    expect((await post(d, createBody, cookie)).status).toBe(422);
+    expect(modCalls).toHaveLength(1);
+    const again = await post(d, createBody, cookie);
+    expect(again.status).toBe(422);
+    expect(modCalls).toHaveLength(1);
+  });
+
+  it("locks an account out for the day after three blocks", async () => {
+    const { api } = scripted([fixtureMessage("create.toadstool.json")], () => "moderate.block.json");
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    for (let i = 0; i < 3; i++) expect((await post(d, createBody, cookie)).status).toBe(422);
+    const res = await post(d, createBody, cookie);
+    expect(res.status).toBe(403);
+    expect((await res.json()).code).toBe("moderation_locked");
+  });
+
+  it("treats a model refusal on the pre-check as a block", async () => {
+    const refusal = { ...fixtureMessage("moderate.allow.json"), stop_reason: "refusal" } as BetaMessage;
+    const api: MessagesApi = {
+      stream: (p) => {
+        const msg = isModeration(p) ? refusal : fixtureMessage("create.toadstool.json");
+        return { async *[Symbol.asyncIterator]() { yield* messageToEvents(msg); }, finalMessage: async () => msg };
+      },
+    };
+    const d = deps({ api });
+    const cookie = await signIn(d);
+    expect((await post(d, createBody, cookie)).status).toBe(422);
+  });
+
+  it("only lets refinements reuse the images that were approved", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    const created = (await events(await post(d, createBody, cookie))).find((e) => e.type === "result")!;
+    const refine = { ...createBody, mode: "refine", jobId: created.jobId, pass: 1, spec: created.spec, render: IMAGE };
+    const swapped = await post(d, { ...refine, image: { data: readFileSync(path.join(IMAGES, "robot.png")).toString("base64"), mediaType: "image/png" } }, cookie);
+    expect(swapped.status).toBe(400);
+    expect((await swapped.json()).code).toBe("bad_job");
+    await events(await post(d, refine, cookie)); // the original image is fine
+  });
+
+  it("mock mode blocks a note containing the test phrase", async () => {
+    const d = deps();
+    const cookie = await signIn(d);
+    expect((await post(d, { ...createBody, notes: "moderation-test-block" }, cookie)).status).toBe(422);
+    // (a blocked image stays blocked by hash, so the allowed request uses a different one)
+    const other = { data: readFileSync(path.join(IMAGES, "robot.png")).toString("base64"), mediaType: "image/png" };
+    const ok = await post(d, { ...createBody, image: other }, cookie);
+    expect(ok.status).toBe(200);
+    await ok.text();
+  });
+});
+
+describe("consent", () => {
+  it("every data route refuses a signed-in user until they agree to the current Terms", async () => {
+    const d = deps();
+    const cookie = await signIn(d, "new@example.com", undefined, false);
+    const me = await (await getSession(jsonReq("GET", "/api/session", undefined, cookie), d)).json();
+    expect(me.authenticated).toBe(true);
+    expect(me.user.consented).toBe(false);
+    const gen = await route((r) => generate(r, d))(jsonReq("POST", "/api/generate", createBody, cookie));
+    expect(gen.status).toBe(403);
+    expect((await gen.json()).code).toBe("consent_required");
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(403);
+    expect((await route((r) => judge(r, d))(jsonReq("POST", "/api/judge", {}, cookie))).status).toBe(403);
+    // agreeing opens everything and is recorded with the version
+    const ok = await route((r) => postSession(r, d))(jsonReq("POST", "/api/session", { action: "consent" }, cookie));
+    expect((await ok.json()).user.consented).toBe(true);
+    expect((await route((r) => getLibrary(r, d))(jsonReq("GET", "/api/library", undefined, cookie))).status).toBe(200);
+    const stored = JSON.parse((await d.kv!.get((await d.kv!.keys("user:"))[0]))!);
+    expect(stored.consent.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

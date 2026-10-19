@@ -34,13 +34,25 @@ export const SUBJECT_KINDS = [
   "other",
 ] as const;
 
+/**
+ * Dev-only escape hatch for `customParts[].code`. Off unless ALLOW_CUSTOM_PARTS=1
+ * on a non-production server (the browser never sets it: `process` is undefined there).
+ */
+export function customPartsAllowed(): boolean {
+  if (typeof process === "undefined" || !process.env) return false;
+  const e = process.env;
+  return e.ALLOW_CUSTOM_PARTS === "1" && e.VERCEL_ENV !== "production" && e.NODE_ENV !== "production";
+}
+const MAX_DEV_CUSTOM_PARTS = 4;
+
 export const LIMITS = {
   parts: 48,
   materials: 16,
   profilePoints: 48,
   outlinePoints: 48,
   pathPoints: 24,
-  customParts: 4,
+  /** 0 in the public build: model-written JS never reaches a visitor's browser. See customPartsAllowed(). */
+  customParts: 0,
   codeChars: 4000,
   tags: 8,
   /** Model units: the subject is modelled roughly 2 units tall. */
@@ -278,10 +290,9 @@ export const SpecSchema = z.object({
     intensity: num(0.2, 3, 1, "Overall light multiplier, 1 is neutral"),
   }),
   background: hex("#efece6", "Backdrop colour, #rrggbb"),
-  customParts: z
-    .array(CustomPartSchema)
-    .describe("Only for forms primitives cannot express. Usually []. At most 2.")
-    .transform((c) => c.slice(0, LIMITS.customParts)),
+  // Not offered to the model (stripped from the JSON schema unless the dev flag is on) and
+  // always emptied by repairSpec in the public build.
+  customParts: z.array(CustomPartSchema).describe("Dev only. Always [].").optional().default([]),
   notes: text(600, "Assumptions about hidden sides and simplifications made"),
 });
 
@@ -308,6 +319,16 @@ export const JudgeSchema = z.object({
   critique: text(600, "The most important remaining differences"),
 });
 export type JudgeResult = z.output<typeof JudgeSchema>;
+
+export const MODERATION_CATEGORIES = ["none", "sexual", "minors", "real_person_face", "graphic_violence", "weapon", "hate_symbol", "other"] as const;
+export type ModerationCategory = (typeof MODERATION_CATEGORIES)[number];
+
+export const ModerationSchema = z.object({
+  verdict: z.enum(["allow", "block"]).describe("allow only if the image clearly passes every rule"),
+  category: z.enum(MODERATION_CATEGORIES).describe("The rule that applies; none when allowed"),
+  reason: text(200, "One short, neutral sentence for the user; never describe explicit content"),
+});
+export type ModerationResult = z.output<typeof ModerationSchema>;
 
 // ---------------------------------------------------------------------------
 // semantic validation (beyond shape): returns warnings, repairs what it can,
@@ -344,6 +365,14 @@ export function parseRefine(input: unknown, opts: { style?: Style } = {}) {
   if (!res.success) throw new SpecError("The refinement did not match the schema", formatZodIssues(res.error));
   const { spec, warnings } = repairSpec(res.data.spec, opts);
   return { result: { ...res.data, spec }, warnings };
+}
+
+export function parseModeration(input: unknown): ModerationResult {
+  const raw = typeof input === "string" ? safeJson(input) : input;
+  const res = ModerationSchema.safeParse(raw);
+  if (!res.success) throw new SpecError("The moderation result did not match the schema", formatZodIssues(res.error));
+  // a block with no category is still a block
+  return res.data.verdict === "block" && res.data.category === "none" ? { ...res.data, category: "other" } : res.data;
 }
 
 export function parseJudge(input: unknown): JudgeResult {
@@ -420,7 +449,11 @@ export function repairSpec(input: Spec, opts: { style?: Style } = {}): ParsedSpe
   breakCycles(parts, warnings);
   spec.parts = parts;
 
-  // custom parts
+  // custom parts: model-written code is dropped unless the dev flag is on
+  if (!customPartsAllowed()) {
+    if (spec.customParts.length) warnings.push(`Dropped ${spec.customParts.length} custom part(s): model-written code is not run in this build`);
+    spec.customParts = [];
+  } else spec.customParts = spec.customParts.slice(0, MAX_DEV_CUSTOM_PARTS);
   const customIds = new Set<string>();
   spec.customParts = spec.customParts.filter((c) => {
     if (customIds.has(c.id) || seen.has(c.id)) {
@@ -489,6 +522,7 @@ const UNSUPPORTED_KEYS = ["minimum", "maximum", "exclusiveMinimum", "exclusiveMa
  */
 export function toStructuredOutputSchema(schema: z.ZodType): Record<string, unknown> {
   const json = z.toJSONSchema(schema, { io: "input", target: "draft-2020-12", unrepresentable: "any" }) as Record<string, unknown>;
+  if (!customPartsAllowed()) dropCustomParts(json);
   return walk(json) as Record<string, unknown>;
 
   function walk(node: unknown): unknown {
@@ -514,3 +548,17 @@ export function toStructuredOutputSchema(schema: z.ZodType): Record<string, unkn
 export const SPEC_JSON_SCHEMA = toStructuredOutputSchema(SpecSchema);
 export const REFINE_JSON_SCHEMA = toStructuredOutputSchema(RefineSchema);
 export const JUDGE_JSON_SCHEMA = toStructuredOutputSchema(JudgeSchema);
+
+/** Removes `customParts` from every object schema, including $defs, so the model is never offered it. */
+function dropCustomParts(node: unknown): void {
+  if (Array.isArray(node)) return node.forEach(dropCustomParts);
+  if (!node || typeof node !== "object") return;
+  const o = node as Record<string, unknown>;
+  const props = o.properties as Record<string, unknown> | undefined;
+  if (props && "customParts" in props) {
+    delete props.customParts;
+    if (Array.isArray(o.required)) o.required = o.required.filter((k) => k !== "customParts");
+  }
+  for (const v of Object.values(o)) dropCustomParts(v);
+}
+export const MODERATION_JSON_SCHEMA = toStructuredOutputSchema(ModerationSchema);
