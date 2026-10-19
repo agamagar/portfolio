@@ -66,3 +66,6 @@
 .hello[data-page="3"] .hv4__head.hv4--drag .hv4__face::before { opacity: 1; }
 html.hv4-grabbing, html.hv4-grabbing * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
 @media (prefers-reduced-motion: reduce) { .hello[data-page="3"] .hv4__head .hv4__t, .hello[data-page="3"] .hv4__head .hv4__face { transition: none !important; } }
+
+/* each character is its own box so the ripple can move it (HeroV4.jsx); kerning across them is given up */
+.hello[data-page="3"] .hv4__c { display: inline-block; transform-origin: 50% 60%; }
