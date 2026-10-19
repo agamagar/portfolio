@@ -180,7 +180,7 @@ export default function QaNotes() {
     <>
       {/* mvfwh7v7 (Agam, "make this a circular button as well"): an icon-only round glass button like the eye and Inspect ones; the open count rides as a badge */}
       <button
-        type="button" className="theme-toggle qa-circle" onClick={() => setOn((v) => !v)} aria-pressed={on}
+        type="button" className="theme-toggle dev-glass qa-circle" onClick={() => setOn((v) => !v)} aria-pressed={on}
         aria-label={`QA notes: ${count("open")} open, ${count("fixed")} fixed, ${count("note")} notes (${on ? "hide" : "show"})`}
         title={`QA · ${count("open")} open · ${count("fixed")} fixed · ${count("note")} notes`}
       >
