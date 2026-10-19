@@ -142,6 +142,7 @@ const PHONE_FRAMES = ".gtmr-one__phone, .article__plate-phone, .fp, .gtmr-device
 const outerPhone = (t) => { let f = t.closest?.(PHONE_FRAMES), up; while (f && (up = f.parentElement?.closest?.(PHONE_FRAMES))) f = up; return f; };
 const propNow = (el, prop) => {
   const cs = getComputedStyle(el);
+  if (prop === "translate-y") { const t = cs.translate; return t === "none" ? 0 : px(t.split(" ")[1] || "0"); }
   if (prop === "line-height") return cs.lineHeight === "normal" ? Math.round(px(cs.fontSize) * 12) / 10 : px(cs.lineHeight);
   return px(cs[camel(prop)]);
 };
@@ -208,7 +209,7 @@ function hoverLines(el) {
   return { r, out, cls: tagCls(el) };
 }
 
-const itemCss = (v) => `${v.sel} { ${v.prop}: ${v.val}px !important; }`;
+const itemCss = (v) => (v.prop === "translate-y" ? `${v.sel} { translate: 0 ${v.val}px !important; }` : `${v.sel} { ${v.prop}: ${v.val}px !important; }`);
 const cssText = (o) => Object.values(o).map(itemCss).join("\n");
 
 export default function InspectMode() {
@@ -238,6 +239,14 @@ export default function InspectMode() {
     return () => { window.removeEventListener("keydown", key); st.remove(); delete window.__inspect; };
   }, []);
   useEffect(() => { if (styleRef.current) styleRef.current.textContent = cssText(ov); }, [ov]);
+  // mvez5rrf: in Elements mode an embedded iframe (the Figma prototype phone) must not swallow the click that selects it
+  useEffect(() => {
+    const h = document.documentElement, st = document.createElement("style");
+    st.textContent = "html[data-inspect-el] iframe { pointer-events: none !important; }";
+    document.head.appendChild(st);
+    if (on && mode === "elements") h.setAttribute("data-inspect-el", ""); else h.removeAttribute("data-inspect-el");
+    return () => { h.removeAttribute("data-inspect-el"); st.remove(); };
+  }, [on, mode]);
 
   const refresh = () => {
     cancelAnimationFrame(raf.current);
@@ -420,18 +429,14 @@ export default function InspectMode() {
                   {fs.filter(([, p]) => !/gap/.test(p) || /flex|grid/.test(getComputedStyle(selEl).display)).map(([l, p, mn]) => (
                     <Field key={p} label={l} value={propNow(selEl, p)} min={mn ?? 0} onSet={(v) => setProp(selEl, p, v, mn ?? 0)} />
                   ))}
-              {/* Move: top / left offset for anything positioned (relative or absolute). Phone frames inside a centred flex stage
-                  (slot-real devices, coded phones) ignore a negative margin, but a relative offset always moves them. */}
-              {getComputedStyle(selEl).position !== "static" && (
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ opacity: 0.5, margin: "4px 0 2px" }}>Move</div>
-                  {[["Y", "top"], ["X", "left"]].map(([l, p]) => (
-                    <Field key={p} label={l} value={propNow(selEl, p)} min={-1e4} onSet={(v) => setProp(selEl, p, v, -1e4)} />
-                  ))}
-                </div>
-              )}
                 </div>
               ))}
+              {/* mvez5rrf: Nudge Y moves ANY selected element (a phone frame above all) up or down with the `translate` property:
+                  it works in centred flex stages, absolute and bottom-anchored boxes, and never touches layout. */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ opacity: 0.5, margin: "4px 0 2px" }}>Nudge{outerPhone(selEl) === selEl ? " (phone)" : ""}</div>
+                <Field label="Y" value={propNow(selEl, "translate-y")} min={-1e4} onSet={(v) => setProp(selEl, "translate-y", v, -1e4)} />
+              </div>
             </div>
           )}
         </div>
