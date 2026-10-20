@@ -845,7 +845,8 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
           if (!shapes.length) shapes = [[b.left + ox, b.top + oy + b.height / 2 - 7, b.width, 14, 2]];
         }
         // measured at the element's REST place: its own entrance transform (a few px, easing out) is taken out
-        { const cs = getComputedStyle(L.el); const m = cs.transform && cs.transform !== "none" ? new DOMMatrix(cs.transform) : null;
+        // (not v4/v5's words: their transform IS their layout place, so taking it out stacked every word at the origin)
+        if (!L.el.matches(".hv4__t")) { const cs = getComputedStyle(L.el); const m = cs.transform && cs.transform !== "none" ? new DOMMatrix(cs.transform) : null;
           const tr = (cs.translate && cs.translate !== "none" ? cs.translate.split(" ").map(parseFloat) : [0, 0]);
           const tx = (m ? m.e : 0) + (tr[0] || 0), ty = (m ? m.f : 0) + (tr[1] || 0);
           if (tx || ty) shapes = shapes.map(([sx, sy, sw, sh, rx]) => [sx - tx, sy - ty, sw, sh, rx]); }
