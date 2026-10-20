@@ -53,6 +53,7 @@ const QaNotes = import.meta.env.DEV ? React.lazy(() => import("./ui/QaNotes.jsx"
 
 // Inspect mode (12 Oct): dev-only spacing redlines + draggers, src/hello3/InspectMode.jsx (Shift+I)
 const InspectMode = import.meta.env.DEV ? React.lazy(() => import("./hello3/InspectMode.jsx")) : null;
+const PalettePanel = import.meta.env.DEV ? React.lazy(() => import("./hello3/PalettePanel.jsx")) : null; // dev palette / components panel (mvgeiwfl)
 
 // the visitor's morphing cursor (src/ui/ContextCursor.jsx), fine pointers only
 const ContextCursor = React.lazy(() => import("./ui/ContextCursor.jsx"));
@@ -88,6 +89,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     )}
     {InspectMode && (
       <Guard name="inspect-mode"><React.Suspense fallback={null}><InspectMode /></React.Suspense></Guard>
+    )}
+    {PalettePanel && (
+      <Guard name="palette-panel"><React.Suspense fallback={null}><PalettePanel /></React.Suspense></Guard>
     )}
     {Agentation && (
       <Guard name="agentation"><React.Suspense fallback={null}>

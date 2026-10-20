@@ -444,3 +444,6 @@ export default function SystemPage({ theme, onToggleTheme }) {
     </div>
   );
 }
+
+// the dev palette panel (hello3/PalettePanel.jsx) reuses these sections as they are
+export { Colour, Type, Components };
