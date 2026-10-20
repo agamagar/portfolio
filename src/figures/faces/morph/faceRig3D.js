@@ -215,6 +215,14 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     rig.parts.HatBand.visible = !!f.hair.clip;
   };
 
+  // free this rig's GPU side (geometry, textures, programs) once it is no longer worn
+  rig.dispose = () => {
+    const seen = new Set();
+    scene.traverse((o) => { o.geometry?.dispose(); });
+    for (const m of shadedMats) { for (const u of Object.values(m.uniforms)) { const t = u.value; if (t?.isTexture && !seen.has(t)) { seen.add(t); t.dispose(); } } m.dispose(); }
+    for (const o of Object.values(rig.parts)) o.userData.mats?.id?.dispose();
+  };
+
   // pose: { yaw, pitch (the viewer's turn), tilt, hpitch, hyaw (the head about the neck), keys: {arkitName: w} }
   rig.pose = (p = {}) => {
     turn.rotation.set(p.pitch || 0, p.yaw || 0, 0, "YXZ");

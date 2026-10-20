@@ -7,12 +7,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createMascotMorph } from "../figures/faces/morph/mascotMorph";
 import { createEmoteEngine, EMOTE_NAMES, CHAIN_NAMES, IDLE, toPose } from "../figures/faces/morph/emoteEngine";
 import { DURATION, ramp } from "../figures/faces/morph/flood";
-import { FW, FH } from "../figures/faces/morph/morphRenderer";
+import { FW, FH, SKIN_IDS } from "../figures/faces/morph/morphRenderer";
+import { skinById } from "../figures/faces/faceSkins";
 import { resolveFace, PRESETS as FACES } from "../figures/faces/features/core";
 import FeaturesPanel from "../figures/faces/features/FeaturesPanel";
 import "./faceLab.css";
 
-const SKINS = [["clay", "Clay"], ["noir", "Noir"], ["plast", "Face system (soft clay)"]]; // the rigs the hero's renderer carries
+const SKINS = SKIN_IDS.map((id) => [id, id === "plast" ? "Face system (soft clay)" : skinById(id).label]); // every rig the hero's renderer can wear (loaded on first use)
 const EASES = {
   hero: ramp, // the hero's speed ramp
   linear: (u) => u,
@@ -138,6 +139,7 @@ function Cell({ id, shared, onRemove, initial }) {
     r.draw = (mm) => {
       const q = pr.current;
       const MR = mm.MR;
+      if (!MR.rigs[q.skin]) { MR.loadSkin(q.skin).then(() => { r.dirty = true; }).catch(() => {}); return; }
       MR.setRig(q.skin);
       if (q.skin === "plast" && MR.rigs.plast) { const fk = JSON.stringify(q.face); if (MR.rigs.plast.faceKey !== fk) { MR.rigs.plast.setFace(resolveFace(q.face)); MR.rigs.plast.faceKey = fk; } }
       const out = r.engine.tick(q.playing ? r.d || 0 : 0, q.skin);

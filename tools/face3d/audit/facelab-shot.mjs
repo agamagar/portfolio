@@ -11,6 +11,7 @@ const errs = [];
 page.on("pageerror", (e) => errs.push("pageerror " + e.message));
 page.on("console", (m) => { if (m.type() === "error" && !/agentation|4747|Failed to load resource/.test(m.text())) errs.push(m.text().slice(0, 200)); });
 await page.goto(base + "/face-lab", { timeout: 180000, waitUntil: "domcontentloaded" });
+await page.waitForSelector(".fl-cell select", { timeout: 240000 });
 await page.waitForSelector(".fl-stage canvas", { timeout: 180000 });
 await page.waitForFunction(() => !document.querySelector(".fl-wait"), null, { timeout: 240000 });
 const cell = page.locator(".fl-cell").first();

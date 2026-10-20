@@ -11,7 +11,10 @@
 import * as THREE from "three";
 import { createFaceRig, PART_ID } from "./faceRig3D";
 import { resolveFace, PRESETS } from "../features/core";
+import { SKINS, skinById } from "../faceSkins";
 
+// every skin the hero's renderer can wear, in click-cycle order (see createMorphRenderer's listSkins/setSkin)
+export const SKIN_IDS = ["clay", "noir", ...SKINS.filter((s) => s.id !== "clay" && s.id !== "noir" && (s.rig || s.mode === "print")).map((s) => s.id), "plast"];
 export const FW = 802, FH = 862;
 
 const QUAD_VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
@@ -306,16 +309,68 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
     rigs.plast = r;
     return r.ready.then(() => patchIds(r));
   })());
+  // ---- every skin (2026-10-20): a public API for the click-cycle -------------------------------
+  // The fitted skins (hose, cel, claySun, pixel, felt, stone, riso) are rigs of their own (their GLB,
+  // fit, id map, raw skin and margins, the same files FaceSV wears); print is drawn on the head with
+  // the face system; clay, noir and plast are above. A rig loads the first time it is asked for
+  // (loadSkin), is kept while it is one of the few most recent, and is disposed after that (each holds
+  // a few MB of geometry and several 1604x862 textures), so cycling all of them stays within budget.
+  const skinLoads = {}, lru = [];
+  const flatsOf = (id) => { const p = skinById(id).parts; return { uFlatSkin: p.Skin.base, uFlatHair: p.Hair.base, uFlatEye: p.Eye.base, uFlatBrow: p.Brow.base, uFlatMouth: p.Mouth.base }; };
+  const loadSkin = (id) => {
+    if (id === "clay") return Promise.resolve(rig);
+    if (id === "noir") return loadNoir();
+    if (id === "plast") return loadPlast();
+    if (!SKIN_IDS.includes(id)) return Promise.reject(new Error("unknown skin " + id));
+    return (skinLoads[id] ||= (() => {
+      const sk = skinById(id), f = sk.rig;
+      const r = f
+        ? createFaceRig({ W: FW, H: FH, src: f.src, fitSrc: f.fit, idSrc: f.idmap || null, rawSrc: f.raw || null, marginSrc: f.margins || null, cleanSrc: null, skinId: id })
+        : createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true,
+            face: resolveFace({ material: { kind: id }, hair: { style: "crop", fringe: 0.5, clip: false }, skin: {}, mouth: { smile: 0.3 } }) });
+      r.skinId = id;
+      rigs[id] = r;
+      return r.ready.then(() => patchIds(r)).then((rr) => {
+        lru.push(id);
+        // keep the base rigs and the three newest others; free the rest (never the one on stage)
+        while (lru.length > 3) {
+          const old = lru.shift();
+          if (rigs[old] === wear) { lru.push(old); break; }
+          rigs[old]?.dispose?.(); delete rigs[old]; delete skinLoads[old];
+        }
+        return rr;
+      });
+    })());
+  };
   // wear a rig: its camera and parts, and its flat under-colours
   const setRig = (name) => {
     if (!rigs[name]) return false;
     wear = rigs[name];
     comp.uniforms.uEdgeAA.value = name === "noir" ? 1 : 0;
-    for (const k in FLATS[name]) comp.uniforms[k].value.set(FLATS[name][k]);
+    const fl = FLATS[name] || flatsOf(name);
+    for (const k in fl) comp.uniforms[k].value.set(fl[k]);
+    const i = lru.indexOf(name); if (i >= 0) { lru.splice(i, 1); lru.push(name); }
     return true;
   };
-  return { renderer, rig, ready, frame, comp, seeds, FW, FH, loadNoir, loadPlast, setRig, get rigs() { return rigs; },
+  // the public API. listSkins(): [{ id, label }] in cycle order. setSkin(id, { transition }): loads the
+  // skin if needed (never blocks the frame loop: the GLB and maps stream in while the current skin keeps
+  // drawing), then swaps. With `transition` (a function) the swap is handed to it as `(swap) => ...` so the
+  // caller can fire it at its own midpoint (HeroMorph's morph: u >= 0.5), light or dark; without, it swaps at once.
+  // preloadNext(id): loads the skin after `id` when the browser is idle.
+  const listSkins = () => SKIN_IDS.map((id) => ({ id, label: skinById(id).label || id }));
+  const nextSkin = (id) => SKIN_IDS[(SKIN_IDS.indexOf(id) + 1) % SKIN_IDS.length];
+  const setSkin = async (id, { transition } = {}) => {
+    await loadSkin(id);
+    const swap = () => setRig(id);
+    if (typeof transition === "function") await transition(swap); else swap();
+    return id;
+  };
+  const preloadNext = (id) => {
+    const go = () => loadSkin(nextSkin(id)).catch(() => {});
+    if (typeof requestIdleCallback === "function") requestIdleCallback(go, { timeout: 4000 }); else setTimeout(go, 800);
+  };
+  return { renderer, rig, ready, frame, comp, seeds, FW, FH, loadNoir, loadPlast, loadSkin, setSkin, listSkins, nextSkin, preloadNext, setRig, get rigs() { return rigs; },
     // the id pass of the current frame (R = part code, bottom-up rows), for the offline texture tools
     readIds: () => { const buf = new Float32Array(FW * FH * 4); renderer.readRenderTargetPixels(rtId, 0, 0, FW, FH, buf); return buf; },
-    setForceFields: (v) => { forceFields = !!v; }, get rigName() { return wear === rigs.noir ? "noir" : wear === rigs.plast ? "plast" : "clay"; } };
+    setForceFields: (v) => { forceFields = !!v; }, get rigName() { return wear === rigs.noir ? "noir" : wear === rigs.plast ? "plast" : wear.skinId || "clay"; } };
 }
