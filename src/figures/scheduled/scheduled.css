@@ -2137,7 +2137,17 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    each a numbered dot on the page, a leader line and a label; a numbered list under the page on a phone. */
 .cpf { --cpf-w: 340px; width: 100%; }
 .cpf__stage { position: relative; width: var(--cpf-w); margin: 0 auto; }
-.cpf__page { display: block; width: 100%; height: auto; border-radius: 28px; corner-shape: round; border: 1px solid var(--line); box-shadow: 0 18px 44px -22px rgba(20, 8, 40, 0.45); background: #fff; }
+.cpf__pg { position: relative; border-radius: 28px; corner-shape: round; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 44px -22px rgba(20, 8, 40, 0.45); background: #fff; }
+.cpf__page { display: block; width: 100%; height: auto; }
+/* mvg9wjb1: the widget being talked about is lit, the rest of the page dims (the shadow is the dim, clipped by .cpf__pg) */
+.cpf__spot { position: absolute; left: 0; right: 0; top: var(--t); height: var(--h); border-radius: 14px; corner-shape: round; box-shadow: 0 0 0 4000px rgba(12, 6, 26, 0.58); outline: 2px solid #8b6cf0; outline-offset: -2px; pointer-events: none; transition: top 600ms cubic-bezier(0.22, 1, 0.36, 1), height 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.cpf__call .cpf__label, .cpf__list li .cpf__label { transition: opacity 300ms ease; }
+.cpf__call:not([data-active]) .cpf__label, .cpf__list li:not([data-active]) .cpf__label { opacity: 0.45; }
+.cpf__call:not([data-active])::before { opacity: 0.25; }
+button.cpf__dot { border: 0; padding: 0; cursor: pointer; transition: scale 300ms ease, background 300ms ease; }
+.cpf__call[data-active] .cpf__dot, .cpf__list li[data-active] .cpf__dot { scale: 1.2; background: #7a56ee; box-shadow: 0 0 0 4px rgba(139, 108, 240, 0.28); }
+button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .cpf__spot { transition: none; } }
 .cpf__dot { position: absolute; z-index: 2; width: 24px; height: 24px; border-radius: 50%; corner-shape: round; display: grid; place-items: center; background: #5b3fd1; color: #fff; font: 600 12px/1 "Google Sans Flex", Inter, sans-serif; box-shadow: 0 0 0 4px rgba(91, 63, 209, 0.22); }
 .cpf__call { position: absolute; top: var(--y); left: 0; right: 0; height: 0; }
 .cpf__call .cpf__dot { left: var(--x); top: 0; translate: -50% -50%; }
