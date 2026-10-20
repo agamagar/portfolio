@@ -8935,7 +8935,8 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 
 .rv-pack { position: relative; container-type: inline-size; width: min(100%, 40rem); aspect-ratio: 1; margin: 1.25rem auto 0; border-radius: 28px; corner-shape: round; overflow: hidden; }
 .rv-pack__c { position: absolute; width: calc(var(--d) * 1cqw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; corner-shape: round; display: grid; place-content: center; justify-items: center; gap: 0.15rem; padding: 6%; text-align: center; font: 500 clamp(0.55rem, 2.7cqw, 1rem)/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
-.rv-pack__c--me { color: #1a1030; }
+.rv-pack__c--me { color: #1a1030; } /* dark text on the light orb's lime centre */
+:root.dark .rv-pack__c--me, html.dark .rv-pack__c--me { color: #fff; } /* mvgn7dlp: white on the dark orb */
 .rv-pack__c--me b { font-weight: 500; font-size: 1.1em; } .rv-pack__c--me small { font-size: 0.8em; opacity: 0.85; }
 .rv-pack__c--who { color: var(--rv-ink); }
 .rv-pack__c--fn { color: var(--rv-ink); }
