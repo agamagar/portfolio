@@ -21,7 +21,7 @@ const RADIUS = 3;
 function Core({
   data, series, xKey = "label", mode, horizontal = false, percent = false, colors = CAT,
   height = 220, rowHeight, yFormat = (v) => String(v), valueFormat, max: maxIn, showValues, legend = true,
-  ariaLabel, caption, note, labelSeries, perRow = false, maxBar = 30, gap = 0.34, emphasis, className = "", xLabelEvery,
+  ariaLabel, caption, note, labelSeries, overlay, perRow = false, maxBar = 30, gap = 0.34, emphasis, className = "", xLabelEvery,
 }) {
   const { ref, w: W, on } = useChart();
   const [hi, setHi] = useState(null);
@@ -45,7 +45,7 @@ function Core({
   const top = horizontal && data.some((r) => r.sub || r.delta || String(r[xKey]).length > 20);
   const labelW = horizontal ? (top ? 16 : clamp(Math.round(W * 0.3), 80, 150)) : 0;
   const rowH = rowHeight ?? (top ? (k > 1 && !stacked ? 18 * k + 36 : 52) : k > 1 && !stacked ? 18 * k + 16 : 32);
-  const P = horizontal ? { l: labelW, r: wantValues ? 56 : 10, t: 6, b: perRow ? 6 : 22 } : { l: 40, r: 8, t: 12, b: 26 };
+  const P = horizontal ? { l: labelW, r: wantValues ? 56 : 10, t: 6, b: perRow ? 6 : 22 } : { l: 40, r: overlay ? 46 : 8, t: 12, b: 26 };
   const H = horizontal ? P.t + n * rowH + P.b : height;
   const plot = { ...P, W, H };
   const pw = W - P.l - P.r;
@@ -57,6 +57,12 @@ function Core({
   const cat = (i) => (horizontal ? P.t : P.l) + slot * i + slot / 2;
   const barC = (i) => (top ? cat(i) + 12 : cat(i)); // centre line the bars sit on
 
+  // overlay: one extra line on its own right-hand scale (vertical bars only), { key, label, color, format }
+  const ovMax = overlay ? niceTicks(Math.max(...data.map((r) => r[overlay.key] || 0)), 3).slice(-1)[0] : 1;
+  const ovy = (v) => P.t + ph - (v / ovMax) * ph;
+  const ovColor = overlay?.color || "var(--ch-c2)";
+  const ovFmt = overlay?.format || ((v) => String(v));
+  const ovPath = overlay ? data.map((r, i) => `${i ? "L" : "M"}${cat(i).toFixed(1)} ${ovy(r[overlay.key] || 0).toFixed(1)}`).join(" ") : "";
   const bars = [];
   const labels = [];
   data.forEach((r, i) => {
@@ -100,7 +106,7 @@ function Core({
   const yt = ticks.map((t) => ({ pos: horizontal ? vx(t) : vy(t), label: yFormat(t) }));
 
   const lab = ariaLabel || `${series.map((s) => s.label).filter(Boolean).join(", ") || "Values"} by ${xKey}`;
-  const tipRows = (r) => series.map((s, si) => ({ label: s.label, color: col(s, si), value: fmt(percent && stacked ? val(r, s) : r[s.key] || 0, r, s.key) }));
+  const tipRows = (r) => [...series.map((s, si) => ({ label: s.label, color: col(s, si), value: fmt(percent && stacked ? val(r, s) : r[s.key] || 0, r, s.key) })), ...(overlay ? [{ label: overlay.label, color: ovColor, swatch: "line", value: ovFmt(r[overlay.key] || 0) }] : [])];
   const tipX = hi == null ? 0 : horizontal ? clamp(P.l + pw * 0.45, 90, W - 90) : clamp(cat(hi), 90, W - 90);
   const tipY = hi == null ? 0 : horizontal ? cat(hi) : P.t;
 
@@ -131,6 +137,13 @@ function Core({
             <text key={"v" + j} x={horizontal ? b.x + b.w + 7 : b.x + b.w / 2} y={horizontal ? b.y + b.h / 2 + 3.5 : b.y - 6}
               textAnchor={horizontal ? "start" : "middle"} className="ch-val" style={{ "--i": b.i }}>{fmt(perRow ? data[b.i][series[b.si].key] : b.v, data[b.i], series[b.si].key)}</text>
           )))}
+          {overlay && (
+            <g>
+              {niceTicks(ovMax, 3).map((t) => <text key={t} x={W - P.r + 8} y={ovy(t) + 3.5} className="ch-tick">{ovFmt(t)}</text>)}
+              <path d={ovPath} pathLength="1" className="ch-line" stroke={ovColor} />
+              {data.map((r, i) => <circle key={i} cx={cat(i)} cy={ovy(r[overlay.key] || 0)} r={2.8} fill={ovColor} className="ch-dot" />)}
+            </g>
+          )}
           {data.map((r, i) => (
             <rect key={"h" + i}
               x={horizontal ? 0 : cat(i) - slot / 2} y={horizontal ? cat(i) - slot / 2 : P.t}
@@ -143,11 +156,11 @@ function Core({
         {hi != null && <Tooltip x={tipX} y={tipY} below={horizontal} title={data[hi].span || data[hi][xKey]} rows={tipRows(data[hi])} />}
       </div>
       {note && <p className="ch-note">{note}</p>}
-      {legend && k > 1 && <Legend items={series.map((s, si) => ({ label: s.label, color: col(s, si) }))} />}
+      {legend && (k > 1 || overlay) && <Legend items={[...series.map((s, si) => ({ label: s.label || overlay?.seriesLabel || "", color: col(s, si) })), ...(overlay ? [{ label: overlay.label, color: ovColor, swatch: "line" }] : [])]} />}
       <table className="ch-sr">
         <caption>{caption || lab}</caption>
-        <thead><tr><th>{xKey}</th>{series.map((s) => <th key={s.key}>{s.label}</th>)}</tr></thead>
-        <tbody>{data.map((r, i) => <tr key={i}><th>{r[xKey]}</th>{series.map((s) => <td key={s.key}>{fmt(r[s.key] || 0, r, s.key)}</td>)}</tr>)}</tbody>
+        <thead><tr><th>{xKey}</th>{series.map((s) => <th key={s.key}>{s.label}</th>)}{overlay && <th>{overlay.label}</th>}</tr></thead>
+        <tbody>{data.map((r, i) => <tr key={i}><th>{r[xKey]}</th>{series.map((s) => <td key={s.key}>{fmt(r[s.key] || 0, r, s.key)}</td>)}{overlay && <td>{ovFmt(r[overlay.key] || 0)}</td>}</tr>)}</tbody>
       </table>
     </figure>
   );

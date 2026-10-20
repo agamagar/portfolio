@@ -70,3 +70,5 @@
 .ch-block__desc { font-size: 0.875rem; line-height: 1.35; }
 @media (max-width: 700px) { .ch-block { width: 100%; grid-template-columns: 1fr; row-gap: 0.4rem; } }
 @media (prefers-reduced-motion: reduce) { .ch-block { clip-path: none; transition: none; } }
+.rwf__charts--one { width: 100%; }
+.rwf-chart__cap { margin: 0 0 10px; font-size: 13px; color: var(--ch-ink); }

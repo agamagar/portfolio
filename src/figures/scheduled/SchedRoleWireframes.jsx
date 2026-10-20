@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate as motionAnimate } from "motion";
 import { DrawIcon } from "./SchedInsight"; // mv5iv45e: the insight header's own draw-on stroke icon
+import { Bars, fmtK } from "../../ui/charts";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
@@ -353,102 +354,21 @@ function SpeedStrip() {
     </ol>
   );
 }
-// mukpkglc (28 Sep): the two speed charts sit SIDE BY SIDE with one legend, so
-// each is drawn at half width (320) rather than a 600-wide chart squeezed to
-// half, which would shrink its 9px labels to about 4px
-// mv4hecwh (12 Oct, "combine these graphs in parallel view, one below the
-// other") stacked the two speed charts at the same width, height and plot
-// margins. mv56wfv2 (12 Oct, "make these 2 graphs the same type and timeline"):
-// both are now LINE charts (the monthly bars became a line with an area under
-// it, a dot per month) on ONE date axis, the union of their data: the pilot's
-// first day, 10 Oct 2025, to the end of the last full month, 31 Aug 2026, with
-// the same month ticks and labels, so the same date sits at the same x in both.
-// The rollout has seven checkpoint days between 10 Oct and 23 Dec 2025 and
-// nothing after, so its line stops there and the rest of its plot is empty,
-// as it should be: no data is drawn where there is none. Each month's total is
-// one point, at the middle of the days it covers (the 16th; October's pilot
-// month runs from the 10th, so the 20th).
-const STACK_W = 600, STACK_H = 190, STACK_P = { l: 40, r: 40, t: 14, b: 30 };
-const T0 = new Date("2025-10-10").getTime(), T1 = new Date("2026-08-31").getTime();
-const sx = (t) => STACK_P.l + ((t - T0) / (T1 - T0)) * (STACK_W - STACK_P.l - STACK_P.r);
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-// the shared axis: month starts from 1 Nov 2025 to 1 Aug 2026, "Oct" at the left end (the pilot day, 10 Oct 2025) and the year at each January
-const AXIS_TICKS = [{ t: T0, lbl: "Oct", anchor: "start" }, ...Array.from({ length: 10 }, (_, k) => {
-  const d = new Date(Date.UTC(2025, 10 + k, 1)); const m = d.getUTCMonth();
-  return { t: d.getTime(), lbl: MONTH_NAMES[m] + (m === 0 ? " 26" : ""), anchor: "middle" };
-})];
-function SharedAxis({ H, P, W }) {
-  return (
-    <>
-      {AXIS_TICKS.map((k) => (
-        <g key={k.t}>
-          <line x1={sx(k.t)} x2={sx(k.t)} y1={H - P.b} y2={H - P.b + 4} className="rwf-chart__grid" />
-          <text x={sx(k.t)} y={H - 10} className="rwf-chart__axis" textAnchor={k.anchor}>{k.lbl}</text>
-        </g>
-      ))}
-      <line x1={P.l} x2={W - P.r} y1={H - P.b} y2={H - P.b} className="rwf-chart__grid" />
-    </>
-  );
-}
-function RolloutChart() {
-  const W = STACK_W, H = STACK_H, P = STACK_P;
-  const maxO = 40000, maxS = 1200;
-  const t = (d) => new Date(d).getTime();
-  const yO = (v) => P.t + (1 - v / maxO) * (H - P.t - P.b), yS = (v) => P.t + (1 - v / maxS) * (H - P.t - P.b);
-  const line = (f, k) => ROLLOUT.map((r, i) => `${i ? "L" : "M"}${sx(t(r.d)).toFixed(1)},${f(r[k]).toFixed(1)}`).join(" ");
-  const full = ROLLOUT.find((r) => r.mark === "full rollout");
-  const lastR = ROLLOUT[ROLLOUT.length - 1];
-  return (
-    <figure className="rwf-chart" tabIndex={0} onMouseEnter={() => feedbackCoalesced("navigate", 200)} onFocus={() => feedbackCoalesced("navigate", 200)}>
-      <figcaption>Pilot to every store, in {daysFrom(full.d)} days</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Rollout: 2 stores on 10 Oct 2025 to ${full.stores} stores on 12 Dec; daily scheduled orders from 16 to ${lastR.orders.toLocaleString("en-IN")} by 23 Dec. The chart shares its date axis with the monthly chart below, so nothing is drawn after 23 Dec.`}>
-        {[0, 20000, 40000].map((g) => <g key={g}><line x1={P.l} x2={W - P.r} y1={yO(g)} y2={yO(g)} className="rwf-chart__grid" /><text x={P.l - 5} y={yO(g) + 3} className="rwf-chart__axis" textAnchor="end">{g ? `${g / 1000}k` : 0}</text></g>)}
-        {[0, 600, 1200].map((g) => <text key={g} x={W - P.r + 5} y={yS(g) + 3} className="rwf-chart__axis">{g}</text>)}
-        <rect className="rwf-hl" x={sx(t(ROLLOUT[0].d))} y={P.t} width={sx(t(full.d)) - sx(t(ROLLOUT[0].d))} height={H - P.t - P.b} rx="4" />
-        <path d={line(yS, "stores")} className="rwf-chart__line rwf-chart__line--b" />
-        <path d={line(yO, "orders")} className="rwf-chart__line rwf-chart__line--a" />
-        {ROLLOUT.map((r) => (
-          <g key={r.d}>
-            <circle cx={sx(t(r.d))} cy={yO(r.orders)} r="3.5" className="rwf-chart__dot rwf-chart__dot--a"><title>{`${r.label}: ${r.orders.toLocaleString("en-IN")} orders a day, ${r.stores} stores`}</title></circle>
-            <circle cx={sx(t(r.d))} cy={yS(r.stores)} r="3.5" className="rwf-chart__dot rwf-chart__dot--b"><title>{`${r.label}: ${r.stores} stores`}</title></circle>
-          </g>
-        ))}
-        <SharedAxis H={H} P={P} W={W} />
-        <Callout x={Math.min(sx(t(lastR.d)) + 12, W - P.r - 176)} y={P.t + 4} w={172}
-          lines={[`${ROLLOUT[0].stores} stores to ${full.stores.toLocaleString("en-IN")} in ${daysFrom(full.d)} days`, `orders a day: ${ROLLOUT[0].orders} to ${lastR.orders.toLocaleString("en-IN")}`]} to={[sx(t(full.d)), yS(full.stores)]} />
-      </svg>
-    </figure>
-  );
-}
-function ScaleChart() {
+// Annotation mvgl98l2-ksoqpj ("instead of 2 graphs build common graph"): the rollout line and the monthly
+// scale line were one story told twice, so they are ONE chart on the shared month axis: scheduled orders a
+// month as bars (left scale), stores live as a line (right scale). The pilot's first day, 10 Oct 2025, is
+// the October bar (a partial month); September 2026 is left out as it covers 21 days.
+function GrowthChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
-  const W = STACK_W, H = STACK_H, P = STACK_P, max = 2e6;
-  const y = (v) => P.t + (1 - v / max) * (H - P.t - P.b);
-  // one point a month, at the middle of the days the month covers
-  const at = (r) => { const [yr, mo] = r.m.split("-").map(Number); return r.m === "2025-10" ? new Date(Date.UTC(2025, 9, 20)).getTime() : Date.UTC(yr, mo - 1, 16); };
-  const pts = rows.map((r) => [sx(at(r)), y(r.sd), r]);
+  const full = ROLLOUT.find((r) => r.mark === "full rollout");
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
-  const mi = rows.findIndex((r) => r.sd >= 1e6);
-  const mline = pts.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)},${py.toFixed(1)}`).join(" ");
-  const area = `${mline} L${pts[pts.length - 1][0].toFixed(1)},${y(0)} L${pts[0][0].toFixed(1)},${y(0)} Z`;
-  const [yr1, mo1] = rows[mi].m.split("-").map(Number);
-  const hlEnd = sx(Date.UTC(yr1, mo1, 0)); // the end of the month it passed a million
-  const pk = pts[rows.indexOf(peak)];
   return (
-    <figure className="rwf-chart" tabIndex={0} onMouseEnter={() => feedbackCoalesced("navigate", 200)} onFocus={() => feedbackCoalesced("navigate", 200)}>
-      <figcaption>Scheduled orders a month</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Monthly scheduled orders: 383 in the October 2025 pilot, over a million by January 2026, peaking at ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}. The chart shares its date axis with the rollout chart above.`}>
-        {[0, 1e6, 2e6].map((g) => <g key={g}><line x1={P.l} x2={W - P.r} y1={y(g)} y2={y(g)} className="rwf-chart__grid" /><text x={P.l - 5} y={y(g) + 3} className="rwf-chart__axis" textAnchor="end">{g ? `${g / 1e6}M` : 0}</text></g>)}
-        <rect className="rwf-hl" x={P.l} y={P.t} width={hlEnd - P.l} height={H - P.t - P.b} rx="4" />
-        <path d={area} className="rwf-chart__area--a" />
-        <path d={mline} className="rwf-chart__line rwf-chart__line--a" />
-        {pts.map(([px, py, r]) => <circle key={r.m} cx={px} cy={py} r="3.5" className="rwf-chart__dot rwf-chart__dot--a"><title>{`${r.label}: ${r.sd.toLocaleString("en-IN")} orders, ${r.sdPct}% of all shipments`}</title></circle>)}
-        <text x={pk[0]} y={pk[1] - 8} className="rwf-chart__lbl" textAnchor="middle">{(peak.sd / 1e6).toFixed(2)}M</text>
-        <SharedAxis H={H} P={P} W={W} />
-        <Callout x={Math.min(hlEnd + 8, W - P.r - 184)} y={P.t + 8} w={180}
-          lines={[`From ${rows[0].sd} orders to ${(rows[mi].sd / 1e6).toFixed(2)}M a month`, `in ${mi} months, peak ${(peak.sd / 1e6).toFixed(2)}M in ${peak.label}`]} />
-      </svg>
-    </figure>
+    <div className="rwf__charts rwf__charts--one">
+      <p className="rwf-chart__cap">Pilot to every store in {daysFrom(full.d)} days, then {(peak.sd / 1e6).toFixed(2)}M scheduled orders a month at the peak</p>
+      <Bars data={rows} valueKey="sd" label="Scheduled orders" yFormat={fmtK} emphasis={(r) => r.m === peak.m}
+        overlay={{ key: "stores", label: "Stores live", format: (v) => Math.round(v).toLocaleString("en-IN") }}
+        height={230} ariaLabel={`Scheduled orders a month and stores live: from ${rows[0].sd} orders and ${rows[0].stores} stores in the October 2025 pilot to every store by December and a peak of ${(peak.sd / 1e6).toFixed(2)} million orders in ${peak.label}`} />
+    </div>
   );
 }
 
@@ -833,16 +753,15 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
         {s.speed && (
           <>
             {s.speedTitle && <h3 className="rwf__title rwf__title--second">{s.speedTitle}</h3>}
-            <div className="rwf__charts rwf__charts--pair"><RolloutChart /><ScaleChart /></div>
+            <GrowthChart />
             {/* mukq3d05: the four milestones closed the section. mukuobv4 (28 Sep): commented out for now */}
             {/* <SpeedStrip /> */}
             {/* mukq2tj2 (28 Sep): "combine this and the legends": the shared legend
                 (mukpkglc: purple = scheduled orders in both charts, orange = stores) and
                 the source note sit in one dashed box */}
             <div className="rwf-keybox">
-              <p className="rwf-chart__key rwf-chart__key--shared"><span><i className="rwf-chart__sw rwf-chart__sw--a" />Scheduled orders</span><span><i className="rwf-chart__sw rwf-chart__sw--b" />Stores live</span></p>
               {/* mukuubjs (28 Sep): where the data comes from, not how it was pulled (writing harness, Sauer register, gate clean) */}
-            <p className="rwf__source">Source: Zepto's own order records, every order booked with a delivery slot, from the first on 10 October 2025 to 21 September 2026. The daily orders and store counts come from seven checkpoint days in the rollout, 10 October to 23 December 2025.</p>
+            <p className="rwf__source">Source: Zepto's own order records, every order booked with a delivery slot, from the first on 10 October 2025 to 21 September 2026. Store counts are the stores live in each month.</p>
             </div>
           </>
         )}
