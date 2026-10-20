@@ -8376,20 +8376,18 @@ html.dark.glass-lens .article__hero-replay,
   .article__body .cs-sec--stack ul.article__terms > li > p.article__term-d { grid-column: 3; grid-row: 1; }
 }
 
-/* mvgj1ras + mvgj2bd3 (Agam: "make these vertical and align all three horizontally and make icon bigger", "center the div, center the text"):
+/* mvgj1ras + mvgj2bd3 (Agam: "make these vertical and align all three horizontally and make icon bigger"; then "left align this" undid the centring):
    in a stacked section the terms are three vertical cards side by side (icon on top, then title, then text), the icon 1.5x, the
-   section's heading, TL;DR and cards all centred (one column below 700px) */
-.article__body .cs-sec--stack:has(> ul.article__terms) { text-align: center; }
-.article__body .cs-sec--stack:has(> ul.article__terms) > :is(h2, .article__tldr) { margin-inline: auto; }
+   cards left-aligned (one column below 700px) */
 @media (min-width: 701px) {
   .article__body .cs-sec--stack ul.article__terms { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; align-items: start; }
-  .article__body .cs-sec--stack ul.article__terms > li:has(> .role-frame__icon) { grid-template-columns: minmax(0, 1fr); row-gap: 0.75rem; justify-items: center; text-align: center; }
+  .article__body .cs-sec--stack ul.article__terms > li:has(> .role-frame__icon) { grid-template-columns: minmax(0, 1fr); row-gap: 0.75rem; justify-items: start; text-align: left; }
   .article__body .cs-sec--stack ul.article__terms > li > .role-frame__icon { grid-row: auto; grid-column: 1; width: 66px; height: 66px; }
   .article__body .cs-sec--stack ul.article__terms > li > .role-frame__icon svg { width: 36px; height: 36px; }
   .article__body .cs-sec--stack ul.article__terms > li > p.article__term-t, .article__body .cs-sec--stack ul.article__terms > li > p.article__term-d { grid-column: 1; grid-row: auto; }
 }
 @media (max-width: 700px) {
-  .article__body .cs-sec--stack ul.article__terms > li:has(> .role-frame__icon) { justify-items: center; text-align: center; grid-template-columns: minmax(0, 1fr); }
+  .article__body .cs-sec--stack ul.article__terms > li:has(> .role-frame__icon) { justify-items: start; text-align: left; grid-template-columns: minmax(0, 1fr); }
   .article__body .cs-sec--stack ul.article__terms > li > .role-frame__icon { grid-row: auto; grid-column: 1; width: 66px; height: 66px; }
   .article__body .cs-sec--stack ul.article__terms > li > .role-frame__icon svg { width: 36px; height: 36px; }
   .article__body .cs-sec--stack ul.article__terms > li > p { grid-column: 1; }

@@ -374,6 +374,7 @@ const SchedReachExplorer = lazy(() => import("./figures/scheduled/SchedReachExpl
 const SchedCopyProcess = lazy(() => import("./figures/scheduled/SchedCopyProcess")); // 12 Oct, mv59i870: the copy, from first principles
 const SchedCityShift = lazy(() => import("./figures/scheduled/SchedCityShift")); // 12 Oct, winners-and-losers dot columns by city
 const SchedResearchStory = lazy(() => import("./figures/scheduled/SchedResearchStory")); // mukx7ffq
+const SHOW_ETA_SCROLL = false;
 const SchedEtaScroll = lazy(() => import("./figures/scheduled/SchedEtaScroll"));
 const SchedCartGrid = lazy(() => import("./figures/scheduled/SchedCartGrid"));
 const AutoTabs = lazy(() => import("./figures/scheduled/AutoTabs"));
@@ -612,11 +613,11 @@ const figures = {
     </Suspense>
   ),
   // mukvt7cp (28 Sep): the ETA callout variants, a horizontal scroll-in row
-  schedEtaScroll: () => (
+  schedEtaScroll: () => SHOW_ETA_SCROLL ? (
     <Suspense fallback={null}>
       <SchedEtaScroll />
     </Suspense>
-  ),
+  ) : null, // mvgle4wr (Agam, "hide this"): the ETA callout row is hidden; set SHOW_ETA_SCROLL true to bring it back
   // mukxfh9s (28 Sep): three image boxes, waiting on Agam's assets. To fill one,
   // drop the file in public/figures/scheduled/three-boxes/ and set its src below
   schedThreeBoxes: () => (
