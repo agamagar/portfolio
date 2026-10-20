@@ -1,3 +1,6 @@
+/* mvf5kraa / mvgf46bn ("this timeline glitches"): a clamped open panel used to drop its wave shift to 0 in ONE frame (every
+   card beside it snapped up to 150px as the pointer crossed a card). The clamp is now a registered 0..1 number that eases. */
+@property --tlx-clamp { syntax: "<number>"; inherits: false; initial-value: 0; }
 /* THE TIMELINE — one stylesheet, one prefix, one row.
 
    Replaces roughly 4,000 lines of .tl-* rules spread through hello.css, which
@@ -1703,7 +1706,7 @@
   /* X carries the hover wave; -50% Y centres the box on its `top` line, so a
      card of ANY height stays centred there - which is what lets the height
      animate without the box's centre ever moving. */
-  translate: var(--shift, 0px) -50%;
+  translate: calc(var(--shift, 0px) * (1 - var(--tlx-clamp, 0))) -50%; /* mvf5kraa: the clamp is a 0..1 blend that eases, not an instant 0 */
   /* ANCHORED BY THE TOP EDGE (annotation msq0oyzf, "the card should not expand
      with a bottom anchor, can we move the default box up so that we can
      maintain the hover position and make the animation top anchored").
@@ -1815,7 +1818,8 @@
     padding 300ms var(--m3-ease-cine-settle),
     border-radius 300ms var(--m3-ease-cine-settle),
     box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
-    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default),
+    --tlx-clamp 260ms var(--m3-ease-cine-settle);
   /* `top` IS OUT OF THE LIST AGAIN (2026-08-13, "remove the y-shift"). With the
      card centred by `translate ... -50%`, `top` is a fixed centre line that does
      not change between rest and open - only `height` does - so there is nothing

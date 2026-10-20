@@ -1644,7 +1644,8 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
         // left and Away, the one the panel actually overlaps, did not move.
         // The exception belongs to a card whose panel is really open.
         const clamped = i === shownCard && lanes && lanes[i].left > railW - 300;
-        cards[i]?.style.setProperty("--shift", clamped ? "0px" : v);
+        cards[i]?.style.setProperty("--shift", v);
+        cards[i]?.style.setProperty("--tlx-clamp", clamped ? "1" : "0"); // eased by CSS (timeline.css), not an instant 0
         leads[i]?.style.setProperty("--shift", v);
       });
       const nowV = `${fishShift(model.n - 0.5, f, amt)}px`;
