@@ -25,7 +25,7 @@ export const HERO_V2_ROWS = [
 export default function HeroV2({ flyerRef, stage, reduce, replayId, replayGreeting }) {
   return (
     <div className="hv2">
-      <h1 className="hv2__head" data-calm aria-labelledby="hello-hero-title">
+      <h1 className="hv2__head" data-hero-h1 data-calm aria-labelledby="hello-hero-title">
         <span className="hv2__face">
           <span className="hello-hero__flyer hv2__flyer" ref={flyerRef}>
             <span className="header__avatar-wrap" onMouseEnter={replayGreeting}>
