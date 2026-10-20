@@ -16,7 +16,7 @@
 
 import { createWindowEngine, POSTERS } from "./engine.js";
 import { landingPosterUrl } from "./landingPoster.js";
-import { setWarmReady } from "./warmFlag.js";
+import { setWarmReady, cancelWarmDrop, setWarmDropper } from "./warmFlag.js";
 
 let warm = null; // { host, canvas, engine, ready: Promise<boolean>, ok }
 
@@ -79,6 +79,7 @@ function registerRoomCache(theme) {
 }
 
 export function warmScene({ opts, theme }) {
+  cancelWarmDrop();
   if (warm) return warm.ready;
   pulse();
   performance.mark("room:warm-start");
@@ -141,6 +142,7 @@ export const warmAlive = () => !!warm && warm.ok === true && !warm.dead;
 // capture of the page already on the monitor (prepareWarmScene), with the viewport
 // size it was made for.
 export function takeWarmScene() {
+  cancelWarmDrop();
   const w = warm;
   if (!w || !w.ok) return null;
   warm = null;
@@ -248,6 +250,7 @@ export async function refreshWarmPoster() {
 }
 
 // Drop a warm engine that will never be used (the page left before the hand-over).
+setWarmDropper(() => dropWarmScene());
 export function dropWarmScene() {
   if (!warm) return;
   try {

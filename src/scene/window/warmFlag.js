@@ -10,3 +10,21 @@ export const warmIsReady = () => readyTheme !== null && readyTheme === themeNow(
 export const setWarmReady = (v) => {
   readyTheme = v ? themeNow() : null;
 };
+
+// RAM: the warm room (renderer, ~50 textures, hundreds of geometry buffers, ~150-200 MB) used to
+// stay alive for the whole tab, also while the reader sat on a case study. Hello3 schedules a drop
+// when it unmounts and cancels it on mount; a return within the grace finds the room still warm
+// (room-cache's instant path), a longer stay frees it and the next visit warms a fresh one.
+// Lives here, not in sceneWarm.js, so the home page never imports the engine to arm it.
+let dropper = null;
+let dropTimer = 0;
+export const setWarmDropper = (fn) => { dropper = fn; };
+export function cancelWarmDrop() {
+  clearTimeout(dropTimer);
+  dropTimer = 0;
+}
+export function scheduleWarmDrop(ms = 45000) {
+  cancelWarmDrop();
+  if (!dropper) return; // the room was never warmed here
+  dropTimer = setTimeout(() => { dropTimer = 0; dropper?.(); }, ms);
+}

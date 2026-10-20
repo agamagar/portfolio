@@ -15,7 +15,7 @@ import HeroMorph from "./HeroMorph";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { mark } from "./morphDebug";
 import { FLOOD_RGB } from "../figures/faces/morph/flood";
-import { warmIsReady } from "../scene/window/warmFlag";
+import { warmIsReady, cancelWarmDrop, scheduleWarmDrop } from "../scene/window/warmFlag";
 import { Check, Copy, Lock, Mail, Phone } from "iconoir-react";
 import { useReducedMotion } from "../figures/ds/hooks";
 import { fetchSky, sunUniforms } from "../lib/weather";
@@ -239,6 +239,11 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
     }
     setWarmState("idle");
     setWarmEpoch((e) => e + 1);
+  }, []);
+  // leaving the home page: free the warmed room after a grace period (warmFlag.js scheduleWarmDrop)
+  useEffect(() => {
+    cancelWarmDrop();
+    return () => scheduleWarmDrop();
   }, []);
   useEffect(() => {
     const onLost = () => {
