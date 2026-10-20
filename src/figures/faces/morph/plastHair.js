@@ -16,8 +16,8 @@ const lump = (x, y, z, s) => Math.sin(x * 3.1 * s + 1.3) * Math.sin(y * 2.7 * s 
 
 // the scalp: an ellipsoid over the skull, open at a hairline that sits high on the forehead, level
 // with the top of the ear at the sides, and low at the nape
-function cap(r) {
-  const C = new THREE.Vector3(0, 0.05, -0.02), R = new THREE.Vector3(1.07, 1.3, 1.02);
+function cap(P) {
+  const C = new THREE.Vector3(0, 0.05, -0.02), R = new THREE.Vector3(1.07 * P.volume, 1.3 * (0.97 + 0.03 * P.volume), 1.02 * P.volume);
   const NA = 72, NV = 26, pos = [], uv = [], idx = [];
   const hairline = (a) => { // a: azimuth from the front (+z), 0..2pi
     const side = Math.abs(Math.sin(a)), back = Math.max(0, -Math.cos(a));
@@ -30,7 +30,7 @@ function cap(r) {
       const k = Math.sqrt(Math.max(0, 1 - ((y - C.y) / R.y) ** 2));
       let x = C.x + R.x * k * Math.sin(a), z = C.z + R.z * k * Math.cos(a);
       // clay lumps: the surface heaves a little, more toward the crown
-      const bump = 0.05 * lump(x, y, z, 1.0) + 0.03 * lump(x * 1.7, y * 1.7, z * 1.7, 2.1);
+      const bump = (0.012 + 0.05 * P.messiness) * lump(x, y, z, 1.0) + (0.008 + 0.03 * P.messiness) * lump(x * 1.7, y * 1.7, z * 1.7, 2.1);
       const len = Math.hypot(x - C.x, (y - C.y) * 0.8, z - C.z) || 1;
       x += ((x - C.x) / len) * bump; z += ((z - C.z) / len) * bump; const yy = y + bump * 0.6;
       pos.push(x, yy, z); uv.push(i / NA, v);
@@ -87,35 +87,37 @@ function lock(points, radius, { seg = 22, rad = 10, tip = 0.18, belly = 0.45 } =
   return g;
 }
 
-export function buildPlastHair(seed = 7) {
-  const r = rng(seed), parts = [cap(r)];
+// params: length 0 (cropped) .. 1 (shoulders), fringe 0..1, messiness 0..1, volume ~1, sweep -1..1, clip, seed
+export function buildPlastHair(params = {}) {
+  const P = { length: 0.92, fringe: 0.85, messiness: 0.6, volume: 1, sweep: 0.3, clip: true, seed: 7, ...params };
+  const r = rng(P.seed | 0), parts = [cap(P)];
   const rr = (a, b) => a + (b - a) * r();
+  const M = P.messiness, V = P.volume;
   // locks round the back and sides: rooted on the scalp, falling past the jaw to the shoulders
-  const NB = 34;
+  const NB = P.length < 0.04 ? 0 : Math.round(34 * (0.45 + 0.55 * Math.min(1, P.length * 1.6)));
   for (let i = 0; i < NB; i++) {
     const a = THREE.MathUtils.lerp(1.1, Math.PI * 2 - 1.1, (i + rr(-0.35, 0.35)) / (NB - 1)); // skip the face
     const sx = Math.sin(a), cz = Math.cos(a);
     const side = Math.abs(sx);
-    const yRoot = rr(0.35, 0.8) - 0.6 * Math.max(0, -cz) * 0.0;
-    const rad0 = 1.0; // the lock leaves the skull here
-    const len = rr(1.75, 2.3); // tips at about y -1.2 .. -1.7: past the chin (-1.49), shoulder length
+    const yRoot = rr(0.35, 0.8);
+    const len = THREE.MathUtils.lerp(0.5, 2.05, P.length) * rr(0.86, 1.12) + (P.length > 0.85 ? rr(0, 0.25) : 0); // length 1: tips at about y -1.2 .. -1.7, past the chin (-1.49)
     const pts = [];
-    const steps = 6, drift = rr(-0.16, 0.16), flick = rr(0.1, 0.34) * (r() < 0.5 ? -1 : 1);
+    const steps = 6, drift = rr(-0.16, 0.16) * (0.3 + 1.4 * M), flick = rr(0.1, 0.34) * (0.3 + 1.2 * M) * (r() < 0.5 ? -1 : 1);
     for (let s = 0; s <= steps; s++) {
       const t = s / steps, y = yRoot - len * t;
       // radial distance from the head's axis: hugs the skull, then the neck, then flares at the shoulder
-      const radial = (rad0 + 0.34 * side * side * smooth(0.05, 0.3, t)) * (1.0 + 0.1 * Math.sin(t * 2.4)) * (y > -0.4 ? 1 : 0.94 + 0.14 * smooth(0.55, 1.0, t)) + 0.08;
+      const radial = (1.0 + 0.34 * side * side * smooth(0.05, 0.3, t)) * V * (1.0 + 0.1 * Math.sin(t * 2.4)) * (y > -0.4 ? 1 : 0.94 + 0.14 * smooth(0.55, 1.0, t)) + 0.08;
       const aa = a + drift * t * t + flick * smooth(0.65, 1.0, t) * 0.35;
       pts.push([radial * Math.sin(aa) * 1.04, y, radial * Math.cos(aa) * 0.98 - 0.05 - 0.12 * smooth(0.3, 1, t)]);
     }
     parts.push(lock(pts, rr(0.2, 0.3), { tip: rr(0.12, 0.3), belly: rr(0.3, 0.6) }));
   }
-  // the fringe: loose tufts that fall from the crown across the forehead, swept a little to one side
-  const NF = 8;
+  // the fringe: loose tufts that fall from the crown across the forehead, swept to one side
+  const NF = Math.round(P.fringe * 9);
   for (let i = 0; i < NF; i++) {
-    const u = i / (NF - 1), x = THREE.MathUtils.lerp(-0.78, 0.78, u) + rr(-0.05, 0.05);
-    const sweep = 0.16 + 0.22 * (u - 0.5) + rr(-0.05, 0.05);
-    const yEnd = 0.7 + 0.1 * Math.abs(u - 0.5) * 2 + rr(-0.07, 0.07);
+    const u = NF > 1 ? i / (NF - 1) : 0.5, x = THREE.MathUtils.lerp(-0.78, 0.78, u) + rr(-0.05, 0.05);
+    const sweep = P.sweep * 0.5 + 0.22 * (u - 0.5) + rr(-0.05, 0.05);
+    const yEnd = THREE.MathUtils.lerp(1.0, 0.64, Math.min(1, P.fringe)) + 0.1 * Math.abs(u - 0.5) * 2 + rr(-0.07, 0.07);
     const pts = [
       [x * 0.55, 1.18, 0.12],
       [x * 0.85, 1.1, 0.5],
@@ -125,12 +127,12 @@ export function buildPlastHair(seed = 7) {
     ];
     parts.push(lock(pts, rr(0.21, 0.27), { seg: 14, rad: 9, tip: 0.35, belly: 0.5 }));
   }
-  // a few clay lumps on the crown for the messy outline
-  for (let i = 0; i < 7; i++) {
+  // clay lumps on the crown for the messy outline
+  const NL = Math.round(M * 9);
+  for (let i = 0; i < NL; i++) {
     const a = rr(0, Math.PI * 2), el = rr(0.35, 0.95), rs = rr(0.2, 0.34);
     const d = new THREE.Vector3(Math.sin(a) * Math.cos(el), Math.sin(el), Math.cos(a) * Math.cos(el) * 0.9 - 0.1);
-    const sp = new THREE.SphereGeometry(rs, 14, 10).scale(1, rr(0.7, 1.0), rr(0.9, 1.3)).translate(d.x * 1.0, 0.05 + d.y * 1.28 + 0.02, d.z * 0.98);
-    parts.push(sp);
+    parts.push(new THREE.SphereGeometry(rs, 14, 10).scale(1, rr(0.7, 1.0), rr(0.9, 1.3)).translate(d.x * V, 0.05 + d.y * 1.28 + 0.02, d.z * 0.98 * V));
   }
   const hair = new THREE.Mesh(mergeGeometries(parts.map((g) => (g.index ? g.toNonIndexed() : g)), false));
   hair.name = "Hair";

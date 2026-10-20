@@ -10,6 +10,7 @@
 // nearest seed (background, ear rim, nose contour, mouth), and the ink is a distance test.
 import * as THREE from "three";
 import { createFaceRig, PART_ID } from "./faceRig3D";
+import { resolveFace, PRESETS } from "../features/core";
 
 export const FW = 802, FH = 862;
 
@@ -301,7 +302,7 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
   // id map, raw skin or GLB hair. Same head, camera and emotes as clay
   let plastP = null;
   const loadPlast = () => (plastP ||= (() => {
-    const r = createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true });
+    const r = createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true, face: resolveFace(PRESETS["agam-clay"]) });
     rigs.plast = r;
     return r.ready.then(() => patchIds(r));
   })());

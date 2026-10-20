@@ -15,6 +15,7 @@ const names = process.env.EMOTES ? process.env.EMOTES.split(",") : await page.ev
 const peak = await page.evaluate(() => window.RS.peak);
 for (const id of rigs) {
   await page.evaluate((id) => window.RS.load(id), id);
+  if (id === "plast" && process.env.FACE) await page.evaluate(([id, f]) => window.RS.useFace(id, f.startsWith("{") ? JSON.parse(f) : f), [id, process.env.FACE]);
   const views = [["rest", null, 0, 0, 0], ["turnL", null, 0, -0.3, 0], ["turnR", null, 0, 0.3, 0], ...names.map((n) => [n, n, peak[n], 0, 0])];
   for (const [v, e, t, yaw, pitch] of views) {
     const png = await page.evaluate(([id, e, t, yaw, pitch]) => window.RS.shot(id, e, t, yaw, pitch), [id, e, t, yaw, pitch]);

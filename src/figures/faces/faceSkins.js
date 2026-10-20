@@ -152,6 +152,7 @@ export const SKINS = [
 // (the morph's third rig, the face lab), so it is not in SKINS: FaceSV's cycle and the picker on
 // /faces keep their nine.
 export const PLAST = {
+  // (the neutral palette; a face config's modules (features/) repaint it)
   id: "plast", label: "Clay, soft", mode: "plast", bg: "#efe6f0",
   parts: {
     Skin: P("#c98f66", "#a86b47", "#7a4630"), Hair: P("#553626", "#37201a", "#1c0e08"),
@@ -159,8 +160,6 @@ export const PLAST = {
     Mouth: P("#b9704f", "#98553a", "#6f3a27"), MouthInner: P("#4d1a14", "#3a120d", "#250a07"),
     HatBand: P("#b9a2e0", "#9780c4", "#6f5a9c"),
   },
-  // the resting face: eyes softly narrowed, a closed-mouth smile (emotes replace them while they play)
-  keys: { eyeBlinkLeft: 0.36, eyeBlinkRight: 0.36, eyeSquintLeft: 0.5, eyeSquintRight: 0.5, mouthSmileLeft: 0.32, mouthSmileRight: 0.32, cheekPuff: 0.08, browDownLeft: 0.12, browDownRight: 0.12 },
   outline: null,
 };
 export const skinById = (id) => (id === PLAST.id ? PLAST : SKINS.find((s) => s.id === id) || SKINS[0]);
@@ -174,20 +173,27 @@ export const partKey = (name) =>
 // the morph chunks let the shape keys (glTF morph targets) bend position and normal;
 // vP (object space, morphed) feeds the procedural textures, so grain sticks to the head
 export const SHAPE_GLSL = /* glsl */ `
-// the soft clay's shape pass (uShape 1): one smooth warp of object space, applied to every face part alike so they stay joined
-uniform float uShape;
+// the face system's soft warps (features/core.js): up to 16 handles, three vec4 each:
+// [centre, radius] [delta, mirror] [scale, 0]. Every vertex within a handle's radius moves by
+// its delta plus scale x (p - centre), with a gaussian falloff; a mirrored handle also acts at -x
+// (its delta's x flipped). The same pass runs on every face part, so they stay joined.
+uniform float uShape; uniform float uWn; uniform vec4 uW[48];
 vec3 softShape(vec3 p){
-  float low = smoothstep(0.15, -1.15, p.y);
-  p.x *= 1.0 - 0.11 * low;
-  p.z -= 0.05 * low * smoothstep(0.2, 1.0, p.z);
-  vec2 c = vec2(abs(p.x) - 0.72, p.y + 0.3);
-  float cheek = exp(-dot(c, c) / 0.2) * smoothstep(0.1, 0.7, p.z);
-  p.z += 0.075 * cheek; p.x += sign(p.x) * 0.045 * cheek;
-  float chin = exp(-dot(vec2(p.x, p.y + 1.2), vec2(p.x, p.y + 1.2)) / 0.12);
-  p.y += 0.05 * chin; p.z -= 0.03 * chin;
-  return p;
-}
-`;
+  vec3 o = p;
+  for (int i = 0; i < 16; i++) {
+    if (float(i) >= uWn) break;
+    vec4 a = uW[i * 3], b = uW[i * 3 + 1], c = uW[i * 3 + 2];
+    for (int sd = 0; sd < 2; sd++) {
+      float sg = sd == 0 ? 1.0 : -1.0;
+      if (sd == 1 && b.w < 0.5) break;
+      vec3 ctr = vec3(a.x * sg, a.y, a.z), d = vec3(b.x * sg, b.y, b.z);
+      vec3 q = p - ctr;
+      float g = exp(-dot(q, q) / max(a.w * a.w, 1e-4));
+      o += g * (d + q * vec3(c.x, c.y, c.z));
+    }
+  }
+  return o;
+}`;
 
 export const VERT = /* glsl */ `
 #include <common>
@@ -244,7 +250,7 @@ void main(){
 }`;
 
 export const FRAG = /* glsl */ `
-uniform vec3 uBase, uShade, uDeep, uL, uMisreg; uniform float uDot, uMode, uSpec, uIsHair;
+uniform vec3 uBase, uShade, uDeep, uL, uMisreg; uniform float uDot, uMode, uSpec, uIsHair, uBump, uSSS;
 uniform vec3 uSH[9], uTint; uniform float uK, uUseMap, uIsEye, uFloor, uTexScale, uTexGamma; uniform sampler2D uMap;
 // a lid is lit with the face's normal round its eye (uFlat of the way), so a blink reads as flush skin
 uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
@@ -541,13 +547,13 @@ void main(){
     vec3 ridge = vec3(cos(length(fc.xy - vec2(1.7, 0.4)) * 11.0), sin(fc.y * 5.0), 0.0) * whorl;
     // tool marks: long shallow grooves
     float groove = sin(dot(vP, vec3(5.0, 11.0, 3.0)) * 3.0 + 4.0 * fbm(vP * 2.3)) * smoothstep(0.55, 0.7, fbm(vP * 2.0 + 9.0));
-    vec3 nb = normalize(n + 0.16 * grain + 0.03 * ridge + 0.025 * groove * vec3(0.4, 1.0, 0.2));
+    vec3 nb = normalize(n + uBump * (0.16 * grain + 0.03 * ridge + 0.025 * groove * vec3(0.4, 1.0, 0.2)));
     float dd = dot(nb, l);
     float ww = dd * 0.5 + 0.5;
     col = ramp(ww, 0.2);
     col *= 0.6 + 0.62 * smoothstep(0.1, 0.9, ww);
     float sss = smoothstep(0.0, 0.42, ww) * (1.0 - smoothstep(0.42, 0.78, ww));
-    col += vec3(0.5, 0.17, 0.07) * sss * 0.13 * (uIsHair > 0.5 ? 0.0 : 1.0);
+    col += vec3(0.5, 0.17, 0.07) * sss * 0.2 * uSSS * (uIsHair > 0.5 ? 0.0 : 1.0);
     col *= 0.965 + 0.07 * g0;
     col = mix(col, col * vec3(1.05, 0.98, 0.94) + vec3(0.04, 0.015, 0.0), pow(fres, 3.0) * 0.5);
     col *= 1.0 - 0.1 * pow(fres, 2.5);

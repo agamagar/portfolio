@@ -26,5 +26,10 @@ const shot = async (name) => {
 for (const [name, t] of [["2d", 0], ["morph", 0.55], ["3d", 1]]) { await setT(t); await shot(name); }
 await pick(1, "grin");
 await shot("grin");
+// the Features panel: pause the loop (a page screenshot stalls while WebGL redraws), then shoot the cell
+await pick(1, "none");
+await cell.getByRole("button", { name: "Pause" }).click().catch(() => {});
+await page.waitForTimeout(1500);
+await cell.screenshot({ path: `${out}/${skin}_panel.png`, timeout: 120000 }).catch((e) => console.log("panel shot failed", e.message.split("\n")[0]));
 console.log("errors:", errs.length ? errs.join(" | ") : "none");
 await browser.close();
