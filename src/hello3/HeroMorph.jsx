@@ -52,8 +52,12 @@ const inOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
 const grow = (t) => inOut(clamp01((t - 0.06) / 0.79));
 
 let lastFrame = null; // a copy of the final 802 x 862 clay frame, once played (per visit)
-let lastNoir = null; // the same for the noir head, once it has been shown
-let styleNow = "clay"; // which head the visit is on: a click on the head swaps them
+const skinFrames = {}; // the same for every other head (noir, ...), once it has been shown
+let styleNow = "clay"; // which head the visit is on: a click on the head cycles to the next one
+// the heads the renderer can wear, in order: its own listSkins() when it has one, else the two rigs it has
+const skinList = (mm) => { const l = mm?.MR?.listSkins?.(); return Array.isArray(l) && l.length ? l.map((x) => (typeof x === "string" ? x : x.id)) : ["clay", "noir"]; };
+const prepSkin = (mm, id) => (id === "clay" ? Promise.resolve() : id === "noir" ? mm.MR.loadNoir() : Promise.resolve(mm.MR.loadSkin?.(id)));
+const wearSkin = (mm, id) => (mm.MR.setSkin ? mm.MR.setSkin(id) : mm.MR.setRig(id));
 
 function canMorph() {
   try {
@@ -245,7 +249,7 @@ export default function HeroMorph({ ready }) {
       // the clay is here: the wave hand fades (heroMorph.css) and the head takes over with its
       // own emotes. Reduced motion: a still head, so the renderer goes
       wrap.dataset.clay = "on";
-      btn.hidden = !isDark();
+      btn.hidden = false;
       btn.setAttribute("aria-pressed", "false");
       if (m && !reduce) startEmotes(m, m.MR.renderer.domElement);
       else release();
@@ -261,13 +265,10 @@ export default function HeroMorph({ ready }) {
     // in-out ease leaves the head near the front most of the time, the camera pulls back as it
     // turns (faceRig3D's zoom), and a blur follows the angular speed. Preloaded on the first
     // hover or focus so the click is instant. Reduced motion: a quick crossfade, no turn.
-    // DARK ONLY (Agam, 2026-10-12: "disable the click face turn on light mode"): in the light theme
-    // the face is not a control at all (the button is hidden, so no cursor, no focus stop, nothing
-    // for a screen reader to announce), the remembered skin is clay, and a visitor who switches to
-    // light while the head is noir sees it crossfade back to clay. Hover emotes are unaffected.
-    const isDark = () => document.documentElement.classList.contains("dark");
+    // Any theme, any number of heads (20 Oct): the click cycles through the renderer's heads (listSkins() when it
+    // has one; clay and noir today), the remembered head holds for the visit, and window "agam:face-cycle" asks for
+    // the next one (the perched cursor); "agam:face-skin" reports the one now worn. Hover emotes are unaffected.
     let style = styleNow, spinning = false, spinRaf = 0, liveP = null;
-    if (!isDark()) style = styleNow = "clay";
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     // the live renderer: the one the morph kept, or (reduced motion, a later mount) a still build
     const ensureLive = () => {
@@ -278,38 +279,40 @@ export default function HeroMorph({ ready }) {
         glc.addEventListener("webglcontextlost", (e) => { e.preventDefault(); em?.stop(); m = null; liveP = null; });
         const mm = await createMascotMorph(glc, { clear: true, ink: getComputedStyle(svg).color, still: true });
         if (!alive) { mm.MR.renderer.dispose(); mm.MR.renderer.forceContextLoss(); return null; }
-        if (style === "noir") { await mm.MR.loadNoir(); mm.MR.setRig("noir"); mm.renderAt(1, {}); }
+        if (style !== "clay") { await prepSkin(mm, style); wearSkin(mm, style); mm.renderAt(1, {}); }
         m = mm;
         return mm;
       })().catch(() => { liveP = null; return null; }));
     };
-    const preload = () => { if (done && isDark()) ensureLive().then((mm) => mm && mm.MR.loadNoir()).catch(() => {}); };
-    const frameFor = (name) => (name === "noir" ? lastNoir : lastFrame);
+    const preload = () => { if (done) ensureLive().then((mm) => mm && prepSkin(mm, nextSkin(mm))).catch(() => {}); };
+    const nextSkin = (mm) => { const l = skinList(mm); return l[(Math.max(0, l.indexOf(style)) + 1) % l.length]; };
+    const frameFor = (name) => (name === "clay" ? lastFrame : skinFrames[name]);
     // the new head at rest: render it, cache its frame, hold it in the 2D canvas
     const settle = (mm, to) => {
-      mm.MR.setRig(to);
+      wearSkin(mm, to);
       style = styleNow = to;
       mm.renderAt(1, {});
-      if (to === "noir" && !lastNoir) {
-        lastNoir = document.createElement("canvas");
-        lastNoir.width = FW; lastNoir.height = FH;
-        lastNoir.getContext("2d").drawImage(mm.MR.renderer.domElement, 0, 0);
+      if (to !== "clay" && !skinFrames[to]) {
+        const c = skinFrames[to] = document.createElement("canvas");
+        c.width = FW; c.height = FH;
+        c.getContext("2d").drawImage(mm.MR.renderer.domElement, 0, 0);
       }
       frameSrc = frameFor(to);
       frame(1);
       blit(frameSrc);
-      btn.setAttribute("aria-pressed", String(to === "noir"));
+      btn.setAttribute("aria-pressed", String(to !== "clay"));
+      window.dispatchEvent(new CustomEvent("agam:face-skin", { detail: { id: to } })); // the favicon / cursor can follow
     };
     const swap = async (opts) => {
-      const toLight = opts?.toLight === true; // the theme went light while on noir: fade back, no turn
-      if (spinning || !done || !alive || (!isDark() && !toLight)) return;
+      const toLight = opts?.toLight === true; // (reduced motion falls through to the crossfade)
+      if (spinning || !done || !alive) return;
       spinning = true;
       btn.setAttribute("aria-busy", "true");
       try {
         const mm = await ensureLive();
         if (!mm || !alive) return;
-        const to = style === "clay" ? "noir" : "clay";
-        if (to === "noir") await mm.MR.loadNoir();
+        const to = toLight ? "clay" : nextSkin(mm);
+        await prepSkin(mm, to);
         if (!alive) return;
         if (em) em.pause(); // the performance stops (and resets) while the head turns
         const glc = mm.MR.renderer.domElement;
@@ -330,7 +333,7 @@ export default function HeroMorph({ ready }) {
             if (!alive || !m) { resolve(); return; }
             const u = Math.min(1, (performance.now() - t0) / DUR);
             const e = u < 0.5 ? 4 * u * u * u : 1 - (-2 * u + 2) ** 3 / 2; // in-out cubic: 0 -> 1
-            if (!swapped && u >= 0.5) { mm.MR.setRig(to); swapped = true; }
+            if (!swapped && u >= 0.5) { wearSkin(mm, to); swapped = true; }
             // angular speed, 0 at the ends and 1 in the middle, drives a light blur and a dissolve:
             // the fastest turn is also the least photographed (turned clay smears, noir's key
             // light flares on the back of the neck), so there the head thins out to a third
@@ -357,12 +360,13 @@ export default function HeroMorph({ ready }) {
     };
     const syncTheme = () => {
       if (!done || !alive) return;
-      btn.hidden = !isDark();
-      if (!isDark() && style === "noir" && !spinning) swap({ toLight: true });
+      btn.hidden = false;
     };
     const themeObs = new MutationObserver(syncTheme);
     themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     btn.addEventListener("click", swap);
+    const onCycle = () => { if (!btn.hidden) swap(); }; // the perched cursor (and anything else) asks for the next head
+    window.addEventListener("agam:face-cycle", onCycle);
     btn.addEventListener("focus", preload);
     wrap.addEventListener("mouseenter", preload, { once: true });
 
@@ -450,13 +454,13 @@ export default function HeroMorph({ ready }) {
           if (!alive) return;
           pose = mod.default.pose;
           layout();
-          frameSrc = (style === "noir" && lastNoir) || lastFrame;
+          frameSrc = (style !== "clay" && skinFrames[style]) || lastFrame;
           frame(1);
           blit(frameSrc);
           done = true;
           wrap.dataset.clay = "on";
-          btn.hidden = !isDark();
-          btn.setAttribute("aria-pressed", String(style === "noir"));
+          btn.hidden = false;
+          btn.setAttribute("aria-pressed", String(style !== "clay"));
           raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => alive && show())));
           ro.observe(wrap);
           noMorph();
@@ -560,6 +564,7 @@ export default function HeroMorph({ ready }) {
       cancelAnimationFrame(spinRaf);
       themeObs.disconnect();
       btn.removeEventListener("click", swap);
+      window.removeEventListener("agam:face-cycle", onCycle);
       btn.removeEventListener("focus", preload);
       wrap.removeEventListener("mouseenter", preload);
       btn.hidden = true;
