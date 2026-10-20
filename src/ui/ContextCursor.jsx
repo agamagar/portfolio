@@ -290,7 +290,13 @@ export default function ContextCursor() {
       <span className="cx__glass" />
       <svg className="cx__svg" width="1" height="1" overflow="visible">
         <rect className="cx__body" />
-        <g className="cx__org"><g className="cx__org-in"><path className="cx__arrow" /></g></g>
+      </svg>
+      {/* the breathing / spinning is on this <svg> (an HTML-level box, so it runs on the compositor); the same
+          animation on a <g> inside an svg restyled and re-laid-out the page 60 times a second */}
+      <svg className="cx__svg cx__svg--org" width="1" height="1" overflow="visible">
+        <g className="cx__org"><path className="cx__arrow" /></g>
+      </svg>
+      <svg className="cx__svg" width="1" height="1" overflow="visible">
         <polyline className="cx__g1" fill="none" />
         <polyline className="cx__g2" fill="none" />
       </svg>

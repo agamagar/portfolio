@@ -8,6 +8,7 @@ import "./index.css";
 import { startSmoothScroll } from "./ui/smoothScroll";
 import { startScrollHoverGuard } from "./ui/scrollHover";
 import { startVideoGate } from "./ui/videoGate";
+import { startAnimGate } from "./ui/animGate";
 import { startFavicon3d } from "./lib/favicon3d";
 import { introIsPlaying, introRevealed } from "./hello3/useStage";
 import { heroMorphSettledOrTimeout } from "./hello3/heroMorphGate";
@@ -17,6 +18,7 @@ import "./hello3/inspect-overrides.css"; // Inspect mode's written overrides; la
 startSmoothScroll();
 startScrollHoverGuard(); // no hover while the page scrolls (ui/scrollHover.js)
 startVideoGate(); // autoplay videos decode only near the viewport (ui/videoGate.js)
+startAnimGate(); // endless CSS animations pause while far off screen (ui/animGate.js)
 
 // tab icon morphs through solids, one-sided surfaces and 4D shapes (src/lib/favicon3d.js);
 // static face under reduced motion or without WebGL2.
@@ -63,6 +65,14 @@ const CursorSheet = import.meta.env.DEV && /[?&]cursors=1\b/.test(window.locatio
 
 // the Agam cursor as a guide on case-study pages once activated on the home page (src/hello3/GuideHost.jsx)
 const GuideHost = React.lazy(() => import("./hello3/GuideHost.jsx"));
+
+// Agentation's three "connected" status dots pulse a box-shadow forever: a main-thread repaint + restyle at 60 fps
+// on every page (measured as most of the idle paint cost in dev). Dev only; the dots just stay lit.
+if (import.meta.env.DEV) {
+  const st = document.createElement("style");
+  st.textContent = '[class*="styles-module__mcp"][class*="connected"] { animation: none !important; }';
+  document.head.appendChild(st);
+}
 
 const Agentation = import.meta.env.DEV
   ? React.lazy(() =>

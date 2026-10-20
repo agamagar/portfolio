@@ -45,8 +45,8 @@ html.dark .cx, :root[data-theme="dark"] .cx { --cx-ink: #fff; --cx-on-ink: #111;
    busy state, turns. */
 .cx__arrow { fill: var(--cx-ink); fill-rule: evenodd; stroke: none; filter: drop-shadow(0 0 0.7px var(--cx-on-ink)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
 .cx[data-s="disabled"] .cx__arrow { opacity: 0.6; }
-.cx__org-in { transform-origin: 0 0; animation: cx-breathe 3.8s ease-in-out infinite; }
-.cx[data-spin] .cx__org-in { animation: cx-spin 900ms linear infinite; }
+.cx__svg--org { transform-origin: 0 0; animation: cx-breathe 3.8s ease-in-out infinite; }
+.cx[data-spin] .cx__svg--org { animation: cx-spin 900ms linear infinite; }
 @keyframes cx-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 @keyframes cx-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .cx__org-in, .cx[data-spin] .cx__org-in { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .cx__svg--org, .cx[data-spin] .cx__svg--org { animation: none; } }
