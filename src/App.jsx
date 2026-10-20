@@ -66,6 +66,7 @@ const ShaderGallery = lazyFig(() => import("./figures/shaders/ShaderGallery"));
 const SkyLab = lazyFig(() => import("./figures/sky/SkyLab"));
 const ThreeLinesLab = lazyFig(() => import("./figures/threeLines/ThreeLinesLab"));
 const PixelMascotLab = lazyFig(() => import("./figures/pixelMascot/PixelMascotLab"));
+const FaceLabPage = (PRIVATE_SITE || import.meta.env.DEV) ? lazyFig(() => import("./facelab/FaceLabPage")) : null; // /face-lab, face-animation variants side by side (dev + private only)
 const FaceLab = lazyFig(() => import("./figures/faces/FaceLab")); // /faces, the face-style playground (2026-10-08)
 const StellaLab = lazyFig(() => import("./figures/stella/StellaLab"));
 import "./hello/hello.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
@@ -11471,6 +11472,7 @@ export default function App() {
   const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
   const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
   const isLab = PRIVATE_SITE && path === "/lab";
+  const isFaceLab = !!FaceLabPage && path === "/face-lab"; // unlisted dev/private route
   const isSystem = PRIVATE_SITE && path === "/system"; // unlisted, like /lab: not in any nav
   // The cross-sell decision tree, standalone and edge to edge (unlisted, like
   // /lab and /mockups). Same component as figure 1 of /work/cross-sell.
@@ -11684,7 +11686,7 @@ export default function App() {
   // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
-  const variant = isCrossSellTree || isLab || isSystem || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
+  const variant = isCrossSellTree || isLab || isSystem || isFaceLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug && PRIVATE_SITE ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
@@ -11794,6 +11796,7 @@ export default function App() {
         <ViewMenu feedback={feedback}>
           <FontSwitch i={0} feedback={feedback} />
           {(path === "/" || path === "/portfolio") && <HeroSwitch i={0} feedback={feedback} />}
+          {import.meta.env.DEV && <button type="button" className="theme-toggle font-ctl" aria-label="Face lab (dev)" data-tip onClick={() => { feedback?.("toggle"); navigate("/face-lab"); }}><span className="font-ctl__aa" aria-hidden="true">FL</span></button>}
           {path.startsWith("/work/scheduled-delivery") && <ExplorationsSwitch i={0} feedback={feedback} />}
           {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
             <Suspense fallback={null}>
@@ -11819,6 +11822,8 @@ export default function App() {
         <Hello onNavigate={navigate} detail="card" />
       ) : isHello3 ? (
         <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
+      ) : isFaceLab ? (
+        <Guard name="face-lab"><FaceLabPage onBack={() => navigate("/")} /></Guard>
       ) : isSystem && SystemPage ? (
         <Guard name="system-page"><SystemPage theme={theme} onToggleTheme={toggleTheme} /></Guard>
       ) : isLab ? (
