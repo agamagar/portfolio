@@ -17,7 +17,7 @@ export default function LineChart({
   const n = data.length;
   const col = (s, i) => s.color || colors[i % colors.length];
   const multi = series.length > 1;
-  const P = { l: 40, r: multi ? 74 : 26, t: 14, b: 26 };
+  const P = { l: 40, r: multi || series[0].short ? 74 : 26, t: 14, b: 26 };
   const H = height;
   const plot = { ...P, W, H };
   const all = series.flatMap((s) => data.map((r) => r[s.key])).filter((v) => v != null);
@@ -77,7 +77,7 @@ export default function LineChart({
               {pts.length === 1 && <circle cx={pts[0][0]} cy={pts[0][1]} r={3} fill={col(s, si)} />}
             </g>
           )))}
-          {multi && series.map((s, si) => lastOf(s) < 0 ? null : (
+          {(multi || series[0].short) && series.map((s, si) => lastOf(s) < 0 ? null : (
             <text key={s.key} x={x(lastOf(s)) + 9} y={labelY[si] + 3.5} className="ch-end" fill={col(s, si)}>{s.short || s.label}</text>
           ))}
           {hi != null && <line x1={x(hi)} x2={x(hi)} y1={P.t} y2={H - P.b} className="ch-cross" />}

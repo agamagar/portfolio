@@ -22,7 +22,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MONTHLY, GMV_AOV, ELECTRONICS, ONTIME, SELLOUT_MONTHLY,
 } from "./sdReport";
-import { fmtK, fmtInr } from "./SdChartKit";
+import { fmtK, fmtInr } from "../../ui/charts";
 
 const MONTHS = [
   "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03",
@@ -64,7 +64,7 @@ function buildSeries() {
 const BANDS = [
   {
     name: "Demand",
-    color: "var(--sdc-c1)",
+    color: "var(--ch-c1)",
     rows: [
       { key: "sd", label: "Scheduled orders", sub: "per month", fmt: fmtK },
       { key: "sdPct", label: "Share of all orders", sub: "of every shipment", fmt: (v) => v.toFixed(2) + "%" },
@@ -72,7 +72,7 @@ const BANDS = [
   },
   {
     name: "Money",
-    color: "var(--sdc-c2)",
+    color: "var(--ch-c2)",
     rows: [
       { key: "gmv", label: "GMV", sub: "crore rupees, matched orders", fmt: (v) => "₹" + v.toFixed(0) + " Cr" },
       { key: "aov", label: "Average order value", sub: "rupees", fmt: fmtInr },
@@ -81,17 +81,17 @@ const BANDS = [
   },
   {
     name: "The promise",
-    color: "var(--sdc-ok-within)",
+    color: "var(--ch-ok)",
     rows: [
       { key: "within", label: "Within the booked hour", sub: "of delivered orders", fmt: (v) => v.toFixed(1) + "%" },
-      { key: "early", label: "Arrived early", sub: "before the slot opened", fmt: (v) => v.toFixed(1) + "%", color: "var(--sdc-ok-early)" },
-      { key: "late", label: "Arrived late", sub: "after the slot closed", fmt: (v) => v.toFixed(1) + "%", color: "var(--sdc-ok-late)" },
-      { key: "cancel", label: "Cancelled", sub: "share of scheduled orders", fmt: (v) => v.toFixed(1) + "%", color: "var(--sdc-ok-late)" },
+      { key: "early", label: "Arrived early", sub: "before the slot opened", fmt: (v) => v.toFixed(1) + "%", color: "var(--ch-early)" },
+      { key: "late", label: "Arrived late", sub: "after the slot closed", fmt: (v) => v.toFixed(1) + "%", color: "var(--ch-late)" },
+      { key: "cancel", label: "Cancelled", sub: "share of scheduled orders", fmt: (v) => v.toFixed(1) + "%", color: "var(--ch-late)" },
     ],
   },
   {
     name: "Supply",
-    color: "var(--sdc-c3)",
+    color: "var(--ch-c3)",
     rows: [
       { key: "sellout", label: "6 AM slots sold out", sub: "share of open store-slot-days", fmt: (v) => v.toFixed(1) + "%" },
     ],

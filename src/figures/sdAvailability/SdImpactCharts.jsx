@@ -22,11 +22,11 @@
 // no-internal-numbers rule is unresolved for this section; see CONTEXT.md.
 import { useEffect, useMemo, useState } from "react";
 import {
-  CAT, SEQ5, SEQ7, OK3,
+  CAT, SEQ5, SEQ7, STATUS as OK3,
   fmtK, fmtInt, fmtPct1, fmtPct0, fmtInr,
-  StackedColumns, MultiLine, RangeColumns, CompareRows, SlopeChart, HBars,
-  SmallMultiples, Card, SectionHead, Kpis, Legend,
-} from "./SdChartKit";
+  StackedBars, Bars, LineChart, SlopeChart,
+  SmallMultiples, Card, SectionHead, Kpis,
+} from "../../ui/charts";
 import {
   MONTHLY, ROLLOUT, SLOT_BANDS, SLOT_MIX, LEAD_BUCKETS, LEAD_TIME,
   ONTIME, ONTIME_BAND_KEYS, ONTIME_BANDS, ARRIVAL_RATING, CITY_MONTHS, CITY_ONTIME,
@@ -146,12 +146,12 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", "Scheduled", "All shipments", "Share", "Stores"], rows: MONTHLY.map((m) => [m.label + (m.note ? " (" + m.note + ")" : ""), fmtInt(m.sd), m.allShipments + "M", m.sdPct.toFixed(2) + "%", fmtInt(m.stores)]) }}
         footnote="September covers 1 to 21 only."
       >
-        <RangeColumns
-          rows={MONTHLY.map((m) => ({ label: m.label, span: m.label + (m.note ? ", " + m.note : ""), v: m.sd }))}
+        <Bars
+          data={MONTHLY.map((m) => ({ label: m.label, span: m.label + (m.note ? ", " + m.note : ""), v: m.sd }))}
           valueKey="v"
-          yFmt={fmtK}
+          yFormat={fmtK}
           emphasis={(r) => r.label === "May 26"}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -161,12 +161,12 @@ export default function SdImpactCharts() {
         reads="scheduling is a small, real slice of a very large business. The May peak is the ceiling so far, and the drift down since is not demand dying: it is the share falling while capacity kept rising."
         table={{ head: ["Month", "Share of all orders"], rows: MONTHLY.map((m) => [m.label, m.sdPct.toFixed(2) + "%"]) }}
       >
-        <MultiLine
-          rows={MONTHLY.map((m) => ({ label: m.label, pct: m.sdPct }))}
+        <LineChart
+          data={MONTHLY.map((m) => ({ label: m.label, pct: m.sdPct }))}
           series={[{ key: "pct", label: "Scheduled share", short: "share" }]}
           colors={[CAT[0]]}
-          yFmt={(v) => v.toFixed(1) + "%"}
-        />
+          yFormat={(v) => v.toFixed(1) + "%"}
+         legend={false} />
       </Card>
 
       <Card
@@ -177,12 +177,12 @@ export default function SdImpactCharts() {
         legend={[{ label: "Scheduled orders", color: CAT[0] }, { label: "All orders", color: CAT[1] }]}
         table={{ head: ["Month", "Scheduled cancelled", "All cancelled"], rows: live.map((m) => [m.label, m.sdCancelPct.toFixed(1) + "%", m.allCancelPct.toFixed(1) + "%"]) }}
       >
-        <MultiLine
-          rows={cancelRows}
+        <LineChart
+          data={cancelRows}
           series={[{ key: "sd", label: "Scheduled", short: "sched" }, { key: "all", label: "All orders", short: "all" }]}
           colors={[CAT[0], CAT[1]]}
-          yFmt={fmtPct0}
-        />
+          yFormat={fmtPct0}
+         legend={false} />
       </Card>
 
       <Card
@@ -198,25 +198,25 @@ export default function SdImpactCharts() {
             {
               title: "Orders per day",
               children: (
-                <MultiLine
-                  rows={ROLLOUT.map((r) => ({ label: r.label, v: r.orders }))}
+                <LineChart
+                  data={ROLLOUT.map((r) => ({ label: r.label, v: r.orders }))}
                   series={[{ key: "v", label: "Orders", short: "orders" }]}
                   colors={[CAT[0]]}
-                  yFmt={fmtK}
+                  yFormat={fmtK}
                   height={190}
-                />
+                 legend={false} />
               ),
             },
             {
               title: "Stores live",
               children: (
-                <MultiLine
-                  rows={ROLLOUT.map((r) => ({ label: r.label, v: r.stores }))}
+                <LineChart
+                  data={ROLLOUT.map((r) => ({ label: r.label, v: r.stores }))}
                   series={[{ key: "v", label: "Stores", short: "stores" }]}
                   colors={[CAT[2]]}
-                  yFmt={(v) => String(Math.round(v))}
+                  yFormat={(v) => String(Math.round(v))}
                   height={190}
-                />
+                 legend={false} />
               ),
             },
           ]}
@@ -233,12 +233,12 @@ export default function SdImpactCharts() {
           table={{ head: ["Week", "Orders", "Delivered", "Cities"], rows: weekly.map((w) => [fmtWeekLong(w.week_start), fmtInt(w.total_orders), fmtInt(w.delivered_orders), w.cities_live]) }}
           footnote="From the earlier notebook export, not the verified monthly report; the two agree on shape."
         >
-          <MultiLine
-            rows={weekly.map((w) => ({ label: fmtWeek(w.week_start), v: w.total_orders }))}
+          <LineChart
+            data={weekly.map((w) => ({ label: fmtWeek(w.week_start), v: w.total_orders }))}
             series={[{ key: "v", label: "Orders", short: "orders" }]}
             colors={[CAT[0]]}
-            yFmt={fmtK}
-          />
+            yFormat={fmtK}
+           legend={false} />
         </Card>
       )}
 
@@ -250,12 +250,12 @@ export default function SdImpactCharts() {
           reads="the rollout curve, and the steps where new cities switched on."
           table={{ head: ["Week", "Cities"], rows: weekly.map((w) => [fmtWeekLong(w.week_start), w.cities_live]) }}
         >
-          <MultiLine
-            rows={weekly.map((w) => ({ label: fmtWeek(w.week_start), v: w.cities_live }))}
+          <LineChart
+            data={weekly.map((w) => ({ label: fmtWeek(w.week_start), v: w.cities_live }))}
             series={[{ key: "v", label: "Cities", short: "cities" }]}
             colors={[CAT[2]]}
-            yFmt={(v) => String(Math.round(v))}
-          />
+            yFormat={(v) => String(Math.round(v))}
+           legend={false} />
         </Card>
       )}
 
@@ -266,12 +266,12 @@ export default function SdImpactCharts() {
         reads="supply did not arrive as new stores. Whatever changed in May happened inside the stores that were already live."
         table={{ head: ["Month", "Stores"], rows: MONTHLY.map((m) => [m.label, fmtInt(m.stores)]) }}
       >
-        <MultiLine
-          rows={MONTHLY.map((m) => ({ label: m.label, v: m.stores }))}
+        <LineChart
+          data={MONTHLY.map((m) => ({ label: m.label, v: m.stores }))}
           series={[{ key: "v", label: "Stores", short: "stores" }]}
           colors={[CAT[2]]}
-          yFmt={(v) => String(Math.round(v))}
-        />
+          yFormat={(v) => String(Math.round(v))}
+         legend={false} />
       </Card>
 
       <Card
@@ -283,12 +283,12 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", "Orders per store per day"], rows: PER_STORE.map((r) => [r.label, r.v.toFixed(1)]) }}
         footnote="DERIVED: monthly volume divided by stores with scheduled delivery, divided by days in month. September covers 21 days."
       >
-        <MultiLine
-          rows={PER_STORE}
+        <LineChart
+          data={PER_STORE}
           series={[{ key: "v", label: "Orders per store per day", short: "per store" }]}
           colors={[CAT[0]]}
-          yFmt={(v) => v.toFixed(0)}
-        />
+          yFormat={(v) => v.toFixed(0)}
+         legend={false} />
       </Card>
 
       {/* ================= 2. When people book ============================ */}
@@ -309,7 +309,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", ...SLOT_BANDS.map((b) => b.label), "Busiest hour"], rows: SLOT_MIX.map((r) => [r.label, ...SLOT_BANDS.map((b) => r[b.key].toFixed(1) + "%"), hourName(r.busiest)]) }}
         footnote="There are no slots between 2 AM and 6 AM. In Nov 2025 the 6 and 7 AM slots barely existed, at 137 and 119 orders: the early-morning window was built later."
       >
-        <StackedColumns rows={SLOT_MIX} series={SLOT_BANDS} colors={SEQ5} labelSeries="am" height={250} />
+        <StackedBars percent yFormat={fmtPct0} valueFormat={fmtPct1} data={SLOT_MIX} series={SLOT_BANDS} colors={SEQ5} labelSeries="am" height={250}  legend={false} />
       </Card>
 
       <Card
@@ -337,12 +337,12 @@ export default function SdImpactCharts() {
           reads={`the busiest slot across the whole window is ${peakSlot ? fmtHour(peakSlot.slot_hour) : ""}; the ${lowSlot ? fmtHour(lowSlot.slot_hour) : ""} slot has the lowest delivered share, the midnight window the case study spends a whole section on.`}
           table={{ head: ["Slot", "Orders", "Delivered %"], rows: slot.map((s) => [fmtHour(s.slot_hour), fmtInt(s.total_orders), fmtPct1(s.delivery_pct)]) }}
         >
-          <RangeColumns
-            rows={slotBars.map((b) => ({ label: String(b.x).padStart(2, "0"), span: fmtHour(b.x), v: b.y, hour: b.x }))}
+          <Bars
+            data={slotBars.map((b) => ({ label: String(b.x).padStart(2, "0"), span: fmtHour(b.x), v: b.y, hour: b.x }))}
             valueKey="v"
-            yFmt={fmtK}
+            yFormat={fmtK}
             emphasis={(r) => r.hour === lowSlot?.slot_hour}
-          />
+           legend={false} />
         </Card>
       )}
 
@@ -357,7 +357,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", ...LEAD_BUCKETS.map((b) => b.label), "Median"], rows: LEAD_TIME.map((r) => [r.label, ...LEAD_BUCKETS.map((b) => r[b.key].toFixed(1) + "%"), r.median.toFixed(1) + "h"]) }}
         footnote="From January onward the buckets add up to the verified monthly totals. November and December are plain-text answers whose totals only roughly match."
       >
-        <StackedColumns rows={LEAD_TIME} series={LEAD_BUCKETS} colors={SEQ7} height={250} />
+        <StackedBars percent yFormat={fmtPct0} valueFormat={fmtPct1} data={LEAD_TIME} series={LEAD_BUCKETS} colors={SEQ7} height={250}  legend={false} />
       </Card>
 
       <Card
@@ -367,12 +367,12 @@ export default function SdImpactCharts() {
         reads="the behaviour settled early and stayed settled. Whatever changed in May, it was not how far ahead people plan."
         table={{ head: ["Month", "Median lead time"], rows: LEAD_TIME.map((r) => [r.label, r.median.toFixed(1) + " h"]) }}
       >
-        <MultiLine
-          rows={LEAD_TIME.map((r) => ({ label: r.label, v: r.median }))}
+        <LineChart
+          data={LEAD_TIME.map((r) => ({ label: r.label, v: r.median }))}
           series={[{ key: "v", label: "Median lead time", short: "median" }]}
           colors={[CAT[0]]}
-          yFmt={(v) => v.toFixed(1) + "h"}
-        />
+          yFormat={(v) => v.toFixed(1) + "h"}
+         legend={false} />
       </Card>
 
       {/* ================= 3. Keeping the promise ======================== */}
@@ -393,7 +393,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", "Delivered", "Within slot", "Early", "Late"], rows: ONTIME.map((r) => [r.label, fmtInt(r.delivered), fmtPct1(r.within), fmtPct1(r.early), fmtPct1(r.late)]) }}
         footnote="Delivered counts match the verified monthly totals within 0.5%, except September at minus 2%."
       >
-        <StackedColumns rows={ONTIME} series={okSeries} colors={OK3} height={250} />
+        <StackedBars percent yFormat={fmtPct0} valueFormat={fmtPct1} data={ONTIME} series={okSeries} colors={OK3} height={250}  legend={false} />
       </Card>
 
       <Card
@@ -405,14 +405,14 @@ export default function SdImpactCharts() {
         legend={[{ label: "Within the booked hour", color: OK3[0] }, { label: "Not late (within or early)", color: CAT[0] }]}
         table={{ head: ["Month", "Within slot", "Not late"], rows: ontimeTrend.map((r) => [r.label, fmtPct1(r.within), fmtPct1(r.notLate)]) }}
       >
-        <MultiLine
-          rows={ontimeTrend}
+        <LineChart
+          data={ontimeTrend}
           series={[{ key: "within", label: "Within slot", short: "within" }, { key: "notLate", label: "Not late", short: "not late" }]}
           colors={[OK3[0], CAT[0]]}
-          yFmt={fmtPct0}
+          yFormat={fmtPct0}
           domainMin={70}
           domainMax={100}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -429,9 +429,9 @@ export default function SdImpactCharts() {
             {
               title: "Average rating",
               children: (
-                <HBars
-                  rows={ARRIVAL_RATING.map((r, i) => ({ k: r.label, sub: r.sub, v: r.rating, color: OK3[[1, 0, 2][i]] }))}
-                  fmt={(v) => v.toFixed(2)}
+                <Bars horizontal valueKey="v"
+                  data={(ARRIVAL_RATING.map((r, i) => ({ k: r.label, sub: r.sub, v: r.rating, color: OK3[[1, 0, 2][i]] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={(v) => v.toFixed(2)}
                   max={5}
                 />
               ),
@@ -439,9 +439,9 @@ export default function SdImpactCharts() {
             {
               title: "One and two star share",
               children: (
-                <HBars
-                  rows={ARRIVAL_RATING.map((r, i) => ({ k: r.label, sub: r.sub, v: r.lowStar, color: OK3[[1, 0, 2][i]] }))}
-                  fmt={fmtPct1}
+                <Bars horizontal valueKey="v"
+                  data={(ARRIVAL_RATING.map((r, i) => ({ k: r.label, sub: r.sub, v: r.lowStar, color: OK3[[1, 0, 2][i]] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={fmtPct1}
                   max={30}
                 />
               ),
@@ -469,15 +469,15 @@ export default function SdImpactCharts() {
           panels={ONTIME_BAND_KEYS.map((b) => ({
             title: b.label,
             children: (
-              <MultiLine
-                rows={ONTIME_BANDS.map((r) => ({ label: r.label, early: r[b.key][1], late: r[b.key][2] }))}
+              <LineChart
+                data={ONTIME_BANDS.map((r) => ({ label: r.label, early: r[b.key][1], late: r[b.key][2] }))}
                 series={[{ key: "early", label: "Early", short: "early" }, { key: "late", label: "Late", short: "late" }]}
                 colors={[OK3[1], OK3[2]]}
-                yFmt={fmtPct0}
+                yFormat={fmtPct0}
                 domainMin={0}
                 domainMax={21}
                 height={200}
-              />
+               legend={false} />
             ),
           }))}
         />
@@ -496,11 +496,11 @@ export default function SdImpactCharts() {
         }}
         footnote="DERIVED, not pulled. The band weights were recovered by solving the three-by-three system in the on-time-by-band table: each month's totals are a weighted average of the three band rates, and the weights sum to one. December is degenerate, the band rates sit too close together to solve, and was dropped. Recovered morning / day / evening mix: Feb 25/29/46, May 19/52/29, Aug 28/42/30, Sep 27/46/27."
       >
-        <HBars
-          rows={EARLY_SHIFT_SHARE.parts.map((x, i) => ({ k: x.label, sub: x.note, v: x.v, color: [OK3[2], "var(--sdc-neutral)", CAT[0]][i] }))}
-          fmt={(v) => "+" + v.toFixed(1) + "pp"}
+        <Bars horizontal valueKey="v"
+          data={(EARLY_SHIFT_SHARE.parts.map((x, i) => ({ k: x.label, sub: x.note, v: x.v, color: [OK3[2], "var(--sdc-neutral)", CAT[0]][i] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+          yFormat={(v) => "+" + v.toFixed(1) + "pp"}
           max={EARLY_SHIFT_SHARE.total}
-          sub={`Total rise in early arrivals, Feb to Sep: +${EARLY_SHIFT_SHARE.total} percentage points.`}
+          note={`Total rise in early arrivals, Feb to Sep: +${EARLY_SHIFT_SHARE.total} percentage points.`}
         />
       </Card>
 
@@ -532,11 +532,11 @@ export default function SdImpactCharts() {
           panels={[
             {
               title: "May 2026",
-              children: <HBars rows={[...CITY_ONTIME].sort((a, b) => b.v[1][2] - a.v[1][2]).map((c) => ({ k: c.city, v: c.v[1][2] }))} fmt={fmtPct0} max={15} color={CAT[1]} />,
+              children: <Bars horizontal valueKey="v" data={([...CITY_ONTIME].sort((a, b) => b.v[1][2] - a.v[1][2]).map((c) => ({ k: c.city, v: c.v[1][2] }))).map(({ k, ...r }) => ({ label: k, ...r }))} yFormat={fmtPct0} max={15} color={CAT[1]} />,
             },
             {
               title: "September 2026",
-              children: <HBars rows={[...CITY_ONTIME].sort((a, b) => b.v[3][2] - a.v[3][2]).map((c) => ({ k: c.city, v: c.v[3][2] }))} fmt={fmtPct0} max={15} color={CAT[0]} />,
+              children: <Bars horizontal valueKey="v" data={([...CITY_ONTIME].sort((a, b) => b.v[3][2] - a.v[3][2]).map((c) => ({ k: c.city, v: c.v[3][2] }))).map(({ k, ...r }) => ({ label: k, ...r }))} yFormat={fmtPct0} max={15} color={CAT[0]} />,
             },
           ]}
         />
@@ -550,12 +550,12 @@ export default function SdImpactCharts() {
         reads={`a fixable problem, not a systemic one. These ten stores are ${WORST_STORE_SHARE.volume}% of delivered scheduled volume and about ${WORST_STORE_SHARE.lateOrders}% of every late scheduled order in the country, running ${WORST_STORE_SHARE.ownRate}% late between them. This is an operations list, not a design list, and fixing the worst twenty would move the national number on its own.`}
         table={{ head: ["Store", "City", "Delivered", "Late", "Early"], rows: WORST_STORES.map((s) => [s.store, s.city, fmtInt(s.delivered), fmtPct1(s.late), fmtPct1(s.early)]) }}
       >
-        <HBars
-          rows={WORST_STORES.map((s) => ({ k: s.store, sub: `${s.city}, ${fmtInt(s.delivered)} delivered`, v: s.late }))}
-          fmt={fmtPct1}
+        <Bars horizontal valueKey="v"
+          data={(WORST_STORES.map((s) => ({ k: s.store, sub: `${s.city}, ${fmtInt(s.delivered)} delivered`, v: s.late }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+          yFormat={fmtPct1}
           max={30}
           color={OK3[2]}
-          sub={`Network average in August: ${NETWORK_LATE_AUG}% late.`}
+          note={`Network average in August: ${NETWORK_LATE_AUG}% late.`}
         />
       </Card>
 
@@ -576,13 +576,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Measure", "Scheduled", "Instant"], rows: VS_INSTANT.map((r) => [r.label, fmtMeasure(r.scheduled, r), fmtMeasure(r.instant, r) + (r.approx ? " (approx)" : "")]) }}
         footnote="Only 55% of scheduled orders matched the GMV table, so the basket figures are indicative. The ticket rate's denominator is approximate, but both groups use the same method. * the instant cancellation rate is stated as about 11%."
       >
-        <CompareRows
-          rows={VS_INSTANT.map((r) => ({ label: r.label, a: r.scheduled, b: r.instant, fmt: r.fmt, approxB: r.approx === "instant" }))}
-          aLabel="Scheduled"
-          bLabel="Instant"
-          colors={[CAT[0], CAT[1]]}
-          format={fmtMeasure}
-        />
+        <Bars horizontal perRow data={VS_INSTANT.map((r) => ({ label: r.label, a: r.scheduled, b: r.instant, fmt: r.fmt, approxB: r.approx === "instant" }))} series={[{ key: "a", label: "Scheduled" }, { key: "b", label: "Instant" }]} colors={[CAT[0], CAT[1]]} valueFormat={(v, r, key) => (fmtMeasure)(v, r) + (key === "b" && r.approxB ? "*" : "")} />
       </Card>
 
       <Card
@@ -598,21 +592,15 @@ export default function SdImpactCharts() {
             {
               title: "Mean against median",
               children: (
-                <CompareRows
-                  rows={BASKET_SHAPE.map((b) => ({ label: b.label, a: b.mean, b: b.median, fmt: "inr" }))}
-                  aLabel="Mean"
-                  bLabel="Median"
-                  colors={[CAT[0], CAT[1]]}
-                  format={fmtMeasure}
-                />
+                <Bars horizontal perRow data={BASKET_SHAPE.map((b) => ({ label: b.label, a: b.mean, b: b.median, fmt: "inr" }))} series={[{ key: "a", label: "Mean" }, { key: "b", label: "Median" }]} colors={[CAT[0], CAT[1]]} valueFormat={(v, r, key) => (fmtMeasure)(v, r) + (key === "b" && r.approxB ? "*" : "")} />
               ),
             },
             {
               title: "Mean divided by median",
               children: (
-                <HBars
-                  rows={BASKET_SHAPE.map((b, i) => ({ k: b.label, sub: i === 0 ? "a long tail of very large baskets" : "one population", v: b.ratio, color: i === 0 ? CAT[0] : CAT[1] }))}
-                  fmt={(v) => v.toFixed(2) + "x"}
+                <Bars horizontal valueKey="v"
+                  data={(BASKET_SHAPE.map((b, i) => ({ k: b.label, sub: i === 0 ? "a long tail of very large baskets" : "one population", v: b.ratio, color: i === 0 ? CAT[0] : CAT[1] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={(v) => v.toFixed(2) + "x"}
                   max={3}
                 />
               ),
@@ -632,8 +620,8 @@ export default function SdImpactCharts() {
       >
         <SmallMultiples
           panels={[
-            { title: "GMV, crore rupees", children: <MultiLine rows={GMV_AOV.map((m) => ({ label: m.label, v: m.gmvCr }))} series={[{ key: "v", label: "GMV", short: "GMV" }]} colors={[CAT[2]]} yFmt={(v) => "\u20b9" + Math.round(v)} height={210} /> },
-            { title: "Matched orders, lakhs", children: <MultiLine rows={GMV_AOV.map((m) => ({ label: m.label, v: m.ordersLakh }))} series={[{ key: "v", label: "Orders", short: "orders" }]} colors={[CAT[0]]} yFmt={(v) => v.toFixed(0) + "L"} height={210} /> },
+            { title: "GMV, crore rupees", children: <LineChart data={GMV_AOV.map((m) => ({ label: m.label, v: m.gmvCr }))} series={[{ key: "v", label: "GMV", short: "GMV" }]} colors={[CAT[2]]} yFormat={(v) => "\u20b9" + Math.round(v)} height={210}  legend={false} /> },
+            { title: "Matched orders, lakhs", children: <LineChart data={GMV_AOV.map((m) => ({ label: m.label, v: m.ordersLakh }))} series={[{ key: "v", label: "Orders", short: "orders" }]} colors={[CAT[0]]} yFormat={(v) => v.toFixed(0) + "L"} height={210}  legend={false} /> },
           ]}
         />
       </Card>
@@ -645,13 +633,13 @@ export default function SdImpactCharts() {
         reads="nothing in the feature changed in July. Something in the catalogue did."
         table={{ head: ["Month", "AOV"], rows: GMV_AOV.map((m) => [m.label, fmtInr(m.aov)]) }}
       >
-        <MultiLine
-          rows={GMV_AOV.map((m) => ({ label: m.label, v: m.aov }))}
+        <LineChart
+          data={GMV_AOV.map((m) => ({ label: m.label, v: m.aov }))}
           series={[{ key: "v", label: "Average order value", short: "AOV" }]}
           colors={[CAT[0]]}
-          yFmt={(v) => "\u20b9" + Math.round(v)}
+          yFormat={(v) => "\u20b9" + Math.round(v)}
           domainMin={800}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -666,8 +654,8 @@ export default function SdImpactCharts() {
       >
         <SmallMultiples
           panels={[
-            { title: "Items per order", children: <RangeColumns rows={BASKET_DECOMP} valueKey="items" yFmt={(v) => v.toFixed(1)} height={200} color={CAT[2]} /> },
-            { title: "Price per item", children: <RangeColumns rows={BASKET_DECOMP} valueKey="pricePerItem" yFmt={(v) => "\u20b9" + Math.round(v)} height={200} color={CAT[1]} /> },
+            { title: "Items per order", children: <Bars data={BASKET_DECOMP} valueKey="items" yFormat={(v) => v.toFixed(1)} height={200} color={CAT[2]}  legend={false} /> },
+            { title: "Price per item", children: <Bars data={BASKET_DECOMP} valueKey="pricePerItem" yFormat={(v) => "\u20b9" + Math.round(v)} height={200} color={CAT[1]}  legend={false} /> },
           ]}
         />
       </Card>
@@ -684,8 +672,8 @@ export default function SdImpactCharts() {
       >
         <SmallMultiples
           panels={[
-            { title: "Share of scheduled GMV", children: <MultiLine rows={ELECTRONICS.map((e) => ({ label: e.label, v: e.shareOfSdGmv }))} series={[{ key: "v", label: "Share of SD GMV", short: "share" }]} colors={[CAT[1]]} yFmt={fmtPct0} height={210} /> },
-            { title: "Price per electronics item", children: <MultiLine rows={ELECTRONICS.map((e) => ({ label: e.label, v: e.pricePerItem }))} series={[{ key: "v", label: "Price per item", short: "per item" }]} colors={[CAT[3]]} yFmt={(v) => "\u20b9" + fmtK(v)} height={210} /> },
+            { title: "Share of scheduled GMV", children: <LineChart data={ELECTRONICS.map((e) => ({ label: e.label, v: e.shareOfSdGmv }))} series={[{ key: "v", label: "Share of SD GMV", short: "share" }]} colors={[CAT[1]]} yFormat={fmtPct0} height={210}  legend={false} /> },
+            { title: "Price per electronics item", children: <LineChart data={ELECTRONICS.map((e) => ({ label: e.label, v: e.pricePerItem }))} series={[{ key: "v", label: "Price per item", short: "per item" }]} colors={[CAT[3]]} yFormat={(v) => "\u20b9" + fmtK(v)} height={210}  legend={false} /> },
           ]}
         />
       </Card>
@@ -700,13 +688,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Measure", "Appliance", "Other scheduled"], rows: APPLIANCE_VS_OTHER.map((r) => [r.label, fmtMeasure(r.a, r), fmtMeasure(r.b, r)]) }}
         footnote="Classified with order_product_partitioned, which has 100% order coverage and INCLUDES cancelled orders, unlike the GMV table. Counts reconcile exactly: delivered plus cancelled plus RTO equals the total for both groups, and the split covers 94.8% of August's verified scheduled orders."
       >
-        <CompareRows
-          rows={APPLIANCE_VS_OTHER}
-          aLabel="Appliance orders"
-          bLabel="Every other scheduled order"
-          colors={[CAT[3], CAT[0]]}
-          format={fmtMeasure}
-        />
+        <Bars horizontal perRow data={APPLIANCE_VS_OTHER} series={[{ key: "a", label: "Appliance orders" }, { key: "b", label: "Every other scheduled order" }]} colors={[CAT[3], CAT[0]]} valueFormat={(v, r, key) => (fmtMeasure)(v, r) + (key === "b" && r.approxB ? "*" : "")} />
       </Card>
 
       <Card
@@ -718,14 +700,14 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", "Appliance cancelled", "Other cancelled", "Appliance RTO", "Other RTO"], rows: APPLIANCE_MONTHLY.map((m) => [m.label, fmtPct1(m.apCancelled), fmtPct1(m.otCancelled), fmtPct1(m.apRto), fmtPct1(m.otRto)]) }}
         footnote="June's within / early / late split was rejected: a UTC conversion returned 99% late. August's is the sound one."
       >
-        <MultiLine
-          rows={APPLIANCE_MONTHLY.map((m) => ({ label: m.label, ap: m.apCancelled, ot: m.otCancelled }))}
+        <LineChart
+          data={APPLIANCE_MONTHLY.map((m) => ({ label: m.label, ap: m.apCancelled, ot: m.otCancelled }))}
           series={[{ key: "ap", label: "Appliance", short: "appliance" }, { key: "ot", label: "Other", short: "other" }]}
           colors={[CAT[3], CAT[0]]}
-          yFmt={fmtPct0}
+          yFormat={fmtPct0}
           domainMin={20}
           domainMax={40}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -749,11 +731,11 @@ export default function SdImpactCharts() {
           panels={[
             {
               title: "Share of scheduled orders",
-              children: <HBars rows={[{ k: "Appliance", v: 7.5, color: CAT[3] }, { k: "Everything else", v: 92.5, color: CAT[0] }]} fmt={fmtPct1} max={100} />,
+              children: <Bars horizontal valueKey="v" data={([{ k: "Appliance", v: 7.5, color: CAT[3] }, { k: "Everything else", v: 92.5, color: CAT[0] }]).map(({ k, ...r }) => ({ label: k, ...r }))} yFormat={fmtPct1} max={100} />,
             },
             {
               title: "Share of the cancelled value",
-              children: <HBars rows={[{ k: "Appliance", sub: "\u20b944.2 Cr", v: 57.7, color: CAT[3] }, { k: "Everything else", sub: "\u20b932.3 Cr", v: 42.3, color: CAT[0] }]} fmt={fmtPct1} max={100} />,
+              children: <Bars horizontal valueKey="v" data={([{ k: "Appliance", sub: "\u20b944.2 Cr", v: 57.7, color: CAT[3] }, { k: "Everything else", sub: "\u20b932.3 Cr", v: 42.3, color: CAT[0] }]).map(({ k, ...r }) => ({ label: k, ...r }))} yFormat={fmtPct1} max={100} />,
             },
           ]}
         />
@@ -766,9 +748,9 @@ export default function SdImpactCharts() {
         reads="none of them is wrong; they answer different questions on different samples. This card exists so the case study never quotes one of them without saying which, because the spread is 23% and a reviewer will find it."
         table={{ head: ["Scope", "August AOV", "What it covers"], rows: AOV_SCOPES.map((r) => [r.label, fmtInr(r.v), r.note]) }}
       >
-        <HBars
-          rows={AOV_SCOPES.map((r, i) => ({ k: r.label, sub: r.note, v: r.v, color: [CAT[0], CAT[1], CAT[3]][i] }))}
-          fmt={fmtInr}
+        <Bars horizontal valueKey="v"
+          data={(AOV_SCOPES.map((r, i) => ({ k: r.label, sub: r.note, v: r.v, color: [CAT[0], CAT[1], CAT[3]][i] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+          yFormat={fmtInr}
           max={1800}
         />
       </Card>
@@ -781,9 +763,9 @@ export default function SdImpactCharts() {
         table={{ head: ["Measure", "Share"], rows: OVER_WEIGHT.map((r) => [r.label, fmtPct1(r.v)]) }}
         footnote="DERIVED from the order counts, the average order values and the per-thousand ticket rates."
       >
-        <HBars
-          rows={OVER_WEIGHT.map((r, i) => ({ k: r.label, v: r.v, color: i === 0 ? "var(--sdc-neutral)" : i === 1 ? CAT[0] : OK3[2] }))}
-          fmt={fmtPct1}
+        <Bars horizontal valueKey="v"
+          data={(OVER_WEIGHT.map((r, i) => ({ k: r.label, v: r.v, color: i === 0 ? "var(--sdc-neutral)" : i === 1 ? CAT[0] : OK3[2] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+          yFormat={fmtPct1}
           max={4}
         />
       </Card>
@@ -803,27 +785,27 @@ export default function SdImpactCharts() {
             {
               title: "As reported, share of all cancellations",
               children: (
-                <HBars
-                  rows={CANCEL_REASONS.map((r) => ({
+                <Bars horizontal valueKey="v"
+                  data={(CANCEL_REASONS.map((r) => ({
                     k: r.label,
                     sub: r.instantNote ? "scheduled only" : r.instantPct != null ? `instant: ${r.instantPct}%` : undefined,
                     v: r.scheduledPct,
                     color: r.blank ? "var(--sdc-neutral)" : r.instantNote ? OK3[2] : CAT[0],
-                  }))}
-                  fmt={fmtPct1}
+                  }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={fmtPct1}
                   max={90}
-                  sub={`Total cancelled in August: ${fmtInt(CANCEL_TOTAL_AUG)}.`}
+                  note={`Total cancelled in August: ${fmtInt(CANCEL_TOTAL_AUG)}.`}
                 />
               ),
             },
             {
               title: "Rebased: who actually cancelled",
               children: (
-                <HBars
-                  rows={CANCEL_REBASED.map((r) => ({ k: r.label, sub: r.detail, v: r.v, color: { customer: CAT[0], ops: OK3[2], other: "var(--sdc-neutral)" }[r.key] }))}
-                  fmt={fmtPct1}
+                <Bars horizontal valueKey="v"
+                  data={(CANCEL_REBASED.map((r) => ({ k: r.label, sub: r.detail, v: r.v, color: { customer: CAT[0], ops: OK3[2], other: "var(--sdc-neutral)" }[r.key] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={fmtPct1}
                   max={100}
-                  sub={`The scheduled-delivery bot is ${CANCEL_BOT_OF_REASONED}% of the cancellations that carry a reason.`}
+                  note={`The scheduled-delivery bot is ${CANCEL_BOT_OF_REASONED}% of the cancellations that carry a reason.`}
                 />
               ),
             },
@@ -840,12 +822,12 @@ export default function SdImpactCharts() {
         table={{ head: ["Month", "Cancelled", "Times the network rate"], rows: CANCELLED_MONTHLY.map((r) => [r.label + (r.partial ? " (21 days)" : ""), fmtInt(r.cancelled), r.ratio.toFixed(2) + "x"]) }}
         footnote="DERIVED: monthly volume multiplied by that month's cancellation rate. The method lands August at 420,884 against the report's exact 421,145, a gap of 0.06%. The rupee figure applies August's average order value and is indicative: only 55% of scheduled orders matched the GMV table."
       >
-        <RangeColumns
-          rows={CANCELLED_MONTHLY.map((r) => ({ label: r.label, span: r.label + (r.partial ? ", 21 days" : ""), v: r.cancelled }))}
+        <Bars
+          data={CANCELLED_MONTHLY.map((r) => ({ label: r.label, span: r.label + (r.partial ? ", 21 days" : ""), v: r.cancelled }))}
           valueKey="v"
-          yFmt={fmtK}
+          yFormat={fmtK}
           emphasis={(r) => r.label === "May 26"}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -855,13 +837,13 @@ export default function SdImpactCharts() {
         reads="the improvement is the network's, not the feature's. Nothing we did to scheduled delivery moved this line."
         table={{ head: ["Month", "Scheduled", "All orders", "Ratio"], rows: live.map((m) => [m.label, fmtPct1(m.sdCancelPct), fmtPct1(m.allCancelPct), (m.sdCancelPct / m.allCancelPct).toFixed(2) + "x"]) }}
       >
-        <MultiLine
-          rows={CANCELLED_MONTHLY.map((r) => ({ label: r.label, v: r.ratio }))}
+        <LineChart
+          data={CANCELLED_MONTHLY.map((r) => ({ label: r.label, v: r.ratio }))}
           series={[{ key: "v", label: "Times the network rate", short: "ratio" }]}
           colors={[OK3[2]]}
-          yFmt={(v) => v.toFixed(1) + "x"}
+          yFormat={(v) => v.toFixed(1) + "x"}
           domainMin={1.5}
-        />
+         legend={false} />
       </Card>
 
       <Card
@@ -900,9 +882,9 @@ export default function SdImpactCharts() {
       >
         <SmallMultiples
           panels={[
-            { title: "Average capacity per slot", children: <RangeColumns rows={CAPACITY_AUG} valueKey="capacity" yFmt={(v) => v.toFixed(1)} height={200} color={CAT[0]} /> },
-            { title: "Sold out, share of open slots", children: <RangeColumns rows={CAPACITY_AUG} valueKey="soldOutPct" yFmt={fmtPct0} height={200} color={OK3[2]} /> },
-            { title: "Average fill", children: <RangeColumns rows={CAPACITY_AUG} valueKey="fill" yFmt={fmtPct0} height={200} color={CAT[2]} /> },
+            { title: "Average capacity per slot", children: <Bars data={CAPACITY_AUG} valueKey="capacity" yFormat={(v) => v.toFixed(1)} height={200} color={CAT[0]}  legend={false} /> },
+            { title: "Sold out, share of open slots", children: <Bars data={CAPACITY_AUG} valueKey="soldOutPct" yFormat={fmtPct0} height={200} color={OK3[2]}  legend={false} /> },
+            { title: "Average fill", children: <Bars data={CAPACITY_AUG} valueKey="fill" yFormat={fmtPct0} height={200} color={CAT[2]}  legend={false} /> },
           ]}
         />
       </Card>
@@ -921,11 +903,11 @@ export default function SdImpactCharts() {
           panels={[
             {
               title: "Sold-out rate",
-              children: <MultiLine rows={sellout} series={WATCHED_HOURS.map((h) => ({ key: h.key, label: h.label + " slot", short: h.label }))} colors={CAT} yFmt={fmtPct0} height={210} />,
+              children: <LineChart data={sellout} series={WATCHED_HOURS.map((h) => ({ key: h.key, label: h.label + " slot", short: h.label }))} colors={CAT} yFormat={fmtPct0} height={210}  legend={false} />,
             },
             {
               title: "Average capacity per slot",
-              children: <MultiLine rows={capacity} series={WATCHED_HOURS.map((h) => ({ key: h.key, label: h.label + " slot", short: h.label }))} colors={CAT} yFmt={(v) => v.toFixed(1)} height={210} domainMin={4} />,
+              children: <LineChart data={capacity} series={WATCHED_HOURS.map((h) => ({ key: h.key, label: h.label + " slot", short: h.label }))} colors={CAT} yFormat={(v) => v.toFixed(1)} height={210} domainMin={4}  legend={false} />,
             },
           ]}
         />
@@ -964,23 +946,23 @@ export default function SdImpactCharts() {
             {
               title: "Where the capacity sits",
               children: (
-                <HBars
-                  rows={[
+                <Bars horizontal valueKey="v"
+                  data={([
                     { k: "10 AM to 6 PM", sub: `about ${CAPACITY_SHAPE.deadZoneFill}% full`, v: CAPACITY_SHAPE.deadZoneShare, color: "var(--sdc-neutral)" },
                     { k: "Every other hour", sub: "where the demand is", v: +(100 - CAPACITY_SHAPE.deadZoneShare).toFixed(1), color: CAT[0] },
-                  ]}
-                  fmt={fmtPct1}
+                  ]).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={fmtPct1}
                   max={100}
-                  sub={`System fill across all hours: ${CAPACITY_SHAPE.systemFill}%.`}
+                  note={`System fill across all hours: ${CAPACITY_SHAPE.systemFill}%.`}
                 />
               ),
             },
             {
               title: "What lifting each peak to 9.4 would add",
               children: (
-                <HBars
-                  rows={CAPACITY_SHAPE.lift.map((r) => ({ k: r.label + " slot", sub: `now ${CAPACITY_AUG.find((c) => c.label === r.label)?.capacity} orders a slot`, v: r.v, color: CAT[2] }))}
-                  fmt={(v) => "+" + v + "%"}
+                <Bars horizontal valueKey="v"
+                  data={(CAPACITY_SHAPE.lift.map((r) => ({ k: r.label + " slot", sub: `now ${CAPACITY_AUG.find((c) => c.label === r.label)?.capacity} orders a slot`, v: r.v, color: CAT[2] }))).map(({ k, ...r }) => ({ label: k, ...r }))}
+                  yFormat={(v) => "+" + v + "%"}
                   max={60}
                 />
               ),
@@ -996,7 +978,7 @@ export default function SdImpactCharts() {
         reads="the 24% that sell out more than six hours ahead, 13,390 store-slot-days, are the real constraint cases. Everything else is the evening rush finding the nearest slot."
         table={{ head: ["Filled up", "Store-slot-days", "Share"], rows: SELLOUT_TIMING.map((r) => [r.label, fmtInt(r.days), fmtPct1(r.pct)]) }}
       >
-        <HBars rows={SELLOUT_TIMING.map((r, i) => ({ k: r.label, v: r.pct, color: SEQ7[i] }))} fmt={fmtPct1} max={42} />
+        <Bars horizontal valueKey="v" data={(SELLOUT_TIMING.map((r, i) => ({ k: r.label, v: r.pct, color: SEQ7[i] }))).map(({ k, ...r }) => ({ label: k, ...r }))} yFormat={fmtPct1} max={42} />
       </Card>
 
       {/* ================= 6. The experiment ============================= */}
@@ -1015,8 +997,7 @@ export default function SdImpactCharts() {
         table={{ head: ["Metric", "Control", "New logic", "Holds up?"], rows: EXPERIMENT.map((r) => [r.label, fmtMeasure(r.control, r), fmtMeasure(r.test, r), EXPERIMENT_SIG[r.label] ? EXPERIMENT_SIG[r.label].verdict + (EXPERIMENT_SIG[r.label].z ? ` (z = ${EXPERIMENT_SIG[r.label].z})` : "") : "not tested"]) }}
         footnote="The significance tests are DERIVED from the counts in the experiment table, not supplied with it."
       >
-        <CompareRows
-          rows={EXPERIMENT.map((r) => {
+        <Bars horizontal perRow data={EXPERIMENT.map((r) => {
             const d = ((r.test - r.control) / r.control) * 100;
             const sig = EXPERIMENT_SIG[r.label];
             return {
@@ -1026,12 +1007,7 @@ export default function SdImpactCharts() {
               fmt: r.fmt,
               delta: (d >= 0 ? "+" : "") + d.toFixed(1) + "%" + (sig ? ` \u00b7 ${sig.verdict}` : ""),
             };
-          })}
-          aLabel="Control"
-          bLabel="New logic"
-          colors={[CAT[0], CAT[3]]}
-          format={fmtMeasure}
-        />
+          })} series={[{ key: "a", label: "Control" }, { key: "b", label: "New logic" }]} colors={[CAT[0], CAT[3]]} valueFormat={(v, r, key) => (fmtMeasure)(v, r) + (key === "b" && r.approxB ? "*" : "")} />
       </Card>
 
       {/* ================= 7. Still missing ============================== */}
