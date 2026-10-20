@@ -2,6 +2,7 @@
 // noir), posed by the hero's emotes, shaded pass only, on a transparent ground.
 import * as THREE from "three";
 import { createFaceRig } from "/src/figures/faces/morph/faceRig3D.js";
+import { resolveFace, PRESETS } from "/src/figures/faces/features/core.js";
 import { EMOTES, sample, toPose } from "/src/figures/faces/morph/emotes.js";
 const W = 802, H = 862;
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: true, preserveDrawingBuffer: true });
@@ -28,3 +29,6 @@ export function shotPose(id, p) {
   rig.pose(p); rig.shaded(renderer, null);
   return renderer.domElement.toDataURL("image/png");
 }
+cfg.plast = { face: resolveFace(PRESETS["agam-clay"]), W, H, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true };
+// wear a face config on a rig: a preset name, or a JSON object of feature blocks
+export function useFace(id, spec) { rigs[id].setFace(resolveFace(typeof spec === "string" ? PRESETS[spec] : spec)); }

@@ -1,0 +1,11 @@
+{
+  "_note": "tuned from ~/portfolio-inbox/face-refs/clay-ref.webp: shoulder-length messy dark hair with a loose fringe, warm-brown skin, softly narrowed smiling eyes, a gentle closed smile, a soft rounded jaw",
+  "material": { "kind": "clay", "grain": 0.6, "warmth": 0.65 },
+  "skin": { "tone": 0.46, "blush": 0.6 },
+  "hair": { "style": "shoulder-messy", "color": "#4a2f21", "clip": true, "seed": 7 },
+  "eyes": { "openness": -0.5, "smileSquint": 0.35, "size": 0.05, "spacing": 0 },
+  "brows": { "height": -0.15, "angle": 0.1 },
+  "nose": { "width": -0.1, "tip": 0.1 },
+  "mouth": { "width": 0.1, "smile": 0.45 },
+  "cheeks": { "fullness": 0.45, "jaw": -0.45, "chin": 0.5 }
+}

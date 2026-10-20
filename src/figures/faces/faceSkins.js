@@ -12,7 +12,7 @@
 
 const P = (base, shade, deep, spec = 0) => ({ base, shade, deep, spec });
 
-export const MODES = { print: 0, clay: 1, noir: 2, hose: 3, cel: 4, clayRough: 5, pixel: 6, felt: 7, stone: 8, riso: 9, fit: 10 };
+export const MODES = { print: 0, clay: 1, noir: 2, hose: 3, cel: 4, clayRough: 5, pixel: 6, felt: 7, stone: 8, riso: 9, fit: 10, plast: 11 };
 
 export const SKINS = [
   {
@@ -147,7 +147,22 @@ export const SKINS = [
   },
 ];
 
-export const skinById = (id) => SKINS.find((s) => s.id === id) || SKINS[0];
+// The soft clay (2026-10-20): drawn, not fitted, on the same head, with its own hair
+// (morph/plastHair.js) and a shape pass in the vertex shader. Worn only by the hero's renderer
+// (the morph's third rig, the face lab), so it is not in SKINS: FaceSV's cycle and the picker on
+// /faces keep their nine.
+export const PLAST = {
+  // (the neutral palette; a face config's modules (features/) repaint it)
+  id: "plast", label: "Clay, soft", mode: "plast", bg: "#efe6f0",
+  parts: {
+    Skin: P("#c98f66", "#a86b47", "#7a4630"), Hair: P("#553626", "#37201a", "#1c0e08"),
+    Eye: P("#1b110d", "#1b110d", "#0c0706"), Brow: P("#2f1d14", "#22140d", "#150b07"),
+    Mouth: P("#b9704f", "#98553a", "#6f3a27"), MouthInner: P("#4d1a14", "#3a120d", "#250a07"),
+    HatBand: P("#b9a2e0", "#9780c4", "#6f5a9c"),
+  },
+  outline: null,
+};
+export const skinById = (id) => (id === PLAST.id ? PLAST : SKINS.find((s) => s.id === id) || SKINS[0]);
 
 // which palette entry a mesh uses (lids are skin)
 export const PROPS = ["Hat", "HatBand", "Pin"];
@@ -157,6 +172,29 @@ export const partKey = (name) =>
 // ---- shaders --------------------------------------------------------------------
 // the morph chunks let the shape keys (glTF morph targets) bend position and normal;
 // vP (object space, morphed) feeds the procedural textures, so grain sticks to the head
+export const SHAPE_GLSL = /* glsl */ `
+// the face system's soft warps (features/core.js): up to 16 handles, three vec4 each:
+// [centre, radius] [delta, mirror] [scale, 0]. Every vertex within a handle's radius moves by
+// its delta plus scale x (p - centre), with a gaussian falloff; a mirrored handle also acts at -x
+// (its delta's x flipped). The same pass runs on every face part, so they stay joined.
+uniform float uShape; uniform float uWn; uniform vec4 uW[48];
+vec3 softShape(vec3 p){
+  vec3 o = p;
+  for (int i = 0; i < 16; i++) {
+    if (float(i) >= uWn) break;
+    vec4 a = uW[i * 3], b = uW[i * 3 + 1], c = uW[i * 3 + 2];
+    for (int sd = 0; sd < 2; sd++) {
+      float sg = sd == 0 ? 1.0 : -1.0;
+      if (sd == 1 && b.w < 0.5) break;
+      vec3 ctr = vec3(a.x * sg, a.y, a.z), d = vec3(b.x * sg, b.y, b.z);
+      vec3 q = p - ctr;
+      float g = exp(-dot(q, q) / max(a.w * a.w, 1e-4));
+      o += g * (d + q * vec3(c.x, c.y, c.z));
+    }
+  }
+  return o;
+}`;
+
 export const VERT = /* glsl */ `
 #include <common>
 #include <morphtarget_pars_vertex>
@@ -178,6 +216,7 @@ attribute vec2 _mvuv;
 // with no lips, and a lip ring standing proud of the skin drew a pale crescent beside an open mouth.
 // Pushed back from the camera it stays only where the opening shows it
 uniform vec3 uActs; uniform float uRecess;
+${SHAPE_GLSL}
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv;
 // the (morphed) normal in the fitted camera's frame at rest: where the reference's light was fitted
 varying vec3 vRN;
@@ -191,6 +230,7 @@ void main(){
   #include <morphnormal_vertex>
   #include <begin_vertex>
   #include <morphtarget_vertex>
+  if (uShape > 0.5) transformed = softShape(transformed);
   vec4 mv = modelViewMatrix * vec4(transformed,1.0);
   mv.xyz += normalize(mv.xyz) * uRecess * clamp(uActs.z, 0.0, 1.0);
   vN = normalize(normalMatrix * objectNormal);
@@ -210,7 +250,7 @@ void main(){
 }`;
 
 export const FRAG = /* glsl */ `
-uniform vec3 uBase, uShade, uDeep, uL, uMisreg; uniform float uDot, uMode, uSpec, uIsHair;
+uniform vec3 uBase, uShade, uDeep, uL, uMisreg; uniform float uDot, uMode, uSpec, uIsHair, uBump, uSSS;
 uniform vec3 uSH[9], uTint; uniform float uK, uUseMap, uIsEye, uFloor, uTexScale, uTexGamma; uniform sampler2D uMap;
 // a lid is lit with the face's normal round its eye (uFlat of the way), so a blink reads as flush skin
 uniform vec3 uFlatN, uRatioMean; uniform float uFlat, uTurn;
@@ -493,6 +533,30 @@ void main(){
     col = ramp(sd, 0.3);
     col *= 0.9 + 0.16 * fbm(vP * 30.0);
     col *= 1.0 - 0.25 * pow(fres, 3.0);
+  } else if (m == 11) {
+    // soft clay: matte plasticine. Wrapped diffuse with a warm subsurface band at the terminator, no
+    // specular, a faint fingerprint whorl and tool grooves pressed into the surface (the normal is
+    // nudged by them), and a little lighter, warmer rim
+    vec3 q = vP * 34.0;
+    float e = 0.35;
+    float g0 = fbm(q), gx = fbm(q + vec3(e, 0.0, 0.0)), gy = fbm(q + vec3(0.0, e, 0.0)), gz = fbm(q + vec3(0.0, 0.0, e));
+    vec3 grain = vec3(gx - g0, gy - g0, gz - g0) / e;
+    // fingerprint: ridges around a few centres, faded in patches
+    vec3 fc = vP * 7.0;
+    float whorl = sin(length(fc.xy - vec2(1.7, 0.4)) * 11.0 + 2.5 * fbm(fc * 1.7)) * smoothstep(0.35, 0.65, fbm(vP * 3.1 + 4.0));
+    vec3 ridge = vec3(cos(length(fc.xy - vec2(1.7, 0.4)) * 11.0), sin(fc.y * 5.0), 0.0) * whorl;
+    // tool marks: long shallow grooves
+    float groove = sin(dot(vP, vec3(5.0, 11.0, 3.0)) * 3.0 + 4.0 * fbm(vP * 2.3)) * smoothstep(0.55, 0.7, fbm(vP * 2.0 + 9.0));
+    vec3 nb = normalize(n + uBump * (0.16 * grain + 0.03 * ridge + 0.025 * groove * vec3(0.4, 1.0, 0.2)));
+    float dd = dot(nb, l);
+    float ww = dd * 0.5 + 0.5;
+    col = ramp(ww, 0.2);
+    col *= 0.6 + 0.62 * smoothstep(0.1, 0.9, ww);
+    float sss = smoothstep(0.0, 0.42, ww) * (1.0 - smoothstep(0.42, 0.78, ww));
+    col += vec3(0.5, 0.17, 0.07) * sss * 0.2 * uSSS * (uIsHair > 0.5 ? 0.0 : 1.0);
+    col *= 0.965 + 0.07 * g0;
+    col = mix(col, col * vec3(1.05, 0.98, 0.94) + vec3(0.04, 0.015, 0.0), pow(fres, 3.0) * 0.5);
+    col *= 1.0 - 0.1 * pow(fres, 2.5);
   } else {
     // riso: one ink colour per part, laid as a coarse dot screen on the paper; the
     // darker the light, the bigger the dot; ink parts print solid

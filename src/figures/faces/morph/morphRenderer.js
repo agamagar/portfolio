@@ -10,6 +10,7 @@
 // nearest seed (background, ear rim, nose contour, mouth), and the ink is a distance test.
 import * as THREE from "three";
 import { createFaceRig, PART_ID } from "./faceRig3D";
+import { resolveFace, PRESETS } from "../features/core";
 
 export const FW = 802, FH = 862;
 
@@ -208,6 +209,7 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
   let wear = rig;
   const FLATS = {
     clay: { uFlatSkin: "#f2dcc6", uFlatHair: "#4a2a1c", uFlatEye: "#171111", uFlatBrow: "#3b2016", uFlatMouth: "#d9ab90" },
+    plast: { uFlatSkin: "#c98f66", uFlatHair: "#553626", uFlatEye: "#1b110d", uFlatBrow: "#2f1d14", uFlatMouth: "#b9704f" },
     noir: { uFlatSkin: "#6c6c6c", uFlatHair: "#1d1d1d", uFlatEye: "#0a0a0a", uFlatBrow: "#1a1a1a", uFlatMouth: "#474747" },
   };
 
@@ -296,6 +298,14 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
     rigs.noir = r;
     return r.ready.then(() => patchIds(r));
   })());
+  // the soft clay (2026-10-20): drawn, not fitted; its hair is built in code (plastHair.js), so it has no
+  // id map, raw skin or GLB hair. Same head, camera and emotes as clay
+  let plastP = null;
+  const loadPlast = () => (plastP ||= (() => {
+    const r = createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true, face: resolveFace(PRESETS["agam-clay"]) });
+    rigs.plast = r;
+    return r.ready.then(() => patchIds(r));
+  })());
   // wear a rig: its camera and parts, and its flat under-colours
   const setRig = (name) => {
     if (!rigs[name]) return false;
@@ -304,8 +314,8 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
     for (const k in FLATS[name]) comp.uniforms[k].value.set(FLATS[name][k]);
     return true;
   };
-  return { renderer, rig, ready, frame, comp, seeds, FW, FH, loadNoir, setRig, get rigs() { return rigs; },
+  return { renderer, rig, ready, frame, comp, seeds, FW, FH, loadNoir, loadPlast, setRig, get rigs() { return rigs; },
     // the id pass of the current frame (R = part code, bottom-up rows), for the offline texture tools
     readIds: () => { const buf = new Float32Array(FW * FH * 4); renderer.readRenderTargetPixels(rtId, 0, 0, FW, FH, buf); return buf; },
-    setForceFields: (v) => { forceFields = !!v; }, get rigName() { return wear === rigs.noir ? "noir" : "clay"; } };
+    setForceFields: (v) => { forceFields = !!v; }, get rigName() { return wear === rigs.noir ? "noir" : wear === rigs.plast ? "plast" : "clay"; } };
 }

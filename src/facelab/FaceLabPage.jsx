@@ -8,9 +8,11 @@ import { createMascotMorph } from "../figures/faces/morph/mascotMorph";
 import { createEmoteEngine, EMOTE_NAMES, CHAIN_NAMES, IDLE, toPose } from "../figures/faces/morph/emoteEngine";
 import { DURATION, ramp } from "../figures/faces/morph/flood";
 import { FW, FH } from "../figures/faces/morph/morphRenderer";
+import { resolveFace, PRESETS as FACES } from "../figures/faces/features/core";
+import FeaturesPanel from "../figures/faces/features/FeaturesPanel";
 import "./faceLab.css";
 
-const SKINS = [["clay", "Clay"], ["noir", "Noir"]]; // the rigs the hero's renderer carries
+const SKINS = [["clay", "Clay"], ["noir", "Noir"], ["plast", "Face system (soft clay)"]]; // the rigs the hero's renderer carries
 const EASES = {
   hero: ramp, // the hero's speed ramp
   linear: (u) => u,
@@ -22,6 +24,7 @@ export const DEFAULTS = {
   skin: "clay", t: 1, emote: "cycle", playing: true, speed: 1, follow: false,
   intensity: 1, headMove: 1, ambient: true, quick: false, cycleGap: 3200,
   morphMs: DURATION, morphEase: "hero", gaze: 0.6, seed: 7,
+  face: JSON.parse(JSON.stringify(FACES["agam-clay"])), // (the soft clay's face config: features/, worn when the skin is "plast")
 };
 const PRESETS = {
   "Current hero": {},
@@ -52,6 +55,7 @@ function useShared() {
       try {
         mmLocal = await createMascotMorph(off, { clear: true, ink: "#17171a" });
         await mmLocal.MR.loadNoir();
+        await mmLocal.MR.loadPlast();
         if (dead) return;
         setMm(mmLocal);
       } catch (e) { setErr(String(e?.message || e)); return; }
@@ -95,7 +99,7 @@ function Cell({ id, shared, onRemove, initial }) {
   const reset = () => { const r = rt.current; r.engine = createEmoteEngine({ seed: pr.current.seed }); r.engine.setAmbient(pr.current.ambient); r.gapLeft = 1500; r.dirty = true; };
   useEffect(() => { reset(); }, [p.seed]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { rt.current.engine?.setAmbient(p.ambient); }, [p.ambient]);
-  useEffect(() => { rt.current.dirty = true; }, [p.skin, p.t, p.intensity, p.headMove]);
+  useEffect(() => { rt.current.dirty = true; }, [p.skin, p.t, p.intensity, p.headMove, p.face]);
 
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => { rt.current.seen = e.isIntersecting; rt.current.dirty = true; });
@@ -135,6 +139,7 @@ function Cell({ id, shared, onRemove, initial }) {
       const q = pr.current;
       const MR = mm.MR;
       MR.setRig(q.skin);
+      if (q.skin === "plast" && MR.rigs.plast) { const fk = JSON.stringify(q.face); if (MR.rigs.plast.faceKey !== fk) { MR.rigs.plast.setFace(resolveFace(q.face)); MR.rigs.plast.faceKey = fk; } }
       const out = r.engine.tick(q.playing ? r.d || 0 : 0, q.skin);
       // lab wrappers over the engine's output: amplitude and head share
       const pose = { ...out, keys: { ...out.keys } };
@@ -176,6 +181,7 @@ function Cell({ id, shared, onRemove, initial }) {
           <option value="cycle">cycle</option><option value="none">none (ambient only)</option>
           {ALL_EMOTES.map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
       </div>
+      {p.skin === "plast" && <FeaturesPanel face={p.face} onChange={(f) => set("face", f)} onCopied={(m) => { setInfo(m); setTimeout(() => setInfo(""), 1400); }} />}
       <div className="fl-row">
         <label className="fl-grow">Morph 2D ↔ 3D <input type="range" min="0" max="1" step="0.005" value={p.t} onChange={(e) => setT(+e.target.value)} /></label>
         <button onClick={playMorph}>Play morph</button>
