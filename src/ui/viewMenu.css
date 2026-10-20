@@ -12,7 +12,7 @@
 .view-menu__btn { pointer-events: auto; }
 .top-controls[data-scrolled] > .view-menu,
 html .top-controls[data-scrolled] > .view-menu { translate: none !important; opacity: 1 !important; pointer-events: none; transition: none; }
-.view-menu[data-dev], body:has(.article__index-tabs) .view-menu[data-dev] { bottom: calc(var(--dev-base, 16px) + 88px); left: max(20px, env(safe-area-inset-left)); } /* QA, Inspect, then the eye (mvfy2i8i) */
+.view-menu[data-dev], body:has(.article__index-tabs) .view-menu[data-dev] { bottom: calc(var(--dev-base, 16px) + 44px); left: max(20px, env(safe-area-inset-left)); } /* Inspect, then the eye above it (QA, when opted in, goes on top) */
 .view-menu__panel {
   position: absolute;
   left: 0;
