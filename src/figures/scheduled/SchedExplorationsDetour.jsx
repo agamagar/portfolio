@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useReducedMotion, useInViewLoop } from "../ds/hooks";
+import IphoneFrame from "../ds/IphoneFrame";
 import "./schedExplorationsDetour.css";
 
 // Agentation mvg8xj51-ht1eue: a copy of "The explorations" illustrated after Pentagram's "In Defense of the
@@ -11,18 +12,18 @@ import "./schedExplorationsDetour.css";
 const TAG = { shipped: "Shipped", killed: "Killed", scale: "Didn't scale", considered: "Considered" };
 
 const ROWS = [
-  { label: "Placement", ink: "#2fb5a6", chips: [
+  { label: "Placement", ink: "#2fb5a6", screen: "/figures/scheduled/sched-cart-prompted.png", screenAlt: "The cart with the schedule prompt, per shipment", chips: [
     { t: "On the PDP", v: "killed" },
     { t: "Home prompt", v: "shipped" },
     { t: "Cart, per shipment", v: "shipped" },
   ] },
-  { label: "Cart structure", ink: "#e26fcf", chips: [
+  { label: "Cart structure", ink: "#e26fcf", screen: "/figures/scheduled/sched-pg-default.png", screenAlt: "The single-page listing, every shipment on one page", chips: [
     { t: "Tabbed, one per shipment", v: "killed" },
     { t: "Bottom sheet", v: "scale" },
     { t: "One combined cart", v: "killed" },
     { t: "Single-page listing", v: "shipped" },
   ] },
-  { label: "Slot picker", ink: "#6c76f0", chips: [
+  { label: "Slot picker", ink: "#6c76f0", screen: "/figures/scheduled/sched-pg-crossday.png", screenAlt: "The inline slot list", chips: [
     { t: "Calendar", v: "considered" },
     { t: "Bottom-sheet picker", v: "considered" },
     { t: "Inline slot list", v: "shipped" },
@@ -137,6 +138,7 @@ export default function SchedExplorationsDetour() {
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
           <div className="dtr-row__label" role="heading" aria-level={3}><span>{row.label}</span></div>
+          <div className="dtr-row__body">
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
               const on = peak >= i + 1 || beat >= i + 1;
@@ -149,6 +151,8 @@ export default function SchedExplorationsDetour() {
                 </div>
               );
             })}
+          </div>
+          <IphoneFrame className="dtr-phone" screen={row.screen} alt={row.screenAlt} width={124} controls={false} />
           </div>
         </div>
       ))}

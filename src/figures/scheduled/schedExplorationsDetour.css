@@ -65,3 +65,12 @@
 /* mvgj4xlm: each question is its own section with a standard sub-heading */
 .dtr-row__label { font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.01em; }
 .dtr-row:first-child { padding-top: 6px; }
+
+/* mvgld4n4: the shipped direction's screen beside each section's path, same size in all three */
+.dtr-row__body { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: clamp(16px, 3vw, 36px); align-items: start; }
+.dtr-row__body .dtr-row__line { align-self: center; }
+.dtr-phone { flex: none; }
+@media (max-width: 560px) {
+  .dtr-row__body { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
+  .dtr-phone { justify-self: start; }
+}
