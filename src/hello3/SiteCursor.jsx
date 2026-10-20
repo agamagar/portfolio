@@ -25,6 +25,7 @@ import { introRevealed } from "./useStage";
 import { heroMorphSettledOrTimeout } from "./heroMorphGate";
 import { createGuide, noise } from "./siteGuide";
 import { headlineEnd, headlineEl } from "./lineEnd";
+import { STATES, FS } from "../ui/cursorStates"; // the main pointer's own silhouette
 import { subscribeHeroVersion } from "./heroVersions";
 import "./siteCursor.css";
 
@@ -186,7 +187,7 @@ export default function SiteCursor({ caseMode = false } = {}) {
     // face's right, left, below, above; the first spot clear of every headline text rect (and on screen) wins, else the
     // least-overlapping one. Text rects are re-collected only when dirty (resize, reflow, font load); the face rect is
     // one cheap read per tick, and the spot is re-picked only when it moved, so a dragged face carries the cursor.
-    let spot = null, spotKey = "", textRects = [];
+    let spot = null, spotKey = "", lastHk = "", textRects = [];
     const faceRect = () => {
       for (const sel of [".hv4__face", ".hero-morph__cv", ".header__avatar-wrap"]) { // v4/v5 face, the morph canvas once placed, the 2D head before
         const r = document.querySelector(sel)?.getBoundingClientRect();
@@ -197,12 +198,15 @@ export default function SiteCursor({ caseMode = false } = {}) {
     const collectText = () => {
       const c = headlineEl(), out = [];
       if (!c) return out;
-      const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); let n;
+      for (const root of [c, document.querySelector(".hello-hero__links")]) { // the headline and the Resume / LinkedIn row
+      if (!root) continue;
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
       while ((n = w.nextNode())) {
         const pe = n.parentElement;
         if (!n.nodeValue.trim() || !pe || pe.closest(".sr-only, .hello-hero__sr, [hidden]")) continue;
         const rg = document.createRange(); rg.selectNodeContents(n);
         for (const q of rg.getClientRects()) if (q.width > 0 && q.height > 0) out.push([q.left, q.top, q.right, q.bottom]);
+      }
       }
       if (!out.length && c instanceof SVGElement) for (const e of c.querySelectorAll("path, text, tspan")) { const q = e.getBoundingClientRect(); if (q.width > 0 && q.height > 0) out.push([q.left, q.top, q.right, q.bottom]); }
       return out;
@@ -210,20 +214,25 @@ export default function SiteCursor({ caseMode = false } = {}) {
     const perch = () => {
       const fr = faceRect();
       if (!fr) { watch(); const e2 = headlineEnd(); return e2 ? [e2[0] - window.scrollX, e2[1] - window.scrollY] : PARK; }
-      if (eolDirty) { watch(); textRects = collectText(); eolDirty = false; spotKey = ""; }
+      const hr = headlineEl()?.getBoundingClientRect(); // reflow without a mutation (font swap, face moving) shows up here
+      const hk = hr ? hr.left.toFixed(0) + "," + hr.top.toFixed(0) + "," + hr.width.toFixed(0) + "," + hr.height.toFixed(0) : "";
+      if (eolDirty || hk !== lastHk) { watch(); textRects = collectText(); eolDirty = false; lastHk = hk; spotKey = ""; }
       const key = fr.left.toFixed(0) + "," + fr.top.toFixed(0) + "," + fr.width.toFixed(0) + "," + window.innerWidth + "," + window.innerHeight;
       if (key !== spotKey) {
         spotKey = key;
         const tag = el.querySelector(".sc__tag");
         const ar = el.querySelector(".sc__arrow");
         const bw = 16 + (tag?.offsetWidth || 150) + 4, bh = Math.max((ar?.clientHeight || 18), 18) + (tag?.offsetHeight || 24) + 4; // arrow + hanging tag
-        const g = 10, cx = fr.left + fr.width / 2, cy = fr.top + fr.height / 2, pad = 6;
-        const cands = [
-          [fr.right + g, cy - bh / 2], [fr.left - g - bw, cy - bh / 2],
-          [cx - bw / 2, fr.bottom + g], [cx - bw / 2, fr.top - g - bh],
-        ];
+        const cx = fr.left + fr.width / 2, cy = fr.top + fr.height / 2, pad = 6;
+        // boxes ringed around the face, nearest rings first (right, left, below, above lead each ring): the first clear one wins
+        const cands = [];
+        for (const d of [10, 26, 46, 70]) for (const ang of [0, 180, 90, 270, 30, 330, 150, 210, 60, 300, 120, 240, 45, 315, 135, 225]) {
+          const t = (ang * Math.PI) / 180, ux = Math.cos(t), uy = Math.sin(t);
+          const ex = (fr.width / 2 + d + bw / 2) * ux, ey = (fr.height / 2 + d + bh / 2) * uy; // box centre
+          cands.push([cx + ex - bw / 2, cy + ey - bh / 2]);
+        }
         const W = window.innerWidth, H = window.innerHeight;
-        let best = null, bestScore = 1e9;
+        let best = null, bestScore = 1e12;
         for (const [x, y] of cands) {
           let ov = 0;
           for (const t of textRects) {
@@ -231,9 +240,9 @@ export default function SiteCursor({ caseMode = false } = {}) {
             if (w2 > 0 && h2 > 0) ov += w2 * h2;
           }
           const off = Math.max(0, 8 - x) + Math.max(0, x + bw - (W - 8)) + Math.max(0, 8 - y) + Math.max(0, y + bh - (H - 8));
-          const score = ov + off * 400;
+          const score = ov + off * 400 + (ov || off ? 1e6 : 0) * 0 + Math.hypot(x + bw / 2 - cx, y + bh / 2 - cy) * 0.01;
           if (score < bestScore) { bestScore = score; best = [x, y]; }
-          if (score === 0) break;
+          if (ov === 0 && off === 0) break;
         }
         spot = best;
       }
@@ -476,8 +485,8 @@ export default function SiteCursor({ caseMode = false } = {}) {
   if (!on) return null;
   return (
     <div className="sc" ref={root} aria-hidden="true">
-      <svg className="sc__arrow" viewBox="0 0 16 16" width="18" height="18">
-        <path d="M2 1.5 L2 14.2 L5.6 10.8 L8.1 15 L10.3 13.9 L7.9 9.8 L12.8 9.8 Z" />
+      <svg className="sc__arrow" width="1" height="1" overflow="visible">
+        <path d={STATES.arrow.fig.parts[0]} transform={`scale(${FS}) translate(${-STATES.arrow.fig.hot[0]} ${-STATES.arrow.fig.hot[1]})`} />
       </svg>
       <span className="sc__tag"><span className="sc__t-rest">Click to activate</span><span className="sc__t-live">Agam</span></span>
     </div>
