@@ -2449,7 +2449,7 @@ const caseStudies = {
         roleFrame: {
           stats: false, // mv2lfboc put ROLE_STATS under the leadership points; mv58by9f (12 Oct) moved them into My role Option 3 (RoleScopeMap, .rv-map__rows)
           hideFrame: true, // mv594ats (12 Oct, "hide this section"): the My role frame is parked; the scope map (Option 3) is now the final My role. Delete to bring the frame back
-          hideMapStats: false, // mv5939z4 parked the scope map's stats; mv5iv45m (12 Oct) brought them back as the icon rows
+          hideMapStats: true, // mvgeobim (Agam, "hide this for now"): the metrics rows under the scope map are hidden; set false to bring them back (mv5iv45m had restored them as the icon rows)
           hideMapFoot: true, // the outlined box that repeated them stays parked (set to false to show it)
           hideEditorial: true, // mv4hab0z (12 Oct, "hide this"): Option 1 (RoleEditorial) parked; delete this line to bring it back
           hideCard: true, // mv4h93kq (12 Oct, "hide this"): Option 2 (RoleCard) parked; delete this line to bring it back
