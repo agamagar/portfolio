@@ -1084,9 +1084,18 @@ function RoleScopeMap({ s, i }) {
       </div>
       {mapView === "circles" ? (
         <div className="rv-pack" role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
-          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b><small>end to end</small></span>
-          {ROLE_PARTNERS.map((p, k) => { const a = (-90 + k * 120) * Math.PI / 180; return <span key={p} className="rv-pack__c rv-pack__c--who" style={{ left: `${50 + 24 * Math.cos(a)}%`, top: `${50 + 24 * Math.sin(a)}%`, "--d": 24 }}>{p}</span>; })}
-          {ROLE_FUNCTIONS.map((f, k) => { const a = [-45, 5, 90, 190, 235][k] * Math.PI / 180; return <span key={f} className="rv-pack__c rv-pack__c--fn" style={{ left: `${50 + 41 * Math.cos(a)}%`, top: `${50 + 41 * Math.sin(a)}%`, "--d": 17 }}>{f}</span>; })}
+          {/* positions in % of the square; the lines run edge to edge from the lead designer to every circle (the Tree's relationships) */}
+          {(() => {
+            const pts = [...ROLE_PARTNERS.map((p, k) => { const a = (-90 + k * 120) * Math.PI / 180; return [p, 50 + 24 * Math.cos(a), 50 + 24 * Math.sin(a), 24, "who"]; }),
+              ...ROLE_FUNCTIONS.map((f, k) => { const a = [-45, 5, 90, 190, 235][k] * Math.PI / 180; return [f, 50 + 41 * Math.cos(a), 50 + 41 * Math.sin(a), 17, "fn"]; })];
+            return (<>
+              <svg className="rv-pack__lines" viewBox="0 0 100 100" aria-hidden="true">
+                {pts.map(([n, x, y, d]) => { const dx = x - 50, dy = y - 50, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L; return <line key={n} x1={50 + ux * 10} y1={50 + uy * 10} x2={x - ux * d / 2} y2={y - uy * d / 2} />; })}
+              </svg>
+              <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b><small>end to end</small></span>
+              {pts.map(([n, x, y, d, k]) => <span key={n} className={"rv-pack__c rv-pack__c--" + k} style={{ left: `${x}%`, top: `${y}%`, "--d": d }}>{n}</span>)}
+            </>);
+          })()}
         </div>
       ) : (
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">

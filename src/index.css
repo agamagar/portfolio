@@ -8908,14 +8908,13 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .rv-map__vt button[aria-pressed="true"] { background: #5b3fd1; color: #fff; }
 .rv-map__vt button:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
 .rv-map__vt + .rv-map__tree, .rv-map__vt + .rv-pack { margin-top: 1.25rem; }
-.rv-pack { position: relative; container-type: inline-size; width: min(100%, 40rem); aspect-ratio: 1; margin: 1.25rem auto 0; border-radius: 50%; corner-shape: round; border: 1px solid color-mix(in srgb, var(--rv-accent) 55%, transparent); }
+.rv-pack { position: relative; container-type: inline-size; width: min(100%, 40rem); aspect-ratio: 1; margin: 1.25rem auto 0; border-radius: 28px; corner-shape: round; overflow: hidden; /* placeholder gradient until Agam's image arrives (mvgg4upz) */ background: radial-gradient(circle at 50% 42%, #9674db 0%, #4a2c96 32%, #1d1040 62%, #0b0814 100%); }
+.rv-pack__lines { position: absolute; inset: 0; width: 100%; height: 100%; } .rv-pack__lines line { stroke: rgba(255, 255, 255, 0.45); stroke-width: 0.25; vector-effect: non-scaling-stroke; stroke-width: 1px; }
 .rv-pack__c { position: absolute; width: calc(var(--d) * 1%); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; corner-shape: round; display: grid; place-content: center; justify-items: center; gap: 0.15rem; padding: 6%; text-align: center; font: 500 clamp(0.55rem, 2.7cqw, 1rem)/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
-.rv-pack__c--me { background: var(--rv-accent); color: #fff; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
+.rv-pack__c--me { background: #fff; color: #1a1030; box-shadow: 0 10px 30px -12px rgba(150, 116, 219, 0.7); }
 .rv-pack__c--me b { font-weight: 500; font-size: 1.1em; } .rv-pack__c--me small { font-size: 0.8em; opacity: 0.85; }
-:root.dark .rv-pack__c--me, html.dark .rv-pack__c--me { color: #1a1030; }
-html:not(.dark) .rv-pack__c--me { background: #5b3fd1; }
-.rv-pack__c--who { background: color-mix(in srgb, var(--rv-accent) 22%, transparent); border: 1px solid color-mix(in srgb, var(--rv-accent) 70%, transparent); color: var(--rv-ink); }
-.rv-pack__c--fn { border: 1px solid color-mix(in srgb, var(--rv-accent) 60%, transparent); color: var(--rv-ink); }
+.rv-pack__c--who { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.rv-pack__c--fn { background: rgba(11, 8, 20, 0.55); color: #fff; }
 @media (prefers-reduced-motion: reduce) { .rv-map__vt button { transition: none; } }
 
 
