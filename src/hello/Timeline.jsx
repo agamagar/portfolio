@@ -1626,13 +1626,28 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
   // is moving - the pointer never drives this, so it cannot wobble on a sweep.
   useEffect(() => {
     const wrap = cardsRef.current;
+    // mvgf46bn / mvf5kraa ("this timeline glitches"): the wave's centre snaps from tick to tick as the pointer crosses them, so a
+    // card's shift used to jump up to ~100px in ONE frame. Every written shift now eases toward its target (a short exponential
+    // approach, ~3 frames), cards and leaders alike so they stay one object; the first write lands exactly (no ease from 0).
+    const cur = new Map(), tgt = new Map();
+    let raf = 0;
+    const put = (el, px) => { if (!el) return; if (!cur.has(el)) { cur.set(el, px); el.style.setProperty("--shift", `${px}px`); } tgt.set(el, px); };
+    const tick = () => {
+      raf = 0; let moving = false;
+      tgt.forEach((t, el) => {
+        const c = cur.get(el), d = t - c;
+        if (Math.abs(d) < 0.25) { if (c !== t) { cur.set(el, t); el.style.setProperty("--shift", `${t}px`); } return; }
+        const n = c + d * 0.32; cur.set(el, n); el.style.setProperty("--shift", `${n.toFixed(2)}px`); moving = true;
+      });
+      if (moving) raf = requestAnimationFrame(tick);
+    };
     const write = (amt) => {
       const f = fish.current;
       if (!wrap) return;
       const cards = wrap.querySelectorAll(".tlx__rail-tagcard:not(.tlx__rail-measure-card)");
       const leads = wrap.querySelectorAll(".tlx__rail-leader");
       model.cards.forEach((c, i) => {
-        const v = `${fishShift(c.i0 + 0.5, f, amt)}px`;
+        const v = fishShift(c.i0 + 0.5, f, amt);
         // A CLAMPED OPEN PANEL STAYS ON THE EDGE (QA msuap2dy): its left is
         // pinned to railW-300 by the render, so adding its month's shift only
         // pushed it past the rail (measured 467-767 on a 744 rail). The panel
@@ -1644,25 +1659,27 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
         // left and Away, the one the panel actually overlaps, did not move.
         // The exception belongs to a card whose panel is really open.
         const clamped = i === shownCard && lanes && lanes[i].left > railW - 300;
-        cards[i]?.style.setProperty("--shift", v);
+        put(cards[i], v);
         cards[i]?.style.setProperty("--tlx-clamp", clamped ? "1" : "0"); // eased by CSS (timeline.css), not an instant 0
-        leads[i]?.style.setProperty("--shift", v);
+        put(leads[i], v);
       });
-      const nowV = `${fishShift(model.n - 0.5, f, amt)}px`;
-      wrap.querySelector(".tlx__rail-nowlead")?.style.setProperty("--shift", nowV);
-      wrap.querySelector(".tlx__rail-nowcard")?.style.setProperty("--shift", nowV);
+      const nowV = fishShift(model.n - 0.5, f, amt);
+      put(wrap.querySelector(".tlx__rail-nowlead"), nowV);
+      put(wrap.querySelector(".tlx__rail-nowcard"), nowV);
       const root = wrap.closest(".tlx__rail");
       root?.querySelectorAll(".tlx__rail-year").forEach((y) => {
         const pct = parseFloat(y.style.getPropertyValue("--x")) || 0;
-        y.style.setProperty("--shift", `${fishShift((pct / 100) * model.n, f, amt)}px`);
+        put(y, fishShift((pct / 100) * model.n, f, amt));
       });
+      if (!raf) raf = requestAnimationFrame(tick);
     };
     write(fishAmt.get());
-    return fishAmt.on("change", (amt) => {
+    const off = fishAmt.on("change", (amt) => {
       write(amt);
       // relaxed all the way home with nothing new asked for: drop the shape
       if (amt < 0.002 && fishRaw.get() === 0) fish.current = null;
     });
+    return () => { off(); if (raf) cancelAnimationFrame(raf); };
   }, [fishAmt, fishRaw, model.cards, model.n, lanes, activeCard, railW]);
   // PER-CARD EXPANDED HEIGHT (Agam, 2026-08-13: "per card centering"). The
   // resting card centres on the midline of its OWN expanded panel, not the one
