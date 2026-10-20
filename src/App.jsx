@@ -2101,6 +2101,14 @@ const caseStudies = {
     hideCaptions: true, // mtmvvzbk: no figure captions on this case until asked for
     // mtmx0aw8: the pronunciation recordings credit lives in the footer, not under the cards
     // mukx4arl (28 Sep): footer credit removed (key parked). NB the American clip is CC BY-SA, which needs attribution while it plays
+    // mvg6568p (Agam): the OpenStreetMap attribution moved here from the reach explorer, and the credits are built out: every
+    // third-party asset the page uses and its licence (Footer renders an array as a Credits block)
+    credits: [
+      { what: "Map data", who: "© OpenStreetMap contributors", href: "https://www.openstreetmap.org/copyright", licence: "ODbL", note: "the Indiranagar reach explorer: roads, parks and water" },
+      { what: "Animated emoji", who: "Google Noto Emoji", href: "https://googlefonts.github.io/noto-emoji-animation/", licence: "CC BY 4.0", note: "the moments tags, self-hosted" },
+      { what: "Icons", who: "Google Material Symbols", href: "https://fonts.google.com/icons", licence: "Apache 2.0", note: "the timeline's bullet icons" },
+      { what: "Icons", who: "Phosphor Icons", href: "https://phosphoricons.com", licence: "MIT", note: "the role map and constraint icons" },
+    ],
     _credits: "Pronunciation recordings from Wikimedia Commons: British by Soundguys (CC0), American by Dvortygirl (CC BY-SA 3.0).",
     // mtmhmszl: the gif has real alpha, so the video keeps it (no white matte):
     // HEVC-with-alpha .mov for Safari, VP9-with-alpha .webm elsewhere.
@@ -8586,7 +8594,20 @@ function Footer({ credits }) {
   return (
     <footer className="footer">
       {/* per-page credits (a licence that needs attribution, say) */}
-      {credits && <span className="footer__credits">{credits}</span>}
+      {Array.isArray(credits) ? (
+        <section className="footer__credits-block" aria-label="Credits">
+          <h2 className="footer__credits-h">Credits</h2>
+          <ul className="footer__credits-list">
+            {credits.map((c) => (
+              <li key={c.who}>
+                <span className="footer__credits-what">{c.what}</span>
+                <a href={c.href} target="_blank" rel="noopener noreferrer">{c.who}</a>
+                <span className="footer__credits-lic">{c.licence}{c.note ? `, ${c.note}` : ""}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : credits && <span className="footer__credits">{credits}</span>}
       <a href="mailto:agamagar117@gmail.com">
         <span className="footer__mail">
           <MailIcon />

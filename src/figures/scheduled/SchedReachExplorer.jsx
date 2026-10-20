@@ -275,7 +275,7 @@ export default function SchedReachExplorer() {
             <path d="M-5 0H5M0 -5V5" />
           </g>
         </svg>
-        <a className="rex__osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
+        {/* mvg6568p: the © OpenStreetMap contributors (ODbL) attribution now lives in the page footer's Credits */}
         <p className="rex__hint">{touched ? "Drag the circle, or its edge to resize" : "Drag the circle to explore"}</p>
       </div>
     </div>

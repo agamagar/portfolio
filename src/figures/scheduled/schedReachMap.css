@@ -18,7 +18,7 @@
 .rex { --rex-mute: color-mix(in srgb, var(--fg) 38%, var(--bg)); --rex-none: color-mix(in srgb, var(--fg) 12%, var(--bg)); }
 .rex .rex__title { font: 400 1.5rem/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); padding: 16px 16px 0; margin: 0; } /* mvg63bjp (Agam): "Delivery availability" in Stack Sans at the heading size (24px) */
 .rex .rex__big--hl { color: var(--sdc-c2); font-size: 34px; }
-.rex__legend--min { margin-top: 10px; }
+.rex__legend--min { margin-top: 10px; padding-left: 32px; } /* mvg65gbl (Agam): extra left padding (was 19px) */
 .rex__legend--min li { grid-template-columns: 8px 1fr auto; color: var(--muted); }
 .rex__road--minor { opacity: 0.55; }
 .rex .rex__ring { fill: none; }

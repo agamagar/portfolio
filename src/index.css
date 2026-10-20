@@ -7437,6 +7437,14 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 
 /* per-page credits line in the footer */
 .footer__credits { display: block; margin: 0 0 0.6rem; font-size: 0.6875rem; color: var(--muted); }
+/* mvg6568p: the built-out Credits block (an array of { what, who, href, licence, note }) */
+.footer__credits-block { margin: 0 0 1.5rem; }
+.footer__credits-h { margin: 0 0 0.6rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.footer__credits-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; font-size: 0.75rem; line-height: 1.5; color: var(--muted); }
+.footer__credits-list li { display: flex; flex-wrap: wrap; column-gap: 0.6rem; }
+.footer__credits-what { min-width: 6.5rem; }
+.footer__credits-list a { color: var(--fg); text-underline-offset: 2px; }
+.footer__credits-lic { color: var(--muted); }
 
 /* mtmx10qn: the opening question sits well below the lead, a lot more air above it */
 .article__body p.article__ask { margin-top: 4.5rem; }
