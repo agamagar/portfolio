@@ -5,7 +5,7 @@
 :root:not(.dark) .dtr { --paper: #f3f0ea; --ink-text: #1b1824; --ink-dim: rgba(27,24,36,.6); }
 .dtr-defs { position: absolute; }
 
-.dtr-row { padding: 18px 0 8px; }
+.dtr-row { padding: 26px 0 14px; }
 .dtr-row + .dtr-row { border-top: 1px dashed color-mix(in srgb, var(--ink-text) 16%, transparent); }
 .dtr-row__label { display: inline-flex; flex-direction: column; font-weight: 800; font-size: clamp(15px, 2vw, 19px); letter-spacing: .01em; }
 .dtr-row__line { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin-top: 14px; }
@@ -61,3 +61,7 @@
 .dtr-cell__t { font-weight: 600; }
 .dtr-cell__tag { font-style: normal; }
 .dtr-end__t { font-weight: 400; letter-spacing: -0.01em; }
+
+/* mvgj4xlm: each question is its own section with a standard sub-heading */
+.dtr-row__label { font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.01em; }
+.dtr-row:first-child { padding-top: 6px; }

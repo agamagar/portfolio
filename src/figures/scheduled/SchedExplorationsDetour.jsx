@@ -73,7 +73,8 @@ const SHOW_DTR_END = false; // mvggfli3 (Agam, "hide this"): set true to bring b
 const SHOW_DTR_TOGGLE = false; // mvggc7xf (Agam, "make lanes default and hide it"): set true to bring the Rows / Lanes toggle back
 
 export default function SchedExplorationsDetour() {
-  const [mode, setMode] = useState("lanes");
+  const [mode, setMode] = useState("rows"); // mvgj4xlm: three stacked sections, each question's marker path running left to right. "lanes" (the vertical view) stays in the code, reachable with SHOW_DTR_TOGGLE
+  const [peak, setPeak] = useState(0); // rows and lanes draw once, as they scroll in, and stay drawn
   const [seen, setSeen] = useState(false); // lanes draw once, as they scroll in, and stay drawn
   const reduce = useReducedMotion();
   const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
@@ -87,7 +88,7 @@ export default function SchedExplorationsDetour() {
     }
   });
 
-  useEffect(() => { if (beat >= 1) setSeen(true); }, [beat]);
+  useEffect(() => { if (beat >= 1) setSeen(true); setPeak((p) => Math.max(p, beat)); }, [beat]);
   const lanesOn = seen || beat >= 1;
 
   return (
@@ -135,10 +136,10 @@ export default function SchedExplorationsDetour() {
         </div>
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
-          <div className="dtr-row__label"><span>{row.label}</span></div>
+          <div className="dtr-row__label" role="heading" aria-level={3}><span>{row.label}</span></div>
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
-              const on = beat >= i + 1;
+              const on = peak >= i + 1 || beat >= i + 1;
               return (
                 <div className="dtr-cell" key={c.t} data-on={on} data-v={c.v} style={{ "--k": k }}>
                   <Mark v={c.v} on={on} last={k === row.chips.length - 1} />
@@ -152,7 +153,7 @@ export default function SchedExplorationsDetour() {
         </div>
       ))}
 
-      {SHOW_DTR_END && <div className="dtr-end" data-on={mode === "lanes" ? lanesOn : beat >= ROWS.length + 1}>
+      {SHOW_DTR_END && <div className="dtr-end" data-on={mode === "lanes" ? lanesOn : peak >= ROWS.length + 1}>
         <span className="dtr-end__l">Converged</span>
         <p className="dtr-end__t">Schedule on the cart, per shipment, one single page, slots inline.</p>
       </div>}

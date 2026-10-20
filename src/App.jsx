@@ -2612,6 +2612,7 @@ const caseStudies = {
       {
         h: "The explorations",
         nav: "Explorations",
+        figNextDetour: true,
         figIn: "schedEtaScroll", // mukvt7cp (28 Sep): the callout variants, scrolling in right to left inside the section
         group: "Process",
         tldr:
@@ -10217,7 +10218,8 @@ function CaseStudyBodyFull({ cs }) {
               <SectionFigure fig={s.figNext} variant="article" bare />
             </EF>
           )}
-          {s.figNext === "schedExplorations" && <ExplorationsDetourAfter EF={EF} />}
+          {/* mvgj74re: the Detour lanes sit after the end of "The explorations" section, not inside the constraints one */}
+          {s.figNextDetour && <ExplorationsDetourAfter EF={EF} />}
           {/* 11 Oct: a whiteboard (src/figures/board) after the main figure, so it never replaces one:
               whiteboardNext: { board, alt, caption }. SectionFigure renders the easel, the lightbox writes it live. */}
           {s.whiteboardNext && (
