@@ -20,7 +20,8 @@ const CALLOUTS = [
   { a: 34.9, b: 42.2, y: 38.5, x: 6, t: "Pharmacy orders", d: "A prescription step lives in the same cart: one of the things that make it complex before scheduling asks for room." },
   { a: 57.1, b: 60.4, y: 58.7, x: 94, t: "More rows than shipments", d: "Gift-bag and “ordering for someone” rows sit in the same list. [CONFIRM what each is for]" },
   { a: 64.0, b: 77.7, y: 70.8, x: 6, t: "The bill, and what was saved", d: "Fees, coupons and the total (“To Pay”, “Total savings”) close the scroll: the page scheduling had to fit into." },
-  { a: 96.6, b: 99.9, y: 98.2, x: 94, t: "Where the pay button goes", d: "Pay Online and Pay on Delivery end the page. Where the pay button went on an unserviceable cart ran as two experiments." },
+  // mvgm2r93 (Agam, "option 7 not needed"): step 7 is parked; restore this line to bring it back
+  // { a: 96.6, b: 99.9, y: 98.2, x: 94, t: "Where the pay button goes", d: "Pay Online and Pay on Delivery end the page. Where the pay button went on an unserviceable cart ran as two experiments." },
 ];
 
 const STEP_MS = 3800;
