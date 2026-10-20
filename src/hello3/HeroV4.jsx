@@ -193,8 +193,12 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
       if (fc.on) {
         const dx = p.x + c.dx - fcx, dy = p.y + lh / 2 - fcy, dist = Math.hypot(dx, dy);
         if (dist < RANGE) {
-          const s = (1 - dist / RANGE) ** 1.6, ux = dx / (dist || 1), uy = dy / (dist || 1);
-          tx = ux * s * PUSH + fc.vx * s * VEL * 12; ty = uy * s * PUSH + fc.vy * s * VEL * 12;
+          // letters inside the face's footprint are pushed out past its edge; a soft tail reaches further, so
+          // neighbours at different distances separate and a word splits around the face
+          const r0 = FW * S.fs * 0.5, ux = dx / (dist || 1), uy = dy / (dist || 1);
+          const f = 1 - dist / RANGE, s = f * f;
+          const m = Math.max(0, r0 - dist) + PUSH * s;
+          tx = ux * m + fc.vx * s * VEL * 12; ty = uy * m * 0.8 + fc.vy * s * VEL * 12;
           tr = (ux >= 0 ? 1 : -1) * s * TILT * (0.5 + Math.min(1, speed / 900) * 0.5); ts = 1 + s * GROW;
         }
       }
@@ -257,6 +261,12 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     clearTimeout(d.timer);
     S.drag = null;
     if (!d.active) return;
+    let drop = null;
+    if (!cancel && d.pts) { // the gap closest to where the face was let go (same measure as nearest())
+      const cx = d.tx + FW * S.fs / 2, cy = d.ty + FH * S.fs / 2, lh = LH * S.fs; let bd = Infinity;
+      for (const p of d.pts) { const q = Math.hypot(p.x - cx, (p.y - (cy - lh / 2)) * 1.4); if (q < bd) { bd = q; drop = p; } }
+    }
+    if (drop && drop.g !== S.g) S.g = drop.g;
     S.fc.on = false; S.fc.vx = S.fc.vy = 0; // the springs carry the characters home
     cancelAnimationFrame(S.raf); S.raf = 0;
     head.current.classList.remove("hv4--drag");
@@ -265,7 +275,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
     // the face settles into the slot it has been holding open
     const h = head.current; h.classList.add("hv4--settle"); setTimeout(() => h.classList.remove("hv4--settle"), 320);
     saveSlot(S.g);
-    place(false);
+    place(!!drop);
   };
   const onDown = (e) => {
     if (e.button > 0 || S.drag) return;
@@ -281,11 +291,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
       begin(e);
     }
     d.tx = d.fx + (e.clientX - d.p0.x); d.ty = d.fy + (e.clientY - d.p0.y);
-    const hit = nearest(d.tx + FW * S.fs / 2, d.ty + FH * S.fs / 2);
-    if (hit && hit.g !== S.g) { // the slot jumps to the new gap and the words re-wrap around it, now
-      moveTo(hit.g, "live");
-      d.pts = gapPoints(S.L, S.widths, S.fs);
-    }
+    // the words hold still while dragging: only the characters move aside. The face drops into the nearest gap on release
     kick(); kickRipple();
   };
   const onKey = (e) => {
