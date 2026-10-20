@@ -1065,6 +1065,7 @@ function RoleEditorial({ s }) {
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
 function RoleScopeMap({ s, i }) {
+  const [mapView, setMapView] = useState("tree"); // mvg9bd94 + mvgb0gi8: tree (default) or the packed-circles map
   const [view, setView] = useState("left"); // mvdvotz9 (Agam): "Icon left" is the default
   // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
   // "Option 3" tag, no dashed box, and its label carries the section's heading id for the index and scroll-spy.
@@ -1076,6 +1077,18 @@ function RoleScopeMap({ s, i }) {
       {!final && <RoleOptionTag n={3} name="Scope map" />}
       {final ? <h2 id={`sec-${i}`} className="rv__label">My role</h2> : <p className="rv__label">My role</p>}
       <p className="rv__statement">{s.roleFrame.statement}</p>
+      <div className="rv-map__vt" role="group" aria-label="Map view">
+        {[["tree", "Tree"], ["circles", "Circles"]].map(([k, l]) => (
+          <button key={k} type="button" aria-pressed={mapView === k} onClick={() => setMapView(k)}>{l}</button>
+        ))}
+      </div>
+      {mapView === "circles" ? (
+        <div className="rv-pack" role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
+          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b><small>end to end</small></span>
+          {ROLE_PARTNERS.map((p, k) => { const a = (-90 + k * 120) * Math.PI / 180; return <span key={p} className="rv-pack__c rv-pack__c--who" style={{ left: `${50 + 24 * Math.cos(a)}%`, top: `${50 + 24 * Math.sin(a)}%`, "--d": 24 }}>{p}</span>; })}
+          {ROLE_FUNCTIONS.map((f, k) => { const a = [-45, 5, 90, 190, 235][k] * Math.PI / 180; return <span key={f} className="rv-pack__c rv-pack__c--fn" style={{ left: `${50 + 41 * Math.cos(a)}%`, top: `${50 + 41 * Math.sin(a)}%`, "--d": 17 }}>{f}</span>; })}
+        </div>
+      ) : (
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
         <span className="rv-map__me"><b>Lead designer</b><small>end to end</small></span>
         <ul className="rv-map__cols">
@@ -1083,6 +1096,7 @@ function RoleScopeMap({ s, i }) {
           <li className="rv-map__node rv-map__node--fns">{ROLE_FUNCTIONS.map((f) => <span key={f} className="rv-map__fn">{f}</span>)}</li>
         </ul>
       </div>
+      )}
       {/* mv5iv45m (12 Oct, "there were three metrics with icons and small descriptions: bring them back"): the stats are
           back (roleFrame.hideMapStats is off) as the icon rows, centred under the map, three across. The outlined
           box that repeated the same numbers stays parked (roleFrame.hideMapFoot). */}
