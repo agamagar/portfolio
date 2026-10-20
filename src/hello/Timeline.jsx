@@ -1624,12 +1624,14 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
   // variable the stylesheet already reads on cards, leaders and the now-mark;
   // the years get it too). One subscription, ~30 nodes, only while the spring
   // is moving - the pointer never drives this, so it cannot wobble on a sweep.
+  const shiftCur = useRef(null); // each node's CURRENT shift, kept across this effect re-running (a new card opening re-runs it)
+  if (!shiftCur.current) shiftCur.current = new WeakMap();
   useEffect(() => {
     const wrap = cardsRef.current;
     // mvgf46bn / mvf5kraa ("this timeline glitches"): the wave's centre snaps from tick to tick as the pointer crosses them, so a
     // card's shift used to jump up to ~100px in ONE frame. Every written shift now eases toward its target (a short exponential
     // approach, ~3 frames), cards and leaders alike so they stay one object; the first write lands exactly (no ease from 0).
-    const cur = new Map(), tgt = new Map();
+    const cur = shiftCur.current, tgt = new Map();
     let raf = 0;
     const put = (el, px) => { if (!el) return; if (!cur.has(el)) { cur.set(el, px); el.style.setProperty("--shift", `${px}px`); } tgt.set(el, px); };
     const tick = () => {
