@@ -2647,6 +2647,7 @@ const caseStudies = {
         h: "Different ways we explored how schedule could exist on the app",
         nav: "Ways to exist",
         group: "Process",
+        stack: true, // mvgmceoe (Agam, "make this a vertical layout"): heading above the text, not in a label column beside it
         whiteboardNext: SD_BOARDS.directions, // 11 Oct: tabbed vs single page, and the sentence that decided it
         tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
         p: [
