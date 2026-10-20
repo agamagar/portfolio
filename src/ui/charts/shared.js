@@ -12,6 +12,9 @@ export const ramp = (n) =>
     return `color-mix(in oklab, var(--ch-seq-hi) ${t}%, var(--ch-seq-lo))`;
   });
 
+export const SEQ5 = ramp(5);
+export const SEQ7 = ramp(7);
+
 export const fmtK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(Math.round(n)));
 export const fmtInt = (n) => Math.round(n).toLocaleString("en-IN");
 export const fmtPct0 = (n) => Math.round(n) + "%";

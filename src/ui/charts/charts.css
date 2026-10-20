@@ -61,3 +61,12 @@
 }
 .ch .ch-legend, .ch .ch-legend li { font-size: 12px !important; line-height: 1.3 !important; margin-bottom: 0; }
 .ch table, .ch figcaption { font-size: 12px; }
+.ch-note { margin: 10px 0 0; font-size: 12px !important; color: var(--ch-mute); }
+
+.ch-blocks { display: grid; gap: 10px; }
+.ch-block { width: var(--w); display: grid; grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr); align-items: center; column-gap: 1.25rem; padding: 0.9rem 1.4rem; border-radius: 6px; corner-shape: round; background: #9674db; color: #1a1030; clip-path: inset(0 100% 0 0 round 6px); transition: clip-path 900ms cubic-bezier(.2,.8,.2,1) calc(var(--i) * 120ms); }
+.ch[data-in="true"] .ch-block { clip-path: inset(0 0 0 0 round 6px); }
+.ch-block__num { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); font-weight: 600; font-size: clamp(2.25rem, 5.4vw, 3.75rem); line-height: 1; letter-spacing: -0.02em; }
+.ch-block__desc { font-size: 0.875rem; line-height: 1.35; }
+@media (max-width: 700px) { .ch-block { width: 100%; grid-template-columns: 1fr; row-gap: 0.4rem; } }
+@media (prefers-reduced-motion: reduce) { .ch-block { clip-path: none; transition: none; } }
