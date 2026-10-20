@@ -1040,7 +1040,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
      dark (dataviz-validated); the slot mix is one purple ramp. */
 .rwf-run { margin: 1rem 0 2rem; display: flex; flex-direction: column; }
 .rwf {
-  --ink: #33095e; --lbl: #33095e; --muted: rgba(51, 9, 94, 0.65); --rule: rgba(51, 9, 94, 0.14);
+  --ink: #33095e; --lbl: #6240cf; --muted: rgba(51, 9, 94, 0.65); --rule: rgba(51, 9, 94, 0.14);
   --sa: #5b3fd1; --sb: #c0621a; --grid: rgba(51, 9, 94, 0.1); --wash: rgba(51, 9, 94, 0.045);
   aspect-ratio: var(--case-study-frame-default);
   padding: var(--case-study-frame-default-padding);

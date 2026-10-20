@@ -2419,6 +2419,7 @@ const caseStudies = {
         },
         figure:
           "Out of hours, a disruption, an address beyond coverage, an item out of stock, a store at capacity. Each one is demand with nowhere to go.",
+        hideFigure: true, // mvgiw1sh (Agam, "remove this"): the empty placeholder figure + caption is hidden; delete this line to bring it back
         // muieho5p: the dots under the five reasons removed
       },
       {
@@ -10157,7 +10158,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.insightBefore && <SchedUseCases />}
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
-          {(s.figure || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && (
+          {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && (
             <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}
               {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}
@@ -10200,7 +10201,7 @@ function CaseStudyBodyFull({ cs }) {
                 bare={s.figBare}
               />
               )}
-              {s.figure && <figcaption>{s.figure}</figcaption>}
+              {s.figure && !s.hideFigure && <figcaption>{s.figure}</figcaption>}
               {s.figureHeading && <figcaption className="article__figcap-heading">{s.figureHeading}</figcaption>}
             </EF>
           )}
