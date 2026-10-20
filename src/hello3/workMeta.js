@@ -10,7 +10,7 @@ export const PROJECT_DATE = {
   "/work/zepiris": { year: 2026, date: "20/01" }, // from the projects list in App.jsx
   "/work/scheduled-delivery": { year: 2025, date: "08/08" },
   "/work/dassh": { year: 2025, date: "15/03" }, // from the projects list in App.jsx
-  "/list": { year: 2023, date: "01/01" }, // CaratLane: year only
+  "/work/caratlane": { year: 2023, date: "01/01" }, // CaratLane: year only
   "/work/toppr": { year: 2019, date: "04/06" },
 };
 const key = (href) => {
@@ -31,7 +31,7 @@ export const PROJECT_ROWS = [
   { year: "2025", org: "Dassh", line: "Building a B2B SaaS from the ground up", href: "/work/dassh" },
   { year: "2026", org: "Away", line: "An agent that never takes the wheel", href: "/work/away-agent" },
   { year: "2026", org: "Zepto", line: "Zepto’s first open source platform", href: "/work/zepiris" },
-  { year: "2023", org: "CaratLane", line: "E-commerce for a jewelry brand" /* mtqs7lcx: shorter */, href: "/list" },
+  { year: "2023", org: "CaratLane", line: "E-commerce for a jewelry brand" /* mtqs7lcx: shorter */, href: "/work/caratlane" },
   { year: "2019", org: "Toppr", line: "Joyful learning experiences for students", href: "/work/toppr" },
 ];
 export const projectRow = (href) => PROJECT_ROWS.find((r) => r.href === href);
