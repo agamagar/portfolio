@@ -2182,3 +2182,22 @@ html .page--article .article__body .ig ul.ig__bars > li::before, html .page--art
 
 /* mvg9bvbv (Agam, "this text should be title case"): the Scheduled rail's card labels are not upper-cased */
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; } /* outranks the type-pass rule that upper-cases it */
+
+/* list <-> circles toggle on the role-slide point lists */
+.rwf__rl { display: grid; gap: 1.25rem; min-width: 0; }
+.rwf__rl-toggle { justify-self: start; }
+.rwf__rl-row { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; }
+.rwf__rl-row > li { border: 0; padding: 0; margin: 0 0 0 -4%; display: block; flex: 0 1 11.5rem; min-width: 0; }
+.rwf__rl-row > li:first-child { margin-left: 0; }
+.page--article .article__body .rwf-run .rwf .rwf__rl-c {
+  width: 100%; aspect-ratio: 1; border-radius: 50%; corner-shape: round; cursor: pointer; padding: 0.6rem;
+  display: grid; place-content: center; justify-items: center; gap: 0.3rem; text-align: center;
+  background: transparent; color: var(--ink); border: 1.5px solid var(--lbl);
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.page--article .article__body .rwf-run .rwf .rwf__rl-c[data-on] { background: #5b3fd1; border-color: #5b3fd1; color: #fff; }
+.rwf__rl-c:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
+.rwf__rl-n { font-size: 0.75rem; opacity: 0.7; font-variant-numeric: tabular-nums; }
+.rwf__rl-t { font: 500 clamp(0.72rem, 1.45vw, 0.95rem)/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
+.rwf__rl-detail { margin: 1.25rem auto 0; max-width: 52ch; text-align: center; color: var(--muted); min-height: 3.2em; }
+@media (prefers-reduced-motion: reduce) { .rwf__rl-c { transition: none; } }

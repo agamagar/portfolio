@@ -718,6 +718,48 @@ const pickSide = (s) => Object.fromEntries(SIDE_KEYS.filter((k) => s[k]).map((k)
 const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SIDE_KEYS.includes(k)));
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
+// list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
+// overlapping outlined circles, one per point, with the detail of the picked one beneath
+function RoleList({ items, vertical }) {
+  const [view, setView] = useState("list");
+  const [on, setOn] = useState(0);
+  const rows = items.map((it) => (Array.isArray(it) ? it : [null, it]));
+  return (
+    <div className="rwf__rl">
+      <div className="rwf-tabs rwf__rl-toggle" role="group" aria-label="Points view">
+        {[["list", "List"], ["circles", "Circles"]].map(([k, l]) => (
+          <button key={k} type="button" className="rwf-tabs__tab" aria-pressed={view === k} aria-selected={view === k} onClick={() => setView(k)}>{l}</button>
+        ))}
+      </div>
+      {view === "list" ? (
+        <ol className={"rwf__list" + (vertical ? " rwf__list--vertical" : "")}>
+          {rows.map(([head, text], i) => (
+            <li key={i}>
+              <span className="rwf__n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+              {head && <span className="rwf__what">{head}</span>}
+              <span className="rwf__detail">{text}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div className="rwf__rl-circles">
+          <ol className="rwf__rl-row">
+            {rows.map(([head, text], i) => (
+              <li key={i}>
+                <button type="button" className="rwf__rl-c" data-on={i === on ? "" : undefined} aria-pressed={i === on} onClick={() => setOn(i)} onMouseEnter={() => setOn(i)}>
+                  <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                  <span className="rwf__rl-t">{head || text}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Slide({ s: s0, embedded, compact, noCad, part }) {
   const s = part === "side" ? pickSide(s0) : part === "main" ? omitSide(s0) : s0;
   // mv5iv45e: the vertical header rises in (opacity + 28px, label then title) when its section is a quarter in view, as
@@ -768,20 +810,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
         )}
         {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
         {s.kind === "list" && (
-          <ol className={"rwf__list" + (s.vertical ? " rwf__list--vertical" : "")}>
-            {/* mujvef11 (27 Sep): every point built like a timeline step: small
-                meta, a headline saying what the point says, then the detail */}
-            {s.items.map((it, i) => {
-              const [head, text] = Array.isArray(it) ? it : [null, it];
-              return (
-                <li key={i}>
-                  <span className="rwf__n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
-                  {head && <span className="rwf__what">{head}</span>}
-                  <span className="rwf__detail">{text}</span>
-                </li>
-              );
-            })}
-          </ol>
+          <RoleList items={s.items} vertical={s.vertical} />
         )}
         {s.pairs && (
           <ul className="rwf__pairs" aria-label="Copy, before and after">
