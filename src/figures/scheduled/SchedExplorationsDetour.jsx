@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion, useInViewLoop } from "../ds/hooks";
-import IphoneFrame from "../ds/IphoneFrame";
 import "./schedExplorationsDetour.css";
 
 // Agentation mvg8xj51-ht1eue: a copy of "The explorations" illustrated after Pentagram's "In Defense of the
@@ -40,17 +39,47 @@ const STROKE = {
   shipped: { c: "#9674db", d: "M0 22 C18 6 38 38 60 20 S84 22 92 22", tail: "M92 22 L100 22", head: "M80 9 L96 22 L80 35" },
 };
 
+// rows view: the same paths in true pixels (a 232 x 54 cell) so the marker has one even width everywhere; scaling the
+// 100 x 44 drawing unevenly made horizontal runs thin and vertical ones fat
+const CW = 232, CH = 54;
+const px = (d) => { let i = 0; return d.replace(/-?\d+(\.\d+)?/g, (n) => String((i++ % 2 === 0 ? +n * CW / 100 : +n * CH / 44).toFixed(1))); };
+const PX = Object.fromEntries(Object.entries(STROKE).map(([k, s]) => [k, { ...s, d: px(s.d), tail: s.tail && px(s.tail), head: s.head && px(s.head) }]));
+
+PX.shipped.head = `M204 14 L224 ${CH / 2} L204 ${CH - 14}`; // an arrowhead drawn in pixels, so it keeps its shape
+
 function Mark({ v, on, last }) {
-  const s = STROKE[v];
+  const s = PX[v];
+  const mid = CH / 2;
   return (
-    <svg className="dtr-mark" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true" data-on={on} data-v={v}>
-      <path className="dtr-mark__rule" d="M0 22 L100 22" />
+    <svg className="dtr-mark" viewBox={`0 0 ${CW} ${CH}`} width={CW} height={CH} aria-hidden="true" data-on={on} data-v={v}>
+      <path className="dtr-mark__rule" d={`M0 ${mid} L${CW} ${mid}`} />
       {s.tail && <path className="dtr-mark__tail" d={s.tail} />}
-      <g filter="url(#dtr-marker)" stroke={s.c}>
+      <g filter="url(#dtr-marker-h)" stroke={s.c}>
         <path className="dtr-mark__ink" d={s.d} pathLength="1" />
         {s.head && last && <path className="dtr-mark__ink dtr-mark__head" d={s.head} pathLength="1" />}
       </g>
     </svg>
+  );
+}
+
+// a horizontally scrolling row: scroll-snap, an edge fade on whichever side has more to show
+function Scroller({ children }) {
+  const ref = useRef(null);
+  const [edge, setEdge] = useState({ l: false, r: false });
+  const measure = () => {
+    const el = ref.current; if (!el) return;
+    setEdge({ l: el.scrollLeft > 4, r: el.scrollLeft + el.clientWidth < el.scrollWidth - 4 });
+  };
+  useEffect(() => {
+    measure();
+    const el = ref.current; if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(measure); ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div className="dtr-scroll" ref={ref} onScroll={measure} data-l={edge.l} data-r={edge.r} tabIndex={0} role="group" aria-label="Directions, scroll sideways">
+      {children}
+    </div>
   );
 }
 
@@ -99,6 +128,10 @@ export default function SchedExplorationsDetour() {
       <svg width="0" height="0" className="dtr-defs" aria-hidden="true" focusable="false">
         <defs>
           {/* a hair of wobble so the strokes read as felt-tip, not vector */}
+          <filter id="dtr-marker-h" filterUnits="userSpaceOnUse" x="-20" y="-20" width="272" height="94">
+            <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="4" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" />
+          </filter>
           <filter id="dtr-marker" x="-5%" y="-30%" width="110%" height="160%">
             <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="4" result="n" />
             <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" />
@@ -140,7 +173,7 @@ export default function SchedExplorationsDetour() {
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
           <div className="dtr-row__label" role="heading" aria-level={3}><span>{row.label}</span></div>
-          <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
+          <Scroller><div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
               const on = peak >= i + 1 || beat >= i + 1;
               return (
@@ -150,12 +183,12 @@ export default function SchedExplorationsDetour() {
                   <span className="dtr-cell__t">{c.t}</span>
                   <span className="dtr-cell__tag">{TAG[c.v]}</span>
                   {c.screen
-                    ? <IphoneFrame className="dtr-phone" screen={c.screen} alt={c.t} width={104} controls={false} />
-                    : <IphoneFrame className="dtr-phone dtr-phone--none" width={104} controls={false} alt={c.t}><span>No screen<br />built</span></IphoneFrame>}
+                    ? <img className="dtr-shot" src={c.screen} alt={c.t} loading="lazy" draggable="false" />
+                    : <div className="dtr-shot dtr-shot--none" role="img" aria-label={c.t + ": no screen built"}><span>No screen<br />built</span></div>}
                 </div>
               );
             })}
-          </div>
+          </div></Scroller>
         </div>
       ))}
 
