@@ -26,6 +26,7 @@
 // shared-element move.
 
 const READY_MS = 150;
+const NO_SKELETON_BEAT_MS = 700; // a case that opts out of the skeleton: the old page is held (View Transition snapshot) this long for its hero
 const SKELETON_CAP_MS = 2600; // the skeleton never outlives this: the page shows regardless
 const isCase = (p) => p.startsWith("/work/") && p !== "/work/resume";
 const isHome = (p) => p === "/" || p === "/portfolio";
@@ -35,11 +36,13 @@ const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
 
 /* ---------- prefetch: hover or focus on a project link warms its hero ---------- */
 
+let eagerSlugs = []; // cases whose hero is warmed at idle, so opening them never waits (no skeleton)
 let assetsFor = () => null; // App supplies: slug -> { images: [], warm: () => Promise }
 const warmed = new Map(); // slug -> Promise (settles when the hero's assets are decoded)
 
 export function configureProjectTransition(opts) {
   if (opts.assetsFor) assetsFor = opts.assetsFor;
+  if (opts.eagerSlugs) eagerSlugs = opts.eagerSlugs;
 }
 
 const slugOf = (path) => path.slice("/work/".length).split(/[?#]/)[0];
@@ -76,6 +79,8 @@ let installed = false;
 export function installProjectIntent() {
   if (installed || typeof document === "undefined") return;
   installed = true;
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
+  idle(() => eagerSlugs.forEach((slug) => prefetchProject("/work/" + slug)));
   const linkOf = (e) => {
     const a = e.target?.closest?.("a[href]");
     if (!a) return null;
@@ -292,7 +297,7 @@ export async function runRouteTransition(from, to, commit) {
   const assets = opening ? prefetchProject(to) : Promise.resolve();
   let readyBefore = await Promise.race([
     Promise.all([assets, fontsReady()]).then(() => true),
-    sleep(opening ? READY_MS : 0).then(() => false),
+    sleep(opening ? (assetsFor(slugOf(to))?.noSkeleton ? NO_SKELETON_BEAT_MS : READY_MS) : 0).then(() => false),
   ]);
   if (token !== navToken) return;
 
@@ -301,7 +306,7 @@ export async function runRouteTransition(from, to, commit) {
       // ready before the swap: open straight onto the content (the SD page's own
       // gate then clears in a frame or two, inside its de-mist). Not ready: the
       // skeleton, from the new page's first frame, until it is.
-      if (!readyBefore) {
+      if (!readyBefore && !assetsFor(slugOf(to))?.noSkeleton) {
         showSkeleton();
         watchUntilReady(token);
       }
