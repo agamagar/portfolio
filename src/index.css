@@ -8897,7 +8897,7 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .article__index--spy .article__index-group-list { border-left-color: var(--line); }
 .article__index-slider {
   position: absolute;
-  left: 0; right: 0; top: 0;
+  left: 0; width: 6px; top: 0;
   height: var(--pill-h, 0px);
   transform: translateY(var(--pill-y, 0px));
   opacity: 0;
@@ -8908,16 +8908,17 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .article__index--spy[data-pill="on"] .article__index-slider { opacity: 1; }
 .article__index-glow {
   position: absolute;
-  left: 8%; right: 8%; bottom: -9px; height: 16px;
+  left: -5px; top: 10%; bottom: 10%; width: 16px;
   border-radius: 50%;
-  background: linear-gradient(90deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
-  filter: blur(7px);
+  background: linear-gradient(180deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
+  filter: blur(6px);
   opacity: 0.6;
 }
+/* a slim 6px glass pill; the purple line runs inside it */
 .article__index-glass {
   position: absolute;
-  inset: 0;
-  border-radius: 10px;
+  left: 0; width: 6px; top: 2px; bottom: 2px;
+  border-radius: 999px;
   background: var(--glass-film);
   -webkit-backdrop-filter: blur(10px) saturate(1.8);
   backdrop-filter: blur(10px) saturate(1.8);
@@ -8927,11 +8928,12 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .article__index-glass::after {
   content: "";
   position: absolute;
-  left: 12%; right: 12%; bottom: 0;
-  height: 2px;
+  left: 50%; top: 6px; bottom: 6px;
+  width: 2px;
+  margin-left: -1px;
   border-radius: 2px;
   background: #9674db;
-  box-shadow: 0 0 8px 1px rgba(150, 116, 219, 0.7);
+  box-shadow: 0 0 6px 1px rgba(150, 116, 219, 0.7);
 }
 html.dark .article__index-glow { opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) {

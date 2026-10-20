@@ -64,25 +64,23 @@
 }
 .cis__sheet li button {
   display: block; width: 100%; min-height: 2.75rem;
-  padding: 0.4rem 0.85rem;
+  padding: 0.4rem 0.85rem 0.4rem 1.1rem;
   border: 0; border-radius: 12px; position: relative;
   background: none; text-align: left; font: inherit; font-size: 0.9375rem;
   color: var(--muted); cursor: pointer;
 }
-.cis__sheet li button.is-active {
-  color: var(--fg);
-  background: var(--glass-film);
-  box-shadow: var(--glass-edge);
-}
-/* the one active state: a #9674db line under the glass pill, its light dispersing */
+.cis__sheet li button.is-active { color: var(--fg); }
+/* the one active state: a slim 6px glass pill at the label's left, a #9674db line inside it */
 .cis__sheet li button.is-active::after {
-  content: ""; position: absolute; left: 12%; right: 12%; bottom: 0; height: 2px;
-  border-radius: 2px; background: #9674db; box-shadow: 0 0 8px 1px rgba(150, 116, 219, 0.7);
+  content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 6px;
+  border-radius: 999px; background: var(--glass-film); box-shadow: var(--glass-edge);
+  background-image: linear-gradient(#9674db, #9674db);
+  background-size: 2px calc(100% - 12px); background-position: center; background-repeat: no-repeat;
 }
 .cis__sheet li button.is-active::before {
-  content: ""; position: absolute; left: 8%; right: 8%; bottom: -8px; height: 14px; z-index: -1;
-  border-radius: 50%; filter: blur(7px); opacity: 0.6; pointer-events: none;
-  background: linear-gradient(90deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
+  content: ""; position: absolute; left: -5px; top: 10%; bottom: 10%; width: 16px; z-index: -1;
+  border-radius: 50%; filter: blur(6px); opacity: 0.6; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
 }
 .cis__sheet li { position: relative; z-index: 0; }
 @keyframes cis-fade { from { opacity: 0; } }
