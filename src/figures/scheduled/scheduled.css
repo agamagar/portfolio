@@ -2211,3 +2211,17 @@ html .page--article .article__body .ig ul.ig__bars > li::before, html .page--art
 .rwf__rl-t { font: 500 clamp(0.72rem, 1.45vw, 0.95rem)/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
 .rwf__rl-detail { margin: 1.25rem auto 0; max-width: 52ch; text-align: center; color: var(--muted); min-height: 3.2em; }
 @media (prefers-reduced-motion: reduce) { .rwf__rl-c { transition: none; } }
+
+
+/* mvgar01a: the whole cart page scrolls inside a standard iPhone frame; the steps sit beside it (stacked under it on a phone) */
+.cpf { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2.5rem; align-items: center; justify-content: center; }
+.cpf__phone { justify-self: center; }
+.cpf__scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; background: #fff; }
+.cpf__scroll::-webkit-scrollbar { display: none; }
+.cpf__scroll:focus-visible { outline: 2px solid #8b6cf0; outline-offset: -2px; }
+.cpf .cpf__pg { position: relative; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; }
+.cpf__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; max-width: 22rem; }
+.cpf__steps li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0.75rem; align-items: start; }
+.cpf__steps li:not([data-active]) .cpf__label { opacity: 0.4; }
+.cpf__steps li[data-active] .cpf__dot { scale: 1.2; background: #7a56ee; box-shadow: 0 0 0 4px rgba(139, 108, 240, 0.28); }
+@media (max-width: 760px) { .cpf { grid-template-columns: 1fr; gap: 1.5rem; } .cpf__steps { max-width: none; } }

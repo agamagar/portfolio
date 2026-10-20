@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../ds/hooks";
+import IphoneFrame from "../ds/IphoneFrame";
 import "./scheduled.css";
 
 // The whole cart page, top to bottom (mvf9leyc, 19 Oct 2026): the export laid out flat at full height, not scrolling
@@ -22,15 +23,17 @@ const CALLOUTS = [
   { a: 96.6, b: 99.9, y: 98.2, x: 94, t: "Where the pay button goes", d: "Pay Online and Pay on Delivery end the page. Where the pay button went on an unserviceable cart ran as two experiments." },
 ];
 
-const STEP_MS = 3600;
+const STEP_MS = 3800;
 
+// mvgar01a (Agam, "make this standard height and the widget inside the phone can scroll"): the page is no longer laid out
+// 3,500px tall; it sits in a standard iPhone frame and scrolls INSIDE it (by hand, or on its own as the tour steps). The
+// callouts become the steps beside the phone: the lit widget's step reads in full, the others fade.
 export default function SchedCartPageFlat() {
   const [active, setActive] = useState(0);
-  const [held, setHeld] = useState(false);   // hovering or focused: the tour waits
+  const [held, setHeld] = useState(false);   // the reader is driving: the tour waits
   const [seen, setSeen] = useState(false);
-  const ref = useRef(null);
+  const ref = useRef(null), scroller = useRef(null), pg = useRef(null);
   const reduce = useReducedMotion();
-  // the tour steps through the widgets while the figure is on screen (reduced motion: no timer, click a number instead)
   useEffect(() => {
     if (!ref.current) return undefined;
     const io = new IntersectionObserver(([e]) => setSeen(e.isIntersecting && e.intersectionRatio >= 0.3), { threshold: [0, 0.3, 0.6] });
@@ -42,24 +45,33 @@ export default function SchedCartPageFlat() {
     const t = setInterval(() => setActive((n) => (n + 1) % CALLOUTS.length), STEP_MS);
     return () => clearInterval(t);
   }, [reduce, held, seen]);
+  // scroll the page INSIDE the phone to the lit widget (never the document)
+  useEffect(() => {
+    const sc = scroller.current, p = pg.current;
+    if (!sc || !p) return;
+    const top = (CALLOUTS[active].a / 100) * p.offsetHeight - 70;
+    sc.scrollTo({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" });
+  }, [active, reduce]);
   const cur = CALLOUTS[active];
   return (
-    <div className="cpf" ref={ref}>
-      <div className="cpf__stage" onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}>
-        <div className="cpf__pg">
-          <img className="cpf__page" src={SRC} alt="The full Zepto cart page, top to bottom: offers, shipments, items, prescription, add-ons, bill and the pay buttons." width="720" height="7452" loading="lazy" decoding="async" />
-          <span className="cpf__spot" aria-hidden="true" style={{ "--t": cur.a + "%", "--h": (cur.b - cur.a) + "%" }} />
-        </div>
-        {CALLOUTS.map((c, i) => (
-          <div className="cpf__call" key={c.t} data-side={i % 2 === 0 ? "right" : "left"} data-active={i === active ? "true" : undefined} style={{ "--y": c.y + "%", "--x": c.x + "%" }}>
-            <button type="button" className="cpf__dot" aria-label={`Show: ${c.t}`} aria-pressed={i === active} onClick={() => setActive(i)} onMouseEnter={() => setActive(i)}>{i + 1}</button>
-            <p className="cpf__label"><b>{c.t}</b><span>{c.d}</span></p>
+    <div className="cpf" ref={ref} onMouseLeave={() => setHeld(false)}>
+      <div className="cpf__phone">
+        <IphoneFrame width={320} alt="The full Zepto cart page, scrolling inside a phone" controls={false}>
+          <div className="cpf__scroll" ref={scroller} tabIndex={0} role="region" aria-label="The full cart page; scroll it"
+            onWheel={() => setHeld(true)} onTouchStart={() => setHeld(true)} onPointerDown={() => setHeld(true)}>
+            <div className="cpf__pg" ref={pg}>
+              <img className="cpf__page" src={SRC} alt="The full Zepto cart page, top to bottom: offers, shipments, items, prescription, add-ons, bill and the pay buttons." width="720" height="7452" loading="lazy" decoding="async" />
+              <span className="cpf__spot" aria-hidden="true" style={{ "--t": cur.a + "%", "--h": (cur.b - cur.a) + "%" }} />
+            </div>
           </div>
-        ))}
+        </IphoneFrame>
       </div>
-      <ol className="cpf__list">
+      <ol className="cpf__steps">
         {CALLOUTS.map((c, i) => (
-          <li key={c.t} data-active={i === active ? "true" : undefined}><button type="button" className="cpf__dot cpf__dot--static" aria-label={`Show: ${c.t}`} aria-pressed={i === active} onClick={() => setActive(i)}>{i + 1}</button><p className="cpf__label"><b>{c.t}</b><span>{c.d}</span></p></li>
+          <li key={c.t} data-active={i === active ? "true" : undefined}>
+            <button type="button" className="cpf__dot cpf__dot--static" aria-label={`Show: ${c.t}`} aria-pressed={i === active} onClick={() => { setActive(i); setHeld(true); }}>{i + 1}</button>
+            <p className="cpf__label"><b>{c.t}</b><span>{c.d}</span></p>
+          </li>
         ))}
       </ol>
     </div>

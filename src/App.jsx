@@ -2557,7 +2557,7 @@ const caseStudies = {
           "A shipment is unserviceable outright, because its store is closed or out of stock for that window",
         ],
         // fig: "schedSplit", // mukw52nu (28 Sep): replaced by the cart grid; uncomment to restore
-        fig: "schedCartGrid",
+        // fig: "schedCartGrid", // mvgargvp (Agam, "hide this"): the six-things cart grid is hidden; uncomment to restore
         figBare: true, // mtmrnolv: no figure card around coded figures
         figure:
           "One cart, many hubs. A mixed cart fans out by fulfilling site (Mother Hub feeds the superstore and the dark store), so it ships in pieces, up to four. Scheduling is per shipment, so each answers the slot question on its own: the worst case is four shipments at once, one scheduled, one unavailable, one closed.",
