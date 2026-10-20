@@ -67,3 +67,21 @@ export async function uvMask(url, name, W, H) {
   }
   return c.toDataURL("image/png");
 }
+// object-space bounding box of every mesh (the head's size, for building geometry that fits it)
+export async function bboxes(url) {
+  const gltf = await new Promise((ok, no) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, ok, undefined, no));
+  const out = {};
+  gltf.scene.updateMatrixWorld(true);
+  gltf.scene.traverse((o) => { if (o.isMesh) { o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld); out[o.name] = { min: b.min.toArray().map((v) => +v.toFixed(3)), max: b.max.toArray().map((v) => +v.toFixed(3)) }; } });
+  out._root = { pos: gltf.scene.position.toArray(), scale: gltf.scene.scale.toArray() };
+  return out;
+}
+// head profile: per y slice of a mesh, the x and z extent (to build hair that sits on the scalp)
+export async function slices(url, name, step = 0.2) {
+  const gltf = await new Promise((ok, no) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, ok, undefined, no));
+  let m; gltf.scene.traverse((o) => { if (o.isMesh && o.name === name) m = o; });
+  const P = m.geometry.attributes.position, rows = {};
+  for (let i = 0; i < P.count; i++) { const k = Math.round(P.getY(i) / step) * step; const r = rows[k.toFixed(2)] ||= { xmin: 9, xmax: -9, zmin: 9, zmax: -9, zmaxAtX0: -9 }; const x = P.getX(i), z = P.getZ(i);
+    r.xmin = Math.min(r.xmin, x); r.xmax = Math.max(r.xmax, x); r.zmin = Math.min(r.zmin, z); r.zmax = Math.max(r.zmax, z); if (Math.abs(x) < 0.15) r.zmaxAtX0 = Math.max(r.zmaxAtX0, z); }
+  return rows;
+}

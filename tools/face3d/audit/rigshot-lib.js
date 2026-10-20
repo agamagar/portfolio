@@ -28,3 +28,4 @@ export function shotPose(id, p) {
   rig.pose(p); rig.shaded(renderer, null);
   return renderer.domElement.toDataURL("image/png");
 }
+cfg.plast = { W, H, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true };
