@@ -1819,7 +1819,8 @@
     border-radius 300ms var(--m3-ease-cine-settle),
     box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
     opacity var(--m3-dur-effects-default) var(--m3-effects-default),
-    --tlx-clamp 260ms var(--m3-ease-cine-settle);
+    --tlx-clamp 260ms var(--m3-ease-cine-settle),
+    left 260ms var(--m3-ease-cine-settle); /* the edge clamp moves `left` once per open/close, never per frame: ease it */
   /* `top` IS OUT OF THE LIST AGAIN (2026-08-13, "remove the y-shift"). With the
      card centred by `translate ... -50%`, `top` is a fixed centre line that does
      not change between rest and open - only `height` does - so there is nothing
