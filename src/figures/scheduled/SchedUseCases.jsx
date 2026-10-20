@@ -59,7 +59,9 @@ const CLIPS = new Set(Object.keys(import.meta.glob("/public/figures/scheduled/us
 const REDUCED = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Decorative loop over the photo: plays only while on screen and the tab is
-// visible; the photo is the poster and stays underneath until the first frame.
+// visible; the video's own first frame (use-cases/<key>.webp) is the poster and the
+// fallback image, so nothing changes when playback starts; the old moments photo
+// shows only for a bubble with no clip.
 // No per-frame JS: the browser decodes, we only toggle play/pause.
 function BubbleVideo({ name, style }) {
   const ref = useRef(null);
@@ -80,7 +82,7 @@ function BubbleVideo({ name, style }) {
   const base = `/figures/scheduled/use-cases/${name}`;
   return (
     <video ref={ref} className={"suc__video" + (on ? " is-on" : "")} muted loop playsInline preload="metadata" tabIndex={-1}
-      poster={`/figures/scheduled/moments/${name}-v2.webp`} aria-hidden draggable="false" disablePictureInPicture
+      poster={`/figures/scheduled/use-cases/${name}.webp`} aria-hidden draggable="false" disablePictureInPicture
       disableRemotePlayback onPlaying={() => setOn(true)} style={style}>
       <source src={`${base}.webm`} type="video/webm" />
       <source src={`${base}.mp4`} type="video/mp4" />
@@ -119,7 +121,7 @@ function Orb({ id, sp, delay }) {
         </filter>
       </svg>
       <span className="suc__bubble" style={{ animationDelay: `${delay}s` }}>
-        <img src={`/figures/scheduled/moments/${sp[3]}-v2.webp`} alt="" draggable="false" style={{ filter: `url(#${id})` }} />
+        <img src={CLIPS.has(sp[3]) ? `/figures/scheduled/use-cases/${sp[3]}.webp` : `/figures/scheduled/moments/${sp[3]}-v2.webp`} alt="" draggable="false" style={{ filter: `url(#${id})` }} />
         {CLIPS.has(sp[3]) && !REDUCED && <BubbleVideo name={sp[3]} style={{ filter: `url(#${id})` }} />}
       </span>
     </span>
