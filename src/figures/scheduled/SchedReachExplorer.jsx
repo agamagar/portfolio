@@ -47,8 +47,8 @@ const STORES = [
   { id: "C", name: "Store C", x: 282, y: 556, nightOpen: false },
 ];
 const KIND = [
-  { key: "instant", label: "Instant", color: "var(--rex-mute)" },
-  { key: "sched", label: "Schedule only", color: "var(--sdc-c2)" },
+  { key: "instant", label: "Instant", color: "var(--rex-inst)" },
+  { key: "sched", label: "Schedule only", color: "var(--rex-acc)" },
   { key: "none", label: "Nothing", color: "var(--rex-none)" },
 ];
 
@@ -104,15 +104,16 @@ function buildCity() {
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
 function classify(block, night) {
-  let kind = "none", nearest = null, best = Infinity;
+  let kind = "none", nearest = null, best = Infinity, openBest = Infinity;
   for (const s of STORES) {
     const d = dist(block, s);
     if (d < best) { best = d; nearest = s.id; }
     const open = !night || s.nightOpen;
+    if (open && d < openBest) openBest = d;
     if (open && d <= INSTANT_R) kind = "instant";
     else if (kind !== "instant" && d <= SCHED_R) kind = "sched";
   }
-  return { kind, nearest };
+  return { kind, nearest, depth: Math.min(1, openBest / SCHED_R) }; // 0 beside an open store, 1 at the edge of scheduled reach
 }
 
 export default function SchedReachExplorer() {
@@ -183,6 +184,8 @@ export default function SchedReachExplorer() {
     setC((p) => ({ x: clamp(p.x + d[0], 0, W), y: clamp(p.y + d[1], 0, H) }));
   };
   const fill = (b) => (dist(b, c) <= r ? KIND.find((k) => k.key === b.kind).color : "var(--rex-block)");
+  // like the pin's density ramp: inside the circle a block's tint deepens the nearer it is to an open store
+  const tint = (b) => (dist(b, c) <= r ? (b.kind === "none" ? 0.5 : 1 - b.depth * 0.55) : undefined);
 
   return (
     <div className="rex">
@@ -206,6 +209,15 @@ export default function SchedReachExplorer() {
           {/* mv589p9j (12 Oct, "make it simple"): one number, the one the case turns on. The waffle, the per-store bars and the second stat are gone; the same counts feed the map colours and this line. */}
           <p className="rex__big rex__mono rex__big--hl">{pct[1].toFixed(0)}%</p>
           <p className="rex__lbl">of the {inside.length} blocks in the circle can only schedule</p>
+          <div className="rex__donuts">
+            {[0, 1].map((i) => (
+              <figure key={i} className="rex__donut" style={{ "--p": pct[i].toFixed(1), "--c": KIND[i].color }}>
+                <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14.5" pathLength="100" className="rex__donut-bg" /><circle cx="18" cy="18" r="14.5" pathLength="100" className="rex__donut-fg" /></svg>
+                <b className="rex__mono">{pct[i].toFixed(0)}%</b>
+                <figcaption>{KIND[i].label}</figcaption>
+              </figure>
+            ))}
+          </div>
           <ul className="rex__legend rex__legend--min">
             {KIND.map((k, i) => (
               <li key={k.key}>
@@ -247,10 +259,12 @@ export default function SchedReachExplorer() {
               x={b.x - b.w / 2} y={b.y - b.h / 2} width={b.w} height={b.h}
               fill={fill(b)}
               data-in={dist(b, c) <= r ? "" : undefined}
+              style={tint(b) === undefined ? undefined : { opacity: tint(b) }}
               className="rex__block"
             />
           ))}
-          <g className="rex__geo" aria-hidden="true">
+          <defs><clipPath id="rexSpot"><circle cx={c.x} cy={c.y} r={r} /></clipPath></defs>
+          <g className="rex__geo rex__geo--roads" aria-hidden="true">
             <path d={GEO.minor} className="rex__road rex__road--minor" />
             <path d={GEO.major[2]} className="rex__road rex__road--3" />
             <path d={GEO.major[1]} className="rex__road rex__road--2" />
@@ -258,6 +272,12 @@ export default function SchedReachExplorer() {
             {GEO.labels.map((l) => (
               <text key={l.name} x={l.xy[0]} y={l.xy[1]} transform={`rotate(${l.ang} ${l.xy[0]} ${l.xy[1]})`} className="rex__street" textAnchor="middle">{l.name}</text>
             ))}
+          </g>
+          <g className="rex__geo rex__geo--spot" clipPath="url(#rexSpot)" aria-hidden="true">
+            <path d={GEO.minor} className="rex__road rex__road--minor" />
+            <path d={GEO.major[2]} className="rex__road rex__road--3" />
+            <path d={GEO.major[1]} className="rex__road rex__road--2" />
+            <path d={GEO.major[0]} className="rex__road rex__road--1" />
           </g>
           {STORES.map((s) => {
             const open = !night || s.nightOpen;

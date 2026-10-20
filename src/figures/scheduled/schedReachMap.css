@@ -22,3 +22,25 @@
 .rex__legend--min li { grid-template-columns: 8px 1fr auto; color: var(--muted); }
 .rex__road--minor { opacity: 0.55; }
 .rex .rex__ring { fill: none; }
+
+/* Pin pass (20 Oct 2026, Morphocode Explorer ref): the map outside the circle recedes, inside it is a spotlight: sharp roads, lavender blocks that deepen toward an open store, a fine dotted ring, donuts in the panel. Accent is the site lavender #9674db. */
+.rex { --rex-acc: #9674db; --rex-inst: color-mix(in srgb, #9674db 42%, var(--bg)); }
+.rex .rex__big--hl { color: var(--rex-acc); }
+.rex .rex__geo--roads { opacity: 0.55; }
+.rex .rex__geo--spot .rex__road { stroke: color-mix(in srgb, var(--fg) 62%, var(--bg)); }
+.rex .rex__geo--spot .rex__road--minor { opacity: 0.8; }
+.rex__map .rex__block { transition: opacity 0.35s ease, fill 0.35s ease; opacity: 0.22; }
+.rex__map .rex__block[data-in] { opacity: 1; }
+.rex .rex__ring { stroke: var(--fg); stroke-width: 1.2; stroke-dasharray: 1.5 4; stroke-linecap: round; }
+.rex .rex__handle circle { fill: var(--rex-acc); stroke: none; }
+.rex .rex__handle path { stroke: #fff; stroke-width: 1.6; fill: none; }
+.rex .rex__dot { fill: var(--rex-acc); }
+.rex .rex__store circle { stroke-width: 2; }
+.rex__donuts { display: flex; gap: 22px; margin: 14px 0 4px; }
+.rex__donut { position: relative; margin: 0; width: 84px; text-align: center; }
+.rex__donut svg { display: block; width: 84px; height: 84px; transform: rotate(-90deg); }
+.rex__donut circle { fill: none; stroke-width: 5; }
+.rex__donut-bg { stroke: color-mix(in srgb, var(--fg) 12%, var(--bg)); }
+.rex__donut-fg { stroke: var(--c); stroke-dasharray: var(--p) 100; stroke-linecap: butt; transition: stroke-dasharray 0.35s ease; }
+.rex__donut b { position: absolute; left: 0; right: 0; top: 29px; font-size: 16px; font-weight: 600; }
+.rex__donut figcaption { margin-top: 4px; font-size: 11px; color: var(--muted); }
