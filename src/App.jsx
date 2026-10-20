@@ -2993,6 +2993,7 @@ const caseStudies = {
       {
         h: "Impact",
         group: "Outcome",
+        stack: true, // mvgntthg (Agam, "make the layout vertical"): heading, TL;DR and photo in one column instead of side by side
         sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
         // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
         // one-sentence version (adoption, 3x value, cancellation, appliances)
