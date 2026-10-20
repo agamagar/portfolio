@@ -1065,9 +1065,10 @@ function RoleEditorial({ s }) {
 // the editorial list (Option 1), the My role frame's icon-left rows (mv56uy5f) and the first scope map's bare numbers
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
+const SHOW_MAP_TREE = false; // mvgjw15e: Circles is the only My role map view and the Tree/Circles toggle is hidden; true brings the Tree and the toggle back
 const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "Expectations with the C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
-  const [mapView, setMapView] = useState("tree"); // mvg9bd94 + mvgb0gi8: tree (default) or the packed-circles map
+  const [mapView, setMapView] = useState(SHOW_MAP_TREE ? "tree" : "circles"); // mvg9bd94 + mvgb0gi8: tree (default) or the packed-circles map
   const [view, setView] = useState("left"); // mvdvotz9 (Agam): "Icon left" is the default
   // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
   // "Option 3" tag, no dashed box, and its label carries the section's heading id for the index and scroll-spy.
@@ -1079,11 +1080,11 @@ function RoleScopeMap({ s, i }) {
       {!final && <RoleOptionTag n={3} name="Scope map" />}
       {final ? <h2 id={`sec-${i}`} className="rv__label">My role</h2> : <p className="rv__label">My role</p>}
       <p className="rv__statement">{s.roleFrame.statement}</p>
-      <div className="rv-map__vt" role="group" aria-label="Map view">
+      {SHOW_MAP_TREE && <div className="rv-map__vt" role="group" aria-label="Map view">
         {[["tree", "Tree"], ["circles", "Circles"]].map(([k, l]) => (
           <button key={k} type="button" aria-pressed={mapView === k} onClick={() => setMapView(k)}>{l}</button>
         ))}
-      </div>
+      </div>}
       {mapView === "circles" ? (
         <div className="rv-pack" role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
           {/* positions in % of the square; the lines run edge to edge from the lead designer to every circle (the Tree's relationships) */}
