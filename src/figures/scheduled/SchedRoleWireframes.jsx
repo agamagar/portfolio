@@ -639,6 +639,7 @@ const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SI
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
 const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
+const SHOW_RWF_KEYBOX = false; // mvgn7qr3 ("hide this"): the dashed legend + source box under the speed charts; true brings it back
 const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
 const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): the detail paragraph under the Circles view; true brings it back
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
@@ -759,10 +760,12 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
             {/* mukq2tj2 (28 Sep): "combine this and the legends": the shared legend
                 (mukpkglc: purple = scheduled orders in both charts, orange = stores) and
                 the source note sit in one dashed box */}
+            {SHOW_RWF_KEYBOX && (
             <div className="rwf-keybox">
               {/* mukuubjs (28 Sep): where the data comes from, not how it was pulled (writing harness, Sauer register, gate clean) */}
             <p className="rwf__source">Source: Zepto's own order records, every order booked with a delivery slot, from the first on 10 October 2025 to 21 September 2026. Store counts are the stores live in each month.</p>
             </div>
+            )}
           </>
         )}
         {s.charts && (
