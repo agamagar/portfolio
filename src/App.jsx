@@ -2470,13 +2470,21 @@ const caseStudies = {
         // mukvlu72 / mukvy9ql / mukw85nf: tried inside the section. mukwgm7k (28 Sep): the
         // text sits right of the heading again (the standard layout) and the animated
         // board runs FULL WIDTH, right after the section
-        figNext: "schedExplorations",
         stack: true, // mv598hzr (12 Oct): vertical layout, heading on top; the three constraints run in a row
         group: "Problem",
         // mukxbblb (28 Sep): the TL;DR takes the intro line, verbatim; was "One-hour
         // slots, peak-time fulfilment, and an ironclad delivery-window promise shaped
         // every decision." mukxaiwm: the paragraph that carried it is removed
         tldr: "Scheduled delivery sits on top of a live logistics system, so the design had to respect hard limits rather than wish them away:",
+      },
+      {
+        // mvg8tk7s (Agam, "bring them to a new section"): the three constraints (with the lock-screen figure that shows the
+        // promise) moved out of "The constraints" into their own section right after it; the board that follows keeps its place
+        h: "What we had to design around",
+        nav: "Design limits",
+        stack: true,
+        group: "Problem",
+        figNext: "schedExplorations",
         // mukwqanr (28 Sep): "bigger font ... under that, a small explanation. The
         // bullet points don't work." Each constraint is now a title in the heading
         // size with a short line under it ({ t, d } items, see .article__terms)
