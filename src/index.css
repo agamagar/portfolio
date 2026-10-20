@@ -8917,3 +8917,8 @@ html:not(.dark) .rv-pack__c--me { background: #5b3fd1; }
 .rv-pack__c--who { background: color-mix(in srgb, var(--rv-accent) 22%, transparent); border: 1px solid color-mix(in srgb, var(--rv-accent) 70%, transparent); color: var(--rv-ink); }
 .rv-pack__c--fn { border: 1px solid color-mix(in srgb, var(--rv-accent) 60%, transparent); color: var(--rv-ink); }
 @media (prefers-reduced-motion: reduce) { .rv-map__vt button { transition: none; } }
+
+
+/* mvgf46cj (Agam, "make another button on top of this and dock the annotations plugin here"): the Agentation toolbar's collapsed
+   button docks at the top of the left button stack (above the palette button), not bottom-right */
+html [data-agentation-toolbar] { right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) - 3px) !important; bottom: calc(var(--dev-base, 16px) + 129px) !important; }
