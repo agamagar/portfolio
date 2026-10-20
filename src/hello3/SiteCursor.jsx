@@ -245,6 +245,7 @@ export default function SiteCursor({ caseMode = false } = {}) {
           if (ov === 0 && off === 0) break;
         }
         spot = best;
+        const hb = el.querySelector(".sc__hit"); if (hb) { hb.style.width = bw + "px"; hb.style.height = bh + "px"; }
       }
       return spot;
     };
@@ -329,6 +330,9 @@ export default function SiteCursor({ caseMode = false } = {}) {
       const q = clampPt(ptr.x + Math.cos(ang) * rad, ptr.y + Math.sin(ang) * rad);
       chase(q[0], q[1], dt, 2.0, 0.95);
     };
+    const hitBtn = el.querySelector(".sc__hit");
+    const onHit = (e) => { if (e.isTrusted && mode !== "follow" && el.hasAttribute("data-live")) activate(); };
+    hitBtn?.addEventListener("click", onHit);
     const activate = () => {
       if (mode === "tour") { settle(); queue = []; groups = []; cur = null; }
       queue = []; cur = null; mode = "follow"; lastMove = vt;
@@ -478,17 +482,19 @@ export default function SiteCursor({ caseMode = false } = {}) {
       window.removeEventListener("wheel", onTouch);
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("click", onClick, true);
+      hitBtn?.removeEventListener("click", onHit);
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [on]);
 
   if (!on) return null;
   return (
-    <div className="sc" ref={root} aria-hidden="true">
-      <svg className="sc__arrow" width="1" height="1" overflow="visible">
+    <div className="sc" ref={root}>
+      <button type="button" className="sc__hit" aria-label="Activate the Agam cursor" />
+      <svg className="sc__arrow" width="1" height="1" overflow="visible" aria-hidden="true">
         <path d={STATES.arrow.fig.parts[0]} transform={`scale(${FS}) translate(${-STATES.arrow.fig.hot[0]} ${-STATES.arrow.fig.hot[1]})`} />
       </svg>
-      <span className="sc__tag"><span className="sc__t-rest">Click to activate</span><span className="sc__t-live">Agam</span></span>
+      <span className="sc__tag" aria-hidden="true"><span className="sc__t-rest">Click to activate</span><span className="sc__t-live">Agam</span></span>
     </div>
   );
 }

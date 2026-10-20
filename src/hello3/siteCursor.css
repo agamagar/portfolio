@@ -46,3 +46,13 @@ html.dark .sc__tag { color: #f2f7ff; background: linear-gradient(rgba(109, 177, 
 .sc[data-hover] .sc__tag { background: linear-gradient(rgba(26, 111, 208, 0.1), rgba(26, 111, 208, 0.1)), var(--glass-film-hover); }
 @media (hover: none), (pointer: coarse) { .sc { display: none; } }
 @media (prefers-reduced-motion: reduce) { .sc { transition: none; } }
+/* THE PERCHED CURSOR IS A BUTTON (Agam, 20 Oct: "the cursor itself should be clickable"): a transparent hit box over the
+   arrow and its label, live only while parked; it never covers more than the cursor, so the face drag and the headline
+   around it keep their own pointer. Following the pointer it is gone (display none, out of the tab order too). */
+.sc__hit {
+  position: absolute; left: -3px; top: -3px; margin: 0; padding: 0; border: 0; background: none;
+  border-radius: 10px; pointer-events: none; cursor: pointer; appearance: none;
+}
+.sc[data-live]:not([data-follow]):not([data-morph]) .sc__hit { pointer-events: auto; }
+.sc[data-follow] .sc__hit { display: none; }
+.sc__hit:focus-visible { outline: 2px solid var(--sc-cur); outline-offset: 2px; }
