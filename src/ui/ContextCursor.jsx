@@ -102,20 +102,21 @@ function samplePart(svg, d, scale, hot) {
   }
   return out;
 }
+export function buildShape(svg, n) {
+  const st = STATES[n];
+  const ds = st.fig ? st.fig.parts : st.parts, scale = st.fig ? FS : 1, hot = st.fig ? st.fig.hot : [0, 0];
+  const a = samplePart(svg, ds[0], scale, hot);
+  let b;
+  if (ds[1]) b = samplePart(svg, ds[1], scale, hot);
+  else { // a second blob that is a point at the first one's centre: it can grow out of nothing
+    let x = 0, y = 0; for (let i = 0; i < NPT; i++) { x += a[i * 2]; y += a[i * 2 + 1]; }
+    b = new Float32Array(NPT * 2); for (let i = 0; i < NPT; i++) { b[i * 2] = x / NPT; b[i * 2 + 1] = y / NPT; }
+  }
+  return [a, b];
+}
 export function buildShapes(svg) {
   const out = {};
-  for (const n of STATE_NAMES) {
-    const st = STATES[n];
-    const ds = st.fig ? st.fig.parts : st.parts, scale = st.fig ? FS : 1, hot = st.fig ? st.fig.hot : [0, 0];
-    const a = samplePart(svg, ds[0], scale, hot);
-    let b;
-    if (ds[1]) b = samplePart(svg, ds[1], scale, hot);
-    else { // a second blob that is a point at the first one's centre: it can grow out of nothing
-      let x = 0, y = 0; for (let i = 0; i < NPT; i++) { x += a[i * 2]; y += a[i * 2 + 1]; }
-      b = new Float32Array(NPT * 2); for (let i = 0; i < NPT; i++) { b[i * 2] = x / NPT; b[i * 2 + 1] = y / NPT; }
-    }
-    out[n] = [a, b];
-  }
+  for (const n of STATE_NAMES) out[n] = buildShape(svg, n);
   return out;
 }
 
@@ -126,10 +127,21 @@ export default function ContextCursor() {
     const el = root.current;
     if (!el) return undefined;
     const glass = el.querySelector(".cx__glass"), body = el.querySelector(".cx__body"), p1 = el.querySelector(".cx__g1"), p2 = el.querySelector(".cx__g2"), lab = el.querySelector(".cx__label"), orgG = el.querySelector(".cx__org"), orgP = el.querySelector(".cx__arrow");
-    let SH = null; // built once, in idle time (~16k path measurements), or on the first paint that needs it
+    // Each state's outline is measured once (~700 path measurements, a few ms to ~100 ms each): one state per idle
+    // slice, so the page never freezes for the whole ~16k; a paint that needs a state not built yet builds just that one.
+    const SH = {};
     const svgEl = el.querySelector(".cx__svg");
-    const ensure = () => SH || (SH = buildShapes(svgEl));
-    const idleBuild = window.requestIdleCallback ? window.requestIdleCallback(ensure, { timeout: 2500 }) : setTimeout(ensure, 600);
+    const shapeOf = (n) => SH[n] || (SH[n] = buildShape(svgEl, n));
+    let alive = true, qi = 0, idleBuild = 0;
+    const idleStep = () => {
+      idleBuild = 0;
+      if (!alive) return;
+      while (qi < STATE_NAMES.length && SH[STATE_NAMES[qi]]) qi++;
+      if (qi >= STATE_NAMES.length) return;
+      shapeOf(STATE_NAMES[qi++]);
+      idleBuild = window.requestIdleCallback ? window.requestIdleCallback(idleStep, { timeout: 2500 }) : setTimeout(idleStep, 120);
+    };
+    idleBuild = window.requestIdleCallback ? window.requestIdleCallback(idleStep, { timeout: 2500 }) : setTimeout(idleStep, 600);
     const NAMES = STATE_NAMES;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const KEYS = ["x", "y", "w", "h", "r", "sc", "ga", "g2a", "la", ...STATE_NAMES.map((n) => "w_" + n), "aa", "lean", "st", ...Array.from({ length: 20 }, (_, i) => "p" + i)];
@@ -163,9 +175,9 @@ export default function ContextCursor() {
       lab.style.transform = `translate3d(${(gx + 9).toFixed(1)}px,-50%,0)`;
       // the organic arrow: a weighted sum of the three outlines (weights are springs), leaning and
       // stretching a little with pointer speed; skipped entirely when it is not the visible shape
-      if ((V.aa > 0.01 || T.aa > 0) && ensure()) {
+      if (V.aa > 0.01 || T.aa > 0) {
         const act = []; // only the states with weight right now (usually one or two)
-        for (const n of NAMES) { const w = V["w_" + n]; if (w > 0.004 || w < -0.004) act.push([SH[n], w]); }
+        for (const n of NAMES) { const w = V["w_" + n]; if (w > 0.004 || w < -0.004) act.push([shapeOf(n), w]); }
         let d = "";
         for (let sub = 0; sub < 2; sub++) {
           for (let i = 0; i < NPT * 2; i += 2) {
@@ -261,7 +273,7 @@ export default function ContextCursor() {
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("touchstart", onTouch, { passive: true });
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(st); if (window.cancelIdleCallback) window.cancelIdleCallback(idleBuild);
+      alive = false; cancelAnimationFrame(raf); cancelAnimationFrame(st); if (window.cancelIdleCallback) window.cancelIdleCallback(idleBuild); else clearTimeout(idleBuild);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
