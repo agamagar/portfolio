@@ -10,7 +10,7 @@ import { DURATION, ramp } from "../figures/faces/morph/flood";
 import { FW, FH } from "../figures/faces/morph/morphRenderer";
 import "./faceLab.css";
 
-const SKINS = [["clay", "Clay"], ["noir", "Noir"]]; // the rigs the hero's renderer carries
+const SKINS = [["clay", "Clay"], ["noir", "Noir"], ["plast", "Clay, soft"]]; // the rigs the hero's renderer carries
 const EASES = {
   hero: ramp, // the hero's speed ramp
   linear: (u) => u,
@@ -52,6 +52,7 @@ function useShared() {
       try {
         mmLocal = await createMascotMorph(off, { clear: true, ink: "#17171a" });
         await mmLocal.MR.loadNoir();
+        await mmLocal.MR.loadPlast();
         if (dead) return;
         setMm(mmLocal);
       } catch (e) { setErr(String(e?.message || e)); return; }

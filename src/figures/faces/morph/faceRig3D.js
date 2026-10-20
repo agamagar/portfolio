@@ -10,7 +10,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
-import { MODES, skinById, partKey, VERT, FRAG } from "../faceSkins";
+import { MODES, skinById, partKey, VERT, FRAG, SHAPE_GLSL } from "../faceSkins";
+import { buildPlastHair } from "./plastHair";
 
 // the ids pass: part codes (red channel / 255); the ear is the skin past the cheek on the side we see (the far ear stays skin:
 // the drawing has none, so it is just part of the silhouette)
@@ -20,11 +21,13 @@ const EAR_X = -0.98; // object space: skin further out than this, on the near si
 const ID_VERT = /* glsl */ `
 #include <common>
 #include <morphtarget_pars_vertex>
+${SHAPE_GLSL}
 varying vec3 vO; varying vec2 vUv;
 void main(){
   vUv = uv;
   #include <begin_vertex>
   #include <morphtarget_vertex>
+  if (uShape > 0.5) transformed = softShape(transformed);
   vO = transformed;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
 }`;
@@ -43,14 +46,14 @@ void main(){
 // reads this instead; a missing file falls back to the GLB's map.
 // hat: show the hat parts (the clay rig hides them); a rig without an id map, raw skin or margins
 // (noir has none) passes null for them and draws what its own maps carry
-export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false }) {
+export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false, procedural = false }) {
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(27, W / H, 0.1, 50);
   const lightDir = new THREE.Vector3(-0.35, 0.75, 0.75).normalize();
   const lView = new THREE.Vector3();
   // uActs (shared, as FaceSV): how much the eyes, brows and mouth are moving, so their skin
   // margins fade to the clean skin while an emote moves them
-  const shared = { uL: { value: lView }, uMode: { value: MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() }, uDefringe: { value: 0 } };
+  const shared = { uL: { value: lView }, uMode: { value: procedural ? MODES.plast : MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() }, uDefringe: { value: 0 } };
   const skin = skinById(skinId);
 
   const body = new THREE.Group();
@@ -108,6 +111,11 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     // it read a texture of another type and every clay draw failed (an empty, flat head)
     const mv = Object.fromEntries(await Promise.all(Object.entries(fit.mv?.maps || {}).map(async ([part, file]) => [part, await data(fitSrc.replace(/[^/]*$/, file))])));
     const root = gltf.scene;
+    // a drawn (procedural) skin wears no fitted texture and no GLB hair or props: its own hair is built in code
+    if (procedural) {
+      for (const n of ["Hair", "Hat", "HatBand", "Pin"]) { const m = root.getObjectByName(n); if (m) m.removeFromParent(); }
+      for (const m of buildPlastHair()) root.add(m);
+    }
     placeCam(cam, fit);
     root.updateMatrixWorld(true);
     const meshes = [];
@@ -116,7 +124,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     for (const o of meshes) {
       const key = partKey(o.name);
       if (key === "Pin" || (!hat && (key === "Hat" || key === "HatBand"))) { o.visible = false; continue; }
-      const map = o.material?.map || null;
+      const map = procedural ? null : o.material?.map || null;
       if (map) { map.colorSpace = THREE.NoColorSpace; map.needsUpdate = true; }
       const L = fit.light;
       const crease = key === "Mouth" || key === "MouthInner";
@@ -124,7 +132,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
         : key === "Hat" || key === "HatBand" ? L.hat || L.hair : L.skin;
       const P = skin.parts[key] || skin.parts.Skin;
       const mat = new THREE.ShaderMaterial({
-        vertexShader: VERT, fragmentShader: FRAG, vertexColors: !!o.geometry.attributes.color,
+        vertexShader: VERT, fragmentShader: FRAG, side: procedural && key === "Hair" ? THREE.DoubleSide : THREE.FrontSide, vertexColors: !!o.geometry.attributes.color,
         uniforms: { ...shared, uBase: { value: new THREE.Color(P.base) }, uShade: { value: new THREE.Color(P.shade) }, uDeep: { value: new THREE.Color(P.deep) },
           uSpec: { value: P.spec || 0 }, uIsHair: { value: key === "Hair" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
           uSH: { value: SHv(lit) }, uK: { value: lit.k },
@@ -143,7 +151,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uRestModel: { value: new THREE.Matrix4() }, uRestV: { value: new THREE.Matrix4() }, uRestP: { value: new THREE.Matrix4() }, uMirror: { value: 0 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
-          uTurn: { value: 0 },
+          uTurn: { value: 0 }, uShape: { value: procedural && key !== "Hair" && key !== "HatBand" ? 1 : 0 },
           uMapRaw: { value: (o.name === "Skin" && skinRaw) || blank }, uMargin: { value: (o.name === "Skin" && margins) || blank },
           uHasRaw: { value: o.name === "Skin" && skinRaw && margins ? 1 : 0 },
           uMV: { value: (mv[o.name] && o.geometry.attributes._mvuv && mv[o.name]) || blank },
@@ -160,7 +168,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
       // (the hat counts as hair: part of the head's silhouette, with the hair's flat colour)
       const idCode = PART_ID[o.name] ?? (key === "Skin" ? PART_ID.Skin : key === "Hat" || key === "HatBand" ? PART_ID.Hair : 0);
       const idMat = new THREE.ShaderMaterial({ vertexShader: ID_VERT, fragmentShader: ID_FRAG,
-        uniforms: { uId: { value: idCode }, uEarSplit: { value: o.name === "Skin" ? 1 : 0 } } });
+        uniforms: { uId: { value: idCode }, uEarSplit: { value: o.name === "Skin" ? 1 : 0 }, uShape: { value: procedural && key !== "Hair" && key !== "HatBand" ? 1 : 0 } } });
       o.material = mat;
       shadedMats.push(mat);
       o.userData.mats = { shaded: mat, id: idMat };
@@ -184,10 +192,16 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     // smearing its far ear
     const away = Math.min(1, (Math.abs(Math.atan2(Math.sin(p.yaw || 0), Math.cos(p.yaw || 0))) + Math.abs(p.pitch || 0)) / 0.7);
     for (const m of shadedMats) m.uniforms.uTurn.value = away;
-    const z = 1 - 0.22 * away * away * (3 - 2 * away);
+    const z = (1 - 0.22 * away * away * (3 - 2 * away)) * (procedural ? 0.78 : 1); // (the soft clay's hair is wider than the fitted head)
     if (Math.abs(cam.zoom - z) > 1e-4) { cam.zoom = z; cam.updateProjectionMatrix(); }
     head.rotation.set(p.hpitch || 0, p.hyaw || 0, p.tilt || 0);
-    const keys = p.keys || {};
+    // a drawn skin's resting face (narrowed eyes, a closed smile) fades out as any emote key comes in
+    let keys = p.keys || {};
+    if (procedural && Object.keys(rig.baseKeys).length) {
+      const act = Math.min(1, Math.max(0, ...Object.values(keys)) * 2.5);
+      keys = { ...keys };
+      for (const [k0, v0] of Object.entries(rig.baseKeys)) keys[k0] = Math.max(keys[k0] || 0, v0 * (1 - act));
+    }
     // as FaceSV's fitted look: the lids only while a blink or squint uses them (wide eyes pull
     // them out of sight), the lip's inside only while the mouth moves. (The lip itself stays:
     // the morph's ink head draws its mouth line from it.)
