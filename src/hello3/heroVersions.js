@@ -1,6 +1,6 @@
 // Hero versions: a small registry so the eye menu (ui/HeroSwitch.jsx) and the page (Hello.jsx)
 // share one list. To add a version: add a row here and render it in Hello.jsx's hero.
-// The pick lives in localStorage, a ?hero=<id> URL param wins for the visit, v1 is the default.
+// The pick lives in localStorage, a ?hero=<id> URL param wins for the visit, v4 is the default.
 import { useSyncExternalStore } from "react";
 
 export const HERO_VERSIONS = [
@@ -11,7 +11,7 @@ export const HERO_VERSIONS = [
   { id: "v5", label: "v5", note: "Left, face in the text" },
 ];
 const KEY = "hero-version";
-const DEFAULT = "v1";
+const DEFAULT = "v4";
 const valid = (id) => HERO_VERSIONS.some((v) => v.id === id);
 const listeners = new Set();
 
