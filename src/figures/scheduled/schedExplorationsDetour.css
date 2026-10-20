@@ -1,7 +1,7 @@
 /* SchedExplorationsDetour: hand-drawn marker version of the explorations board (after Pentagram, In Defense of the Detour) */
 .dtr { --paper: #15131b; --ink-text: #f1eefb; --ink-dim: rgba(241,238,251,.62); --accent: #9674db;
-  position: relative; width: 100%; box-sizing: border-box; padding: clamp(22px, 4vw, 44px); border-radius: 18px;
-  background: var(--paper); color: var(--ink-text); font-family: var(--serif, Georgia, "Times New Roman", serif); overflow: hidden; }
+  position: relative; width: 100%; box-sizing: border-box; padding: 0;
+  background: transparent; /* mvggfren: no fill, no frame */ color: var(--ink-text); font-family: var(--serif, Georgia, "Times New Roman", serif); overflow: visible; }
 :root:not(.dark) .dtr { --paper: #f3f0ea; --ink-text: #1b1824; --ink-dim: rgba(27,24,36,.6); }
 .dtr-defs { position: absolute; }
 
