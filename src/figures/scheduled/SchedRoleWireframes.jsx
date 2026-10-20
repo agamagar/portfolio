@@ -605,7 +605,8 @@ const titleCase = (t) => {
   const w = t.split(" ");
   return w.map((x, i) => (i > 0 && i < w.length - 1 && SMALL.has(x.toLowerCase()) ? x.toLowerCase() : x.replace(/(^|-)([a-z])/g, (_, a, c) => a + c.toUpperCase()))).join(" ");
 };
-const phaseLabel = (what) => (PHASE_EMOJI[what] ? `${PHASE_EMOJI[what]} ${what}` : what);
+// mvg9bvbv (Agam): the rail's card labels read in title case (and the rail no longer upper-cases them)
+const phaseLabel = (what) => (PHASE_EMOJI[what] ? `${PHASE_EMOJI[what]} ${titleCase(what)}` : titleCase(what));
 function phaseRailModel(phases) {
   // 28 Sep: the rail ENDS just after the last step starts, so Hardening is the
   // last thing on it and the earlier steps get the width (was Feb 28, which

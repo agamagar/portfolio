@@ -2179,3 +2179,6 @@ html .page--article .article__body .ig ul.ig__bars > li::before, html .page--art
    .gtmr-pan carries the image and the video and is translated by SchedGtmReal.jsx (useBannerScroll) */
 .gtmr-one .gtmr-scroll { position: absolute; inset: 0; clip-path: inset(13.2% 0 0 0); border-radius: 13.7% / 6.3%; overflow: hidden; }
 .gtmr-one .gtmr-pan { position: absolute; inset: 0; will-change: transform; }
+
+/* mvg9bvbv (Agam, "this text should be title case"): the Scheduled rail's card labels are not upper-cased */
+html .rwf-glass .tlx__rail-tagcard .tlx__rail-tag, html .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; }
