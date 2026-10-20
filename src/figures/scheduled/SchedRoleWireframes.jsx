@@ -719,11 +719,12 @@ const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SI
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
 const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
+const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
 const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): the detail paragraph under the Circles view; true brings it back
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
 // overlapping outlined circles, one per point, with the detail of the picked one beneath
 function RoleList({ items, vertical }) {
-  const [view, setView] = useState("list");
+  const [view, setView] = useState("circles"); // mvgl5d7w: Circles is the default tab
   const [on, setOn] = useState(0);
   const rows = items.map((it) => (Array.isArray(it) ? it : [null, it]));
   return (
@@ -749,13 +750,13 @@ function RoleList({ items, vertical }) {
             {rows.map(([head, text], i) => (
               <li key={i}>
                 <button type="button" className="rwf__rl-c" data-on={i === on ? "" : undefined} aria-pressed={i === on} onClick={() => setOn(i)} onMouseEnter={() => setOn(i)}>
-                  <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                  {SHOW_RL_NUM && <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>}
                   <span className="rwf__rl-t">{head || text}</span>
                 </button>
               </li>
             ))}
           </ol>
-          SHOW_RL_DETAIL && <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>
+          {SHOW_RL_DETAIL && <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>}
         </div>
       )}
     </div>

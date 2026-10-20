@@ -2197,9 +2197,9 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
   width: 100%; aspect-ratio: 1; border-radius: 50%; corner-shape: round; cursor: pointer; padding: 0.6rem;
   display: grid; place-content: center; justify-items: center; gap: 0.3rem; text-align: center;
   background: transparent; color: var(--ink); border: 1.5px solid var(--lbl);
-  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.page--article .article__body .rwf-run .rwf .rwf__rl-c[data-on] { background: #5b3fd1; border-color: #5b3fd1; color: #fff; }
+.page--article .article__body .rwf-run .rwf .rwf__rl-c[data-on] { transform: scale(1.1); position: relative; z-index: 1; } /* mvgl5pqp: selected = a slight grow, never a fill */
 .rwf__rl-c:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
 .rwf__rl-n { font-size: 0.75rem; opacity: 0.7; font-variant-numeric: tabular-nums; }
 .rwf__rl-t { font: 500 clamp(0.72rem, 1.45vw, 0.95rem)/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
