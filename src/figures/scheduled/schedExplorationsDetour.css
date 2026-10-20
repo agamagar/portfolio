@@ -42,3 +42,19 @@
   .dtr-mark__ink, .dtr-cell__tag, .dtr-end { transition: none; }
   .dtr-mark__ink { stroke-dashoffset: 0; }
 }
+
+.dtr__toggle { display: flex; width: fit-content; margin: 0 0 6px; }
+.dtr-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 3vw, 36px); padding-top: 14px; }
+.dtr-lane { min-width: 0; }
+.dtr-lane__line { margin-top: 10px; }
+.dtr-vcell { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 10px; min-height: 104px; padding-bottom: 0; }
+.dtr-vcell .dtr-mark--v { grid-row: 1; width: 44px; height: 100%; min-height: 104px; }
+.dtr-vcell .dtr-dot { left: 17px; top: -5px; }
+.dtr-vcell:first-child .dtr-dot { top: -5px; }
+.dtr-vcell__txt { align-self: center; padding-bottom: 6px; }
+.dtr-vcell .dtr-cell__t { margin-top: 0; }
+.dtr-vcell .dtr-mark__ink { transition-delay: calc(var(--k, 0) * .55s); }
+.dtr-vcell .dtr-mark__head { transition-delay: calc(var(--k, 0) * .55s + .55s); }
+@media (max-width: 720px) {
+  .dtr-lanes { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+}
