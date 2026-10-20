@@ -8854,3 +8854,49 @@ html .cs-tabs__circle[aria-pressed="true"] { color: var(--link, #1a6fd0); box-sh
 /* the dev round buttons stack above it on the left: QA, Inspect, then the eye */
 :root { --dev-base: max(16px, env(safe-area-inset-bottom)); }
 body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bottom)) + 46px); }
+
+/* Case-study rail (nav.article__index--spy): a hairline spine whose lavender fill
+   tracks page progress, and a 2px marker on the active entry. Weight stays constant
+   so the active entry never reflows. */
+.article__index--spy > ul {
+  position: relative;
+  padding-left: 14px;
+}
+.article__index--spy > ul::before,
+.article__index--spy > ul::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+}
+.article__index--spy > ul::before { background: var(--line); }
+.article__index--spy > ul::after {
+  background: #9674db;
+  transform-origin: top;
+  transform: scaleY(var(--idx-progress, 0));
+}
+.article__index--spy li a { position: relative; --o: 0px; }
+.article__index--spy .article__index-group-list { border-left-color: transparent; }
+.article__index--spy .article__index-group-list li a { --o: 15px; }
+.article__index--spy li a.is-active { font-weight: 460; }
+.article__index--spy li a::before {
+  content: "";
+  position: absolute;
+  left: calc(-14px - var(--o));
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 2px;
+  margin-left: -0.5px;
+  border-radius: 2px;
+  background: #9674db;
+  opacity: 0;
+  transition: opacity var(--m3-dur-effects-fast, 0.2s) var(--m3-effects-fast, ease);
+}
+.article__index--spy li a.is-active::before { opacity: 1; }
+.article__index--spy li a:focus-visible { outline: 2px solid #9674db; outline-offset: 3px; border-radius: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .article__index--spy > ul::after, .article__index--spy li a::before { transition: none; }
+}

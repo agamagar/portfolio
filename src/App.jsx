@@ -342,6 +342,8 @@ const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
 // the window scene's header controls (sky and look), only while the scene is on
 import FontSwitch from "./ui/FontSwitch";
 import ViewMenu from "./ui/ViewMenu";
+import { CASE_NAV } from "./caseNav";
+import CaseIndexSheet from "./ui/CaseIndexSheet"; // < 1100px section index: pill + bottom sheet
 import HeroSwitch from "./ui/HeroSwitch";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
 // The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
@@ -2157,9 +2159,6 @@ const caseStudies = {
       "Impact",
     ],
     cover: "Zepto",
-    // Render the section index as a flat list (no "Problem / Directions / …" group
-    // headers) — the grouped rail read as cluttered on this page.
-    flatIndex: true,
     lead:
       "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested internally through design and then validated, after launch, with a 45-user mixed-method study. The payoff lands in the order itself: a scheduled order was worth about ₹1,450 against ₹543 for an instant one in August 2026, and a year of data later the feature is quietly becoming the channel large appliances are delivered through.",
     deck: scheduledDeck,
@@ -2298,6 +2297,7 @@ const caseStudies = {
       // banner mp4 and the prototype embed still exist as assets and helpers.
       {
         h: "Context & problem",
+        nav: "Context",
         split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
         hideSplit: true, // mvf5jlfu (Agam, "remove"): the heading, post-it and text block is hidden (the figure below stays); delete this line to bring it back
         splitStack: true, // mv4h2fqo (12 Oct, "make this a vertical layout"): heading + note on top, the text below, full width
@@ -2466,6 +2466,7 @@ const caseStudies = {
       },
       {
         h: "The constraints",
+        nav: "Constraints",
         // mukvlu72 / mukvy9ql / mukw85nf: tried inside the section. mukwgm7k (28 Sep): the
         // text sits right of the heading again (the standard layout) and the animated
         // board runs FULL WIDTH, right after the section
@@ -2512,6 +2513,7 @@ const caseStudies = {
       // { breaker: true, image: "/figures/scheduled/photos/crates-greens.webp" },
       {
         h: "The cart is a complex construct", // mujuxhxi (27 Sep): the heading says the claim (was "One cart, many hubs")
+        nav: "The cart",
         group: "Problem",
         tldr:
           "Zepto ships from tiered hubs, so one cart splits into several shipments, each needing its own slot. The worst case split four ways.",
@@ -2542,6 +2544,7 @@ const caseStudies = {
         // the whole cart page (Figma Cart Master File 5C34trG8bBJZi3P48736Lb 1:25562,
         // 2x) inside the phone from the top of the page, scrolling as you pass
         h: "The whole cart, top to bottom",
+        nav: "Cart, top to bottom",
         group: "Problem",
         tldr: "Every one of those constructs lives on one page. Scroll it end to end and you see how much the cart already carries before scheduling asks for room.",
         // mvf9leyc (19 Oct, "put this entire page out, annotate different parts of the page"): laid out flat at full height with
@@ -2553,8 +2556,9 @@ const caseStudies = {
       },
       {
         h: "The explorations",
+        nav: "Explorations",
         figIn: "schedEtaScroll", // mukvt7cp (28 Sep): the callout variants, scrolling in right to left inside the section
-        group: "Directions",
+        group: "Process",
         tldr:
           "Before settling the flow I went wide on three questions: where scheduling lives, how the cart holds it, and how slots get picked.",
         // mukwz62i (28 Sep): "comment the explanation out for now", the body
@@ -2578,7 +2582,8 @@ const caseStudies = {
         // boxes; the title, TL;DR and the three assets are still to come
         // mukxmirl (28 Sep): this and Two directions below are ONE section now
         h: "Different ways we explored how schedule could exist on the app",
-        group: "Directions",
+        nav: "Ways to exist",
+        group: "Process",
         whiteboardNext: SD_BOARDS.directions, // 11 Oct: tabbed vs single page, and the sentence that decided it
         tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
         p: [
@@ -2615,7 +2620,7 @@ const caseStudies = {
       {
         hidden: true, // muky55mj (28 Sep): "hide this section"
         h: "The real work",
-        group: "Directions",
+        group: "Process",
         tldr: "Choosing one page settled the concept, not the interaction. Where each control lived took numbered iterations.",
         p: [
           "Picking the single page was the start, not the end. A flexible, stateful page is easy to make overwhelming, so most of the craft went into the opposite: making density feel obvious. The open questions were where every control should live, whether the slot picker should be a bottom sheet or sit inline, which shipment should be open on arrival, and how to keep five shipments legible at once. It ran for several numbered iterations before it landed.",
@@ -2638,7 +2643,8 @@ const caseStudies = {
         // goes in public/figures/scheduled/instant-to-scheduled-toggle.mp4 (placeholder until then).
         // [CONFIRM] the caption's last line once the recording is in: what the motion does, in his words.
         h: "Instant to Scheduled: the toggle",
-        group: "Solution",
+        nav: "The toggle",
+        group: "Process",
         tldr: "One control moves the order from now to later.", // [CONFIRM] wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
         fig: "schedToggleDemo",
         figBare: true,
@@ -2647,7 +2653,8 @@ const caseStudies = {
       },
       {
         h: "One scroll across midnight",
-        group: "Solution",
+        nav: "Across midnight",
+        group: "Process",
         tldr: "Today and Tomorrow shipped first. Later we dissolved the midnight line into one scroll, because at 11pm you are planning tonight, not tomorrow.",
         // mukxp4ks (28 Sep): three paragraphs condensed into one; the originals are
         // parked in _pLong below
@@ -2667,7 +2674,8 @@ const caseStudies = {
       },
       {
         h: "The go-to-market",
-        group: "Solution",
+        nav: "Go-to-market",
+        group: "Process",
         whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
@@ -2704,7 +2712,8 @@ const caseStudies = {
       },
       {
         h: "The stuck cart",
-        group: "Solution",
+        nav: "Stuck cart",
+        group: "Process",
         tldr: "The hardest state was a cart that stays unserviceable even with a slot. I put it in plain sight.",
         p: [
           "The test scenario was deliberately the worst case, and it was also the hardest state to ship: a cart where an item stays unserviceable even with scheduling, because of a live supply gap. The instinct is to hide the broken thing. I did the opposite. The unserviceable shipment is flagged in place, with the honest consequence stated up front (the items are unavailable and will be removed on save) and, where a store is simply closed, an option to schedule for when it reopens.",
@@ -2719,7 +2728,8 @@ const caseStudies = {
       { breaker: true, image: "/figures/scheduled/photos/crate-packed.webp" },
       {
         h: "Cart-page states",
-        group: "Solution",
+        nav: "Cart states",
+        group: "Process",
         tldr:
           "The cart decides each shipment's fate before you ever pick a slot, so the real surface was a matrix. I drew and shipped every combination.",
         p: [
@@ -2745,7 +2755,8 @@ const caseStudies = {
       },
       {
         h: "Slot-page states",
-        group: "Solution",
+        nav: "Slot states",
+        group: "Process",
         tldr:
           "The slot picker is the dense page, so I mapped every state and designed each one so density never tipped into confusion.",
         p: [
@@ -2805,7 +2816,7 @@ const caseStudies = {
           base: "/figures/scheduled/tracking-crates.webp",
           layers: [{ src: "/figures/scheduled/tracking-card.webp", x: 28.95, y: 12.77, w: 42.1, fx: "flip" }],
         },
-        group: "After booking",
+        group: "Outcome",
         tldr:
           "Later is only trustworthy if it arrives, so most of the trust work sits after checkout: tracking built for a slot, reminders, and a hand-off back to instant.",
         p: [
@@ -2833,7 +2844,8 @@ const caseStudies = {
         // mv59i870 (12 Oct, "build a section showing the copywriting process: all the things we rejected and all the copy we finalised, and how it shows strong first-principles thinking").
         // Written in the Sauer register (writing-craft gate 0/0). Every pair is real: the struck line and its replacement, with its source (see SchedCopyProcess.jsx).
         h: "The copy, from first principles",
-        group: "Solution",
+        nav: "The copy",
+        group: "Process",
         tldr: "The copy was rewritten line by line, and the rewrites show one habit: say what the person needs at that moment.",
         p: [
           "On a feature that asks people to trust \"later\" on an app they open because it means now, the words carry as much weight as the screens. A slot picker that says the wrong thing at the wrong moment spends the trust the whole feature rests on.",
@@ -2846,7 +2858,7 @@ const caseStudies = {
       },
       {
         h: "Impact",
-        group: "After booking",
+        group: "Outcome",
         sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
         // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
         // one-sentence version (adoption, 3x value, cancellation, appliances)
@@ -2937,7 +2949,8 @@ const caseStudies = {
       },
       {
         h: "What users told us",
-        group: "After booking",
+        nav: "User voice",
+        group: "Outcome",
         // mukx7ffq (28 Sep): this section and Returns & refunds became ONE story
         // (SchedResearchStory), like the Impact metrics; the prose, stats, quotes
         // and personas figure are parked (underscored) and Returns is commented out below
@@ -3001,6 +3014,7 @@ const caseStudies = {
       // },
       {
         h: "Reflection",
+        group: "Outcome",
         whiteboardNext: SD_BOARDS.reflection, // 11 Oct: what held, what I would revisit, drop 10-minute delivery?
         tldr: "The real challenge was perception: keeping a scheduled option from diluting the instant promise.",
         p: [
@@ -10238,11 +10252,44 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     return () => obs.disconnect();
   }, [cs, listening]);
 
+  // Index entries (grouped or flat), shared by the desktop rail and the phone sheet.
+  const indexEntries = cs.sections.flatMap((s, i) =>
+    s.breaker || s.noHeading || s.hidden ? [] : [{ i, label: s.nav || CASE_NAV[s.h] || s.h, group: cs.flatIndex ? null : s.group }]
+  );
+  // Rail: a spine that fills with page progress, and the active entry kept in view.
+  const indexRef = useRef(null);
+  useEffect(() => {
+    const nav = indexRef.current;
+    if (!nav) return;
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const a = document.querySelector(".article");
+      if (!a) return;
+      const r = a.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
+      nav.style.setProperty("--idx-progress", p.toFixed(4));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => { window.removeEventListener("scroll", on); window.removeEventListener("resize", on); cancelAnimationFrame(raf); };
+  }, [cs, listening]);
+  useEffect(() => {
+    const nav = indexRef.current;
+    const a = nav?.querySelector("a.is-active");
+    if (!nav || !a || nav.scrollHeight <= nav.clientHeight) return;
+    const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
+    if (r.top < n.top + 24) nav.scrollTop -= n.top + 24 - r.top;
+    else if (r.bottom > n.bottom - 24) nav.scrollTop += r.bottom - (n.bottom - 24);
+  }, [activeSection]);
+
   return (
     <>
     <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
       <div className="article__layout">
-        <nav className="article__index" aria-label="Sections">
+        <nav className="article__index article__index--spy" aria-label="Sections" ref={indexRef}>
           <div className="article__index-top">
             {/* Back is not here any more: it moved into .top-controls so the
                 page has ONE bar of chrome instead of two clusters. The lab's
@@ -10274,8 +10321,9 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
                     <a
                       href={`#sec-${i}`}
                       className={i === activeSection ? "is-active" : undefined}
+                      aria-current={i === activeSection ? "location" : undefined}
                     >
-                      {s.nav || s.h}
+                      {s.nav || CASE_NAV[s.h] || s.h}
                     </a>
                   </li>
                 );
@@ -10292,6 +10340,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
               })}
           </ul>
         </nav>
+        <CaseIndexSheet entries={indexEntries} active={activeSection} />
 
         <article className="article">
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
