@@ -2386,7 +2386,7 @@ const caseStudies = {
         // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
         scene: {
           aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
-          bg: "var(--sd-reasons-bg, #f7f7f7)", // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
+          bg: "transparent", noframe: true /* mvgf46bv (Agam, "remove the fill and stroke"): no box fill, no border; was var(--sd-reasons-bg, #f7f7f7) */, // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
           // muiejocv: the heading moved inside the box (was figureTop, above it)
           title: "When instant delivery fails",
           // muikq572: dark mode. `split` = where the icon ends and the text starts
@@ -9894,6 +9894,7 @@ function SecWrap({ on, stack, center, side, row, children }) {
 }
 
 function CaseStudyBodyFull({ cs }) {
+  const explorationsVariant = useExplorationsVariant(); // the Detour version replaces the old board unless "original" is picked
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
   // the plates row (mtmlg1wh); shared by the standalone render and the duo view
@@ -10182,7 +10183,7 @@ function CaseStudyBodyFull({ cs }) {
           )}
           {/* mujukg3s (27 Sep): the mango scene moved one place up, so the key finding follows it */}
           {/* mukuyuyb (28 Sep): a coded figure moved in from another section, right after this one's */}
-          {s.figNext && (
+          {s.figNext && !(s.figNext === "schedExplorations" && explorationsVariant === "detour") && (
             <EF className="article__figure">
               <SectionFigure fig={s.figNext} variant="article" bare />
             </EF>

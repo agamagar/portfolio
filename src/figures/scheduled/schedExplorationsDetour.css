@@ -58,3 +58,13 @@
 @media (max-width: 720px) {
   .dtr-lanes { grid-template-columns: minmax(0, 1fr); gap: 26px; }
 }
+
+/* mvgf46ct (Agam): the same type as the rest of the case (Stack Sans for titles, Google Sans Flex for the rest), not the serif / all-caps of the reference */
+.dtr { font-family: "Google Sans Flex", "Inter", -apple-system, system-ui, sans-serif; }
+.dtr__title, .dtr-end__t, .dtr-row__label { font-family: "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); }
+.dtr__title { font-size: 1.5rem; font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; text-transform: none; max-width: none; }
+.dtr__cap { font-style: normal; font-size: 0.9375rem; }
+.dtr-row__label { font-weight: 500; }
+.dtr-cell__t { font-weight: 600; }
+.dtr-cell__tag { font-style: normal; }
+.dtr-end__t { font-weight: 400; letter-spacing: -0.01em; }

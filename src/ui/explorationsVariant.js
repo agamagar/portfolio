@@ -1,14 +1,14 @@
 // Variant switch for "The explorations" on the Scheduled Delivery case study. "original" is the board alone;
-// "detour" also mounts the hand-drawn copy (SchedExplorationsDetour) right after it so the two can be compared.
-// The pick lives in localStorage; ?explorations=detour (or original) wins for the visit. Original is the default.
+// "detour" shows the hand-drawn version (SchedExplorationsDetour) INSTEAD of the board (mvgf46ct / mvgf46cz, Agam: make it the
+// default, hide the old board). The pick lives in localStorage; ?explorations=detour (or original) wins for the visit. Detour is the default.
 import { useSyncExternalStore } from "react";
 
 export const EXPLORATION_VARIANTS = [
+  { id: "detour", label: "Detour", note: "Hand-drawn (default)" },
   { id: "original", label: "Original", note: "Chip board" },
-  { id: "detour", label: "Detour", note: "Hand-drawn, below the original" },
 ];
 const KEY = "explorations-variant";
-const DEFAULT = "original";
+const DEFAULT = "detour";
 const valid = (id) => EXPLORATION_VARIANTS.some((v) => v.id === id);
 const listeners = new Set();
 
