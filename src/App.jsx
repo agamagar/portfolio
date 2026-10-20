@@ -10412,26 +10412,22 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   const indexEntries = cs.sections.flatMap((s, i) =>
     s.breaker || s.noHeading || s.hidden ? [] : [{ i, label: s.nav || CASE_NAV[s.h] || s.h, group: cs.flatIndex ? null : s.group }]
   );
-  // Rail: a spine that fills with page progress, and the active entry kept in view.
+  // Rail: ONE glass pill slides behind the active entry (position handed to CSS vars).
   const indexRef = useRef(null);
-  useEffect(() => {
+  const placePill = () => {
     const nav = indexRef.current;
-    if (!nav) return;
-    let raf = 0;
-    const tick = () => {
-      raf = 0;
-      const a = document.querySelector(".article");
-      if (!a) return;
-      const r = a.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
-      nav.style.setProperty("--idx-progress", p.toFixed(4));
-    };
-    const on = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    window.addEventListener("resize", on);
-    return () => { window.removeEventListener("scroll", on); window.removeEventListener("resize", on); cancelAnimationFrame(raf); };
-  }, [cs, listening]);
+    const a = nav?.querySelector("a.is-active");
+    if (!nav || !a) return;
+    const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
+    nav.style.setProperty("--pill-y", `${(r.top - n.top + nav.scrollTop).toFixed(1)}px`);
+    nav.style.setProperty("--pill-h", `${r.height.toFixed(1)}px`);
+    nav.dataset.pill = "on";
+  };
+  useLayoutEffect(() => {
+    placePill();
+    window.addEventListener("resize", placePill);
+    return () => window.removeEventListener("resize", placePill);
+  }, [activeSection, cs, listening]);
   useEffect(() => {
     const nav = indexRef.current;
     const a = nav?.querySelector("a.is-active");
@@ -10446,6 +10442,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
       <div className="article__layout">
         <nav className="article__index article__index--spy" aria-label="Sections" ref={indexRef}>
+          <span className="article__index-slider" aria-hidden="true"><i className="article__index-glow" /><i className="article__index-glass" /></span>
           <div className="article__index-top">
             {/* Back is not here any more: it moved into .top-controls so the
                 page has ONE bar of chrome instead of two clusters. The lab's
