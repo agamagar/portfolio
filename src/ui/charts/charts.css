@@ -1,0 +1,63 @@
+/* Chart components. Tokens are theme aware: the violet #9674db leads, the rest of the
+   categorical set is derived around it; the sequential ramp is a colour-mix between
+   --ch-seq-lo and --ch-seq-hi so any step count stays on-brand. */
+:root {
+  --ch-c1: #7a52d0; --ch-c2: #3f73d9; --ch-c3: #c08a1c; --ch-c4: #d04559;
+  --ch-ok: #7a52d0; --ch-early: #8aa4e8; --ch-late: #d04559;
+  --ch-seq-lo: #d9cdf5; --ch-seq-hi: #5a35b0;
+  --ch-ink: var(--fg, #111); --ch-mute: var(--muted, rgba(0,0,0,.56));
+  --ch-line: rgba(0,0,0,.09);
+  --ch-tip-bg: rgba(255,255,255,.88); --ch-tip-line: rgba(0,0,0,.1);
+}
+:root.dark {
+  --ch-c1: #9674db; --ch-c2: #6c9cf0; --ch-c3: #e6bd6e; --ch-c4: #e8707f;
+  --ch-ok: #9674db; --ch-early: #a9bdf2; --ch-late: #e8707f;
+  --ch-seq-lo: #3d2d78; --ch-seq-hi: #d6c8f7;
+  --ch-line: rgba(255,255,255,.09);
+  --ch-tip-bg: rgba(30,28,38,.82); --ch-tip-line: rgba(255,255,255,.12);
+}
+.ch { position: relative; margin: 0; width: 100%; font-size: 12px; color: var(--ch-ink); font-variant-numeric: tabular-nums; }
+.ch__plot { position: relative; width: 100%; }
+.ch__svg { display: block; overflow: visible; max-width: 100%; touch-action: pan-y; }
+.ch__svg:focus-visible, .ch__svg rect:focus-visible { outline: 2px solid var(--ch-c1); outline-offset: 2px; }
+.ch__svg rect:focus { outline: none; }
+.ch-grid { stroke: var(--ch-line); stroke-width: 1; stroke-dasharray: 2 4; }
+.ch-grid.is-base { stroke-dasharray: none; stroke: var(--ch-line); }
+.ch-tick { fill: var(--ch-mute); font-size: 11px; }
+.ch-cat { fill: var(--ch-ink); font-size: 12.5px; }
+.ch-sub { fill: var(--ch-mute); font-size: 11px; }
+.ch-val { fill: var(--ch-ink); font-size: 12px; font-weight: 600; }
+.ch-end { font-size: 11.5px; font-weight: 600; }
+.ch-seg { transition: opacity 160ms ease, transform 760ms cubic-bezier(.2,.8,.2,1) calc(var(--i, 0) * 28ms); transform-box: fill-box; }
+.ch-seg--v { transform-origin: 50% 100%; transform: scaleY(0); }
+.ch-seg--h { transform-origin: 0 50%; transform: scaleX(0); }
+.ch[data-in="true"] .ch-seg { transform: none; }
+.ch-seg.is-off { opacity: .32; }
+.ch-seg.is-dim { opacity: .5; }
+.ch-val { opacity: 0; transition: opacity 400ms ease calc(500ms + var(--i, 0) * 28ms); }
+.ch[data-in="true"] .ch-val { opacity: 1; }
+.ch-line { fill: none; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1100ms cubic-bezier(.3,.7,.2,1); }
+.ch[data-in="true"] .ch-line { stroke-dashoffset: 0; }
+.ch-area { opacity: 0; transition: opacity 700ms ease 500ms; }
+.ch[data-in="true"] .ch-area { opacity: 1; }
+.ch-cross { stroke: var(--ch-mute); stroke-width: 1; stroke-dasharray: 3 3; opacity: .6; }
+.ch-dot { stroke: var(--bg, #fff); stroke-width: 2; }
+.ch-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; color: var(--ch-mute); font-size: 12px; }
+.ch-legend li { display: inline-flex; align-items: center; gap: 7px; margin: 0; padding: 0; }
+.ch-legend li::before, .ch-legend li::marker { content: none; }
+.ch-sw { flex: none; display: inline-block; background: var(--sw); }
+.ch-sw--box { width: 9px; height: 9px; border-radius: 3px; }
+.ch-sw--line { width: 14px; height: 3px; border-radius: 2px; }
+.ch-tip { position: absolute; z-index: 3; pointer-events: none; transform: translate(-50%, calc(-100% - 8px)); display: grid; gap: 5px; min-width: 130px; padding: 9px 11px; border-radius: 12px; background: var(--ch-tip-bg); border: 1px solid var(--ch-tip-line); box-shadow: 0 8px 28px rgba(0,0,0,.28); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); font-size: 12px; color: var(--ch-ink); transition: left 140ms ease, top 140ms ease; }
+.ch-tip.is-below { transform: translate(-50%, 6px); }
+.ch-tip strong { font-weight: 600; font-size: 12px; }
+.ch-tip span { display: flex; align-items: center; gap: 7px; color: var(--ch-mute); }
+.ch-tip b { margin-left: auto; padding-left: 14px; font-weight: 600; color: var(--ch-ink); }
+.ch-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) {
+  .ch-seg, .ch-line, .ch-area, .ch-val, .ch-tip { transition: none !important; }
+  .ch-seg--v, .ch-seg--h { transform: none; }
+  .ch-line { stroke-dashoffset: 0; } .ch-area, .ch-val { opacity: 1; }
+}
+.ch .ch-legend, .ch .ch-legend li { font-size: 12px !important; line-height: 1.3 !important; margin-bottom: 0; }
+.ch table, .ch figcaption { font-size: 12px; }
