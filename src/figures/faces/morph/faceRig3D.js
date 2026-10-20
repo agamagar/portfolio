@@ -150,6 +150,13 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uHasMV: { value: mv[o.name] && o.geometry.attributes._mvuv ? 1 : 0 } },
       });
       if (key === "Eye") mat.uniforms.uBase.value.setRGB(...fit.eye, THREE.LinearSRGBColorSpace);
+      // noir's lids have no fitted look (the clay's have fit.lids): they read the skin texture at the
+      // eye's hole, which is a flat dark grey, and blinked as ragged grey blobs. They take the skin's
+      // own mean colour under the fitted light instead
+      if (o.name.startsWith("Lid") && fit.mono && !fit.lids && fit.ratioMean?.Skin) {
+        mat.uniforms.uUseMap.value = 0;
+        mat.uniforms.uTint.value.fromArray(fit.ratioMean.Skin).multiplyScalar(9);
+      }
       // (the hat counts as hair: part of the head's silhouette, with the hair's flat colour)
       const idCode = PART_ID[o.name] ?? (key === "Skin" ? PART_ID.Skin : key === "Hat" || key === "HatBand" ? PART_ID.Hair : 0);
       const idMat = new THREE.ShaderMaterial({ vertexShader: ID_VERT, fragmentShader: ID_FRAG,
