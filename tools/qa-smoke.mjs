@@ -83,7 +83,7 @@ const visible = async (p, sel, bad, label = sel) => { const l = p.locator(sel).f
 
 await page("/", async (p, bad) => {
   await visible(p, ".hello-hero", bad, "hero");
-  await visible(p, ".hello-hero__greet", bad, "hero heading");
+  await visible(p, "[data-hero-h1]", bad, "hero heading");
   if ((await p.locator(".wg__card").count()) < 1) bad("no work cards (.wg__card)");
   if ((await p.locator(".hello-foot").count()) < 1) bad("footer missing");
   if ((await p.locator("#root *").count()) < 50) bad("home has almost no content");

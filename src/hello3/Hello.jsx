@@ -1445,7 +1445,7 @@ export default function Hello3({ onNavigate, theme, onToggleTheme, sound, onTogg
             <HeroV2 flyerRef={flyerRef} stage={stage} reduce={reduce} replayId={replayId} replayGreeting={replayGreeting} />
           ) : (
           <>
-          <h1 className="hello-hero__greet" onClick={stage === "reveal" ? undefined : skip} data-calm aria-labelledby="hello-hero-title">
+          <h1 className="hello-hero__greet" data-hero-h1 onClick={stage === "reveal" ? undefined : skip} data-calm aria-labelledby="hello-hero-title">
             {/* The words, for anything that reads rather than looks. The mark
                 below is outlines and carries no text at all, so this is the only
                 place the greeting exists as language. */}

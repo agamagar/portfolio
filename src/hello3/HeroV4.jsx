@@ -304,7 +304,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
 
   return (
     <div className={left ? "hv4 hv4--left" : "hv4"}>
-      <h1 className="hv4__head" ref={head} data-calm aria-labelledby="hello-hero-title">
+      <h1 className="hv4__head" data-hero-h1 ref={head} data-calm aria-labelledby="hello-hero-title">
         <span className="hello-hero__sr" id="hello-hero-title">{HERO_V4_COPY}</span>
         {WORDS.map((w, i) => <span key={i} className="hv4__t" aria-hidden>{[...w].map((c, j) => <span key={j} className="hv4__c">{c}</span>)}</span>)}
         <span
