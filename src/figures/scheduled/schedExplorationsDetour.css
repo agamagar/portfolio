@@ -79,3 +79,6 @@
 .dtr-shot--none { display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--ink-text) 7%, transparent); }
 .dtr-shot--none span { font-size: 13px; line-height: 1.3; text-align: center; color: var(--ink-dim); }
 .dtr-cell[data-v="killed"] .dtr-shot, .dtr-cell[data-v="scale"] .dtr-shot, .dtr-cell[data-v="considered"] .dtr-shot { opacity: .8; }
+
+/* mvgnsuy8 (Agam, "hide the dotted line"): the dotted guide rule under the marker paths is hidden; delete this line to bring it back */
+.dtr-mark__rule { display: none; }
