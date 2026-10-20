@@ -718,6 +718,8 @@ const pickSide = (s) => Object.fromEntries(SIDE_KEYS.filter((k) => s[k]).map((k)
 const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SIDE_KEYS.includes(k)));
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
+const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
+const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): the detail paragraph under the Circles view; true brings it back
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
 // overlapping outlined circles, one per point, with the detail of the picked one beneath
 function RoleList({ items, vertical }) {
@@ -753,7 +755,7 @@ function RoleList({ items, vertical }) {
               </li>
             ))}
           </ol>
-          <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>
+          SHOW_RL_DETAIL && <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>
         </div>
       )}
     </div>
@@ -781,7 +783,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
   const body = (
       <div className="rwf__main">
         {s.title && <h3 className="rwf__title">{s.title}</h3>}
-        {s.lead && <p className="rwf__lead">{s.lead}</p>}
+        {SHOW_RWF_LEAD && s.lead && <p className="rwf__lead">{s.lead}</p>}
         {s.leadership && (
           <ul className="rwf__leadership">{s.leadership.map((l) => <li key={l}>{l}</li>)}</ul>
         )}
@@ -826,7 +828,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
             ))}
           </div>
         )}
-        {s.measures && <p className="rwf__lead">{s.measures}</p>}
+        {SHOW_RWF_LEAD && s.measures && <p className="rwf__lead">{s.measures}</p>}
         {s.speed && (
           <>
             {s.speedTitle && <h3 className="rwf__title rwf__title--second">{s.speedTitle}</h3>}

@@ -1064,6 +1064,7 @@ function RoleEditorial({ s }) {
 // the editorial list (Option 1), the My role frame's icon-left rows (mv56uy5f) and the first scope map's bare numbers
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
+const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "Expectations with the C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
   const [mapView, setMapView] = useState("tree"); // mvg9bd94 + mvgb0gi8: tree (default) or the packed-circles map
   const [view, setView] = useState("left"); // mvdvotz9 (Agam): "Icon left" is the default
@@ -1092,8 +1093,8 @@ function RoleScopeMap({ s, i }) {
               <svg className="rv-pack__lines" viewBox="0 0 100 100" aria-hidden="true">
                 {pts.map(([n, x, y, d]) => { const dx = x - 50, dy = y - 50, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L; return <line key={n} x1={50 + ux * 10} y1={50 + uy * 10} x2={x - ux * d / 2} y2={y - uy * d / 2} />; })}
               </svg>
-              <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b><small>end to end</small></span>
-              {pts.map(([n, x, y, d, k]) => <span key={n} className={"rv-pack__c rv-pack__c--" + k} style={{ left: `${x}%`, top: `${y}%`, "--d": d }}>{n}</span>)}
+              <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
+              {pts.map(([n, x, y, d, k]) => <span key={n} className={"rv-pack__c rv-pack__c--" + k} style={{ left: `${x}%`, top: `${y}%`, "--d": d }}>{PACK_SHORT[n] || n}</span>)}
             </>);
           })()}
         </div>
