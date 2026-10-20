@@ -8698,9 +8698,9 @@ html.dark .dev-glass { background: rgba(28, 28, 32, 0.62); box-shadow: inset 0 1
    (palette, eye, Inspect, Design/PRD, Listen, Agentation, QA): glass fill + edge + shadow from .dev-glass, one glyph colour, one hover, one pressed */
 :root { --dev-ink: rgba(36, 22, 68, 0.72); --dev-ink-hover: #33095e; --dev-glass-on: rgba(255, 255, 255, 0.92); }
 html.dark { --dev-ink: rgba(255, 255, 255, 0.72); --dev-ink-hover: #fff; --dev-glass-on: rgba(70, 70, 80, 0.85); }
-html .theme-toggle.dev-glass, html .view-menu[data-dev] .view-menu__btn { color: var(--dev-ink); }
+html .theme-toggle.dev-glass, html .view-menu[data-dev] .view-menu__btn { color: var(--dev-ink) !important; }
 html .theme-toggle.dev-glass:hover, html .view-menu[data-dev] .view-menu__btn:hover, html [data-agentation-toolbar] [class*="collapsed"]:hover [class*="toggleContent"] { color: var(--dev-ink-hover) !important; }
-html .theme-toggle.dev-glass[aria-pressed="true"] { color: var(--dev-ink-hover); background: var(--dev-glass-on); }
+html .theme-toggle.dev-glass[aria-pressed="true"] { color: var(--dev-ink-hover) !important; background: var(--dev-glass-on); }
 html .view-menu[data-dev] .view-menu__btn { background-color: rgba(255, 255, 255, 0.62); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 4px 14px -6px rgba(40, 20, 80, 0.22); border-radius: 999px; corner-shape: round; }
 html.dark .view-menu[data-dev] .view-menu__btn { background-color: rgba(28, 28, 32, 0.62); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
 .qa-circle { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: calc(var(--dev-base, 16px) + 132px); z-index: 2147482001; cursor: pointer; } /* mvfy2i8i: bottom-left, under Inspect and the eye */
