@@ -380,6 +380,22 @@
 .sdcmp__tag { display: inline-flex; align-items: center; gap: 6px; align-self: center; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
 .sdcmp__tag[data-kind="killed"] { background: var(--ds-focal-red-fill); color: var(--ds-focal-red); }
 .sdcmp__tag[data-kind="shipped"] { background: var(--ds-focal-green-fill); color: var(--ds-green); }
+.sdcmp__tag[data-kind="explored"] { background: rgba(120, 100, 200, 0.16); color: var(--ds-text-2, #6b5a9a); }
+/* mvgnctlf: the coded bottom-sheet mock, in the 216 x 430 screen; the cart page behind is dimmed, the sheet takes the lower half */
+.sdsheet { position: absolute; inset: 0; font-size: 7px; }
+.sdsheet > img { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
+.sdsheet__scrim { position: absolute; inset: 0; background: rgba(12, 6, 26, 0.5); }
+.sdsheet__panel { position: absolute; left: 0; right: 0; bottom: 0; padding: 7px 10px 10px; border-radius: 14px 14px 0 0; background: #fff; display: grid; gap: 7px; color: #1e1730; }
+.sdsheet__grab { justify-self: center; width: 26px; height: 3px; border-radius: 3px; background: rgba(30, 23, 48, 0.2); }
+.sdsheet__title { font-size: 9px; font-weight: 600; }
+.sdsheet__days { display: flex; gap: 12px; border-bottom: 1px solid rgba(30, 23, 48, 0.12); padding-bottom: 5px; font-size: 7px; }
+.sdsheet__days span { opacity: 0.55; }
+.sdsheet__days span[data-on] { opacity: 1; color: #d6285c; font-weight: 600; }
+.sdsheet__slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.sdsheet__slots span { padding: 5px 0; border: 1px solid rgba(30, 23, 48, 0.16); border-radius: 5px; text-align: center; font-weight: 600; }
+.sdsheet__slots span[data-off] { opacity: 0.4; }
+.sdsheet__cta { margin-top: 3px; padding: 7px 0; border-radius: 6px; background: #e8174f; color: #fff; text-align: center; font-weight: 700; font-size: 8px; }
+:root.dark .sdcmp__tag[data-kind="explored"] { color: #b69cea; }
 .sdcmp__screen { position: relative; width: 100%; aspect-ratio: 216 / 430; overflow: hidden; border-radius: 22px; background: #fff; border: 1px solid var(--ds-line); box-shadow: var(--ds-shadow-frame); }
 .sdcmp__screen img { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
 .sdcmp__note { font-size: 11px; color: var(--ds-text-2); line-height: 1.4; text-align: center; }
