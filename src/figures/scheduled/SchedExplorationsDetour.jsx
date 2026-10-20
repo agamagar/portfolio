@@ -8,7 +8,7 @@ import "./schedExplorationsDetour.css";
 // story; here every direction is a stretch of one marker line. Shipped runs straight on to an arrowhead, the killed
 // ones loop back on themselves, didn't-scale wobbles and breaks off, considered makes one small loop and carries on.
 
-const TAG = { shipped: "Shipped", killed: "Killed", scale: "Didn't scale", considered: "Considered" };
+const TAG = { shipped: "Shipped", killed: "Rejected", scale: "Didn't scale", considered: "Considered" };
 
 const ROWS = [
   { label: "Placement", ink: "#2fb5a6", chips: [
