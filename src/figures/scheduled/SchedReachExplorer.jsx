@@ -187,7 +187,7 @@ export default function SchedReachExplorer() {
   return (
     <div className="rex">
       <aside className="rex__panel">
-        <h4 className="rex__title">At 11 PM the same address can go from instant to schedule only</h4>
+        <h4 className="rex__title">Delivery availability</h4>
         <div className="rex__row rex__row--slider">
           <input
             type="range" min="0.5" max="2" step="0.05" value={km}
