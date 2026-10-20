@@ -28,9 +28,9 @@ const N = WORDS.length;
 // metrics as ratios of the font size (heroV4.css: line-height 1.15, face 2.14 x 2.3)
 const LH = 1.15, FW = 2.14, FH = 2.3, SPACE = 0.25, GAP = 0.3, TOL = 0.6;
 const DRAG_PX = 6, LONG_PRESS = 350;
-// the ripple: characters within RANGE px of the face's centre are pushed away (PUSH px at the face, squared falloff),
+// the ripple: characters within RANGE px of the face's centre are pushed away (PUSH px at the face, falloff^1.6),
 // tilted and scaled, with the face's velocity added; each one springs back to rest
-const RANGE = 180, PUSH = 22, TILT = 14, GROW = 0.14, VEL = 0.012, SK = 240, SC = 2 * Math.sqrt(240) * 0.55;
+const RANGE = 280, PUSH = 56, TILT = 22, GROW = 0.2, VEL = 0.012, SK = 240, SC = 2 * Math.sqrt(240) * 0.55;
 const SLOT_KEY = "hv4-slot";
 
 const readSlot = () => {
@@ -193,7 +193,7 @@ export default function HeroV4({ left = false, flyerRef, stage, reduce, replayId
       if (fc.on) {
         const dx = p.x + c.dx - fcx, dy = p.y + lh / 2 - fcy, dist = Math.hypot(dx, dy);
         if (dist < RANGE) {
-          const s = (1 - dist / RANGE) ** 2, ux = dx / (dist || 1), uy = dy / (dist || 1);
+          const s = (1 - dist / RANGE) ** 1.6, ux = dx / (dist || 1), uy = dy / (dist || 1);
           tx = ux * s * PUSH + fc.vx * s * VEL * 12; ty = uy * s * PUSH + fc.vy * s * VEL * 12;
           tr = (ux >= 0 ? 1 : -1) * s * TILT * (0.5 + Math.min(1, speed / 900) * 0.5); ts = 1 + s * GROW;
         }
