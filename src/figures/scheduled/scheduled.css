@@ -2181,4 +2181,4 @@ html .page--article .article__body .ig ul.ig__bars > li::before, html .page--art
 .gtmr-one .gtmr-pan { position: absolute; inset: 0; will-change: transform; }
 
 /* mvg9bvbv (Agam, "this text should be title case"): the Scheduled rail's card labels are not upper-cased */
-html .rwf-glass .tlx__rail-tagcard .tlx__rail-tag, html .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; } /* outranks the type-pass rule that upper-cases it */
