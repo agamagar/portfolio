@@ -296,7 +296,7 @@ export default function SchedReachExplorer() {
           </g>
         </svg>
         {/* mvg6568p: the © OpenStreetMap contributors (ODbL) attribution now lives in the page footer's Credits */}
-        <p className="rex__hint">{touched ? "Drag the circle, or its edge to resize" : "Drag the circle to explore"}</p>
+        {/* mvg90gcm (Agam): the "Drag the circle to explore" hint is removed; the handle itself is the affordance */}
       </div>
     </div>
   );
