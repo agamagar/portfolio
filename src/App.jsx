@@ -2142,71 +2142,84 @@ const caseStudies = {
       "Optional: a coded pilot-results bars figure (4 dimensions, about 6 of 7) to sit in 'Does it feel like it works?'",
     ],
   },
-  // CaratLane (Figma Portfolio 2026, node 226:24181): text is the frames' own copy; role/dates/metrics beyond the recap are not in the file.
+  // CaratLane (Figma Portfolio 2026, node 226:24181, frames 260:66181): built with the Scheduled Delivery system: slideLayout
+  // (label left, statement right), headFacts, grouped index, expandable figures. Copy is the frames' own; role/dates/metrics beyond the recap are not in the file.
   caratlane: {
+    eagerHero: true, // projectTransition: hero warmed at idle, tile -> hero with no skeleton
+    slideLayout: true,
     accent: "#8863FB",
-    eyebrow: "CaratLane · Case study",
-    title: "Improving discovery across 500+ retail stores, and designing for new revenue streams",
-    meta: "Design · CaratLane · 2023",
-    cover: "CaratLane",
+    heroBg: "#260d35",
     heroImage: "/figures/caratlane/hero.jpg",
     heroAlt: "CaratLane Select: the invite sheet, \"You are invited to CaratLane Select, designed for our most loyal customers\"",
-    heroBg: "#260d35",
+    hideCaptions: true,
     expandFigures: true,
+    eyebrow: "CaratLane · Case study",
+    title: "Improving discovery across 500+ retail stores,\nand designing for new revenue streams",
+    headFacts: [
+      { label: "Organisation", value: "CaratLane" },
+      { label: "Year", value: "2023" },
+    ],
+    meta: "Design · CaratLane · 2023",
+    cover: "CaratLane",
     lead:
       "CaratLane is an e-commerce jewelry brand with a retail footprint of more than 500 stores. The work spans four pieces of the product: CaratLane Select, an invite-only tier for the most loyal customers; a revamped listing page with filters and a design-help prompt; a referral program that pays in xClusive points; and Roupe, the design system that holds them together.",
     sections: [
       {
         h: "Project recap",
+        nav: "Recap",
         group: "Overview",
         tldr: "Improving discovery across 500+ retail stores, and designing for new revenue streams.",
         p: [
-          "The brief had two halves. The first was discovery: helping people find the right piece, in the app and across more than 500 retail stores. The second was revenue: designing new streams around the customers CaratLane already has, through a loyalty tier and a referral program.",
+          "The brief had two halves. The first was discovery: helping people find the right piece, in the app and across 500+ retail stores. The second was revenue: designing new revenue streams around the customers CaratLane already has, through a loyalty tier and a referral program.",
         ],
       },
       {
         h: "Listing page revamp",
+        nav: "Listing page",
         group: "Discovery",
+        stack: true,
         tldr: "Filters by category and by price, and a prompt that offers expert help when choosing is the hard part.",
         p: [
           "The listing page was rebuilt for the tablet and the phone. Filtering by category shows each style as a picture and a name (Hoop, Earcuff, Jhumka, Chandbali, Pearl, Sui Dhaga, Studs, Drop), so a shopper recognises a shape instead of reading a label. Filtering by price offers ranges in steps of ₹10,000, from under ₹10,000 to ₹80,000, with the chosen ranges highlighted.",
           "Between the products sit a promotional banner and a card that asks \"Do you need help picking a design?\". Enter a phone number and the experts help select the jewellery.",
         ],
-        collage: ["/figures/caratlane/listing-ipad.png", "/figures/caratlane/listing-cards.png"],
-        figure: "The revamped listing page on tablet, and the cards that sit between products: promotion, filter by category, filter by price, and the design-help prompt.",
-        divider: true,
+        image: "/figures/caratlane/listing-plate.jpg",
+        figure: "The revamped listing page on a tablet, beside the promotion, filter by category, filter by price and design-help cards",
       },
       {
         h: "CaratLane Select",
+        nav: "Select",
         group: "New revenue streams",
         tldr: "An invitation for the most loyal customers, opened from the home screen with one clear action.",
         p: [
           "CaratLane Select opens as a sheet over the app's home screen. It reads \"You are invited to CaratLane Select\", names who it is for (\"Designed for our most loyal customers\") and asks for a single step: Get Started. A close control sits top right, so the invitation never traps the person who is not ready.",
         ],
-        divider: true,
       },
       {
         h: "Referral program",
+        nav: "Referral",
         group: "New revenue streams",
+        stack: true,
         tldr: "Refer a friend, earn xClusive points: 250 for each registration, 500 more when a friend buys.",
         p: [
           "The referral page greets the customer by name and sets the offer in one line: earn up to 750 xClusive points by influencing friends and family. The personal link is one tap to copy, and Share with WhatsApp and Refer a Friend sit directly beneath it.",
           "Below, the page explains the maths plainly: 250 points on each referral (after registration on the CaratLane app), 500 points after the friend's purchase, and 1 point = ₹1. Referring five or more friends gives a chance to be featured on the CaratLane Instagram page.",
         ],
         image: "/figures/caratlane/homepages.png",
-        figure: "The referral program: the invite and share screen, how points are earned, and the Instagram feature.",
-        divider: true,
+        figure: "The referral program: the invite and share screen, how points are earned, and the Instagram feature",
       },
       {
         h: "Design system: Roupe",
+        nav: "Roupe",
         group: "System",
+        stack: true,
         tldr: "Roupe, written in English, Hindi (रूप) and Tamil (உருவம்), is the shared system under all of it.",
         p: [
           "Roupe means form: the name is shown in three scripts, in English, Hindi and Tamil. The system defines two six-step palettes, purple and pink, from 10 to 60, with Purple 60 (#4F3267) for text and Purple 10 (#F6F3F9) for quiet surfaces. Type is Inter in Regular, Medium, Semi-bold and Bold.",
           "On top sit the interface parts: radio buttons and checkboxes, tabs and toggles, option chips, date and time selectors, delivery preferences, and a set of line icons.",
         ],
         image: "/figures/caratlane/design-system.png",
-        figure: "Roupe: wordmark, palettes, type, components and icons.",
+        figure: "Roupe: wordmark, palettes, type, components and icons",
       },
     ],
   },
@@ -8549,12 +8562,14 @@ export const caseStudies = PRIVATE_SITE ? buildCaseStudies() : {};
 // beat (src/ui/projectTransition.js): its hero image or poster decoded, and the SD
 // heart's chunk + layers warm. Read at hover time, so later entries are covered.
 configureProjectTransition({
+  eagerSlugs: ["caratlane"],
   assetsFor: (slug) => {
     const cs = caseStudies[{ "occasion-buying": "cross-sell" }[slug] || slug];
     if (!cs || cs.locked || cs.doc) return null;
     return {
       images: [cs.heroImage, cs.heroPoster],
       warm: cs.heroFig === "schedHeartHero" ? warmHeart : null,
+      noSkeleton: !!cs.eagerHero, // its hero is warmed at idle (eagerSlugs) and the old page is held for it: no skeleton
       ownReveal: !!cs.loadReveal, // the case has its own load reveal: no card-to-hero move on top of it
     };
   },
