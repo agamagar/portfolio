@@ -33,7 +33,7 @@ for (const id of ids) {
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     const png = await page.evaluate(() => document.querySelector(".face-sv").__face.snapshot());
     fs.writeFileSync(`${out}/${id}_${v}.png`, Buffer.from(png.split(",")[1], "base64"));
-    if (v === "rest") await (await page.$(".face-sv")).screenshot({ path: `${out}/${id}_page.png` });
+    if (v === "rest" && !process.env.NOPAGE) await (await page.$(".face-sv")).screenshot({ path: `${out}/${id}_page.png` });
   }
   await page.evaluate(() => { const f = document.querySelector(".face-sv").__face; f.pose(null); f.setView(0, 0); });
 }

@@ -371,6 +371,11 @@ void main(){
     float turnGate = mix(1.0, smoothstep(0.3, 0.75, vSeen), uTurn);
     float trust = smoothstep(0.05, 0.35, seen) * smoothstep(0.0, 0.2, vSeen) * turnGate;
     trust = max(trust, defr * (1.0 - uTurn)); // (a defringed edge texel is the part's own colour)
+    // At the fitted view the texture IS the reference's own pixel: no gate. A head move (a tilt or a
+    // nod: uTurn stays 0 for those) used to blend the lit-by-view fallback into every texel the id map
+    // marks partial (a part boundary), and as soon as the normal moved off the fitted one that
+    // fallback drew a pale line round the nose and the ear's rim
+    trust = mix(1.0, trust, smoothstep(0.0, 0.25, uTurn));
     // the light never drops below a floor (the texture maker uses the same one), so a
     // grazing edge keeps its colour instead of clipping to black
     // The texture is the reference's colour divided by the light it was fitted under, so the
