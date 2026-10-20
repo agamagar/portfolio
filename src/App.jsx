@@ -10075,6 +10075,8 @@ function CaseStudyBodyFull({ cs }) {
               {Array.isArray(s.tldr) ? s.tldr.map((t, k) => <span className="tldr-b" key={k}>{t}</span>) : s.tldr}
             </p>
           )}
+          {/* mvgj0x67 (Agam, "move this to the impact section"): the glance sits right under the Impact heading and TL;DR, not after the divider */}
+          {s.glance && <SchedImpactGlance g={s.glance} />}
           {/* mujuytgf: numbered points, Figma HBBgHT1u7e5jsz7BEEZ3fT 46:15909
               (big numeral over a light label, one column each) */}
           {s.points && (
@@ -10249,7 +10251,6 @@ function CaseStudyBodyFull({ cs }) {
           {/* mtmlg1wh: a row of horizontal plates under the figure; a plate
               without a src is a placeholder waiting for a Figma node */}
           {s.plates && !s.platesToggle && renderPlates(s)}
-          {s.glance && <SchedImpactGlance g={s.glance} />}
           {s.divider && (
             <p className="article__divider" aria-hidden>
               · · ·

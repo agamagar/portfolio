@@ -70,7 +70,7 @@ export default function SchedCartPageFlat() {
         {CALLOUTS.map((c, i) => (
           <li key={c.t} data-active={i === active ? "true" : undefined}>
             <button type="button" className="cpf__dot cpf__dot--static" aria-label={`Show: ${c.t}`} aria-pressed={i === active} onClick={() => { setActive(i); setHeld(true); }}>{i + 1}</button>
-            <p className="cpf__label"><b>{c.t}</b><span>{c.d}</span></p>
+            <p className="cpf__label"><b>{c.t}</b><span className="cpf__d"><span>{c.d}</span></span></p>
           </li>
         ))}
       </ol>
