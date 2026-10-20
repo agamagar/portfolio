@@ -21,6 +21,63 @@ import PathMarquee from "./PathMarquee";
 import { MATERIAL_SHAPES } from "./materialShapes";
 import { PATH_PRESETS, PATH_KEYS } from "./pathPresets";
 
+// The caption phone is a toy (mvgglagb, Agam: "make the phone fully draggable"): grab it anywhere, fling it
+// (inertia), and it eases gently back home. pointerdown stops here so the marquee's own drag never starts
+// from the phone; touch-action none keeps a finger on the phone from scrolling the page.
+function DragPhone({ children }) {
+  const el = useRef(null);
+  const S = useRef({ x: 0, y: 0, vx: 0, vy: 0, down: null, raf: 0, last: 0 }).current;
+  useEffect(() => () => cancelAnimationFrame(S.raf), [S]);
+  const reduce = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const paint = () => { if (el.current) el.current.style.transform = `translate(${S.x.toFixed(1)}px,${S.y.toFixed(1)}px)`; };
+  const tick = (now) => {
+    const dt = Math.min(0.032, Math.max(0.001, (now - S.last) / 1000));
+    S.last = now;
+    // fling decays, a soft spring (K 26, damped) pulls it home
+    const K = 26, C = 7.5;
+    S.vx += (-K * S.x - C * S.vx) * dt; S.vy += (-K * S.y - C * S.vy) * dt;
+    S.x += S.vx * dt; S.y += S.vy * dt;
+    paint();
+    if (Math.hypot(S.x, S.y) < 0.2 && Math.hypot(S.vx, S.vy) < 4) { S.x = S.y = S.vx = S.vy = 0; paint(); S.raf = 0; return; }
+    S.raf = requestAnimationFrame(tick);
+  };
+  const onDown = (e) => {
+    e.stopPropagation();
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    cancelAnimationFrame(S.raf); S.raf = 0;
+    S.down = { id: e.pointerId, px: e.clientX, py: e.clientY, x0: S.x, y0: S.y, t: performance.now(), lx: e.clientX, ly: e.clientY };
+    S.vx = S.vy = 0;
+    try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* gone */ }
+    el.current.dataset.drag = "1";
+  };
+  const onMove = (e) => {
+    const d = S.down;
+    if (!d || d.id !== e.pointerId) return;
+    e.stopPropagation();
+    S.x = d.x0 + e.clientX - d.px; S.y = d.y0 + e.clientY - d.py;
+    const now = performance.now(), dt = Math.max(1, now - d.t) / 1000;
+    S.vx = S.vx * 0.5 + ((e.clientX - d.lx) / dt) * 0.5; S.vy = S.vy * 0.5 + ((e.clientY - d.ly) / dt) * 0.5;
+    d.t = now; d.lx = e.clientX; d.ly = e.clientY;
+    paint();
+  };
+  const onUp = (e) => {
+    const d = S.down;
+    if (!d || d.id !== e.pointerId) return;
+    e.stopPropagation();
+    S.down = null;
+    delete el.current.dataset.drag;
+    if (performance.now() - d.t > 90) S.vx = S.vy = 0; // held still before release: no fling
+    if (reduce()) { S.x = S.y = S.vx = S.vy = 0; paint(); return; }
+    S.last = performance.now();
+    S.raf = requestAnimationFrame(tick);
+  };
+  return (
+    <div ref={el} className="ap__cap-drag" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
+      {children}
+    </div>
+  );
+}
+
 // PURPOSE-BUILT DERIVATIVES, not the case-study originals. The originals run
 // 720x1582 to 1080x2487 and are drawn here at about 110x148, a 16x downscale,
 // and the marquee changes their scale as they travel — so every frame was
@@ -245,7 +302,7 @@ function WallLabel({ cap }) {
   return (
     <div className="ap__cap" style={{ "--cap-k": 1 + 0.1 * n }} aria-description={facts || undefined}>
       {/* mvdqolwe (Agam): the notification chip sits ABOVE the caption text */}
-      {cap.chip && <FigmaPhone plate="pro17" className="ap__cap-phone" width={150} screen={cap.chip.src} alt={cap.chip.alt} />}
+      {cap.chip && <DragPhone><FigmaPhone plate="pro17" className="ap__cap-phone" width={150} screen={cap.chip.src} alt={cap.chip.alt} /></DragPhone>}
       {cap.cta ? (
         <a
           className="ap__cap-line ap__cap-link hello-hero__link--out"
