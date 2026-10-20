@@ -8908,9 +8908,9 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .article__index--spy[data-pill="on"] .article__index-slider { opacity: 1; }
 .article__index-glow {
   position: absolute;
-  left: 8%; right: 8%; bottom: -9px; height: 16px;
+  left: -7px; top: 14%; bottom: 14%; width: 18px;
   border-radius: 50%;
-  background: linear-gradient(90deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
+  background: linear-gradient(180deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
   filter: blur(7px);
   opacity: 0.6;
 }
@@ -8927,8 +8927,8 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .article__index-glass::after {
   content: "";
   position: absolute;
-  left: 12%; right: 12%; bottom: 0;
-  height: 2px;
+  left: 0; top: 18%; bottom: 18%;
+  width: 2px;
   border-radius: 2px;
   background: #9674db;
   box-shadow: 0 0 8px 1px rgba(150, 116, 219, 0.7);
