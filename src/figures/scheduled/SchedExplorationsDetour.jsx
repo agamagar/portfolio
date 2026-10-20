@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useReducedMotion, useInViewLoop } from "../ds/hooks";
 import "./schedExplorationsDetour.css";
 
@@ -51,7 +51,28 @@ function Mark({ v, on, last }) {
   );
 }
 
+// the same stretch of marker line turned to run top to bottom (lanes view): rotated 90deg into a 44 x 100 cell
+function VMark({ v, on, last }) {
+  const s = STROKE[v];
+  return (
+    <svg className="dtr-mark dtr-mark--v" viewBox="0 0 44 100" preserveAspectRatio="none" aria-hidden="true" data-on={on} data-v={v}>
+      <g transform="translate(44 0) rotate(90)">
+        <path className="dtr-mark__rule" d="M0 22 L100 22" />
+        {s.tail && <path className="dtr-mark__tail" d={s.tail} />}
+        <g filter="url(#dtr-marker)" stroke={s.c}>
+          <path className="dtr-mark__ink" d={s.d} pathLength="1" />
+          {s.head && last && <path className="dtr-mark__ink dtr-mark__head" d={s.head} pathLength="1" />}
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+const MODES = [["rows", "Rows"], ["lanes", "Lanes"]];
+
 export default function SchedExplorationsDetour() {
+  const [mode, setMode] = useState("rows");
+  const [seen, setSeen] = useState(false); // lanes draw once, as they scroll in, and stay drawn
   const reduce = useReducedMotion();
   const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
 
@@ -63,6 +84,9 @@ export default function SchedExplorationsDetour() {
       setBeat(ROWS.length + 1); await wait(3200);
     }
   });
+
+  useEffect(() => { if (beat >= 1) setSeen(true); }, [beat]);
+  const lanesOn = seen || beat >= 1;
 
   return (
     <div className="dtr" ref={loopRef}>
@@ -81,7 +105,36 @@ export default function SchedExplorationsDetour() {
         <p className="dtr__cap">{ROWS.length} questions, and the slow part before each answer.</p>
       </div>
 
-      {ROWS.map((row, i) => (
+      <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
+        {MODES.map(([k, label]) => (
+          <button key={k} type="button" className={"fig-toggle__btn" + (mode === k ? " is-active" : "")} aria-pressed={mode === k} onClick={() => setMode(k)}>{label}</button>
+        ))}
+      </div>
+
+      {mode === "lanes" ? (
+        <div className="dtr-lanes">
+          {ROWS.map((row) => (
+            <div className="dtr-lane" key={row.label} style={{ "--ink": row.ink }}>
+              <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
+              <div className="dtr-lane__line">
+                {row.chips.map((c, k) => {
+                  const on = lanesOn;
+                  return (
+                    <div className="dtr-vcell dtr-cell" key={c.t} data-on={on} data-v={c.v} style={{ "--k": k }}>
+                      <VMark v={c.v} on={on} last={k === row.chips.length - 1} />
+                      <span className="dtr-dot" aria-hidden="true" />
+                      <div className="dtr-vcell__txt">
+                        <span className="dtr-cell__t">{c.t}</span>
+                        <span className="dtr-cell__tag">{TAG[c.v]}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
           <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
@@ -100,7 +153,7 @@ export default function SchedExplorationsDetour() {
         </div>
       ))}
 
-      <div className="dtr-end" data-on={beat >= ROWS.length + 1}>
+      <div className="dtr-end" data-on={mode === "lanes" ? lanesOn : beat >= ROWS.length + 1}>
         <span className="dtr-end__l">Converged</span>
         <p className="dtr-end__t">Schedule on the cart, per shipment, one single page, slots inline.</p>
       </div>
