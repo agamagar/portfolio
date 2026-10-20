@@ -1159,7 +1159,7 @@ export default function PathMarquee({
           }}
           onPointerLeave={(e) => {
             // only when the pointer leaves the RUN, not just this card (mttiqwmf)
-            if (!e.currentTarget.closest(".pm")?.contains(e.relatedTarget)) ui.current.hovering = false;
+            if (!e.currentTarget.closest(".pm")?.contains(e.relatedTarget instanceof Node ? e.relatedTarget : null)) ui.current.hovering = false;
           }}
           style={{
             offsetPath: `path('${d}')`,
