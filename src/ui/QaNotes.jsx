@@ -109,7 +109,23 @@ function Reply({ n, sent, onSent }) {
   );
 }
 
+// Agam: "2 annotation widgets on the page, there should be exactly one". Agentation's toolbar is the one; this QA-pin layer is
+// now OPT-IN: add ?qa=1 once (remembered) to bring it back, ?qa=0 to put it away again.
+const WIDGET_KEY = "qa-notes-widget";
+const widgetEnabled = () => {
+  try {
+    if (/[?&]qa=1\b/.test(location.search)) { localStorage.setItem(WIDGET_KEY, "1"); return true; }
+    if (/[?&]qa=0\b/.test(location.search)) { localStorage.removeItem(WIDGET_KEY); return false; }
+    return localStorage.getItem(WIDGET_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
 export default function QaNotes() {
+  return widgetEnabled() ? <QaNotesLayer /> : null;
+}
+
+function QaNotesLayer() {
   const [on, setOn] = useState(readOn);
   const [path, setPath] = useState(() => location.pathname);
   const [spots, setSpots] = useState([]);
