@@ -1857,7 +1857,9 @@
     padding var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
     border-radius var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
     box-shadow var(--m3-dur-effects-default) var(--m3-effects-default),
-    opacity var(--m3-dur-effects-default) var(--m3-effects-default);
+    opacity var(--m3-dur-effects-default) var(--m3-effects-default),
+    --tlx-clamp var(--m3-dur-spatial-default) var(--m3-ease-cine-settle),
+    left var(--m3-dur-spatial-default) var(--m3-ease-cine-settle); /* the edge clamp eases in the open state too */
   flex-direction: column;
   align-items: flex-start;
   gap: 7px;
