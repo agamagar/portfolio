@@ -8886,50 +8886,56 @@ html .cs-tabs__circle[aria-pressed="true"] { color: var(--link, #1a6fd0); box-sh
 :root { --dev-base: max(16px, env(safe-area-inset-bottom)); }
 body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bottom)) + 90px); } /* two 38px circles + gaps */
 
-/* Case-study rail (nav.article__index--spy): a hairline spine whose lavender fill
-   tracks page progress, and a 2px marker on the active entry. Weight stays constant
-   so the active entry never reflows. */
-.article__index--spy > ul {
-  position: relative;
-  padding-left: 14px;
-}
-.article__index--spy > ul::before,
-.article__index--spy > ul::after {
-  content: "";
+/* Case-study rail (nav.article__index--spy): ONE glass pill slides behind the active
+   entry. A thin #9674db line sits under it, and its light disperses through the glass
+   (a soft violet / blue / pink bloom under the pill's blur). No other active state;
+   weight stays constant so nothing reflows. */
+.article__index--spy > ul { padding: 0 9px; position: relative; }
+.article__index--spy li a { position: relative; z-index: 1; }
+.article__index--spy li a.is-active { color: var(--fg); font-weight: 460; }
+.article__index--spy li a:focus-visible { outline: 2px solid #9674db; outline-offset: 1px; border-radius: 6px; }
+.article__index--spy .article__index-group-list { border-left-color: var(--line); }
+.article__index-slider {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
+  left: 0; right: 0; top: 0;
+  height: var(--pill-h, 0px);
+  transform: translateY(var(--pill-y, 0px));
+  opacity: 0;
   pointer-events: none;
+  z-index: 0;
+  transition: transform 0.42s cubic-bezier(0.3, 1.2, 0.4, 1), height 0.3s ease, opacity 0.2s ease;
 }
-.article__index--spy > ul::before { background: var(--line); }
-.article__index--spy > ul::after {
-  background: #9674db;
-  transform-origin: top;
-  transform: scaleY(var(--idx-progress, 0));
+.article__index--spy[data-pill="on"] .article__index-slider { opacity: 1; }
+.article__index-glow {
+  position: absolute;
+  left: 8%; right: 8%; bottom: -9px; height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255, 122, 217, 0.55), #9674db 35%, #9674db 65%, rgba(91, 140, 255, 0.55));
+  filter: blur(7px);
+  opacity: 0.6;
 }
-.article__index--spy li a { position: relative; --o: 0px; }
-.article__index--spy .article__index-group-list { border-left-color: transparent; }
-.article__index--spy .article__index-group-list li a { --o: 15px; }
-.article__index--spy li a.is-active { font-weight: 460; }
-.article__index--spy li a::before {
+.article__index-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--glass-film);
+  -webkit-backdrop-filter: blur(10px) saturate(1.8);
+  backdrop-filter: blur(10px) saturate(1.8);
+  box-shadow: var(--glass-edge);
+  overflow: hidden;
+}
+.article__index-glass::after {
   content: "";
   position: absolute;
-  left: calc(-14px - var(--o));
-  top: 0.3rem;
-  bottom: 0.3rem;
-  width: 2px;
-  margin-left: -0.5px;
+  left: 12%; right: 12%; bottom: 0;
+  height: 2px;
   border-radius: 2px;
   background: #9674db;
-  opacity: 0;
-  transition: opacity var(--m3-dur-effects-fast, 0.2s) var(--m3-effects-fast, ease);
+  box-shadow: 0 0 8px 1px rgba(150, 116, 219, 0.7);
 }
-.article__index--spy li a.is-active::before { opacity: 1; }
-.article__index--spy li a:focus-visible { outline: 2px solid #9674db; outline-offset: 3px; border-radius: 3px; }
+html.dark .article__index-glow { opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) {
-  .article__index--spy > ul::after, .article__index--spy li a::before { transition: none; }
+  .article__index-slider { transition: none; }
 }
 
 /* My role scope map: Tree <-> Circles toggle (same pill as the Scheduled role lists) and the packed-circles view */
