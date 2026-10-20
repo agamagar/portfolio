@@ -9,41 +9,43 @@
   transition: opacity 160ms linear, scale 420ms var(--ds-ease-pop, cubic-bezier(0.34, 1.46, 0.64, 1));
   will-change: transform;
   --sc-cur: #1a6fd0;
+  --sc-k: 1.5; /* size of the whole cursor vs the original 18px arrow / 12px tag */
 }
 .sc[data-live] { opacity: 1; scale: 1; }
 .sc[data-leave] { opacity: 0; scale: 0.8; transition-duration: 300ms; }
 .sc__arrow {
   position: absolute; left: 0; top: 0; display: block;
-  fill: var(--sc-cur); stroke: #fff; stroke-width: 0.7; stroke-linejoin: round;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28));
+  width: calc(18px * var(--sc-k)); height: calc(18px * var(--sc-k));
+  fill: rgba(26, 111, 208, 0.34); stroke: rgba(255, 255, 255, 0.9); stroke-width: 0.8; stroke-linejoin: round;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 3px 6px rgba(26, 111, 208, 0.38));
   transform: rotate(-6deg);
   transition: scale 140ms ease; transform-origin: 2px 1.5px;
 }
 .sc[data-press] .sc__arrow { scale: 0.82; }
 /* the tag hangs off the arrow's lower right, like Figma's: solid fill, no stroke, snug */
 .sc__tag {
-  position: absolute; left: 11px; top: 13px;
+  position: absolute; left: calc(11px * var(--sc-k)); top: calc(13px * var(--sc-k));
   display: block; width: max-content; white-space: nowrap;
-  padding: 3px 9px 4px;
+  padding: calc(3px * var(--sc-k)) calc(9px * var(--sc-k)) calc(4px * var(--sc-k));
   border-radius: 999px; corner-shape: round;
-  background: var(--sc-cur); color: #fff;
-  font: 500 12px/16px "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
+  /* fully glass in every state: the site's glass-pill tokens (index.css) under a faint link-blue tint */
+  background: linear-gradient(rgba(26, 111, 208, 0.16), rgba(26, 111, 208, 0.16)), var(--glass-film);
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge), inset 0 0 0 1px rgba(26, 111, 208, 0.28);
+  color: #0d3f7e;
+  font: 500 calc(12px * var(--sc-k))/calc(16px * var(--sc-k)) "Google Sans Code", ui-monospace, "SF Mono", Menlo, monospace;
   letter-spacing: 0.01em;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
 }
 .sc[data-morph] .sc__arrow, .sc[data-morph] .sc__tag { opacity: 0; transition: opacity 120ms linear; } /* the page's dragger pill stands in (HelloDragger.jsx) */
 .sc__t-live { display: none; }
 .sc[data-follow] .sc__t-rest { display: none; }
 .sc[data-follow] .sc__t-live { display: inline; } /* parked: "Click to activate"; following the pointer: "Agam" */
 .sc__arrow, .sc__tag { transition-property: scale, opacity; }
-/* hovering: the whole cursor turns glass (frosted, translucent, a light rim), arrow and tag alike */
-.sc__arrow, .sc__tag { transition-property: scale, opacity, fill, background, backdrop-filter, box-shadow, color; transition-duration: 200ms; }
-.sc[data-hover] .sc__arrow { fill: rgba(255, 255, 255, 0.16); stroke: rgba(255, 255, 255, 0.85); stroke-width: 0.9; filter: drop-shadow(0 1px 4px rgba(26, 111, 208, 0.35)); }
-.sc[data-hover] .sc__tag {
-  background: rgba(255, 255, 255, 0.14); color: #fff;
-  -webkit-backdrop-filter: blur(10px) saturate(1.6); backdrop-filter: blur(10px) saturate(1.6);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 14px rgba(26, 111, 208, 0.25);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
-}
+.sc__arrow, .sc__tag { transition-property: scale, opacity, fill, background, box-shadow, color; transition-duration: 200ms; }
+html.dark .sc__tag { color: #f2f7ff; background: linear-gradient(rgba(109, 177, 255, 0.16), rgba(109, 177, 255, 0.16)), var(--glass-film); box-shadow: var(--glass-edge), inset 0 0 0 1px rgba(109, 177, 255, 0.3); }
+html.dark .sc__arrow { fill: rgba(109, 177, 255, 0.3); stroke: rgba(255, 255, 255, 0.8); }
+/* hovering a target: a touch more light in the glass */
+.sc[data-hover] .sc__arrow { fill: rgba(26, 111, 208, 0.2); stroke: #fff; }
+.sc[data-hover] .sc__tag { background: linear-gradient(rgba(26, 111, 208, 0.1), rgba(26, 111, 208, 0.1)), var(--glass-film-hover); }
 @media (hover: none), (pointer: coarse) { .sc { display: none; } }
 @media (prefers-reduced-motion: reduce) { .sc { transition: none; } }

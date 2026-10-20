@@ -182,11 +182,62 @@ export default function SiteCursor({ caseMode = false } = {}) {
       ro = new ResizeObserver(dirty); ro.observe(c);
       mo = new MutationObserver(dirty); mo.observe(c, { subtree: true, childList: true, attributes: true, attributeFilter: ["style", "class"] });
     };
+    // BESIDE THE FACE (Agam, 20 Oct: "close to the face but not overlapping the text"): the cursor's box is tried on the
+    // face's right, left, below, above; the first spot clear of every headline text rect (and on screen) wins, else the
+    // least-overlapping one. Text rects are re-collected only when dirty (resize, reflow, font load); the face rect is
+    // one cheap read per tick, and the spot is re-picked only when it moved, so a dragged face carries the cursor.
+    let spot = null, spotKey = "", textRects = [];
+    const faceRect = () => {
+      for (const sel of [".hv4__face", ".hero-morph__cv", ".header__avatar-wrap"]) { // v4/v5 face, the morph canvas once placed, the 2D head before
+        const r = document.querySelector(sel)?.getBoundingClientRect();
+        if (r && r.width > 20 && r.height > 20) return r;
+      }
+      return null;
+    };
+    const collectText = () => {
+      const c = headlineEl(), out = [];
+      if (!c) return out;
+      const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); let n;
+      while ((n = w.nextNode())) {
+        const pe = n.parentElement;
+        if (!n.nodeValue.trim() || !pe || pe.closest(".sr-only, .hello-hero__sr, [hidden]")) continue;
+        const rg = document.createRange(); rg.selectNodeContents(n);
+        for (const q of rg.getClientRects()) if (q.width > 0 && q.height > 0) out.push([q.left, q.top, q.right, q.bottom]);
+      }
+      if (!out.length && c instanceof SVGElement) for (const e of c.querySelectorAll("path, text, tspan")) { const q = e.getBoundingClientRect(); if (q.width > 0 && q.height > 0) out.push([q.left, q.top, q.right, q.bottom]); }
+      return out;
+    };
     const perch = () => {
-      if (eolDirty) { watch(); eol = headlineEnd(); eolDirty = false; }
-      if (eol) return [eol[0] - window.scrollX, eol[1] - window.scrollY];
-      const r = document.querySelector(".hero-morph__cv")?.getBoundingClientRect();
-      return r && r.width > 20 && r.height > 20 ? [r.left + r.width * 0.78, r.top + r.height * 0.04 - 6] : PARK;
+      const fr = faceRect();
+      if (!fr) { watch(); const e2 = headlineEnd(); return e2 ? [e2[0] - window.scrollX, e2[1] - window.scrollY] : PARK; }
+      if (eolDirty) { watch(); textRects = collectText(); eolDirty = false; spotKey = ""; }
+      const key = fr.left.toFixed(0) + "," + fr.top.toFixed(0) + "," + fr.width.toFixed(0) + "," + window.innerWidth + "," + window.innerHeight;
+      if (key !== spotKey) {
+        spotKey = key;
+        const tag = el.querySelector(".sc__tag");
+        const ar = el.querySelector(".sc__arrow");
+        const bw = 16 + (tag?.offsetWidth || 150) + 4, bh = Math.max((ar?.clientHeight || 18), 18) + (tag?.offsetHeight || 24) + 4; // arrow + hanging tag
+        const g = 10, cx = fr.left + fr.width / 2, cy = fr.top + fr.height / 2, pad = 6;
+        const cands = [
+          [fr.right + g, cy - bh / 2], [fr.left - g - bw, cy - bh / 2],
+          [cx - bw / 2, fr.bottom + g], [cx - bw / 2, fr.top - g - bh],
+        ];
+        const W = window.innerWidth, H = window.innerHeight;
+        let best = null, bestScore = 1e9;
+        for (const [x, y] of cands) {
+          let ov = 0;
+          for (const t of textRects) {
+            const w2 = Math.min(x + bw + pad, t[2]) - Math.max(x - pad, t[0]), h2 = Math.min(y + bh + pad, t[3]) - Math.max(y - pad, t[1]);
+            if (w2 > 0 && h2 > 0) ov += w2 * h2;
+          }
+          const off = Math.max(0, 8 - x) + Math.max(0, x + bw - (W - 8)) + Math.max(0, 8 - y) + Math.max(0, y + bh - (H - 8));
+          const score = ov + off * 400;
+          if (score < bestScore) { bestScore = score; best = [x, y]; }
+          if (score === 0) break;
+        }
+        spot = best;
+      }
+      return spot;
     };
     const offVersion = subscribeHeroVersion(() => setTimeout(dirty, 120)); // the new hero mounts a beat later
     window.addEventListener("resize", dirty, { passive: true });
