@@ -12,24 +12,26 @@ import "./schedExplorationsDetour.css";
 const TAG = { shipped: "Shipped", killed: "Killed", scale: "Didn't scale", considered: "Considered" };
 
 const ROWS = [
-  { label: "Placement", ink: "#2fb5a6", screen: "/figures/scheduled/sched-cart-prompted.png", screenAlt: "The cart with the schedule prompt, per shipment", chips: [
+  { label: "Placement", ink: "#2fb5a6", chips: [
     { t: "On the PDP", v: "killed" },
-    { t: "Home prompt", v: "shipped" },
-    { t: "Cart, per shipment", v: "shipped" },
+    { t: "Home prompt", v: "shipped", screen: "/figures/scheduled/sched-home-strip.png" },
+    { t: "Cart, per shipment", v: "shipped", screen: "/figures/scheduled/sched-cart-prompted.png" },
   ] },
-  { label: "Cart structure", ink: "#e26fcf", screen: "/figures/scheduled/sched-pg-default.png", screenAlt: "The single-page listing, every shipment on one page", chips: [
-    { t: "Tabbed, one per shipment", v: "killed" },
+  { label: "Cart structure", ink: "#e26fcf", chips: [
+    { t: "Tabbed, one per shipment", v: "killed", screen: "/figures/scheduled/sched-dir-tabbed.png" },
     { t: "Bottom sheet", v: "scale" },
-    { t: "One combined cart", v: "killed" },
-    { t: "Single-page listing", v: "shipped" },
+    { t: "One combined cart", v: "killed", screen: "/figures/scheduled/sched-cart-both.png" },
+    { t: "Single-page listing", v: "shipped", screen: "/figures/scheduled/sched-pg-default.png" },
   ] },
-  { label: "Slot picker", ink: "#6c76f0", screen: "/figures/scheduled/sched-pg-crossday.png", screenAlt: "The inline slot list", chips: [
+  { label: "Slot picker", ink: "#6c76f0", chips: [
     { t: "Calendar", v: "considered" },
     { t: "Bottom-sheet picker", v: "considered" },
-    { t: "Inline slot list", v: "shipped" },
+    { t: "Inline slot list", v: "shipped", screen: "/figures/scheduled/sched-pg-crossday.png" },
   ] },
 ];
 
+// each direction carries its own small screen: the closest existing asset in public/figures/scheduled; a direction that
+// was never built as a screen (no `screen`) shows a labelled placeholder frame
 // one stretch of marker line per verdict, drawn in a 100 x 44 cell that joins its neighbours at (0,22) and (100,22)
 const STROKE = {
   killed: { c: "#f0634f", d: "M0 22 C22 22 44 3 66 10 C88 17 70 42 50 33 C34 25 52 12 64 21", tail: "M64 21 L100 22" },
@@ -138,7 +140,6 @@ export default function SchedExplorationsDetour() {
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
           <div className="dtr-row__label" role="heading" aria-level={3}><span>{row.label}</span></div>
-          <div className="dtr-row__body">
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
               const on = peak >= i + 1 || beat >= i + 1;
@@ -148,11 +149,12 @@ export default function SchedExplorationsDetour() {
                   <span className="dtr-dot" aria-hidden="true" />
                   <span className="dtr-cell__t">{c.t}</span>
                   <span className="dtr-cell__tag">{TAG[c.v]}</span>
+                  {c.screen
+                    ? <IphoneFrame className="dtr-phone" screen={c.screen} alt={c.t} width={104} controls={false} />
+                    : <IphoneFrame className="dtr-phone dtr-phone--none" width={104} controls={false} alt={c.t}><span>No screen<br />built</span></IphoneFrame>}
                 </div>
               );
             })}
-          </div>
-          <IphoneFrame className="dtr-phone" screen={row.screen} alt={row.screenAlt} width={124} controls={false} />
           </div>
         </div>
       ))}

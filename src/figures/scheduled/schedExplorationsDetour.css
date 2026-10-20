@@ -66,11 +66,8 @@
 .dtr-row__label { font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.01em; }
 .dtr-row:first-child { padding-top: 6px; }
 
-/* mvgld4n4: the shipped direction's screen beside each section's path, same size in all three */
-.dtr-row__body { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: clamp(16px, 3vw, 36px); align-items: start; }
-.dtr-row__body .dtr-row__line { align-self: center; }
-.dtr-phone { flex: none; }
-@media (max-width: 560px) {
-  .dtr-row__body { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
-  .dtr-phone { justify-self: start; }
-}
+/* mvgm1j46: one small screen per direction, under its item on the path; a direction with no built screen gets a labelled neutral frame */
+.dtr-phone { flex: none; margin-top: 14px; }
+.dtr-phone--none .ifr__screen { display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--ink-text) 7%, transparent); }
+.dtr-phone--none .ifr__screen span { font-size: 11px; line-height: 1.3; text-align: center; color: var(--ink-dim); }
+.dtr-cell[data-v="killed"] .dtr-phone, .dtr-cell[data-v="scale"] .dtr-phone, .dtr-cell[data-v="considered"] .dtr-phone { opacity: .78; }
