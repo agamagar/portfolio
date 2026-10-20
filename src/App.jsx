@@ -1068,6 +1068,14 @@ const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metri
 const SHOW_MAP_TREE = false; // mvgjw15e: Circles is the only My role map view and the Tree/Circles toggle is hidden; true brings the Tree and the toggle back
 const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "Expectations with the C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
+  const packRef = useRef(null);
+  useEffect(() => { // pause the orbit and the pulse while the figure is off-screen
+    const el = packRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return undefined;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) el.removeAttribute("data-off"); else el.setAttribute("data-off", ""); });
+    io.observe(el);
+    return () => io.disconnect();
+  });
   const [mapView, setMapView] = useState(SHOW_MAP_TREE ? "tree" : "circles"); // mvg9bd94 + mvgb0gi8: tree (default) or the packed-circles map
   const [view, setView] = useState("left"); // mvdvotz9 (Agam): "Icon left" is the default
   // mv593w8x (12 Oct): with the My role frame parked (roleFrame.hideFrame) this scope map is the final My role: no
@@ -1086,19 +1094,17 @@ function RoleScopeMap({ s, i }) {
         ))}
       </div>}
       {mapView === "circles" ? (
-        <div className="rv-pack" role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
-          {/* positions in % of the square; the lines run edge to edge from the lead designer to every circle (the Tree's relationships) */}
-          {(() => {
-            const pts = [...ROLE_PARTNERS.map((p, k) => { const a = (-90 + k * 120) * Math.PI / 180; return [p, 50 + 24 * Math.cos(a), 50 + 24 * Math.sin(a), 24, "who"]; }),
-              ...ROLE_FUNCTIONS.map((f, k) => { const a = [-45, 5, 90, 190, 235][k] * Math.PI / 180; return [f, 50 + 41 * Math.cos(a), 50 + 41 * Math.sin(a), 17, "fn"]; })];
-            return (<>
-              <svg className="rv-pack__lines" viewBox="0 0 100 100" aria-hidden="true">
-                {pts.map(([n, x, y, d]) => { const dx = x - 50, dy = y - 50, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L; return <line key={n} x1={50 + ux * 10} y1={50 + uy * 10} x2={x - ux * d / 2} y2={y - uy * d / 2} />; })}
-              </svg>
-              <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
-              {pts.map(([n, x, y, d, k]) => <span key={n} className={"rv-pack__c rv-pack__c--" + k} style={{ left: `${x}%`, top: `${y}%`, "--d": d }}>{PACK_SHORT[n] || n}</span>)}
-            </>);
-          })()}
+        <div className="rv-pack" ref={packRef} role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
+          {/* mvgkpgjn: the circles revolve around the lead designer (one orbit ~48 / 58 s, a phase and radius stagger each), the lines
+              ride the same rotating wrapper, labels counter-rotate to stay upright; the orb gradient pulses on ::before. CSS transforms only. */}
+          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
+          {[...ROLE_PARTNERS.map((n, k) => [n, -90 + k * 120, 24 + [0, -1.5, 1][k], 24, "who", 48]),
+            ...ROLE_FUNCTIONS.map((n, k) => [n, [-45, 5, 90, 190, 235][k], 41 + [0, -1, -2, -1, 0][k], 17, "fn", 58])].map(([n, a0, r, d, k, dur]) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
+              <i className="rv-pack__ln" />
+              <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
+            </span>
+          ))}
         </div>
       ) : (
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
