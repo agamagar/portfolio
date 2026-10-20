@@ -69,9 +69,10 @@ function VMark({ v, on, last }) {
 }
 
 const MODES = [["rows", "Rows"], ["lanes", "Lanes"]];
+const SHOW_DTR_TOGGLE = false; // mvggc7xf (Agam, "make lanes default and hide it"): set true to bring the Rows / Lanes toggle back
 
 export default function SchedExplorationsDetour() {
-  const [mode, setMode] = useState("rows");
+  const [mode, setMode] = useState("lanes");
   const [seen, setSeen] = useState(false); // lanes draw once, as they scroll in, and stay drawn
   const reduce = useReducedMotion();
   const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
@@ -105,11 +106,11 @@ export default function SchedExplorationsDetour() {
         <p className="dtr__cap">{ROWS.length} questions, and the slow part before each answer.</p>
       </div>
 
-      <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
+      {SHOW_DTR_TOGGLE && <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
         {MODES.map(([k, label]) => (
           <button key={k} type="button" className={"fig-toggle__btn" + (mode === k ? " is-active" : "")} aria-pressed={mode === k} onClick={() => setMode(k)}>{label}</button>
         ))}
-      </div>
+      </div>}
 
       {mode === "lanes" ? (
         <div className="dtr-lanes">
