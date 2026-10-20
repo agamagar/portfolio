@@ -8342,6 +8342,7 @@ html.dark.glass-lens .article__hero-replay,
 .article__body .cs-sec > .article__figure--float { float: right; width: 44%; margin: 0.4rem 0 1.25rem 2rem; }
 @media (max-width: 720px) { .article__body .cs-sec > .article__figure--float { float: none; width: 100%; margin: 1.25rem 0; } }
 .article__body .cs-sec.cs-sec--stack > .cs-sec__in { margin-top: 1.5rem; }
+.article__body .cs-sec.cs-sec--stack > img.cs-sec__side { width: 100%; margin: 0 0 1.5rem; } /* mvgntthg: a stacked section's photo sits above its heading with air under it */
 /* mv59g9e3 (12 Oct): heading left, subheading right in one row (stacks below 700px); the figure runs full width under both */
 .article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 2rem; }
 .article__body .cs-sec.cs-sec--row > * { grid-column: 1 / -1; }
