@@ -8928,8 +8928,8 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 .rv-map__vt button:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
 .rv-map__vt + .rv-map__tree, .rv-map__vt + .rv-pack { margin-top: 1.25rem; }
 /* Figma "Gradient · lime-violet orb" (1671:17436), light as drawn; the dark one keeps the hues and drops the lightness so it sinks into the dark page */
-.rv-pack { --pk-0: #c4f04e; --pk-22: #b8ee6a; --pk-30: #a4d9a1; --pk-38: #8fc3d8; --pk-50: #9c86f2; --pk-66: #b47bf8; --pk-755: #d0a9fa; --pk-85: #ebd6fc; --pk-100: #fbf5fe; }
-:root.dark .rv-pack, html.dark .rv-pack { --pk-0: #93b52c; --pk-22: #82b04f; --pk-30: #63997c; --pk-38: #4b80a2; --pk-50: #5a45b8; --pk-66: #5a2f9e; --pk-755: #3a2270; --pk-85: #1e1240; --pk-100: #0f0c1c; }
+.rv-pack { --pk-0: #c4f04e; --pk-22: #b8ee6a; --pk-30: #a4d9a1; --pk-38: #8fc3d8; --pk-50: #9c86f2; --pk-66: #b47bf8; --pk-755: #d0a9fa; --pk-85: #ebd6fc; --pk-100: rgba(235, 214, 252, 0); }
+:root.dark .rv-pack, html.dark .rv-pack { --pk-0: #93b52c; --pk-22: #82b04f; --pk-30: #63997c; --pk-38: #4b80a2; --pk-50: #5a45b8; --pk-66: #5a2f9e; --pk-755: #3a2270; --pk-85: #1e1240; --pk-100: rgba(30, 18, 64, 0); }
 
 .rv-pack { position: relative; container-type: inline-size; width: min(100%, 40rem); aspect-ratio: 1; margin: 1.25rem auto 0; border-radius: 28px; corner-shape: round; overflow: hidden; background: radial-gradient(circle closest-side at 50% 50%, var(--pk-0) 0%, var(--pk-22) 22%, var(--pk-30) 30%, var(--pk-38) 38%, var(--pk-50) 50%, var(--pk-66) 66%, var(--pk-755) 75.5%, var(--pk-85) 85%, var(--pk-100) 100%); }
 .rv-pack__lines { position: absolute; inset: 0; width: 100%; height: 100%; } .rv-pack__lines line { stroke: color-mix(in srgb, var(--rv-accent) 70%, transparent); stroke-width: 0.25; vector-effect: non-scaling-stroke; stroke-width: 1px; }
