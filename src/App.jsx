@@ -2619,6 +2619,7 @@ const caseStudies = {
       {
         h: "The explorations",
         nav: "Explorations",
+        stack: true, // mvgnbzzu (Agam, "make this vertical"): heading above the text, like Ways to exist
         figNextDetour: true,
         figIn: "schedEtaScroll", // mukvt7cp (28 Sep): the callout variants, scrolling in right to left inside the section
         group: "Process",
@@ -2649,6 +2650,7 @@ const caseStudies = {
         group: "Process",
         stack: true, // mvgmceoe (Agam, "make this a vertical layout"): heading above the text, not in a label column beside it
         whiteboardNext: SD_BOARDS.directions, // 11 Oct: tabbed vs single page, and the sentence that decided it
+        whiteboardFloat: true, // mvgndaq6 (Agam): the whiteboard floats right inside this section, the text wraps around it (stacked on a phone)
         tldr: "I ran a tabbed flow against a single-page listing. One sentence in testing killed the tidier one.",
         p: [
           "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\"",
@@ -10089,6 +10091,12 @@ function CaseStudyBodyFull({ cs }) {
           )}
           {/* mvgj0x67 (Agam, "move this to the impact section"): the glance sits right under the Impact heading and TL;DR, not after the divider */}
           {s.glance && <SchedImpactGlance g={s.glance} />}
+          {/* mvgndaq6: the whiteboard floats beside the section's text instead of sitting after the figure */}
+          {s.whiteboardNext && s.whiteboardFloat && (
+            <EF className="article__figure article__figure--float">
+              <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
+            </EF>
+          )}
           {/* mujuytgf: numbered points, Figma HBBgHT1u7e5jsz7BEEZ3fT 46:15909
               (big numeral over a light label, one column each) */}
           {s.points && (
@@ -10230,7 +10238,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.figNextDetour && <ExplorationsDetourAfter EF={EF} />}
           {/* 11 Oct: a whiteboard (src/figures/board) after the main figure, so it never replaces one:
               whiteboardNext: { board, alt, caption }. SectionFigure renders the easel, the lightbox writes it live. */}
-          {s.whiteboardNext && (
+          {s.whiteboardNext && !s.whiteboardFloat && (
             <EF className="article__figure">
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
             </EF>

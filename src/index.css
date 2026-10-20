@@ -8336,7 +8336,11 @@ html.dark.glass-lens .article__hero-replay,
    label on top, then the heading, the explanation, then its figure below. */
 .article__body .cs-sec.cs-sec--stack { grid-template-columns: minmax(0, 1fr); }
 .article__body .cs-sec.cs-sec--stack > * { grid-column: 1; }
-.article__body .cs-sec.cs-sec--stack > h2 { grid-row: auto; position: static; margin-bottom: 0.75rem; }
+.article__body .cs-sec.cs-sec--stack > h2 { grid-row: auto; position: static; margin-bottom: 0.75rem; max-width: none; } /* mvgncazn (Agam, "full width"): a stacked heading spans the whole column (no narrow label measure) */
+/* mvgndaq6: a stacked section with a floated figure is a plain block so its paragraphs wrap around the float */
+.article__body .cs-sec.cs-sec--stack:has(> .article__figure--float) { display: block; }
+.article__body .cs-sec > .article__figure--float { float: right; width: 44%; margin: 0.4rem 0 1.25rem 2rem; }
+@media (max-width: 720px) { .article__body .cs-sec > .article__figure--float { float: none; width: 100%; margin: 1.25rem 0; } }
 .article__body .cs-sec.cs-sec--stack > .cs-sec__in { margin-top: 1.5rem; }
 /* mv59g9e3 (12 Oct): heading left, subheading right in one row (stacks below 700px); the figure runs full width under both */
 .article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 2rem; }
