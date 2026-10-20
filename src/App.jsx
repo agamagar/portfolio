@@ -2245,72 +2245,7 @@ const caseStudies = {
         // mtmlg1wh: two horizontal plates under the parallax; pin Figma nodes to fill them.
         // mtmlmth1: the go-to-market banner animation first, on the purple card ground.
       },
-      {
-        // mtp8th5p / mtp8tht6: Context and Objective, node 315-29373, six text
-        // layers revealing top to bottom. Bridge: sits after the phone, as in Figma.
-        h: "Context and objective",
-        noHeading: true,
-        figBare: true,
-        // mv2lnssw (10 Oct): "move this one section down", from under the parallax to here.
-        // mv2l6ub3 (10 Oct): "below this there were 2 other container like this", the
-        // row is back: the banner phone (mukx11r8 had moved it to The go-to-market,
-        // where it also stays) and the live prototype (mukx078o / muky1muk had parked it).
-        platesStack: true, // mvdsfhsn (Agam): the two plates one below the other, each a full image slot (was side by side)
-        platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-        plates: [
-          {
-            fig: "schedGtmRealOne",
-            figBare: true,
-            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-            alt: "The go-to-market banner animation, on the phone: a sweeping clock and slot chips popping in.",
-          },
-          {
-            auto: false,
-            embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
-            embedClickNode: "40000084:180821",
-            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-            cueBox: [48.5, 30.6, 45, 7.8],
-            cueLabel: "Click here",
-            cueNoPointer: true,
-            cueNoBox: true,
-            cueClick: true,
-            alt: "The scheduled order prototype, live from Figma",
-            // mv2mmvt6: the file is private (see PROTO_EMBED), so a visitor without access meets Figma's sign-in
-            figmaLink: "https://www.figma.com/proto/71cZSn6pTNf4zFzO07O2uv/?node-id=40000084-123917&starting-point-node-id=40000084%3A123917",
-          },
-        ],
-        scene: {
-          aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
-          bg: "transparent", // mtpeowii: no box fill, no stroke
-          noframe: true,
-          layers: [
-            { src: "/figures/scheduled/dup2/context-chip.png", x: 7.94, y: 12.22, w: 10.38, fx: "reveal", tint: true },
-            { src: "/figures/scheduled/dup2/context-1.png", x: 54.04, y: 13.44, w: 37.46, fx: "reveal", tint: true },
-            { src: "/figures/scheduled/dup2/context-2.png", x: 54.15, y: 28.44, w: 34.95, fx: "reveal", tint: true },
-            { src: "/figures/scheduled/dup2/objective-chip.png", x: 7.94, y: 56.11, w: 12.24, fx: "reveal", tint: true },
-            { src: "/figures/scheduled/dup2/objective-1.png", x: 54.06, y: 57.33, w: 28.8, fx: "reveal", tint: true },
-            { src: "/figures/scheduled/dup2/objective-2.png", x: 54.04, y: 78.64, w: 24.63, fx: "reveal", tint: true },
-          ],
-          // phones: one column, chip then lines, at reading size (2026-09-06)
-          mobile: {
-            aspect: [375, 450],
-            layers: [
-              { src: "/figures/scheduled/dup2/context-chip.png", x: 8, y: 5.8, w: 22, fx: "reveal", tint: true },
-              { src: "/figures/scheduled/dup2/context-1.png", x: 8, y: 17.3, w: 84, fx: "reveal", tint: true },
-              { src: "/figures/scheduled/dup2/context-2.png", x: 8, y: 32.4, w: 78, fx: "reveal", tint: true },
-              { src: "/figures/scheduled/dup2/objective-chip.png", x: 8, y: 48.4, w: 26, fx: "reveal", tint: true },
-              { src: "/figures/scheduled/dup2/objective-1.png", x: 8, y: 60, w: 66, fx: "reveal", tint: true },
-              { src: "/figures/scheduled/dup2/objective-2.png", x: 8, y: 84.4, w: 60, fx: "reveal", tint: true },
-            ],
-          },
-        },
-      },
-      // mukx078o + mukx11r8 (28 Sep): the two-plate row that sat here was split up:
-      // the banner phone went to The go-to-market, the live prototype to Slot-page states
-      // Bridge (2026-09-06 05:10): Agam deleted the two plate frames (560:11533,
-      // 560:11536) and moved 134 'Context & problem' up to sit after frame 146 and
-      // before the three cards. The plates section is gone from here; the hero
-      // banner mp4 and the prototype embed still exist as assets and helpers.
+      // mvgb0ugo (Agam, "move this one section up"): "Context & problem" (with the "When instant delivery fails" scene) now comes before "Context and objective"
       {
         h: "Context & problem",
         nav: "Context",
@@ -2380,6 +2315,72 @@ const caseStudies = {
           "Out of hours, a disruption, an address beyond coverage, an item out of stock, a store at capacity. Each one is demand with nowhere to go.",
         // muieho5p: the dots under the five reasons removed
       },
+      {
+        // mtp8th5p / mtp8tht6: Context and Objective, node 315-29373, six text
+        // layers revealing top to bottom. Bridge: sits after the phone, as in Figma.
+        h: "Context and objective",
+        noHeading: true,
+        figBare: true,
+        // mv2lnssw (10 Oct): "move this one section down", from under the parallax to here.
+        // mv2l6ub3 (10 Oct): "below this there were 2 other container like this", the
+        // row is back: the banner phone (mukx11r8 had moved it to The go-to-market,
+        // where it also stays) and the live prototype (mukx078o / muky1muk had parked it).
+        platesStack: true, // mvdsfhsn (Agam): the two plates one below the other, each a full image slot (was side by side)
+        platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+        plates: [
+          {
+            fig: "schedGtmRealOne",
+            figBare: true,
+            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+            alt: "The go-to-market banner animation, on the phone: a sweeping clock and slot chips popping in.",
+          },
+          {
+            auto: false,
+            embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
+            embedClickNode: "40000084:180821",
+            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
+            cueBox: [48.5, 30.6, 45, 7.8],
+            cueLabel: "Click here",
+            cueNoPointer: true,
+            cueNoBox: true,
+            cueClick: true,
+            alt: "The scheduled order prototype, live from Figma",
+            // mv2mmvt6: the file is private (see PROTO_EMBED), so a visitor without access meets Figma's sign-in
+            figmaLink: "https://www.figma.com/proto/71cZSn6pTNf4zFzO07O2uv/?node-id=40000084-123917&starting-point-node-id=40000084%3A123917",
+          },
+        ],
+        scene: {
+          aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
+          bg: "transparent", // mtpeowii: no box fill, no stroke
+          noframe: true,
+          layers: [
+            { src: "/figures/scheduled/dup2/context-chip.png", x: 7.94, y: 12.22, w: 10.38, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/context-1.png", x: 54.04, y: 13.44, w: 37.46, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/context-2.png", x: 54.15, y: 28.44, w: 34.95, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-chip.png", x: 7.94, y: 56.11, w: 12.24, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-1.png", x: 54.06, y: 57.33, w: 28.8, fx: "reveal", tint: true },
+            { src: "/figures/scheduled/dup2/objective-2.png", x: 54.04, y: 78.64, w: 24.63, fx: "reveal", tint: true },
+          ],
+          // phones: one column, chip then lines, at reading size (2026-09-06)
+          mobile: {
+            aspect: [375, 450],
+            layers: [
+              { src: "/figures/scheduled/dup2/context-chip.png", x: 8, y: 5.8, w: 22, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/context-1.png", x: 8, y: 17.3, w: 84, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/context-2.png", x: 8, y: 32.4, w: 78, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-chip.png", x: 8, y: 48.4, w: 26, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-1.png", x: 8, y: 60, w: 66, fx: "reveal", tint: true },
+              { src: "/figures/scheduled/dup2/objective-2.png", x: 8, y: 84.4, w: 60, fx: "reveal", tint: true },
+            ],
+          },
+        },
+      },
+      // mukx078o + mukx11r8 (28 Sep): the two-plate row that sat here was split up:
+      // the banner phone went to The go-to-market, the live prototype to Slot-page states
+      // Bridge (2026-09-06 05:10): Agam deleted the two plate frames (560:11533,
+      // 560:11536) and moved 134 'Context & problem' up to sit after frame 146 and
+      // before the three cards. The plates section is gone from here; the hero
+      // banner mp4 and the prototype embed still exist as assets and helpers.
       // muic2lhk (26 Sep): moved to sit just below Context & problem (was after the question); the phone moves up with it (muic1wk2)
       {
         // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
