@@ -2183,7 +2183,7 @@ const caseStudies = {
           "The listing page was rebuilt for the tablet and the phone. Filtering by category shows each style as a picture and a name (Hoop, Earcuff, Jhumka, Chandbali, Pearl, Sui Dhaga, Studs, Drop), so a shopper recognises a shape instead of reading a label. Filtering by price offers ranges in steps of ₹10,000, from under ₹10,000 to ₹80,000, with the chosen ranges highlighted.",
           "Between the products sit a promotional banner and a card that asks \"Do you need help picking a design?\". Enter a phone number and the experts help select the jewellery.",
         ],
-        image: "/figures/caratlane/listing-plate.jpg",
+        image: "/figures/caratlane/listing-plate.png",
         figure: "The revamped listing page on a tablet, beside the promotion, filter by category, filter by price and design-help cards",
       },
       {

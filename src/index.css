@@ -3379,6 +3379,12 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   background: #0f1115;
   display: block;
 }
+/* CaratLane: keyed-out figures with real alpha sit straight on the page, no frame or fill behind them */
+.article__figure-img--real[src*="/caratlane/listing-"] {
+  border: 0;
+  background: none !important;
+  border-radius: 0;
+}
 .slide__media-img--real {
   aspect-ratio: auto;
   width: 100%;
