@@ -9611,6 +9611,26 @@ const CS_FAMILIES = [
 function CaseStudyTabs({ slug, className, listen }) {
   const tabs = CS_FAMILIES.find((fam) => fam.some((t) => t.slug === slug));
   if (!tabs) return null;
+  // mvfy31wq (Agam, "make this into a circular button with icon instead of 2 part toggle"): on the case study's own page a
+  // Design / PRD pair is ONE round glass button showing the OTHER view's icon (it opens that view); Listen is a round button
+  // beside it. Families with a third view (Away's System) keep the labelled pill.
+  if (className && className.includes("article__index-tabs") && tabs.length === 2) {
+    const other = tabs.find((t) => t.slug !== slug);
+    const doc = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M7 3h7l4 4v14H7z" /><path d="M14 3v4h4" /><path d="M10 12h5M10 16h5" /></svg>;
+    const design = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M4 10h16M10 10v10" /></svg>;
+    return (
+      <nav className={`cs-tabs cs-tabs--circles ${className}`} aria-label="Related views">
+        <Link to={`/work/${other.slug}`} className="cs-tabs__circle theme-toggle dev-glass" aria-label={`Open the ${other.label}`} title={other.label}>
+          {other.label === "PRD" ? doc : design}
+        </Link>
+        {listen && (
+          <button type="button" className="cs-tabs__circle theme-toggle dev-glass" aria-pressed={listen.on} aria-label="Listen" title="Listen" onClick={() => listen.set(!listen.on)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><rect x="3" y="14" width="4" height="6" rx="1.5" /><rect x="17" y="14" width="4" height="6" rx="1.5" /></svg>
+          </button>
+        )}
+      </nav>
+    );
+  }
   return (
     <nav className={`cs-tabs${className ? " " + className : ""}`} aria-label="Related views">
       {tabs.map((t) => {

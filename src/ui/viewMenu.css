@@ -12,7 +12,7 @@
 .view-menu__btn { pointer-events: auto; }
 .top-controls[data-scrolled] > .view-menu,
 html .top-controls[data-scrolled] > .view-menu { translate: none !important; opacity: 1 !important; pointer-events: none; transition: none; }
-.view-menu[data-dev] { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 44px); }
+.view-menu[data-dev], body:has(.article__index-tabs) .view-menu[data-dev] { bottom: calc(var(--dev-base, 16px) + 88px); } /* QA, Inspect, then the eye (mvfy2i8i) */
 .view-menu__panel {
   position: absolute;
   left: 0;

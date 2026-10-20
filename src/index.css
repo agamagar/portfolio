@@ -8665,10 +8665,9 @@ html:not(.dark) .sdcmp__tag[data-kind="shipped"] { color: #027a48; }
 /* the nav's glass film for the dev-only round buttons that sit outside .top-controls (QA notes, Inspect) */
 .dev-glass { border-radius: 999px; corner-shape: round; background: rgba(255, 255, 255, 0.62); -webkit-backdrop-filter: blur(14px) saturate(1.8); backdrop-filter: blur(14px) saturate(1.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 4px 14px -6px rgba(40, 20, 80, 0.22); }
 html.dark .dev-glass { background: rgba(28, 28, 32, 0.62); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
-.qa-circle { position: fixed; left: 50%; bottom: 16px; translate: -50% 0; z-index: 2147482001; cursor: pointer; }
+.qa-circle { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: var(--dev-base, 16px); z-index: 2147482001; cursor: pointer; } /* mvfy2i8i: bottom-left, under Inspect and the eye */
 html .qa-circle[aria-pressed="true"] { box-shadow: 0 0 0 2px #e8930c, 0 4px 14px -6px rgba(0, 0, 0, 0.5); color: #ffc46b; }
 .qa-circle__n { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; box-sizing: border-box; background: #e8930c; color: #1a1205; font: 700 10px/16px "Google Sans Flex", Inter, sans-serif; text-align: center; }
-@media (max-width: 700px) { .qa-circle { bottom: 70px; } }
 @media (max-width: 700px) { .qa-pill__n--note { display: none; } .qa-pill { bottom: 70px; } .qa-pin__card { width: min(280px, 80vw); } }
 /* 11 Oct: the reply field on each QA card */
 .qa-pin__card { pointer-events: none; }
@@ -8835,3 +8834,15 @@ html .page--article .article__body .rv dl.rv-map__rows, .rv-map__editorial, .rv-
 html .page--article .article__body .rv-map__nums dt { font-size: 1.5rem; font-weight: 300; }
 @media (max-width: 700px) { .rv-map__nums { gap: 1rem; justify-content: space-between; } html .page--article .article__body .rv-map__nums dt { font-size: 1.125rem; white-space: nowrap; } }
 html .page--article .article__body .rv-card--bare dl.rv-card__foot { margin: 0; }
+
+
+/* mvfy31wq: the Design / PRD pair is a round glass icon button (+ Listen), bottom-left on the case study's own page */
+html .cs-tabs.cs-tabs--circles.article__index-tabs, html.glass-lens .cs-tabs.cs-tabs--circles.article__index-tabs, html.dark.glass-lens .cs-tabs.cs-tabs--circles.article__index-tabs {
+  left: max(20px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 8px; padding: 0; border: 0; border-radius: 0; background: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+}
+.cs-tabs__circle { position: relative; cursor: pointer; text-decoration: none; }
+html .cs-tabs__circle[aria-pressed="true"] { color: var(--link, #1a6fd0); box-shadow: 0 0 0 2px var(--link, #1a6fd0), 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
+/* the dev round buttons stack above it on the left: QA, Inspect, then the eye */
+:root { --dev-base: max(16px, env(safe-area-inset-bottom)); }
+body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bottom)) + 46px); }
