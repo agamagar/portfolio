@@ -14,12 +14,12 @@ const SRC = "/figures/scheduled/cart-page-full.webp"; // 720 x 7452
 // a / b are the widget's top and bottom edge down the page, in % of its height (measured on the 720 x 7452 export): the
 // one being talked about is lit and the rest of the page is dimmed (mvg9wjb1: one widget at a time, stepping through)
 const CALLOUTS = [
-  { a: 3.9, b: 9.2, y: 6.4, x: 94, t: "Gifts for you", d: "Free gifts live on the cart: offers to unlock, then progress toward the ₹1999 gift, each gift at ₹1." },
-  { a: 9.8, b: 13.4, y: 11.6, x: 6, t: "Unserviceable, first", d: "“3 items can’t be delivered” leads the cart. A shipment is unserviceable outright when its store is closed or out of stock for that window." },
-  { a: 13.8, b: 31.1, y: 15.5, x: 94, t: "One shipment, its own ETA", d: "“Delivering in 19 mins” is one shipment. A mixed cart fans out by fulfilling site, up to four, and scheduling is per shipment." },
-  { a: 34.9, b: 42.2, y: 38.5, x: 6, t: "Pharmacy orders", d: "A prescription step lives in the same cart: one of the things that make it complex before scheduling asks for room." },
+  { a: 3.9, b: 9.2, y: 6.4, x: 94, t: "Gifts for you", d: "Free gifts live on the cart: offers to unlock, then progress toward the ₹1999 gift, each gift at ₹1. It is one of the things the cart already carries before scheduling asks for room." },
+  { a: 9.8, b: 13.4, y: 11.6, x: 6, t: "Unserviceable, first", d: "“3 items can’t be delivered” leads the cart. A shipment is unserviceable outright when its store is closed or out of stock for that window, so the cart says so first, before any slot is offered. Items that go unavailable while you linger move to another shipment." },
+  { a: 13.8, b: 31.1, y: 15.5, x: 94, t: "One shipment, its own ETA", d: "“Delivering in 19 mins” is one shipment. A mixed cart fans out by fulfilling site, up to four, because the dark store nearby and the superstore stock different categories. A slot belongs to each shipment, not to the order, since every site has its own capacity." },
+  { a: 34.9, b: 42.2, y: 38.5, x: 6, t: "Pharmacy orders", d: "A prescription step lives in the same cart, a pharmacy order beside the groceries. It is one of the constructs that make the cart complex, and part of why the Instant-versus-Schedule choice has to resolve shipment by shipment." },
   { a: 57.1, b: 60.4, y: 58.7, x: 94, t: "More rows than shipments", d: "Gift-bag and “ordering for someone” rows sit in the same list. [CONFIRM what each is for]" },
-  { a: 64.0, b: 77.7, y: 70.8, x: 6, t: "The bill, and what was saved", d: "Fees, coupons and the total (“To Pay”, “Total savings”) close the scroll: the page scheduling had to fit into." },
+  { a: 64.0, b: 77.7, y: 70.8, x: 6, t: "The bill, and what was saved", d: "Fees, coupons and the total (“To Pay”, “Total savings”) close the scroll: the page scheduling had to fit into. If a chosen slot lapses while you are away, you review the schedule again before paying, rather than failing at checkout." },
   // mvgm2r93 (Agam, "option 7 not needed"): step 7 is parked; restore this line to bring it back
   // { a: 96.6, b: 99.9, y: 98.2, x: 94, t: "Where the pay button goes", d: "Pay Online and Pay on Delivery end the page. Where the pay button went on an unserviceable cart ran as two experiments." },
 ];
