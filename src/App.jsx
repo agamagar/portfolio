@@ -2261,75 +2261,6 @@ const caseStudies = {
       },
       // mvgb0ugo (Agam, "move this one section up"): "Context & problem" (with the "When instant delivery fails" scene) now comes before "Context and objective"
       {
-        h: "Context & problem",
-        nav: "Context",
-        split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
-        hideSplit: true, // mvf5jlfu (Agam, "remove"): the heading, post-it and text block is hidden (the figure below stays); delete this line to bring it back
-        splitStack: true, // mv4h2fqo (12 Oct, "make this a vertical layout"): heading + note on top, the text below, full width
-        // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a circle over a modelled city and
-        // watch instant, schedule-only and nothing recount, with the 11 PM store closures one tap away.
-        // mv56y336 (12 Oct): moved here from The constraints. It answers this section's own line, "an app that
-        // only knew how to say now had nowhere to put them": it shows who has instant, who can only schedule,
-        // and how the clock changes that. The constraints are about slot width, booked-plus-live load and the
-        // delivery promise, none of which it shows.
-        // mv589p9j (12 Oct): the reach explorer moved to Impact (figsAfter, after the availability tape)
-        group: "Problem",
-        // mujp57h2 (27 Sep): re-voiced in the Fadell register (writing harness,
-        // gate 0/0); was "Some demand wants groceries later, not now, and a
-        // ten-minute-only app had nowhere to put it."
-        tldr: "Not every order is urgent. Some people wanted their groceries later. And an app built only for ten minutes had nowhere to put them. So that demand walked out the door.",
-        p: [
-          // mujk799p (27 Sep): re-voiced with the writing harness (Sauer register,
-          // gate 0/0), same facts; was one dense paragraph, now claim then turn
-          // mv2lud20 (10 Oct): ==…== marks the skim path (squiggle())
-          "Zepto's whole promise is ==speed==: groceries at your door in ten minutes. But ==not every need is urgent==. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had ==nowhere to put them==.",
-          "Scheduled Delivery let people order anything on Zepto for ==a one-hour slot of their choosing==, ==without spending the trust== that ten minutes had earned.",
-        ],
-        _pBefore27Sep: [
-          "Zepto's moat is instant: groceries in ten minutes. But not every need is instant, and forcing every order to be immediate left real demand on the table. Scheduled Delivery gave users a way to order anything on Zepto for a future one-hour slot, without spending the trust that makes the platform work.",
-        ],
-        // 26 Sep: PARKED, it repeated the use-cases lead line word for word
-        // (SchedUseCases); move it back into `p` to restore
-        _p2: [
-          "Talking to users, a few high-intent personas emerged. Each one reframed the feature from a nice-to-have into the reason they ordered at all.",
-        ],
-        // 26 Sep: bullets PARKED (the three personas now have their own frames,
-        // SchedUseCases); drop the underscore to bring them back
-        _ul: [
-          "Commuters scheduling on the ride home so groceries arrive when they do, no second errand after reaching the door",
-          "Users in geographies with patchy store coverage near home, for whom instant often wasn't serviceable",
-          "Superstore shoppers buying new-category items that only stock in larger superstores, which close overnight, making a late-night order impossible without scheduling",
-        ],
-        // Annotation mtmgqeqk: the three-persona figure moved to "What users told us".
-        // Annotation mtmgxe0z: image frame from Figma Portfolio 2026 node 480-23182.
-        // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
-        scene: {
-          aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
-          bg: "var(--sd-reasons-bg, #f7f7f7)", // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
-          // muiejocv: the heading moved inside the box (was figureTop, above it)
-          title: "When instant delivery fails",
-          // muikq572: dark mode. `split` = where the icon ends and the text starts
-          // (% of the export, measured from its alpha); in dark the text part is
-          // repainted light and the icon keeps its colour. `lift` brightens the
-          // two icons that fall under 3:1 on the dark box (moon 1.99, hexagon 2.22).
-          // muifd33t: was "Five reasons instant can't answer"
-          // muif6v96: rows re-spaced under the heading (were 12.88..79.7, set for
-          // a box with no heading). muif89sl: box 20% taller, same content size,
-          // centred. muifckmg: more air under the heading (~40 -> ~75px): heading
-          // at 14.5%, rows 31.5 / 43.2 / 54.9 / 66.6 / 78.3
-          layers: [
-            { src: "/figures/scheduled/reasons/row-1.png", x: 36.78, y: 31.5, w: 26.44, fx: "reveal", split: 20.31, lift: true },
-            { src: "/figures/scheduled/reasons/row-2.png", x: 37.64, y: 43.2, w: 24.78, fx: "reveal", split: 22.61, lift: true },
-            { src: "/figures/scheduled/reasons/row-3.png", x: 32.61, y: 54.9, w: 34.84, fx: "reveal", split: 15.77 },
-            { src: "/figures/scheduled/reasons/row-4.png", x: 36.85, y: 66.6, w: 26.29, fx: "reveal", split: 21.11 },
-            { src: "/figures/scheduled/reasons/row-5.png", x: 37.64, y: 78.3, w: 24.71, fx: "reveal", split: 21.22 },
-          ],
-        },
-        figure:
-          "Out of hours, a disruption, an address beyond coverage, an item out of stock, a store at capacity. Each one is demand with nowhere to go.",
-        // muieho5p: the dots under the five reasons removed
-      },
-      {
         // mtp8th5p / mtp8tht6: Context and Objective, node 315-29373, six text
         // layers revealing top to bottom. Bridge: sits after the phone, as in Figma.
         h: "Context and objective",
@@ -2408,6 +2339,76 @@ const caseStudies = {
         fig: "schedMoments",
         figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
         // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
+      },
+      // mvgewwfq (Agam, "move this 2 sections down"): "Context & problem" (the "When instant delivery fails" scene) now sits after "Six moments"
+      {
+        h: "Context & problem",
+        nav: "Context",
+        split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
+        hideSplit: true, // mvf5jlfu (Agam, "remove"): the heading, post-it and text block is hidden (the figure below stays); delete this line to bring it back
+        splitStack: true, // mv4h2fqo (12 Oct, "make this a vertical layout"): heading + note on top, the text below, full width
+        // 5 Oct: the reach explorer (Pinterest ref, Morphocode Explorer): drag a circle over a modelled city and
+        // watch instant, schedule-only and nothing recount, with the 11 PM store closures one tap away.
+        // mv56y336 (12 Oct): moved here from The constraints. It answers this section's own line, "an app that
+        // only knew how to say now had nowhere to put them": it shows who has instant, who can only schedule,
+        // and how the clock changes that. The constraints are about slot width, booked-plus-live load and the
+        // delivery promise, none of which it shows.
+        // mv589p9j (12 Oct): the reach explorer moved to Impact (figsAfter, after the availability tape)
+        group: "Problem",
+        // mujp57h2 (27 Sep): re-voiced in the Fadell register (writing harness,
+        // gate 0/0); was "Some demand wants groceries later, not now, and a
+        // ten-minute-only app had nowhere to put it."
+        tldr: "Not every order is urgent. Some people wanted their groceries later. And an app built only for ten minutes had nowhere to put them. So that demand walked out the door.",
+        p: [
+          // mujk799p (27 Sep): re-voiced with the writing harness (Sauer register,
+          // gate 0/0), same facts; was one dense paragraph, now claim then turn
+          // mv2lud20 (10 Oct): ==…== marks the skim path (squiggle())
+          "Zepto's whole promise is ==speed==: groceries at your door in ten minutes. But ==not every need is urgent==. Some orders are for tonight, some for tomorrow morning, and an app that only knew how to say now had ==nowhere to put them==.",
+          "Scheduled Delivery let people order anything on Zepto for ==a one-hour slot of their choosing==, ==without spending the trust== that ten minutes had earned.",
+        ],
+        _pBefore27Sep: [
+          "Zepto's moat is instant: groceries in ten minutes. But not every need is instant, and forcing every order to be immediate left real demand on the table. Scheduled Delivery gave users a way to order anything on Zepto for a future one-hour slot, without spending the trust that makes the platform work.",
+        ],
+        // 26 Sep: PARKED, it repeated the use-cases lead line word for word
+        // (SchedUseCases); move it back into `p` to restore
+        _p2: [
+          "Talking to users, a few high-intent personas emerged. Each one reframed the feature from a nice-to-have into the reason they ordered at all.",
+        ],
+        // 26 Sep: bullets PARKED (the three personas now have their own frames,
+        // SchedUseCases); drop the underscore to bring them back
+        _ul: [
+          "Commuters scheduling on the ride home so groceries arrive when they do, no second errand after reaching the door",
+          "Users in geographies with patchy store coverage near home, for whom instant often wasn't serviceable",
+          "Superstore shoppers buying new-category items that only stock in larger superstores, which close overnight, making a late-night order impossible without scheduling",
+        ],
+        // Annotation mtmgqeqk: the three-persona figure moved to "What users told us".
+        // Annotation mtmgxe0z: image frame from Figma Portfolio 2026 node 480-23182.
+        // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
+        scene: {
+          aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
+          bg: "var(--sd-reasons-bg, #f7f7f7)", // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
+          // muiejocv: the heading moved inside the box (was figureTop, above it)
+          title: "When instant delivery fails",
+          // muikq572: dark mode. `split` = where the icon ends and the text starts
+          // (% of the export, measured from its alpha); in dark the text part is
+          // repainted light and the icon keeps its colour. `lift` brightens the
+          // two icons that fall under 3:1 on the dark box (moon 1.99, hexagon 2.22).
+          // muifd33t: was "Five reasons instant can't answer"
+          // muif6v96: rows re-spaced under the heading (were 12.88..79.7, set for
+          // a box with no heading). muif89sl: box 20% taller, same content size,
+          // centred. muifckmg: more air under the heading (~40 -> ~75px): heading
+          // at 14.5%, rows 31.5 / 43.2 / 54.9 / 66.6 / 78.3
+          layers: [
+            { src: "/figures/scheduled/reasons/row-1.png", x: 36.78, y: 31.5, w: 26.44, fx: "reveal", split: 20.31, lift: true },
+            { src: "/figures/scheduled/reasons/row-2.png", x: 37.64, y: 43.2, w: 24.78, fx: "reveal", split: 22.61, lift: true },
+            { src: "/figures/scheduled/reasons/row-3.png", x: 32.61, y: 54.9, w: 34.84, fx: "reveal", split: 15.77 },
+            { src: "/figures/scheduled/reasons/row-4.png", x: 36.85, y: 66.6, w: 26.29, fx: "reveal", split: 21.11 },
+            { src: "/figures/scheduled/reasons/row-5.png", x: 37.64, y: 78.3, w: 24.71, fx: "reveal", split: 21.22 },
+          ],
+        },
+        figure:
+          "Out of hours, a disruption, an address beyond coverage, an item out of stock, a store at capacity. Each one is demand with nowhere to go.",
+        // muieho5p: the dots under the five reasons removed
       },
       {
         h: "The central question",
