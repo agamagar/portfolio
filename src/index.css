@@ -8945,9 +8945,9 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 
 /* mvgf46cj (Agam, "make another button on top of this and dock the annotations plugin here"): the Agentation toolbar's collapsed
    button docks at the top of the left button stack (above the palette button), not bottom-right */
-html [data-agentation-toolbar] { right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) ) !important; bottom: calc(var(--dev-base, 16px) + 132px) !important; }
+html [data-agentation-toolbar] { top: auto !important; right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) ) !important; bottom: calc(var(--dev-base, 16px) + 132px) !important; }
 /* collapsed, the wrapper (337px wide, the round button at its right end) is right-anchored so the BUTTON lands in the stack column; open, it grows to the right from the stack */
-html [data-agentation-toolbar]:has([class*="collapsed"]) { left: auto !important; right: calc(100vw - max(20px, env(safe-area-inset-left)) - 38px) !important; }
+html [data-agentation-toolbar]:has([class*="collapsed"]) { left: auto !important; right: calc(100vw - max(20px, env(safe-area-inset-left)) - 38px) !important; top: auto !important; }
 /* mvgjm (Agam, "make the annotation floater a glass icon on the left bottom"): collapsed, the Agentation button is a 38px round glass
    icon like the eye / palette / Inspect buttons (same .dev-glass tokens); open, its own toolbar shows unchanged */
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="collapsed"] { width: 38px !important; height: 38px !important; min-width: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 999px !important; corner-shape: round; background: rgba(255, 255, 255, 0.62) !important; -webkit-backdrop-filter: blur(14px) saturate(1.8); backdrop-filter: blur(14px) saturate(1.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 4px 14px -6px rgba(40, 20, 80, 0.22) !important; color: #33095e; display: grid; place-items: center; }

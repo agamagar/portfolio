@@ -638,6 +638,7 @@ const pickSide = (s) => Object.fromEntries(SIDE_KEYS.filter((k) => s[k]).map((k)
 const omitSide = (s) => Object.fromEntries(Object.entries(s).filter(([k]) => !SIDE_KEYS.includes(k)));
 export const hasSide = (s) => SIDE_KEYS.some((k) => s[k]);
 
+const SHOW_LEADING_WITH_DESIGN = false; // mvgnrq1v ("hide this"): the whole "Leading with design" tabbed section is hidden; true brings it back
 const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
 const SHOW_RWF_KEYBOX = false; // mvgn7qr3 ("hide this"): the dashed legend + source box under the speed charts; true brings it back
 const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
@@ -901,7 +902,7 @@ export default function SchedRoleWireframes({ only, exclude }) {
       {list.map((s) => {
         // the tabbed section replaces its five slides on the full page; a
         // hand-picked `only` list (the presenting cut) keeps slides as chosen
-        if (!only && grouped.has(s.tag)) return s.tag === "Working with product" ? <LeadingWithDesign key="lwd" /> : null; // the section sits where the first of the five slides was
+        if (!only && grouped.has(s.tag)) return s.tag === "Working with product" && SHOW_LEADING_WITH_DESIGN ? <LeadingWithDesign key="lwd" /> : null; // the section sits where the first of the five slides was
         // mukq5ujj (28 Sep): "What I'd do differently" closes the whole case study now (App.jsx renders it after Reflection)
         if (!only && s.tag === "What I'd do differently") return null;
         return <Slide key={s.tag} s={s} />;
