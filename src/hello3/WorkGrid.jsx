@@ -71,7 +71,7 @@ const CARDS = [
   // with the CaratLane invite reveal (the phone row's 27-node motion spec)
   // playing in its screen, at the instance's offsets in the frame: 237 wide
   // at x 214, y -179 on a 666 x 432 card. The PNG stays as the fallback src.
-  { src: "/hello3/cards/card-4.png", href: "/list", alt: "CaratLane Select", live: "caratlane" },
+  { src: "/hello3/cards/card-4.png", href: "/work/caratlane", alt: "CaratLane Select", live: "caratlane" },
 ];
 
 // A multiplayer-style cursor: the arrow, then the name pill hanging off its

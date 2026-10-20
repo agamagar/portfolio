@@ -2142,6 +2142,74 @@ const caseStudies = {
       "Optional: a coded pilot-results bars figure (4 dimensions, about 6 of 7) to sit in 'Does it feel like it works?'",
     ],
   },
+  // CaratLane (Figma Portfolio 2026, node 226:24181): text is the frames' own copy; role/dates/metrics beyond the recap are not in the file.
+  caratlane: {
+    accent: "#8863FB",
+    eyebrow: "CaratLane · Case study",
+    title: "Improving discovery across 500+ retail stores, and designing for new revenue streams",
+    meta: "Design · CaratLane · 2023",
+    cover: "CaratLane",
+    heroImage: "/figures/caratlane/hero.jpg",
+    heroAlt: "CaratLane Select: the invite sheet, \"You are invited to CaratLane Select, designed for our most loyal customers\"",
+    heroBg: "#260d35",
+    expandFigures: true,
+    lead:
+      "CaratLane is an e-commerce jewelry brand with a retail footprint of more than 500 stores. The work spans four pieces of the product: CaratLane Select, an invite-only tier for the most loyal customers; a revamped listing page with filters and a design-help prompt; a referral program that pays in xClusive points; and Roupe, the design system that holds them together.",
+    sections: [
+      {
+        h: "Project recap",
+        group: "Overview",
+        tldr: "Improving discovery across 500+ retail stores, and designing for new revenue streams.",
+        p: [
+          "The brief had two halves. The first was discovery: helping people find the right piece, in the app and across more than 500 retail stores. The second was revenue: designing new streams around the customers CaratLane already has, through a loyalty tier and a referral program.",
+        ],
+      },
+      {
+        h: "Listing page revamp",
+        group: "Discovery",
+        tldr: "Filters by category and by price, and a prompt that offers expert help when choosing is the hard part.",
+        p: [
+          "The listing page was rebuilt for the tablet and the phone. Filtering by category shows each style as a picture and a name (Hoop, Earcuff, Jhumka, Chandbali, Pearl, Sui Dhaga, Studs, Drop), so a shopper recognises a shape instead of reading a label. Filtering by price offers ranges in steps of ₹10,000, from under ₹10,000 to ₹80,000, with the chosen ranges highlighted.",
+          "Between the products sit a promotional banner and a card that asks \"Do you need help picking a design?\". Enter a phone number and the experts help select the jewellery.",
+        ],
+        collage: ["/figures/caratlane/listing-ipad.png", "/figures/caratlane/listing-cards.png"],
+        figure: "The revamped listing page on tablet, and the cards that sit between products: promotion, filter by category, filter by price, and the design-help prompt.",
+        divider: true,
+      },
+      {
+        h: "CaratLane Select",
+        group: "New revenue streams",
+        tldr: "An invitation for the most loyal customers, opened from the home screen with one clear action.",
+        p: [
+          "CaratLane Select opens as a sheet over the app's home screen. It reads \"You are invited to CaratLane Select\", names who it is for (\"Designed for our most loyal customers\") and asks for a single step: Get Started. A close control sits top right, so the invitation never traps the person who is not ready.",
+        ],
+        divider: true,
+      },
+      {
+        h: "Referral program",
+        group: "New revenue streams",
+        tldr: "Refer a friend, earn xClusive points: 250 for each registration, 500 more when a friend buys.",
+        p: [
+          "The referral page greets the customer by name and sets the offer in one line: earn up to 750 xClusive points by influencing friends and family. The personal link is one tap to copy, and Share with WhatsApp and Refer a Friend sit directly beneath it.",
+          "Below, the page explains the maths plainly: 250 points on each referral (after registration on the CaratLane app), 500 points after the friend's purchase, and 1 point = ₹1. Referring five or more friends gives a chance to be featured on the CaratLane Instagram page.",
+        ],
+        image: "/figures/caratlane/homepages.png",
+        figure: "The referral program: the invite and share screen, how points are earned, and the Instagram feature.",
+        divider: true,
+      },
+      {
+        h: "Design system: Roupe",
+        group: "System",
+        tldr: "Roupe, written in English, Hindi (रूप) and Tamil (உருவம்), is the shared system under all of it.",
+        p: [
+          "Roupe means form: the name is shown in three scripts, in English, Hindi and Tamil. The system defines two six-step palettes, purple and pink, from 10 to 60, with Purple 60 (#4F3267) for text and Purple 10 (#F6F3F9) for quiet surfaces. Type is Inter in Regular, Medium, Semi-bold and Bold.",
+          "On top sit the interface parts: radio buttons and checkboxes, tabs and toggles, option chips, date and time selectors, delivery preferences, and a set of line icons.",
+        ],
+        image: "/figures/caratlane/design-system.png",
+        figure: "Roupe: wordmark, palettes, type, components and icons.",
+      },
+    ],
+  },
   "scheduled-delivery": {
     slideLayout: true, // mujvribt (27 Sep): every section in the My role slide layout
     accent: "#6B21D9",
@@ -10506,7 +10574,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           </div>
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
-          <div className="article__hero-board article__hero-board--image">
+          <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
             <img className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
@@ -10639,7 +10707,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           </div>
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
-          <div className="article__hero-board article__hero-board--image">
+          <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
             <img className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
