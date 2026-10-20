@@ -8846,14 +8846,14 @@ html .page--article .article__body .rv-card--bare dl.rv-card__foot { margin: 0; 
 
 /* mvfy31wq: the Design / PRD pair is a round glass icon button (+ Listen), bottom-left on the case study's own page */
 html .cs-tabs.cs-tabs--circles.article__index-tabs, html.glass-lens .cs-tabs.cs-tabs--circles.article__index-tabs, html.dark.glass-lens .cs-tabs.cs-tabs--circles.article__index-tabs {
-  left: max(20px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 8px; padding: 0; border: 0; border-radius: 0; background: none;
+  left: max(20px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); flex-direction: column; gap: 6px; padding: 0; border: 0; border-radius: 0; background: none; /* mvgehnsz: one vertical line with the other buttons */
   -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
 }
 .cs-tabs__circle { position: relative; cursor: pointer; text-decoration: none; }
 html .cs-tabs__circle[aria-pressed="true"] { color: var(--link, #1a6fd0); box-shadow: 0 0 0 2px var(--link, #1a6fd0), 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
 /* the dev round buttons stack above it on the left: QA, Inspect, then the eye */
 :root { --dev-base: max(16px, env(safe-area-inset-bottom)); }
-body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bottom)) + 46px); }
+body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bottom)) + 90px); } /* two 38px circles + gaps */
 
 /* Case-study rail (nav.article__index--spy): a hairline spine whose lavender fill
    tracks page progress, and a 2px marker on the active entry. Weight stays constant
