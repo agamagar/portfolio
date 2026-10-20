@@ -1,0 +1,44 @@
+/* SchedExplorationsDetour: hand-drawn marker version of the explorations board (after Pentagram, In Defense of the Detour) */
+.dtr { --paper: #15131b; --ink-text: #f1eefb; --ink-dim: rgba(241,238,251,.62); --accent: #9674db;
+  position: relative; width: 100%; box-sizing: border-box; padding: clamp(22px, 4vw, 44px); border-radius: 18px;
+  background: var(--paper); color: var(--ink-text); font-family: var(--serif, Georgia, "Times New Roman", serif); overflow: hidden; }
+:root:not(.dark) .dtr { --paper: #f3f0ea; --ink-text: #1b1824; --ink-dim: rgba(27,24,36,.6); }
+.dtr-defs { position: absolute; }
+.dtr__head { margin-bottom: clamp(18px, 3vw, 30px); }
+.dtr__title { margin: 0; font-family: var(--serif, Georgia, "Times New Roman", serif); font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; line-height: .95;
+  font-size: clamp(24px, 4vw, 40px); max-width: 20ch; }
+.dtr__cap { margin: 12px 0 0; font-style: italic; font-size: clamp(14px, 1.9vw, 18px); color: var(--ink-dim); }
+
+.dtr-row { padding: 18px 0 8px; }
+.dtr-row + .dtr-row { border-top: 1px dashed color-mix(in srgb, var(--ink-text) 16%, transparent); }
+.dtr-row__label { display: inline-flex; flex-direction: column; font-weight: 800; font-size: clamp(15px, 2vw, 19px); letter-spacing: .01em; }
+.dtr-row__label i { display: block; height: 7px; margin-top: 3px; border-radius: 6px; background: var(--ink); transform: rotate(-1.2deg); }
+.dtr-row__line { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin-top: 14px; }
+.dtr-cell { position: relative; padding-bottom: 12px; min-width: 0; }
+.dtr-mark { display: block; width: 100%; height: 54px; overflow: visible; }
+.dtr-mark path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dtr-mark__rule, .dtr-mark__tail { vector-effect: non-scaling-stroke; }
+.dtr-mark__rule { stroke: color-mix(in srgb, var(--ink-text) 22%, transparent); stroke-width: 2; stroke-dasharray: 1 7; }
+.dtr-mark__tail { stroke: color-mix(in srgb, var(--ink-text) 22%, transparent); stroke-width: 2; }
+.dtr-mark__ink { stroke-width: 6; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s cubic-bezier(.5,.1,.2,1); transition-delay: calc(var(--k, 0) * .3s); }
+.dtr-mark__head { stroke-width: 6; transition-delay: calc(var(--k, 0) * .3s + .55s); }
+.dtr-cell[data-on="true"] .dtr-mark__ink { stroke-dashoffset: 0; }
+.dtr-dot { position: absolute; left: -5px; top: 22px; width: 11px; height: 11px; border-radius: 50%; background: var(--ink-text); transform: translateY(-.5px); }
+.dtr-cell__t { display: block; margin-top: 8px; padding-right: 10px; font-weight: 700; font-size: clamp(13px, 1.7vw, 16px); line-height: 1.2; }
+.dtr-cell__tag { display: block; margin-top: 3px; font-style: italic; font-size: 13px; color: var(--ink-dim); opacity: 0; transition: opacity .5s ease .5s; }
+.dtr-cell[data-on="true"] .dtr-cell__tag { opacity: 1; }
+.dtr-cell[data-on="true"][data-v="shipped"] .dtr-cell__tag { color: var(--accent); font-weight: 700; }
+.dtr-cell[data-on="true"][data-v="killed"] .dtr-cell__t { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: #f0634f; }
+
+.dtr-end { margin-top: 18px; padding-top: 18px; border-top: 3px solid var(--accent); opacity: 0; transform: translateY(8px); transition: opacity .6s ease, transform .6s ease; }
+.dtr-end[data-on="true"] { opacity: 1; transform: none; }
+.dtr-end__l { font-weight: 900; text-transform: uppercase; letter-spacing: .04em; font-size: 13px; color: var(--accent); }
+.dtr-end__t { margin: 6px 0 0; font-weight: 800; font-size: clamp(20px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -.01em; max-width: 26ch; }
+
+@media (max-width: 560px) {
+  .dtr-row__line { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dtr-mark__ink, .dtr-cell__tag, .dtr-end { transition: none; }
+  .dtr-mark__ink { stroke-dashoffset: 0; }
+}

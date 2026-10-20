@@ -155,6 +155,7 @@ const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitc
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
+const SchedExplorationsDetour = lazyFig(() => import("./figures/scheduled/SchedExplorationsDetour"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmRealOneDim, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
 import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
@@ -345,6 +346,8 @@ import ViewMenu from "./ui/ViewMenu";
 import { CASE_NAV } from "./caseNav";
 import CaseIndexSheet from "./ui/CaseIndexSheet"; // < 1100px section index: pill + bottom sheet
 import HeroSwitch from "./ui/HeroSwitch";
+import ExplorationsSwitch from "./ui/ExplorationsSwitch";
+import { useExplorationsVariant } from "./ui/explorationsVariant";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
 // The window scene sandbox (/window, unlisted): three r186 WebGPU, lazy like /dj
 // so its chunk never reaches any other page. See src/scene/window/.
@@ -733,6 +736,7 @@ const figures = {
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
+  schedExplorationsDetour: SchedExplorationsDetour,
   schedPostBooking: SchedPostBooking,
   schedGtmReal: SchedGtmReal,
   schedGtmRealOne: SchedGtmRealOne, // one phone, no frame (mtmm2p84)
@@ -1679,6 +1683,18 @@ function ReelOrStill({ reel, still, parallax, variant }) {
         />
       )}
     </div>
+  );
+}
+
+// Agentation mvg8xj51-ht1eue: a hand-drawn copy of "The explorations" (after Pentagram's In Defense of the Detour),
+// mounted right after the original when ?explorations=detour / the eye-menu pick is on.
+function ExplorationsDetourAfter({ EF }) {
+  const v = useExplorationsVariant();
+  if (v !== "detour") return null;
+  return (
+    <EF className="article__figure">
+      <SectionFigure fig="schedExplorationsDetour" variant="article" bare />
+    </EF>
   );
 }
 
@@ -10147,6 +10163,7 @@ function CaseStudyBodyFull({ cs }) {
               <SectionFigure fig={s.figNext} variant="article" bare />
             </EF>
           )}
+          {s.figNext === "schedExplorations" && <ExplorationsDetourAfter EF={EF} />}
           {/* 11 Oct: a whiteboard (src/figures/board) after the main figure, so it never replaces one:
               whiteboardNext: { board, alt, caption }. SectionFigure renders the easel, the lightbox writes it live. */}
           {s.whiteboardNext && (
@@ -11729,6 +11746,7 @@ export default function App() {
         <ViewMenu feedback={feedback}>
           <FontSwitch i={0} feedback={feedback} />
           {(path === "/" || path === "/portfolio") && <HeroSwitch i={0} feedback={feedback} />}
+          {path.startsWith("/work/scheduled-delivery") && <ExplorationsSwitch i={0} feedback={feedback} />}
           {(isWindow || ((path === "/" || path === "/portfolio") && typeof window !== "undefined" && windowSceneOn())) && (
             <Suspense fallback={null}>
               <SceneControls i={0} feedback={feedback} />
