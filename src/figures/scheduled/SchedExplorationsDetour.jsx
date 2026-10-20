@@ -101,10 +101,7 @@ export default function SchedExplorationsDetour() {
         </defs>
       </svg>
 
-      <div className="dtr__head">
-        <div className="dtr__title" role="heading" aria-level={3}>What we explored, before converging</div>
-        <p className="dtr__cap">{ROWS.length} questions, and the slow part before each answer.</p>
-      </div>
+      {/* mvggcv40: no heading of its own; the section's standard h2 + TL;DR above carry it */}
 
       {SHOW_DTR_TOGGLE && <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
         {MODES.map(([k, label]) => (
@@ -116,7 +113,7 @@ export default function SchedExplorationsDetour() {
         <div className="dtr-lanes">
           {ROWS.map((row) => (
             <div className="dtr-lane" key={row.label} style={{ "--ink": row.ink }}>
-              <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
+              <div className="dtr-row__label"><span>{row.label}</span></div>
               <div className="dtr-lane__line">
                 {row.chips.map((c, k) => {
                   const on = lanesOn;
@@ -137,7 +134,7 @@ export default function SchedExplorationsDetour() {
         </div>
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
-          <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
+          <div className="dtr-row__label"><span>{row.label}</span></div>
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
               const on = beat >= i + 1;
