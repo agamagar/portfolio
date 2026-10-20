@@ -116,6 +116,9 @@ function classify(block, night) {
   return { kind, nearest, depth: Math.min(1, openBest / SCHED_R) }; // 0 beside an open store, 1 at the edge of scheduled reach
 }
 
+// mvg90wh8 (Agam, "remove this"): the "Illustrative model on a real map…" note under the explorer is hidden; set true to bring it back.
+// (It is the line that says the stores and radii are assumptions, not Zepto data.)
+const SHOW_REX_NOTE = false;
 export default function SchedReachExplorer() {
   const city = useMemo(buildCity, []);
   const [night, setNight] = useState(false);
@@ -229,9 +232,9 @@ export default function SchedReachExplorer() {
           </ul>
         </section>
 
-        <p className="rex__note">
+        {SHOW_REX_NOTE && <p className="rex__note">
           Illustrative model on a real map of Indiranagar, Bangalore: the streets are OpenStreetMap, but the three stores are placed for the demo, not real addresses, and instant reach is {INSTANT_R / KM} km, scheduled reach {SCHED_R / KM} km. A block is a 100 m square of the map. It shows how distance and the clock decide a cart's options. It is not Zepto data.
-        </p>
+        </p>}
       </aside>
 
       <div className="rex__map">
