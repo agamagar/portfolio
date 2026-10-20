@@ -3,6 +3,7 @@
 // declare, components are the real ones. Nothing is typed in twice. See readCss.js.
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SERIFS } from "../lib/serifFont";
+import { StackedBars, Bars, LineChart, Legend, ramp, STATUS, fmtPct0, fmtPct1, fmtK } from "../ui/charts";
 import FontSwitch from "../ui/FontSwitch";
 import ViewMenu from "../ui/ViewMenu";
 import HeroChips from "../hello3/HeroChips";
@@ -19,10 +20,35 @@ import "./system.css";
 const WorkGrid = lazy(() => import("../hello3/WorkGrid"));
 
 const SECTIONS = [
-  ["colour", "Colour"], ["type", "Type"], ["space", "Spacing and layout"], ["glass", "Glass"], ["components", "Components"], ["motion", "Motion"],
+  ["colour", "Colour"], ["type", "Type"], ["space", "Spacing and layout"], ["glass", "Glass"], ["components", "Components"], ["charts", "Charts"], ["motion", "Motion"],
 ];
 const noop = () => {};
 const PILL = { position: "static", display: "inline-flex", alignItems: "center", translate: "none", transform: "none", margin: 0, inset: "auto", opacity: 1, visibility: "visible" };
+
+/* ---------------------------------------------------------------- charts */
+const CH_MONTHS = ["Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+const CH_STACK = CH_MONTHS.map((label, i) => ({ label, am: 11 + i * 2, mid: 20 + (i % 3), pm: 24 - i, eve: 36 - i * 2.2, night: 8 + (i % 2) }));
+const CH_STACK_S = [{ key: "am", label: "6 to 10 AM" }, { key: "mid", label: "10 to 2" }, { key: "pm", label: "2 to 6" }, { key: "eve", label: "6 to 10 PM" }, { key: "night", label: "Night" }];
+const CH_BARS = CH_MONTHS.map((label, i) => ({ label, orders: 80000 + i * i * 9000 + (i % 3) * 20000 }));
+const CH_LINES = CH_MONTHS.map((label, i) => ({ label, a: 28 + Math.sin(i) * 3 + i, b: 14 + Math.cos(i / 2) * 2 }));
+const CH_H = [{ label: "Customer changed mind", v: 71.4, sub: "before the slot" }, { label: "Out of stock", v: 18.2 }, { label: "Operations", v: 10.4 }];
+function Chart({ name, note, children }) {
+  return <div style={{ margin: "28px 0 0", maxWidth: 680 }}><h3 style={{ margin: "0 0 4px", fontSize: 16 }}>{name}</h3><p className="sys-note" style={{ margin: "0 0 14px", fontSize: 13 }}>{note}</p>{children}</div>;
+}
+function Charts() {
+  return (
+    <>
+      <p className="sys-note">Chart components in <code>src/ui/charts</code>. Segments of 3px radius with a 2px gap, a faint baseline instead of a heavy grid, the hovered bar lifts while the rest dim, bars and lines draw in once on scroll, and every chart carries a hidden data table. Sample data.</p>
+      <Chart name="StackedBars" note="percent, 5-step violet ramp, legend and tooltip."><StackedBars percent data={CH_STACK} series={CH_STACK_S} colors={ramp(5)} yFormat={fmtPct0} valueFormat={fmtPct1} height={210} ariaLabel="Slot mix by month, sample" /></Chart>
+      <Chart name="StackedBars, horizontal" note="Same component, orientation flipped."><StackedBars horizontal percent data={CH_STACK.slice(0, 4)} series={CH_STACK_S.slice(0, 3)} yFormat={fmtPct0} valueFormat={fmtPct1} ariaLabel="Slot mix, horizontal, sample" /></Chart>
+      <Chart name="Bars" note="One series, vertical, with an emphasised bar."><Bars data={CH_BARS} valueKey="orders" label="Orders" yFormat={fmtK} emphasis={9} height={200} ariaLabel="Orders by month, sample" /></Chart>
+      <Chart name="Bars, horizontal" note="Value labels at the bar end, optional sub caption."><Bars horizontal data={CH_H} valueKey="v" label="Share" yFormat={fmtPct1} max={100} ariaLabel="Cancellations by cause, sample" /></Chart>
+      <Chart name="LineChart" note="Direct end labels, crosshair on hover, arrow keys when focused."><LineChart data={CH_LINES} series={[{ key: "a", label: "Scheduled" }, { key: "b", label: "All orders" }]} yFormat={fmtPct0} height={200} ariaLabel="Two lines, sample" /></Chart>
+      <Chart name="LineChart, area" note="area adds a soft fade under the line."><LineChart area data={CH_LINES} series={[{ key: "a", label: "Scheduled" }]} yFormat={fmtPct0} height={170} ariaLabel="One area, sample" /></Chart>
+      <Chart name="Legend" note="Box or line swatch; also built into the charts above."><Legend items={[{ label: "Within slot", color: STATUS[0] }, { label: "Early", color: STATUS[1] }, { label: "Late", color: STATUS[2] }]} /></Chart>
+    </>
+  );
+}
 
 /* ---------------------------------------------------------------- colour */
 const TEXT_ON_BG = ["--fg", "--muted", "--muted-2", "--link", "--green", "--accent", "--sdc-accent", "--sdc-ok-within", "--sdc-ok-late"];
@@ -426,7 +452,7 @@ export default function SystemPage({ theme, onToggleTheme }) {
     SECTIONS.forEach(([id]) => { const n = document.getElementById(id); if (n) io.observe(n); });
     return () => io.disconnect();
   }, []);
-  const body = useMemo(() => ({ colour: <Colour />, type: <Type />, space: <Space />, glass: <Glass theme={theme} onToggleTheme={onToggleTheme} />, components: <Components theme={theme} onToggleTheme={onToggleTheme} />, motion: <Motion theme={theme} /> }), [theme, onToggleTheme]);
+  const body = useMemo(() => ({ colour: <Colour />, type: <Type />, space: <Space />, glass: <Glass theme={theme} onToggleTheme={onToggleTheme} />, components: <Components theme={theme} onToggleTheme={onToggleTheme} />, charts: <Charts />, motion: <Motion theme={theme} /> }), [theme, onToggleTheme]);
   return (
     <div className="sys">
       <header className="sys-top">
