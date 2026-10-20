@@ -69,6 +69,7 @@ function VMark({ v, on, last }) {
 }
 
 const MODES = [["rows", "Rows"], ["lanes", "Lanes"]];
+const SHOW_DTR_END = false; // mvggfli3 (Agam, "hide this"): set true to bring back the Converged line under the lanes
 const SHOW_DTR_TOGGLE = false; // mvggc7xf (Agam, "make lanes default and hide it"): set true to bring the Rows / Lanes toggle back
 
 export default function SchedExplorationsDetour() {
@@ -151,10 +152,10 @@ export default function SchedExplorationsDetour() {
         </div>
       ))}
 
-      <div className="dtr-end" data-on={mode === "lanes" ? lanesOn : beat >= ROWS.length + 1}>
+      {SHOW_DTR_END && <div className="dtr-end" data-on={mode === "lanes" ? lanesOn : beat >= ROWS.length + 1}>
         <span className="dtr-end__l">Converged</span>
         <p className="dtr-end__t">Schedule on the cart, per shipment, one single page, slots inline.</p>
-      </div>
+      </div>}
     </div>
   );
 }
