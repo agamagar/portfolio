@@ -2264,6 +2264,7 @@ const caseStudies = {
         // mtp8th5p / mtp8tht6: Context and Objective, node 315-29373, six text
         // layers revealing top to bottom. Bridge: sits after the phone, as in Figma.
         h: "Context and objective",
+        sceneBetween: "Context & problem", // mvgfkkqz: the "When instant delivery fails" scene sits between this section's two phone plates
         noHeading: true,
         figBare: true,
         // mv2lnssw (10 Oct): "move this one section down", from under the parallax to here.
@@ -2343,6 +2344,7 @@ const caseStudies = {
       // mvgewwfq (Agam, "move this 2 sections down"): "Context & problem" (the "When instant delivery fails" scene) now sits after "Six moments"
       {
         h: "Context & problem",
+        sceneHidden: true, // mvgfkkqz: its scene is drawn between the phone plates of "Context and objective"
         nav: "Context",
         split: true, // muidhm8w: Context and Objective layout, TL;DR as a post-it
         hideSplit: true, // mvf5jlfu (Agam, "remove"): the heading, post-it and text block is hidden (the figure below stays); delete this line to bring it back
@@ -9898,9 +9900,14 @@ function CaseStudyBodyFull({ cs }) {
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
   // the plates row (mtmlg1wh); shared by the standalone render and the duo view
-  const renderPlates = (s) => (
+  // mvgfkkqz (Agam, "move this up in between the 2 phone frames"): a section can name another whose scene is drawn BETWEEN its
+  // first and second plate (sceneBetween: that section's heading); the other section then hides its own copy (sceneHidden)
+  const renderPlates = (s) => {
+    const sceneBetweenPlates = s.sceneBetween ? cs.sections.find((x) => x.h === s.sceneBetween)?.scene : null;
+    return (
             <PlatesStack stack={s.platesStack} gradient={s.platesGradient}>
               {s.plates.map((pl, k) => (
+                <Fragment key={`plf-${k}`}>
                 <figure className={"article__plate" + (pl.wide ? " article__plate--wide" : "") + (pl.heading ? " article__plate--copy" : "") + (pl.src || pl.video ? "" : " article__plate--empty")} key={`pl-${k}`}>
                   {/* mtpevnfg: a heading and subheading beside the plate */}
                   {pl.heading && (
@@ -9997,9 +10004,16 @@ function CaseStudyBodyFull({ cs }) {
                   )}
                   {pl.caption && <figcaption>{pl.caption}</figcaption>}
                 </figure>
+                {k === 0 && sceneBetweenPlates && (
+                  <EF className="article__figure">
+                    <SectionFigure scene={sceneBetweenPlates} variant="article" bare />
+                  </EF>
+                )}
+                </Fragment>
               ))}
             </PlatesStack>
-  );
+    );
+  };
   return (
     <div className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
       {!cs.headFacts && <p className="article__lead">{cs.lead}</p>}
@@ -10134,7 +10148,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.insightBefore && <SchedUseCases />}
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
-          {(s.figure || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || s.scene) && !s.introQuestion && (
+          {(s.figure || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && (
             <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}
               {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}
@@ -10153,7 +10167,7 @@ function CaseStudyBodyFull({ cs }) {
                 reel={s.reel}
                 still={s.still}
                 stillParallax={s.stillParallax}
-                scene={s.scene}
+                scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
                 bare={s.figBare}
               />} plates={renderPlates(s)} />
@@ -10172,7 +10186,7 @@ function CaseStudyBodyFull({ cs }) {
                 reel={s.reel}
                 still={s.still}
                 stillParallax={s.stillParallax}
-                scene={s.scene}
+                scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
                 bare={s.figBare}
               />
