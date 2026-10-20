@@ -21,24 +21,37 @@ import PathMarquee from "./PathMarquee";
 import { MATERIAL_SHAPES } from "./materialShapes";
 import { PATH_PRESETS, PATH_KEYS } from "./pathPresets";
 
-// The caption phone is a toy (mvgglagb, Agam: "make the phone fully draggable"): grab it anywhere, fling it
-// (inertia), and it eases gently back home. pointerdown stops here so the marquee's own drag never starts
-// from the phone; touch-action none keeps a finger on the phone from scrolling the page.
+// The caption phone is a toy (mvgglagb, Agam: "make the phone fully draggable", then "it stays at the position
+// I moved it to"): grab it anywhere, fling it (short inertia) and it stays where it lands. The spot is kept in
+// localStorage, kept inside the viewport, and a double-click sends it home. pointerdown stops here so the
+// marquee's own drag never starts from the phone; touch-action none keeps a finger on it from scrolling.
+const PHONE_KEY = "ap-cap-phone-pos";
 function DragPhone({ children }) {
   const el = useRef(null);
   const S = useRef({ x: 0, y: 0, vx: 0, vy: 0, down: null, raf: 0, last: 0 }).current;
-  useEffect(() => () => cancelAnimationFrame(S.raf), [S]);
+  const paint = () => { if (el.current) el.current.style.transform = S.x || S.y ? `translate(${S.x.toFixed(1)}px,${S.y.toFixed(1)}px)` : ""; };
+  const save = () => { try { localStorage.setItem(PHONE_KEY, JSON.stringify([Math.round(S.x), Math.round(S.y)])); } catch { /* private mode */ } };
+  // keep the phone's box inside the viewport (8 px margin); shifts x/y by exactly the overshoot
+  const clamp = () => {
+    const r = el.current?.getBoundingClientRect();
+    if (!r || !r.width) return;
+    const M = 8, vw = window.innerWidth, vh = window.innerHeight;
+    if (r.left < M) S.x += M - r.left; else if (r.right > vw - M) S.x -= r.right - (vw - M);
+    if (r.top < M) S.y += M - r.top; else if (r.bottom > vh - M) S.y -= r.bottom - (vh - M);
+  };
+  useEffect(() => {
+    try { const v = JSON.parse(localStorage.getItem(PHONE_KEY) || "null"); if (Array.isArray(v)) { S.x = +v[0] || 0; S.y = +v[1] || 0; paint(); } } catch { /* ignore */ }
+    return () => cancelAnimationFrame(S.raf);
+  }, [S]); // eslint-disable-line react-hooks/exhaustive-deps
   const reduce = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  const paint = () => { if (el.current) el.current.style.transform = `translate(${S.x.toFixed(1)}px,${S.y.toFixed(1)}px)`; };
   const tick = (now) => {
     const dt = Math.min(0.032, Math.max(0.001, (now - S.last) / 1000));
     S.last = now;
-    // fling decays, a soft spring (K 26, damped) pulls it home
-    const K = 26, C = 7.5;
-    S.vx += (-K * S.x - C * S.vx) * dt; S.vy += (-K * S.y - C * S.vy) * dt;
+    const f = Math.exp(-dt * 7); // fling friction
+    S.vx *= f; S.vy *= f;
     S.x += S.vx * dt; S.y += S.vy * dt;
-    paint();
-    if (Math.hypot(S.x, S.y) < 0.2 && Math.hypot(S.vx, S.vy) < 4) { S.x = S.y = S.vx = S.vy = 0; paint(); S.raf = 0; return; }
+    clamp(); paint();
+    if (Math.hypot(S.vx, S.vy) < 8) { S.vx = S.vy = 0; S.raf = 0; save(); return; }
     S.raf = requestAnimationFrame(tick);
   };
   const onDown = (e) => {
@@ -58,7 +71,7 @@ function DragPhone({ children }) {
     const now = performance.now(), dt = Math.max(1, now - d.t) / 1000;
     S.vx = S.vx * 0.5 + ((e.clientX - d.lx) / dt) * 0.5; S.vy = S.vy * 0.5 + ((e.clientY - d.ly) / dt) * 0.5;
     d.t = now; d.lx = e.clientX; d.ly = e.clientY;
-    paint();
+    clamp(); paint();
   };
   const onUp = (e) => {
     const d = S.down;
@@ -66,13 +79,17 @@ function DragPhone({ children }) {
     e.stopPropagation();
     S.down = null;
     delete el.current.dataset.drag;
-    if (performance.now() - d.t > 90) S.vx = S.vy = 0; // held still before release: no fling
-    if (reduce()) { S.x = S.y = S.vx = S.vy = 0; paint(); return; }
+    if (performance.now() - d.t > 90 || reduce()) { S.vx = S.vy = 0; save(); return; } // held still / reduced motion: no fling
     S.last = performance.now();
     S.raf = requestAnimationFrame(tick);
   };
+  const home = (e) => {
+    e.stopPropagation();
+    cancelAnimationFrame(S.raf); S.raf = 0;
+    S.x = S.y = S.vx = S.vy = 0; paint(); save();
+  };
   return (
-    <div ref={el} className="ap__cap-drag" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
+    <div ref={el} className="ap__cap-drag" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onDoubleClick={home}>
       {children}
     </div>
   );
