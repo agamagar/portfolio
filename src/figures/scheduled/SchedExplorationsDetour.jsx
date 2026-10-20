@@ -69,9 +69,10 @@ function VMark({ v, on, last }) {
 }
 
 const MODES = [["rows", "Rows"], ["lanes", "Lanes"]];
+const SHOW_DTR_TOGGLE = false; // mvggc7xf (Agam, "make lanes default and hide it"): set true to bring the Rows / Lanes toggle back
 
 export default function SchedExplorationsDetour() {
-  const [mode, setMode] = useState("rows");
+  const [mode, setMode] = useState("lanes");
   const [seen, setSeen] = useState(false); // lanes draw once, as they scroll in, and stay drawn
   const reduce = useReducedMotion();
   const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
@@ -100,22 +101,19 @@ export default function SchedExplorationsDetour() {
         </defs>
       </svg>
 
-      <div className="dtr__head">
-        <div className="dtr__title" role="heading" aria-level={3}>What we explored, before converging</div>
-        <p className="dtr__cap">{ROWS.length} questions, and the slow part before each answer.</p>
-      </div>
+      {/* mvggcv40: no heading of its own; the section's standard h2 + TL;DR above carry it */}
 
-      <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
+      {SHOW_DTR_TOGGLE && <div className="dtr__toggle fig-toggle" role="group" aria-label="Explorations layout">
         {MODES.map(([k, label]) => (
           <button key={k} type="button" className={"fig-toggle__btn" + (mode === k ? " is-active" : "")} aria-pressed={mode === k} onClick={() => setMode(k)}>{label}</button>
         ))}
-      </div>
+      </div>}
 
       {mode === "lanes" ? (
         <div className="dtr-lanes">
           {ROWS.map((row) => (
             <div className="dtr-lane" key={row.label} style={{ "--ink": row.ink }}>
-              <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
+              <div className="dtr-row__label"><span>{row.label}</span></div>
               <div className="dtr-lane__line">
                 {row.chips.map((c, k) => {
                   const on = lanesOn;
@@ -136,7 +134,7 @@ export default function SchedExplorationsDetour() {
         </div>
       ) : ROWS.map((row, i) => (
         <div className="dtr-row" key={row.label} style={{ "--ink": row.ink }}>
-          <div className="dtr-row__label"><span>{row.label}</span><i aria-hidden="true" /></div>
+          <div className="dtr-row__label"><span>{row.label}</span></div>
           <div className="dtr-row__line" style={{ "--n": row.chips.length }}>
             {row.chips.map((c, k) => {
               const on = beat >= i + 1;
