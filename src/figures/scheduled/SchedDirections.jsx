@@ -37,7 +37,7 @@ function SheetMock() {
 
 export default function SchedDirections() {
   useReducedMotion();
-  const { fitRef, frameRef } = useFitScale(660, 1.06);
+  const { fitRef, frameRef } = useFitScale(760, 1.06);
 
   return (
     <div className="ds-fit" ref={fitRef}>
