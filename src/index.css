@@ -8922,3 +8922,5 @@ html:not(.dark) .rv-pack__c--me { background: #5b3fd1; }
 /* mvgf46cj (Agam, "make another button on top of this and dock the annotations plugin here"): the Agentation toolbar's collapsed
    button docks at the top of the left button stack (above the palette button), not bottom-right */
 html [data-agentation-toolbar] { right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) - 3px) !important; bottom: calc(var(--dev-base, 16px) + 129px) !important; }
+/* collapsed, the wrapper (337px wide, the round button at its right end) is right-anchored so the BUTTON lands in the stack column; open, it grows to the right from the stack */
+html [data-agentation-toolbar]:has([class*="collapsed"]) { left: auto !important; right: calc(100vw - max(20px, env(safe-area-inset-left)) - 41px) !important; }
