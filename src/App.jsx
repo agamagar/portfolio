@@ -67,6 +67,7 @@ const SkyLab = lazyFig(() => import("./figures/sky/SkyLab"));
 const ThreeLinesLab = lazyFig(() => import("./figures/threeLines/ThreeLinesLab"));
 const PixelMascotLab = lazyFig(() => import("./figures/pixelMascot/PixelMascotLab"));
 const FaceLabPage = (PRIVATE_SITE || import.meta.env.DEV) ? lazyFig(() => import("./facelab/FaceLabPage")) : null; // /face-lab, face-animation variants side by side (dev + private only)
+const FaceMakerPage = lazyFig(() => import("./faceMaker/FaceMakerPage")); // /face-maker, the public 3D face maker (PUBLIC route: no private-only code)
 const FaceLab = lazyFig(() => import("./figures/faces/FaceLab")); // /faces, the face-style playground (2026-10-08)
 const StellaLab = lazyFig(() => import("./figures/stella/StellaLab"));
 import "./hello/hello.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
@@ -11572,7 +11573,7 @@ export default function App() {
   const PUBLIC_ONLY = import.meta.env.VITE_PUBLIC_SITE === "1";
   // /work/resume (the tailored-CV builder) is private too; the header's single
   // product-design PDF is the only resume that ships
-  const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
+  const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || rawPath === "/face-maker" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
   const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
   const isLab = PRIVATE_SITE && path === "/lab";
   const isFaceLab = !!FaceLabPage && path === "/face-lab"; // unlisted dev/private route
@@ -11595,6 +11596,7 @@ export default function App() {
   const isMotionCheck = path === "/motion-check";
   const isMascot = path === "/mascot";
   const isFaces = path === "/faces";
+  const isFaceMaker = path === "/face-maker"; // public: the taste-checked 3D face maker
   const isStella = path === "/stella";
   const isDj = path === "/dj";
   const isWindow = path === "/window";
@@ -11789,7 +11791,7 @@ export default function App() {
   // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
-  const variant = isCrossSellTree || isLab || isSystem || isFaceLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
+  const variant = isCrossSellTree || isLab || isSystem || isFaceLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isFaceMaker || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug && PRIVATE_SITE ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
@@ -11984,6 +11986,8 @@ export default function App() {
         <Suspense fallback={null}>
           <MotionCheck onBack={() => navigate("/")} />
         </Suspense>
+      ) : isFaceMaker ? (
+        <Guard name="face-maker"><FaceMakerPage onBack={() => navigate("/")} /></Guard>
       ) : isFaces ? (
         <FaceLab onBack={() => navigate("/")} />
       ) : isMascot ? (
