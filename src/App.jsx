@@ -172,6 +172,7 @@ import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
 import { topprDeck } from "./decks/toppr.deck";
 import Tooltips from "./ui/Tooltips";
+import { useRise, rise } from "./ui/useSectionPlay"; // section play: one controller for scroll entrances
 import { PRIVATE_SITE } from "./lib/site";
 import LockScreen from "./ui/LockScreen";
 import "./ui/lockScreen.css";
@@ -1200,20 +1201,7 @@ function RoleCard({ s }) {
 
 function RoleFrame({ s, i }) {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const items = [...el.querySelectorAll("[data-rise]")];
-    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
-        { duration: 0.7, delay: 0.1 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
-    }, { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  useRise(ref, { lead: 100 }); // section play: fades up, staggered, at the viewport centre
   return (
     <div className="role-frame" ref={ref}>
       <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{s.h}</h2>
@@ -1260,20 +1248,7 @@ function squiggle(text) {
 
 function SplitSection({ s, i }) {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const items = [...el.querySelectorAll("[data-rise]")];
-    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
-        { duration: 0.7, delay: 0.1 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
-    }, { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  useRise(ref, { lead: 100 }); // section play: fades up, staggered, at the viewport centre
   // muidykpc: the note can be peeled off and stuck anywhere on the page.
   // Press: the corner peels up (.is-peeling), then it lifts off the paper
   // (.is-held, a bigger shadow and a small scale-up). Drag: it follows the
@@ -1368,20 +1343,7 @@ function SplitSection({ s, i }) {
 // (muic4w44) and pick-up-and-spring-home dragging (muic1wju).
 function IntroQuestion({ label, question }) {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const items = [...el.querySelectorAll("[data-rise]")];
-    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      items.forEach((n, k) => motionAnimate(n, { opacity: [0, 1], y: [28, 0] },
-        { duration: 0.7, delay: 0.15 + k * 0.12, ease: [0.22, 1, 0.36, 1] }));
-    }, { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  useRise(ref, { lead: 150 }); // section play: fades up, staggered, at the viewport centre
   const drag = (e) => {
     const node = e.currentTarget;
     if (e.button !== 0) return;
@@ -1481,16 +1443,8 @@ function ScrollScene({ scene: sceneIn }) {
     if (!scene.revealIntro || !el) return;
     const targets = [...el.querySelectorAll(".sscene__layer--reveal")].map((n) =>
       n.classList.contains("sscene__layer--tint") ? n : n.firstElementChild);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    targets.forEach((t) => { t.style.opacity = "0"; t.style.transform = "translateY(28px)"; });
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      targets.forEach((t, i) => motionAnimate(t, { opacity: [0, 1], y: [28, 0] },
-        { duration: 0.7, delay: 0.15 + i * 0.12, ease: [0.22, 1, 0.36, 1] }));
-    }, { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
+    const stop = rise(el, targets, { lead: 150 }); // section play: fades up, staggered, at the viewport centre
+    return stop;
   }, [scene.revealIntro, phone]);
   // muic1wju: `draggable` scenes let you pick a layer up; it springs home on release
   const onDragStart = (e) => {

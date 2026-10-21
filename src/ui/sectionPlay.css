@@ -1,0 +1,17 @@
+/* Section play (sectionPlay.js). Shared pieces for every entrance that runs on the controller. */
+
+/* a section being reset (off screen, or for a replay) jumps to its start state: no transitions
+   on it or inside it for the frames around the reset */
+[data-sp-snap], [data-sp-snap] *, [data-sp-snap] *::before, [data-sp-snap] *::after {
+  transition: none !important;
+}
+
+/* "fade up" for the children of a [data-play] section that carry data-sp-rise (see useRise):
+   --sp-dur, --sp-ease, --sp-lead (first delay), --sp-i (stagger index), --sp-rise (distance) */
+@keyframes sp-rise { from { opacity: 0; transform: translateY(var(--sp-rise, 28px)); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: no-preference) {
+  html.sp-on [data-play]:not([data-sp]) [data-sp-rise] { opacity: 0; transform: translateY(var(--sp-rise, 28px)); }
+  html.sp-on [data-play][data-sp="in"] [data-sp-rise] {
+    animation: sp-rise var(--sp-dur, 700ms) var(--sp-ease, cubic-bezier(0.22, 1, 0.36, 1)) calc(var(--sp-lead, 100ms) + var(--sp-i, 0) * var(--sp-step, 120ms)) backwards;
+  }
+}

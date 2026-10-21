@@ -1033,16 +1033,16 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    currentColor (no mask any more). */
 .sin__icon.sin__icon--draw { background: none; -webkit-mask: none; mask: none; color: var(--ink); }
 .sin__icon--draw svg { overflow: visible; }
-.sin__icon--draw path {
-  stroke-dasharray: 1; stroke-dashoffset: 1;
-  transition: stroke-dashoffset var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-emphasized-decelerate, ease-out);
-  transition-delay: calc(var(--i, 0) * 110ms);
+.sin__icon--draw path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+/* section play (ui/sectionPlay.js): the strokes sit undrawn until the figure's top reaches the viewport
+   centre, then each draws on in turn on the clock (not scroll-linked); off screen they undraw, Replay redraws */
+@media (prefers-reduced-motion: no-preference) {
+  html.sp-on .sin:not([data-sp]) .sin__icon--draw path { stroke-dashoffset: 1; }
+  html.sp-on .sin[data-sp="in"] .sin__icon--draw path {
+    transition: stroke-dashoffset var(--m3-dur-spatial-standard-slow, 750ms) var(--m3-emphasized-decelerate, ease-out);
+    transition-delay: calc(100ms + var(--i, 0) * 110ms);
+  }
 }
-.sin__icon--draw.is-drawn path { stroke-dashoffset: 0; }
-@media (prefers-reduced-motion: reduce) { .sin__icon--draw path { transition: none; } }
-/* mujpn8um: the draw is scroll-driven now (inline dash offset per frame), so
-   no CSS transition, which would lag the scroll */
-.sin__icon--draw path { transition: none; }
 
 /* ---- SchedRoleWireframes, drafted in the page system (mujupawd, 27 Sep) ----
    Each slide is a My role frame (index.css .role-frame): case study frame

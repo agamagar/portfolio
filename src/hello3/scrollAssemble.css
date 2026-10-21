@@ -1,14 +1,13 @@
-/* Scroll assemble: the sections below the hero piece themselves together as they
-   enter the viewport. Pieces start a touch offset / rotated / scaled apart and
-   settle, tied to scroll progress (scrub back and it reverses).
-   - Chrome/Edge/Safari 26: animation-timeline: view() on the piece's root, compositor only.
-   - Others: scrollAssemble.js sets --sap (0..1) on each root; same maths via calc().
+/* Scroll assemble: the sections below the hero piece themselves together. Pieces start a touch
+   offset / rotated / scaled apart and settle, time-based, when their root's top reaches the
+   viewport centre (the section controller, src/ui/sectionPlay.js, sets data-sp="in" on the root;
+   off screen it resets, so it plays again; the Replay button replays it).
    Only the individual transform properties translate / rotate / scale + opacity are used,
    so the cards' own `transform` (hover) and the hero-load `translate`/`opacity` on
    .wg__card are untouched (translate and opacity are NOT animated on the card frame).
-   Fully assembled when a root's top is at 60% of the viewport (40% in). */
+   --sp-dur is the whole run; each piece plays from --a to --b of it (the stagger). */
 
-/* piece vars: --a/--b = start/end of this piece as a fraction (0..1) of the 40vh run;
+/* piece vars: --a/--b = start/end of this piece as a fraction (0..1) of the run;
    --x --y translate, --r rotate, --k start scale, --o start opacity */
 .sa-p, .hello[data-page="3"] .wg__card, .hello[data-page="3"] .wg__card > img,
 .hello[data-page="3"] .wg__card > .wg__live, .hello[data-page="3"] .wg__card .wg__badge,
@@ -40,58 +39,38 @@
 .hello[data-page="3"] .sq__nav { --a: 0.3; --b: 1; --y: 14px; --o: 0.2; }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* timeline owners */
-  .hello[data-page="3"] .wg__card, .hello[data-page="3"] .ap, .hello[data-page="3"] .hello-foot,
-  .hello[data-page="3"] .sq, .hello[data-page="3"] .wg__cap { view-timeline: --sa block; }
+  .hello[data-page="3"] { --sp-dur: 1100ms; --sp-ease: cubic-bezier(0.22, 0.9, 0.3, 1); }
 
-  @supports (animation-timeline: view()) {
-    @keyframes sa-settle {
-      from { translate: var(--x) var(--y); rotate: var(--r); scale: var(--k); opacity: var(--o); }
-      to { translate: 0px 0px; rotate: 0deg; scale: 1; opacity: 1; }
-    }
-    .hello[data-page="3"] .wg__card > img, .hello[data-page="3"] .wg__card > .wg__live,
-    .hello[data-page="3"] .wg__card .wg__badge,
-    .hello[data-page="3"] .ap__head, .hello[data-page="3"] .ap__stage, .hello[data-page="3"] .ap__panel,
-    .hello[data-page="3"] .ap__controls, .hello[data-page="3"] .hello-foot__title,
-    .hello[data-page="3"] .hello-foot__figure, .hello[data-page="3"] .hello-foot__meta,
-    .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > * {
-      animation: sa-settle 1s linear both;
-      animation-timeline: --sa;
-      animation-range: entry calc(var(--a) * 40vh) entry calc(var(--b) * 40vh);
-      /* gentle phi ease on the settle (1/phi^2, 1/phi) */
-      animation-timing-function: cubic-bezier(0.382, 0, 0.236, 1);
-    }
-    /* the card frame: rotate + scale only (translate/opacity belong to the load intro) */
-    @keyframes sa-frame { from { rotate: var(--r); scale: var(--k); } to { rotate: 0deg; scale: 1; } }
-    .hello[data-page="3"] .wg__card {
-      animation: sa-frame 1s linear both;
-      animation-timeline: --sa;
-      animation-range: entry calc(var(--a) * 40vh) entry calc(var(--b) * 40vh);
-      animation-timing-function: cubic-bezier(0.382, 0, 0.236, 1);
-    }
+  @keyframes sa-settle {
+    from { translate: var(--x) var(--y); rotate: var(--r); scale: var(--k); opacity: var(--o); }
+    to { translate: 0px 0px; rotate: 0deg; scale: 1; opacity: 1; }
   }
+  /* the card frame: rotate + scale only (translate/opacity belong to the load intro) */
+  @keyframes sa-frame { from { rotate: var(--r); scale: var(--k); } to { rotate: 0deg; scale: 1; } }
 
-  /* fallback: scrollAssemble.js sets --sap on each root */
-  @supports not (animation-timeline: view()) {
-    .hello[data-page="3"] .wg__card, .hello[data-page="3"] .wg__card > *, .hello[data-page="3"] .wg__card .wg__badge,
-    .hello[data-page="3"] .ap__head, .hello[data-page="3"] .ap__stage, .hello[data-page="3"] .ap__panel,
-    .hello[data-page="3"] .ap__controls, .hello[data-page="3"] .hello-foot__title,
-    .hello[data-page="3"] .hello-foot__figure, .hello[data-page="3"] .hello-foot__meta,
-    .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > * {
-      --p0: clamp(0, (var(--sap, 1) - var(--a)) / (var(--b) - var(--a)), 1);
-      --q: calc(1 - var(--p0) * var(--p0) * (3 - 2 * var(--p0)));
-    }
+  /* start state: held on the first frame until the root's section plays */
+  html.sp-on [data-play]:not([data-sp]) :is(
     .hello[data-page="3"] .wg__card > img, .hello[data-page="3"] .wg__card > .wg__live,
-    .hello[data-page="3"] .wg__card .wg__badge,
-    .hello[data-page="3"] .ap__head, .hello[data-page="3"] .ap__stage, .hello[data-page="3"] .ap__panel,
-    .hello[data-page="3"] .ap__controls, .hello[data-page="3"] .hello-foot__title,
+    .hello[data-page="3"] .wg__card .wg__badge, .hello[data-page="3"] .ap__head, .hello[data-page="3"] .ap__stage,
+    .hello[data-page="3"] .ap__panel, .hello[data-page="3"] .ap__controls, .hello[data-page="3"] .hello-foot__title,
     .hello[data-page="3"] .hello-foot__figure, .hello[data-page="3"] .hello-foot__meta,
-    .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > * {
-      translate: calc(var(--x) * var(--q)) calc(var(--y) * var(--q));
-      rotate: calc(var(--r) * var(--q));
-      scale: calc(1 + (var(--k) - 1) * var(--q));
-      opacity: calc(1 - (1 - var(--o)) * var(--q));
-    }
-    .hello[data-page="3"] .wg__card { rotate: calc(var(--r) * var(--q)); scale: calc(1 + (var(--k) - 1) * var(--q)); }
+    .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > *) {
+    animation: sa-hold 1s linear paused both;
+  }
+  html.sp-on .hello[data-page="3"] .wg__card[data-play]:not([data-sp]) { animation: sa-hold-frame 1s linear paused both; }
+  @keyframes sa-hold { from { translate: var(--x) var(--y); rotate: var(--r); scale: var(--k); opacity: var(--o); } to { translate: var(--x) var(--y); rotate: var(--r); scale: var(--k); opacity: var(--o); } }
+  @keyframes sa-hold-frame { from { rotate: var(--r); scale: var(--k); } to { rotate: var(--r); scale: var(--k); } }
+
+  /* playing: each piece runs --a..--b of the run, with a gentle ease */
+  html.sp-on [data-play][data-sp="in"] :is(
+    .hello[data-page="3"] .wg__card > img, .hello[data-page="3"] .wg__card > .wg__live,
+    .hello[data-page="3"] .wg__card .wg__badge, .hello[data-page="3"] .ap__head, .hello[data-page="3"] .ap__stage,
+    .hello[data-page="3"] .ap__panel, .hello[data-page="3"] .ap__controls, .hello[data-page="3"] .hello-foot__title,
+    .hello[data-page="3"] .hello-foot__figure, .hello[data-page="3"] .hello-foot__meta,
+    .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > *) {
+    animation: sa-settle calc((var(--b) - var(--a)) * var(--sp-dur)) var(--sp-ease) calc(var(--a) * var(--sp-dur)) both;
+  }
+  html.sp-on .hello[data-page="3"] .wg__card[data-play][data-sp="in"] {
+    animation: sa-frame calc((var(--b) - var(--a)) * var(--sp-dur)) var(--sp-ease) calc(var(--a) * var(--sp-dur)) both;
   }
 }

@@ -68,7 +68,7 @@ import "../hello/hello.css";
 import "./hello3.css";
 import "./heroV3.css"; // v3 tagline (after hello3.css so it can override)
 import "./scrollAssemble.css"; // scroll-driven assemble of the sections below the hero
-import "./scrollAssemble"; // fallback driver (no-op where view() timelines exist)
+import "./scrollAssemble"; // registers the roots with the section controller
 // The window scene (three r186), behind ?scene=window until approved: see
 // src/scene/window/WindowSceneFolio.jsx and tools/window-light/spec/30-locked-brief.md.
 const WindowSceneFolio = lazyRetry(() => import("../scene/window/WindowSceneFolio"));

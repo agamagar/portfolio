@@ -8710,7 +8710,7 @@ html .theme-toggle.dev-glass:hover, html .view-menu[data-dev] .view-menu__btn:ho
 html .theme-toggle.dev-glass[aria-pressed="true"] { color: var(--dev-ink-hover) !important; background: var(--dev-glass-on); }
 html .view-menu[data-dev] .view-menu__btn { background-color: rgba(255, 255, 255, 0.62); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 4px 14px -6px rgba(40, 20, 80, 0.22); border-radius: 999px; corner-shape: round; }
 html.dark .view-menu[data-dev] .view-menu__btn { background-color: rgba(28, 28, 32, 0.62); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
-.qa-circle { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: calc(var(--dev-base, 16px) + 132px); z-index: 2147482001; cursor: pointer; } /* mvfy2i8i: bottom-left, under Inspect and the eye */
+.qa-circle { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: calc(var(--dev-base, 16px) + 176px); z-index: 2147482001; cursor: pointer; } /* mvfy2i8i: bottom-left, under Inspect and the eye */
 html .qa-circle[aria-pressed="true"] { box-shadow: 0 0 0 2px #e8930c, 0 4px 14px -6px rgba(0, 0, 0, 0.5); color: #ffc46b; }
 .qa-circle__n { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; box-sizing: border-box; background: #e8930c; color: #1a1205; font: 700 10px/16px "Google Sans Flex", Inter, sans-serif; text-align: center; }
 @media (max-width: 700px) { .qa-pill__n--note { display: none; } .qa-pill { bottom: 70px; } .qa-pin__card { width: min(280px, 80vw); } }
@@ -8915,7 +8915,7 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
 
 /* mvgf46cj (Agam, "make another button on top of this and dock the annotations plugin here"): the Agentation toolbar's collapsed
    button docks at the top of the left button stack (above the palette button), not bottom-right */
-html [data-agentation-toolbar] { top: auto !important; right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) ) !important; bottom: calc(var(--dev-base, 16px) + 132px) !important; }
+html [data-agentation-toolbar] { top: auto !important; right: auto !important; left: calc(max(20px, env(safe-area-inset-left)) ) !important; bottom: calc(var(--dev-base, 16px) + 176px) !important; }
 /* collapsed, the wrapper (337px wide, the round button at its right end) is right-anchored so the BUTTON lands in the stack column; open, it grows to the right from the stack */
 /* mvgnx (Agam, "fix the size of the icon" + "expand it vertically and expand the same component"): the wrapper is just the 38px column now
    (the glass pill grows UP from the stack: the close button lands where the icon was), controls stacked vertically inside it */
