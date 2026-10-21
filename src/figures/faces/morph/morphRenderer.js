@@ -326,8 +326,8 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
       const sk = skinById(id), f = sk.rig;
       const r = f
         ? createFaceRig({ W: FW, H: FH, src: f.src, fitSrc: f.fit, idSrc: f.idmap || null, rawSrc: f.raw || null, marginSrc: f.margins || null, cleanSrc: null, skinId: id })
-        : createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true,
-            face: resolveFace({ material: { kind: id }, hair: { style: "crop", fringe: 0.5, clip: false }, skin: {}, mouth: { smile: 0.3 } }) });
+        // (a drawn skin, print: the base head with its own hair and ears, the skin's shading mode and palette; no fitted texture)
+        : createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: id, mode: sk.mode });
       r.skinId = id;
       rigs[id] = r;
       return r.ready.then(() => patchIds(r)).then((rr) => {

@@ -85,3 +85,17 @@ export async function slices(url, name, step = 0.2) {
     r.xmin = Math.min(r.xmin, x); r.xmax = Math.max(r.xmax, x); r.zmin = Math.min(r.zmin, z); r.zmax = Math.max(r.zmax, z); if (Math.abs(x) < 0.15) r.zmaxAtX0 = Math.max(r.zmaxAtX0, z); }
   return rows;
 }
+// triangles whose UVs are stretched across the texture (a fold's sliver joining two depth layers samples every texel between):
+// per mesh, the count with a UV span > thr and where they sit
+export async function stretched(url, name, thr = 0.2) {
+  const gltf = await new Promise((ok, no) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, ok, undefined, no));
+  let m; gltf.scene.traverse((o) => { if (o.isMesh && o.name === name) m = o; });
+  const uv = m.geometry.attributes.uv, P = m.geometry.attributes.position, ix = m.geometry.index.array;
+  const bad = [];
+  for (let t = 0; t < ix.length; t += 3) {
+    const us = [0, 1, 2].map((k) => uv.getX(ix[t + k])), vs = [0, 1, 2].map((k) => uv.getY(ix[t + k]));
+    const du = Math.max(...us) - Math.min(...us), dv = Math.max(...vs) - Math.min(...vs);
+    if (du > thr || dv > thr) bad.push([t / 3, du, dv, [0, 1, 2].reduce((a, k) => a + P.getX(ix[t + k]) / 3, 0), [0, 1, 2].reduce((a, k) => a + P.getY(ix[t + k]) / 3, 0), [0, 1, 2].reduce((a, k) => a + P.getZ(ix[t + k]) / 3, 0)]);
+  }
+  return { tris: ix.length / 3, bad: bad.length, sample: bad.slice(0, 40).map((b) => b.map((v) => +v.toFixed(2))) };
+}

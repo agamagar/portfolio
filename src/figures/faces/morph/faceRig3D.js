@@ -47,14 +47,14 @@ void main(){
 // reads this instead; a missing file falls back to the GLB's map.
 // hat: show the hat parts (the clay rig hides them); a rig without an id map, raw skin or margins
 // (noir has none) passes null for them and draws what its own maps carry
-export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false, procedural = false, face = null }) {
+export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false, procedural = false, face = null, mode = null }) {
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(27, W / H, 0.1, 50);
   const lightDir = new THREE.Vector3(-0.35, 0.75, 0.75).normalize();
   const lView = new THREE.Vector3();
   // uActs (shared, as FaceSV): how much the eyes, brows and mouth are moving, so their skin
   // margins fade to the clean skin while an emote moves them
-  const shared = { uL: { value: lView }, uMode: { value: procedural ? MODES.plast : MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() }, uDefringe: { value: 0 },
+  const shared = { uL: { value: lView }, uMode: { value: mode ? MODES[mode] : procedural ? MODES.plast : MODES.fit }, uDot: { value: 7 }, uActs: { value: new THREE.Vector3() }, uDefringe: { value: 0 },
     // the face system (features/): soft-warp handles, the clay's surface detail and warmth
     uW: { value: Array.from({ length: 48 }, () => new THREE.Vector4()) }, uWn: { value: 0 }, uBump: { value: 0.6 }, uSSS: { value: 0.6 } };
   const skin = skinById(skinId);
