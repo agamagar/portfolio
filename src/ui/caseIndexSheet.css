@@ -52,10 +52,15 @@
   animation: cis-up 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .cis__grab { width: 2.25rem; height: 4px; margin: 0 auto 0.6rem; border-radius: 4px; background: var(--line); }
-.cis__sheet ul { list-style: none; margin: 0; padding: 0; }
+.cis__sheet ul { list-style: none; margin: 0; padding: 0; position: relative; }
+/* one continuous grey hairline; the 6px glass pill is centred on it */
+.cis__sheet ul::before {
+  content: ""; position: absolute; left: 2.5px; top: 0; bottom: 0; width: 1px;
+  background: var(--line); pointer-events: none;
+}
 .cis__group {
   display: block;
-  padding: 0.9rem 0 0.2rem;
+  padding: 0.9rem 0 0.2rem 1.1rem;
   font-size: 0.6875rem;
   font-weight: 560;
   letter-spacing: 0.04rem;

@@ -8896,11 +8896,23 @@ body:has(.cs-tabs--circles) { --dev-base: calc(max(16px, env(safe-area-inset-bot
    entry. A thin #9674db line sits under it, and its light disperses through the glass
    (a soft violet / blue / pink bloom under the pill's blur). No other active state;
    weight stays constant so nothing reflows. */
-.article__index--spy > ul { padding: 0 9px; position: relative; }
+.article__index--spy > ul { padding: 0 0 0 15px; position: relative; }
+/* ONE continuous grey hairline down the whole index (every group and header); the
+   6px glass pill is centred on it (pill 0-6px, line at its middle). Headers and labels
+   share one offset from the line. */
+.article__index--spy > ul::before {
+  content: "";
+  position: absolute;
+  left: 2.5px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
+.article__index--spy .article__index-group-list { margin: 0; padding: 0; border-left: 0; }
+.article__index--spy .article__index-group-list li a { --o: 0px; }
 .article__index--spy li a { position: relative; z-index: 1; }
 .article__index--spy li a.is-active { color: var(--fg); font-weight: 460; }
 .article__index--spy li a:focus-visible { outline: 2px solid #9674db; outline-offset: 1px; border-radius: 6px; }
-.article__index--spy .article__index-group-list { border-left-color: var(--line); }
 .article__index-slider {
   position: absolute;
   left: 0; width: 6px; top: 0;
