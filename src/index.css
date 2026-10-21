@@ -9015,9 +9015,16 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 @keyframes rv-orbit { to { transform: rotate(calc(var(--a0) + 360deg)); } }
 .rv-pack__o > .rv-pack__c { left: calc(var(--r) * 1cqw); top: 0; transform: translate(-50%, -50%) rotate(calc(var(--a0) * -1)); animation: rv-unorbit var(--dur) linear infinite; }
 @keyframes rv-unorbit { to { transform: translate(-50%, -50%) rotate(calc(var(--a0) * -1 - 360deg)); } }
-.rv-pack__ln { position: absolute; left: 10cqw; top: 0; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 1px solid color-mix(in srgb, var(--rv-accent) 70%, transparent); }
+.rv-pack__ln { position: absolute; left: 10cqw; top: 0; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 1px solid rgba(255, 255, 255, 0.7); filter: drop-shadow(0 0 1px rgba(60, 20, 120, 0.55)); }
 .rv-pack:hover .rv-pack__o, .rv-pack:hover .rv-pack__o > .rv-pack__c, .rv-pack[data-off]::before, .rv-pack[data-off] .rv-pack__o, .rv-pack[data-off] .rv-pack__o > .rv-pack__c { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .rv-pack::before, .rv-pack__o, .rv-pack__o > .rv-pack__c { animation: none; } }
 
 /* ui/animGate.js: an endless animation whose element is far off screen holds still (it resumes where it stopped) */
 .ag-off, .ag-off::before, .ag-off::after { animation-play-state: paused !important; }
+
+/* mvigzb44: the lines are white (a faint violet shadow keeps them readable on the pale light-mode orb); a prism lens drifts over the figure */
+.rv-pack__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
+.rv-pack__lens { position: absolute; left: 50%; top: 50%; width: 42cqw; aspect-ratio: 1; margin: -21cqw 0 0 -21cqw; border-radius: 50%; corner-shape: round; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); backdrop-filter: saturate(1.15); backdrop-filter: url(#rv-lens) saturate(1.15); animation: rv-lens 26s ease-in-out infinite alternate; }
+@keyframes rv-lens { 0% { transform: translate(-26cqw, -18cqw); } 50% { transform: translate(14cqw, 20cqw); } 100% { transform: translate(24cqw, -12cqw); } }
+.rv-pack[data-off] .rv-pack__lens, .rv-pack:hover .rv-pack__lens { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .rv-pack__lens { animation: none; transform: translate(0, 0); } }
