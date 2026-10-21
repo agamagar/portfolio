@@ -132,58 +132,9 @@
 .prd__index-group-btn:hover .prd__index-caret { opacity: 0.9; }
 .prd__index-group-btn.is-current .prd__index-count { color: var(--fg); }
 
-/* ---- narrow screens: the rail becomes a disclosure panel ---------------- */
-.prd__index-trigger { display: none; }
+/* ---- narrow screens: the shared SectionIndex pill + bottom sheet takes over ---- */
 @media (max-width: 1099.98px) {
-  .article__index.prd__index {
-    display: block;
-    position: sticky;
-    top: 0;
-    left: auto;
-    z-index: 6;
-    width: auto;
-    max-height: none;
-    overflow: visible;
-    margin-bottom: 0.75rem;
-    background: var(--bg, #fff);
-    border-bottom: 1px solid var(--line, #e6e6e6);
-  }
-  .prd__index-trigger {
-    display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    width: 100%;
-    padding: 0.75rem 0;
-    font: inherit;
-    font-size: 0.8125rem;
-    text-align: left;
-    background: none;
-    border: 0;
-    cursor: pointer;
-    color: var(--fg);
-  }
-  .prd__index-trigger-label {
-    font-size: 0.6875rem;
-    font-weight: 560;
-    letter-spacing: 0.01rem;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .prd__index-trigger-current {
-    flex: 1 1 auto;
-    min-width: 0;
-    font-weight: 560;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .prd__index-list { display: none; }
-  .article__index.prd__index.is-open .prd__index-list {
-    display: block;
-    max-height: min(62vh, 34rem);
-    overflow-y: auto;
-    padding-bottom: 0.9rem;
-  }
+  .article__index.prd__index { display: none; }
 }
 
 /* exact copy-paste prompt block (from { pre } values) */

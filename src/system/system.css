@@ -4,9 +4,6 @@
 .sys small { font-weight: 400; color: var(--muted-2); font-size: 12px; }
 .sys-top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: flex-start; gap: 16px; align-items: center; padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .sys-btn { font: 500 13px/1 "Inter", sans-serif; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--hover); color: var(--fg); cursor: pointer; }
-.sys-nav { position: fixed; top: 56px; left: 0; width: var(--sys-nav); padding: 20px; display: flex; flex-direction: column; gap: 4px; }
-.sys-nav a { padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
-.sys-nav a[aria-current="true"] { background: var(--hover); color: var(--fg); font-weight: 600; }
 .sys-main { margin-left: var(--sys-nav); max-width: 1000px; padding: 32px 32px 120px; }
 .sys-title { font-size: 40px; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 8px; }
 .sys-sec { padding-top: 56px; scroll-margin-top: 60px; }
@@ -58,9 +55,7 @@
 .sys-ease__track { position: relative; height: 14px; border-radius: 7px; background: var(--hover); }
 .sys-ease__track i { position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--link); }
 @media (max-width: 800px) {
-  .sys-nav { position: sticky; top: 49px; z-index: 19; width: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; background: var(--bg); border-bottom: 1px solid var(--line); }
-  .sys-nav a { white-space: nowrap; }
-  .sys-main { margin-left: 0; padding: 20px 16px 100px; }
+      .sys-main { margin-left: 0; padding: 20px 16px 100px; }
   .sys-sec { scroll-margin-top: 110px; }
   .sys-tokens__head, .sys-tokens__row { grid-template-columns: 1fr 1fr; }
   .sys-tokens__head span:first-child, .sys-tokens__row > code { grid-column: 1 / -1; }

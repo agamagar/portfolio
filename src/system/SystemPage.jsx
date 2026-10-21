@@ -1,6 +1,7 @@
 // /system: the design system, read live from the code (private/dev builds only).
 // Colours come from the :root / html.dark rules, scales are histograms of what the stylesheets
 // declare, components are the real ones. Nothing is typed in twice. See readCss.js.
+import SectionIndex from "../ui/SectionIndex";
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SERIFS } from "../lib/serifFont";
 import { StackedBars, Bars, LineChart, Legend, ramp, STATUS, fmtPct0, fmtPct1, fmtK } from "../ui/charts";
@@ -459,9 +460,11 @@ export default function SystemPage({ theme, onToggleTheme }) {
         <b>System</b>
         <button type="button" className="sys-btn" onClick={onToggleTheme} aria-pressed={theme === "dark"}>{theme === "dark" ? "Dark" : "Light"} · switch</button>
       </header>
-      <nav className="sys-nav" aria-label="Sections">
-        {SECTIONS.map(([id, label]) => <a key={id} href={`#${id}`} aria-current={active === id ? "true" : undefined} onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>{label}</a>)}
-      </nav>
+      <SectionIndex
+        className="sys-index"
+        entries={SECTIONS.map(([id, label]) => ({ key: id, label }))}
+        active={active}
+      />
       <main className="sys-main">
         <h1 className="sys-title">Design system</h1>
         <p className="sys-note">Read live from the stylesheets and components on this site. Change the code and this page changes with it. Private and dev builds only.</p>

@@ -2,6 +2,7 @@
 // /work/away-deep-search). Data pulled from PostHog (awayAnalyticsData.js) and
 // organized by pages (screens) and flows (funnels). Same tabbed left-index shell
 // as the PRD (folio .article__index), so every number is scannable by Agentation.
+import SectionIndex from "../ui/SectionIndex";
 import { useState } from "react";
 import { awayAnalyticsData } from "./awayAnalyticsData";
 import "./prd.css";
@@ -208,29 +209,12 @@ export default function AwayAnalyticsDoc() {
 
   return (
     <article className="prd">
-      <nav className="article__index prd__index" aria-label="Sections">
-        <ul>
-          {groups.map((g, gi) => (
-            <li className="article__index-group" key={gi}>
-              <span className="article__index-group-head">{g.group}</span>
-              <ul className="article__index-group-list">
-                {g.items.map((s) => (
-                  <li key={s.key}>
-                    <a
-                      href={`#an-${s.key}`}
-                      className={s.key === active ? "is-active" : undefined}
-                      aria-current={s.key === active ? "true" : undefined}
-                      onClick={(e) => { e.preventDefault(); pick(s.key); }}
-                    >
-                      {s.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <SectionIndex
+        className="prd__index"
+        entries={sections.map((x) => ({ key: x.key, label: x.label, group: x.group }))}
+        active={active}
+        onPick={pick}
+      />
 
       <header className="prd__head">
         <p className="prd__kick">Product analytics · {source}</p>

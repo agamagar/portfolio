@@ -346,7 +346,7 @@ const DjConsole = lazy(() => import("./figures/dj/DjConsole"));
 import FontSwitch from "./ui/FontSwitch";
 import ViewMenu from "./ui/ViewMenu";
 import { CASE_NAV } from "./caseNav";
-import CaseIndexSheet from "./ui/CaseIndexSheet"; // < 1100px section index: pill + bottom sheet
+import SectionIndex, { scrollToId, useScrollSpyIds } from "./ui/SectionIndex"; // THE section index: rail + phone sheet
 import HeroSwitch from "./ui/HeroSwitch";
 import ExplorationsSwitch from "./ui/ExplorationsSwitch";
 import { useExplorationsVariant } from "./ui/explorationsVariant";
@@ -10425,92 +10425,29 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
     return () => obs.disconnect();
   }, [cs, listening]);
 
-  // Index entries (grouped or flat), shared by the desktop rail and the phone sheet.
+  // Index entries for the shared SectionIndex (key = section number).
   const indexEntries = cs.sections.flatMap((s, i) =>
-    s.breaker || s.noHeading || s.hidden ? [] : [{ i, label: s.nav || CASE_NAV[s.h] || s.h, group: cs.flatIndex ? null : s.group }]
+    s.breaker || s.noHeading || s.hidden ? [] : [{ key: i, label: s.nav || CASE_NAV[s.h] || s.h, group: cs.flatIndex ? null : s.group }]
   );
-  // Rail: ONE glass pill slides behind the active entry (position handed to CSS vars).
-  const indexRef = useRef(null);
-  const placePill = () => {
-    const nav = indexRef.current;
-    const a = nav?.querySelector("a.is-active");
-    if (!nav || !a) return;
-    const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
-    nav.style.setProperty("--pill-y", `${(r.top - n.top + nav.scrollTop).toFixed(1)}px`);
-    nav.style.setProperty("--pill-h", `${r.height.toFixed(1)}px`);
-    nav.dataset.pill = "on";
-  };
-  useLayoutEffect(() => {
-    placePill();
-    window.addEventListener("resize", placePill);
-    return () => window.removeEventListener("resize", placePill);
-  }, [activeSection, cs, listening]);
-  useEffect(() => {
-    const nav = indexRef.current;
-    const a = nav?.querySelector("a.is-active");
-    if (!nav || !a || nav.scrollHeight <= nav.clientHeight) return;
-    const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
-    if (r.top < n.top + 24) nav.scrollTop -= n.top + 24 - r.top;
-    else if (r.bottom > n.bottom - 24) nav.scrollTop += r.bottom - (n.bottom - 24);
-  }, [activeSection]);
 
   return (
     <>
     <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
       <div className="article__layout">
-        <nav className="article__index article__index--spy" aria-label="Sections" ref={indexRef}>
-          <span className="article__index-slider" aria-hidden="true"><i className="article__index-glow" /><i className="article__index-glass" /></span>
-          <div className="article__index-top">
-            {/* Back is not here any more: it moved into .top-controls so the
-                page has ONE bar of chrome instead of two clusters. The lab's
-                own "Index" link, same base class, is untouched. */}
-            {/* mtmm3lt0 put the Read / Listen switch in the sidebar; mtpb0swq folds
-                Listen into the Design / PRD row and drops the separate switch */}
-            <CaseStudyTabs slug={slug} className="article__index-tabs" listen={narration ? { on: listening, set: setListening } : null} />
-          </div>
-          <ul>
-            {(cs.flatIndex
-              ? // flat: every section is its own ungrouped entry (no group heads)
-                cs.sections.flatMap((s, i) => (s.breaker || s.noHeading || s.hidden ? [] : [{ items: [{ s, i }] }]))
-              : cs.sections.reduce((groups, s, i) => {
-                  if (s.breaker || s.noHeading || s.hidden) return groups; // breakers and heading-less sections have no index entry
-                  // consecutive sections sharing a group key collapse into one block
-                  const last = groups[groups.length - 1];
-                  if (s.group && last && last.group === s.group) {
-                    last.items.push({ s, i });
-                  } else if (s.group) {
-                    groups.push({ group: s.group, items: [{ s, i }] });
-                  } else {
-                    groups.push({ items: [{ s, i }] });
-                  }
-                  return groups;
-                }, []))
-              .map((g, gi) => {
-                const link = ({ s, i }) => (
-                  <li key={i}>
-                    <a
-                      href={`#sec-${i}`}
-                      className={i === activeSection ? "is-active" : undefined}
-                      aria-current={i === activeSection ? "location" : undefined}
-                    >
-                      {s.nav || CASE_NAV[s.h] || s.h}
-                    </a>
-                  </li>
-                );
-                return g.group ? (
-                  <li className="article__index-group" key={`g-${gi}`}>
-                    <span className="article__index-group-head">{g.group}</span>
-                    <ul className="article__index-group-list">
-                      {g.items.map(link)}
-                    </ul>
-                  </li>
-                ) : (
-                  link(g.items[0])
-                );
-              })}
-          </ul>
-        </nav>
-        <CaseIndexSheet entries={indexEntries} active={activeSection} />
+        <SectionIndex
+          entries={indexEntries}
+          active={activeSection}
+          onPick={(i) => scrollToId(`sec-${i}`)}
+          top={
+            <div className="article__index-top">
+              {/* Back is not here any more: it moved into .top-controls so the
+                  page has ONE bar of chrome instead of two clusters. */}
+              {/* mtmm3lt0 put the Read / Listen switch in the sidebar; mtpb0swq folds
+                  Listen into the Design / PRD row and drops the separate switch */}
+              <CaseStudyTabs slug={slug} className="article__index-tabs" listen={narration ? { on: listening, set: setListening } : null} />
+            </div>
+          }
+        />
 
         <article className="article">
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
@@ -10830,42 +10767,39 @@ function M3Track({ label, dur, ease }) {
   );
 }
 
+const LAB_INDEX = [
+  { key: "lab-modes", label: "Motion modes" },
+  { key: "lab-decks", label: "Deck presets" },
+  { key: "lab-hands", label: "Doodle hands" },
+  { key: "lab-system", label: "System catalog" },
+  { key: "lab-appendix", label: "Live specimens" },
+];
+const LAB_IDS = LAB_INDEX.map((e) => e.key);
+
 function MotionLab() {
+  const labActive = useScrollSpyIds(LAB_IDS);
   return (
     <div className="page page--lab" style={{ "--accent": "#3e9fff" }}>
       {/* section index, like the case-study pages: fixed left rail with the Back link
           on top and jump links to each part of the lab */}
-      <nav className="article__index page--lab-index" aria-label="Sections">
-        <div className="article__index-top">
-          <Link to="/" className="back-link article__back">
-            <BackIcon />
-            Index
-          </Link>
-        </div>
-        <ul>
-          {[
-            ["lab-modes", "Motion modes"],
-            ["lab-decks", "Deck presets"],
-            ["lab-hands", "Doodle hands"],
-            ["lab-system", "System catalog"],
-            ["lab-appendix", "Live specimens"],
-          ].map(([id, label]) => (
-            <li key={id}>
-              <a
-                href={`#${id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  // explicit "instant": the page's html{scroll-behavior:smooth} makes a
-                  // plain scrollIntoView no-op here, so force the jump
-                  document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
-                }}
-              >
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <SectionIndex
+        className="page--lab-index"
+        entries={LAB_INDEX}
+        active={labActive}
+        onPick={(id) => {
+          // explicit "instant": the page's html{scroll-behavior:smooth} makes a
+          // plain scrollIntoView no-op here, so force the jump
+          document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+        }}
+        top={
+          <div className="article__index-top">
+            <Link to="/" className="back-link article__back">
+              <BackIcon />
+              Index
+            </Link>
+          </div>
+        }
+      />
 
       {/* The lab, grouped by animation MODE: each mode's properties (live, copiable)
           + a live example + its reference, in one place. The consumer register and
