@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import SectionIndex from "../../ui/SectionIndex";
 import { useReducedMotion, useStepSequence } from "../ds/hooks";
 import { Panel, Track, ScoreMeter, Mark, FactRow } from "../ds/SystemExplainer";
 import ChooserFigure from "../systemExplainer/ChooserFigure";
@@ -738,18 +739,13 @@ export default function SystemSheet() {
       <div className="syssheet__wrap">
 
         {/* contents rail (>=1100) */}
-        <nav className="syssheet__rail" aria-label="Contents">
-          <p className="syssheet__rail-title">Field guide</p>
-          <ol>
-            {NAV.map((x) => (
-              <li key={x.id}>
-                <a href={`#${x.id}`} className={active === x.id ? "is-active" : undefined}>
-                  <span className="syssheet__rail-no">{x.n}</span>{x.t}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
+        <SectionIndex
+          className="article__index--flow"
+          label="Contents"
+          entries={NAV.map((x) => ({ key: x.id, label: x.t }))}
+          active={active}
+          top={<p className="syssheet__rail-title">Field guide</p>}
+        />
 
         <main className="syssheet__main">
 

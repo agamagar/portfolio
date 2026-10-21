@@ -5,7 +5,7 @@
 // Expected data shape:
 //   { synthesis:{oneLiner,...}, pillars:[{key,title,oneLiner,...fields}],
 //     personas?:[{...}], journeys?:[{user,stages}], specs?:[{eyebrow,id,...spec}] }
-import { useState, createContext, useContext, Fragment } from "react";
+import { useState, useRef, createContext, useContext, Fragment } from "react";
 import NarrationPlayer from "./NarrationPlayer";
 import CompositionPromptBuilder from "./CompositionPromptBuilder";
 import AirplanePromptBuilder from "./AirplanePromptBuilder";
@@ -20,6 +20,7 @@ import TeamsPromptBuilder from "./TeamsPromptBuilder";
 import TeamIllustrationsPromptBuilder from "./TeamIllustrationsPromptBuilder";
 import JourneyEmbedding from "./JourneyEmbedding";
 import { ratio, fmt, passes, level } from "./colorLibrary/contrast.js";
+import { IndexSlider, IndexSheet, useIndexPill } from "../ui/SectionIndex";
 import "./prd.css";
 
 // Registry for one-off interactive specs: a spec field valued { builder: "<key>" }
@@ -613,9 +614,7 @@ export default function PrdRenderer({ data, kick, title, narration, agentCopy, b
   const [active, setActive] = useState(sections[0]?.key);
   const [view, setView] = useState("cards");
   const [mode, setMode] = useState("read");
-  // narrow screens: the rail collapses into a "Sections" panel (the old chip
-  // wall was 77 tabs on the prompt library). Desktop ignores this flag.
-  const [navOpen, setNavOpen] = useState(false);
+  const indexRef = useRef(null);
   // rail groups collapse; the group holding the active section is always open,
   // everything else opens on click (Zepto catalogue alone is 38 entries)
   const [openGroups, setOpenGroups] = useState(() => new Set());
@@ -623,9 +622,9 @@ export default function PrdRenderer({ data, kick, title, narration, agentCopy, b
   const listening = narration && mode === "listen";
   const agentMode = agentCopy && mode === "agent";
   const cur = sections.find((s) => s.key === active) || sections[0];
+  useIndexPill(indexRef, [active, openGroups, listening, agentMode]);
   const pick = (key) => {
     setActive(key);
-    setNavOpen(false);
     setView("cards"); // reset the field view so a leftover "interactive" view from
     // one section never leaks into another that has no Preview
     if (typeof window !== "undefined") window.scrollTo({ top: 0 });
@@ -702,16 +701,9 @@ export default function PrdRenderer({ data, kick, title, narration, agentCopy, b
       {/* left index rail — reuses the folio's .article__index (fixed rail ≥1100px).
           Hidden in Listen / Agent-copy mode, where that view takes over the body. */}
       {!listening && !agentMode && (
-      <nav className={`article__index prd__index${navOpen ? " is-open" : ""}`} aria-label="Sections">
-        <button
-          type="button"
-          className="prd__index-trigger"
-          aria-expanded={navOpen}
-          onClick={() => setNavOpen((v) => !v)}
-        >
-          <span className="prd__index-trigger-label">Sections</span>
-          <span className="prd__index-trigger-current">{cur?.label}</span>
-        </button>
+      <>
+      <nav className="article__index article__index--spy prd__index" aria-label="Sections" ref={indexRef}>
+        <IndexSlider />
         <ul className="prd__index-list">
           {tiered
             ? families.map((f, fi) => (
@@ -723,6 +715,12 @@ export default function PrdRenderer({ data, kick, title, narration, agentCopy, b
             : groups.map(renderGroup)}
         </ul>
       </nav>
+      <IndexSheet
+        entries={sections.map((s) => ({ key: s.key, label: s.label, group: s.group }))}
+        active={active}
+        onPick={pick}
+      />
+      </>
       )}
 
       <header className="prd__head">

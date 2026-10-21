@@ -14,25 +14,13 @@
 .syssheet__wrap { max-width: 1180px; margin: 0 auto; padding-inline: clamp(1.25rem, 5vw, 3rem); }
 
 .syssheet__main { max-width: 760px; margin: 0; }
-@media (min-width: 1080px) {
+@media (min-width: 1100px) {
   .syssheet__wrap { display: grid; grid-template-columns: 172px minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
   .syssheet__main { max-width: 880px; }
 }
 
-/* ---- contents rail ---- */
-.syssheet__rail { display: none; }
-@media (min-width: 1080px) {
-  .syssheet__rail { display: block; position: sticky; top: 5rem; align-self: start; }
-  .syssheet__rail-title { font-family: var(--font-serif); font-size: 13px; color: var(--muted); margin: 0 0 14px; }
-  .syssheet__rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-  .syssheet__rail a {
-    display: flex; align-items: baseline; gap: 8px; padding: 5px 10px; border-radius: 999px;
-    font-size: 12.5px; color: var(--muted); transition: color var(--m3-dur-effects-default) var(--m3-effects-default), background var(--m3-dur-effects-default) var(--m3-effects-default);
-  }
-  .syssheet__rail a:hover { color: var(--fg); background: var(--hover); }
-  .syssheet__rail a.is-active { color: var(--bg); background: var(--fg); }
-  .syssheet__rail-no { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; opacity: 0.7; min-width: 16px; }
-}
+/* ---- contents rail: the shared SectionIndex (flow variant, sticky in the grid column) ---- */
+.syssheet__rail-title { font-family: var(--font-serif); font-size: 13px; color: var(--muted); margin: 0 0 14px; }
 
 /* ---- shared type ---- */
 .ss-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
