@@ -27,6 +27,8 @@ export default defineConfig(({ command }) => ({
   define: { "import.meta.env.VITE_SITE": JSON.stringify(process.env.VITE_SITE || (command === "serve" ? "private" : "public")) },
   plugins: [pureLazy(), react(), tailwindcss(), inspectOverrides()],
   css: { postcss: { plugins: [scrollHover()] } },
+  // the synced design-playground bundle (public/sd-playground) is prebuilt: keep the dependency scan out of it
+  optimizeDeps: { entries: ["**/*.html", "!public/sd-playground/**"] },
   // IPv4 loopback: Node resolved "localhost" to ::1 only, so http://127.0.0.1:5173
   // refused connections (2026-09-27); browsers still reach it as localhost
   // PORT (set by the desktop app's preview when 5173 is taken by another chat's

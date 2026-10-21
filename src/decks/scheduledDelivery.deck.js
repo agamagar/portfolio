@@ -15,6 +15,18 @@
 // Renders through buildSlides / Slide in App.jsx. The `contents` slide links to each
 // section by an `id` on its phase divider and jumps to it in present mode.
 
+import {
+  sdDiscover,
+  sdDefine,
+  sdDevelopToggle,
+  sdDevelopSlots,
+  sdDevelopCart,
+  sdDevelopReturns,
+  sdDevelopOffers,
+  sdDevelopSystem,
+  sdDeliver,
+} from "./scheduledDelivery.story";
+
 export const scheduledDeck = [
   // 1 - Cover: the reusable "case study" title archetype — native/coded to match
   // the reference deck's title frame (Figma Portfolio-Landing-Page node 1773-446):
@@ -119,6 +131,7 @@ export const scheduledDeck = [
       "Where we lead: the split-cart summary that stays put, and the relabel across midnight. Where we hold back: fixed one-hour windows and no discount lever, because precision is the whole promise",
     ],
   },
+  ...sdDiscover,
 
   // ===================== 02 DEFINE =====================
   {
@@ -170,6 +183,7 @@ export const scheduledDeck = [
     ],
     fig: "schedCartStates",
   },
+  ...sdDefine,
 
   // ===================== 03 DEVELOP =====================
   {
@@ -281,6 +295,7 @@ export const scheduledDeck = [
     figure: "Switching Today and Tomorrow re-animates the slot list. Today is partial because earlier slots have passed; tomorrow opens a full day.",
     layout: "split",
   },
+  ...sdDevelopToggle,
   {
     type: "figure",
     h: "One scroll across midnight",
@@ -303,6 +318,7 @@ export const scheduledDeck = [
     ],
     fig: "schedPageStates",
   },
+  ...sdDevelopSlots,
   {
     type: "numbered",
     kicker: "Serviceability",
@@ -325,6 +341,7 @@ export const scheduledDeck = [
     ],
     fig: "schedStuckCart",
   },
+  ...sdDevelopCart,
   {
     type: "figure",
     layout: "text",
@@ -334,6 +351,7 @@ export const scheduledDeck = [
       "Once the slot picker earned its trust on the forward cart, it became a pattern, not a one-off. The returns and refunds flow reused it to book a pickup window, this time with the slots laid out inline on the page instead of in a sheet. One picker, two jobs.",
     ],
   },
+  ...sdDevelopReturns,
   {
     type: "figure",
     kicker: "Booked",
@@ -365,6 +383,8 @@ export const scheduledDeck = [
       "Editing a slot before you confirm is a first-class control. Cancelling after that routed through support chat in v1, on purpose, to handle abuse and refunds safely while the flow was young. It belongs as a first-class control next, held to the same honesty rules as the rest, alongside the auto-cancel-and-credit for when we're the ones who miss.",
     ],
   },
+  ...sdDevelopOffers,
+  ...sdDevelopSystem,
 
   // ===================== 04 DELIVER =====================
   {
@@ -415,6 +435,7 @@ export const scheduledDeck = [
       { k: "#1 ask", v: "finer slots, 15 to 30 minutes" },
     ],
   },
+  ...sdDeliver,
   {
     type: "closing",
     id: "reflection",
