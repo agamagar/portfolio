@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { animate } from "motion";
+import { useRise } from "../../ui/useSectionPlay";
 import "./scheduled.css";
 import { uniqueSvgIds } from "../../lib/svgIds"; // mv4h4hhf: per-instance ids for the Figma exports
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
@@ -38,58 +38,14 @@ export function DrawIcon({ src }) { // exported (mv5iv45e): the "Who I worked wi
     });
     return () => { live = false; };
   }, [src, uid]);
-  // mujpn8um: SCROLL-LINKED, not play-once. As the icon travels from the
-  // bottom of the viewport (95%) to just above centre (45%) each stroke draws
-  // on in turn, on the decelerate curve; scrolling back undraws it.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !svg) return;
-    const paths = [...el.querySelectorAll("path")];
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { paths.forEach((pa) => (pa.style.strokeDashoffset = "0")); return; }
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
-    const clamp = (v) => Math.max(0, Math.min(1, v));
-    const n = paths.length, span = 0.55, step = n > 1 ? (1 - span) / (n - 1) : 0;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      // mv58b49j (12 Oct, "it closes too early; it should conclude only when the item reaches the centre
-      // of the viewport"): the draw is driven by the WHOLE figure, not the icon. It starts as the figure's
-      // top edge enters (95% down the viewport) and reaches 1 exactly when the figure's centre is at the
-      // viewport's centre. It was the icon's centre reaching 45%, which is the figure's top part: it was
-      // finished with the figure still a quarter of a screen below the middle. Scroll-linked, so it
-      // un-draws on the way back; under reduced motion it is already drawn (above).
-      const r = (el.closest(".sin") || el).getBoundingClientRect();
-      const vh = window.visualViewport?.height || window.innerHeight;
-      const c0 = vh * 0.95 + r.height / 2, c1 = vh * 0.5;
-      const p = clamp((c0 - (r.top + r.height / 2)) / (c0 - c1));
-      paths.forEach((pa, i) => { pa.style.strokeDashoffset = (1 - ease(clamp((p - i * step) / span))).toFixed(4); });
-    };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
-    window.addEventListener("resize", onScroll);
-    return () => { window.removeEventListener("scroll", onScroll, { capture: true }); window.removeEventListener("resize", onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, [svg]);
+  // the draw is plain CSS off the figure's section state (scheduled.css, .sin[data-sp]): it plays on the clock when
+  // the figure's top reaches the viewport centre, and undraws off screen (it was scroll-linked before)
   return <span ref={ref} className="sin__icon sin__icon--draw" aria-hidden dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
 export default function SchedInsight() {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const items = [...el.querySelectorAll("[data-rise]")];
-    items.forEach((n) => { n.style.opacity = "0"; n.style.transform = "translateY(28px)"; });
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      feedbackCoalesced("reveal", 600); // the question and the finding arrive
-      items.forEach((n, k) => animate(n, { opacity: [0, 1], y: [28, 0] },
-        { duration: 0.7, delay: 0.1 + k * 0.1, ease: [0.22, 1, 0.36, 1] }));
-    }, { threshold: 0.25 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  useRise(ref, { lead: 100, step: 100, onPlay: (instant) => { if (!instant) feedbackCoalesced("reveal", 600); } }); // the question and the finding arrive
   return (
     <div className="sin" ref={ref}>
       {COLS.map((c) => (

@@ -4,6 +4,7 @@
 // .view-menu itself is fixed to the viewport corner (viewMenu.css).
 import { useEffect, useRef, useState } from "react";
 import { Eye } from "iconoir-react";
+import ReplayButton from "./ReplayButton";
 import "./viewMenu.css";
 
 export default function ViewMenu({ feedback, children }) {
@@ -45,6 +46,7 @@ export default function ViewMenu({ feedback, children }) {
       >
         <Eye width={15} height={15} strokeWidth={2} aria-hidden />
       </button>
+      <ReplayButton feedback={feedback} />
       {open && <div className="view-menu__panel" id="view-menu-panel" role="group" aria-label="View options">{children}</div>}
     </span>
   );

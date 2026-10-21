@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useReducedMotion, useInViewLoop } from "../ds/hooks";
+import { useReducedMotion } from "../ds/hooks";
+import { useSectionPlay } from "../../ui/useSectionPlay";
 import "./schedExplorationsDetour.css";
 
 // Agentation mvg8xj51-ht1eue: a copy of "The explorations" illustrated after Pentagram's "In Defense of the
@@ -111,16 +112,23 @@ export default function SchedExplorationsDetour() {
   const reduce = useReducedMotion();
   const [beat, setBeat] = useState(reduce ? ROWS.length + 1 : 0);
 
-  const loopRef = useInViewLoop(!reduce, async ({ wait, alive }) => {
-    while (alive()) {
-      setBeat(0); await wait(900); if (!alive()) break;
-      for (let i = 0; i < ROWS.length && alive(); i++) { setBeat(i + 1); await wait(1700); }
-      if (!alive()) break;
-      setBeat(ROWS.length + 1); await wait(3200);
-    }
+  // the section controller (ui/sectionPlay) plays the rows once, row by row, when the figure's top reaches the
+  // viewport centre; leaving the viewport resets them, and the Replay button runs them again
+  const loopRef = useRef(null);
+  const timers = useRef([]);
+  const clear = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  useSectionPlay(loopRef, {
+    play: (instant) => {
+      clear();
+      if (instant) { setBeat(ROWS.length + 1); return; }
+      setBeat(0);
+      for (let i = 0; i <= ROWS.length; i++) timers.current.push(setTimeout(() => setBeat(i + 1), 900 + i * 1700));
+    },
+    reset: () => { clear(); setBeat(0); },
   });
+  useEffect(() => clear, []);
 
-  useEffect(() => { if (beat >= 1) setSeen(true); setPeak((p) => Math.max(p, beat)); }, [beat]);
+  useEffect(() => { if (beat >= 1) setSeen(true); else setSeen(false); setPeak(beat); }, [beat]);
   const lanesOn = seen || beat >= 1;
 
   return (

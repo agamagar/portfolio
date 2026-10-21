@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate as motionAnimate } from "motion";
 import { DrawIcon } from "./SchedInsight"; // mv5iv45e: the insight header's own draw-on stroke icon
 import { Bars, fmtK } from "../../ui/charts";
+import { watchSection } from "../../ui/sectionPlay";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
@@ -444,14 +445,14 @@ function Diorama({ d, groups }) {
   const stage = useRef(null);
   const [pop, setPop] = useState(() => typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   useEffect(() => { if (pop) stage.current?.closest(".rwf")?.setAttribute("data-dio-pop", "on"); }, [pop]);
-  useEffect(() => {
-    if (pop) return undefined;
+  useEffect(() => { // the pop-in plays when the figure's top reaches the viewport centre (section controller), resets off screen
     const el = stage.current; if (!el) return undefined;
-    // the middle band of the viewport: the figure has "reached the centre" once it overlaps a thin strip around it
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setPop(true); el.closest(".rwf")?.setAttribute("data-dio-pop", "on"); io.disconnect(); } }, { rootMargin: "-48% 0px -48% 0px", threshold: 0 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [pop]);
+    const rwf = el.closest(".rwf");
+    return watchSection(el, {
+      play: () => { setPop(true); rwf?.setAttribute("data-dio-pop", "on"); },
+      reset: () => { setPop(false); rwf?.removeAttribute("data-dio-pop"); },
+    });
+  }, []);
   const order = [...d.pins].sort((a, b) => a.y - b.y || a.x - b.x).map((p) => p.g);
   return (
     <figure className="dio">

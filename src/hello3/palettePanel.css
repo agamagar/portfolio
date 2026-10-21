@@ -1,5 +1,5 @@
 /* the dev palette panel (PalettePanel.jsx) */
-.pal__btn { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: calc(var(--dev-base, 16px) + 88px); z-index: 2147482600; cursor: pointer; }
+.pal__btn { position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: calc(var(--dev-base, 16px) + 132px); z-index: 2147482600; cursor: pointer; }
 html .pal__btn[aria-pressed="true"] { color: #8b6cf0; box-shadow: 0 0 0 2px #8b6cf0, 0 4px 14px -6px rgba(0, 0, 0, 0.5); }
 .pal { position: fixed; left: calc(max(20px, env(safe-area-inset-left)) + 52px); bottom: 20px; z-index: 2147482600; width: min(640px, calc(100vw - 100px)); max-height: 78vh; display: flex; flex-direction: column; border-radius: 16px; corner-shape: round; overflow: hidden; background: var(--bg); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55); font: 400 14px/1.45 "Inter", -apple-system, sans-serif; }
 .pal__tabs { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--line); flex: none; }

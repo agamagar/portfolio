@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { watchSection, sectionPlayActive } from "../sectionPlay";
 
 // Shared chart plumbing: colour ramps (all CSS vars, theme aware), formatters,
 // a size + in-view + reduced-motion hook, nice ticks and label de-collision.
@@ -64,13 +65,10 @@ export function useChart(initialW = 600) {
     if (!el) return undefined;
     const ro = new ResizeObserver(([e]) => setW(Math.max(160, Math.round(e.contentRect.width))));
     ro.observe(el);
-    let io;
-    if (typeof IntersectionObserver === "undefined") setIn(true);
-    else {
-      io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setIn(true); io.disconnect(); } }, { threshold: 0.25 });
-      io.observe(el);
-    }
-    return () => { ro.disconnect(); io?.disconnect(); };
+    // the grow-in runs on the section controller: plays when the chart's top reaches the viewport centre,
+    // resets off screen, and replays on the Replay button. (No controller under reduced motion: `on` is forced.)
+    const off = watchSection(el, { play: () => setIn(true), reset: () => setIn(false) });
+    return () => { ro.disconnect(); off(); };
   }, []);
-  return { ref, w, on: inView || reduce, reduce };
+  return { ref, w, on: inView || reduce || !sectionPlayActive, reduce };
 }
