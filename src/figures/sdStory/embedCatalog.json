@@ -1,0 +1,2677 @@
+{
+ "note": "Append ?theme=dark|light&motion=reduce&bg=transparent to any hash. The embed posts {source:'sd-playground',type:'size',hash,height} to its parent.",
+ "flows": 32,
+ "cases": 326,
+ "embeds": [
+  {
+   "id": "schedule",
+   "kind": "schedule",
+   "title": "Schedule Delivery screen (interactive; ?state=a1..c1)",
+   "hash": "#embed/schedule",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "states": [
+    "a1",
+    "a2",
+    "a3",
+    "a4",
+    "b1",
+    "b2",
+    "b3",
+    "c1"
+   ]
+  },
+  {
+   "id": "states",
+   "kind": "states",
+   "title": "All 8 designed states side by side",
+   "hash": "#embed/states",
+   "size": {
+    "w": 3200,
+    "h": 861
+   }
+  },
+  {
+   "id": "flowchart",
+   "kind": "flowchart",
+   "title": "Schedule Delivery decision flow chart",
+   "hash": "#embed/flowchart",
+   "size": {
+    "w": 1032,
+    "h": 1180
+   }
+  },
+  {
+   "id": "storyboard",
+   "kind": "storyboard",
+   "title": "User-journey filmstrips (all five)",
+   "hash": "#embed/storyboard",
+   "size": {
+    "w": 1100,
+    "h": 2400
+   }
+  },
+  {
+   "id": "storyboard-instant",
+   "kind": "storyboard",
+   "title": "Journey filmstrip: Instant delivery",
+   "hash": "#embed/storyboard/instant",
+   "size": {
+    "w": 1100,
+    "h": 560
+   }
+  },
+  {
+   "id": "prototype-instant",
+   "kind": "prototype",
+   "title": "Guided prototype: Instant delivery",
+   "hash": "#embed/prototype/instant",
+   "size": {
+    "w": 760,
+    "h": 900
+   }
+  },
+  {
+   "id": "storyboard-tonight",
+   "kind": "storyboard",
+   "title": "Journey filmstrip: Schedule for tonight",
+   "hash": "#embed/storyboard/tonight",
+   "size": {
+    "w": 1100,
+    "h": 560
+   }
+  },
+  {
+   "id": "prototype-tonight",
+   "kind": "prototype",
+   "title": "Guided prototype: Schedule for tonight",
+   "hash": "#embed/prototype/tonight",
+   "size": {
+    "w": 760,
+    "h": 900
+   }
+  },
+  {
+   "id": "storyboard-tomorrow",
+   "kind": "storyboard",
+   "title": "Journey filmstrip: Schedule for tomorrow",
+   "hash": "#embed/storyboard/tomorrow",
+   "size": {
+    "w": 1100,
+    "h": 560
+   }
+  },
+  {
+   "id": "prototype-tomorrow",
+   "kind": "prototype",
+   "title": "Guided prototype: Schedule for tomorrow",
+   "hash": "#embed/prototype/tomorrow",
+   "size": {
+    "w": 760,
+    "h": 900
+   }
+  },
+  {
+   "id": "storyboard-instant-unavailable",
+   "kind": "storyboard",
+   "title": "Journey filmstrip: Edge: Instant unavailable",
+   "hash": "#embed/storyboard/instant-unavailable",
+   "size": {
+    "w": 1100,
+    "h": 560
+   }
+  },
+  {
+   "id": "prototype-instant-unavailable",
+   "kind": "prototype",
+   "title": "Guided prototype: Edge: Instant unavailable",
+   "hash": "#embed/prototype/instant-unavailable",
+   "size": {
+    "w": 760,
+    "h": 900
+   }
+  },
+  {
+   "id": "storyboard-nothing-available",
+   "kind": "storyboard",
+   "title": "Journey filmstrip: Edge: nothing available",
+   "hash": "#embed/storyboard/nothing-available",
+   "size": {
+    "w": 1100,
+    "h": 560
+   }
+  },
+  {
+   "id": "prototype-nothing-available",
+   "kind": "prototype",
+   "title": "Guided prototype: Edge: nothing available",
+   "hash": "#embed/prototype/nothing-available",
+   "size": {
+    "w": 760,
+    "h": 900
+   }
+  },
+  {
+   "id": "canvas",
+   "kind": "canvas",
+   "title": "Figma-style canvas of the designed states",
+   "hash": "#embed/canvas",
+   "size": {
+    "w": 1280,
+    "h": 760
+   }
+  },
+  {
+   "id": "map",
+   "kind": "map",
+   "title": "Master map of all flows and cases",
+   "hash": "#embed/map",
+   "size": {
+    "w": 1200,
+    "h": 900
+   }
+  },
+  {
+   "id": "flow-schedule-slot-picker-m4",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "slot-picker-m4",
+   "title": "Schedule page: Instant vs Schedule and slot picking (M4 Slot Management)",
+   "summary": "The core screen. One shipment card with an Instant Delivery / Schedule Delivery toggle, Today / Tomorrow date tabs and time-of-day slot groups, then Confirm. M4 is the *WIP* page; its 8-screen flow (Schedule Page section plus the cloned flow screens) is what is prototyped.",
+   "status": "wip",
+   "hash": "#embed/flow/schedule/slot-picker-m4",
+   "caseHash": "#embed/flow/schedule/slot-picker-m4?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-001",
+     "title": "Default: Schedule selected, Today, evening slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-01.png"
+    },
+    {
+     "id": "S-002",
+     "title": "Instant delivery selected",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-02.png"
+    },
+    {
+     "id": "S-003",
+     "title": "Edge: Instant unavailable (demand)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-03.png"
+    },
+    {
+     "id": "S-004",
+     "title": "Edge: Schedule unavailable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-04.png"
+    },
+    {
+     "id": "S-005",
+     "title": "Morning window: past slots disabled",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-05.png"
+    },
+    {
+     "id": "S-006",
+     "title": "Evening and night: all slots shown",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-06.png"
+    },
+    {
+     "id": "S-007",
+     "title": "Earliest slots, next-day date, slot picked",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-07.png"
+    },
+    {
+     "id": "S-008",
+     "title": "Tomorrow tab with more slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-08.png"
+    },
+    {
+     "id": "S-009",
+     "title": "Screen 2: expanded grid, Early Morning to Night",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-09.png"
+    },
+    {
+     "id": "S-010",
+     "title": "Screen 3: Late night group dated Oct 25 above Evening",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-10.png"
+    },
+    {
+     "id": "S-011",
+     "title": "Screen 4: full grid starting at Early Morning",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-11.png"
+    },
+    {
+     "id": "S-012",
+     "title": "Delivery Options card (collapsed-in-place view)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-12.png"
+    },
+    {
+     "id": "S-013",
+     "title": "Single shipment (1 of 1): Tomorrow, more slots available",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-13.png"
+    },
+    {
+     "id": "S-014",
+     "title": "Single shipment: Tomorrow, all slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-14.png"
+    },
+    {
+     "id": "S-015",
+     "title": "Single shipment: Today, all slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SP-15.png"
+    },
+    {
+     "id": "S-016",
+     "title": "Section 3 iterations: 'Late night / Oct 25' and 'early morning / Oct 25' groups",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/schedule/SP-16.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-slots-unavailable-feedback",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "slots-unavailable-feedback",
+   "title": "Slots unavailable (product feedback, Dec 26)",
+   "summary": "Two M4 sections named 'Slots unavaialble (Product feedback: Dec 26)'. The first holds the schedule page with disabled chips, 'SLOT FULL' labels, a 'no slots available' day state and the intro banner; the second reuses the slot picker on the Returns pickup page.",
+   "status": "wip",
+   "hash": "#embed/flow/schedule/slots-unavailable-feedback",
+   "caseHash": "#embed/flow/schedule/slots-unavailable-feedback?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-017",
+     "title": "Some slots unavailable (disabled chips, no label)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SU-01.png"
+    },
+    {
+     "id": "S-018",
+     "title": "Some slots unavailable with a 'SLOT FULL' tag on each full chip",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SU-02.png"
+    },
+    {
+     "id": "S-019",
+     "title": "No slots available on the selected day",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SU-03.png"
+    },
+    {
+     "id": "S-020",
+     "title": "Schedule page with the 'Introducing Schedule Delivery' header banner and both days at 13 Slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/SU-04.png"
+    },
+    {
+     "id": "S-021",
+     "title": "Returns pickup: slot picker reused for 'Pickup Time' (person booking 2-3 AM)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/schedule/RP-01.png"
+    },
+    {
+     "id": "S-022",
+     "title": "Returns pickup: person booking 6-7 PM",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/schedule/RP-02.png"
+    },
+    {
+     "id": "S-023",
+     "title": "Returns pickup: 'Expanded State' (Interaction section)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/schedule/RP-03.png"
+    },
+    {
+     "id": "S-024",
+     "title": "Returns pickup: 'Next Day' tab",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/schedule/RP-04.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-cases-breakdown-shipment-card",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "cases-breakdown-shipment-card",
+   "title": "Cases Breakdown: shipment card states from Instant x Schedule availability (M2 GTM spine)",
+   "summary": "The 2 x 2 matrix on M2: GTM that decides what the collapsed shipment card shows in a multi-shipment order. Instant availability on one axis, schedule availability on the other; 'highlight' means the Schedule for later chip is emphasised.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/cases-breakdown-shipment-card",
+   "caseHash": "#embed/flow/schedule/cases-breakdown-shipment-card?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-025",
+     "title": "Instant available + Schedule available (highlight Schedule)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CB-00.png"
+    },
+    {
+     "id": "S-026",
+     "title": "Instant available + Schedule unavailable (no change)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CB-00.png"
+    },
+    {
+     "id": "S-027",
+     "title": "Instant unavailable + Schedule available (highlight: to be scheduled)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CB-00.png"
+    },
+    {
+     "id": "S-028",
+     "title": "Instant unavailable + Schedule unavailable (no change)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CB-00.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-confirm-page-multi-shipment",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "confirm-page-multi-shipment",
+   "title": "Schedule page: multi-shipment states (1 of 3 / 2 of 3 / 3 of 3)",
+   "summary": "How the 'Schedule your order' page reads when there are several shipments and every card is collapsed. From 'Schedule Page All Cases' (20 Nov) and the 'All Variations' section.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/confirm-page-multi-shipment",
+   "caseHash": "#embed/flow/schedule/confirm-page-multi-shipment?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-029",
+     "title": "Three shipments: scheduled, instant, unserviceable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CP-01.png"
+    },
+    {
+     "id": "S-030",
+     "title": "Shipment with no slot selected",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/CP-02.png"
+    },
+    {
+     "id": "S-031",
+     "title": "Same two cases re-drawn on '20 Nov' (frames 112 and 113)",
+     "designStatus": "superseded",
+     "thumb": null
+    },
+    {
+     "id": "S-032",
+     "title": "'All Variations': three shipments with 'Delivering Tomorrow Morning, 5 - 6 AM' (variants 3, 4, 5)",
+     "designStatus": "exploration",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-instant-unavailable-treatments",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "instant-unavailable-treatments",
+   "title": "Instant unavailable: callout, tag and toggle treatments (Nov 20-21 updates)",
+   "summary": "GTM explorations of how to say 'Instant is unavailable' and how to present the Instant / Schedule choice (radio, toggle, up/down toggle, 'Get it now / later'). The Nov 21 set ('High Demand!') is the latest.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/instant-unavailable-treatments",
+   "caseHash": "#embed/flow/schedule/instant-unavailable-treatments?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-033",
+     "title": "Instant 'Back soon', schedule list below (Updates 20 Nov, frame 107)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-01.png"
+    },
+    {
+     "id": "S-034",
+     "title": "'Temporarily UNAVAILABLE' tag above the toggle (frame 109 / 111)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-02.png"
+    },
+    {
+     "id": "S-035",
+     "title": "'We got you!' callout (frame 110)",
+     "designStatus": "superseded",
+     "thumb": "flow/map/thumbs/schedule/IU-03.png"
+    },
+    {
+     "id": "S-036",
+     "title": "Radio vs Toggle: Instant 'Back soon' / Schedule 'Unavailable' (frames 108 / 103)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "S-037",
+     "title": "Up/down toggle: Instant unavailable above, schedule list expanded",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-04.png"
+    },
+    {
+     "id": "S-038",
+     "title": "Up/down toggle: both options available (frame 98 / 102)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-05.png"
+    },
+    {
+     "id": "S-039",
+     "title": "'Get it now / Get it later' wording (frame 56)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-06.png"
+    },
+    {
+     "id": "S-040",
+     "title": "'Get it later' with only a 10-min chip (frame 55)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/IU-07.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-time-of-day-slot-availability",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "time-of-day-slot-availability",
+   "title": "Slot availability by time of day (Updates Nov 21)",
+   "summary": "Three frames show the same instant-unavailable shipment at different clock times: 10 PM leaves two slots, 12:00 shows the early-morning window, 6:30 AM starts at 7 - 8 AM. Both '2 of 2 Scheduled' second shipment stays below.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/time-of-day-slot-availability",
+   "caseHash": "#embed/flow/schedule/time-of-day-slot-availability?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-041",
+     "title": "10 PM: only two slots left",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/TD-01.png"
+    },
+    {
+     "id": "S-042",
+     "title": "12:00: after midnight, earliest = 12 - 1 AM",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/TD-02.png"
+    },
+    {
+     "id": "S-043",
+     "title": "6:30 AM: earliest = 7 - 8 AM",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/TD-03.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-collapsed-card-slot-summary",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "collapsed-card-slot-summary",
+   "title": "Slot visibility on expanded and collapsed schedule cards",
+   "summary": "Alternatives for telling the user which slot a collapsed shipment holds (research echo: users forget the slot once they move to the next shipment).",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/collapsed-card-slot-summary",
+   "caseHash": "#embed/flow/schedule/collapsed-card-slot-summary?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-044",
+     "title": "Collapsed: 'This shipment will be delivered Today, 5 - 6 AM'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SV-01.png"
+    },
+    {
+     "id": "S-045",
+     "title": "Alternative 2: 'Delivering Today morning, 5 - 6 AM'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SV-02.png"
+    },
+    {
+     "id": "S-046",
+     "title": "Alternative 3: 'Delivering Today, 5 - 6 AM' plus 'Select a slot'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SV-03.png"
+    },
+    {
+     "id": "S-047",
+     "title": "Alternative 4: 'Delivering Today, 5 - 6 AM' replaces the pill",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SV-04.png"
+    },
+    {
+     "id": "S-048",
+     "title": "Slot divide: 'Delivering Tomorrow Morning, 5 - 6 AM' (ALT-1)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SV-05.png"
+    },
+    {
+     "id": "S-049",
+     "title": "Expanded vs collapsed cards (Delivery Info Expanded / Collapsed)",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-intro-banner-and-assets",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "intro-banner-and-assets",
+   "title": "Introducing Schedule Delivery: header banner, Lottie and visual assets (M2 GTM)",
+   "summary": "Banner and animation explorations for introducing the feature on the schedule page. Includes the SD 1..10 Lottie frames (1080x340), copy options ('Get it now or later with schedule!', 'Skip the last minute rush', 'NO Minimum Order Value'), orange vs purple themes and a trust marker.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/intro-banner-and-assets",
+   "caseHash": "#embed/flow/schedule/intro-banner-and-assets?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-050",
+     "title": "Top banner: three rotating lines (frame 156)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/BN-01.png"
+    },
+    {
+     "id": "S-051",
+     "title": "Top banner: 'Introducing Schedule Delivery' static (frames 158 / 161)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/BN-02.png"
+    },
+    {
+     "id": "S-052",
+     "title": "Top banner: 'Schedule for Later / Skip the last minute rush' (frame 159)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/BN-02.png"
+    },
+    {
+     "id": "S-053",
+     "title": "SD 1..10 Lottie frames",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/BN-03.png"
+    },
+    {
+     "id": "S-054",
+     "title": "'Select a slot' tag exploration (frames 177-180)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/TG-01.png"
+    },
+    {
+     "id": "S-055",
+     "title": "Trust marker: 'No extra charges on schedule orders'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/TR-01.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-cart-entry-coachmark",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "cart-entry-coachmark",
+   "title": "Cart entry point: schedule nudge and coachmark (M2 GTM)",
+   "summary": "How the cart introduces scheduling: an 'Instant Temporarily Unavailable / NEW / Tap to pick your preferred day & time' header with a coachmark / tooltip, or a 'Schedule' pill when instant works. Options 60-66 test the tooltip copy.",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/cart-entry-coachmark",
+   "caseHash": "#embed/flow/schedule/cart-entry-coachmark?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-056",
+     "title": "GTM cart: 'Instant Temporarily Unavailable' with NEW pill",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/CC-01.png"
+    },
+    {
+     "id": "S-057",
+     "title": "Coachmark option 61: 'Schedule for later / Earliest delivery in 45 mins'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/CC-02.png"
+    },
+    {
+     "id": "S-058",
+     "title": "Coachmark option 62: 'Orders can now be scheduled'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/CC-03.png"
+    },
+    {
+     "id": "S-059",
+     "title": "Coachmark option 66: 'Plan your deliveries for later'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/CC-04.png"
+    },
+    {
+     "id": "S-060",
+     "title": "Coachmark options 60, 63, 64, 65",
+     "designStatus": "exploration",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-cart-header-states",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "cart-header-states",
+   "title": "Cart shipment header states by reason code (M3 Cart Headers)",
+   "summary": "Final cart headers per backend reason: scheduleable, store closed, stand-still (rain), store not taking orders, order limit, orders per day limit, weight limit, default, plus the scheduled and unserviceable shipment headers. M3 also has a 'Disabled Button' copy of the set.",
+   "status": "final",
+   "hash": "#embed/flow/schedule/cart-header-states",
+   "caseHash": "#embed/flow/schedule/cart-header-states?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-061",
+     "title": "Scheduleable: 'Schedule for later'",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-062",
+     "title": "storeClosed",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-063",
+     "title": "standStill (rain pause)",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-064",
+     "title": "storeNotTakingOrders",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-065",
+     "title": "orderLimitBreached",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-066",
+     "title": "ordersPerDayLimitBreached",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-067",
+     "title": "weightLimitExceeded",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-068",
+     "title": "default",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-069",
+     "title": "Scheduled shipment header (today / tomorrow)",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-01.png"
+    },
+    {
+     "id": "S-070",
+     "title": "Unserviceable shipment header",
+     "designStatus": "final",
+     "thumb": "flow/map/thumbs/schedule/HD-00.png"
+    },
+    {
+     "id": "S-071",
+     "title": "Header consistency: scheduled-shipment variants with dates",
+     "designStatus": "exploration",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-cart-cases-m1-dev-ready",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "cart-cases-m1-dev-ready",
+   "title": "M1 Dev Ready: unserviceable / scheduled cart cases, loading, nudges",
+   "summary": "The dev-ready M1 sections that matter to scheduling: 'New Cases' (all cart configurations), 'Explorations', 'Schduled Delivery Not Available' (typo kept) and 'Bottom Nudge Explorations'.",
+   "status": "dev-ready",
+   "hash": "#embed/flow/schedule/cart-cases-m1-dev-ready",
+   "caseHash": "#embed/flow/schedule/cart-cases-m1-dev-ready?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-072",
+     "title": "Items unserviceable: auto-remove on Pay",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-01.png"
+    },
+    {
+     "id": "S-073",
+     "title": "Some items unavailable: 'Schedule your order'",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-02.png"
+    },
+    {
+     "id": "S-074",
+     "title": "Store unserviceable due to rain",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-03.png"
+    },
+    {
+     "id": "S-075",
+     "title": "Items unavailable: 'These items cannot be delivered'",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-04.png"
+    },
+    {
+     "id": "S-076",
+     "title": "Cart item removal sheet: 'Unavailable items will be removed from cart'",
+     "designStatus": "dev-ready",
+     "thumb": null
+    },
+    {
+     "id": "S-077",
+     "title": "Unavailable items removed successfully",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-06.png"
+    },
+    {
+     "id": "S-078",
+     "title": "'Your delivery is scheduled': Remove",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-05.png"
+    },
+    {
+     "id": "S-079",
+     "title": "Multi-shipment page with 'No Slots Avaialable' (2 of 2) and +3 items",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-07.png"
+    },
+    {
+     "id": "S-080",
+     "title": "Explorations: 'Store Unserviceable / Unserviceable due to rain' row",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/NC-08.png"
+    },
+    {
+     "id": "S-081",
+     "title": "Explorations: 'Your delivery is scheduled' row with Edit",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "S-082",
+     "title": "Explorations: loading state while slots are fetched",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/NC-09.png"
+    },
+    {
+     "id": "S-083",
+     "title": "Scheduled Delivery Not Available: 'Schedule needs review'",
+     "designStatus": "dev-ready",
+     "thumb": "flow/map/thumbs/schedule/NC-10.png"
+    },
+    {
+     "id": "S-084",
+     "title": "GTM bottom sheet for an unserviceable shipment (Options 01-04)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/BS-01.png"
+    },
+    {
+     "id": "S-085",
+     "title": "Bottom nudge: 'Move Unavailable Items to Wishlist?'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/NN-01.png"
+    },
+    {
+     "id": "S-086",
+     "title": "Order Scheduled Successfully",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/NN-02.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-delivery-options-bottomsheet",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "delivery-options-bottomsheet",
+   "title": "Delivery options bottom sheet: progressive tabs and cart states (Progressive Tab, Dev Discussion, Shreya's Playground)",
+   "summary": "Earlier exploration. Instead of a full page, a bottom sheet with one tab per shipment (Shipment 1 Instant / Shipment 2 Scheduled / Shipment 3 No Slots Available), plus cart states for 'State with schedule selected' and the scenario matrix (single / multiple shipments x serviceable / unserviceable / mixed).",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/delivery-options-bottomsheet",
+   "caseHash": "#embed/flow/schedule/delivery-options-bottomsheet?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-087",
+     "title": "Cart: Items unserviceable right now / Schedule",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SH-01.png"
+    },
+    {
+     "id": "S-088",
+     "title": "Cart: Order Unserviceable / No slots available",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SH-02.png"
+    },
+    {
+     "id": "S-089",
+     "title": "Cart: 'Scheduled delivery / Edit slot'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SH-03.png"
+    },
+    {
+     "id": "S-090",
+     "title": "Cart: 'Delivery scheduled / Reset / Edit slot'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/SH-04.png"
+    },
+    {
+     "id": "S-091",
+     "title": "Delivery Options sheet: shipment tabs, Instant / Schedule list",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/PB-01.png"
+    },
+    {
+     "id": "S-092",
+     "title": "Delivery Options sheet: Not Selected / Removed states",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/PB-02.png"
+    },
+    {
+     "id": "S-093",
+     "title": "'Combined Possible Negative Cases' sheet",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/PB-03.png"
+    },
+    {
+     "id": "S-094",
+     "title": "'Some items in your cart are not available' sheet",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/PB-04.png"
+    },
+    {
+     "id": "S-095",
+     "title": "Delivery Options sheet: Shipment 2 'Scheduled' state",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/PB-05.png"
+    },
+    {
+     "id": "S-096",
+     "title": "Scenario matrix: single / multiple shipments x serviceable / unserviceable / mix",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "S-097",
+     "title": "Shreya's Playground text labels: 'Slot yes / Slot no / Serviceable / Unserviceable'",
+     "designStatus": "exploration",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-ut-prototypes",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "ut-prototypes",
+   "title": "User-test prototypes (UT 01 dual toggle, UT 02 toggle with 3 options, UT 03 mini toggle)",
+   "summary": "Three alternative interaction models for resolving a cart with an unserviceable shipment, each with a Prototype section: cart -> schedule sheet -> per-shipment choice -> remove-items sheet -> toast. Footer is 'Save' (not Confirm).",
+   "status": "exploration",
+   "hash": "#embed/flow/schedule/ut-prototypes",
+   "caseHash": "#embed/flow/schedule/ut-prototypes?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-098",
+     "title": "UT 01: three shipments, shipment 1 expanded with slots",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-01.png"
+    },
+    {
+     "id": "S-099",
+     "title": "UT 01: shipment 2 expanded, 3 'Unserviceable items will be removed'",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-02.png"
+    },
+    {
+     "id": "S-100",
+     "title": "UT 01: confirm removal bottom sheet + toast",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-03.png"
+    },
+    {
+     "id": "S-101",
+     "title": "UT 01 inline hints: 'Items will be removed on save'",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "S-102",
+     "title": "UT 02: toggle with 3 options (Instant / Schedule / Remove Items)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-04.png"
+    },
+    {
+     "id": "S-103",
+     "title": "UT 02 Approach 01..04 comparison frames",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-05.png"
+    },
+    {
+     "id": "S-104",
+     "title": "UT 03: mini toggle with the slot in the pill ('Aug 18, 5-6 AM')",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-06.png"
+    },
+    {
+     "id": "S-105",
+     "title": "UT 03: first state (all slot choices open)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/schedule/UT-07.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-schedule-ut-oct29-research",
+   "kind": "flow",
+   "cluster": "schedule",
+   "flowId": "ut-oct29-research",
+   "title": "Oct 29 user-testing session: process, approaches and findings",
+   "summary": "Research page. Process section tells users: 'You are looking at a cart with some products either currently unavailable and unserviceable, your objective is to navigate to the schedule feature and schedule the currently unavailable products'. Approaches section (dimmed in the file) says two approaches were tested with a variable matrix that is not legible. Observations: three users, five annotated quotes.",
+   "status": "research",
+   "hash": "#embed/flow/schedule/ut-oct29-research",
+   "caseHash": "#embed/flow/schedule/ut-oct29-research?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "S-106",
+     "title": "User 01: 'Don't let me save if something is pending'",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/RS-01.png"
+    },
+    {
+     "id": "S-107",
+     "title": "User 01: 'Did it not auto select a slot for me?'",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/RS-01.png"
+    },
+    {
+     "id": "S-108",
+     "title": "User 02: 'I might forget the time slot selected for shipment 1'",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/RS-01.png"
+    },
+    {
+     "id": "S-109",
+     "title": "User 03: 'Will the products be removed on save or is it already removed'",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/RS-01.png"
+    },
+    {
+     "id": "S-110",
+     "title": "User 02: 'Green tick on the scheduled state brings me peace'",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/schedule/RS-01.png"
+    },
+    {
+     "id": "S-111",
+     "title": "Metrics card: 8% VWO, 50% AM/PM, 25% Wanted in now, 25% Batching Orders",
+     "designStatus": "research",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-cs-chat-exchange",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "cs-chat-exchange",
+   "title": "Exchange via support chat (Exchange Only)",
+   "summary": "The user raises an issue on a delivered item through Help & Support; the Zap chatbot checks eligibility and offers an exchange, confirms the user will be home, and places a replacement order. Covers the happy path plus every blocker/pitch-return/refund branch.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/cs-chat-exchange",
+   "caseHash": "#embed/flow/returns/cs-chat-exchange?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "EX-001",
+     "title": "Entry: Help & Support lists past orders",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-001.png"
+    },
+    {
+     "id": "EX-002",
+     "title": "Order Help page lists issue categories",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-002.png"
+    },
+    {
+     "id": "EX-003",
+     "title": "Item selection: eligible and ineligible items",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-003.png"
+    },
+    {
+     "id": "EX-004",
+     "title": "Select issue for item",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-004.png"
+    },
+    {
+     "id": "EX-005",
+     "title": "Quantity, photos/videos and description",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-005.png"
+    },
+    {
+     "id": "EX-006",
+     "title": "Summary before submitting",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-006.png"
+    },
+    {
+     "id": "EX-007",
+     "title": "Chat echoes the submitted issue",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-007.png"
+    },
+    {
+     "id": "EX-008",
+     "title": "Bot offers exchange",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-008.png"
+    },
+    {
+     "id": "EX-009",
+     "title": "Availability confirmation: exchange at your door",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/EX-009.png"
+    },
+    {
+     "id": "EX-010",
+     "title": "Exchange confirmed",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-010.png"
+    },
+    {
+     "id": "EX-011",
+     "title": "Escalation to human agent",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-011.png"
+    },
+    {
+     "id": "EX-012",
+     "title": "Item OOS before exchange: pitch Return",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-012.png"
+    },
+    {
+     "id": "EX-013",
+     "title": "Item OOS after exchange is confirmed: pitch Return",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-013.png"
+    },
+    {
+     "id": "EX-014",
+     "title": "Item already exchanged: block re-selection",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-014.png"
+    },
+    {
+     "id": "EX-015",
+     "title": "Store unserviceable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-015.png"
+    },
+    {
+     "id": "EX-016",
+     "title": "Maximum active child orders",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-016.png"
+    },
+    {
+     "id": "EX-017",
+     "title": "CS window closed (3-day complaint window passed)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-017.png"
+    },
+    {
+     "id": "EX-018",
+     "title": "RTO in exchange flow: suggest Return",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-018.png"
+    },
+    {
+     "id": "EX-019",
+     "title": "Cancelled in exchange flow: suggest Exchange",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-019.png"
+    },
+    {
+     "id": "EX-020",
+     "title": "Exchange declined: need return or refund",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-020.png"
+    },
+    {
+     "id": "EX-021",
+     "title": "Instant pickup unavailable: schedule a slot",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/EX-021.png"
+    },
+    {
+     "id": "EX-022",
+     "title": "Items ineligible (complaint window closed)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/EX-022.png"
+    },
+    {
+     "id": "EX-023",
+     "title": "Multi-product issue",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-023.png"
+    },
+    {
+     "id": "EX-024",
+     "title": "OOS pivot confirmed as Return (refund to Zepto Cash)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-024.png"
+    },
+    {
+     "id": "EX-026",
+     "title": "Clear details confirmation sheet",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "EX-025",
+     "title": "Pick refund method after OOS pivot",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/EX-025.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-cs-chat-return",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "cs-chat-return",
+   "title": "Return via support chat (Return Only)",
+   "summary": "Same chat entry as the exchange flow but the bot offers a return (with refund after pickup) first, can pivot to exchange, and ends in the CS-window-closed and store-unserviceable blockers.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/cs-chat-return",
+   "caseHash": "#embed/flow/returns/cs-chat-return?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "RT-001",
+     "title": "Bot: eligible for a Return",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/RT-001.png"
+    },
+    {
+     "id": "RT-002",
+     "title": "Return availability confirmation",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/RT-002.png"
+    },
+    {
+     "id": "RT-003",
+     "title": "Return flow suggests Exchange",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/RT-003.png"
+    },
+    {
+     "id": "RT-004",
+     "title": "CS window closed (return)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/RT-004.png"
+    },
+    {
+     "id": "RT-005",
+     "title": "Store unserviceable (return)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/returns/RT-005.png"
+    },
+    {
+     "id": "RT-006",
+     "title": "Return declined: Need further help",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "RT-007",
+     "title": "Agent handoff (return)",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-in-app-exchange-return",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "in-app-exchange-return",
+   "title": "In-app Exchange / Return from Order Details (Single Product > Single Qty)",
+   "summary": "Self-serve creation of an exchange or return from the order details page, with eligibility banners on each item, preference (Exchange/Return), quantity, issue, photo upload with error states, review with pickup time + refund method, payment-style confirmation, then order status/OTP.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/in-app-exchange-return",
+   "caseHash": "#embed/flow/returns/in-app-exchange-return?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "IA-001",
+     "title": "Order Details with RnR states per item",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-001.png"
+    },
+    {
+     "id": "IA-002",
+     "title": "Parent Order with shipments",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-002.png"
+    },
+    {
+     "id": "IA-003",
+     "title": "RnR creation: choose Exchange or Return",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-003.png"
+    },
+    {
+     "id": "IA-004",
+     "title": "Quantity and issue list",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-004.png"
+    },
+    {
+     "id": "IA-005",
+     "title": "Upload failure: file too large / invalid format",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-005.png"
+    },
+    {
+     "id": "IA-006",
+     "title": "Camera / gallery / file access denied",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-006.png"
+    },
+    {
+     "id": "IA-007",
+     "title": "Review: items, address, guidelines, pickup time",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-007.png"
+    },
+    {
+     "id": "IA-008",
+     "title": "Instant unavailable: schedule pickup + refund method",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-008.png"
+    },
+    {
+     "id": "IA-009",
+     "title": "Cancel exchange from items sheet",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-009.png"
+    },
+    {
+     "id": "IA-010",
+     "title": "Returns unavailable blocker (bottom sheet)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-010.png"
+    },
+    {
+     "id": "IA-011",
+     "title": "Blocker flow: store unavailable",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-011.png"
+    },
+    {
+     "id": "IA-012",
+     "title": "Exchange order placed",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-012.png"
+    },
+    {
+     "id": "IA-013",
+     "title": "Order status after placing (Exchange rider on way)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/IA-013.png"
+    },
+    {
+     "id": "IA-014",
+     "title": "Active exchange + one exchange still eligible (note)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "IA-015",
+     "title": "Only 1 product selected (note)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "IA-017",
+     "title": "Upload photos or videos",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "IA-016",
+     "title": "Instant and schedule unavailable (note)",
+     "designStatus": "wip",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-scheduled-exchange-return",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "scheduled-exchange-return",
+   "title": "Scheduled Exchange + Return (combined, in-app)",
+   "summary": "One flow for exchanging some items and returning others in the same request: select items, preference per item, review with two pickup partners, refund method, pickup date/time (reuses the slot picker), confirmation, OTP handover.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/scheduled-exchange-return",
+   "caseHash": "#embed/flow/returns/scheduled-exchange-return?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "SE-001",
+     "title": "Homepage entry",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-001.png"
+    },
+    {
+     "id": "SE-002",
+     "title": "Order Details: history with exchange/return states",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-002.png"
+    },
+    {
+     "id": "SE-003",
+     "title": "RnR creation: select issues",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-003.png"
+    },
+    {
+     "id": "SE-004",
+     "title": "Select Items bottom sheet: eligible items",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-004.png"
+    },
+    {
+     "id": "SE-005",
+     "title": "Select Items: non-eligible tab",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-005.png"
+    },
+    {
+     "id": "SE-006",
+     "title": "Summary with per-item preference",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-006.png"
+    },
+    {
+     "id": "SE-007",
+     "title": "Review: exchange + return in one request",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-007.png"
+    },
+    {
+     "id": "SE-008",
+     "title": "Pickup date and time picker",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-008.png"
+    },
+    {
+     "id": "SE-009",
+     "title": "Order scheduled confirmation",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-009.png"
+    },
+    {
+     "id": "SE-010",
+     "title": "OTP page: share OTP for exchange & returns",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-010.png"
+    },
+    {
+     "id": "SE-011",
+     "title": "OTP generated: per-item labels",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-011.png"
+    },
+    {
+     "id": "SE-012",
+     "title": "Rider on the way for pickup (swipe card)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-012.png"
+    },
+    {
+     "id": "SE-013",
+     "title": "Final UI: order status page",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-013.png"
+    },
+    {
+     "id": "SE-014",
+     "title": "Review: return only with refund selection",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "SE-015",
+     "title": "Review: exchange only with slot picker",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/SE-015.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-pickup-slot-picker",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "pickup-slot-picker",
+   "title": "Pickup time (Picktime) states: instant vs scheduled",
+   "summary": "The pickup-time module inside the review screen: Instant Pickup (9 min) vs Scheduled for Later (date + slot grid), recommended/eco-saver variants, and the unavailable states. It is the same pattern as the Schedule Delivery slot picker, adapted for pickup.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/pickup-slot-picker",
+   "caseHash": "#embed/flow/returns/pickup-slot-picker?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "PK-001",
+     "title": "No slot selected (Instant + Scheduled for Later)",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/PK-001.png"
+    },
+    {
+     "id": "PK-002",
+     "title": "Slot selected: main CTA active",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "PK-003",
+     "title": "No slots available in the earliest window",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/PK-003.png"
+    },
+    {
+     "id": "PK-004",
+     "title": "No slots available: time of the day",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/PK-004.png"
+    },
+    {
+     "id": "PK-005",
+     "title": "Alternative 01: \"Less co2 emmisions\"",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "PK-006",
+     "title": "Alternative 02: eco saver tag",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "PK-007",
+     "title": "Return: no pickup option selected",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "PK-008",
+     "title": "Instant Unavailable",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/returns/PK-008.png"
+    },
+    {
+     "id": "PK-009",
+     "title": "Schedule Unavailable",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "PK-010",
+     "title": "Component: Instant card",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "PK-011",
+     "title": "Component: Scheduled card",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "PK-012",
+     "title": "Schedule Card States component set",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-otp-pickup-handover",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "otp-pickup-handover",
+   "title": "OTP verification at pickup",
+   "summary": "On pickup day the Order Status page offers \"See OTP\"; the user shares a per-rider OTP for the exchange and/or return so the rider can collect the items.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/otp-pickup-handover",
+   "caseHash": "#embed/flow/returns/otp-pickup-handover?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "OT-001",
+     "title": "OTP page: Share OTP for easy Exchange & Returns",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "OT-002",
+     "title": "OTP generated: three OTP variants",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "OT-003",
+     "title": "Pickup scheduled (Today 6-7 PM)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "OT-004",
+     "title": "Pickup scheduled: estimated window variant",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "OT-005",
+     "title": "Order status \"Tomorrow\" / \"Today\" finals",
+     "designStatus": "wip",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-order-tracking-states",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "order-tracking-states",
+   "title": "Order and refund tracking states (timeline spine)",
+   "summary": "The state labels floating above the Return/Exchange sections are the intended tracking timeline. They are text only on the canvas (no state frames drawn), and Replace Order (forward replacement) and Return (reverse) each get their own chain; a mixed Replace + Return chain exists for the OOS partial-return case. Only a few states are drawn elsewhere (WIP order page, home card, swipe cards).",
+   "status": "wip",
+   "hash": "#embed/flow/returns/order-tracking-states",
+   "caseHash": "#embed/flow/returns/order-tracking-states?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "TR-001",
+     "title": "Replace Order: getting packed",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-002",
+     "title": "Replace Order: on the way",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-003",
+     "title": "Replace Order: arrived",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-004",
+     "title": "Replace Order delivered, rider picked up item",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-005",
+     "title": "Return: rider on the way to pickup",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-006",
+     "title": "Return: rider arrived to pickup",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-007",
+     "title": "Return: rider picked up item",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-008",
+     "title": "Refund Initiated (return)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-009",
+     "title": "Refund Credited (return)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-010",
+     "title": "Return cancelled",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-011",
+     "title": "Replacement cancelled",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-012",
+     "title": "Replacement failed",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-013",
+     "title": "Replace + Return: OOS partial return, rest refund",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-014",
+     "title": "Orders page WIP: Pickup Scheduled, Cancel Order, completed lines",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "TR-015",
+     "title": "Homepage WIP: order card",
+     "designStatus": "wip",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-returns-refund-handling",
+   "kind": "flow",
+   "cluster": "returns",
+   "flowId": "refund-handling",
+   "title": "Refund method and refund states",
+   "summary": "Where the refund is chosen and how it is communicated: chat (preferred method) and in-app review (Zepto Cash instant vs Source Account 3-5 days), plus Refund Initiated and Refund Credited tracking states and the OOS partial-return-rest-refund label.",
+   "status": "wip",
+   "hash": "#embed/flow/returns/refund-handling",
+   "caseHash": "#embed/flow/returns/refund-handling?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "RF-001",
+     "title": "Refund method: Zepto Cash instant vs source",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "RF-002",
+     "title": "In-app refund method (Return review)",
+     "designStatus": "wip",
+     "thumb": null
+    },
+    {
+     "id": "RF-003",
+     "title": "Refund after pickup (chat)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "RF-004",
+     "title": "Refund credited line in Order Details",
+     "designStatus": "wip",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-ftb-cart-entry-states",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "ftb-cart-entry-states",
+   "title": "FTB handover: cart entry, intro and scheduled-limit states",
+   "summary": "Cart page states in the FTB (dev handover) section: first-time introduction, returning-user bottom-tray highlight, unserviceable items that push the user to schedule, the 5-per-day scheduled-order limit and the \"New Cases\" for removing unserviceable items.",
+   "status": "dev-ready",
+   "hash": "#embed/flow/cart/ftb-cart-entry-states",
+   "caseHash": "#embed/flow/cart/ftb-cart-entry-states?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-001",
+     "title": "First-time introduction to Schedule Delivery",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/537-46368.png"
+    },
+    {
+     "id": "C-002",
+     "title": "Returning user: bottom tray highlight",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/4709-97174.png"
+    },
+    {
+     "id": "C-003",
+     "title": "Items unserviceable, Schedule Now",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/533-39521.png"
+    },
+    {
+     "id": "C-004",
+     "title": "Items unavailable, Schedule Now (variant copy)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/925-61752.png"
+    },
+    {
+     "id": "C-005",
+     "title": "Scheduled limit: baseline cart (Schedule button visible)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1607-62166.png"
+    },
+    {
+     "id": "C-006",
+     "title": "Maximum number of scheduled deliveries reached: disabled button",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1607-63725.png"
+    },
+    {
+     "id": "C-007",
+     "title": "Scheduled limit toast",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1607-65178.png"
+    },
+    {
+     "id": "C-008",
+     "title": "New case: unserviceable items auto-removed",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/cart/2757-66479.png"
+    },
+    {
+     "id": "C-009",
+     "title": "New case: some items not available, Schedule Order",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/cart/2757-71743.png"
+    },
+    {
+     "id": "C-010",
+     "title": "New case: unserviceable due to rain",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/cart/2757-76433.png"
+    },
+    {
+     "id": "C-011",
+     "title": "New case: items cannot be delivered",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/cart/2800-65107.png"
+    },
+    {
+     "id": "C-012",
+     "title": "Delivery scheduled on cart",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/2757-69363.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-ftb-schedule-picker-flow",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "ftb-schedule-picker-flow",
+   "title": "FTB handover: schedule picker, skip, view-items, no-slots, non-schedulable",
+   "summary": "The Schedule Delivery picker screens inside FTB: the shipment picker with instant vs scheduled choice, loading and error states, the Don't Schedule (skip) path with a confirmation sheet, View Items, No Slots Available and non-schedulable cart or shipment.",
+   "status": "dev-ready",
+   "hash": "#embed/flow/cart/ftb-schedule-picker-flow",
+   "caseHash": "#embed/flow/cart/ftb-schedule-picker-flow?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-013",
+     "title": "Cart with unserviceable store: Schedule for when we open",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/960-78080.png"
+    },
+    {
+     "id": "C-014",
+     "title": "Picker: loading shimmer",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1068-157404.png"
+    },
+    {
+     "id": "C-015",
+     "title": "Picker: schedule selected",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/968-80121.png"
+    },
+    {
+     "id": "C-016",
+     "title": "Picker: instant unavailable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/533-39300.png"
+    },
+    {
+     "id": "C-017",
+     "title": "Picker: unable to load slots",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/968-80709.png"
+    },
+    {
+     "id": "C-018",
+     "title": "Don't schedule: instant selected",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-019",
+     "title": "Returning user: unavailable items collapsed (Show more)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1206-61557.png"
+    },
+    {
+     "id": "C-020",
+     "title": "Returning user: to be delivered later",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-021",
+     "title": "Schedule reset: cart",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1206-61776.png"
+    },
+    {
+     "id": "C-022",
+     "title": "Confirm schedule: multi-shipment picker",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-86466.png"
+    },
+    {
+     "id": "C-023",
+     "title": "Skip flow: popup with Proceed to Payment",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/2046-105240.png"
+    },
+    {
+     "id": "C-024",
+     "title": "Skip flow: popup acknowledgement",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-025",
+     "title": "Skip flow: shipments 2 of 2 scheduled (6 items)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-026",
+     "title": "View items: shipment contents",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-027",
+     "title": "No slots available",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-87857.png"
+    },
+    {
+     "id": "C-028",
+     "title": "Non-schedulable cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-029",
+     "title": "Non-schedulable shipment",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1297-182512.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-order-placing-and-tracking",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "order-placing-and-tracking",
+   "title": "Order placing, payment and scheduled-order tracking",
+   "summary": "From pay to the order tracking (OTP) screens: payment loading and success, then tracking for a scheduled order for tomorrow, today and a regular order, plus ETA types. Dev Ready 2 repeats the tracking screens in an OTP section.",
+   "status": "dev-ready",
+   "hash": "#embed/flow/cart/order-placing-and-tracking",
+   "caseHash": "#embed/flow/cart/order-placing-and-tracking?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-030",
+     "title": "Payment processing",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-031",
+     "title": "Order confirmed",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-67116.png"
+    },
+    {
+     "id": "C-032",
+     "title": "Tracking: scheduled for tomorrow",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-68127.png"
+    },
+    {
+     "id": "C-033",
+     "title": "Tracking: scheduled for today",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-73815.png"
+    },
+    {
+     "id": "C-034",
+     "title": "Tracking: regular order",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-70068.png"
+    },
+    {
+     "id": "C-035",
+     "title": "Tracking final UI",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-036",
+     "title": "Dev Ready 2 OTP: Order Scheduled",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/222-81344.png"
+    },
+    {
+     "id": "C-037",
+     "title": "Dev Ready 2 OTP: Scheduled order arriving",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/222-83285.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-touchpoints-orders-home-pdp",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "touchpoints-orders-home-pdp",
+   "title": "Touchpoints: My Orders, homepage strip, PDP and cancel flow",
+   "summary": "Entry points and visibility of scheduled orders outside the cart: the Orders page with Cancel Scheduled Order flow, the homepage strip (regular vs scheduled) and the PDP \"schedule for later\" info. The same four sections exist in M1 Dev Ready and Dev Ready 2.",
+   "status": "dev-ready",
+   "hash": "#embed/flow/cart/touchpoints-orders-home-pdp",
+   "caseHash": "#embed/flow/cart/touchpoints-orders-home-pdp?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-038",
+     "title": "PDP: schedule for later info",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1241-138770.png"
+    },
+    {
+     "id": "C-039",
+     "title": "Orders page: scheduled order",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-137236.png"
+    },
+    {
+     "id": "C-040",
+     "title": "Orders page (Dev Ready 2): scheduled order",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-041",
+     "title": "Cancel scheduled order: confirm sheet",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-042",
+     "title": "Order cancelled",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-043",
+     "title": "Homepage strip: regular order",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-137846.png"
+    },
+    {
+     "id": "C-044",
+     "title": "Homepage strip: scheduled order",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-137849.png"
+    },
+    {
+     "id": "C-045",
+     "title": "Homepage strip (Dev Ready 2): scheduled order",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-046",
+     "title": "Order scheduled bottom button",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-047",
+     "title": "Orders page: returns and replacement history on the same list",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/1222-137236.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-cart-composition-ds-ss",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "cart-composition-ds-ss",
+   "title": "Cart composition by Dark Store / Super Store availability",
+   "summary": "Seven blocks of cart + schedule-page frames keyed by DH and SS availability (checkmark = available, red square = unavailable). DH shows Delivering in 10 mins, SS shows Delivering in 22 mins. Experiments 1 and 2 differ in the pay button (disabled vs replaced with a schedule button). The same section is repeated in Dev Ready 2 (222:62803).",
+   "status": "dev-ready",
+   "hash": "#embed/flow/cart/cart-composition-ds-ss",
+   "caseHash": "#embed/flow/cart/cart-composition-ds-ss?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-048",
+     "title": "DH ok, SS ok: cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-049",
+     "title": "DH ok, SS ok: with intro pop-up",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-050",
+     "title": "DH ok, SS ok: schedule page",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-051",
+     "title": "DH ok, SS unavailable: cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-052",
+     "title": "DH ok, SS unavailable: scheduled",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-053",
+     "title": "DH ok, SS unavailable: wishlisted",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-054",
+     "title": "DH unavailable, SS ok: cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-055",
+     "title": "DH unavailable, SS ok: scheduled",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-056",
+     "title": "DH unavailable, SS ok: wishlist",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-057",
+     "title": "Both unavailable, Experiment 1 (pay button disabled): cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-058",
+     "title": "Both unavailable, Experiment 1: unserviceable copy",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-059",
+     "title": "Both unavailable, Experiment 1: scheduled",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-060",
+     "title": "Both unavailable, Experiment 2 (pay replaced with schedule button): cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-061",
+     "title": "Both unavailable, Experiment 2: Return frame",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "C-062",
+     "title": "Both unavailable, Experiment 2: scheduled",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-063",
+     "title": "SS unavailable only (Experiment 1): cart",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-064",
+     "title": "SS unavailable only (Experiment 1): scheduled",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-bxgy-offer-combined-cart",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "bxgy-offer-combined-cart",
+   "title": "BxGy offer on a combined cart (MRP and SP cases)",
+   "summary": "On hold. How Buy X Get Y offers (Buy 2/3 Get 10% off) are discovered, explained and applied on a combined (split into 2 shipments) cart, including pre/post selection and the MRP vs SP quantity rules.",
+   "status": "on-hold",
+   "hash": "#embed/flow/cart/bxgy-offer-combined-cart",
+   "caseHash": "#embed/flow/cart/bxgy-offer-combined-cart?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-065",
+     "title": "Cart before BxGy selection",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17830.png"
+    },
+    {
+     "id": "C-066",
+     "title": "Cart after BxGy selection (post selection)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17729.png"
+    },
+    {
+     "id": "C-067",
+     "title": "Cart add-ons: offer applied",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17371.png"
+    },
+    {
+     "id": "C-068",
+     "title": "Cart add-ons: offer not yet unlocked",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17630.png"
+    },
+    {
+     "id": "C-069",
+     "title": "Offer bottom sheet: savings summary",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17296.png"
+    },
+    {
+     "id": "C-070",
+     "title": "Offer bottom sheet: collapsed details",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17472.png"
+    },
+    {
+     "id": "C-071",
+     "title": "Offer bottom sheet: expanded details",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17522.png"
+    },
+    {
+     "id": "C-072",
+     "title": "Offer bottom sheet: offer applied",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17582.png"
+    },
+    {
+     "id": "C-073",
+     "title": "MRP/SP rule: Buy 2 get 10% off",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-074",
+     "title": "MRP/SP rule: consumer bought 6 items in the offer",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-075",
+     "title": "MRP/SP rule: Buy 2 at MRP, 5 items bought",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-076",
+     "title": "MRP/SP illustration: quantity 1 + offer applied",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-17935.png"
+    },
+    {
+     "id": "C-077",
+     "title": "MRP/SP illustration: quantity 2",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18034.png"
+    },
+    {
+     "id": "C-078",
+     "title": "MRP/SP illustration: 1 at 10% off row",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18134.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-swap-save-and-add-on-constructs",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "swap-save-and-add-on-constructs",
+   "title": "Swap n Save, Discounted Add-ons and Add n Save on a combined cart",
+   "summary": "On hold. Other offer constructs shown on the combined shipment cart: no-offer baseline, Swap & Save (swap items, items swapped successfully), Discounted Add-ons (special price add-ons, edit) and Add n Save. \"Other Constructs (on top of combined cart)\" repeats the same structure.",
+   "status": "on-hold",
+   "hash": "#embed/flow/cart/swap-save-and-add-on-constructs",
+   "caseHash": "#embed/flow/cart/swap-save-and-add-on-constructs?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-079",
+     "title": "Combined shipments: no offer",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18243.png"
+    },
+    {
+     "id": "C-080",
+     "title": "Swap n Save: strip",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18342.png"
+    },
+    {
+     "id": "C-081",
+     "title": "Swap n Save: swap sheet",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18832.png"
+    },
+    {
+     "id": "C-082",
+     "title": "Swap n Save: items swapped successfully",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18930.png"
+    },
+    {
+     "id": "C-083",
+     "title": "Swap n Save: after swap",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19028.png"
+    },
+    {
+     "id": "C-084",
+     "title": "Discounted add-ons: strip",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18440.png"
+    },
+    {
+     "id": "C-085",
+     "title": "Discounted add-ons: Add 2 & Get 10% off",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18538.png"
+    },
+    {
+     "id": "C-086",
+     "title": "Discounted add-ons: selected",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18636.png"
+    },
+    {
+     "id": "C-087",
+     "title": "Add n Save: edit special price add-ons",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-18734.png"
+    },
+    {
+     "id": "C-088",
+     "title": "Other constructs on top of combined cart: Swap n Save",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-089",
+     "title": "Other constructs: Discounted add-ons",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "C-090",
+     "title": "Other constructs: Add n Save edit",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-combined-cart-unserviceable-and-slot-visibility",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "combined-cart-unserviceable-and-slot-visibility",
+   "title": "Unserviceable items in combined cart; slot visibility; schedule screen association",
+   "summary": "On hold. Problem statements: (1) unserviceable items in a combined cart: tag per item (approach 1) vs grouped at top (approach 2); (2) delivery slot visibility at item level on cart; (3) association between cart and schedule screen (WIP, make images the hero).",
+   "status": "on-hold",
+   "hash": "#embed/flow/cart/combined-cart-unserviceable-and-slot-visibility",
+   "caseHash": "#embed/flow/cart/combined-cart-unserviceable-and-slot-visibility?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-091",
+     "title": "Swap n Save combined shipment: Swap offer",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-16162.png"
+    },
+    {
+     "id": "C-092",
+     "title": "Swap n Save combined shipment: edit add-ons",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-16262.png"
+    },
+    {
+     "id": "C-093",
+     "title": "Swap n Save combined shipment: unserviceable tag",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-16392.png"
+    },
+    {
+     "id": "C-094",
+     "title": "Unserviceable approach 1: tag (sorted by offer or order added)",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/cart/9381-16545.png"
+    },
+    {
+     "id": "C-095",
+     "title": "Unserviceable approach 2: grouped at the top",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/cart/9381-16697.png"
+    },
+    {
+     "id": "C-096",
+     "title": "Slot tag at item level (consistent across cart and schedule)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-16858.png"
+    },
+    {
+     "id": "C-097",
+     "title": "Schedule screen: images as hero",
+     "designStatus": "wip",
+     "thumb": "flow/map/thumbs/cart/9381-17052.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-unservisability-cases",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "unservisability-cases",
+   "title": "Unserviceability cases: OOS, primary / secondary / both stores, with and without schedule",
+   "summary": "On hold. Matrix of cart states (Multiple Shipment frames) for out of stock and unserviceable stores, each without and with a Schedule path. The section note also lists open items: collapsed and open states with 1 vs >1 item, weight, order limit, chevron/cross/schedule handling, large text.",
+   "status": "on-hold",
+   "hash": "#embed/flow/cart/unservisability-cases",
+   "caseHash": "#embed/flow/cart/unservisability-cases?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-098",
+     "title": "Out of stock",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19938.png"
+    },
+    {
+     "id": "C-099",
+     "title": "Unlabelled variant: 3 items can’t be delivered",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/cart/9381-19997.png"
+    },
+    {
+     "id": "C-100",
+     "title": "Primary store unserviceable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20006.png"
+    },
+    {
+     "id": "C-101",
+     "title": "Primary store unserviceable, with schedule",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20022.png"
+    },
+    {
+     "id": "C-102",
+     "title": "Secondary store unserviceable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19947.png"
+    },
+    {
+     "id": "C-103",
+     "title": "Secondary store unserviceable, with schedule",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19963.png"
+    },
+    {
+     "id": "C-104",
+     "title": "Both stores unserviceable",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19979.png"
+    },
+    {
+     "id": "C-105",
+     "title": "Both stores unserviceable, with schedule",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-19988.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-cart-oos-limit-and-edge-cases",
+   "kind": "flow",
+   "cluster": "cart",
+   "flowId": "oos-limit-and-edge-cases",
+   "title": "Order limits, high demand, rain, errors and store closed (OOS / weight / edge handling)",
+   "summary": "On hold. Cart-level blockers: order limit breached, multiple orders placed, high demand/surcharge, rain, technical error, store closed, plus the rain case combined with a scheduled shipment. The \"Edge Cases\" section (9381:20168) is a duplicate of this section.",
+   "status": "on-hold",
+   "hash": "#embed/flow/cart/oos-limit-and-edge-cases",
+   "caseHash": "#embed/flow/cart/oos-limit-and-edge-cases?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "C-106",
+     "title": "Order limit breached",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20056.png"
+    },
+    {
+     "id": "C-107",
+     "title": "Stand still (annotation) shows order-limit copy",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/cart/9381-20065.png"
+    },
+    {
+     "id": "C-108",
+     "title": "High demand / surcharge",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20074.png"
+    },
+    {
+     "id": "C-109",
+     "title": "Rain: deliveries paused",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20083.png"
+    },
+    {
+     "id": "C-110",
+     "title": "Cart throwing error",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20092.png"
+    },
+    {
+     "id": "C-111",
+     "title": "Rain with schedule available",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20101.png"
+    },
+    {
+     "id": "C-112",
+     "title": "Rain: Forgot something? variant",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20116.png"
+    },
+    {
+     "id": "C-113",
+     "title": "Multiple orders placed",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20131.png"
+    },
+    {
+     "id": "C-114",
+     "title": "Store closed",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/cart/9381-20140.png"
+    }
+   ]
+  }
+ ]
+}

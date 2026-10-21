@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "postinstall": "node tools/agentation/restore-sqlite.mjs",
     "check:figma": "node tools/figma-fidelity/check.mjs",
+    "sync:sd-playground": "node tools/sync-sd-playground.mjs",
     "export:reel": "node tools/export-reel.mjs",
     "qa:stella": "node scripts/qaStella.mjs",
     "qa:prompts": "node scripts/qaPromptLibrary.mjs"

@@ -165,6 +165,7 @@ const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
 import { scheduledDeck } from "./decks/scheduledDelivery.deck";
+import { PlaygroundEmbed, sdFigure } from "./figures/sdStory";
 import { awayAgentDeck } from "./decks/awayAgent.deck";
 import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
@@ -1750,7 +1751,7 @@ function SectionFigure({
   variant,
   bare,
 }) {
-  const Fig = fig ? figures[fig] : null;
+  const Fig = fig ? (fig.startsWith("sd:") ? sdFigure(fig.slice(3)) : figures[fig]) : null;
   const slide = variant === "slide";
   // Whiteboard asset type: a section sets `whiteboard: "<src>"` or
   // `{ src, alt, caption }` — any image on a hand-drawn whiteboard easel that
@@ -1797,7 +1798,9 @@ function SectionFigure({
         {/* Live figures resolve their own theme from the `dark` class on
             documentElement (ds/hooks useDsTheme), so an embedded product window
             follows the page it is embedded in instead of asserting dark. */}
-        <Fig />
+        <Suspense fallback={null}>
+          <Fig />
+        </Suspense>
       </div>
     );
   }
@@ -3001,6 +3004,47 @@ const caseStudies = {
           "Each pair below is a line that was struck and the line that replaced it, with where the change came from. The product-copy comments are paraphrased from the design file's own review history, not quoted.",
         ],
         figNext: "schedCopyProcess",
+        divider: true,
+      },
+      // Synced playground embeds (src/figures/sdStory, docs/sd-story-sync.md): the live prototypes behind the full-flow story
+      {
+        h: "Every state, running",
+        nav: "Live states",
+        group: "Process",
+        tldr: "The slot picker is a live component, not a recording. All eight designed states sit side by side below.",
+        p: [
+          "The picker holds a lot, so I drew every state it can be in: Instant selected, Instant unavailable, Schedule unavailable, past slots in the morning, a full evening, the next-day pick and tomorrow's full grid. Then I built them as real components and ran them.",
+          "These frames are the playground's own components, embedded. Click one to use it.",
+        ],
+        fig: "sd:states",
+        figBare: true,
+        figure: "All eight states, side by side. Click a frame to interact; Escape hands the keyboard back.",
+        divider: true,
+      },
+      {
+        h: "The returns family",
+        nav: "Returns, live",
+        group: "Process",
+        tldr: "Exchange and return reuse the slot picker for pickup, so one pattern now does two jobs.",
+        p: [
+          "One request can exchange some items and return others. Pick the items, say what you want for each, and the review shows two pickup partners, the refund method and a pickup time. That pickup time is the slot picker again.",
+        ],
+        fig: "sd:flow-returns-scheduled-exchange-return?case=SE-007",
+        figBare: true,
+        figure: "Exchange and return in one request, running. Tap through the cases to follow the flow.",
+        divider: true,
+      },
+      {
+        h: "All 326 cases",
+        nav: "The full map",
+        group: "Process",
+        tldr: "Thirty-two flows and 326 cases are mapped from the design file, and every one has a screen you can open.",
+        p: [
+          "Schedule Delivery has 111 cases, returns and exchange 101, and cart and offers 114. Dev-ready flows sit next to ones still in progress, on hold or exploring, and the file's own status travels with each one. A few research and asset cases are small viewers rather than full screens.",
+        ],
+        fig: "sd:map",
+        figBare: true,
+        figure: "The master map. Filter by cluster, flow or status.",
         divider: true,
       },
       {
@@ -9469,6 +9513,39 @@ function Slide({ slide, onGoto, idMap }) {
           </div>
         </div>
       );
+
+    // Live, synced prototype from the design playground (src/figures/sdStory, docs/sd-story-sync.md).
+    case "playground": {
+      const wide = slide.layout === "wide";
+      return (
+        <div className={`slide slide--playground${wide ? " is-wide" : ""}`}>
+          <div className="slide__text">
+            {slide.kicker && <p className="slide__eyebrow">{slide.kicker}</p>}
+            {slide.h && <h2 className="slide__h">{slide.h}</h2>}
+            {(slide.p || []).map((t, k) => (
+              <p key={k}>{t}</p>
+            ))}
+            {slide.ul && (
+              <ul>
+                {slide.ul.map((t, k) => (
+                  <li key={k}>{t}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Suspense fallback={null}>
+            <PlaygroundEmbed
+              id={slide.embed}
+              caseId={slide.caseId}
+              state={slide.state}
+              fit={slide.fit || (wide ? "fill" : "scale")}
+              frame={slide.frameStyle || "card"}
+              caption={slide.figure}
+            />
+          </Suspense>
+        </div>
+      );
+    }
 
     case "phaseDivider":
       return (
