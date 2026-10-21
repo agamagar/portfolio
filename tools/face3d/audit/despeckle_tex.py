@@ -9,7 +9,8 @@ import sys
 import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
-THR = 11
+import os
+THR = int(os.environ.get("THR", 11))
 SZ = 5
 for f in sys.argv[1:]:
     im = Image.open(f); mode = im.mode
