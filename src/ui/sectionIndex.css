@@ -36,7 +36,7 @@
 .article__index-glow {
   position: absolute;
   left: -14px; top: 0; bottom: 0; width: 40px;
-  border-radius: 50%;
+  border-radius: 100px;
   background:
     radial-gradient(closest-side, rgba(150, 116, 219, 0.9), rgba(150, 116, 219, 0) 100%),
     linear-gradient(180deg, rgba(255, 122, 217, 0.6), rgba(150, 116, 219, 0.2) 40%, rgba(91, 140, 255, 0.6));
@@ -47,7 +47,7 @@
 .article__index-glass {
   position: absolute;
   left: 0; width: 12px; top: 2px; bottom: 2px;
-  border-radius: 999px;
+  border-radius: 100px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)), var(--glass-film);
   -webkit-backdrop-filter: blur(18px) saturate(2.4);
   backdrop-filter: blur(18px) saturate(2.4);
@@ -60,7 +60,7 @@
   left: 50%; top: 6px; bottom: 6px;
   width: 2px;
   margin-left: -1px;
-  border-radius: 2px;
+  border-radius: 100px;
   background: #9674db;
   box-shadow: 0 0 10px 3px rgba(150, 116, 219, 0.6);
 }
@@ -92,7 +92,7 @@ html.dark .article__index-glow { opacity: 0.8; }
   height: 2.375rem;
   padding: 0 0.9rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 100px;
   font: inherit;
   font-size: 0.78125rem;
   font-weight: 520;
@@ -152,7 +152,7 @@ html.dark .article__index-glow { opacity: 0.8; }
 /* the one active state: a slim 6px glass pill at the label's left, a #9674db line inside it */
 .cis__sheet li button.is-active::after {
   content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 12px;
-  border-radius: 999px;
+  border-radius: 100px;
   background-color: var(--glass-film);
   background-image: linear-gradient(#9674db, #9674db), linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1));
   background-size: 2px calc(100% - 12px), 100% 100%; background-position: center, center; background-repeat: no-repeat;
@@ -161,7 +161,7 @@ html.dark .article__index-glow { opacity: 0.8; }
 }
 .cis__sheet li button.is-active::before {
   content: ""; position: absolute; left: -14px; top: 0; bottom: 0; width: 40px; z-index: -1;
-  border-radius: 50%; filter: blur(9px); opacity: 0.7; pointer-events: none;
+  border-radius: 100px; filter: blur(9px); opacity: 0.7; pointer-events: none;
   background:
     radial-gradient(closest-side, rgba(150, 116, 219, 0.9), rgba(150, 116, 219, 0) 100%),
     linear-gradient(180deg, rgba(255, 122, 217, 0.6), rgba(150, 116, 219, 0.2) 40%, rgba(91, 140, 255, 0.6));
