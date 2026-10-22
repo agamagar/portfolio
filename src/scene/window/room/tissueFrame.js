@@ -11,7 +11,7 @@
 // on the wall (z = 0), the picture facing +z.
 
 import * as THREE from "three/webgpu";
-import { Batch, boxGeo } from "./geom.js";
+import { Batch, boxGeo, bezelFrameGeo } from "./geom.js";
 
 // a tiny seeded random, so the sketch and the crinkles are identical every load
 function rng(seed) {
@@ -137,11 +137,13 @@ export function buildTissueFrame(mats, parent, { size = 0.3, tiltDeg = 0 } = {})
   const matM = new THREE.MeshStandardMaterial({ name: "frameMat", color: 0xfbfaf7, roughness: 0.92 });
   const B = new Batch("tissueFrame");
   const h = size / 2, bar = 0.016, depth = 0.022;
-  // the four bars of the frame, mitred look not needed at this size
-  B.add(frameM, boxGeo(-h, h, h - bar, h, 0, depth, "x"));
-  B.add(frameM, boxGeo(-h, h, -h, -h + bar, 0, depth, "x"));
-  B.add(frameM, boxGeo(-h, -h + bar, -h + bar, h - bar, 0, depth, "y"));
-  B.add(frameM, boxGeo(h - bar, h, -h + bar, h - bar, 0, depth, "y"));
+  // a stepped moulding with mitred, chamfered corners (the shared bezel ring): a tall
+  // outer rim, then a lower inner lip in a slightly lighter satin black that catches
+  // the light along the sight edge, like a real wood-and-paint picture frame
+  const lipM = new THREE.MeshStandardMaterial({ name: "frameLip", color: 0x34302d, roughness: 0.38, metalness: 0.15 });
+  const rim = 0.0105, lip = 0.0055;
+  B.add(frameM, bezelFrameGeo({ ow: size, oh: size, iw: size - 2 * rim, ih: size - 2 * rim, z0: 0, z1: depth, r: 0.0006, ri: 0.0003, ch: 0.0016 }));
+  B.add(lipM, bezelFrameGeo({ ow: size - 2 * (rim - 0.0005), oh: size - 2 * (rim - 0.0005), iw: size - 2 * bar, ih: size - 2 * bar, z0: 0, z1: depth - 0.0045, r: 0.0003, ri: 0.0003, ch: 0.0008 }));
   // the white mat, set a little back inside the frame
   B.add(matM, boxGeo(-h + bar, h - bar, -h + bar, h - bar, 0, depth - 0.006, "y"));
   B.build(group);
