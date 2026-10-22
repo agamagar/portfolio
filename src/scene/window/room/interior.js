@@ -11,7 +11,7 @@ import { buildCar } from "./car.js";
 import { buildBike } from "./bike.js";
 import { buildScooter } from "./scooter.js";
 import { buildBobblehead } from "./bobblehead.js";
-import { contactShadow, footprint } from "./propKit.js";
+import { contactShadow, footprint, tubeAlong } from "./propKit.js";
 import { buildVrHeadset } from "./vrHeadset.js";
 import { buildTissueFrame } from "./tissueFrame.js";
 import { makeCodeScreen } from "./codeScreen.js";
@@ -189,7 +189,17 @@ export function buildInterior(P, ctx, mats, root, win) {
 
   // --- the desk ---
   const DK = R.desk;
-  S.add(m.desk, boxGeo(k(DK.x0), k(DK.x1), k(DK.y) - 0.03, k(DK.y), k(f), DK.zFar, "x"));
+  // the slab stops 1.5 cm short of its front edge, and a half-round bullnose (the
+  // same wood, its grain running along x) closes it: the edge catches a highlight
+  // like a real worktop's instead of a razor-sharp corner
+  const BN = 0.015;
+  S.add(m.desk, boxGeo(k(DK.x0), k(DK.x1), k(DK.y) - 0.03, k(DK.y), k(f), DK.zFar - BN, "x"));
+  {
+    const len = k(DK.x1) - k(DK.x0);
+    const bn = new THREE.CylinderGeometry(BN, BN, len, 20, 1);
+    bn.rotateZ(Math.PI / 2);
+    S.add(m.desk, bn, M.T((k(DK.x0) + k(DK.x1)) / 2, k(DK.y) - BN, DK.zFar - BN));
+  }
 
   // --- the BenQ MA270UP: screen (anchor), bezel, body, rear, pole arm ---
   const MN = R.monitor;
@@ -281,6 +291,17 @@ export function buildInterior(P, ctx, mats, root, win) {
       PB.add(m.steelDark, rboxGeo(-wdt / 2 + 0.01, wdt / 2 - 0.01, -base - 0.004, -base + 0.006, -0.1, 0.03, 0.004)); // plate
       PB.add(m.steelDark, rboxGeo(-0.05, 0.05, -base + 0.006, -0.012, -0.048, -0.028, 0.004)); // web
       PB.add(m.steelDark, rboxGeo(-wdt / 2 + 0.004, wdt / 2 - 0.004, -0.012, -0.004, -0.056, 0.012, 0.003)); // cradle
+      // four rubber feet under the plate, the cradle's hinge caps at both ends, and the
+      // power lead dropping from the panel's rear to the desk edge
+      for (const sx of [-1, 1]) for (const z of [-0.085, 0.015]) {
+        PB.add(m.monBlack, new THREE.CylinderGeometry(0.007, 0.0075, 0.004, 12), M.T(sx * (wdt / 2 - 0.025), -base - 0.006, z), { cast: false });
+      }
+      for (const sx of [-1, 1]) {
+        const cap = new THREE.CylinderGeometry(0.008, 0.008, 0.003, 14);
+        cap.rotateZ(Math.PI / 2);
+        PB.add(m.steelDark, cap, M.T(sx * (wdt / 2 - 0.0025), -0.008, -0.022));
+      }
+      PB.add(m.monBlack, tubeAlong([[0.04, 0.05, -0.05], [0.045, 0.0, -0.06], [0.05, -base * 0.5, -0.075], [0.06, -base - 0.002, -0.09], [0.12, -base - 0.002, -0.13]], 0.0018, 18, 5), null, { cast: false });
     }
     PB.build(g);
     // its screen: an AI code editor open (2026-09-27, Agam), codeScreen.js; the cursor
