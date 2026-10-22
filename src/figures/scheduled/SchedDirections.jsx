@@ -1,5 +1,6 @@
 import { useReducedMotion, useFitScale } from "../ds/hooks";
 import { FigmaLinks } from "./FigmaShot";
+import PhoneFrame from "../ds/IphoneFrame";
 import "./scheduled.css";
 
 // Design Mode: two directions, and the sentence that decided them. A 2-up of the
@@ -17,7 +18,7 @@ const ICheck = () => (<svg viewBox="0 0 24 24" width="13" height="13" fill="none
 
 export default function SchedDirections() {
   useReducedMotion();
-  const { fitRef, frameRef } = useFitScale(760, 1.06);
+  const { fitRef, frameRef } = useFitScale(820, 1.06);
 
   return (
     <div className="ds-fit" ref={fitRef}>
@@ -25,21 +26,19 @@ export default function SchedDirections() {
         <div className="sd-stage sd-stage--cmp">
           <div className="sdcmp">
             <span className="sdcmp__tag" data-kind="killed"><IX /> Rejected</span>
-            <div className="sdcmp__screen"><img src={KILLED} alt="The tabbed flow: a tab per shipment, so picking a slot in one hides the others." draggable={false} /></div>
+            <PhoneFrame className="sdcmp__screen" width={260} screen={KILLED} alt="The tabbed flow: a tab per shipment, so picking a slot in one hides the others." enter={false} />
             <div className="sdcmp__note"><b className="sdcmp__note-t">Tabbed per shipment</b><span className="sdcmp__note-s">Choosing one slot hides the rest, so trust leaks away.</span></div>
           </div>
 
           <div className="sdcmp">
             <span className="sdcmp__tag" data-kind="explored"><IX /> Explored</span>
-            <div className="sdcmp__screen">
-              <img src={SHEET} alt="The bottom-sheet direction: the slot picker opens as a sheet over the cart." draggable={false} />
-            </div>
+            <PhoneFrame className="sdcmp__screen" width={260} screen={SHEET} alt="The bottom-sheet direction: the slot picker opens as a sheet over the cart." enter={false} />
             <div className="sdcmp__note"><b className="sdcmp__note-t">Bottom sheet</b><span className="sdcmp__note-s">The slot picker rises over the cart, so the other shipments&rsquo; choices sit behind it.</span><FigmaLinks k="dir-sheet" /></div>
           </div>
 
           <div className="sdcmp">
             <span className="sdcmp__tag" data-kind="shipped"><ICheck /> Shipped</span>
-            <div className="sdcmp__screen"><img src={SHIPPED} alt="The single-page listing: every shipment and its chosen slot stay visible at once." draggable={false} /></div>
+            <PhoneFrame className="sdcmp__screen" width={260} screen={SHIPPED} alt="The single-page listing: every shipment and its chosen slot stay visible at once." enter={false} />
             <div className="sdcmp__note"><b className="sdcmp__note-t">One page</b><span className="sdcmp__note-s">Every shipment and its slot stay on screen, so the order reads at a glance.</span></div>
           </div>
         </div>
