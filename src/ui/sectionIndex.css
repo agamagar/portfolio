@@ -52,7 +52,7 @@
   -webkit-backdrop-filter: blur(18px) saturate(2.4);
   backdrop-filter: blur(18px) saturate(2.4);
   box-shadow: var(--glass-edge), inset 1px 0 0 rgba(255, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.55);
-  overflow: hidden;
+  overflow: visible;
 }
 .article__index-glass::after {
   content: "";
@@ -172,3 +172,16 @@ html.dark .article__index-glow { opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) {
   .cis__pill, .cis__scrim, .cis__sheet { transition: none; animation: none; }
 }
+
+/* Room for the pill's glow and dispersion: the rail scrolls vertically (so x would clip at
+   its edge), so it gets padding instead of clipping: shifted left and widened by the same
+   amount, so the labels and the line stay exactly where they were. */
+@media (min-width: 1100px) {
+  .article__index.article__index--spy:not(.article__index--flow) {
+    left: calc(1.5rem - 20px);
+    width: calc(164px + 40px);
+    padding: 16px 20px;
+    margin: -16px 0;
+  }
+}
+.article__index.article__index--flow { padding: 16px 20px; margin: -16px -20px; }
