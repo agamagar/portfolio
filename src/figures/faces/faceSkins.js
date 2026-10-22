@@ -315,7 +315,11 @@ void main(){
   // skin started as: always clean at any angle) and the two are crossfaded: front on, the photograph; profile, the drawn skin.
   int m0 = int(uMode + 0.5);
   vec3 col = vec3(0.0), colFit = vec3(0.0);
-  float tb = (m0 == 10 && uDrawn >= 0.0) ? smoothstep(0.4, 0.9, uTurn) : 0.0;
+  // (the far half of the head, past the photo's own side, goes over to the drawn look early: the photo has no honest texels for it, and
+  // it was where the doubled eye, doubled nose and glassy temple showed at the first few degrees of turn)
+  float hw = max(uEarBox.x / 0.69, 0.1);
+  float farHalf = smoothstep(-0.12, 0.2, vRP.x / hw);
+  float tb = (m0 == 10 && uDrawn >= 0.0) ? max(smoothstep(0.4, 0.9, uTurn), smoothstep(0.06, 0.3, uTurn) * farHalf) : 0.0;
   for (int pass = 0; pass < 2; pass++) {
   if (pass == 1 && tb <= 0.0) break;
   int m = pass == 0 ? m0 : int(uDrawn + 0.5);
