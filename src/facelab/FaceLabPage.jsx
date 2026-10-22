@@ -11,6 +11,7 @@ import { FW, FH, SKIN_IDS } from "../figures/faces/morph/morphRenderer";
 import { skinById } from "../figures/faces/faceSkins";
 import { resolveFace, PRESETS as FACES } from "../figures/faces/features/core";
 import FeaturesPanel from "../figures/faces/features/FeaturesPanel";
+import { sanitize } from "../figures/faces/features/describe";
 import "./faceLab.css";
 
 const SKINS = SKIN_IDS.map((id) => [id, id === "plast" ? "Face system (soft clay)" : skinById(id).label]); // every rig the hero's renderer can wear (loaded on first use)
@@ -215,11 +216,17 @@ export default function FaceLabPage({ onBack }) {
   const shared = useShared();
   const [ids, setIds] = useState([1, 2, 3, 4]);
   const next = useRef(5);
+  // /face-lab?skin=<id>#f=<token>: the first cell opens on that skin (and face), e.g. from the /faces gallery
+  const [fromUrl, setFromUrl] = useState(() => { const k = new URLSearchParams(location.search).get("skin"); return SKINS.some(([id]) => id === k) ? { skin: k } : null; });
+  useEffect(() => { // #face=<base64url JSON>: the full face-system config (the gallery passes it; the face maker's own token drops headwear)
+    const t = (location.hash.match(/[#&]face=([A-Za-z0-9_-]+)/) || [])[1];
+    if (t && fromUrl) try { setFromUrl((u) => ({ ...u, face: sanitize(JSON.parse(atob(t.replace(/-/g, "+").replace(/_/g, "/")))) })); } catch { /* bad link: ignore */ }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const seeds = useMemo(() => [
-    { skin: "clay", emote: "grin" }, { skin: "noir", emote: "surprised" },
+    fromUrl || { skin: "clay", emote: "grin" }, { skin: "noir", emote: "surprised" },
     { skin: "clay", emote: "cycle" }, { skin: "noir", emote: "lookGrin" },
     { skin: "clay", emote: "think" }, { skin: "noir", emote: "laugh" },
-  ], []);
+  ], [fromUrl]);
   const setCount = useCallback((n) => setIds((cur) => {
     if (n < cur.length) return cur.slice(0, n);
     const out = [...cur]; while (out.length < n) out.push(next.current++); return out;
@@ -233,7 +240,7 @@ export default function FaceLabPage({ onBack }) {
         <span className="fl-note">One shared WebGL context · off-screen cells pause · dev/private builds only</span>
       </header>
       <div className="fl-grid">
-        {ids.map((id, i) => <Cell key={id} id={id} shared={shared} initial={seeds[i % seeds.length]} onRemove={() => ids.length > 2 && setIds(ids.filter((x) => x !== id))} />)}
+        {ids.map((id, i) => <Cell key={id + (i === 0 && fromUrl?.face ? "f" : "")} id={id} shared={shared} initial={seeds[i % seeds.length]} onRemove={() => ids.length > 2 && setIds(ids.filter((x) => x !== id))} />)}
       </div>
     </main>
   );

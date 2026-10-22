@@ -68,7 +68,7 @@ const ThreeLinesLab = lazyFig(() => import("./figures/threeLines/ThreeLinesLab")
 const PixelMascotLab = lazyFig(() => import("./figures/pixelMascot/PixelMascotLab"));
 const FaceLabPage = (PRIVATE_SITE || import.meta.env.DEV) ? lazyFig(() => import("./facelab/FaceLabPage")) : null; // /face-lab, face-animation variants side by side (dev + private only)
 const FaceMakerPage = lazyFig(() => import("./faceMaker/FaceMakerPage")); // /face-maker, the public 3D face maker (PUBLIC route: no private-only code)
-const FaceLab = lazyFig(() => import("./figures/faces/FaceLab")); // /faces, the face-style playground (2026-10-08)
+const FacesPage = lazyFig(() => import("./facesGallery/FacesPage")); // /faces, the one gallery of every face (public; was the FaceLab playground)
 const StellaLab = lazyFig(() => import("./figures/stella/StellaLab"));
 import "./hello/hello.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
 const Hello = lazyFig(() => import("./hello/Hello"));
@@ -11940,7 +11940,7 @@ export default function App() {
       ) : isFaceMaker ? (
         <Guard name="face-maker"><FaceMakerPage onBack={() => navigate("/")} /></Guard>
       ) : isFaces ? (
-        <FaceLab onBack={() => navigate("/")} />
+        <FacesPage onBack={() => navigate("/")} />
       ) : isMascot ? (
         <PixelMascotLab onBack={() => navigate("/")} />
       ) : isStella ? (
