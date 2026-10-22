@@ -99,3 +99,11 @@ export async function stretched(url, name, thr = 0.2) {
   }
   return { tris: ix.length / 3, bad: bad.length, sample: bad.slice(0, 40).map((b) => b.map((v) => +v.toFixed(2))) };
 }
+// the Skin mesh's own albedo-ratio map (what a rig reads as its "clean" skin), as a PNG data URL
+export async function skinMapPng(url) {
+  const gltf = await new Promise((ok, no) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, ok, undefined, no));
+  let m; gltf.scene.traverse((o) => { if (o.isMesh && o.name === "Skin") m = o; });
+  const img = m.material.map.image, c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+  c.getContext("2d").drawImage(img, 0, 0);
+  return c.toDataURL("image/png");
+}

@@ -196,7 +196,7 @@ const FaceSV = forwardRef(function FaceSV({ size = 420, src = "/faces/face.glb",
               uLayered: { value: ["Skin", "Hair", "LidL", "LidR"].includes(o.name) ? 1 : 0 },
               uFlatN: { value: new THREE.Vector3().fromArray(fit?.lids?.[o.name] || [0, 0, 1]) }, uFlat: { value: fit?.lids?.[o.name] ? 0.85 : 0 },
               uRatioMean: { value: new THREE.Vector3().fromArray(fit?.ratioMean?.[o.name.startsWith("Lid") ? "Skin" : o.name] || [0, 0, 0]) },
-              uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
+              uPlate: { value: null }, uUsePlate: { value: 0 }, uDepth: { value: depthMap }, uHasDepth: depthMap ? depthOn : { value: 0 },
               uRestMV: { value: rc.matrixWorldInverse.clone().multiply(o.matrixWorld) },
               // the mirror's rest frame: the model at rest, the fitted camera's view and projection
               uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 },

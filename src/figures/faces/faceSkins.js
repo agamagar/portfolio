@@ -212,6 +212,8 @@ varying float vRestZ;
 // reference shows that point's twin: its screen spot (top-left origin), distance, normal
 uniform mat4 uRestModel, uRestV, uRestP;
 varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
+// where this point's rest position projects in the fitted camera (a lid reads the skin texture at the spot it covers)
+varying vec2 vProj;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
 attribute vec2 _mvuv;
 // the lip's recess while the mouth moves (uActs.z: 0 at rest): the fitted heads' mouths are creases
@@ -242,6 +244,7 @@ void main(){
   vec4 mv0 = uRestV * vec4(-rp.x, rp.y, rp.z, 1.0);
   vec4 mc = uRestP * mv0;
   vMirZ = -mv0.z;
+  { vec4 pc = uRestP * (uRestV * (uRestModel * vec4(position, 1.0))); vProj = vec2(pc.x / pc.w * 0.5 + 0.5, 0.5 - pc.y / pc.w * 0.5); }
   vMirUv = vec2(mc.x / mc.w * 0.5 + 0.5, 0.5 - mc.y / mc.w * 0.5);
   vec3 rn = mat3(uRestModel) * objectNormal;
   vMirN = mat3(uRestV) * vec3(-rn.x, rn.y, rn.z);
@@ -271,7 +274,7 @@ varying float vRestZ;
 uniform float uMirror;
 varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 #include <color_pars_fragment>
-varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN;
+varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN; varying vec2 vProj; uniform sampler2D uPlate; uniform float uUsePlate;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
 vec3 shEval(vec3 n){
   return uSH[0] * 0.282095 + uSH[1] * 0.488603 * n.y + uSH[2] * 0.488603 * n.z + uSH[3] * 0.488603 * n.x
@@ -571,6 +574,8 @@ void main(){
     if (distance(uBase, uDeep) < 0.02) col = uDeep; // ink parts (eyes, brows, lips) print solid
     col *= 0.94 + 0.08 * hash(vec3(floor(gl_FragCoord.xy / 2.0), 1.0));
   }
+  // a lid, once the rig has painted its skin plate: the skin itself, at the spot the lid covers (see faceRig3D buildPlate)
+  if (uUsePlate > 0.5) col = texture2D(uPlate, vProj).rgb;
   gl_FragColor = vec4(col, 1.0);
   #include <colorspace_fragment>
 }`;
