@@ -8922,7 +8922,8 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="controlButton"]:hover { background: color-mix(in srgb, var(--dev-ink) 16%, transparent) !important; color: var(--dev-ink-hover) !important; }
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="controlButton"][class*="active"] { background: color-mix(in srgb, var(--link, #3c82f7) 22%, transparent) !important; color: var(--link, #3c82f7) !important; }
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="buttonWrapper"] { display: grid; place-items: center; }
-html [data-agentation-toolbar] [class*="settingsPanel"] { right: auto !important; left: calc(100% + 12px) !important; bottom: 0 !important; }
+html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="sendButtonWrapper"]:not([class*="sendButtonVisible"]) { display: none !important; } /* its 0-wide box still took a row in the column */
+html [data-agentation-toolbar] [class*="__settingsPanel___"] { right: auto !important; left: calc(100% + 12px) !important; bottom: 0 !important; }
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="divider"] { width: 14px !important; height: 1px !important; margin: 0 !important; }
 html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [class*="controlButton"] { color: var(--dev-ink); }
 
