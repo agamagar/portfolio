@@ -68,7 +68,7 @@ const ACTS = [
     beats: [
       {
         claim: "Our hypothesis came back as a quote.",
-        body: "We had argued for two years that adding \"later\" to a \"now\" platform was a trust problem. Users said it back, unprompted. One person, seeing the slots, wondered whether instant had gone away entirely.",
+        body: "Zepto had argued for two years, before I joined the project, that adding \"later\" to a \"now\" platform was a trust problem. Users said it back, unprompted. One person, seeing the slots, wondered whether instant had gone away entirely.",
         visual: <Quote>Why would I schedule an order if Zepto has already made a habit to get it at the earliest?</Quote>,
       },
     ],

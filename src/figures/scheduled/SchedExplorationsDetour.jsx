@@ -26,7 +26,7 @@ const ROWS = [
     { t: "Single-page listing", v: "shipped", screen: "/figures/scheduled/sched-pg-default.png" },
   ] },
   { label: "Slot picker", ink: "#6c76f0", chips: [
-    { t: "Calendar", v: "considered" },
+    { t: "Calendar", v: "considered", note: "Considered, never drawn as a screen." },
     { t: "Bottom-sheet picker", v: "considered", figma: "sheet-picker" },
     { t: "Inline slot list", v: "shipped", screen: "/figures/scheduled/sched-pg-crossday.png" },
   ] },
@@ -196,7 +196,7 @@ export default function SchedExplorationsDetour() {
                     ? <FigmaShot k={c.figma} size="md" tag={false} alt={c.t} className="dtr-fshot" />
                     : c.screen
                     ? <PhoneFrame screen={c.screen} alt={c.t} size="md" interactive={false} enter={false} className="dtr-fshot" />
-                    : <PhoneFrame size="md" interactive={false} enter={false} className="dtr-fshot" alt={c.t + ": no screen built"}><div className="dtr-shot--none" role="img" aria-label={c.t + ": no screen built"}><span>No screen<br />built</span></div></PhoneFrame>}
+                    : <p className="dtr-cell__note">{c.note}</p>}
                 </div>
               );
             })}

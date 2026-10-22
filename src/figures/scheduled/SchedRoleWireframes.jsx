@@ -29,7 +29,7 @@ import { MONTHLY, SLOT_BANDS, SLOT_MIX, VS_INSTANT, SOURCE_NOTE, ROLLOUT } from 
 // the role numbers, shown in the My role frame (mv2lfboc)
 export const ROLE_STATS = [
   ["2 releases", "A narrow M1 (late Oct 2025), the full multi-shipment M2 (mid-Nov 2025)"],
-  ["6 months", "August to February, from the first canvas notes to engineering hardening"],
+  ["6 months", "August to January, from the first canvas notes to engineering hardening"],
   ["5 functions", "Design, product, content, engineering and QA, operations"],
 ];
 
@@ -42,7 +42,7 @@ const SLIDES = [
     // numbers now render in the My role frame (App.jsx RoleFrame, ROLE_STATS)
     _stats: [
       ["2 releases", "A narrow M1 (late Oct 2025), the full multi-shipment M2 (mid-Nov 2025)"],
-      ["6 months", "August to February, from the first canvas notes to engineering hardening"],
+      ["6 months", "August to January, from the first canvas notes to engineering hardening"],
       // mukposjs (28 Sep): commented out at Agam's request; uncomment to bring back
       // ["506 comments", "In the design file, about 300 of them my own working notes"],
       ["5 functions", "Design, product, content, engineering and QA, operations"],
@@ -390,7 +390,7 @@ function PhaseTrack({ phases }) {
     return { ph, i, a, b, lane };
   });
   return (
-    <div className="ptk" role="list" aria-label="Six months, Aug 2025 to Feb 2026">
+    <div className="ptk" role="list" aria-label="Six months, Aug 2025 to Jan 2026">
       <div className="ptk__grid" style={{ "--cols": AXIS.length }}>
         {placed.map(({ ph: [when, what, detail], i, a, b, lane }) => {
           const I = STEP_ICON[what];
@@ -520,14 +520,10 @@ const PHASE_BULLETS = {
 // mukpz799 (28 Sep): a Google Material Symbols icon per bullet, matched to what
 // the bullet says (loaded as a subset in index.html; add a name there too)
 const PHASE_BULLET_ICONS = {"Problem on the canvas": ["map", "sync", "science"], "First review": ["rule", "sentiment_satisfied", "calendar_today", "check_circle"], "M1 build and handoff": ["grid_view", "help"], "Content pass": ["trending_up", "forum", "edit_note"], "M1 ships": ["rocket_launch"], "M2 ships": ["local_shipping", "campaign"], "Validation study": ["groups", "handshake"], "Returns and refunds": ["assignment_return"], "Hardening": ["engineering", "event_busy", "cloud_off", "analytics"]};
-// mvds04yi (Agam): the rail's bullet text reads in title case; small words stay lower unless first or last
-const SMALL = new Set(["a", "an", "and", "as", "at", "but", "by", "for", "in", "of", "on", "or", "the", "to", "with"]);
-const titleCase = (t) => {
-  const w = t.split(" ");
-  return w.map((x, i) => (i > 0 && i < w.length - 1 && SMALL.has(x.toLowerCase()) ? x.toLowerCase() : x.replace(/(^|-)([a-z])/g, (_, a, c) => a + c.toUpperCase()))).join(" ");
-};
+// 22 Oct (Agam): rail labels and bullets are sentence case (was title case, mvds04yi / mvg9bvbv)
+const sentenceCase = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 // mvg9bvbv (Agam): the rail's card labels read in title case (and the rail no longer upper-cases them)
-const phaseLabel = (what) => (PHASE_EMOJI[what] ? `${PHASE_EMOJI[what]} ${titleCase(what)}` : titleCase(what));
+const phaseLabel = (what) => (PHASE_EMOJI[what] ? `${PHASE_EMOJI[what]} ${sentenceCase(what)}` : sentenceCase(what));
 function phaseRailModel(phases) {
   // 28 Sep: the rail ENDS just after the last step starts, so Hardening is the
   // last thing on it and the earlier steps get the width (was Feb 28, which
@@ -553,7 +549,7 @@ function phaseRailModel(phases) {
   const jan = months.findIndex((c) => c.m === 2026 * 12);
   if (jan > 0) years.push({ label: "2026", x: (jan / n) * 100, i: jan });
   const cards = spans.map((sp) => ({ key: `p${sp.k}`, tid: `p${sp.k}`, org: sp.what, role: null, x: (sp.i0 / n) * 100, i0: sp.i0, i1: sp.i1 }));
-  const details = new Map(phases.map(([when, what, detail], k) => [`p${k}`, { id: `p${k}`, org: phaseLabel(what), kind: "", rawKind: "work", role: null, dates: when, span: when, outs: [], summary: PHASE_BULLETS[what] ? null : detail, bullets: PHASE_BULLETS[what] ? PHASE_BULLETS[what].map((t, j) => ({ icon: PHASE_BULLET_ICONS[what]?.[j], text: titleCase(t) })) : null }]));
+  const details = new Map(phases.map(([when, what, detail], k) => [`p${k}`, { id: `p${k}`, org: phaseLabel(what), kind: "", rawKind: "work", role: null, dates: when, span: when, outs: [], summary: PHASE_BULLETS[what] ? null : detail, bullets: PHASE_BULLETS[what] ? PHASE_BULLETS[what].map((t, j) => ({ icon: PHASE_BULLET_ICONS[what]?.[j], text: sentenceCase(t) })) : null }]));
   return { model: { months, n, years, cards }, details };
 }
 // mukt31g5 (28 Sep): a month row under the glass ticks, above the years. Each

@@ -8818,15 +8818,15 @@ html .page--article .article__body .rv dl.rv-map__rows { margin-top: 2rem; }
    statement centred. The statement takes the whole content width, capped at 70ch so a wide column keeps a readable measure
    (at the 816 column 70ch is wider than the 686px of content, so it is the full width there). */
 .article__body .rv.rv--final { border: 0; }
-html .page--article .article__body .rv--final h2.rv__label, html .page--article .article__body .rv--final p.rv__label { text-align: center; margin-top: 0; }
-html .page--article .article__body .rv--final p.rv__statement { width: 100%; max-width: 70ch; margin-left: auto; margin-right: auto; text-align: center; }
+html .page--article .article__body .rv--final h2.rv__label, html .page--article .article__body .rv--final p.rv__label { text-align: start; margin-top: 0; }
+html .page--article .article__body .rv--final p.rv__statement { width: 100%; max-width: none; margin-left: 0; margin-right: 0; text-align: start; font-weight: 300; }
 /* mv591ryn (12 Oct, "make sure this bit is only 50 percent of the card"): the split's text column is exactly half
    of the card's width (408px of 816). The card pads 7.94% a side, so the column is 50% / (1 - 2 x 0.0794) of the content box. */
 @media (min-width: 701px) {
   .article__split.article__split--stack { grid-template-columns: calc(50% / (1 - 2 * 0.0794)) minmax(0, 1fr); column-gap: 2rem; }
 }
 /* the final My role's label is an h2 (it carries the section id): it wears the label's own look, over the full width, centred */
-html .page--article .article__body .rv--final h2.rv__label { display: block; width: 100%; margin: 0 0 1.25rem; font: 400 1.5rem/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--rv-accent); letter-spacing: 0; text-align: center; max-width: none; }
+html .page--article .article__body .rv--final h2.rv__label { display: block; width: 100%; margin: 0 0 1.25rem; font: 300 1.625rem/1.3 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); color: var(--rv-accent); letter-spacing: 0; text-align: start; max-width: none; } /* 22 Oct: the standard section heading (26/300, left) with the statement as its TL;DR */
 
 /* mv59ku9w (12 Oct): a TL;DR given as a list renders as bullets inside the same note */
 .article__body .tldr-b { display: block; position: relative; padding-left: 1.1em; margin-top: 0.4em; }
