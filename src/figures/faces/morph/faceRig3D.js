@@ -51,6 +51,8 @@ void main(){
 // (noir has none) passes null for them and draws what its own maps carry
 // parts that do not follow the head-shape warp (they are not skin: hair and headwear sit over it)
 const PART_SLOTS = ["Headwear", "Beard", "Glasses", "Bindi", "Tilak", "Earring", "NosePin"];
+// where the far ear is, from the Skin mesh's own box (each fitted skin's head has its own scale): x past 69% of the half-width, y in the 25..75% band
+const earBox = (o) => { if (o.name !== "Skin") return new THREE.Vector3(9, 0, 0); o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox, h = b.max.y - b.min.y; return new THREE.Vector3(0.69 * Math.max(-b.min.x, b.max.x), b.min.y + 0.25 * h, b.min.y + 0.755 * h); };
 const NOWARP = ["Hair", "HatBand", "Headwear"];
 export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false, procedural = false, face = null, mode = null }) {
   const scene = new THREE.Scene();
@@ -157,7 +159,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
           uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
           uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 }, // (as FaceSV: the lip sinks while the mouth moves)
-          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uEarMirror: { value: o.name === "Skin" && !procedural ? 1 : 0 }, uDrawn: { value: !procedural && !mode ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 },
+          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uEarMirror: { value: o.name === "Skin" && !procedural ? 1 : 0 }, uEarBox: { value: earBox(o) }, uDrawn: { value: !procedural && !mode ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 },

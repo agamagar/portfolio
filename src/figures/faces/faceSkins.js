@@ -273,7 +273,7 @@ uniform sampler2D uDepth; uniform float uHasDepth;
 varying float vRestZ;
 // the mirror (see VERT): on for skin and hair of a rig with a depth map
 uniform float uMirror;
-varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN; varying vec3 vRP; uniform float uEarMirror;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN; varying vec3 vRP; uniform float uEarMirror; uniform vec3 uEarBox;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN; varying vec2 vProj; uniform sampler2D uPlate; uniform float uUsePlate, uDrawn;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -447,7 +447,11 @@ void main(){
     // (with "seen": the revealed surface in the colour the reference shows of the part, shaded by
     // the view light's brightness only; the fitted light's hue swings with direction, and read off
     // at a new normal it tinted a turned head orange or red)
-    vec3 unseen = litView * local;
+    // surface the photo never showed is lit like the surface beside it: by the REST normal (as the textured texels are) until the head has
+    // turned well away, then by the view's. Lit by the view from the first degree of turn, the strip along the nose's flank and the
+    // cheek's edge came out lighter than the textured skin next to it: a pale translucent-looking band.
+    vec3 litU = mix(litRest, litView, smoothstep(0.55, 1.0, uTurn));
+    vec3 unseen = litU * local;
     // (only as the head turns: at rest the fit's own refinement saw the plain blend)
     if (uSeenLum > 0.0 && uHasMV < 0.5 && uTurn > 0.0) {
       // (the blur's variation about the part's colour, gently: on surface the reference never
@@ -478,7 +482,7 @@ void main(){
     // camera sees behind it, which read as glass; and it cannot be told apart by depth (the hero carries none). The far ear is skin: the part's
     // own colour (the fit's median skin ratio), lit by the view light on its real geometry, so its form comes from the shading, never a texture.
     if (uEarMirror > 0.5) {
-      float ear = smoothstep(0.95, 1.03, vRP.x) * step(-0.8, vRP.y) * step(vRP.y, 0.6);
+      float ear = smoothstep(uEarBox.x - 0.04, uEarBox.x + 0.04, vRP.x) * step(uEarBox.y, vRP.y) * step(vRP.y, uEarBox.z);
       if (ear > 0.0) col = mix(col, litView * whole * uTint, ear);
     }
     // a defringed edge: the fitted light carries the backdrop's bounce at grazing normals (claySun's
