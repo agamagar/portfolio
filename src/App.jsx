@@ -154,6 +154,7 @@ const SchedMoments = lazyFig(() => import("./figures/scheduled/SchedMoments"));
 const SchedCartStates = lazyFig(() => import("./figures/scheduled/SchedCartStates"));
 const SchedPageStates = lazyFig(() => import("./figures/scheduled/SchedPageStates"));
 const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
+const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
@@ -738,6 +739,7 @@ const figures = {
   schedCartStates: SchedCartStates,
   schedPageStates: SchedPageStates,
   schedDateSwitch: SchedDateSwitch,
+  schedCartHubs: SchedCartHubs,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -2650,6 +2652,7 @@ const caseStudies = {
           "A shipment is unserviceable outright, because its store is closed or out of stock for that window",
         ],
         // fig: "schedSplit", // mukw52nu (28 Sep): replaced by the cart grid; uncomment to restore
+        fig: "schedCartHubs", // Figma 182:126352: the cart with a dark-store and a super-store shipment
         // fig: "schedCartGrid", // mvgargvp (Agam, "hide this"): the six-things cart grid is hidden; uncomment to restore
         figBare: true, // mtmrnolv: no figure card around coded figures
         figure:

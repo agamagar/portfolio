@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import FigmaShot from "./FigmaShot";
 import PhoneControls from "../../ui/PhoneControls";
 import "./schedToggleDemo.css";
 
 // mv59m6yi (12 Oct): the Instant -> Scheduled toggle, shown as Agam's own screen
 // recording. Drop the file at DEMO_SRC (public/figures/scheduled/); until it exists
-// the plate shows a labelled placeholder. Muted, looping, plays while in view.
+// the plate shows the three user-test toggle frames from Figma (a still stand-in). Muted, looping, plays while in view.
 // data-exp-ok lets the full-page expand (ui/ExpandableFigure) carry the video.
 // No coded replica: the real toggle's motion only exists in the recording.
 export const DEMO_SRC = "/figures/scheduled/instant-to-scheduled-toggle.mp4";
@@ -28,13 +29,7 @@ export default function SchedToggleDemo() {
           aria-label="The delivery mode toggle switching from Instant to Scheduled"
           onLoadedData={() => setOk(true)} onError={() => setOk(false)} />
         {ok && <PhoneControls label="Delivery toggle demo" />}
-        {!ok && (
-          <div className="std__ph" role="note">
-            <svg viewBox="0 0 120 240" width="120" height="240" aria-hidden="true"><rect x="3" y="3" width="114" height="234" rx="22" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.5" /></svg>
-            <p style={{ color: "#33095e" }}>Demo recording goes here [CONFIRM]</p>
-            <code>public{DEMO_SRC}</code>
-          </div>
-        )}
+        {!ok && <FigmaShot k="toggle-demo" bare alt="Three toggle prototypes side by side: UT 01 dual toggle, UT 02 three options, UT 03 mini toggle with per-shipment pills." />}
       </div>
     </div>
   );

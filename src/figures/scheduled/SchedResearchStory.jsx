@@ -1,3 +1,4 @@
+import FigmaShot from "./FigmaShot";
 import "./scheduled.css";
 
 // mukx7ffq (28 Sep): "just like the analytics combined, this section and the
@@ -41,6 +42,7 @@ const ACTS = [
             <Stat value="45" label="moderated interviews" />
             <Stat value="12" label="cities" />
             <Stat value="1000s" label="behavioural frames" />
+            <FigmaShot k="interview-stats" bare tag={false} alt="The Oct 29 user-testing observations: a legend of needs attention, minor and positive, and quote cards from users 1, 2 and 3." className="rsty__board" />
           </div>
         ),
       },

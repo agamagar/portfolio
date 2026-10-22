@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../ds/hooks";
 import { useSectionPlay } from "../../ui/useSectionPlay";
+import FigmaShot from "./FigmaShot";
 import "./schedExplorationsDetour.css";
 
 // Agentation mvg8xj51-ht1eue: a copy of "The explorations" illustrated after Pentagram's "In Defense of the
@@ -13,19 +14,19 @@ const TAG = { shipped: "Shipped", killed: "Rejected", scale: "Didn't scale", con
 
 const ROWS = [
   { label: "Placement", ink: "#2fb5a6", chips: [
-    { t: "On the PDP", v: "killed" },
+    { t: "On the PDP", v: "killed", figma: "pdp" },
     { t: "Home prompt", v: "shipped", screen: "/figures/scheduled/sched-home-strip.png" },
     { t: "Cart, per shipment", v: "shipped", screen: "/figures/scheduled/sched-cart-prompted.png" },
   ] },
   { label: "Cart structure", ink: "#e26fcf", chips: [
     { t: "Tabbed, one per shipment", v: "killed", screen: "/figures/scheduled/sched-dir-tabbed.png" },
-    { t: "Bottom sheet", v: "scale" },
+    { t: "Bottom sheet", v: "scale", figma: "sheet" },
     { t: "One combined cart", v: "killed", screen: "/figures/scheduled/sched-cart-both.png" },
     { t: "Single-page listing", v: "shipped", screen: "/figures/scheduled/sched-pg-default.png" },
   ] },
   { label: "Slot picker", ink: "#6c76f0", chips: [
     { t: "Calendar", v: "considered" },
-    { t: "Bottom-sheet picker", v: "considered" },
+    { t: "Bottom-sheet picker", v: "considered", figma: "sheet-picker" },
     { t: "Inline slot list", v: "shipped", screen: "/figures/scheduled/sched-pg-crossday.png" },
   ] },
 ];
@@ -190,7 +191,9 @@ export default function SchedExplorationsDetour() {
                   <span className="dtr-dot" aria-hidden="true" />
                   <span className="dtr-cell__t">{c.t}</span>
                   <span className="dtr-cell__tag">{TAG[c.v]}</span>
-                  {c.screen
+                  {c.figma
+                    ? <FigmaShot k={c.figma} width={208} tag={false} alt={c.t} className="dtr-fshot" />
+                    : c.screen
                     ? <img className="dtr-shot" src={c.screen} alt={c.t} loading="lazy" draggable="false" />
                     : <div className="dtr-shot dtr-shot--none" role="img" aria-label={c.t + ": no screen built"}><span>No screen<br />built</span></div>}
                 </div>

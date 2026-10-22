@@ -82,3 +82,5 @@
 
 /* mvgnsuy8 (Agam, "hide the dotted line"): the dotted guide rule under the marker paths is hidden; delete this line to bring it back */
 .dtr-mark__rule { display: none; }
+.dtr-fshot { margin-top: 14px; }
+.dtr-cell[data-v="killed"] .dtr-fshot, .dtr-cell[data-v="scale"] .dtr-fshot, .dtr-cell[data-v="considered"] .dtr-fshot { opacity: .9; }
