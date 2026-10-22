@@ -54,7 +54,7 @@ export default function SchedImpact() {
             </div>
             <div className="sd-metric" data-on={beat >= 2}>
               <span className="sd-metric__l">Adoption, share of all orders</span>
-              <span className="sd-metric__row"><span className="sd-metric__big" style={{ fontSize: 22 }}>1.72%</span><span className="sd-metric__unit">peak, May 2026; settled near 1.4%</span></span>
+              <span className="sd-metric__row"><span className="sd-metric__big" style={{ fontSize: 22 }}>1.72%</span><span className="sd-metric__unit">peak in May 2026, settled near 1.4%</span></span>
             </div>
             <div className="sd-metric" data-on={beat >= 3}>
               <span className="sd-metric__l">Last-mile cost</span>
