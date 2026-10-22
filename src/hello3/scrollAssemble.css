@@ -17,14 +17,14 @@
 .hello[data-page="3"] .sq__head, .hello[data-page="3"] .sq__nav, .hello[data-page="3"] .wg__cap > * { --a: 0; --b: 0.7; --x: 0px; --y: 0px; --r: 0deg; --k: 1; --o: 1; }
 
 /* ---- pieces ---- */
-.hello[data-page="3"] .wg__card { --a: 0; --b: 0.62; --r: -0.9deg; --k: 0.972; }
-.hello[data-page="3"] .wg__card:nth-child(even) { --r: 0.9deg; }
+/* mvgox (Agam, "there is some rotation on the cards, remove it"): the project cards and their parts never rotate: --r stays 0deg, the entrance is scale / translate / opacity only */
+.hello[data-page="3"] .wg__card { --a: 0; --b: 0.62; --r: 0deg; --k: 0.972; }
 .hello[data-page="3"] .wg__card > img,
-.hello[data-page="3"] .wg__card > .wg__live:not(.wg__live--over) { --a: 0.08; --b: 0.8; --x: -9px; --y: 10px; --r: 0.9deg; --k: 1.06; }
+.hello[data-page="3"] .wg__card > .wg__live:not(.wg__live--over) { --a: 0.08; --b: 0.8; --x: -9px; --y: 10px; --r: 0deg; --k: 1.06; }
 .hello[data-page="3"] .wg__card:nth-child(even) > img,
-.hello[data-page="3"] .wg__card:nth-child(even) > .wg__live:not(.wg__live--over) { --x: 9px; --r: -0.9deg; }
-.hello[data-page="3"] .wg__card .wg__live--over { --a: 0.2; --b: 0.95; --x: 0px; --y: 22px; --r: -1.6deg; --k: 0.97; --o: 0.4; }
-.hello[data-page="3"] .wg__card .wg__badge { --a: 0.3; --b: 1; --x: 14px; --y: -12px; --r: 4deg; --k: 0.88; --o: 0; }
+.hello[data-page="3"] .wg__card:nth-child(even) > .wg__live:not(.wg__live--over) { --x: 9px; }
+.hello[data-page="3"] .wg__card .wg__live--over { --a: 0.2; --b: 0.95; --x: 0px; --y: 22px; --r: 0deg; --k: 0.97; --o: 0.4; }
+.hello[data-page="3"] .wg__card .wg__badge { --a: 0.3; --b: 1; --x: 14px; --y: -12px; --r: 0deg; --k: 0.88; --o: 0; }
 /* phones: the caption under a card settles a beat after it, line by line (its own timeline) */
 .hello[data-page="3"] .wg__cap > * { --a: 0.15; --b: 0.85; --y: 10px; --o: 0.2; }
 .hello[data-page="3"] .wg__cap > .wg__cap-line { --a: 0.25; --b: 0.95; }
