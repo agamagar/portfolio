@@ -111,12 +111,49 @@ export function buildInterior(P, ctx, mats, root, win) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     parent.add(mesh);
+    // the sewn hem: a pocket with the weight bar in it, a thin round roll along the
+    // bottom edge (a Roman blind's hem is thick; the bare cloth edge read as paper).
+    // Same fabric material; it follows the bottom row of the cloth in setDrop
+    const hemR = 0.0065, hemN = 6;
+    const hemPos = new Float32Array((nx + 1) * hemN * 3), hemUv = new Float32Array((nx + 1) * hemN * 2), hemIdx = [];
+    for (let i = 0; i <= nx; i++) {
+      for (let a = 0; a < hemN; a++) hemUv.set([pos[i * 3] * 1, pos[i * 3 + 1] * 1], (i * hemN + a) * 2);
+      if (i < nx) for (let a = 0; a < hemN; a++) {
+        const p0 = i * hemN + a, p1 = i * hemN + ((a + 1) % hemN), q0 = p0 + hemN, q1 = p1 + hemN;
+        hemIdx.push(p0, q0, q1, p0, q1, p1);
+      }
+    }
+    const hg = new THREE.BufferGeometry();
+    hg.setAttribute("position", new THREE.BufferAttribute(hemPos, 3));
+    hg.setAttribute("uv", new THREE.BufferAttribute(hemUv, 2));
+    hg.setIndex(hemIdx);
+    const hem = new THREE.Mesh(hg, m.blind);
+    hem.name = "blindHem";
+    hem.castShadow = true;
+    hem.receiveShadow = true;
+    parent.add(hem);
+    const fillHem = () => {
+      const P3 = g.attributes.position.array;
+      for (let i = 0; i <= nx; i++) {
+        const cx = P3[i * 3], cy = P3[i * 3 + 1] + hemR * 0.6, cz = P3[i * 3 + 2];
+        for (let a = 0; a < hemN; a++) {
+          const t = (a / hemN) * Math.PI * 2;
+          hemPos.set([cx, cy + Math.sin(t) * hemR, cz + Math.cos(t) * hemR * 1.3], (i * hemN + a) * 3);
+        }
+      }
+      hg.attributes.position.needsUpdate = true;
+      hg.computeVertexNormals();
+      hg.computeBoundingSphere();
+      hg.computeBoundingBox();
+    };
+    fillHem();
     mesh.userData.setDrop = (d) => {
       fill(Math.max(0, Math.min(1, d)));
       g.attributes.position.needsUpdate = true;
       g.computeVertexNormals();
       g.computeBoundingSphere();
       g.computeBoundingBox();
+      fillHem();
     };
     return mesh;
   }
