@@ -116,15 +116,22 @@ function classify(block, night) {
   return { kind, nearest, depth: Math.min(1, openBest / SCHED_R) }; // 0 beside an open store, 1 at the edge of scheduled reach
 }
 
-// mvg90wh8 (Agam, "remove this"): the "Illustrative model on a real map…" note under the explorer is hidden; set true to bring it back.
-// (It is the line that says the stores and radii are assumptions, not Zepto data.)
-const SHOW_REX_NOTE = false;
+// 22 Oct (Agam): the note is back as a small "Illustrative model" label (the stores and radii are assumptions, not Zepto data).
 export default function SchedReachExplorer() {
   const city = useMemo(buildCity, []);
   const [night, setNight] = useState(false);
   const [km, setKm] = useState(1.0);
   const [c, setC] = useState({ x: 320, y: 400 });
   const [touched, setTouched] = useState(false);
+  // 22 Oct: on a touch screen the map no longer traps page scroll. It scrolls the page until a tap arms it (a tap
+  // elsewhere disarms it), then the circle drags as before.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return undefined;
+    const off = (e) => { if (!svgRef.current?.contains(e.target)) setArmed(false); };
+    document.addEventListener("pointerdown", off);
+    return () => document.removeEventListener("pointerdown", off);
+  }, [armed]);
   const svgRef = useRef(null);
   const drag = useRef(null);
   const r = km * KM;
@@ -164,6 +171,7 @@ export default function SchedReachExplorer() {
   };
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   const onDown = (e) => {
+    if (e.pointerType === "touch" && !armed) { drag.current = { mode: "tap", x: e.clientX, y: e.clientY }; return; }
     setTouched(true);
     const p = toSvg(e);
     const onHandle = Math.abs(dist(p, { x: c.x - r, y: c.y })) < 16;
@@ -172,12 +180,16 @@ export default function SchedReachExplorer() {
     e.currentTarget.setPointerCapture(e.pointerId);
   };
   const onMove = (e) => {
-    if (!drag.current) return;
+    if (!drag.current || drag.current.mode === "tap") return;
     const p = toSvg(e);
     if (drag.current.mode === "r") setKm(clamp(Math.round((Math.abs(c.x - p.x) / KM) * 20) / 20, 0.5, 2));
     else setC({ x: clamp(p.x + drag.current.dx, 0, W), y: clamp(p.y + drag.current.dy, 0, H) });
   };
-  const onUp = () => { drag.current = null; };
+  const onUp = (e) => {
+    const d = drag.current;
+    if (d?.mode === "tap" && e.type === "pointerup" && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 10) setArmed(true);
+    drag.current = null;
+  };
   const onKey = (e) => {
     const step = e.shiftKey ? 30 : 10;
     const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
@@ -232,9 +244,7 @@ export default function SchedReachExplorer() {
           </ul>
         </section>
 
-        {SHOW_REX_NOTE && <p className="rex__note">
-          Illustrative model on a real map of Indiranagar, Bangalore: the streets are OpenStreetMap, but the three stores are placed for the demo, not real addresses, and instant reach is {INSTANT_R / KM} km, scheduled reach {SCHED_R / KM} km. A block is a 100 m square of the map. It shows how distance and the clock decide a cart's options. It is not Zepto data.
-        </p>}
+        <p className="rex__note">Illustrative model<span className="rex__hint"> · tap the map, then drag the circle</span></p>
       </aside>
 
       <div className="rex__map">
@@ -245,6 +255,7 @@ export default function SchedReachExplorer() {
           role="img"
           aria-label={`A street map of Indiranagar, Bangalore, with three illustrative dark stores. Inside the circle, ${pct[0].toFixed(0)}% of blocks get instant delivery, ${pct[1].toFixed(0)}% can only schedule, ${pct[2].toFixed(0)}% get nothing. Drag the circle, or focus it and use the arrow keys.`}
           tabIndex={0}
+          data-armed={armed ? "" : undefined}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}

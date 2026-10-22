@@ -99,7 +99,7 @@ const ACTS = [
       },
       {
         claim: "The tail has a name: appliances.",
-        body: `Electronics and appliances went from ${elFirst.shareOfSdGmv}% of scheduled GMV in December to ${elLast.shareOfSdGmv}% in September. Around ₹${GMV_TOTAL_CR} Cr of scheduled GMV since December, and that is a floor: the bridge matches only about 55% of orders.`,
+        body: `Electronics and appliances went from a small share of scheduled GMV in December to a large and growing one by September. Around ₹${GMV_TOTAL_CR} Cr of scheduled GMV since December, and that is a floor: the bridge matches only about 55% of orders.`,
         chart: <LineChart data={ELECTRONICS} series={[{ key: "shareOfSdGmv", label: "Appliances, % of GMV" }]} colors={[CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={60} height={200} />,
       },
     ],

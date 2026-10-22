@@ -5,14 +5,12 @@ import "./schedCopyProcess.css";
 // Sources: the Agentation history on /work/scheduled-delivery (~/.agentation
 // store.db, which records the text the annotation sat on), the 21 Jun 2026
 // checkpoint of App.jsx (git 88c8ae4) against the live copy, and the design-file
-// review thread in SchedRoleWireframes (WF05, paraphrased from the file's comments).
+// (22 Oct: the paraphrased design-file review lines and the first-draft pair were removed, Agam.)
 // Nothing here is invented; the "why" lines name the move, not a motive.
 const GROUPS = [
   {
     move: "Say what the person can do, not what is wrong",
     pairs: [
-      { was: "Some items are unserviceable", now: "Schedule your order", src: "Design-file review, 24 to 25 Aug 2025 (PM comment, paraphrased), and three reviewers killed the negative phrasing" },
-      { was: "Day after tomorrow", now: "The actual date, on every slot tab", src: "Design-file review, 24 to 25 Aug 2025 (PM comment, paraphrased)" },
       { was: "Five reasons instant can't answer", now: "When instant delivery fails", src: "Annotation on the scroll scene, 26 Sep 2026" },
     ],
   },
@@ -28,13 +26,6 @@ const GROUPS = [
     pairs: [
       { was: "How do you promise later without spending the trust that now is built on?", now: "How do you promise later without breaking the trust that Zepto is built on?", src: "Annotation on the central question, 27 Sep 2026" },
       { was: "They're fine with the delivery landing later.", now: "Users are fine with deliveries landing later.", src: "Annotation on the key finding, 27 Sep 2026" },
-    ],
-  },
-  {
-    move: "Write what the evidence says",
-    pairs: [
-      { was: "Because the order is for later, people plan and build a bigger cart.", now: "Roughly eight in ten did it as a fallback, because instant was not available at that moment, not because they had planned ahead.", src: "First draft, 21 Jun 2026, against the post-launch study" },
-      { was: "Average order value doubled for scheduled orders, roughly ₹600+ versus ₹300 on a regular order.", now: "In August 2026 a scheduled order was worth about 1,450 rupees against 543 for an instant one. The 550-against-300 pair I had been quoting turned out to be the median, not the mean.", src: "First draft, 21 Jun 2026, against the September data pull" },
     ],
   },
 ];

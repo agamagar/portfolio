@@ -109,7 +109,7 @@ const ACTS = [
     beats: [
       {
         claim: "Returns became a trip you could book yourself.",
-        body: "Returns are where trust is quietly won or lost, and usually where you end up talking to support. With scheduling built, the reverse trip could be self-served on the very same one-hour slots.",
+        body: "Returns are where trust is quietly won or lost, and usually where you end up talking to support. With scheduling built, the reverse trip shipped as a self-serve flow on the very same one-hour slots. The in-app flow comes first, and chat is a fallback for the edge cases.",
         visual: (
           <Steps items={[
             ["Pick the items", "with the refund total shown live"],

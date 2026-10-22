@@ -141,7 +141,7 @@ const NOTES = [
   },
   {
     row: "elec", m: "2026-07", title: "The catalogue changed",
-    body: "Electronics GMV doubled in one month, 20 crore to 42 crore, and its share of scheduled GMV went 21% to 37%. Pricier units, not more units: items sold have fallen since.",
+    body: "Electronics GMV doubled in one month, 20 crore to 42 crore, and its share of scheduled GMV rose sharply. Pricier units, not more units: items sold have fallen since.",
   },
   {
     row: "gmv", m: "2026-08", title: "GMV grows while orders fall",
@@ -156,8 +156,8 @@ const NOTES = [
     body: "The fall is early arrivals, not lateness. Early arrivals rate no worse than on-time ones, so 'not late' is the honest metric, and by that measure the promise has held at 93 to 96% all year.",
   },
   {
-    row: "elec", m: "2026-09", title: "54% of every scheduled rupee",
-    body: "More than half of scheduled GMV is now a large appliance, at 10,810 rupees an item, in only about 5% of orders. A fridge needs a time slot; a snack does not. This is a different product than the one we designed.",
+    row: "elec", m: "2026-09", title: "Most of every scheduled rupee",
+    body: "Most of scheduled GMV is now a large appliance, at 10,810 rupees an item, in only about 5% of orders. A fridge needs a time slot; a snack does not. This is a different product than the one we designed.",
   },
   {
     row: "sdPct", m: "2026-09", title: "1.39%, and nothing is holding it back",

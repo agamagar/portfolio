@@ -2533,11 +2533,11 @@ const caseStudies = {
           ],
           statement: "I led the interaction design end-to-end across product, content, and operations, over two 2025 releases.",
           // the body is the ORIGINAL role paragraph, as the Figma frame sets it
-          body: "I led the interaction design end-to-end, working closely with my design manager, Shreya Garg. There was an existing pitch when I picked up the problem, but it didn't feel right, it didn't account for the real spread of cases. So the bulk of my work was mapping every flow and edge case, running the exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November, with PMs Nishit Raj and Kavya Jain, content design by Ciara Greenwood, and an engineering group that pushed hard on the edge cases. The post-launch validation study I ran with the PMs.",
+          body: "I led the interaction design end-to-end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right, it didn't account for the real spread of cases. So the bulk of my work was mapping every flow and edge case, running the exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November, with product, content, engineering, operations and QA, and an engineering group that pushed hard on the edge cases. The post-launch validation study I ran with the PMs.",
         },
-        tldr: "I led the interaction design end to end with my manager Shreya Garg, across product, content and operations, over two 2025 releases.",
+        tldr: "I led the interaction design end to end with my manager, across product, content and operations, over two 2025 releases.",
         p: [
-          "I led the interaction design end to end, working closely with my design manager, Shreya Garg. There was an existing pitch when I picked up the problem, but it didn't feel right. It didn't account for the real spread of cases, so I set it aside and started again from the map.",
+          "I led the interaction design end to end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right. It didn't account for the real spread of cases, so I set it aside and started again from the map.",
         ],
         // mu3johvc: expanded on what leading it meant; every item sourced from Claude/Case Studies/2026-06-24_schedule-order-handoff-timeline.md
         // PARKED 27 Sep (not in the Figma frame): the "Leading it meant owning the
@@ -2545,7 +2545,7 @@ const caseStudies = {
         _ul: [
           "The problem before the screens. In the first ten days I laid the whole problem space onto the canvas myself, before anyone reviewed it: the order lifecycle from placed to failed delivery, and edge cases from address changes and daily order limits to pharmacy and EMI orders. Most of those came back in engineering questions months later, already answered.",
           "The decisions, framed as bets. Where the pay button went on an unserviceable cart ran as two experiments, not an opinion. And I ran a full parallel direction to ground rather than defending the first one.",
-          "The thread through every handover. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November. The PM changed from Nishit Raj to Kavya Jain between them, content design came in with Ciara Greenwood's copy pass in October, and the design stayed one coherent system across all of it.",
+          "The thread through every handover. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November. The PM changed between them, content design came in with the copy pass in October, and the design stayed one coherent system across all of it.",
           "Operations as a design partner. Slots, store hours and store capacity are supply-chain facts, so product and operations were in the room to keep every promise on screen one the warehouse could keep.",
           "The work after launch. Engineering pushed hard on the edge cases, and the answers were design answers: open the first day with a free slot instead of greying out an empty tab, and say plainly when a chosen slot has gone. I ran the post-launch validation study with the PMs, and the slot picker went on to carry the returns pickup flow.",
         ],
@@ -2706,6 +2706,7 @@ const caseStudies = {
           "We had pointed her at the real worst case, not the happy path: a cart with some items unavailable or unserviceable for instant delivery, and the job was to find scheduling and book the unavailable item for a later slot. That was deliberate. Almost all real scheduling happens on exactly these mixed carts, so the test had to start there. The hard part was never the happy path. It was that Zepto splits a cart into multiple shipments, and scheduling lives at the shipment level, so one order can need a separate schedule per shipment.",
           "I had carried two directions into the room, nearly identical in construct and opposite in feel. One was tabbed: a tab per shipment, each holding its own instant-versus-schedule choice and slot grid, the simpler build and tidier on paper. The other kept every shipment on a single page, switchable in place. Then I watched what happened with more than one thing to schedule, which is to say almost always. The tabbed flow broke at exactly the moment her sentence named: move to shipment two, and what you chose for shipment one is on another tab, out of view. No running summary, nothing to hold onto, so people lost the picture and stopped trusting the earlier choice had even saved.",
           "The single page won, and not because it was prettier. It kept the record of your own choices in front of you the whole time: every shipment and its slot stayed visible, so scheduling across a fanned-out cart stayed legible. That is the lesson I took away, and it outlived this project: a summary you can see is itself a trust mechanism, because you commit to \"later\" only when you can see exactly what you committed to. So the evidence killed the tabbed flow, and I spent the craft on the harder one, making that dense, stateful page feel effortless.",
+          "The same logic put scheduling on a full page rather than a bottom sheet. A sheet could not fit one of three shipments with their slots and their reasons, and people dismissed sheets by accident and lost the slot they had picked.",
         ],
         // muky4dn5 (28 Sep): the three image boxes moved up into The explorations
         fig: "schedDirections",
@@ -2759,10 +2760,10 @@ const caseStudies = {
         h: "Instant to Scheduled: the toggle",
         nav: "The toggle",
         group: "Process",
-        tldr: "One control moves the order from now to later.", // [CONFIRM] wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
+        tldr: "One control moves the order from now to later.", // wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
         fig: "schedToggleDemo",
         figBare: true,
-        figure: "Switching the delivery mode from Instant to Scheduled. Instant promises 9 minutes; Schedule Delivery asks you to select a slot, the shift from now to later. [CONFIRM: what the micro-animation communicates, once the recording is in]",
+        figure: "Switching the delivery mode from Instant to Scheduled. Instant promises 9 minutes; Schedule Delivery asks you to select a slot, the shift from now to later.",
         divider: true,
       },
       {
@@ -2795,7 +2796,8 @@ const caseStudies = {
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
           "Push a new option everywhere and it reads as clutter that quietly dilutes the instant promise. Hide it and no one finds it. So the go-to-market was a design problem in its own right: surface scheduling only where it earns its place, and let motion do the introducing rather than a hard sell.",
-          "On the schedule page, an animated banner sits at the very top, a small, friendly motion that frames the feature the moment you arrive in the flow. Away from it, the prompt to schedule appears only when it genuinely helps, when demand is high and the cart is not serviceable for instant, so it meets a real need instead of interrupting a working one. [Confirm the exact go-to-market surfaces and any banner copy.]",
+          "On the schedule page, an animated banner sits at the very top, a small, friendly motion that frames the feature the moment you arrive in the flow. Away from it, the prompt to schedule appears only when it genuinely helps, when demand is high and the cart is not serviceable for instant, so it meets a real need instead of interrupting a working one.",
+          "What shipped: the banner on the schedule page and a tooltip on the Schedule button. A banner in the cart, an intro animation and a first-run coach-mark were designed but did not ship.",
         ],
         // fig: "schedGtmReal", // muky18to: moved into the plates box below
         figBare: true, // mtmrnolv: no figure card around coded figures
@@ -2831,7 +2833,7 @@ const caseStudies = {
         tldr: "The hardest state was a cart that stays unserviceable even with a slot. I put it in plain sight.",
         p: [
           "The test scenario was deliberately the worst case, and it was also the hardest state to ship: a cart where an item stays unserviceable even with scheduling, because of a live supply gap. The instinct is to hide the broken thing. I did the opposite. The unserviceable shipment is flagged in place, with the honest consequence stated up front (the items are unavailable and will be removed on save) and, where a store is simply closed, an option to schedule for when it reopens.",
-          "Showing the failure honestly is the same trust argument as the rest of the feature: people forgive a clear \"we cannot do this part\" far more than a cart that silently drops items. This state took months of UX-and-ops work to tame, and getting it right mattered more to trust than any happy-path screen. [Confirm this matches the shipped solution.]",
+          "Showing the failure honestly is the same trust argument as the rest of the feature: people forgive a clear \"we cannot do this part\" far more than a cart that silently drops items. This state took months of UX-and-ops work to tame, and getting it right mattered more to trust than any happy-path screen.",
         ],
         fig: "schedStuckCart",
         figBare: true, // mtmrnolv: no figure card around coded figures
@@ -2857,7 +2859,7 @@ const caseStudies = {
           "Instant cannot serve the shipment: Schedule becomes the only action, enabled and highlighted so the path forward is obvious",
           "Neither instant nor schedule works: the shipment is honestly blocked as store unserviceable",
           "A guardrail hit: scheduling caps at two ongoing orders at a time and five a day, so at the ceiling the Schedule option goes unavailable",
-          "A first-run coach-mark teaching the new Schedule button the first time it shows up",
+          "A first-run coach-mark teaching the new Schedule button the first time it shows up (designed, not shipped)",
           "Items that go unavailable while you linger get moved to another shipment, and on save you can keep them in a wishlist",
           "Your chosen slot lapses while you step away: we ask you to review the schedule again before paying, rather than failing silently at checkout",
         ],
@@ -2936,7 +2938,7 @@ const caseStudies = {
         p: [
           "A scheduled order spends almost all of its life after you have paid, and that is exactly where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\"; for a scheduled order that line is wrong. So I designed a new card that leads with the commitment, \"Scheduled for Today, 6 to 7 PM\", and carries the same status onto the home page and into My Orders. The promise stays in front of you the whole time, not buried in a confirmation email.",
           "Because the order is hours away, it has to come find you. Reminders fan out across the channels people actually watch: a push notification, an in-app banner pinned to the foot of the home page, and a WhatsApp message. [WhatsApp was designed for; we did not have a WhatsApp engine live, so treat it as the intended reach, not a shipped channel.]",
-          "The moment that matters most is the hand-off. Roughly half an hour before your slot the order \"wakes up\" and rejoins the normal flow: a rider is assigned, heads to the store, and the experience becomes the familiar 10-minute one, just landing inside your window instead of right now. The 10-minute promise is not abandoned for scheduling. It is deferred, then honoured. And you keep control of it: the slot is editable before you confirm, and the order is cancellable up to 30 minutes before the window, through the support chat. Fuller post-order editing came later. Riders get their own scheduled-order screen, so the operational side keeps up. And on the rare miss the feature stays honest rather than hopeful: if the slot slips you can cancel once it passes, and a longer breach auto-cancels with an apology and a ₹50 credit, so a broken promise ends cleanly instead of leaving you watching a countdown that never resolves. [Confirm the exact wake-up window and the rider-screen details.]",
+          "The moment that matters most is the hand-off. Roughly half an hour before your slot the order \"wakes up\" and rejoins the normal flow: a rider is assigned, heads to the store, and the experience becomes the familiar 10-minute one, just landing inside your window instead of right now. The 10-minute promise is not abandoned for scheduling. It is deferred, then honoured. And you keep control of it: the slot is editable before you confirm, and the order is cancellable up to 30 minutes before the window, through the support chat. Fuller post-order editing came later. Riders get their own scheduled-order screen, so the operational side keeps up. And on the rare miss the feature stays honest rather than hopeful: if the slot slips you can cancel once it passes, and a longer breach auto-cancels with an apology and a ₹50 credit, so a broken promise ends cleanly instead of leaving you watching a countdown that never resolves.",
         ],
         ul: [
           "A \"Scheduled for\" tracking card that replaces the default 10-minute line, mirrored on home and in My Orders",
@@ -2963,9 +2965,8 @@ const caseStudies = {
         tldr: "The copy was rewritten line by line, and the rewrites show one habit: say what the person needs at that moment.",
         p: [
           "On a feature that asks people to trust \"later\" on an app they open because it means now, the words carry as much weight as the screens. A slot picker that says the wrong thing at the wrong moment spends the trust the whole feature rests on.",
-          "So the copy was rewritten again and again, and the rewrites are the evidence. Read them in order and four moves keep coming back. Say what the person can do, not what is wrong. Let the heading carry the claim. Name the thing at stake in plain words. And write what the evidence says, even when it is not the line I pitched.",
-          "The last one changed the story. The first draft of this case study said scheduled orders doubled in value because people plan ahead and build bigger carts. After launch, the data said roughly eight in ten scheduled orders were a fallback, placed because instant was not available at that moment. The sentence changed because the fact did.",
-          "Each pair below is a line that was struck and the line that replaced it, with where the change came from. The product-copy comments are paraphrased from the design file's own review history, not quoted.",
+          "So the copy was rewritten again and again, and the rewrites are the evidence. Read them in order and three moves keep coming back. Say what the person can do, not what is wrong. Let the heading carry the claim. And name the thing at stake in plain words.",
+          "Each pair below is a line that was struck and the line that replaced it, with where the change came from.",
         ],
         figNext: "schedCopyProcess",
         divider: true,
@@ -3029,18 +3030,17 @@ const caseStudies = {
           "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
           "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65.",
           "82.5% arrived inside the booked hour in August, down from 92.6% in February. The bigger miss is cancellation: 27.4% against about 11% for instant.",
-          "Appliances rose from 21% of scheduled GMV in June to 54% in September (1 to 21 Sep), and an appliance order is cancelled 34.4% of the time against 26.6% for the rest.",
+          "Appliances took a steadily larger share of scheduled GMV through the summer, and an appliance order is cancelled 34.4% of the time against 26.6% for the rest.",
         ],
         // mvf9un9o (19 Oct, "make a copy of this but follow this layout to summarise the impact"): the Impact section, kept, and
         // an "Impact at a glance" after it in the layout of Agam's reference (headline with one word highlighted, three
         // bars, a source). Numbers only from the bullets above: 1.72% peak share, ₹1,452 v ₹543, 82.5% in the booked hour
-        // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances 21% (Jun) to 54% (1 to 21 Sep, a partial month).
+        // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances' share of GMV rising (no figure, a partial month).
         glance: {
           label: "Impact at a glance",
           head: ["A small slice of Zepto’s orders, and each one worth almost ", "three", " times an instant one."],
           bars: [
             { v: 82.5, d: "of scheduled orders arrived inside the booked hour in August 2026, down from 92.6% in February" },
-            { v: 54, d: "of scheduled GMV was appliances by September, up from 21% in June (1 to 21 Sep, a partial month) [CONFIRM]" },
             { v: 27.4, d: "of scheduled orders were cancelled in August 2026, against about 11% for instant" },
           ],
           source: "Source: Zepto’s own order records, every order booked with a delivery slot, 10 October 2025 to 21 September 2026",
@@ -3051,7 +3051,7 @@ const caseStudies = {
           "The number I would put on a slide is not the one I would defend in a room. A year on, a month-by-month pull settles it: scheduled delivery grew from a two-store pilot in October 2025 to 1.81 million orders in May 2026, its best month, which was 1.72% of everything Zepto delivered. It has eased to about 1.4% since. That is a small, real slice of a very large business, and it is the number I would defend.",
           "It is not a planning-adoption number, though, and the honest version of this section is about why. When we decomposed it earlier, only about 1.3% of orders chose a slot in the windows when instant was fully available; the climb above that came from the windows when instant could not serve the cart. That matches what users told us: most people schedule as a fallback, not a plan. The warehouse still cannot prove it, because nothing records a customer who opened the slot picker and found nothing bookable. That gap is instrumentation we never built, and it is the first thing I would add.",
           "The value story is cleaner, and it got bigger when we measured it properly. In August 2026 a scheduled order was worth about 1,450 rupees against 543 for an instant one, and carried 5.85 items against 4.65. The 550-against-300 pair I had been quoting for a year turned out to be the median, not the mean; the medians are 561 and 332, so both numbers were right and I had been telling the quieter half of the story.",
-          "Then the September pull explained the gap, and the answer was not the one I had been giving. I had been saying a scheduled cart is the weekly shop. The median cart is nothing of the sort, it is an instant order with a chosen hour, and the mean is carried by a tail that turns out to be large appliances. Items per order never moved: 5.4 to 6.3 all year, no break anywhere. Price per item went from about 160 rupees to 291, because Electronics and Appliances went from 21% of scheduled GMV in June to 54% by September, at 10,810 rupees an item. Only about 5% of scheduled orders contain one. Scheduled delivery is quietly becoming the appliance-delivery channel, which makes complete sense the moment you say it out loud: a fridge needs a time slot, a packet of biscuits does not.",
+          "Then the September pull explained the gap, and the answer was not the one I had been giving. I had been saying a scheduled cart is the weekly shop. The median cart is nothing of the sort, it is an instant order with a chosen hour, and the mean is carried by a tail that turns out to be large appliances. Items per order never moved: 5.4 to 6.3 all year, no break anywhere. Price per item went from about 160 rupees to 291, because Electronics and Appliances took a steadily larger share of scheduled GMV through the summer, at 10,810 rupees an item. Only about 5% of scheduled orders contain one. Scheduled delivery is quietly becoming the appliance-delivery channel, which makes complete sense the moment you say it out loud: a fridge needs a time slot, a packet of biscuits does not.",
           "That reframes the feature rather than flattering it. An appliance delivery is a different product with different needs, installation, two-person handling, a real returns path, and we have been measuring it as though it were groceries. The failure numbers say so too: an appliance order is cancelled 34.4% of the time against 26.6% for every other scheduled order, that gap has widened three months running, and one in three never arrives at all. What it is NOT is the reason scheduled delivery looks bad overall, because support tickets are identical between the two groups at 166 per thousand. The 2.6 times ticket rate is ours, not the fridge's.",
           "And then the part that is harder to put on a slide. The most valuable order in the business is the one we serve worst. Scheduled orders raise 147 support tickets per thousand against 57 for instant, rate 3.98 against 4.32, and are cancelled 27.4% of the time against about 11%. Every one of those cancellations is somebody who booked an hour and did not get it. That is the bill for the promise, and it is the argument for spending on the feature rather than the argument against it.",
           "The last finding is the one I did not expect, and it changed which number I would report. Delivery inside the booked hour fell from 92.6% in February to 76.8% in September, which reads like a collapse. It is not. The fall is almost entirely early arrivals, up from 2.6% to 17%, while lateness peaked in May and recovered. Split August's ratings by arrival and early orders score 4.14 against 4.07 for orders that land inside the window, which is not a significant difference; late ones score 3.81, which very much is. So the claim the data supports is that arriving early is no worse, not that it is better. That is enough. If early arrivals are no worse, a metric that counts them as failures is measuring the wrong thing, and \"not late\" is the honest headline: by that measure the promise has held at 93 to 96% all year.",
@@ -3063,7 +3063,7 @@ const caseStudies = {
         _ul: [
           "Peak adoption 1.72% of all orders (May 2026, 1.81M scheduled orders), settling near 1.4%; about 1.3% in the windows when instant was fully available, so the rest is the unserviceable-window fallback",
           "Average order value about ₹1,450 against ₹543 for an instant order, and 5.85 items against 4.65 (August 2026); the medians are ₹561 and ₹332",
-          "The mean is carried by large appliances, not big grocery shops: items per order never moved, price per item went ₹160 to ₹291, and Electronics & Appliances went from 21% of scheduled GMV in June to 54% by September",
+          "The mean is carried by large appliances, not big grocery shops: items per order never moved, price per item went ₹160 to ₹291, and Electronics & Appliances took a steadily larger share of scheduled GMV through the summer",
           "An appliance order is cancelled 34.4% of the time against 26.6%, and one in three never arrives; but support tickets are identical between the two groups, so the gap against instant is not appliance-driven",
           "The cost of the promise: 2.6 times the support tickets, 2.5 times the cancellations and 0.34 stars lower than an instant order",
           "\"Not late\" has held at 93 to 96% all year; the within-slot metric fell 16 points only because it counts an early arrival as a failure, and the ratings say an early arrival is no worse than an on-time one",
@@ -3182,22 +3182,7 @@ const caseStudies = {
       // mukq5ujj (28 Sep): "What I'd do differently" moved to the very bottom of the case study
       { h: "What I'd do differently", noHeading: true, roleWireframes: true, roleWireframesOnly: ["What I'd do differently"] },
     ],
-    // mukx4g4z (28 Sep) hid this box; 12 Oct: Agam asked for "points left to clarify, like the other
-    // case studies" at the bottom, so it is back as the same cs.todo box, rewritten to what is open now.
-    // Dev only: the public build and the presenting cut drop it, the trim cut keeps it. Questions, not answers.
-    todo: [
-      "Go-to-market: which surfaces shipped, and the banner copy [Confirm note in The go-to-market]",
-      "The stuck cart: does the pause-and-ask state match what shipped? [Confirm note in The stuck cart]",
-      "The wake-up: the exact window before the slot and the rider-screen details [Confirm note in After you book]",
-      "Returns & refunds: how the bot is framed (guided self-service or a conversational assistant), the problem it replaced and any outcome, plus your role and dates on it [two Confirm notes]",
-      "Team and timeline: PM, eng, ops and research partners, with the dates",
-      "One line on why a dedicated schedule page beat a bottom sheet over the cart",
-      "Reach explorer: the model's radii (1.6 km instant, 3.2 km scheduled), the 11 PM closures and the three stores are assumptions, not Zepto data. Confirm them or keep the 'illustrative' label loud",
-      "The pay-button debate: was it with the PM, and whose pitch was set aside (presenting prep, [CHECK]); name the person only if you are comfortable",
-      "The prototype embed: the Figma file is private to your account, so most visitors see a blank frame. Share it or drop the link",
-      "Design calls from the QA pass: the 'Nothing' swatch is 2.1:1 in light mode, and the reach map traps page scroll on a phone",
-      "The copy section: the pairs are real (annotation history, the 21 Jun draft, the design-file review thread), but the review-thread lines are paraphrased from the file, and the 21 Jun draft is shown as the \"first draft\". Confirm you are happy showing both, and the four moves as the way you describe your own process",
-    ],
+    // 22 Oct: the fill-in box (cs.todo) is gone; Agam answered every open point (docs/sd-story-notes.md, "Resolved by Agam").
   },
   zepiris: {
     accent: "#4F46E5",
@@ -10100,6 +10085,7 @@ function CaseStudyBodyFull({ cs }) {
                               height="1566"
                             />
                           )}
+                          {!PROTO_EMBED && <span className="article__plate-still-cap">A still from the prototype. The live version is not public.</span>}
                           {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
                           {pl.cueBox && !pl.cueNoBox && (
                             <span

@@ -68,10 +68,10 @@ const SLIDES = [
       ],
     },
     groups: [
-      ["Design", ["Me, lead designer", "Shreya Garg, design manager and partner through M1 and M2"]],
-      ["Product", ["Nishit Raj, PM for M1", "Kavya Jain, lead PM from M2 onward", "Nishanth Bhat"]],
-      ["Content", ["Ciara Greenwood, the October copy pass", "Shriya Karani", "Harish, returns copy"]],
-      ["Engineering and QA", ["sainath banuru", "Abhijeet", "Junaid Ahmed", "Amit", "tushar patil", "and seven more on build and QA"]],
+      ["Design", ["Me, lead designer", "Design manager and partner through M1 and M2"]],
+      ["Product", ["PM for M1", "Lead PM from M2 onward", "Product partners across both releases"]],
+      ["Content", ["The October copy pass", "Content partners across the file", "Returns copy"]],
+      ["Engineering and QA", ["Engineers on the build", "QA on every release", "Twelve people in all"]],
       // confirmed by Agam, 27 Sep (Brand card removed at his request)
       ["Supply chain", ["Part of the planning from the start", "Part of shipping, at the very end"]],
     ],
@@ -83,11 +83,11 @@ const SLIDES = [
     kind: "timeline",
     phases: [
       ["19 to 28 Aug 2025", "Problem on the canvas", "I laid the whole problem space into the file before anyone reviewed it: order lifecycle, edge cases, the cart-entry experiments."],
-      ["Late Aug", "First review", "Nishit's review set rules that stuck: never negative copy, show the real date, default-select Schedule."],
+      ["Late Aug", "First review", "The first PM review set rules that stuck: never negative copy, show the real date, default-select Schedule."],
       ["Sep 2025", "M1 build and handoff", "The serviceability state matrix; engineering starts asking the hard questions."],
-      ["Oct 2025", "Content pass", "The busiest month in the file, about 105 comments, most of them copy with Ciara."],
+      ["Oct 2025", "Content pass", "The busiest month in the file, about 105 comments, most of them copy with the content team."],
       ["Late Oct", "M1 ships", "Deliberately narrow."],
-      ["Mid-Nov 2025", "M2 ships", "Full multi-shipment scheduling, and the go-to-market with Kavya."],
+      ["Mid-Nov 2025", "M2 ships", "Full multi-shipment scheduling, and the go-to-market with the lead PM."],
       // confirmed by Agam, 27 Sep: the study ran in November
       ["Nov 2025", "Validation study", "The 45-user mixed-method study, run with the PMs just after launch."],
       ["Dec 2025 to Jan 2026", "Returns and refunds", "The slot picker extended into the returns pickup flow."],
@@ -122,20 +122,20 @@ const SLIDES = [
     title: "Two PMs, one system.",
     kind: "list",
     items: [
-      ["Nishit set the rules", "Nishit Raj led product through M1; his first review set the copy and default rules the feature kept."],
-      ["Kavya took M2", "Kavya Jain took over as lead PM for M2 and defined the returns state set."],
+      ["The first PM set the rules", "The M1 PM led product through the first release, and the first review set the copy and default rules the feature kept."],
+      ["A lead PM took M2", "A lead PM took over for M2 and defined the returns state set."],
       ["One system across the handover", "The design stayed one coherent system across the handover: the same slot picker, the same states."],
-      ["Current layout first", "Shreya's steer: try it inside the current layout first, to keep front-end change small."],
+      ["Current layout first", "The design manager's steer: try it inside the current layout first, to keep front-end change small."],
     ],
     // the artefact (27 Sep): a review thread from the design file, annotated.
     // Comments are PARAPHRASED from the file's comment history (the June
     // synthesis of its 506 comments), not verbatim quotes.
     thread: [
-      { who: "Nishit Raj", role: "PM, M1", when: "24 to 25 Aug 2025", text: "The title shouldn't be negative. \"Schedule your order\", not \"Some items are unserviceable\".", led: "Became a rule for every state: positive copy, always." },
-      { who: "Nishit Raj", role: "PM, M1", when: "24 to 25 Aug 2025", text: "If someone taps Schedule, the Schedule option should already be selected when they land.", led: "Shipped as the default selection." },
-      { who: "Nishit Raj", role: "PM, M1", when: "24 to 25 Aug 2025", text: "Don't write \"day after tomorrow\". Show the actual date.", led: "Every slot tab carries its real date." },
-      { who: "Shreya Garg", role: "Design manager", when: "Direction reviews", text: "Try it inside the current layout first, to keep front-end change small.", led: "Set the constraint the explorations worked within." },
-      { who: "Nishit Raj", role: "PM, M1", when: "Direction reviews", text: "In the tabbed version the tabs don't look tappable, and there's too much white space.", led: "One of the reasons the tabbed direction was dropped." },
+      { who: "Product manager", role: "M1", when: "24 to 25 Aug 2025", text: "The title shouldn't be negative. \"Schedule your order\", not \"Some items are unserviceable\".", led: "Became a rule for every state: positive copy, always." },
+      { who: "Product manager", role: "M1", when: "24 to 25 Aug 2025", text: "If someone taps Schedule, the Schedule option should already be selected when they land.", led: "Shipped as the default selection." },
+      { who: "Product manager", role: "M1", when: "24 to 25 Aug 2025", text: "Don't write \"day after tomorrow\". Show the actual date.", led: "Every slot tab carries its real date." },
+      { who: "Design manager", role: "Direction reviews", when: "Direction reviews", text: "Try it inside the current layout first, to keep front-end change small.", led: "Set the constraint the explorations worked within." },
+      { who: "Product manager", role: "M1", when: "Direction reviews", text: "In the tabbed version the tabs don't look tappable, and there's too much white space.", led: "One of the reasons the tabbed direction was dropped." },
     ],
   },
   {
@@ -154,8 +154,8 @@ const SLIDES = [
     title: "Positive copy, always.",
     kind: "list",
     items: [
-      ["Negative copy, killed three times", "Three reviewers (Nishit, Ciara, Harish) independently killed negative phrasing: \"Schedule your order\", not \"Some items are unserviceable\"."],
-      ["October, the busiest month", "Ciara's October pass was the busiest month in the file."],
+      ["Negative copy, killed three times", "Three reviewers (product and content) independently killed negative phrasing: \"Schedule your order\", not \"Some items are unserviceable\"."],
+      ["October, the busiest month", "The October copy pass was the busiest month in the file."],
       ["One question left open", "An open question I raised and never closed: should \"shipment\" become \"delivery\"?"],
     ],
     // the two rewrites the file records (WF05's thread): before -> after
@@ -508,11 +508,11 @@ const PHASE_EMOJI = {
 // own sentence (nothing added)
 const PHASE_BULLETS = {
   "Problem on the canvas": ["The whole problem space, laid out before any review", "The order lifecycle, end to end", "Edge cases and the cart-entry experiments"],
-  "First review": ["Nishit's review set rules that stuck", "Never negative copy", "Show the real date", "Default-select Schedule"],
+  "First review": ["The first PM review set rules that stuck", "Never negative copy", "Show the real date", "Default-select Schedule"],
   "M1 build and handoff": ["The serviceability state matrix", "Engineering starts asking the hard questions"],
-  "Content pass": ["The busiest month in the file", "About 105 comments", "Most of them copy, with Ciara"],
+  "Content pass": ["The busiest month in the file", "About 105 comments", "Most of them copy, with the content team"],
   "M1 ships": ["Deliberately narrow"],
-  "M2 ships": ["Full multi-shipment scheduling", "The go-to-market, with Kavya"],
+  "M2 ships": ["Full multi-shipment scheduling", "The go-to-market, with the lead PM"],
   "Validation study": ["The 45-user mixed-method study", "Run with the PMs, just after launch"],
   "Returns and refunds": ["The slot picker, extended into returns pickup"],
   "Hardening": ["Edge cases with engineering", "Zero slots", "API failure", "Analytics"],

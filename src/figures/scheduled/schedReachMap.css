@@ -15,7 +15,7 @@
 .rex .rex__osm:hover, .rex .rex__osm:focus-visible { color: var(--fg); text-decoration: underline; }
 
 /* mv589p9j (12 Oct, "make it simple"): one highlight colour (schedule only, orange), everything else muted */
-.rex { --rex-mute: color-mix(in srgb, var(--fg) 38%, var(--bg)); --rex-none: color-mix(in srgb, var(--fg) 12%, var(--bg)); }
+.rex { --rex-mute: color-mix(in srgb, var(--fg) 38%, var(--bg)); --rex-none: color-mix(in srgb, var(--fg) 46%, var(--bg)); } /* 22 Oct: 3:1 or better on the card in light mode (was 12%, 2.1:1) */
 .rex .rex__title { font: 400 1.5rem/1.2 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); padding: 16px 16px 0; margin: 0; } /* mvg63bjp (Agam): "Delivery availability" in Stack Sans at the heading size (24px) */
 .rex .rex__big--hl { color: var(--sdc-c2); font-size: 34px; }
 .rex__legend--min { margin-top: 10px; padding-left: 32px; } /* mvg65gbl (Agam): extra left padding (was 19px) */

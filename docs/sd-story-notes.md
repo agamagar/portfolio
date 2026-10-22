@@ -40,6 +40,24 @@ Source of every claim: `~/design-playground/flow/map/{schedule,returns,cart}.jso
 | Deliver: 326 cases, 32 flows, all prototyped | totals 111 + 101 + 114; `docs/build-*.md` ("all N cases registered and reachable") |
 | Deliver: What the full map caught | `inconsistencies` and `openQuestions` in all three files |
 
+## Resolved by Agam, 22 Oct 2026
+The page's own [CONFIRM] notes (the "FILL IN TO FINISH" box on /work/scheduled-delivery) were answered and folded into the copy. Each is plain copy now, with no marker:
+- **54% appliances (partial month):** the number is dropped; the copy describes the rising share without a figure (the chart still plots the partial September point).
+- **Reach explorer:** radii, 11 PM closures and the three stores kept, with a small "Illustrative model" label on the figure.
+- **Team and partners:** generic ("product, content, engineering, operations and QA"), no names anywhere in the section.
+- **Go-to-market:** shipped = the banner on the schedule page and the tooltip on the Schedule button. The cart banner, intro animation and first-run coach-mark were designed, not shipped, and say so.
+- **Pay-button debate:** no disagreement on the page; it reads as a decision.
+- **Page vs sheet:** a sheet could not fit one of three shipments with their slots and reasons, and people dismissed sheets by accident and lost their slot.
+- **Returns:** shipped. Agam's role: designer. The in-app flow comes first; chat is a fallback for edge cases (this resolves item 10 below for the page copy).
+- **Wake-up and stuck-cart details:** accurate as written.
+- **Copy section:** paraphrased review lines and the "first draft" framing removed.
+- **Gift-bag and "ordering for someone" rows:** a gifting use case (schedule a gift to arrive at someone else's place at a set time).
+- **Toggle caption and TL;DR:** kept as is.
+- **QA design calls:** the "Nothing" swatch raised to 3:1 or better in light mode; the reach map no longer traps page scroll on touch (tap to arm, tap outside to release).
+- **Figma prototype embed:** shows a poster and a short caption where it cannot load.
+
+The 16 deck items below are still open except item 10.
+
 ## [CONFIRM] list
 
 1. **Year and context of the Oct 29 session.** The research page says "Oct 29" only. The deck says "Oct 29 session" with no year. Which prototype each of the three users saw is not in the file (open question in `schedule.json`), so the slide says "one person", "another", "a third" and never ties a quote to UT 01, 02 or 03.
@@ -51,7 +69,7 @@ Source of every claim: `~/design-playground/flow/map/{schedule,returns,cart}.jso
 7. **Scheduled-order cancel button.** Cart `touchpoints-orders-home-pdp` (C-039 to C-042) designs "Cancel Order" on the Orders page, but the existing deck says cancellation ran through support chat in v1. Left OUT of the slides to avoid contradicting that. Confirm whether the Orders-page cancel shipped.
 8. **What "FTB" stands for.** The slides say "the dev handover". Also "DH" and "SS" (dark store, super store) are inferred in the map; the cart-composition flow is not used in a slide.
 9. **Return-pickup copy.** The Returns pickup page text reads "Pickup", and some thumbnails are low resolution (PK-005 to PK-012 have none). The pickup slide only claims "Instant Pickup in 9 minutes" (PK-001) and the booked-out grid (PK-003).
-10. **Exchange vs return entry point.** Chat (Zap) and in-app are both drawn as current (open question). The deck shows both and names the question in Learnings.
+10. **(Resolved 22 Oct: in-app first, chat is a fallback.) Exchange vs return entry point.** Chat (Zap) and in-app are both drawn as current (open question). The deck shows both and names the question in Learnings.
 11. **Tracking UI.** The tracking state labels exist as text on the canvas, most without frames (returns inconsistency list). The tracking slide describes the chain of states, not a finished UI. Confirm wording before claiming it shipped.
 12. **"Four rules the cases follow" is synthesis**, not a quote from the file. Each rule maps to a source (header reasons, unserviceable header, collapsed slot, store-closed and high-demand headers) but the wording is mine. Confirm Agam is happy owning these as principles.
 13. **Offers: "all of it is prototyped".** True for the playground (cart-offers group, 41 cases); in Figma the BxGY page is `*On Hold*`. Whether a combined-cart BxGY ships is an open question (what unblocks it). The slide says "on hold".

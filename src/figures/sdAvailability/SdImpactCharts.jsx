@@ -664,7 +664,7 @@ export default function SdImpactCharts() {
         wide
         title="One category did all of it"
         kicker="Electronics and Appliances, share of scheduled GMV and price per item"
-        shows="July is the inflection: electronics GMV doubled in a month, from 20 crore to 42 crore, and its share of scheduled GMV went from 21% to 37%. By September it is 54%."
+        shows="July is the inflection: electronics GMV doubled in a month, from 20 crore to 42 crore, and its share of scheduled GMV rose sharply. It kept climbing through September."
         reads="pricier units, not more units. Items sold have FALLEN since July, 66k to 47k, while GMV kept rising, because the average price per electronics item went from 3,792 rupees to 10,810. That is large appliances, not earbuds. More than half of every scheduled-delivery rupee is now one of them."
         legend={[{ label: "Share of scheduled GMV", color: CAT[1] }, { label: "Price per electronics item", color: CAT[3] }]}
         table={{ head: ["Month", "Electronics GMV", "Share of SD GMV", "Items", "Orders with one", "Price per item"], rows: ELECTRONICS.map((e) => [e.label + (e.partial ? " (to 22nd)" : ""), "\u20b9" + e.gmvCr.toFixed(1) + " Cr", fmtPct1(e.shareOfSdGmv), fmtInt(e.items), fmtInt(e.ordersWithOne), fmtInr(e.pricePerItem)]) }}
