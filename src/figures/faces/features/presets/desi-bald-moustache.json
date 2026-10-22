@@ -1,0 +1,20 @@
+{
+  "skin": {
+    "tone": 0.7
+  },
+  "hair": {
+    "style": "bald"
+  },
+  "facialHair": {
+    "kind": "moustache",
+    "curl": 0.6,
+    "followHair": false,
+    "color": "#1d1714"
+  },
+  "accessories": {
+    "glasses": "square"
+  },
+  "mouth": {
+    "smile": 0.2
+  }
+}

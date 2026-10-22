@@ -166,8 +166,10 @@ export const skinById = (id) => (id === PLAST.id ? PLAST : SKINS.find((s) => s.i
 
 // which palette entry a mesh uses (lids are skin)
 export const PROPS = ["Hat", "HatBand", "Pin"];
+// the face system's parts (features/parts): each is its own part key with its own palette entry
+export const FACE_PARTS = ["Headwear", "Beard", "Glasses", "Bindi", "Tilak", "Earring", "NosePin"];
 export const partKey = (name) =>
-  name.startsWith("Eye") ? "Eye" : name.startsWith("Brow") ? "Brow" : ["Hair", "Mouth", "MouthInner", ...PROPS].includes(name) ? name : "Skin";
+  name.startsWith("Eye") ? "Eye" : name.startsWith("Brow") ? "Brow" : ["Hair", "Mouth", "MouthInner", ...PROPS, ...FACE_PARTS].includes(name) ? name : "Skin";
 
 // ---- shaders --------------------------------------------------------------------
 // the morph chunks let the shape keys (glTF morph targets) bend position and normal;

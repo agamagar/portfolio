@@ -1,0 +1,22 @@
+{
+  "skin": {
+    "tone": 0.6
+  },
+  "hair": {
+    "style": "mohawk",
+    "color": "#15100d"
+  },
+  "facialHair": {
+    "kind": "stubble",
+    "followHair": true
+  },
+  "accessories": {
+    "earrings": "hoops"
+  },
+  "eyes": {
+    "openness": -0.35
+  },
+  "mouth": {
+    "smile": 0.2
+  }
+}

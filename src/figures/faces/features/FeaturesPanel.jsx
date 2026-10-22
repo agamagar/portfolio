@@ -36,6 +36,7 @@ export default function FeaturesPanel({ face, onChange, onCopied }) {
           <summary>{m.label}</summary>
           {Object.entries(m.params).map(([k, spec]) => {
             const v = get(m, k, spec);
+            if (spec.showWhen && !Object.entries(spec.showWhen).every(([dep, vals]) => vals.includes(get(m, dep, m.params[dep])))) return null;
             if (spec.type === "select") return (
               <label className="fl-sl" key={k}><span>{spec.label}</span>
                 <select value={v} onChange={(e) => set(m, k, e.target.value, spec)}>{spec.options.map(([o, l]) => <option key={o} value={o}>{l}</option>)}</select><output /></label>);

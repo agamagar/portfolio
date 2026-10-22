@@ -1,0 +1,20 @@
+{
+  "skin": {
+    "tone": 0.97,
+    "undertone": 0.2
+  },
+  "hair": {
+    "style": "braid",
+    "color": "#120d0b"
+  },
+  "accessories": {
+    "earrings": "hoops"
+  },
+  "eyes": {
+    "openness": -0.2,
+    "smileSquint": 0.5
+  },
+  "mouth": {
+    "smile": 0.7
+  }
+}

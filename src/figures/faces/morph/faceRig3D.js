@@ -13,6 +13,8 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { MODES, skinById, partKey, VERT, FRAG, SHAPE_GLSL } from "../faceSkins";
 import { buildPlastHair } from "./plastHair";
 import { resolveFace, packHandles } from "../features/core";
+import { makeSurface } from "../features/skinSurface";
+import { buildPart } from "../features/parts";
 
 // the ids pass: part codes (red channel / 255); the ear is the skin past the cheek on the side we see (the far ear stays skin:
 // the drawing has none, so it is just part of the silhouette)
@@ -47,6 +49,9 @@ void main(){
 // reads this instead; a missing file falls back to the GLB's map.
 // hat: show the hat parts (the clay rig hides them); a rig without an id map, raw skin or margins
 // (noir has none) passes null for them and draws what its own maps carry
+// parts that do not follow the head-shape warp (they are not skin: hair and headwear sit over it)
+const PART_SLOTS = ["Headwear", "Beard", "Glasses", "Bindi", "Tilak", "Earring", "NosePin"];
+const NOWARP = ["Hair", "HatBand", "Headwear"];
 export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/fit.json", idSrc = "/faces/idmap.png", rawSrc = "/faces/skin-raw.png", marginSrc = "/faces/margins-clay.png", cleanSrc = "/faces/skin-clean.png", skinId = "clay", hat = false, procedural = false, face = null, mode = null }) {
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(27, W / H, 0.1, 50);
@@ -124,9 +129,9 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     const meshes = [];
     root.traverse((o) => { if (o.isMesh) meshes.push(o); });
     const skinMapTex = meshes.find((o) => o.name === "Skin")?.material?.map || null; // the skin's map (the lids share it)
-    for (const o of meshes) {
+    const adopt = (o) => {
       const key = partKey(o.name);
-      if (key === "Pin" || (!hat && (key === "Hat" || key === "HatBand"))) { o.visible = false; continue; }
+      if (key === "Pin" || (!hat && (key === "Hat" || key === "HatBand"))) { o.visible = false; return; }
       const map = procedural ? null : o.material?.map || null;
       if (map) { map.colorSpace = THREE.NoColorSpace; map.needsUpdate = true; }
       const L = fit.light;
@@ -137,7 +142,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
       const mat = new THREE.ShaderMaterial({
         vertexShader: VERT, fragmentShader: FRAG, side: procedural && key === "Hair" ? THREE.DoubleSide : THREE.FrontSide, vertexColors: !!o.geometry.attributes.color,
         uniforms: { ...shared, uBase: { value: new THREE.Color(P.base) }, uShade: { value: new THREE.Color(P.shade) }, uDeep: { value: new THREE.Color(P.deep) },
-          uSpec: { value: P.spec || 0 }, uIsHair: { value: key === "Hair" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
+          uSpec: { value: P.spec || 0 }, uIsHair: { value: key === "Hair" || key === "Beard" || key === "Headwear" ? 1 : 0 }, uMisreg: { value: new THREE.Color() },
           uSH: { value: SHv(lit) }, uK: { value: lit.k },
           uUseMap: { value: map ? 1 : 0 }, uMap: { value: (cleanSkin && map && map === skinMapTex && cleanSkin) || map || blank }, uIsEye: { value: key === "Eye" ? 1 : 0 },
           uFloor: { value: lit.floor ?? 0.03 }, uTexScale: { value: lit.scale ?? 4 }, uTexGamma: { value: lit.gamma ?? 1 },
@@ -154,7 +159,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uRestModel: { value: new THREE.Matrix4() }, uRestV: { value: new THREE.Matrix4() }, uRestP: { value: new THREE.Matrix4() }, uMirror: { value: 0 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
-          uTurn: { value: 0 }, uShape: { value: procedural && key !== "Hair" && key !== "HatBand" ? 1 : 0 },
+          uTurn: { value: 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 },
           uMapRaw: { value: (o.name === "Skin" && skinRaw) || blank }, uMargin: { value: (o.name === "Skin" && margins) || blank },
           uHasRaw: { value: o.name === "Skin" && skinRaw && margins ? 1 : 0 },
           uMV: { value: (mv[o.name] && o.geometry.attributes._mvuv && mv[o.name]) || blank },
@@ -169,9 +174,9 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
         mat.uniforms.uTint.value.fromArray(fit.ratioMean.Skin).multiplyScalar(9);
       }
       // (the hat counts as hair: part of the head's silhouette, with the hair's flat colour)
-      const idCode = PART_ID[o.name] ?? (key === "Skin" ? PART_ID.Skin : key === "Hat" || key === "HatBand" ? PART_ID.Hair : 0);
+      const idCode = PART_ID[o.name] ?? (key === "Skin" ? PART_ID.Skin : key === "Hat" || key === "HatBand" || key === "Headwear" || key === "Beard" ? PART_ID.Hair : key === "Glasses" ? PART_ID.BrowL : ["Bindi", "Tilak", "Earring", "NosePin"].includes(key) ? PART_ID.Skin : 0);
       const idMat = new THREE.ShaderMaterial({ vertexShader: ID_VERT, fragmentShader: ID_FRAG,
-        uniforms: { uW: shared.uW, uWn: shared.uWn, uId: { value: idCode }, uEarSplit: { value: o.name === "Skin" ? 1 : 0 }, uShape: { value: procedural && key !== "Hair" && key !== "HatBand" ? 1 : 0 } } });
+        uniforms: { uW: shared.uW, uWn: shared.uWn, uId: { value: idCode }, uEarSplit: { value: o.name === "Skin" ? 1 : 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 } } });
       mat.userData.key = key;
       o.material = mat;
       shadedMats.push(mat);
@@ -179,7 +184,9 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
       o.userData.rest = { p: o.position.clone() };
       if (o.morphTargetDictionary) rig.morphs.push(o);
       rig.parts[o.name] = o;
-    }
+    };
+    for (const o of meshes) adopt(o);
+    rig._adopt = adopt; rig._root = root;
     if (procedural) rig.setFace(rig.face);
     // at rest only the textured lip shows; lids and the mouth's inside wait for a pose that uses them
     for (const n of ["LidL", "LidR", "MouthInner"]) if (rig.parts[n]) rig.parts[n].visible = false;
@@ -192,7 +199,8 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
   // face (baseKeys), the palette, the material, and the hair (rebuilt only when its params change).
   // Safe to call before the rig has loaded: it is applied as soon as the meshes exist.
   rig.face = rig.face || null;
-  let hairKey = "";
+  let hairKey = "", surface = null;
+  const partKeys = {};
   rig.setFace = (f) => {
     rig.face = f;
     if (!procedural || !rig.parts.Hair) return;
@@ -213,6 +221,36 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
       rig.parts.HatBand.geometry.dispose(); rig.parts.HatBand.geometry = clip.geometry;
     }
     rig.parts.HatBand.visible = !!f.hair.clip;
+    // the pre-built parts (features/parts/*): headwear, beard, glasses, bindi, tilak, earrings, nose pin. A slot is rebuilt only when
+    // its spec changes; the skin's surface is queried once (they sit ON the real geometry)
+    const slots = Object.keys(f.parts || {});
+    for (const slot of PART_SLOTS) {
+      const spec = f.parts?.[slot] || null, k = JSON.stringify(spec);
+      if (partKeys[slot] === k) continue;
+      partKeys[slot] = k;
+      rig.setPart(slot, spec ? buildPart(slot, spec, (surface ||= makeSurface(rig.parts.Skin))) : null);
+    }
+    // (the palette again: new parts have just taken their materials)
+    for (const m of shadedMats) {
+      const P = { ...(base[m.userData.key] || base.Skin), ...(f.palette[m.userData.key] || {}) };
+      m.uniforms.uBase.value.set(P.base); m.uniforms.uShade.value.set(P.shade); m.uniforms.uDeep.value.set(P.deep); m.uniforms.uSpec.value = P.spec || 0;
+    }
+  };
+  // swap one dynamic part (a mesh named by its slot) in or out of the head
+  rig.setPart = (slot, mesh) => {
+    const old = rig.parts[slot];
+    if (old) {
+      old.removeFromParent(); old.geometry.dispose();
+      const i = shadedMats.indexOf(old.userData.mats?.shaded); if (i >= 0) shadedMats.splice(i, 1);
+      old.userData.mats?.shaded.dispose(); old.userData.mats?.id.dispose();
+      const j = rig.morphs.indexOf(old); if (j >= 0) rig.morphs.splice(j, 1);
+      delete rig.parts[slot];
+    }
+    if (!mesh) return;
+    mesh.name = slot;
+    rig._root.add(mesh);
+    rig._root.updateMatrixWorld(true);
+    rig._adopt(mesh);
   };
 
   // free this rig's GPU side (geometry, textures, programs) once it is no longer worn

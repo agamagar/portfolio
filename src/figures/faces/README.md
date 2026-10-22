@@ -20,6 +20,12 @@ the keys and ranges). `resolveFace(cfg)` -> shape keys (the resting face, under 
 Presets are `features/presets/*.json` (`agam-clay`, `neutral`). Adding a module, preset or hair style is adding a file. The schema is additive:
 unknown blocks and keys are ignored, missing ones take the module's defaults, so a saved face keeps loading as modules grow.
 
+## Cases and the photo step
+`features/CASES.md` lists what the Desi-Log pack needs and where each case lives. `features/describe.js` exports `faceSchema()` (the vocabulary),
+`sanitize(cfg)` (clamp any outside JSON to it) and `PHOTO_GUIDE` (how a vision model should read a photo into a config). Parts (headwear, facial hair,
+glasses, bindi, tilak, earrings, nose pin) are pre-built three.js in `features/parts/`, built on the real skin surface (`skinSurface.js`), so they follow
+emotes and head moves; adding one is adding a file.
+
 ## Rest of the folder
 `faceSkins.js` (shaders, palettes, `SKINS`), `FaceSV.jsx` (/faces, the nine skins by the old path), `morph/faceRig3D.js` (the rig),
 `morph/emoteEngine.js` (emotes), `morph/plastHair.js` (built hair). Audit and fit tools: `tools/face3d/`, newest renders in

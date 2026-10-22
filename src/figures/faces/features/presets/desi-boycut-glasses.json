@@ -1,0 +1,20 @@
+{
+  "skin": {
+    "tone": 0.3
+  },
+  "hair": {
+    "style": "boy-cut",
+    "color": "#1a1411"
+  },
+  "facialHair": {
+    "kind": "stubble",
+    "followHair": true,
+    "amount": 0.4
+  },
+  "accessories": {
+    "glasses": "square"
+  },
+  "mouth": {
+    "smile": 0.3
+  }
+}

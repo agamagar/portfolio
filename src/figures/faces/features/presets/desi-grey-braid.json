@@ -1,0 +1,21 @@
+{
+  "skin": {
+    "tone": 0.5
+  },
+  "hair": {
+    "style": "braid",
+    "greying": 0.95,
+    "color": "#3b2b22"
+  },
+  "accessories": {
+    "glasses": "round",
+    "bindi": true,
+    "nosePin": "1"
+  },
+  "brows": {
+    "angle": 0.2
+  },
+  "mouth": {
+    "smile": -0.1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "skin": {
+    "tone": 0.45
+  },
+  "hair": {
+    "style": "balding",
+    "greying": 0.8,
+    "color": "#3b2b22"
+  },
+  "facialHair": {
+    "kind": "full",
+    "followHair": false,
+    "color": "#9a948c",
+    "length": 0.3
+  },
+  "accessories": {
+    "glasses": "round"
+  },
+  "brows": {
+    "angle": 0.15
+  }
+}

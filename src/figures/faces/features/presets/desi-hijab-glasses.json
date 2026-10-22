@@ -1,0 +1,22 @@
+{
+  "skin": {
+    "tone": 0.45
+  },
+  "hair": {
+    "style": "bald"
+  },
+  "headwear": {
+    "kind": "hijab",
+    "color": "#5f9e6e"
+  },
+  "accessories": {
+    "glasses": "round"
+  },
+  "eyes": {
+    "openness": -0.3,
+    "smileSquint": 0.3
+  },
+  "mouth": {
+    "smile": 0.5
+  }
+}

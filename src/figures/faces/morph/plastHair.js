@@ -43,6 +43,11 @@ function cap(P) {
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  if (P.cap === "ring") { // balding: no hair over the crown
+    const keep = [];
+    for (let t = 0; t < idx.length; t += 3) { const ys = [0, 1, 2].map((k) => pos[idx[t + k] * 3 + 1]), xs = [0, 1, 2].map((k) => pos[idx[t + k] * 3]); const my = (ys[0] + ys[1] + ys[2]) / 3, mx = (xs[0] + xs[1] + xs[2]) / 3; if (!(my > 0.55 && Math.abs(mx) < 0.9)) keep.push(idx[t], idx[t + 1], idx[t + 2]); }
+    idx.length = 0; idx.push(...keep);
+  }
   g.setIndex(idx);
   g.computeVertexNormals();
   // winding: the mean triangle normal must point away from the head's centre (flip the whole cap if not)
@@ -89,8 +94,8 @@ function lock(points, radius, { seg = 22, rad = 10, tip = 0.18, belly = 0.45 } =
 
 // params: length 0 (cropped) .. 1 (shoulders), fringe 0..1, messiness 0..1, volume ~1, sweep -1..1, clip, seed
 export function buildPlastHair(params = {}) {
-  const P = { length: 0.92, fringe: 0.85, messiness: 0.6, volume: 1, sweep: 0.3, clip: true, seed: 7, ...params };
-  const r = rng(P.seed | 0), parts = [cap(P)];
+  const P = { length: 0.92, fringe: 0.85, messiness: 0.6, volume: 1, sweep: 0.3, clip: true, seed: 7, cap: "full", bun: false, braid: "none", curly: 0, quiff: 0, ...params };
+  const r = rng(P.seed | 0), parts = P.cap === "none" || P.cap === "crest" || P.cap === "curly" ? [] : [cap(P)];
   const rr = (a, b) => a + (b - a) * r();
   const M = P.messiness, V = P.volume;
   // locks round the back and sides: rooted on the scalp, falling past the jaw to the shoulders
@@ -128,12 +133,62 @@ export function buildPlastHair(params = {}) {
     parts.push(lock(pts, rr(0.21, 0.27), { seg: 14, rad: 9, tip: 0.35, belly: 0.5 }));
   }
   // clay lumps on the crown for the messy outline
-  const NL = Math.round(M * 9);
+  const NL = P.cap === "ring" || P.cap === "none" || P.cap === "curly" || P.cap === "crest" ? 0 : Math.round(M * 9);
   for (let i = 0; i < NL; i++) {
-    const a = rr(0, Math.PI * 2), el = rr(0.35, 0.95), rs = rr(0.2, 0.34);
+    const a = rr(0, Math.PI * 2), el = rr(0.95, 1.3), rs = rr(0.15, 0.25); // (up on the crown: lower lumps sat on the forehead as dark discs)
     const d = new THREE.Vector3(Math.sin(a) * Math.cos(el), Math.sin(el), Math.cos(a) * Math.cos(el) * 0.9 - 0.1);
     parts.push(new THREE.SphereGeometry(rs, 14, 10).scale(1, rr(0.7, 1.0), rr(0.9, 1.3)).translate(d.x * V, 0.05 + d.y * 1.28 + 0.02, d.z * 0.98 * V));
   }
+  // ---- the styles beyond the quiff-and-locks recipe ------------------------------------------------
+  const sph = (c, rs, sc = [1, 1, 1]) => new THREE.SphereGeometry(rs, 14, 10).scale(sc[0], sc[1], sc[2]).translate(c[0], c[1], c[2]);
+  const onSkull = (a, el, k = 1) => [Math.sin(a) * Math.cos(el) * 1.04 * V * k, 0.05 + Math.sin(el) * 1.3 * k, Math.cos(a) * Math.cos(el) * 0.98 * V * k - 0.04];
+  if (P.cap === "curly") {
+    // tight curls: a field of small clay spheres over the scalp, from the hairline up and round to the nape
+    const rows = 13;
+    for (let rI = 0; rI < rows; rI++) {
+      const el = THREE.MathUtils.lerp(1.3, -0.15, rI / (rows - 1)), nA = Math.max(5, Math.round(Math.cos(el) * 28));
+      for (let q = 0; q < nA; q++) {
+        const a = (q / nA) * Math.PI * 2 + rr(-0.12, 0.12), front = Math.cos(a);
+        if (front > 0.1 && el < 1.0) continue;     // keep the forehead clear below the hairline
+        if (Math.abs(Math.sin(a)) > 0.7 && el < 0.15 && Math.cos(a) > -0.3) continue; // and the ears
+        const c = onSkull(a, el, 1.06 + 0.04 * M);
+        parts.push(sph(c, rr(0.13, 0.19) * (1 + 0.2 * M), [1, rr(0.85, 1.05), 1]));
+      }
+    }
+  }
+  if (P.cap === "crest") {
+    // a mohawk / undercut crest: a ridge of upright clay lumps along the midline, front to nape; the sides stay short
+    const nR = 14;
+    for (let q = 0; q < nR; q++) {
+      const t = q / (nR - 1), el = THREE.MathUtils.lerp(1.25, 0.05, t), a = t < 0.5 ? 0 : Math.PI;
+      const c = onSkull(a, t < 0.5 ? THREE.MathUtils.lerp(0.55, 1.5, t * 2) : THREE.MathUtils.lerp(1.5, 0.3, (t - 0.5) * 2), 1.0);
+      parts.push(sph([0, c[1] + 0.06, c[2]], 0.2, [0.5, 1.1 + 0.3 * P.quiff, 0.9]));
+    }
+    // a close shave on the sides: a thin shell darker than the crest comes from the palette's Hair tone, so only a low cap
+  }
+  if (P.quiff > 0 && P.cap !== "crest") {
+    // swept-up front: a few locks rising off the hairline and combed back
+    for (let q = 0; q < 6; q++) {
+      const x = THREE.MathUtils.lerp(-0.5, 0.5, q / 5) + rr(-0.05, 0.05);
+      parts.push(lock([[x * 0.8, 0.95, 0.75], [x * 0.9, 1.22 + 0.1 * P.quiff, 0.98 + 0.08 * P.quiff], [x * 0.7 + 0.1 * P.sweep, 1.42 + 0.1 * P.quiff, 0.72], [x * 0.5 + 0.2 * P.sweep, 1.46 + 0.1 * P.quiff, 0.25]], rr(0.17, 0.22), { seg: 12, rad: 8, tip: 0.3 }));
+    }
+  }
+  if (P.bun) {
+    // a knot high at the back, tied with a ring
+    parts.push(sph([0, 0.95, -1.0], 0.36, [1, 0.9, 1]));
+    parts.push(new THREE.TorusGeometry(0.31, 0.07, 8, 24).rotateX(Math.PI / 2).translate(0, 0.72, -0.98));
+  }
+  if (P.braid && P.braid !== "none") {
+    // a plait over one shoulder: a chain of overlapping clay ovals with a tie at the end
+    const sd = P.braid === "left" ? -1 : 1, n = 12;
+    for (let q = 0; q < n; q++) {
+      const t = q / (n - 1), y = THREE.MathUtils.lerp(-0.1, -2.05, t), x = sd * (1.12 + 0.06 * Math.sin(t * 3)), z = THREE.MathUtils.lerp(0.0, 0.48, Math.min(1, t * 1.4));
+      parts.push(sph([x, y, z], 0.17 * (1 - 0.3 * t), [1.05, 0.95, 0.9]).rotateZ(0));
+      parts.push(sph([x + sd * 0.05 * (q % 2 ? 1 : -1), y - 0.08, z + 0.04 * (q % 2 ? 1 : -1)], 0.13 * (1 - 0.3 * t), [1, 1, 1]));
+    }
+    parts.push(new THREE.TorusGeometry(0.1, 0.035, 8, 16).translate(sd * 1.15, -2.1, 0.5));
+  }
+  if (!parts.length) parts.push(new THREE.SphereGeometry(0.001, 3, 2).translate(0, -9, 0)); // bald: nothing to draw (the mesh stays, empty)
   const hair = new THREE.Mesh(mergeGeometries(parts.map((g) => (g.index ? g.toNonIndexed() : g)), false));
   hair.name = "Hair";
   // the lavender clip: a small rounded bar pinning the fringe on the left, in front of the locks

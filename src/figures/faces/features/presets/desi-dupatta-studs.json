@@ -1,0 +1,24 @@
+{
+  "skin": {
+    "tone": 0.4
+  },
+  "hair": {
+    "style": "braid",
+    "color": "#1c1613"
+  },
+  "headwear": {
+    "kind": "dupatta",
+    "color": "#c9574b"
+  },
+  "accessories": {
+    "bindi": true,
+    "nosePin": "-1",
+    "earrings": "studs"
+  },
+  "eyes": {
+    "openness": -0.1
+  },
+  "mouth": {
+    "smile": 0.4
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "skin": {
+    "tone": 0.5
+  },
+  "hair": {
+    "style": "shoulder-messy",
+    "color": "#161110",
+    "messiness": 0.15,
+    "fringe": 0.3
+  },
+  "accessories": {
+    "bindi": true,
+    "nosePin": "1",
+    "earrings": "hoops"
+  },
+  "eyes": {
+    "openness": -0.1
+  },
+  "mouth": {
+    "smile": 0.35
+  }
+}

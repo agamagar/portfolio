@@ -38,3 +38,4 @@ cfg.plast = { face: resolveFace(PRESETS["agam-clay"]), W, H, idSrc: null, rawSrc
 // wear a face config on a rig: a preset name, or a JSON object of feature blocks
 export function useFace(id, spec) { rigs[id].setFace(resolveFace(typeof spec === "string" ? PRESETS[spec] : spec)); }
 export const R = rigs;
+export { PRESETS };

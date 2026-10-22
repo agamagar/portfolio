@@ -1,0 +1,21 @@
+{
+  "skin": {
+    "tone": 0.65
+  },
+  "hair": {
+    "style": "gelled",
+    "color": "#16100d"
+  },
+  "facialHair": {
+    "kind": "moustache",
+    "followHair": true,
+    "curl": 0.2
+  },
+  "accessories": {
+    "tilak": true,
+    "tilakColor": "#d4561f"
+  },
+  "mouth": {
+    "smile": 0.3
+  }
+}

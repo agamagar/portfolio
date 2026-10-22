@@ -38,7 +38,7 @@ export const defaults = () => Object.fromEntries(MODULES.map((m) => [m.id, Objec
 export const complete = (cfg = {}) => { const d = defaults(); return Object.fromEntries(MODULES.map((m) => [m.id, { ...d[m.id], ...(cfg[m.id] || {}) }])); };
 
 export function resolveFace(cfg) {
-  const full = complete(cfg), acc = { keys: {}, handles: [], palette: {}, hair: null, material: { mode: "plast", bump: 0.6, sss: 0.6 }, lockSkin: false, config: full };
+  const full = complete(cfg), acc = { keys: {}, handles: [], palette: {}, parts: {}, hairHide: null, hair: null, material: { mode: "plast", bump: 0.6, sss: 0.6 }, lockSkin: false, config: full };
   for (const m of MODULES) {
     const out = m.apply(full[m.id], acc) || {};
     for (const [k, v] of Object.entries(out.keys || {})) acc.keys[k] = Math.min(1, Math.max(0, (acc.keys[k] || 0) + v));
@@ -46,8 +46,13 @@ export function resolveFace(cfg) {
     for (const [part, c] of Object.entries(out.palette || {})) acc.palette[part] = { ...(acc.palette[part] || {}), ...c };
     if (out.hair) acc.hair = { ...(acc.hair || {}), ...out.hair };
     if (out.material) acc.material = { ...acc.material, ...out.material };
+    if (out.parts) Object.assign(acc.parts, out.parts);
+    if (out.hairHide !== undefined) acc.hairHide = out.hairHide;
     if (out.lockSkin !== undefined) acc.lockSkin = out.lockSkin;
   }
+  // headwear covers the hair: a turban or hijab all of it, a cap or dupatta the crown only
+  if (acc.hairHide === "all") acc.hair = { ...acc.hair, cap: "none", length: 0, fringe: 0, messiness: 0, bun: false, braid: "none", curly: 0, quiff: 0, clip: false };
+  else if (acc.hairHide === "top") acc.hair = { ...acc.hair, cap: "ring", fringe: 0, quiff: 0, bun: false, curly: 0, clip: false, messiness: 0 };
   acc.handles = acc.handles.slice(0, MAX_HANDLES);
   return acc;
 }

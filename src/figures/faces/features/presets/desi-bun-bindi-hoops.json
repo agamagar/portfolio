@@ -1,0 +1,20 @@
+{
+  "skin": {
+    "tone": 0.35
+  },
+  "hair": {
+    "style": "bun",
+    "color": "#1c1613"
+  },
+  "accessories": {
+    "bindi": true,
+    "earrings": "hoops",
+    "glasses": "round"
+  },
+  "eyes": {
+    "openness": -0.1
+  },
+  "mouth": {
+    "smile": 0.35
+  }
+}
