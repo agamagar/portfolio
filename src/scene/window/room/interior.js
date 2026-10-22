@@ -14,6 +14,7 @@ import { buildBobblehead } from "./bobblehead.js";
 import { contactShadow, footprint, tubeAlong } from "./propKit.js";
 import { buildVrHeadset } from "./vrHeadset.js";
 import { buildTissueFrame } from "./tissueFrame.js";
+import { buildWallPlate } from "./wallPlate.js";
 import { makeCodeScreen } from "./codeScreen.js";
 import { buildBeadChain } from "./beadChain.js";
 
@@ -49,6 +50,14 @@ export function buildInterior(P, ctx, mats, root, win) {
   RS.add(m.plaster, boxGeo(k(-0.9), k(rEnd), k(yF), k(rBot), k(back), k(f), "y"));
   RS.add(m.plaster, boxGeo(k(e.casR_o), k(rEnd), k(rBot), k(topY), k(back), k(f), "y"));
   RS.build(win.right);
+  // the skirting board: a 10 cm painted-wood profile (square back, chamfered top, a
+  // small step) along the window wall's foot, in the wall's own paint
+  {
+    const sh = 0.1, sd = 0.013;
+    const prof = [[0, 0], [sh, 0], [sh, sd * 0.4], [sh - 0.012, sd], [0.02, sd], [0.012, sd * 0.8], [0, sd * 0.8]].map(([y, z]) => [k(yF) + y, k(f) + z]);
+    const x1 = Math.max(xR, win.Rw(Math.max(e.casR_o + 5, WA.right + 1), f)[0]);
+    S.add(m.plaster, prismGeo(prof, "x", k(xL), k(x1)));
+  }
   // the room: side walls, back wall, floor, ceiling (thin boxes so they cast the sun's shadow)
   const t = 0.3;
   const endW = win.Rw(rEnd, f);
@@ -185,6 +194,13 @@ export function buildInterior(P, ctx, mats, root, win) {
     const TF = R.tissueFrame;
     const fr = buildTissueFrame(mats, root, { size: TF.size, tiltDeg: TF.tiltDeg });
     fr.position.set(k(TF.x), k(TF.y), k(f));
+  }
+
+  // the switchboard under the frame, between it and the portrait monitor (params
+  // room.wallPlate; hidden: true leaves it off)
+  if (R.wallPlate && !R.wallPlate.hidden) {
+    const WP = R.wallPlate;
+    buildWallPlate(mats, root).position.set(k(WP.x), k(WP.y), k(f));
   }
 
   // --- the desk ---

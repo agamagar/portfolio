@@ -608,7 +608,7 @@ export function createRoomMaterials(P, ctx = {}) {
   const wc = lin(R.wall.color);
   const plaster = own(new THREE.MeshStandardNodeMaterial({ metalness: 0 }), "plaster");
   plaster.colorNode = vec3(wc.r, wc.g, wc.b).mul(float(0.99).add(pl.r.mul(0.02)).sub(pl.g.mul(0.006)));
-  plaster.roughnessNode = float(0.93);
+  plaster.roughnessNode = float(0.93).add(pl.g.sub(0.5).mul(0.06)); // the paint sheens a touch unevenly (the colour sample, so no extra texture read)
   plaster.normalNode = normalMap(texture(T.plaster.normal, tuv(0.6)), vec2(R.wall.peel ?? 0.08));
 
   // --- the grey dusty sill ledge ---
