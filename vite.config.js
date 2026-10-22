@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import inspectOverrides from "./tools/inspect-overrides-plugin.mjs";
 import scrollHover from "./tools/postcss-scroll-hover.mjs";
 import { fileURLToPath, URL } from "node:url";
-import { realpathSync } from "node:fs";
+import { realpathSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 // Public build (VITE_SITE unset or "public"): mark the lazy() component declarations pure, so a
@@ -22,10 +22,31 @@ const pureLazy = () => ({
   },
 });
 
+
+// Public build: the room monitor draws the homepage's own source as a wall of code (src/scene/window/room/codeScreen.js,
+// raw imports). Ship it as code only: no comments (they carry dev notes and internal tool names) and no URLs (a Figma
+// prototype link lived in WorkGrid.jsx). The monitor shows it at 6 px, so it still reads as dense code.
+const RAW_SCREEN = /\/src\/hello3\/(Hello\.jsx|WorkGrid\.jsx|helloData\.js|hello3\.css)\?raw$/;
+const sanitizeRaw = () => ({
+  name: "sanitize-raw-screen-source",
+  apply: "build",
+  enforce: "pre",
+  load(id) {
+    if (!PUBLIC_BUILD || !RAW_SCREEN.test(id.replace(/\\/g, "/"))) return null;
+    const text = readFileSync(id.replace(/\?raw$/, ""), "utf8")
+      .replace(/(?:https?:)?\/\/[A-Za-z0-9.-]+\.[a-z]{2,}[^\s"'`)<>]*/g, "#")  // URLs first, so their // is not read as a comment
+      .replace(/\/\*[\s\S]*?\*\//g, "")                                          // block comments (JS, JSX, CSS)
+      .replace(/(^|\s)\/\/[^\n]*/g, "$1")                                          // line comments
+      .replace(/\{\s*\}/g, "")                                                       // what is left of {/* ... */}
+      .replace(/[ \t]+$/gm, "").replace(/\n{2,}/g, "\n");
+    return `export default ${JSON.stringify(text)};`;
+  },
+});
+
 export default defineConfig(({ command }) => ({
   // one literal per build, so the bundler can fold PRIVATE_SITE (src/lib/site.js): unset = private on dev, public on build
   define: { "import.meta.env.VITE_SITE": JSON.stringify(process.env.VITE_SITE || (command === "serve" ? "private" : "public")) },
-  plugins: [pureLazy(), react(), tailwindcss(), inspectOverrides()],
+  plugins: [pureLazy(), sanitizeRaw(), react(), tailwindcss(), inspectOverrides()],
   css: { postcss: { plugins: [scrollHover()] } },
   // the synced design-playground bundle (public/sd-playground) is prebuilt: keep the dependency scan out of it
   optimizeDeps: { entries: ["**/*.html", "!public/sd-playground/**"] },
