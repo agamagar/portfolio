@@ -14,6 +14,7 @@ import { buildBobblehead } from "./bobblehead.js";
 import { contactShadow, footprint, tubeAlong } from "./propKit.js";
 import { buildVrHeadset } from "./vrHeadset.js";
 import { buildTissueFrame } from "./tissueFrame.js";
+import { buildWallPlate } from "./wallPlate.js";
 import { makeCodeScreen } from "./codeScreen.js";
 import { buildBeadChain } from "./beadChain.js";
 
@@ -185,6 +186,13 @@ export function buildInterior(P, ctx, mats, root, win) {
     const TF = R.tissueFrame;
     const fr = buildTissueFrame(mats, root, { size: TF.size, tiltDeg: TF.tiltDeg });
     fr.position.set(k(TF.x), k(TF.y), k(f));
+  }
+
+  // the switchboard under the frame, between it and the portrait monitor (params
+  // room.wallPlate; hidden: true leaves it off)
+  if (R.wallPlate && !R.wallPlate.hidden) {
+    const WP = R.wallPlate;
+    buildWallPlate(mats, root).position.set(k(WP.x), k(WP.y), k(f));
   }
 
   // --- the desk ---

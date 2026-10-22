@@ -386,6 +386,7 @@ export const ROOM_PARAMS = {
   // show under it), and the stand keeps the portrait's fitted top where it was
   // the framed napkin sketch on the wall above the portrait monitor (2026-10-05):
   // x, y its centre in W (y 0 is the sill top), size the frame's outer width in m
+  wallPlate: { x: -6.2, y: 2.3 }, // W: the white switch-and-socket plate on the window wall, centre (below the frame)
   tissueFrame: { x: -6.2, y: 5.2, size: 0.22, tiltDeg: -0.6 }, // 22 cm (2026-10-05: "make the frame smaller", was 30)
   portrait: { width: 0.285, height: 0.495, right: -4.53, z: 1.2, yawDeg: 8, base: 0.05, screen: { enabled: true, intensity: 0.35, bloom: 0.04 } }, // m, m, W, W, deg, m; screen: the AI code editor (room/codeScreen.js), emissive x
   // albedo: a dark walnut (5480 photographs it #21150a to #221a18 under the room
