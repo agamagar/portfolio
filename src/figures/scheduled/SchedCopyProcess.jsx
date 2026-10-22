@@ -11,7 +11,7 @@ const GROUPS = [
   {
     move: "Say what the person can do, not what is wrong",
     pairs: [
-      { was: "Some items are unserviceable", now: "Schedule your order", src: "Design-file review, 24 to 25 Aug 2025 (PM comment, paraphrased); three reviewers killed the negative phrasing" },
+      { was: "Some items are unserviceable", now: "Schedule your order", src: "Design-file review, 24 to 25 Aug 2025 (PM comment, paraphrased), and three reviewers killed the negative phrasing" },
       { was: "Day after tomorrow", now: "The actual date, on every slot tab", src: "Design-file review, 24 to 25 Aug 2025 (PM comment, paraphrased)" },
       { was: "Five reasons instant can't answer", now: "When instant delivery fails", src: "Annotation on the scroll scene, 26 Sep 2026" },
     ],

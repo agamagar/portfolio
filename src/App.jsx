@@ -2242,7 +2242,7 @@ const caseStudies = {
     },
     headFacts: [
       { label: "Organisation", value: "Zepto" },
-      { label: "Timeline", value: "5 Months" },
+      { label: "Timeline", value: "5 months" },
     ],
     meta: "Product Designer · Zepto · 2025",
     // Compact PDF cut (?cut=compact): the spine only, for hard page caps.
@@ -2631,9 +2631,9 @@ const caseStudies = {
         // points: ["Multiple shipments", "Pharmacy orders", "Out-of-stock and unserviceable items", "And more"], // mukuzieb (28 Sep): hidden for now, uncomment to restore
         pointsLabel: "What makes the cart complex",
         p: [
-          "Behind every Zepto order is a tiered supply chain. A Mother Hub is the largest warehouse and stocks effectively everything; it feeds two kinds of fulfilment sites: superstores, larger warehouses carrying a broad catalogue, and dark stores, the small local sites that make 10-minute delivery possible. Categories are stored deliberately: fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
+          "Behind every Zepto order is a tiered supply chain. A Mother Hub is the largest warehouse and stocks effectively everything; it feeds two kinds of fulfilment sites. Superstores are larger warehouses carrying a broad catalogue. Dark stores are the small local sites that make 10-minute delivery possible. Categories are stored deliberately: fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
           "That topology stays invisible until you build a mixed cart. Add ten things and some may be served from the dark store nearby while others can only come from the superstore, so the order does not arrive as one delivery. Zepto splits it into separate shipments, one per fulfilling site, and a single order can fan out to as many as four.",
-          "Scheduling is what made the split bite. A slot is not a property of the order; it is a property of each shipment, because each shipment is fulfilled by a different site with its own capacity. So the moment someone schedules, every shipment has to answer the slot question independently, and the answers rarely agree. That produces a small matrix of cases the design had to hold all at once:",
+          "Scheduling is what made the split bite. A slot is not a property of the order. It is a property of each shipment, because each shipment is fulfilled by a different site with its own capacity. So the moment someone schedules, every shipment has to answer the slot question independently, and the answers rarely agree. That produces a small matrix of cases the design had to hold all at once:",
         ],
         ul: [
           "Every shipment is schedulable for the chosen slot, the clean case",
