@@ -274,7 +274,7 @@ varying float vRestZ;
 uniform float uMirror;
 varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
 #include <color_pars_fragment>
-varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN; varying vec2 vProj; uniform sampler2D uPlate; uniform float uUsePlate;
+varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN; varying vec2 vProj; uniform sampler2D uPlate; uniform float uUsePlate, uDrawn;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
 vec3 shEval(vec3 n){
   return uSH[0] * 0.282095 + uSH[1] * 0.488603 * n.y + uSH[2] * 0.488603 * n.z + uSH[3] * 0.488603 * n.x
@@ -309,8 +309,16 @@ void main(){
   float d = dot(n, l);
   float w = d * 0.5 + 0.5;
   float fres = 1.0 - max(dot(n, v), 0.0);
-  int m = int(uMode + 0.5);
-  vec3 col;
+  // TURNED VIEWS: a fitted skin is photo-projected from the front, so off-axis its textures stretch and the unseen side is a guess.
+  // As the view turns (uTurn), a second pass shades the same surface in the skin's own DRAWN mode (the procedural look the
+  // skin started as: always clean at any angle) and the two are crossfaded: front on, the photograph; profile, the drawn skin.
+  int m0 = int(uMode + 0.5);
+  vec3 col = vec3(0.0), colFit = vec3(0.0);
+  float tb = (m0 == 10 && uDrawn >= 0.0) ? smoothstep(0.4, 0.9, uTurn) : 0.0;
+  for (int pass = 0; pass < 2; pass++) {
+  if (pass == 1 && tb <= 0.0) break;
+  int m = pass == 0 ? m0 : int(uDrawn + 0.5);
+  if (pass == 1) colFit = col;
 
   if (m == 10) {
     // fitted to the reference: its own light (SH), its own soft shadow (AO^k), its own
@@ -574,6 +582,8 @@ void main(){
     if (distance(uBase, uDeep) < 0.02) col = uDeep; // ink parts (eyes, brows, lips) print solid
     col *= 0.94 + 0.08 * hash(vec3(floor(gl_FragCoord.xy / 2.0), 1.0));
   }
+  }
+  if (tb > 0.0) col = mix(colFit, col, tb);
   // a lid, once the rig has painted its skin plate: the skin itself, at the spot the lid covers (see faceRig3D buildPlate)
   if (uUsePlate > 0.5) col = texture2D(uPlate, vProj).rgb;
   gl_FragColor = vec4(col, 1.0);

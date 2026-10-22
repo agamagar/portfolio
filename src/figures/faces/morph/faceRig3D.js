@@ -157,7 +157,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
           uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
           uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 }, // (as FaceSV: the lip sinks while the mouth moves)
-          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 },
+          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uDrawn: { value: !procedural && !mode ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 },
