@@ -1,0 +1,4389 @@
+{
+ "generated": "2026-10-22T20:12:04.099Z",
+ "fast": false,
+ "thresholds": {
+  "_doc": "warn/fail per check; higher value = worse unless 'min'. overrides: { skinOrFaceId: { check: {warn,fail} } }. Calibrated 22 Oct 2026 on the first full baseline so that the defects Agam named fail (noir/felt/stone/claySun lids, noir nose scratch, hose ghosts, pixel lines, melted far side) and clay, the reference, mostly does not; every override below is a style that draws this on purpose.",
+  "holes": {
+   "warn": 3,
+   "fail": 12
+  },
+  "blackpix": {
+   "warn": 10,
+   "fail": 30
+  },
+  "stretch": {
+   "warn": 0.06,
+   "fail": 0.1
+  },
+  "symmetry": {
+   "warn": 0.1,
+   "fail": 0.17
+  },
+  "seams": {
+   "warn": 60,
+   "fail": 150
+  },
+  "lidcover": {
+   "warn": 4,
+   "fail": 7
+  },
+  "ghosts": {
+   "warn": 10,
+   "fail": 25
+  },
+  "framing": {
+   "warn": 5,
+   "fail": 10
+  },
+  "aliasing": {
+   "min": true,
+   "warn": 0.55,
+   "fail": 0.3
+  },
+  "edges83": {
+   "warn": 10,
+   "fail": 25
+  },
+  "exposure": {
+   "warn": 2,
+   "fail": 6
+  },
+  "flicker": {
+   "warn": 5,
+   "fail": 12
+  },
+  "errors": {
+   "warn": 0.05,
+   "fail": 1
+  },
+  "loadmem": {
+   "warn": 6,
+   "fail": 20
+  },
+  "parts": {
+   "warn": 0.5,
+   "fail": 1
+  },
+  "browsers": {
+   "warn": 0.5,
+   "fail": 1
+  },
+  "overrides": {
+   "print": {
+    "seams": {
+     "warn": 600,
+     "fail": 1200
+    },
+    "flicker": {
+     "warn": 70,
+     "fail": 150
+    }
+   },
+   "riso": {
+    "seams": {
+     "warn": 450,
+     "fail": 900
+    }
+   },
+   "hose": {
+    "seams": {
+     "warn": 250,
+     "fail": 500
+    },
+    "blackpix": {
+     "warn": 120,
+     "fail": 300
+    }
+   },
+   "pixel": {
+    "blackpix": {
+     "warn": 60,
+     "fail": 150
+    }
+   }
+  }
+ },
+ "faces": {
+  "cel": {
+   "dir": "cel",
+   "skin": "cel",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 0.1602392906740733,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "emote_puff",
+     "note": "enclosed 5px, translucent 2px"
+    },
+    "blackpix": {
+     "value": 19.919766324040523,
+     "unit": "px per 10k skin",
+     "status": "warn",
+     "worst": "emote_nod",
+     "note": "",
+     "crop": "crops/cel__blackpix.png"
+    },
+    "stretch": {
+     "value": 0.006427093856042954,
+     "unit": "|L-R| area share (proj)",
+     "status": "pass",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3026535467621333,
+      "uvStretchFrac": 0.16060014173927079,
+      "uvStretchAsym": 0.03562032492062123,
+      "uvDensP95": 2.0815544500068635,
+      "asymNormalFrac": 0.0004139187063660697,
+      "unpairedFrac": 0.9993377300698143
+     }
+    },
+    "symmetry": {
+     "value": 0.13260009708040538,
+     "unit": "mean |mirror diff| /255",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.5979937209913185,
+      "detailView": "rest_q3R"
+     },
+     "crop": "crops/cel__symmetry.png"
+    },
+    "seams": {
+     "value": 123.06177701206006,
+     "unit": "line px per 10k skin",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/cel__seams.png"
+    },
+    "lidcover": {
+     "value": 24.860688215201506,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL -1.3 (lid minus skin), dE 9.6, eye still visible 48%",
+     "crop": "crops/cel__lidcover.png"
+    },
+    "ghosts": {
+     "value": 35.66009104704097,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "fail",
+     "worst": "emote_angry",
+     "note": "eyes ghost in emote_angry: 36% of 659px",
+     "crop": "crops/cel__ghosts.png"
+    },
+    "framing": {
+     "value": 10.60080976146077,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(363,554) h514; centre off 2.7%, scale x1.04 of base; eyes off 2.7%, span x1.02, cropped px 138",
+     "extra": {
+      "box": {
+       "x0": 39,
+       "y0": 297,
+       "x1": 687,
+       "y1": 810,
+       "cx": 363,
+       "cy": 553.5,
+       "w": 649,
+       "h": 514
+      },
+      "off": 0.027175346171370296,
+      "sc": 1.0383838383838384,
+      "crop": 138
+     }
+    },
+    "aliasing": {
+     "value": 0.896551724137931,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 56.7% of 208 edge px"
+    },
+    "edges83": {
+     "value": 56.730769230769226,
+     "unit": "% edge px with halo/fringe",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 56.7% of 208 edge px",
+     "extra": {
+      "aa": 0.896551724137931,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.12470603253158156,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 192, 0.93x declared base",
+     "extra": {
+      "skinLuma": 191.91075523144204,
+      "ratio": 0.9262745829412954
+     }
+    },
+    "flicker": {
+     "value": 4.644874463973193,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.6515,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "clay": {
+   "dir": "clay",
+   "skin": "clay",
+   "preset": null,
+   "status": "warn",
+   "checks": {
+    "holes": {
+     "value": 0.08839935291673665,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "enclosed 0px, translucent 6px"
+    },
+    "blackpix": {
+     "value": 6.380968153610849,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.14590263748239177,
+     "unit": "mean |mirror diff| /255",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.3899296684279171,
+      "detailView": "rest_q3R"
+     },
+     "crop": "crops/clay__symmetry.png"
+    },
+    "seams": {
+     "value": 90.88635839039777,
+     "unit": "line px per 10k skin",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/clay__seams.png"
+    },
+    "lidcover": {
+     "value": 1.6762661513311787,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": "dL -1.7 (lid minus skin), dE 1.7, eye still visible 99%"
+    },
+    "ghosts": {
+     "value": 2.9017857142857144,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_lookAround",
+     "note": "brows ghost in emote_lookAround: 3% of 448px"
+    },
+    "framing": {
+     "value": 6,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_laugh",
+     "note": "bbox c(354,539) h495; centre off 0.0%, scale x1.00 of base; eyes off 0.0%, span x1.00, cropped px 23",
+     "extra": {
+      "box": {
+       "x0": 40,
+       "y0": 292,
+       "x1": 668,
+       "y1": 786,
+       "cx": 354,
+       "cy": 539,
+       "w": 629,
+       "h": 495
+      },
+      "off": 0,
+      "sc": 1,
+      "crop": 23
+     }
+    },
+    "aliasing": {
+     "value": 0.9024390243902439,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 2.0% of 148 edge px"
+    },
+    "edges83": {
+     "value": 2.027027027027027,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 2.0% of 148 edge px",
+     "extra": {
+      "aa": 0.9024390243902439,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.014240281008211895,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 203, 0.90x declared base",
+     "extra": {
+      "skinLuma": 202.9357821296894,
+      "ratio": 0.8967500074223552
+     }
+    },
+    "flicker": {
+     "value": 6.631774606841625,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "warn",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/clay__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8065,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "18 textures, 55 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 55.36677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "claySun": {
+   "dir": "claySun",
+   "skin": "claySun",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 0.05238646543279079,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "rest_profR",
+     "note": "enclosed 1px, translucent 0px"
+    },
+    "blackpix": {
+     "value": 4.23478345258366,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.008705256097484737,
+     "unit": "|L-R| area share (proj)",
+     "status": "pass",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3436153516097047,
+      "uvStretchFrac": 0.16854616966554742,
+      "uvStretchAsym": 0.03257369621856254,
+      "uvDensP95": 2.1106534641209627,
+      "asymNormalFrac": 0.00029515146636614883,
+      "unpairedFrac": 0.9989535538919746
+     }
+    },
+    "symmetry": {
+     "value": 0.18082412727582434,
+     "unit": "mean |mirror diff| /255",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.21335186560632566,
+      "detailView": "rest_q3R"
+     },
+     "crop": "crops/claySun__symmetry.png"
+    },
+    "seams": {
+     "value": 43.08626582868968,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 5.0570260829328575,
+     "unit": "dE lid vs skin",
+     "status": "warn",
+     "worst": "blinkmid_front",
+     "note": "dL -4.9 (lid minus skin), dE 5.1, eye still visible 98%",
+     "crop": "crops/claySun__lidcover.png"
+    },
+    "ghosts": {
+     "value": 17.600574712643677,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "warn",
+     "worst": "emote_shy",
+     "note": "brows ghost in emote_shy: 18% of 2784px",
+     "crop": "crops/claySun__ghosts.png"
+    },
+    "framing": {
+     "value": 10.677497647948464,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(360,550) h523; centre off 1.9%, scale x1.06 of base; eyes off 1.9%, span x1.04, cropped px 96",
+     "extra": {
+      "box": {
+       "x0": 34,
+       "y0": 289,
+       "x1": 685,
+       "y1": 811,
+       "cx": 359.5,
+       "cy": 550,
+       "w": 652,
+       "h": 523
+      },
+      "off": 0.019263125731368375,
+      "sc": 1.0565656565656565,
+      "crop": 96
+     }
+    },
+    "aliasing": {
+     "value": 0.9424778761061947,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 4.2% of 213 edge px"
+    },
+    "edges83": {
+     "value": 4.225352112676056,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 4.2% of 213 edge px",
+     "extra": {
+      "aa": 0.9424778761061947,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.03374476599668255,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 174, 0.86x declared base",
+     "extra": {
+      "skinLuma": 173.61543616752786,
+      "ratio": 0.8592730689729426
+     }
+    },
+    "flicker": {
+     "value": 1.829998827657001,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 4.0293999999985095,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "felt": {
+   "dir": "felt",
+   "skin": "felt",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 0.4133825717907733,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "emote_sad",
+     "note": "enclosed 9px, translucent 13px"
+    },
+    "blackpix": {
+     "value": 2.861686706292427,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "emote_shy",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.036333197076184154,
+     "unit": "|L-R| area share (proj)",
+     "status": "pass",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.32622665627960784,
+      "uvStretchFrac": 0.18336601729250912,
+      "uvStretchAsym": 0.001021262297677683,
+      "uvDensP95": 2.1861058079211304,
+      "asymNormalFrac": 0.0008580499385064211,
+      "unpairedFrac": 0.998083688470669
+     }
+    },
+    "symmetry": {
+     "value": 0.14154547910703302,
+     "unit": "mean |mirror diff| /255",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.2586260941610545,
+      "detailView": "rest_down"
+     },
+     "crop": "crops/felt__symmetry.png"
+    },
+    "seams": {
+     "value": 61.856212820467825,
+     "unit": "line px per 10k skin",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/felt__seams.png"
+    },
+    "lidcover": {
+     "value": 4.099418953192766,
+     "unit": "dE lid vs skin",
+     "status": "warn",
+     "worst": "blinkmid_front",
+     "note": "dL -3.9 (lid minus skin), dE 4.1, eye still visible 99%",
+     "crop": "crops/felt__lidcover.png"
+    },
+    "ghosts": {
+     "value": 17.96875,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "warn",
+     "worst": "emote_lookAround",
+     "note": "brows ghost in emote_lookAround: 18% of 512px",
+     "crop": "crops/felt__ghosts.png"
+    },
+    "framing": {
+     "value": 12.225511994792912,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(369,549) h504; centre off 3.1%, scale x1.02 of base; eyes off 3.1%, span x1.06, cropped px 80",
+     "extra": {
+      "box": {
+       "x0": 39,
+       "y0": 297,
+       "x1": 698,
+       "y1": 800,
+       "cx": 368.5,
+       "cy": 548.5,
+       "w": 660,
+       "h": 504
+      },
+      "off": 0.031078504589402766,
+      "sc": 1.018181818181818,
+      "crop": 80
+     }
+    },
+    "aliasing": {
+     "value": 0.8794642857142857,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.88 partial/boundary, halo 4.1% of 197 edge px"
+    },
+    "edges83": {
+     "value": 4.060913705583756,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.88 partial/boundary, halo 4.1% of 197 edge px",
+     "extra": {
+      "aa": 0.8794642857142857,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.007014063196709403,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 187, 0.86x declared base",
+     "extra": {
+      "skinLuma": 187.33196038844065,
+      "ratio": 0.8576347620615645
+     }
+    },
+    "flicker": {
+     "value": 1.0486339417299626,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.6106000000014901,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "hose": {
+   "dir": "hose",
+   "skin": "hose",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 5.142098071237102,
+     "unit": "px per 10k",
+     "status": "warn",
+     "worst": "rest_q3R",
+     "note": "enclosed 97px, translucent 74px",
+     "crop": "crops/hose__holes.png"
+    },
+    "blackpix": {
+     "value": 69.4349345465427,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "emote_nod",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.011469587463796616,
+     "unit": "|L-R| area share (proj)",
+     "status": "pass",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.2538997462961367,
+      "uvStretchFrac": 0.1324098854428825,
+      "uvStretchAsym": 0.005384608272926028,
+      "uvDensP95": 2.079469955314483,
+      "asymNormalFrac": 0.00034143464630474594,
+      "unpairedFrac": 0.9995344073004935
+     }
+    },
+    "symmetry": {
+     "value": 0.12587374255923364,
+     "unit": "mean |mirror diff| /255",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.6265913360544318,
+      "detailView": "rest_q3R"
+     },
+     "crop": "crops/hose__symmetry.png"
+    },
+    "seams": {
+     "value": 157.9484118100639,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 20.452986802701943,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL -1.0 (lid minus skin), dE 3.2, eye still visible 53%",
+     "crop": "crops/hose__lidcover.png"
+    },
+    "ghosts": {
+     "value": 25.82417582417583,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "fail",
+     "worst": "emote_sad",
+     "note": "brows ghost in emote_sad: 26% of 182px",
+     "crop": "crops/hose__ghosts.png"
+    },
+    "framing": {
+     "value": 11.156316173899542,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(369,551) h502; centre off 3.3%, scale x1.01 of base; eyes off 3.3%, span x0.96, cropped px 107",
+     "extra": {
+      "box": {
+       "x0": 54,
+       "y0": 300,
+       "x1": 684,
+       "y1": 801,
+       "cx": 369,
+       "cy": 550.5,
+       "w": 631,
+       "h": 502
+      },
+      "off": 0.032834380471545195,
+      "sc": 1.0141414141414142,
+      "crop": 107
+     }
+    },
+    "aliasing": {
+     "value": 0.8986784140969163,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 30.4% of 204 edge px"
+    },
+    "edges83": {
+     "value": 30.392156862745097,
+     "unit": "% edge px with halo/fringe",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 30.4% of 204 edge px",
+     "extra": {
+      "aa": 0.8986784140969163,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.588526453774565,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 196, 0.88x declared base",
+     "extra": {
+      "skinLuma": 195.93077751222526,
+      "ratio": 0.8775532048378563
+     }
+    },
+    "flicker": {
+     "value": 2.136162561970966,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.6953999999985099,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "noir": {
+   "dir": "noir",
+   "skin": "noir",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 8.367067608808153,
+     "unit": "px per 10k",
+     "status": "warn",
+     "worst": "rest_q3R",
+     "note": "enclosed 173px, translucent 42px",
+     "crop": "crops/noir__holes.png"
+    },
+    "blackpix": {
+     "value": 0.87834388260934,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "emote_think",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.07373705383065249,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.33210865062050143,
+      "uvStretchFrac": 0.18659584851522973,
+      "uvStretchAsym": 0.04456779828041066,
+      "uvDensP95": 2.182400754769632,
+      "asymNormalFrac": 0.00028957274857187987,
+      "unpairedFrac": 0.9992629057309079
+     }
+    },
+    "symmetry": {
+     "value": 0.2899110389633335,
+     "unit": "mean |mirror diff| /255",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.3057794251006489,
+      "detailView": "rest_up"
+     },
+     "crop": "crops/noir__symmetry.png"
+    },
+    "seams": {
+     "value": 154.7632695173679,
+     "unit": "line px per 10k skin",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/noir__seams.png"
+    },
+    "lidcover": {
+     "value": 17.02354389964214,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL -16.1 (lid minus skin), dE 16.2, eye still visible 12%",
+     "crop": "crops/noir__lidcover.png"
+    },
+    "ghosts": {
+     "value": 55.08684863523573,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "fail",
+     "worst": "emote_grin",
+     "note": "brows ghost in emote_grin: 55% of 403px",
+     "crop": "crops/noir__ghosts.png"
+    },
+    "framing": {
+     "value": 13.037978672785833,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_shy",
+     "note": "bbox c(358,518) h452; centre off 2.5%, scale x0.91 of base; eyes off 1.3%, span x1.01, cropped px 100",
+     "extra": {
+      "box": {
+       "x0": 46,
+       "y0": 292,
+       "x1": 669,
+       "y1": 743,
+       "cx": 357.5,
+       "cy": 517.5,
+       "w": 624,
+       "h": 452
+      },
+      "off": 0.02494199535962877,
+      "sc": 0.9131313131313131,
+      "crop": 100
+     }
+    },
+    "aliasing": {
+     "value": 0.8411214953271028,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.84 partial/boundary, halo 21.1% of 180 edge px"
+    },
+    "edges83": {
+     "value": 21.11111111111111,
+     "unit": "% edge px with halo/fringe",
+     "status": "warn",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.84 partial/boundary, halo 21.1% of 180 edge px",
+     "extra": {
+      "aa": 0.8411214953271028,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.1303095003578923,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 114, 0.53x declared base",
+     "extra": {
+      "skinLuma": 114.33086751614357,
+      "ratio": 0.5268703572172515
+     }
+    },
+    "flicker": {
+     "value": 2.4771012155078056,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.542,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "15 textures, 49 MB texture memory, 9 geometries",
+     "extra": {
+      "texMB": 49.104514617919925
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "pixel": {
+   "dir": "pixel",
+   "skin": "pixel",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 1.0629104336212434,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "enclosed 21px, translucent 16px"
+    },
+    "blackpix": {
+     "value": 44.321245259454436,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_profR",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.07551049372851687,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.30093175850394,
+      "uvStretchFrac": 0.16254015619903658,
+      "uvStretchAsym": 0.02368906883742214,
+      "uvDensP95": 2.1065197346831135,
+      "asymNormalFrac": 0.00042426813746287653,
+      "unpairedFrac": 0.9991514637250742
+     }
+    },
+    "symmetry": {
+     "value": 0.16934235664690098,
+     "unit": "mean |mirror diff| /255",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.3439171768965743,
+      "detailView": "rest_q3L"
+     },
+     "crop": "crops/pixel__symmetry.png"
+    },
+    "seams": {
+     "value": 216.93677421888037,
+     "unit": "line px per 10k skin",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/pixel__seams.png"
+    },
+    "lidcover": {
+     "value": 6.900873799346538,
+     "unit": "dE lid vs skin",
+     "status": "warn",
+     "worst": "blinkmid_front",
+     "note": "dL -5.8 (lid minus skin), dE 6.9, eye still visible 96%",
+     "crop": "crops/pixel__lidcover.png"
+    },
+    "ghosts": {
+     "value": 70.72463768115942,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "fail",
+     "worst": "emote_shy",
+     "note": "mouth ghost in emote_shy: 71% of 345px",
+     "crop": "crops/pixel__ghosts.png"
+    },
+    "framing": {
+     "value": 5.437151193357597,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "rest_front",
+     "note": "bbox c(374,564) h492; centre off 3.3%, scale x0.99 of base; eyes off 3.3%, span x0.96, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 63,
+       "y0": 318,
+       "x1": 684,
+       "y1": 809,
+       "cx": 373.5,
+       "cy": 563.5,
+       "w": 622,
+       "h": 492
+      },
+      "off": 0.032771909382288134,
+      "sc": 0.9939393939393939,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9409090909090909,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 41.1% of 207 edge px"
+    },
+    "edges83": {
+     "value": 41.06280193236715,
+     "unit": "% edge px with halo/fringe",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 41.1% of 207 edge px",
+     "extra": {
+      "aa": 0.9409090909090909,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.48766917047146807,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 184, 0.85x declared base",
+     "extra": {
+      "skinLuma": 183.8610944475266,
+      "ratio": 0.8547234249703018
+     }
+    },
+    "flicker": {
+     "value": 16.062351126646163,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/pixel__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.1858999999985098,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast": {
+   "dir": "plast",
+   "skin": "plast",
+   "preset": "agam-clay",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 28.29741028474053,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "rest_up",
+     "note": "enclosed 838px, translucent 122px",
+     "crop": "crops/plast__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.038590695041942534,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.7029126594522896,
+      "detailView": "rest_down"
+     }
+    },
+    "seams": {
+     "value": 16.539050535987748,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.024393858201164572,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 105%"
+    },
+    "ghosts": {
+     "value": 0.4464285714285714,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_shy",
+     "note": "brows ghost in emote_shy: 0% of 1344px"
+    },
+    "framing": {
+     "value": 6,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_shy",
+     "note": "bbox c(396,429) h527; centre off 0.0%, scale x1.00 of base; silhouette c(407,511) h701 vs base, cropped px 69",
+     "extra": {
+      "box": {
+       "x0": 188,
+       "y0": 166,
+       "x1": 603,
+       "y1": 692,
+       "cx": 395.5,
+       "cy": 429,
+       "w": 416,
+       "h": 527
+      },
+      "off": 0,
+      "sc": 1,
+      "crop": 69
+     }
+    },
+    "aliasing": {
+     "value": 0.9766355140186916,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.98 partial/boundary, halo 1.0% of 209 edge px"
+    },
+    "edges83": {
+     "value": 0.9569377990430622,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.98 partial/boundary, halo 1.0% of 209 edge px",
+     "extra": {
+      "aa": 0.9766355140186916,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 151",
+     "extra": {
+      "skinLuma": 150.78417175278096,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 13.804450889620169,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8745,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-bald-moustache": {
+   "dir": "plast_desi-bald-moustache",
+   "skin": "plast",
+   "preset": "desi-bald-moustache",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 3.569020898600151,
+     "unit": "px per 10k",
+     "status": "warn",
+     "worst": "rest_profL",
+     "note": "enclosed 250px, translucent 75px",
+     "crop": "crops/plast_desi-bald-moustache__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.012871505987651816,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.22095723681613968,
+      "detailView": "rest_up"
+     }
+    },
+    "seams": {
+     "value": 9.114583333333334,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 9.113170672592272,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 33%",
+     "crop": "crops/plast_desi-bald-moustache__lidcover.png"
+    },
+    "ghosts": {
+     "value": 0,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "eyes ghost in blinkclosed_front: 0% of 2141px"
+    },
+    "framing": {
+     "value": 25.05673576140512,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(359,452) h486; centre off 6.8%, scale x0.69 of base; silhouette c(358,452) h487 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 209,
+       "x1": 603,
+       "y1": 694,
+       "cx": 358.5,
+       "cy": 451.5,
+       "w": 490,
+       "h": 486
+      },
+      "off": 0.06844547563805105,
+      "sc": 0.6947218259629101,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 1,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 1.00 partial/boundary, halo 0.0% of 150 edge px"
+    },
+    "edges83": {
+     "value": 0,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 1.00 partial/boundary, halo 0.0% of 150 edge px",
+     "extra": {
+      "aa": 1,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 99",
+     "extra": {
+      "skinLuma": 98.80076367404037,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 0.1907826540410946,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.9572999999970198,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "8 textures, 5 MB texture memory, 9 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "Hair: not drawn (0px change when hidden); Hair: 1 floating piece(s) (18v @3.054 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-balding-grey-beard": {
+   "dir": "plast_desi-balding-grey-beard",
+   "skin": "plast",
+   "preset": "desi-balding-grey-beard",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 12.662642928634254,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "rest_q3R",
+     "note": "enclosed 161px, translucent 98px",
+     "crop": "crops/plast_desi-balding-grey-beard__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.045920578334892506,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.47113136924052346,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 24.006913991229474,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 8.053788668027835,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.1, eye still visible 30%",
+     "crop": "crops/plast_desi-balding-grey-beard__lidcover.png"
+    },
+    "ghosts": {
+     "value": 8.100147275405007,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_grin",
+     "note": "brows ghost in emote_grin: 8% of 679px"
+    },
+    "framing": {
+     "value": 20.018599265360827,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(363,433) h449; centre off 5.0%, scale x0.74 of base; silhouette c(376,468) h519 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 132,
+       "y0": 209,
+       "x1": 594,
+       "y1": 657,
+       "cx": 363,
+       "cy": 433,
+       "w": 463,
+       "h": 449
+      },
+      "off": 0.04988399071925754,
+      "sc": 0.7403708987161198,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.8598726114649682,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.86 partial/boundary, halo 2.2% of 135 edge px"
+    },
+    "edges83": {
+     "value": 2.2222222222222223,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.86 partial/boundary, halo 2.2% of 135 edge px",
+     "extra": {
+      "aa": 0.8598726114649682,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 158",
+     "extra": {
+      "skinLuma": 157.86123248839624,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 19.191989430498573,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-balding-grey-beard__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.0382999999970197,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "7 textures, 5 MB texture memory, 9 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-boycut-glasses": {
+   "dir": "plast_desi-boycut-glasses",
+   "skin": "plast",
+   "preset": "desi-boycut-glasses",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 3.597639948193985,
+     "unit": "px per 10k",
+     "status": "warn",
+     "worst": "rest_profL",
+     "note": "enclosed 254px, translucent 75px",
+     "crop": "crops/plast_desi-boycut-glasses__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.05036719006266138,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.4166032687460356,
+      "detailView": "rest_up"
+     }
+    },
+    "seams": {
+     "value": 37.58620689655172,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 9.561877654868553,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL -0.0 (lid minus skin), dE 0.0, eye still visible 34%",
+     "crop": "crops/plast_desi-boycut-glasses__lidcover.png"
+    },
+    "ghosts": {
+     "value": 2.881152460984394,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_grin",
+     "note": "brows ghost in emote_grin: 3% of 833px"
+    },
+    "framing": {
+     "value": 22.908808747068388,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(356,405) h475; centre off 9.4%, scale x0.76 of base; silhouette c(370,430) h535 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 168,
+       "x1": 597,
+       "y1": 642,
+       "cx": 355.5,
+       "cy": 405,
+       "w": 484,
+       "h": 475
+      },
+      "off": 0.09396751740139211,
+      "sc": 0.7631954350927247,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.8992805755395683,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 8.0% of 125 edge px"
+    },
+    "edges83": {
+     "value": 8,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 8.0% of 125 edge px",
+     "extra": {
+      "aa": 0.8992805755395683,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 193",
+     "extra": {
+      "skinLuma": 193.10339082108732,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 69.65039506440091,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-boycut-glasses__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.132,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "8 textures, 5 MB texture memory, 10 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-bun-bindi-hoops": {
+   "dir": "plast_desi-bun-bindi-hoops",
+   "skin": "plast",
+   "preset": "desi-bun-bindi-hoops",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 47.633098680605315,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "emote_think",
+     "note": "enclosed 1221px, translucent 174px",
+     "crop": "crops/plast_desi-bun-bindi-hoops__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.06207091680439151,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.6641686935365304,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 20.205887357495325,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 7.746061880738414,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 29%",
+     "crop": "crops/plast_desi-bun-bindi-hoops__lidcover.png"
+    },
+    "ghosts": {
+     "value": 13.260340632603407,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "warn",
+     "worst": "emote_grin",
+     "note": "brows ghost in emote_grin: 13% of 822px",
+     "crop": "crops/plast_desi-bun-bindi-hoops__ghosts.png"
+    },
+    "framing": {
+     "value": 21.40280995499422,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(359,431) h527; centre off 8.8%, scale x0.78 of base; silhouette c(381,435) h545 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 111,
+       "y0": 168,
+       "x1": 607,
+       "y1": 694,
+       "cx": 359,
+       "cy": 431,
+       "w": 497,
+       "h": 527
+      },
+      "off": 0.08816705336426914,
+      "sc": 0.7774607703281027,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9112903225806451,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.91 partial/boundary, halo 2.7% of 226 edge px"
+    },
+    "edges83": {
+     "value": 2.6548672566371683,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.91 partial/boundary, halo 2.7% of 226 edge px",
+     "extra": {
+      "aa": 0.9112903225806451,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 175",
+     "extra": {
+      "skinLuma": 175.35963190533997,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 59.53187385937089,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-bun-bindi-hoops__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.9757999999970197,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 13 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-curly-beard-glasses": {
+   "dir": "plast_desi-curly-beard-glasses",
+   "skin": "plast",
+   "preset": "desi-curly-beard-glasses",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 12.42958960800092,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "blinkclosed_q3R",
+     "note": "enclosed 248px, translucent 139px",
+     "crop": "crops/plast_desi-curly-beard-glasses__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.0047812101359952,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.09408859507417636,
+      "detailView": "rest_up"
+     }
+    },
+    "seams": {
+     "value": 0,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 8.91348211556099,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 32%",
+     "crop": "crops/plast_desi-curly-beard-glasses__lidcover.png"
+    },
+    "ghosts": {
+     "value": 0,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "eyes ghost in blinkclosed_front: 0% of 2098px"
+    },
+    "framing": {
+     "value": 17.284603753965897,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(354,434) h447; centre off 9.3%, scale x0.85 of base; silhouette c(370,431) h598 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 211,
+       "x1": 594,
+       "y1": 657,
+       "cx": 354,
+       "cy": 434,
+       "w": 481,
+       "h": 447
+      },
+      "off": 0.09338747099767981,
+      "sc": 0.8530670470756063,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.84,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.84 partial/boundary, halo 0.0% of 147 edge px"
+    },
+    "edges83": {
+     "value": 0,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.84 partial/boundary, halo 0.0% of 147 edge px",
+     "extra": {
+      "aa": 0.84,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 71",
+     "extra": {
+      "skinLuma": 71.3926619981909,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 0.09131461079430014,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.215,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "10 textures, 5 MB texture memory, 12 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-deep-tone-braid": {
+   "dir": "plast_desi-deep-tone-braid",
+   "skin": "plast",
+   "preset": "desi-deep-tone-braid",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 33.2330157359173,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "emote_think",
+     "note": "enclosed 1075px, translucent 112px",
+     "crop": "crops/plast_desi-deep-tone-braid__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.007297198475019253,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.17438805934083867,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 0,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 8%"
+    },
+    "ghosts": {
+     "value": 0,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "eyes ghost in blinkclosed_front: 0% of 2070px"
+    },
+    "framing": {
+     "value": 7.10201837731387,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "rest_front",
+     "note": "bbox c(375,431) h528; centre off 3.2%, scale x0.93 of base; silhouette c(396,483) h649 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 146,
+       "y0": 167,
+       "x1": 603,
+       "y1": 694,
+       "cx": 374.5,
+       "cy": 430.5,
+       "w": 458,
+       "h": 528
+      },
+      "off": 0.03248259860788863,
+      "sc": 0.9258202567760342,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9013605442176871,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 0.0% of 265 edge px"
+    },
+    "edges83": {
+     "value": 0,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 0.0% of 265 edge px",
+     "extra": {
+      "aa": 0.9013605442176871,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 62",
+     "extra": {
+      "skinLuma": 62.2159742202259,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 0.3501547684076362,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8298999999985098,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "BrowL: not drawn (51px change when hidden); BrowR: not drawn (45px change when hidden)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-dupatta-studs": {
+   "dir": "plast_desi-dupatta-studs",
+   "skin": "plast",
+   "preset": "desi-dupatta-studs",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 66.6630858384211,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "rest_down",
+     "note": "enclosed 2218px, translucent 215px",
+     "crop": "crops/plast_desi-dupatta-studs__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.04089704970382024,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.7865271881976601,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 14.65108131350129,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.16966247690608682,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.2, eye still visible 100%"
+    },
+    "ghosts": {
+     "value": 0.6419753086419753,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "eyes ghost in emote_laugh: 1% of 2025px"
+    },
+    "framing": {
+     "value": 8.536725403270314,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_nod",
+     "note": "bbox c(369,452) h486; centre off 1.3%, scale x0.98 of base; silhouette c(396,520) h684 vs base, cropped px 390",
+     "extra": {
+      "box": {
+       "x0": 135,
+       "y0": 209,
+       "x1": 603,
+       "y1": 694,
+       "cx": 369,
+       "cy": 451.5,
+       "w": 469,
+       "h": 486
+      },
+      "off": 0.013092269326683292,
+      "sc": 0.9757489300998573,
+      "crop": 390
+     }
+    },
+    "aliasing": {
+     "value": 0.8994974874371859,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 3.4% of 179 edge px"
+    },
+    "edges83": {
+     "value": 3.35195530726257,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 3.4% of 179 edge px",
+     "extra": {
+      "aa": 0.8994974874371859,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 167",
+     "extra": {
+      "skinLuma": 166.63350136605598,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 14.378042470965216,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-dupatta-studs__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.0762000000029803,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 14 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "Earring: not drawn (0px change when hidden); NosePin: 1 floating piece(s) (165v @0.083 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-grey-braid": {
+   "dir": "plast_desi-grey-braid",
+   "skin": "plast",
+   "preset": "desi-grey-braid",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 33.2330157359173,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "emote_think",
+     "note": "enclosed 1075px, translucent 112px",
+     "crop": "crops/plast_desi-grey-braid__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.04518928946081358,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.6804955927137755,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 18.11198882730328,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 7.8065522620904835,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 30%",
+     "crop": "crops/plast_desi-grey-braid__lidcover.png"
+    },
+    "ghosts": {
+     "value": 2.119205298013245,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_wink",
+     "note": "brows ghost in emote_wink: 2% of 1510px"
+    },
+    "framing": {
+     "value": 7.10201837731387,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "rest_front",
+     "note": "bbox c(375,431) h528; centre off 3.2%, scale x0.93 of base; silhouette c(396,483) h649 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 146,
+       "y0": 167,
+       "x1": 603,
+       "y1": 694,
+       "cx": 374.5,
+       "cy": 430.5,
+       "w": 458,
+       "h": 528
+      },
+      "off": 0.03248259860788863,
+      "sc": 0.9258202567760342,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.8564814814814815,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.86 partial/boundary, halo 4.9% of 185 edge px"
+    },
+    "edges83": {
+     "value": 4.864864864864865,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.86 partial/boundary, halo 4.9% of 185 edge px",
+     "extra": {
+      "aa": 0.8564814814814815,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 140",
+     "extra": {
+      "skinLuma": 139.90875824941563,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 12.430494278471084,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-grey-braid__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8409000000059604,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "7 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 1,
+     "unit": "problems",
+     "status": "warn",
+     "worst": null,
+     "note": "NosePin: 1 floating piece(s) (165v @0.07 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-hijab-glasses": {
+   "dir": "plast_desi-hijab-glasses",
+   "skin": "plast",
+   "preset": "desi-hijab-glasses",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 1.435156747819997,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "blinkclosed_q3R",
+     "note": "enclosed 125px, translucent 53px"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.027085016724482026,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.6069888823885505,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 19.1554048116971,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 8.181139875199895,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL -0.0 (lid minus skin), dE 0.0, eye still visible 30%",
+     "crop": "crops/plast_desi-hijab-glasses__lidcover.png"
+    },
+    "ghosts": {
+     "value": 0.1794526693584567,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "eyes ghost in emote_laugh: 0% of 2229px"
+    },
+    "framing": {
+     "value": 8.21357735691289,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_nod",
+     "note": "bbox c(359,452) h486; centre off 1.0%, scale x0.98 of base; silhouette c(412,520) h684 vs base, cropped px 390",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 209,
+       "x1": 603,
+       "y1": 694,
+       "cx": 358.5,
+       "cy": 451.5,
+       "w": 490,
+       "h": 486
+      },
+      "off": 0.009860788863109048,
+      "sc": 0.9757489300998573,
+      "crop": 390
+     }
+    },
+    "aliasing": {
+     "value": 0.9518072289156626,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.95 partial/boundary, halo 6.3% of 158 edge px"
+    },
+    "edges83": {
+     "value": 6.329113924050633,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.95 partial/boundary, halo 6.3% of 158 edge px",
+     "extra": {
+      "aa": 0.9518072289156626,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 156",
+     "extra": {
+      "skinLuma": 155.6498649858797,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 13.452743902439023,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-hijab-glasses__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.9242000000029802,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "Hair: not drawn (0px change when hidden); Hair: 1 floating piece(s) (18v @3.054 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-long-bindi-nosepin": {
+   "dir": "plast_desi-long-bindi-nosepin",
+   "skin": "plast",
+   "preset": "desi-long-bindi-nosepin",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 15.297305656977253,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "emote_think",
+     "note": "enclosed 405px, translucent 119px",
+     "crop": "crops/plast_desi-long-bindi-nosepin__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.04407512903068177,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.6387813182264803,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 14.920601087072365,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.12926914095145559,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.1 (lid minus skin), dE 0.1, eye still visible 7%"
+    },
+    "ghosts": {
+     "value": 0.09861932938856016,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "eyes ghost in emote_laugh: 0% of 2028px"
+    },
+    "framing": {
+     "value": 6.750160936673148,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_shy",
+     "note": "bbox c(398,430) h530; centre off 0.5%, scale x0.99 of base; silhouette c(405,507) h697 vs base, cropped px 37",
+     "extra": {
+      "box": {
+       "x0": 189,
+       "y0": 165,
+       "x1": 607,
+       "y1": 694,
+       "cx": 398,
+       "cy": 429.5,
+       "w": 419,
+       "h": 530
+      },
+      "off": 0.004640371229698376,
+      "sc": 0.9942938659058488,
+      "crop": 37
+     }
+    },
+    "aliasing": {
+     "value": 0.9254385964912281,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 0.5% of 211 edge px"
+    },
+    "edges83": {
+     "value": 0.47393364928909953,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 0.5% of 211 edge px",
+     "extra": {
+      "aa": 0.9254385964912281,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 141",
+     "extra": {
+      "skinLuma": 140.6922302919936,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 13.361772638333129,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-long-bindi-nosepin__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8732000000029803,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "9 textures, 5 MB texture memory, 13 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 1,
+     "unit": "problems",
+     "status": "warn",
+     "worst": null,
+     "note": "NosePin: 1 floating piece(s) (165v @0.07 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-mohawk-stubble": {
+   "dir": "plast_desi-mohawk-stubble",
+   "skin": "plast",
+   "preset": "desi-mohawk-stubble",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 100.49561832244345,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "rest_profL",
+     "note": "enclosed 1152px, translucent 100px",
+     "crop": "crops/plast_desi-mohawk-stubble__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.014803324875285327,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.29687973841200527,
+      "detailView": "rest_q3L"
+     }
+    },
+    "seams": {
+     "value": 19.789584216796914,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.1319912514002105,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "dL -0.0 (lid minus skin), dE 0.1, eye still visible 10%"
+    },
+    "ghosts": {
+     "value": 1.8181818181818181,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_puff",
+     "note": "brows ghost in emote_puff: 2% of 220px"
+    },
+    "framing": {
+     "value": 21.770490463431962,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(361,426) h434; centre off 11.4%, scale x0.81 of base; silhouette c(361,413) h570 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 209,
+       "x1": 607,
+       "y1": 642,
+       "cx": 360.5,
+       "cy": 425.5,
+       "w": 494,
+       "h": 434
+      },
+      "off": 0.1142691415313225,
+      "sc": 0.8131241084165478,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9349112426035503,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 3.2% of 158 edge px"
+    },
+    "edges83": {
+     "value": 3.1645569620253164,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 3.2% of 158 edge px",
+     "extra": {
+      "aa": 0.9349112426035503,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 121",
+     "extra": {
+      "skinLuma": 120.6834210134785,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 1.8795624863580143,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.2926000000014901,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "10 textures, 5 MB texture memory, 12 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-sikh-turban": {
+   "dir": "plast_desi-sikh-turban",
+   "skin": "plast",
+   "preset": "desi-sikh-turban",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 10.670018709073902,
+     "unit": "px per 10k",
+     "status": "warn",
+     "worst": "rest_q3R",
+     "note": "enclosed 126px, translucent 82px",
+     "crop": "crops/plast_desi-sikh-turban__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.018316277671944655,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.33280239189817107,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 36.400791876875914,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.14333285534405135,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": "dL -0.1 (lid minus skin), dE 0.1, eye still visible 100%"
+    },
+    "ghosts": {
+     "value": 0.048638132295719845,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "eyes ghost in emote_laugh: 0% of 2056px"
+    },
+    "framing": {
+     "value": 17.57484941600914,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(354,493) h329; centre off 8.7%, scale x0.84 of base; silhouette c(370,436) h587 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 329,
+       "x1": 594,
+       "y1": 657,
+       "cx": 354,
+       "cy": 493,
+       "w": 481,
+       "h": 329
+      },
+      "off": 0.08700696055684455,
+      "sc": 0.8373751783166904,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9787234042553191,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.98 partial/boundary, halo 1.4% of 138 edge px"
+    },
+    "edges83": {
+     "value": 1.4492753623188406,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.98 partial/boundary, halo 1.4% of 138 edge px",
+     "extra": {
+      "aa": 0.9787234042553191,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 131",
+     "extra": {
+      "skinLuma": 131.2480036382898,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 3.326230946481426,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.9462000000029802,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "10 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "Hair: not drawn (0px change when hidden); Hair: 1 floating piece(s) (18v @3.054 head heights)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-taqiyah-beard": {
+   "dir": "plast_desi-taqiyah-beard",
+   "skin": "plast",
+   "preset": "desi-taqiyah-beard",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 13.70801919122687,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "blinkclosed_q3R",
+     "note": "enclosed 207px, translucent 140px",
+     "crop": "crops/plast_desi-taqiyah-beard__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.03496786570501367,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.34852256803553733,
+      "detailView": "rest_up"
+     }
+    },
+    "seams": {
+     "value": 73.87731385407156,
+     "unit": "line px per 10k skin",
+     "status": "warn",
+     "worst": "rest_q3L",
+     "note": "",
+     "crop": "crops/plast_desi-taqiyah-beard__seams.png"
+    },
+    "lidcover": {
+     "value": 8.526603830951657,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 31%",
+     "crop": "crops/plast_desi-taqiyah-beard__lidcover.png"
+    },
+    "ghosts": {
+     "value": 1.1884550084889642,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_surprised",
+     "note": "brows ghost in emote_surprised: 1% of 2356px"
+    },
+    "framing": {
+     "value": 18.75014508553522,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(354,444) h427; centre off 6.4%, scale x0.78 of base; silhouette c(370,456) h548 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 231,
+       "x1": 594,
+       "y1": 657,
+       "cx": 354,
+       "cy": 444,
+       "w": 481,
+       "h": 427
+      },
+      "off": 0.06438515081206496,
+      "sc": 0.7817403708987162,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.9523809523809523,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.95 partial/boundary, halo 4.2% of 120 edge px"
+    },
+    "edges83": {
+     "value": 4.166666666666666,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "83px: aa coverage 0.95 partial/boundary, halo 4.2% of 120 edge px",
+     "extra": {
+      "aa": 0.9523809523809523,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 131",
+     "extra": {
+      "skinLuma": 131.48871547579887,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 20.527936416032848,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_desi-taqiyah-beard__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.9827999999970197,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "8 textures, 5 MB texture memory, 11 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 2,
+     "unit": "problems",
+     "status": "fail",
+     "worst": null,
+     "note": "BrowL: not drawn (0px change when hidden); BrowR: not drawn (0px change when hidden)"
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:desi-tilak-gelled-moustache": {
+   "dir": "plast_desi-tilak-gelled-moustache",
+   "skin": "plast",
+   "preset": "desi-tilak-gelled-moustache",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 1.0989103880844302,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "rest_profL",
+     "note": "enclosed 13px, translucent 0px"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.028142418513012447,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.3863573394232518,
+      "detailView": "rest_front"
+     }
+    },
+    "seams": {
+     "value": 13.472181765219924,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.34344714296185463,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "dL -0.2 (lid minus skin), dE 0.2, eye still visible 10%"
+    },
+    "ghosts": {
+     "value": 0,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "eyes ghost in blinkclosed_front: 0% of 2141px"
+    },
+    "framing": {
+     "value": 21.17798351667625,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "bbox c(359,461) h467; centre off 13.4%, scale x0.86 of base; silhouette c(358,396) h600 vs base, cropped px 0",
+     "extra": {
+      "box": {
+       "x0": 114,
+       "y0": 228,
+       "x1": 603,
+       "y1": 694,
+       "cx": 358.5,
+       "cy": 461,
+       "w": 490,
+       "h": 467
+      },
+      "off": 0.1339907192575406,
+      "sc": 0.8559201141226819,
+      "crop": 0
+     }
+    },
+    "aliasing": {
+     "value": 0.8994082840236687,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 0.0% of 152 edge px"
+    },
+    "edges83": {
+     "value": 0,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.90 partial/boundary, halo 0.0% of 152 edge px",
+     "extra": {
+      "aa": 0.8994082840236687,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 106",
+     "extra": {
+      "skinLuma": 106.0336085361201,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 0.20707149143241704,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 1.12810000000149,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "8 textures, 5 MB texture memory, 10 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "plast:neutral": {
+   "dir": "plast_neutral",
+   "skin": "plast",
+   "preset": "neutral",
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 28.254155989223996,
+     "unit": "px per 10k",
+     "status": "fail",
+     "worst": "rest_up",
+     "note": "enclosed 838px, translucent 122px",
+     "crop": "crops/plast_neutral__holes.png"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.04423580656670109,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.7165467007392471,
+      "detailView": "rest_down"
+     }
+    },
+    "seams": {
+     "value": 17.990644864670372,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0.16913392739056013,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkmid_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.2, eye still visible 100%"
+    },
+    "ghosts": {
+     "value": 0.6400787789266371,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "eyes ghost in emote_laugh: 1% of 2031px"
+    },
+    "framing": {
+     "value": 6,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_shy",
+     "note": "bbox c(396,430) h529; centre off 0.0%, scale x1.00 of base; silhouette c(407,511) h701 vs base, cropped px 69",
+     "extra": {
+      "box": {
+       "x0": 188,
+       "y0": 166,
+       "x1": 603,
+       "y1": 694,
+       "cx": 395.5,
+       "cy": 430,
+       "w": 416,
+       "h": 529
+      },
+      "off": 0,
+      "sc": 1,
+      "crop": 69
+     }
+    },
+    "aliasing": {
+     "value": 0.9672897196261683,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.97 partial/boundary, halo 1.9% of 207 edge px"
+    },
+    "edges83": {
+     "value": 1.932367149758454,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.97 partial/boundary, halo 1.9% of 207 edge px",
+     "extra": {
+      "aa": 0.9672897196261683,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 163",
+     "extra": {
+      "skinLuma": 162.64973061459128,
+      "ratio": null
+     }
+    },
+    "flicker": {
+     "value": 16.83273811383096,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "fail",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     },
+     "crop": "crops/plast_neutral__flicker.png"
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 3.89760000000149,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "6 textures, 5 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 5.320003814697266
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "print": {
+   "dir": "print",
+   "skin": "print",
+   "preset": null,
+   "status": "warn",
+   "checks": {
+    "holes": {
+     "value": 0.08839935291673665,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "emote_laugh",
+     "note": "enclosed 0px, translucent 6px"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.08693880687456546,
+     "unit": "|L-R| area share (proj)",
+     "status": "warn",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3724359341706251,
+      "uvStretchFrac": 0.1925250243811092,
+      "uvStretchAsym": 0.024147003023873737,
+      "uvDensP95": 2.150341169868356,
+      "asymNormalFrac": 0.00012093945770747164,
+      "unpairedFrac": 0.9890186972401616
+     }
+    },
+    "symmetry": {
+     "value": 0.03298863219881663,
+     "unit": "mean |mirror diff| /255",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.7571922481308666,
+      "detailView": "rest_q3R"
+     }
+    },
+    "seams": {
+     "value": 544.7462534059946,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_down",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 0,
+     "unit": "dE lid vs skin",
+     "status": "pass",
+     "worst": "blinkclosed_front",
+     "note": "dL 0.0 (lid minus skin), dE 0.0, eye still visible 9%"
+    },
+    "ghosts": {
+     "value": 6.356968215158925,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "pass",
+     "worst": "emote_sad",
+     "note": "brows ghost in emote_sad: 6% of 409px"
+    },
+    "framing": {
+     "value": 6,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "warn",
+     "worst": "emote_laugh",
+     "note": "bbox c(354,539) h495; centre off 0.0%, scale x1.00 of base; eyes off 0.0%, span x1.00, cropped px 23",
+     "extra": {
+      "box": {
+       "x0": 40,
+       "y0": 292,
+       "x1": 668,
+       "y1": 786,
+       "cx": 354,
+       "cy": 539,
+       "w": 629,
+       "h": 495
+      },
+      "off": 0,
+      "sc": 1,
+      "crop": 23
+     }
+    },
+    "aliasing": {
+     "value": 0.9354838709677419,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 14.8% of 203 edge px"
+    },
+    "edges83": {
+     "value": 14.77832512315271,
+     "unit": "% edge px with halo/fringe",
+     "status": "warn",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.94 partial/boundary, halo 14.8% of 203 edge px",
+     "extra": {
+      "aa": 0.9354838709677419,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 203, 0.98x declared base",
+     "extra": {
+      "skinLuma": 202.7799937998774,
+      "ratio": 0.9804556464435511
+     }
+    },
+    "flicker": {
+     "value": 48.13485231069086,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.8648000000044703,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "15 textures, 42 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 42.20718933105469
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "riso": {
+   "dir": "riso",
+   "skin": "riso",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 0.510194069975079,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": "enclosed 11px, translucent 3px"
+    },
+    "blackpix": {
+     "value": 9.998795325864354,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_profR",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.12152176876506585,
+     "unit": "|L-R| area share (proj)",
+     "status": "fail",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.3026385969861216,
+      "uvStretchFrac": 0.15280029641464787,
+      "uvStretchAsym": 0.043315128102929756,
+      "uvDensP95": 2.0012612656591244,
+      "asymNormalFrac": 0.0016869184743931048,
+      "unpairedFrac": 0.9910382456047866
+     }
+    },
+    "symmetry": {
+     "value": 0.20276575768989977,
+     "unit": "mean |mirror diff| /255",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.4105343479045876,
+      "detailView": "rest_down"
+     },
+     "crop": "crops/riso__symmetry.png"
+    },
+    "seams": {
+     "value": 389.35925138095996,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3R",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 8.208356426621872,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkmid_front",
+     "note": "dL -8.1 (lid minus skin), dE 8.2, eye still visible 98%",
+     "crop": "crops/riso__lidcover.png"
+    },
+    "ghosts": {
+     "value": 66.49282920469362,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "fail",
+     "worst": "emote_sad",
+     "note": "mouth ghost in emote_sad: 66% of 767px",
+     "crop": "crops/riso__ghosts.png"
+    },
+    "framing": {
+     "value": 13.730580623714609,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(365,558) h545; centre off 2.9%, scale x1.10 of base; eyes off 2.9%, span x1.09, cropped px 156",
+     "extra": {
+      "box": {
+       "x0": 24,
+       "y0": 286,
+       "x1": 705,
+       "y1": 830,
+       "cx": 364.5,
+       "cy": 558,
+       "w": 682,
+       "h": 545
+      },
+      "off": 0.029191790189869202,
+      "sc": 1.101010101010101,
+      "crop": 156
+     }
+    },
+    "aliasing": {
+     "value": 0.908695652173913,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.91 partial/boundary, halo 25.4% of 209 edge px"
+    },
+    "edges83": {
+     "value": 25.358851674641148,
+     "unit": "% edge px with halo/fringe",
+     "status": "fail",
+     "worst": "rest_front",
+     "note": "83px: aa coverage 0.91 partial/boundary, halo 25.4% of 209 edge px",
+     "extra": {
+      "aa": 0.908695652173913,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0.039741858564144715,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 178, 0.78x declared base",
+     "extra": {
+      "skinLuma": 178.06463801905528,
+      "ratio": 0.7764051451701816
+     }
+    },
+    "flicker": {
+     "value": 2.491125365884038,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.6226000000014901,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  },
+  "stone": {
+   "dir": "stone",
+   "skin": "stone",
+   "preset": null,
+   "status": "fail",
+   "checks": {
+    "holes": {
+     "value": 0.9892594686263426,
+     "unit": "px per 10k",
+     "status": "pass",
+     "worst": "rest_profL",
+     "note": "enclosed 9px, translucent 23px"
+    },
+    "blackpix": {
+     "value": 0,
+     "unit": "px per 10k skin",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": ""
+    },
+    "stretch": {
+     "value": 0.023231671383421526,
+     "unit": "|L-R| area share (proj)",
+     "status": "pass",
+     "worst": null,
+     "note": "",
+     "extra": {
+      "projStretchFrac": 0.30812188068816604,
+      "uvStretchFrac": 0.16901134335319687,
+      "uvStretchAsym": 0.013073487255317817,
+      "uvDensP95": 2.134652368633243,
+      "asymNormalFrac": 0.0007173799078442734,
+      "unpairedFrac": 0.9969097480892862
+     }
+    },
+    "symmetry": {
+     "value": 0.1838194280640742,
+     "unit": "mean |mirror diff| /255",
+     "status": "fail",
+     "worst": "rest_q3L",
+     "note": "",
+     "extra": {
+      "detailLogRatio": 0.18468897264158937,
+      "detailView": "rest_q3L"
+     },
+     "crop": "crops/stone__symmetry.png"
+    },
+    "seams": {
+     "value": 54.27440949602334,
+     "unit": "line px per 10k skin",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": ""
+    },
+    "lidcover": {
+     "value": 9.867564897673722,
+     "unit": "dE lid vs skin",
+     "status": "fail",
+     "worst": "blinkmid_front",
+     "note": "dL -9.8 (lid minus skin), dE 9.9, eye still visible 99%",
+     "crop": "crops/stone__lidcover.png"
+    },
+    "ghosts": {
+     "value": 22.831050228310502,
+     "unit": "% of vacated feature px not skin-coloured",
+     "status": "warn",
+     "worst": "emote_shy",
+     "note": "mouth ghost in emote_shy: 23% of 438px",
+     "crop": "crops/stone__ghosts.png"
+    },
+    "framing": {
+     "value": 15.397621166706559,
+     "unit": "centre off %·1 + |ln scale|·50 + 5 if cropped",
+     "status": "fail",
+     "worst": "emote_laugh",
+     "note": "bbox c(354,563) h565; centre off 2.8%, scale x1.14 of base; eyes off 2.2%, span x1.03, cropped px 101",
+     "extra": {
+      "box": {
+       "x0": 40,
+       "y0": 281,
+       "x1": 667,
+       "y1": 845,
+       "cx": 353.5,
+       "cy": 563,
+       "w": 628,
+       "h": 565
+      },
+      "off": 0.027842227378190254,
+      "sc": 1.1414141414141414,
+      "crop": 101
+     }
+    },
+    "aliasing": {
+     "value": 0.9345238095238095,
+     "unit": "partial-alpha px / boundary px",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 1.3% of 157 edge px"
+    },
+    "edges83": {
+     "value": 1.2738853503184715,
+     "unit": "% edge px with halo/fringe",
+     "status": "pass",
+     "worst": "rest_q3L",
+     "note": "83px: aa coverage 0.93 partial/boundary, halo 1.3% of 157 edge px",
+     "extra": {
+      "aa": 0.9345238095238095,
+      "w": 83,
+      "h": 89
+     }
+    },
+    "exposure": {
+     "value": 0,
+     "unit": "% clipped/crushed skin px",
+     "status": "pass",
+     "worst": "rest_front",
+     "note": "skin luma 171, 0.74x declared base",
+     "extra": {
+      "skinLuma": 170.87202001151545,
+      "ratio": 0.7416024187034002
+     }
+    },
+    "flicker": {
+     "value": 4.255443178174823,
+     "unit": "px per 10k (2nd difference > 26)",
+     "status": "pass",
+     "worst": "flick1",
+     "note": "identical re-render differs on 0.0 px/10k",
+     "extra": {
+      "nondeterministic": 0
+     }
+    },
+    "errors": {
+     "value": 0,
+     "unit": "errors",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "loadmem": {
+     "value": 0.7958999999985099,
+     "unit": "s load",
+     "status": "pass",
+     "worst": null,
+     "note": "16 textures, 45 MB texture memory, 7 geometries",
+     "extra": {
+      "texMB": 44.72677627563476
+     }
+    },
+    "parts": {
+     "value": 0,
+     "unit": "problems",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    },
+    "browsers": {
+     "value": 0,
+     "unit": "mismatches chromium vs webkit",
+     "status": "pass",
+     "worst": null,
+     "note": ""
+    }
+   }
+  }
+ }
+}

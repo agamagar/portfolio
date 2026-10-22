@@ -111,6 +111,13 @@ await page("/work/scheduled-delivery", async (p, bad) => {
 });
 
 await browser.close();
+// optional fast face gate (--faces): hero size, front + 3/4, light only, against the cache; needs vite on :5218 (see tools/face3d/gate/README.md)
+if (process.argv.includes("--faces")) {
+  const { spawnSync } = await import("node:child_process");
+  for (const args of [["tools/face3d/gate/render.mjs", "--fast"], ["tools/face3d/gate/gate.mjs", "--fast", "--out", "tools/face3d/gate/report-fast"]]) {
+    const r = spawnSync("node", args, { stdio: "inherit" }); if (r.status) fails.push(`face gate (${args[0]}) exit ${r.status}`);
+  }
+}
 const secs = ((Date.now() - t0) / 1000).toFixed(1);
 if (fails.length) { console.error(`QA SMOKE FAILED (${secs}s):\n - ` + [...new Set(fails)].join("\n - ")); process.exit(1); }
 if (slows.length) { console.error(`QA SMOKE SLOW (load-related, not a page failure; machine too busy to verify, rerun) (${secs}s):\n - ` + [...new Set(slows)].join("\n - ")); process.exit(2); }

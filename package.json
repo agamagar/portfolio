@@ -14,7 +14,9 @@
     "sync:sd-playground": "node tools/sync-sd-playground.mjs",
     "export:reel": "node tools/export-reel.mjs",
     "qa:stella": "node scripts/qaStella.mjs",
-    "qa:prompts": "node scripts/qaPromptLibrary.mjs"
+    "qa:prompts": "node scripts/qaPromptLibrary.mjs",
+    "faces:gate": "node tools/face3d/gate/render.mjs && node tools/face3d/gate/gate.mjs",
+    "faces:gate:fast": "node tools/face3d/gate/render.mjs --fast && node tools/face3d/gate/gate.mjs --fast"
   },
   "dependencies": {
     "@fontsource-variable/anek-gujarati": "^5.3.0",

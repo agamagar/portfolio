@@ -1,0 +1,25 @@
+{
+  "_doc": "warn/fail per check; higher value = worse unless 'min'. overrides: { skinOrFaceId: { check: {warn,fail} } }. Calibrated 22 Oct 2026 on the first full baseline so that the defects Agam named fail (noir/felt/stone/claySun lids, noir nose scratch, hose ghosts, pixel lines, melted far side) and clay, the reference, mostly does not; every override below is a style that draws this on purpose.",
+  "holes": { "warn": 3, "fail": 12 },
+  "blackpix": { "warn": 10, "fail": 30 },
+  "stretch": { "warn": 0.06, "fail": 0.10 },
+  "symmetry": { "warn": 0.10, "fail": 0.17 },
+  "seams": { "warn": 60, "fail": 150 },
+  "lidcover": { "warn": 4, "fail": 7 },
+  "ghosts": { "warn": 10, "fail": 25 },
+  "framing": { "warn": 5, "fail": 10 },
+  "aliasing": { "min": true, "warn": 0.55, "fail": 0.3 },
+  "edges83": { "warn": 10, "fail": 25 },
+  "exposure": { "warn": 2, "fail": 6 },
+  "flicker": { "warn": 5, "fail": 12 },
+  "errors": { "warn": 0.05, "fail": 1 },
+  "loadmem": { "warn": 6, "fail": 20 },
+  "parts": { "warn": 0.5, "fail": 1 },
+  "browsers": { "warn": 0.5, "fail": 1 },
+  "overrides": {
+    "print": { "seams": { "warn": 600, "fail": 1200 }, "flicker": { "warn": 70, "fail": 150 } },
+    "riso": { "seams": { "warn": 450, "fail": 900 } },
+    "hose": { "seams": { "warn": 250, "fail": 500 }, "blackpix": { "warn": 120, "fail": 300 } },
+    "pixel": { "blackpix": { "warn": 60, "fail": 150 } }
+  }
+}
