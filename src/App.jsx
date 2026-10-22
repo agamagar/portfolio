@@ -300,7 +300,7 @@ const research = [
 // tools/figma-fidelity/round-screen.py), so the `.fig-screen` drop-shadow
 // follows the rounded shape instead of a hard box.
 function SimpleIphoneLayout({ src, alt = "" }) {
-  return <img className="fig-screen" src={src} alt={alt} loading="lazy" />;
+  return <PhoneFrame screen={src} alt={alt} size="lg" className="fig-screen-pf" />;
 }
 
 // Split iPhone layout — another option in the simple-iphone-layout family: two
@@ -313,10 +313,10 @@ function SplitIphoneLayout({ src, alt = "" }) {
   return (
     <div className="fig-split" role="img" aria-label={alt}>
       <span className="fig-split__pane fig-split__pane--first">
-        <img className="fig-split__screen" src={first} alt="" loading="lazy" />
+        <PhoneFrame screen={first} size="md" interactive={false} className="fig-split__screen" />
       </span>
       <span className="fig-split__pane fig-split__pane--second">
-        <img className="fig-split__screen" src={second} alt="" loading="lazy" />
+        <PhoneFrame screen={second} size="lg" className="fig-split__screen" />
       </span>
     </div>
   );
@@ -469,7 +469,7 @@ const figmaEmbedUrl = (fileKey, nodeId) =>
 const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
-import { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // base iPhone frame, Scheduled Delivery only for now
+import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
 import { animate as motionAnimate } from "motion";
 import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, Expand as IconExpand } from "iconoir-react";
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
@@ -1636,12 +1636,7 @@ function ScrollPhone({ src, long }) {
     <div className={"sp" + (long ? " sp--long" : "")} ref={ref} data-expand="" data-open={lb ? "" : undefined}
       role="button" tabIndex={0} aria-haspopup="dialog" aria-label="Open this screen full page" title="Click to expand"
       onClick={openLb} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(); } }}>
-      <div className="sp__phone">
-        <div className="sp__screen">
-          <img src={src} alt="" draggable="false" />
-        </div>
-        <img className="sp__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
-      </div>
+      <PhoneFrame className="sp__phone" screen={src} interactive={false} enter={false} shadow="none" />
       {/* mv56ivr6 (12 Oct): the site's glass button (.article__hero-replay, the one the replay and
           Open-in-Figma controls use: 38px, nav glass, same hover / press / focus), bottom right */}
       <span className="article__hero-replay sp__hint" aria-hidden="true">
@@ -10095,8 +10090,14 @@ function CaseStudyBodyFull({ cs }) {
                       )}
                       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
                           notification scene) over a screen cutout that holds the prototype */}
-                      <div className="article__plate-phone">
-                        <div className="article__plate-screen">
+                      <PhoneFrame interactive={false} enter={false} size="hero" className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
+                          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
+                            <span className="article__plate-cursor">
+                              <IconCursor width={20} height={20} strokeWidth={1.6} />
+                            </span>
+                            <b>{pl.cueLabel || "Click here"}</b>
+                          </span>
+                        ) : null}>
                           {PROTO_EMBED ? (
                             <ProtoFrame src={pl.embed} title={pl.alt || "Figma prototype"} id={`pl-${k}`} link={pl.figmaLink} />
                           ) : (
@@ -10129,19 +10130,7 @@ function CaseStudyBodyFull({ cs }) {
                               />
                             </Suspense>
                           )}
-                        </div>
-                        <img className="article__plate-bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
-                        {/* mtmq59fw: a multiplayer-style cursor (Iconoir pointer) with a
-                            name pill, nudging toward the tab */}
-                        {pl.cueBox && !pl.cueNoPointer && (
-                          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
-                            <span className="article__plate-cursor">
-                              <IconCursor width={20} height={20} strokeWidth={1.6} />
-                            </span>
-                            <b>{pl.cueLabel || "Click here"}</b>
-                          </span>
-                        )}
-                      </div>
+                      </PhoneFrame>
                     </div>
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground

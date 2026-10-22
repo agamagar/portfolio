@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../ds/hooks";
 import { useSectionPlay } from "../../ui/useSectionPlay";
 import FigmaShot from "./FigmaShot";
+import PhoneFrame from "../ds/IphoneFrame";
 import "./schedExplorationsDetour.css";
 
 // Agentation mvg8xj51-ht1eue: a copy of "The explorations" illustrated after Pentagram's "In Defense of the
@@ -192,10 +193,10 @@ export default function SchedExplorationsDetour() {
                   <span className="dtr-cell__t">{c.t}</span>
                   <span className="dtr-cell__tag">{TAG[c.v]}</span>
                   {c.figma
-                    ? <FigmaShot k={c.figma} width={208} tag={false} alt={c.t} className="dtr-fshot" />
+                    ? <FigmaShot k={c.figma} size="md" tag={false} alt={c.t} className="dtr-fshot" />
                     : c.screen
-                    ? <img className="dtr-shot" src={c.screen} alt={c.t} loading="lazy" draggable="false" />
-                    : <div className="dtr-shot dtr-shot--none" role="img" aria-label={c.t + ": no screen built"}><span>No screen<br />built</span></div>}
+                    ? <PhoneFrame screen={c.screen} alt={c.t} size="md" interactive={false} enter={false} className="dtr-fshot" />
+                    : <PhoneFrame size="md" interactive={false} enter={false} className="dtr-fshot" alt={c.t + ": no screen built"}><div className="dtr-shot--none" role="img" aria-label={c.t + ": no screen built"}><span>No screen<br />built</span></div></PhoneFrame>}
                 </div>
               );
             })}

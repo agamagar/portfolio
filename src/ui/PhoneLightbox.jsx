@@ -32,7 +32,7 @@ const FULL = { left: 12, top: 12, right: 0, bottom: 0 };
 export function collectExpandables() {
   const nodes = [...document.querySelectorAll(".sp[data-expand], figure[data-exp]")];
   return nodes.map((el) => el.classList.contains("sp")
-    ? { kind: "phone", el, src: el.querySelector(".sp__screen img")?.getAttribute("src"), caption: el.closest("figure")?.querySelector("figcaption")?.textContent?.trim() || "", label: "Phone screen" }
+    ? { kind: "phone", el, src: el.querySelector(".sp__phone .ifr__img")?.getAttribute("src"), caption: el.closest("figure")?.querySelector("figcaption")?.textContent?.trim() || "", label: "Phone screen" }
     : { kind: "clone", el, label: el.querySelector("figcaption")?.textContent?.trim() || "Figure" });
 }
 

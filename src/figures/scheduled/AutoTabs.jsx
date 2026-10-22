@@ -8,8 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { animate } from "motion/react";
 import { CursorPointer as IconCursor } from "iconoir-react";
 import { useInViewLoop, useReducedMotion, spring } from "../ds/hooks";
-import PhoneControls from "../../ui/PhoneControls";
-import { IPHONE_FRAME_SRC } from "../ds/IphoneFrame";
+import PhoneFrame from "../ds/IphoneFrame";
 
 const SCREENS = { today: "/figures/scheduled/auto/today.png", tomorrow: "/figures/scheduled/auto/tomorrow.png" };
 // tab centres, % of the screen (from the Figma start frame: the tab bar at
@@ -57,8 +56,7 @@ export default function AutoTabs() {
 
   return (
     <div className="autotabs" ref={loopRef}>
-      <div className="article__plate-phone autotabs__phone">
-        <div className="article__plate-screen">
+      <PhoneFrame className="autotabs__phone" interactive enter={false} alt="Schedule tabs demo">
           <img className={"autotabs__screen" + (screen === "today" ? " is-on" : "")} src={SCREENS.today} alt="The schedule page with Today selected" draggable="false" />
           <img className={"autotabs__screen" + (screen === "tomorrow" ? " is-on" : "")} src={SCREENS.tomorrow} alt="The schedule page with Tomorrow selected" draggable="false" />
           {!reduce && (
@@ -66,10 +64,7 @@ export default function AutoTabs() {
               <IconCursor width={22} height={22} strokeWidth={1.6} />
             </span>
           )}
-        </div>
-        <img className="article__plate-bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" />
-        <PhoneControls label="Schedule tabs demo" />
-      </div>
+      </PhoneFrame>
     </div>
   );
 }

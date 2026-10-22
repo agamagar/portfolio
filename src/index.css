@@ -2683,6 +2683,8 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   width: auto;
   height: min(74vh, 620px);
 }
+/* the same, for the shared PhoneFrame (width follows the frame's 1209:2472 ratio) */
+.slide__media-live .fig-screen-pf { width: calc(min(74vh, 620px) * 1209 / 2472); }
 
 /* Rive layout: an interactive .riv animation, sized like the screen figures. The
    Rive <canvas> fills this container. */
@@ -2744,9 +2746,6 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   /* capped at the pane: at phone width two fixed 184px frames are 368px in a
      ~270px card and the right one clipped off the edge */
   width: min(var(--split-frame-w), 100%);
-  height: auto;
-  border-radius: 20px;
-  filter: drop-shadow(0 12px 28px rgba(20, 16, 45, 0.26));
 }
 .slide__media-live .fig-split {
   max-width: none;
@@ -6886,24 +6885,7 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
      (13% of the phone), mtmh3eq5 / mtmh5ibu, recomputed for the new width */
   transform: translate(-50%, calc(13% - var(--p) * 72%));
   will-change: transform;
-  filter: drop-shadow(0 18px 40px rgba(20, 8, 40, 0.45));
 }
-.sp__screen {
-  position: absolute;
-  /* iphone-frame-screen */
-  /* the cutout measured out to the ring's SOLID edge (tools/frames/check-
-     iphone-frame.py), so the screen runs under the soft edge: no gap, no bleed */
-  left: 5.29%;
-  top: 2.39%;
-  width: 89.41%;
-  height: 95.11%;
-  border-radius: 13.7% / 6.3%;
-  corner-shape: round;
-  overflow: hidden;
-  background: #fff;
-}
-.sp__screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
-.sp__bezel { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 
 /* ---- ScrollScene (.sscene; .scene is taken by the motion lab): a Figma
    plate in layers that move with the scroll ---- */
@@ -8413,7 +8395,7 @@ html.dark.glass-lens .article__hero-replay,
 /* mukxenvq (28 Sep): a full-length page in the phone. The export is 10.35x as
    tall as it is wide and the screen shows 2.175x, so about 21% of it is in
    view; the image rides up the remaining 79% with the same --p */
-.sp--long .sp__screen img { height: auto; object-fit: initial; transform: translateY(calc(var(--p) * -79%)); will-change: transform; }
+.sp--long .sp__phone .ifr__img { height: auto; object-fit: initial; transform: translateY(calc(var(--p) * -79%)); will-change: transform; }
 /* mukxfh9s (28 Sep): three image boxes, one row, same flat ground as the cart grid */
 .tbox { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
 .tbox__cell { aspect-ratio: 3 / 4; border-radius: 16px; overflow: hidden; background: #f2e8ff; display: grid; place-items: center; }
