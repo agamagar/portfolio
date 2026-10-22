@@ -356,13 +356,10 @@
 
 /* ── slot-picker Design Mode, ANIMATED (real device frame + states + cursor) ─*/
 .sd-stage--slotreal { justify-content: flex-start; gap: 30px; }
-.slotreal-device { position: relative; flex: 0 0 auto; width: 232px; }
-/* phone frame removed (annotation mqryekfl) — the screen is now the device,
-   kept at the former cutout's 232 x 504 proportions so cursor coords hold */
-.slotreal-screen { position: relative; width: 100%; aspect-ratio: 232 / 504; overflow: hidden; border-radius: 28px; border: 1px solid var(--ds-border-card); box-shadow: var(--ds-shadow-frame); background: #fff; }
+.slotreal-device { flex: 0 0 auto; width: 260px; }
 .slotreal-img { position: absolute; top: 0; left: 0; width: 100%; height: auto; opacity: 0; transition: opacity 520ms var(--ds-ease-out); }
 .slotreal-img[data-on="true"] { opacity: 1; }
-/* pointer: shared glass Cursor (ds/Cursor) rendered inside .slotreal-screen */
+/* pointer: shared glass Cursor (ds/Cursor) rendered inside the frame screen (.ifr__screen, 232 x 504 of the 260 phone) */
 
 /* ── design-mode galleries: real-screen contact sheets ─────────────────────*/
 .sd-stage--gallery { display: block; padding: 16px 16px 8px; }
@@ -1898,8 +1895,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* muky96u1 (28 Sep): the stuck-cart screen (1080x2487) is taller than the
    232/504 frame, so its foot was cut. The FRAME grows to the screen's own ratio
    (and a touch wider) instead of cropping the screen */
-.slotreal-device--tall { width: 252px; }
-.slotreal-device--tall .slotreal-screen { aspect-ratio: 1080 / 2487; }
+.slotreal-device--tall { width: 282px; }
 .slotreal-device--tall .slotreal-img { height: 100%; object-fit: cover; object-position: top; }
 
 /* ---- SchedReachExplorer (5 Oct): the Morphocode-style reach explorer ---- */

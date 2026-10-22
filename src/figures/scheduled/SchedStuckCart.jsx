@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import "./scheduled.css";
-import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
+import PhoneFrame from "../ds/IphoneFrame";
 
 // Design Mode: the real "cart that stays stuck" — when items can't make the
 // chosen slot, the cart pauses with a "Schedule needs review" sheet before pay
@@ -34,12 +34,10 @@ export default function SchedStuckCart() {
     <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
-          <div className="slotreal-device slotreal-device--tall">
-            <div className="slotreal-screen">
+          <PhoneFrame className="slotreal-device slotreal-device--tall" width={282} enter={false} alt="Stuck cart">
               <img className="slotreal-img" src={SCREEN} alt="The cart with a Schedule needs review sheet: some items may not be available for the chosen slot, with a Review Schedule action." draggable={false} data-on="true" />
-            </div>
-            <PhoneControls label="Stuck cart" />
-          </div>
+            
+            </PhoneFrame>
 
           <div className="sd-rail">
             <div className="sd-rail__cap">The cart that stays stuck</div>
