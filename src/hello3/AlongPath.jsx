@@ -17,6 +17,7 @@ import { lockBackgroundScroll } from "../ui/smoothScroll";
 // used Phosphor bold glyphs, the one family the site does not draw with
 // anywhere except the top chip row; Iconoir at 16 / stroke 2 is the house set.
 import { Xmark } from "iconoir-react";
+import { PRIVATE_SITE } from "../lib/site";
 import PathMarquee from "./PathMarquee";
 import { MATERIAL_SHAPES } from "./materialShapes";
 import { PATH_PRESETS, PATH_KEYS } from "./pathPresets";
@@ -147,6 +148,13 @@ const PLATES = [
     // the X notification under the caption (17 Oct 2026): Dylan Field liking the post, cropped
     // from the screenshot, 920 px wide for a 300 px chip. Text is whatever the crop shows.
     cap: { line: "Config India 2026 recap", title: "Config India 2026 recap", type: "Video", chip: { src: "/figures/marquee/config-india-dylan-full.webp", alt: "Dylan Field liked your post: @zoink thanks for hosting!", w: 920, h: 2000 } } },
+  // 22 Oct 2026, Agam: "add Praan as a side quest card". A potential client's pitch, so the card is
+  // PRIVATE-build only until Agam says it can be public: PRIVATE_SITE folds to false on the public build,
+  // which drops this entry (and its strings) from the bundle, and tools/prune-public.mjs deletes the
+  // praan-* files. No public link, so a click opens the loop in the lightbox. A 6 s muted loop of the
+  // 3D HIVE render (Office, Living, Bedroom) from the 16 Oct build.
+  ...(PRIVATE_SITE ? [{ video: "/figures/marquee/praan-60.mp4", poster: "/figures/marquee/praan-poster.png", alt: "Praan: a 3D HIVE air purifier in three rooms", aspect: "4 / 3",
+    cap: { line: "Praan: a 3D product page for an air purifier, room by room", title: "Praan", type: "Video", text: "A 3D product page for an air purifier, room by room." } }] : []),
   { src: "/figures/marquee/state-3.png", alt: "Away: deep search running", hidden: true }, // mtrx258e (08 Sep 2026): hidden, kept
   { src: "/figures/marquee/dassh-stella-system.png", alt: "Dassh: Stella, constructed", aspect: "1478 / 1080", hidden: true }, // mtrx1xxd: hidden, kept
   { src: "/figures/marquee/sched-cart-confirmed.png", alt: "Zepto: cart, slot confirmed", hidden: true }, // mtrx44o3: hidden, kept
