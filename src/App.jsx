@@ -1116,12 +1116,12 @@ function RoleScopeMap({ s, i }) {
           <svg className="rv-pack__defs" width="0" height="0" aria-hidden="true" focusable="false">
             <filter id="rv-lens" x="0" y="0" width="1" height="1" colorInterpolationFilters="sRGB">
               <feImage href={"data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><defs><radialGradient id='r' cx='.5' cy='.5' r='.5'><stop offset='0' stop-color='#808080'/><stop offset='1' stop-color='#808080'/></radialGradient><linearGradient id='x' x1='0' x2='1'><stop offset='0' stop-color='#000'/><stop offset='1' stop-color='#f00'/></linearGradient><linearGradient id='y' y1='0' y2='1'><stop offset='0' stop-color='#000'/><stop offset='1' stop-color='#0f0'/></linearGradient></defs><rect width='200' height='200' fill='#000'/><rect width='200' height='200' fill='url(#x)'/><rect width='200' height='200' fill='url(#y)' style='mix-blend-mode:screen'/></svg>")} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
-              <feDisplacementMap in="SourceGraphic" in2="map" scale="9" xChannelSelector="R" yChannelSelector="G" result="mag" />
+              <feDisplacementMap in="SourceGraphic" in2="map" scale="5" xChannelSelector="R" yChannelSelector="G" result="mag" />
               <feColorMatrix in="mag" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r" />
               <feColorMatrix in="mag" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g" />
               <feColorMatrix in="mag" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b" />
-              <feOffset in="r" dx="-1.5" dy="0" result="r2" />
-              <feOffset in="b" dx="1.5" dy="0" result="b2" />
+              <feOffset in="r" dx="-1" dy="0" result="r2" />
+              <feOffset in="b" dx="1" dy="0" result="b2" />
               <feBlend in="r2" in2="g" mode="screen" result="rg" />
               <feBlend in="rg" in2="b2" mode="screen" />
             </filter>

@@ -8957,7 +8957,4 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 
 /* mvigzb44: the lines are white (a faint violet shadow keeps them readable on the pale light-mode orb); a prism lens drifts over the figure */
 .rv-pack__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
-.rv-pack__lens { position: absolute; left: 50%; top: 50%; width: 42cqw; aspect-ratio: 1; margin: -21cqw 0 0 -21cqw; border-radius: 50%; corner-shape: round; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); backdrop-filter: saturate(1.15); backdrop-filter: url(#rv-lens) saturate(1.15); animation: rv-lens 26s ease-in-out infinite alternate; }
-@keyframes rv-lens { 0% { transform: translate(-26cqw, -18cqw); } 50% { transform: translate(14cqw, 20cqw); } 100% { transform: translate(24cqw, -12cqw); } }
-.rv-pack[data-off] .rv-pack__lens, .rv-pack:hover .rv-pack__lens { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .rv-pack__lens { animation: none; transform: translate(0, 0); } }
+.rv-pack__lens { position: absolute; inset: 0; pointer-events: none; backdrop-filter: saturate(1.1); backdrop-filter: url(#rv-lens) saturate(1.1); -webkit-mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); } /* mvj9tks3: static, covers the whole figure, feathered so it has no visible edge */
