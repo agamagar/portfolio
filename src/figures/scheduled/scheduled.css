@@ -356,13 +356,10 @@
 
 /* ── slot-picker Design Mode, ANIMATED (real device frame + states + cursor) ─*/
 .sd-stage--slotreal { justify-content: flex-start; gap: 30px; }
-.slotreal-device { position: relative; flex: 0 0 auto; width: 232px; }
-/* phone frame removed (annotation mqryekfl) — the screen is now the device,
-   kept at the former cutout's 232 x 504 proportions so cursor coords hold */
-.slotreal-screen { position: relative; width: 100%; aspect-ratio: 232 / 504; overflow: hidden; border-radius: 28px; border: 1px solid var(--ds-border-card); box-shadow: var(--ds-shadow-frame); background: #fff; }
+.slotreal-device { flex: 0 0 auto; width: 260px; }
 .slotreal-img { position: absolute; top: 0; left: 0; width: 100%; height: auto; opacity: 0; transition: opacity 520ms var(--ds-ease-out); }
 .slotreal-img[data-on="true"] { opacity: 1; }
-/* pointer: shared glass Cursor (ds/Cursor) rendered inside .slotreal-screen */
+/* pointer: shared glass Cursor (ds/Cursor) rendered inside the frame screen (.ifr__screen, 232 x 504 of the 260 phone) */
 
 /* ── design-mode galleries: real-screen contact sheets ─────────────────────*/
 .sd-stage--gallery { display: block; padding: 16px 16px 8px; }
@@ -375,9 +372,9 @@
 .sdg-cap { font-size: 10.5px; font-weight: 600; color: var(--ds-text-2); line-height: 1.3; text-align: center; padding: 0 2px; }
 
 /* ── design-mode 2-up comparison (killed vs shipped) ───────────────────────*/
-.ds-root--phone:has(> .sd-stage--cmp) { width: 760px; } /* mvgnctlf: three cards (Rejected, Explored, Shipped) instead of two */
+.ds-root--phone:has(> .sd-stage--cmp) { width: 820px; } /* mvgnctlf: three cards (Rejected, Explored, Shipped) instead of two */
 .sd-stage--cmp { gap: 30px; align-items: flex-start; justify-content: center; padding: 18px; }
-.sdcmp { display: flex; flex-direction: column; gap: 11px; flex: 0 0 auto; width: 216px; }
+.sdcmp { display: flex; flex-direction: column; gap: 11px; flex: 0 0 auto; width: 242px; }
 .sdcmp__tag { display: inline-flex; align-items: center; gap: 6px; align-self: center; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
 .sdcmp__tag[data-kind="killed"] { background: var(--ds-focal-red-fill); color: var(--ds-focal-red); }
 .sdcmp__tag[data-kind="shipped"] { background: var(--ds-focal-green-fill); color: var(--ds-green); }
@@ -397,8 +394,8 @@
 .sdsheet__slots span[data-off] { opacity: 0.4; }
 .sdsheet__cta { margin-top: 3px; padding: 7px 0; border-radius: 6px; background: #e8174f; color: #fff; text-align: center; font-weight: 700; font-size: 8px; }
 :root.dark .sdcmp__tag[data-kind="explored"] { color: #b69cea; }
-.sdcmp__screen { position: relative; width: 100%; aspect-ratio: 216 / 430; overflow: hidden; border-radius: 22px; background: #fff; border: 1px solid var(--ds-line); box-shadow: var(--ds-shadow-frame); }
-.sdcmp__screen img { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
+.sdcmp__screen { width: 100%; }
+.sdcmp__screen .ifr__screen > img { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
 .sdcmp__note { font-size: 11px; color: var(--ds-text-2); line-height: 1.4; text-align: center; }
 
 /* ── R&R Design Mode plate ─────────────────────────────────────────────────*/
@@ -1898,8 +1895,7 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* muky96u1 (28 Sep): the stuck-cart screen (1080x2487) is taller than the
    232/504 frame, so its foot was cut. The FRAME grows to the screen's own ratio
    (and a touch wider) instead of cropping the screen */
-.slotreal-device--tall { width: 252px; }
-.slotreal-device--tall .slotreal-screen { aspect-ratio: 1080 / 2487; }
+.slotreal-device--tall { width: 282px; }
 .slotreal-device--tall .slotreal-img { height: 100%; object-fit: cover; object-position: top; }
 
 /* ---- SchedReachExplorer (5 Oct): the Morphocode-style reach explorer ---- */

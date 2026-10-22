@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
-import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
+import PhoneFrame from "../ds/IphoneFrame";
 
 // "One scroll across midnight" — the real Schedule states inside the real device
 // frame (Schedule Order Handoff, section 40000019:69582), driven by the glass
@@ -72,15 +72,13 @@ export default function SchedPageReal() {
     <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
-          <div className="slotreal-device">
-            <div className="slotreal-screen">
+          <PhoneFrame className="slotreal-device" width={260} enter={false} alt="Slot page">
               {SCREENS.map((s, i) => (
                 <img key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
-            </div>
-            <PhoneControls label="Slot page" />
-          </div>
+            
+            </PhoneFrame>
 
           <div className="sd-rail">
             <div className="sd-rail__cap">One scroll across midnight</div>

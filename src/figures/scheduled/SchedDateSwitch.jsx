@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
-import PhoneControls from "../../ui/PhoneControls"; // the shared playback bar on the phone (mv: controls pass)
+import PhoneFrame from "../ds/IphoneFrame";
 
 // Design Mode: the real Today <-> Tomorrow date switch (Schedule Order Handoff,
 // section 40000019:69582). Today is PARTIAL — earlier windows have passed, 11
@@ -65,15 +65,13 @@ export default function SchedDateSwitch() {
     <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
-          <div className="slotreal-device">
-            <div className="slotreal-screen">
+          <PhoneFrame className="slotreal-device" width={260} enter={false} alt="Day switch">
               {SCREENS.map((s, i) => (
                 <img key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
-            </div>
-            <PhoneControls label="Day switch" />
-          </div>
+            
+            </PhoneFrame>
 
           <div className="sd-rail">
             <div className="sd-rail__cap">The day switch</div>

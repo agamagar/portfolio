@@ -57,7 +57,7 @@ export default function SchedCartPageFlat() {
   return (
     <div className="cpf" ref={ref} onMouseLeave={() => setHeld(false)}>
       <div className="cpf__phone">
-        <IphoneFrame width={320} alt="The full Zepto cart page, scrolling inside a phone" controls={false}>
+        <IphoneFrame width={320} enter={false} alt="The full Zepto cart page, scrolling inside a phone" controls={false}>
           <div className="cpf__scroll" ref={scroller} tabIndex={0} role="region" aria-label="The full cart page; scroll it"
             onWheel={() => setHeld(true)} onTouchStart={() => setHeld(true)} onPointerDown={() => setHeld(true)}>
             <div className="cpf__pg" ref={pg}>

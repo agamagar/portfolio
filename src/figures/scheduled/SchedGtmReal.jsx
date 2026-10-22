@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFitScale } from "../ds/hooks";
 import LayerMap from "../ds/LayerMap";
 import schedulePageLayers from "./schedulePageLayers";
+import PhoneFrame from "../ds/IphoneFrame";
 import PhoneControls from "../../ui/PhoneControls";
 import "./scheduled.css";
 
@@ -60,8 +61,7 @@ export function SchedGtmRealOne({ dim = false }) {
   const video = <video ref={motion ? vid : undefined} className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay={!motion} muted loop playsInline preload="auto" />; // motion: started by useBannerScroll when scrolled into view
   return (
     <div className="gtmr-one">
-      <div className="article__plate-phone gtmr-one__phone">
-        <div className="article__plate-screen">
+      <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare" ref={root}>
             <img className="gtmr-plate" src={IMG} alt={ALT} />
             {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}
@@ -78,9 +78,7 @@ export function SchedGtmRealOne({ dim = false }) {
             )}
             <PhoneControls label="Schedule page" />
           </div>
-        </div>
-        <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
-      </div>
+      </PhoneFrame>
     </div>
   );
 }
@@ -105,15 +103,12 @@ export function SchedGtmBanner() {
 export function SchedGtmCartOne() {
   return (
     <div className="gtmr-one">
-      <div className="article__plate-phone gtmr-one__phone">
-        <div className="article__plate-screen">
+      <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare">
             <img className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
             <PhoneControls label="Cart page" />
           </div>
-        </div>
-        <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
-      </div>
+      </PhoneFrame>
     </div>
   );
 }
@@ -122,15 +117,12 @@ export function SchedGtmCartOne() {
 export function SchedGtmTooltipOne() {
   return (
     <div className="gtmr-one">
-      <div className="article__plate-phone gtmr-one__phone">
-        <div className="article__plate-screen">
+      <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare">
             <img className="gtmr-plate" src="/figures/scheduled/gtm-tooltip-plate.webp" alt="The Zepto cart with a Scheduled order tooltip on the Schedule button: Plan your deliveries, Choose a time slot." />
             <PhoneControls label="Cart tooltip" />
           </div>
-        </div>
-        <img className="article__plate-bezel" src="/figures/frames/iphone-17-pro.png" alt="" draggable="false" />
-      </div>
+      </PhoneFrame>
     </div>
   );
 }
