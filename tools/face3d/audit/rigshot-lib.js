@@ -14,7 +14,7 @@ const cfg = {
 };
 // every other skin, as morphRenderer.loadSkin builds it (a fitted rig of its own; print drawn on the head)
 for (const sk of SKINS) if (!cfg[sk.id]) cfg[sk.id] = sk.rig
-  ? { W, H, src: sk.rig.src, fitSrc: sk.rig.fit, idSrc: sk.rig.idmap || null, rawSrc: sk.rig.raw || null, marginSrc: sk.rig.margins || null, cleanSrc: null, skinId: sk.id }
+  ? { W, H, src: sk.rig.src, fitSrc: sk.rig.fit, idSrc: sk.rig.idmap || null, rawSrc: sk.rig.raw || null, marginSrc: sk.rig.margins || null, cleanSrc: `/faces/skin-clean-${sk.id}.png`, skinId: sk.id }
   : { W, H, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: sk.id, mode: sk.mode };
 const rigs = {};
 export async function load(id) { rigs[id] ||= createFaceRig(cfg[id]); await rigs[id].ready; }

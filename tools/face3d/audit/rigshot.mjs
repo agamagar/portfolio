@@ -16,7 +16,9 @@ const peak = await page.evaluate(() => window.RS.peak);
 for (const id of rigs) {
   await page.evaluate((id) => window.RS.load(id), id);
   if (id === "plast" && process.env.FACE) await page.evaluate(([id, f]) => window.RS.useFace(id, f.startsWith("{") ? JSON.parse(f) : f), [id, process.env.FACE]);
-  const views = [["rest", null, 0, 0, 0], ["turnL", null, 0, -0.3, 0], ["turnR", null, 0, 0.3, 0], ...names.map((n) => [n, n, peak[n], 0, 0])];
+  const allViews = [["rest", null, 0, 0, 0], ["turnL", null, 0, -0.3, 0], ["turnR", null, 0, 0.3, 0], ["yawL", null, 0, -0.75, 0], ["yawR", null, 0, 0.75, 0], ["profile", null, 0, 1.45, 0], ...names.map((n) => [n, n, peak[n], 0, 0])];
+  const views = process.env.VIEWS ? allViews.filter((v) => process.env.VIEWS.split(",").includes(v[0])) : allViews;
+  if (process.env.NODRAWN) await page.evaluate((id) => { for (const m of Object.values(window.RS.R[id].parts).map((o) => o.userData.mats?.shaded).filter(Boolean)) m.uniforms.uDrawn.value = -1; }, id);
   for (const [v, e, t, yaw, pitch] of views) {
     const png = await page.evaluate(([id, e, t, yaw, pitch]) => window.RS.shot(id, e, t, yaw, pitch), [id, e, t, yaw, pitch]);
     fs.writeFileSync(`${out}/${id}_${v}.png`, Buffer.from(png.split(",")[1], "base64"));

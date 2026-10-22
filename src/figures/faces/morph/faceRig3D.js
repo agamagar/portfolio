@@ -86,7 +86,8 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
   };
   const SHv = (L) => Array.from({ length: 9 }, (_, j) => new THREE.Vector3(L.sh[0][j], L.sh[1][j], L.sh[2][j]));
 
-  const shadedMats = [];
+  const shadedMats = [], lidMats = [];
+  let plate = null;
   const rig = { scene, cam, parts: {}, morphs: [], skinned: [], baseKeys: skin.keys || {} };
   const fitP = fetch(fitSrc).then((x) => x.json());
   // every sampler gets a texture (an unbound one reads unit 0, whatever type is there)
@@ -156,7 +157,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
           uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
           uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 }, // (as FaceSV: the lip sinks while the mouth moves)
-          uRestModel: { value: new THREE.Matrix4() }, uRestV: { value: new THREE.Matrix4() }, uRestP: { value: new THREE.Matrix4() }, uMirror: { value: 0 },
+          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uEarMirror: { value: o.name === "Skin" && !procedural ? 1 : 0 }, uDrawn: { value: !procedural && !mode ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 },
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 },
@@ -166,13 +167,11 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           uHasMV: { value: mv[o.name] && o.geometry.attributes._mvuv ? 1 : 0 } },
       });
       if (key === "Eye") mat.uniforms.uBase.value.setRGB(...fit.eye, THREE.LinearSRGBColorSpace);
-      // noir's lids have no fitted look (the clay's have fit.lids): they read the skin texture at the
-      // eye's hole, which is a flat dark grey, and blinked as ragged grey blobs. They take the skin's
-      // own mean colour under the fitted light instead
-      if (o.name.startsWith("Lid") && fit.mono && !fit.lids && fit.ratioMean?.Skin) {
-        mat.uniforms.uUseMap.value = 0;
-        mat.uniforms.uTint.value.fromArray(fit.ratioMean.Skin).multiplyScalar(9);
-      }
+      // THE SHARED LID MECHANISM: a lid (shown while an eye blinks or squints) is skin. Once the rig has painted its skin plate
+      // (buildPlate: the skin alone at rest, in the fitted camera's view, features cleaned), a lid draws the plate at the spot it
+      // covers, so a closed lid is the surrounding face in whatever skin is worn (clay, noir, felt, stone, claySun...). Before, lids read
+      // texture at UVs that landed on the eye's hole: pale discs and grey patches.
+      if (o.name.startsWith("Lid") && !procedural) lidMats.push(mat);
       // (the hat counts as hair: part of the head's silhouette, with the hair's flat colour)
       const idCode = PART_ID[o.name] ?? (key === "Skin" ? PART_ID.Skin : key === "Hat" || key === "HatBand" || key === "Headwear" || key === "Beard" ? PART_ID.Hair : key === "Glasses" ? PART_ID.BrowL : ["Bindi", "Tilak", "Earring", "NosePin"].includes(key) ? PART_ID.Skin : 0);
       const idMat = new THREE.ShaderMaterial({ vertexShader: ID_VERT, fragmentShader: ID_FRAG,
@@ -259,6 +258,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     scene.traverse((o) => { o.geometry?.dispose(); });
     for (const m of shadedMats) { for (const u of Object.values(m.uniforms)) { const t = u.value; if (t?.isTexture && !seen.has(t)) { seen.add(t); t.dispose(); } } m.dispose(); }
     for (const o of Object.values(rig.parts)) o.userData.mats?.id?.dispose();
+    plate?.dispose();
   };
 
   // pose: { yaw, pitch (the viewer's turn), tilt, hpitch, hyaw (the head about the neck), keys: {arkitName: w} }
@@ -314,7 +314,27 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     }
   };
   const use = (which) => { for (const o of Object.values(rig.parts)) o.material = o.userData.mats[which]; };
+  // the skin plate: the Skin mesh alone at rest (no head move, no shape keys, no turn), its features faded to the clean skin (uActs = 1),
+  // drawn once through the fitted camera into a render target. Lids sample it by their rest projection (vProj).
+  const buildPlate = (renderer) => {
+    plate = new THREE.WebGLRenderTarget(W, H, { colorSpace: THREE.SRGBColorSpace });
+    const vis = {}; for (const [n, o] of Object.entries(rig.parts)) { vis[n] = o.visible; o.visible = n === "Skin"; }
+    const sv = { tr: turn.rotation.clone(), hr: head.rotation.clone(), hp: head.position.clone(), bs: body.scale.clone(), zoom: cam.zoom, acts: shared.uActs.value.clone(), turn: shadedMats[0]?.uniforms.uTurn.value || 0, infl: rig.parts.Skin.morphTargetInfluences ? [...rig.parts.Skin.morphTargetInfluences] : null };
+    turn.rotation.set(0, 0, 0); head.rotation.set(0, 0, 0); head.position.set(0, -NECK, 0); body.scale.set(1, 1, 1);
+    cam.zoom = 1; cam.updateProjectionMatrix(); shared.uActs.value.set(1, 1, 1);
+    for (const m of shadedMats) m.uniforms.uTurn.value = 0;
+    if (sv.infl) rig.parts.Skin.morphTargetInfluences.fill(0);
+    use("shaded");
+    lView.copy(lightDir).transformDirection(cam.matrixWorldInverse);
+    const prev = renderer.getRenderTarget(); renderer.setRenderTarget(plate); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, cam); renderer.setRenderTarget(prev);
+    turn.rotation.copy(sv.tr); head.rotation.copy(sv.hr); head.position.copy(sv.hp); body.scale.copy(sv.bs); cam.zoom = sv.zoom; cam.updateProjectionMatrix(); shared.uActs.value.copy(sv.acts);
+    for (const m of shadedMats) m.uniforms.uTurn.value = sv.turn;
+    if (sv.infl) sv.infl.forEach((v, i) => (rig.parts.Skin.morphTargetInfluences[i] = v));
+    for (const [n, o] of Object.entries(rig.parts)) o.visible = vis[n];
+    for (const m of lidMats) { m.uniforms.uPlate.value = plate.texture; m.uniforms.uUsePlate.value = 1; }
+  };
   rig.shaded = (renderer, target = null) => {
+    if (!plate && lidMats.length) buildPlate(renderer);
     use("shaded");
     lView.copy(lightDir).transformDirection(cam.matrixWorldInverse);
     renderer.setRenderTarget(target);
