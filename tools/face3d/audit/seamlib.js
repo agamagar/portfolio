@@ -107,3 +107,26 @@ export async function skinMapPng(url) {
   c.getContext("2d").drawImage(img, 0, 0);
   return c.toDataURL("image/png");
 }
+// winding vs vertex normals, left (x<0) against right (x>0) half, plus the normals' mirror symmetry: a flipped or asymmetric half shows here
+export async function symmetry(url, name = "Skin") {
+  const gltf = await new Promise((ok, no) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, ok, undefined, no));
+  let m; gltf.scene.traverse((o) => { if (o.isMesh && o.name === name) m = o; });
+  const g = m.geometry, P = g.attributes.position, N = g.attributes.normal, ix = g.index.array;
+  const res = { L: { tris: 0, flipped: 0 }, R: { tris: 0, flipped: 0 } };
+  const bins = {};
+  for (let t = 0; t < ix.length; t += 3) {
+    const a = ix[t], b = ix[t + 1], c = ix[t + 2];
+    const ax = P.getX(a), ay = P.getY(a), az = P.getZ(a), bx = P.getX(b) - ax, by = P.getY(b) - ay, bz = P.getZ(b) - az, cx = P.getX(c) - ax, cy = P.getY(c) - ay, cz = P.getZ(c) - az;
+    const nx = by * cz - bz * cy, ny = bz * cx - bx * cz, nz = bx * cy - by * cx;
+    const vx = N.getX(a) + N.getX(b) + N.getX(c), vy = N.getY(a) + N.getY(b) + N.getY(c), vz = N.getZ(a) + N.getZ(b) + N.getZ(c);
+    const mx = (ax + P.getX(b) + P.getX(c)) / 3, my = (ay + P.getY(b) + P.getY(c)) / 3, mz = (az + P.getZ(b) + P.getZ(c)) / 3;
+    const side = mx < 0 ? "L" : "R"; res[side].tris++;
+    if (nx * vx + ny * vy + nz * vz < 0) res[side].flipped++;
+    // coarse mirror comparison: mean position-normal in bins of (|x|, y, z)
+    const k = [Math.round(Math.abs(mx) / 0.2), Math.round(my / 0.2), Math.round(mz / 0.2)].join(",");
+    const bn = (bins[k] ||= { L: [0, 0, 0, 0], R: [0, 0, 0, 0] })[side]; bn[0] += vx; bn[1] += vy; bn[2] += vz; bn[3]++;
+  }
+  let asym = 0, cmp = 0; const worst = [];
+  for (const [k, v] of Object.entries(bins)) { if (v.L[3] < 3 || v.R[3] < 3) continue; const l = v.L, r = v.R; const ln = Math.hypot(l[0], l[1], l[2]) || 1, rn = Math.hypot(r[0], r[1], r[2]) || 1; const d = (-l[0] / ln) * (r[0] / rn) + (l[1] / ln) * (r[1] / rn) + (l[2] / ln) * (r[2] / rn); cmp++; if (d < 0.7) { asym++; worst.push([k, +d.toFixed(2)]); } }
+  return { ...res, binsCompared: cmp, asymmetricBins: asym, worst: worst.slice(0, 12) };
+}

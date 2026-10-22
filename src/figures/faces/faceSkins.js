@@ -211,7 +211,7 @@ varying float vRestZ;
 // the mirrored point, projected by the fitted camera at rest (uRestV, uRestP), is where the
 // reference shows that point's twin: its screen spot (top-left origin), distance, normal
 uniform mat4 uRestModel, uRestV, uRestP;
-varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN; varying vec3 vRP;
 // where this point's rest position projects in the fitted camera (a lid reads the skin texture at the spot it covers)
 varying vec2 vProj;
 // the turnaround atlas's UVs (fit mode, Skin and Hair only)
@@ -244,6 +244,7 @@ void main(){
   vec4 mv0 = uRestV * vec4(-rp.x, rp.y, rp.z, 1.0);
   vec4 mc = uRestP * mv0;
   vMirZ = -mv0.z;
+  vRP = rp.xyz;
   { vec4 pc = uRestP * (uRestV * (uRestModel * vec4(position, 1.0))); vProj = vec2(pc.x / pc.w * 0.5 + 0.5, 0.5 - pc.y / pc.w * 0.5); }
   vMirUv = vec2(mc.x / mc.w * 0.5 + 0.5, 0.5 - mc.y / mc.w * 0.5);
   vec3 rn = mat3(uRestModel) * objectNormal;
@@ -272,7 +273,7 @@ uniform sampler2D uDepth; uniform float uHasDepth;
 varying float vRestZ;
 // the mirror (see VERT): on for skin and hair of a rig with a depth map
 uniform float uMirror;
-varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN;
+varying vec2 vMirUv; varying float vMirZ; varying vec3 vMirN; varying vec3 vRP; uniform float uEarMirror;
 #include <color_pars_fragment>
 varying vec3 vN; varying vec3 vV; varying vec3 vP; varying vec3 vMV; varying vec2 vUv; varying float vSeen; varying vec2 vMvUv; varying vec3 vRN; varying vec2 vProj; uniform sampler2D uPlate; uniform float uUsePlate, uDrawn;
 // the fitted light: 9 spherical-harmonic terms of the view-space normal (radiance, linear)
@@ -473,6 +474,13 @@ void main(){
       unseen = mix(unseen, litTwin * twin, twinSeen * uTurn);
     }
     col = mix(unseen, litRest * ratio, trust) * uTint;
+    // THE FAR EAR (the 'melted right side'): the photo shows only the near ear, so the far ear's own texels are the cheek and hair edge the
+    // camera sees behind it, which read as glass; and it cannot be told apart by depth (the hero carries none). The far ear is skin: the part's
+    // own colour (the fit's median skin ratio), lit by the view light on its real geometry, so its form comes from the shading, never a texture.
+    if (uEarMirror > 0.5) {
+      float ear = smoothstep(0.95, 1.03, vRP.x) * step(-0.8, vRP.y) * step(vRP.y, 0.6);
+      if (ear > 0.0) col = mix(col, litView * whole * uTint, ear);
+    }
     // a defringed edge: the fitted light carries the backdrop's bounce at grazing normals (claySun's
     // yellow, felt's red), so the edge takes the part's own colour, shaded by brightness only
     if (defr > 0.5 && uSeenLum > 0.0)
