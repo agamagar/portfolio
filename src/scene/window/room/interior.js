@@ -391,6 +391,13 @@ export function buildInterior(P, ctx, mats, root, win) {
     const prof = [[0.0001, 0], [r, 0], [r, h * 0.82], [r * 0.93, h * 0.86], [r * 0.93, h * 0.87]].map(([a, b]) => new THREE.Vector2(a, b));
     S.add(m.steelBrushed, new THREE.LatheGeometry(prof, 32), M.T(k(BT.x), k(DK.y), k(BT.z)));
     S.add(m.monBlack, new THREE.CylinderGeometry(r * 0.92, r * 0.92, h * 0.13, 32), M.T(k(BT.x), k(DK.y) + h * 0.935, k(BT.z)));
+    // the cap's grip ridges and its seam, a rolled steel base ring, and a silicone
+    // sleeve band round the lower body (a Borosil flask has all three)
+    const bx = k(BT.x), by = k(DK.y), bz = k(BT.z);
+    for (let i = 0; i < 3; i++) S.add(m.monBlack, new THREE.TorusGeometry(r * 0.925, 0.0006, 5, 32).rotateX(Math.PI / 2), M.T(bx, by + h * (0.885 + i * 0.03), bz));
+    S.add(m.steelBrushed, new THREE.TorusGeometry(r * 0.99, 0.0012, 6, 32).rotateX(Math.PI / 2), M.T(bx, by + 0.0012, bz));
+    S.add(m.steelBrushed, new THREE.TorusGeometry(r * 0.94, 0.0008, 6, 32).rotateX(Math.PI / 2), M.T(bx, by + h * 0.82, bz));
+    S.add(m.monBlack, new THREE.CylinderGeometry(r * 1.004, r * 1.004, h * 0.22, 32, 1, true), M.T(bx, by + h * 0.3, bz));
   }
   {
     // the 3-in-1 charging dock (13-photo 6; 5480): a bevelled grey aluminium base,
@@ -445,6 +452,11 @@ export function buildInterior(P, ctx, mats, root, win) {
     const cse = slab(0.05, 0.022, 0.045, 0.01, 0.006);
     cse.rotateX(-Math.PI / 2);
     DB.add(m.whitePlastic, cse, M.T(-0.022, 0, 0.062));
+    // four rubber feet under the base, a status LED on the panel's lower edge and the
+    // USB-C lead trailing off the back of the base
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) DB.add(m.padBlack, new THREE.CylinderGeometry(0.004, 0.0045, 0.002, 10), M.T(sx * 0.04, -0.0005, 0.005 + sz * 0.027), { cast: false });
+    DB.add(m.whitePlastic, new THREE.CylinderGeometry(0.0015, 0.0015, 0.0008, 8).rotateX(Math.PI / 2), M.mul(M.T(0, 0.011, -0.022), M.RX(-tilt), M.T(0, 0.008, 0.0127)), { cast: false });
+    DB.add(m.padBlack, tubeAlong([[0.02, 0.005, -0.03], [0.03, 0.002, -0.06], [0.05, 0.002, -0.1], [0.08, 0.002, -0.14]], 0.0017, 16, 5), null, { cast: false });
     DB.build(g);
   }
 
