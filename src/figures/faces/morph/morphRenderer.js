@@ -12,6 +12,7 @@ import * as THREE from "three";
 import { createFaceRig, PART_ID } from "./faceRig3D";
 import { resolveFace, PRESETS } from "../features/core";
 import { SKINS, skinById } from "../faceSkins";
+import { rigConfig } from "./rigConfigs";
 
 // every skin the hero's renderer can wear, in click-cycle order (see createMorphRenderer's listSkins/setSkin)
 export const SKIN_IDS = ["clay", "noir", ...SKINS.filter((s) => s.id !== "clay" && s.id !== "noir" && (s.rig || s.mode === "print")).map((s) => s.id), "plast"];
@@ -323,11 +324,7 @@ export function createMorphRenderer({ canvas, src, fitSrc, clear = false, ink = 
     if (id === "plast") return loadPlast();
     if (!SKIN_IDS.includes(id)) return Promise.reject(new Error("unknown skin " + id));
     return (skinLoads[id] ||= (() => {
-      const sk = skinById(id), f = sk.rig;
-      const r = f
-        ? createFaceRig({ W: FW, H: FH, src: f.src, fitSrc: f.fit, idSrc: f.idmap || null, rawSrc: f.raw || null, marginSrc: f.margins || null, cleanSrc: `/faces/skin-clean-${id}.png`, skinId: id })
-        // (a drawn skin, print: the base head with its own hair and ears, the skin's shading mode and palette; no fitted texture)
-        : createFaceRig({ W: FW, H: FH, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: id, mode: sk.mode });
+      const r = createFaceRig(rigConfig(id, FW, FH));
       r.skinId = id;
       rigs[id] = r;
       return r.ready.then(() => patchIds(r)).then((rr) => {

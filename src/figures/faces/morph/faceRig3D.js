@@ -159,7 +159,7 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
           // (no depth test in the hero: it shows the fitted pose; bound, as every sampler must be)
           uDepth: { value: blank }, uHasDepth: { value: 0 }, uRestMV: { value: new THREE.Matrix4() },
           uRecess: { value: o.name === "Mouth" && map ? 0.025 : 0 }, // (as FaceSV: the lip sinks while the mouth moves)
-          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uEarMirror: { value: o.name === "Skin" && !procedural ? 1 : 0 }, uEarBox: { value: earBox(o) }, uDrawn: { value: !procedural && !mode && skin.mode !== "noir" ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 } /* (noir keeps its photo: its drawn mode is far brighter than the fitted dark look) */,
+          uRestModel: { value: o.matrixWorld.clone() }, uRestV: { value: cam.matrixWorldInverse.clone() }, uRestP: { value: cam.projectionMatrix.clone() }, uMirror: { value: 0 }, uPlate: { value: blank }, uUsePlate: { value: 0 }, uEarMirror: { value: o.name === "Skin" && !procedural ? 1 : 0 }, uEarBox: { value: earBox(o) }, uDrawn: { value: !procedural && !mode && skin.mode !== "noir" && skin.mode !== "riso" && skin.mode !== "pixel" ? (skin.mode === "fit" ? MODES.clay : MODES[skin.mode] ?? -1) : -1 } /* (noir keeps its photo: its drawn mode is far brighter than the fitted dark look; riso and pixel are patterned (halftone, posterised): crossfading to them in a turn drew a line field the gate flags) */,
           uSeenRad: { value: new THREE.Vector3().fromArray(fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.rad || [0, 0, 0]) },
           uSeenLum: { value: fit.seen?.[o.name.startsWith("Lid") ? "Skin" : o.name]?.lum || 0 },
           uTurn: { value: 0 }, uShape: { value: procedural && !NOWARP.includes(key) ? 1 : 0 },
@@ -301,6 +301,9 @@ export function createFaceRig({ W, H, src = "/faces/face.glb", fitSrc = "/faces/
     head.position.x = p.hx || 0;
     const sx = p.sx ?? 1, sy = p.sy ?? 1;
     body.scale.set(sx, sy, (sx + sy) / 2);
+    // A closed eye shows no eyeball: the lids of some fitted skins (hose, cel: big cartoon eyes the lid mesh was never scaled to) cover only
+    // part of it, so the bead stayed visible through the "closed" lid. Past the point the lid has covered it, the eyeball is not drawn.
+    for (const [n, key] of [["EyeL", "eyeBlinkLeft"], ["EyeR", "eyeBlinkRight"]]) { const o = rig.parts[n]; if (o) o.visible = (keys[key] || 0) < 0.82; }
     for (const n of ["EyeL", "EyeR", "LidL", "LidR"]) {
       const o = rig.parts[n];
       if (o) o.position.set(o.userData.rest.p.x + (p.eyeX || 0), o.userData.rest.p.y + (p.eyeY || 0), o.userData.rest.p.z);

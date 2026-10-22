@@ -16,20 +16,18 @@ const gl = renderer.getContext();
 const copy = document.createElement("canvas"); copy.width = W; copy.height = H;
 const cx = copy.getContext("2d", { willReadFrequently: true });
 
-const cfg = { clay: { W, H }, noir: { W, H, src: "/faces/face-noir.glb", fitSrc: "/faces/fit-noir.json", idSrc: null, rawSrc: "/faces/skin-raw-noir.png", marginSrc: "/faces/margins-noir.png", cleanSrc: "/faces/skin-clean-noir.png", skinId: "noir", hat: true } };
-for (const sk of SKINS) if (!cfg[sk.id]) cfg[sk.id] = sk.rig
-  ? { W, H, src: sk.rig.src, fitSrc: sk.rig.fit, idSrc: sk.rig.idmap || null, rawSrc: sk.rig.raw || null, marginSrc: sk.rig.margins || null, cleanSrc: null, skinId: sk.id }
-  : { W, H, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: sk.id, mode: sk.mode };
-cfg.plast = { face: resolveFace(PRESETS["agam-clay"]), W, H, idSrc: null, rawSrc: null, marginSrc: null, cleanSrc: null, skinId: "plast", hat: true, procedural: true };
+import { rigConfig, RIG_SKINS } from "/src/figures/faces/morph/rigConfigs.js";
+// (the production config: rigConfigs.js, the same one morphRenderer.loadSkin builds from)
+const cfg = new Proxy({}, { get: (_, id) => (id === "plast" ? { ...rigConfig("plast", W, H), face: resolveFace(PRESETS["agam-clay"]) } : rigConfig(String(id), W, H)) });
 
 // every face the gate certifies: each skin, and each preset (the curated Desi-Log combos) worn on the soft-clay rig
 export const faces = () => [
-  ...Object.keys(cfg).filter((id) => id !== "plast").map((id) => ({ id, skin: id, preset: null })),
+  ...RIG_SKINS.filter((id) => id !== "plast").map((id) => ({ id, skin: id, preset: null })),
   { id: "plast", skin: "plast", preset: "agam-clay" },
   ...Object.keys(PRESETS).filter((p) => p !== "agam-clay").map((p) => ({ id: "plast:" + p, skin: "plast", preset: p })),
 ];
 // the files a skin's look depends on (hashed node-side for the incremental cache)
-export const assetsOf = (skin) => { const c = cfg[skin]; return [c.src, c.fitSrc, c.idSrc, c.rawSrc, c.marginSrc, c.cleanSrc].filter(Boolean).concat(skin === "plast" || !c.src ? ["/faces/face.glb", "/faces/fit.json"] : []); };
+export const assetsOf = (skin) => { const c = cfg[skin]; return [c.src, c.fitSrc, c.idSrc, c.rawSrc, c.marginSrc, c.cleanSrc, c.depthSrc].filter(Boolean).concat(skin === "plast" || !c.src ? ["/faces/face.glb", "/faces/fit.json"] : []); };
 export const presetJson = (p) => JSON.stringify(PRESETS[p]);
 export const emoteNames = Object.keys(EMOTES);
 export const emotePeak = Object.fromEntries(Object.entries(EMOTES).map(([k, [, fr]]) => [k, fr[1][0]]));
