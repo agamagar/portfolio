@@ -2761,6 +2761,7 @@ const caseStudies = {
         nav: "The toggle",
         group: "Process",
         tldr: "One control moves the order from now to later.", // wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
+        p: ["The toggle carries the reason. Its subtext changes with the situation, so people never have to guess why Instant is off or what Schedule offers."],
         fig: "schedToggleDemo",
         figBare: true,
         figure: "Switching the delivery mode from Instant to Scheduled. Instant promises 9 minutes; Schedule Delivery asks you to select a slot, the shift from now to later.",
