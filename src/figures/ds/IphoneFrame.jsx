@@ -15,8 +15,8 @@
 // shadow  "none" | "sm" | "md" (default) | "lg"
 // statusBar  false | "dark" | "light": draw the iOS status bar (9:41, signal, battery) over a bare
 //         screen that doesn't carry its own; island adds the Dynamic Island pill
-// caption / tag / figma / proto: caption under the phone, a status chip over it, and the
-//         "Open in Figma" / "Try prototype" row under it (links are private-build only)
+// caption / tag / proto: caption under the phone, a status chip over it, and the
+//         "Try prototype" action under it (private build only)
 // interactive  hover bar with play / restart / scrub / expand (PhoneControls); on by default
 // enter   scroll entrance on the section-play controller (fade-up); off for hero phones that
 //         have their own load sequence
@@ -45,7 +45,7 @@ function StatusBar({ tone }) {
 
 export default function PhoneFrame({
   screen, alt = "", size = "md", width, theme, shadow = "md", statusBar = false, island = false,
-  caption, tag, tagTone, figma, proto, overlay, interactive = true, enter = true, sheet = false,
+  caption, tag, tagTone, proto, overlay, interactive = true, enter = true, sheet = false,
   className = "", style, children, controls, ...rest
 }) {
   const root = useRef(null);
@@ -71,7 +71,7 @@ export default function PhoneFrame({
         <img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
         {overlay}
       </div>
-      {(figma || proto) && <PhoneLinks figma={figma} proto={proto} />}
+      {proto && <PhoneLinks proto={proto} />}
       {caption && <figcaption className="pf__cap">{caption}</figcaption>}
     </figure>
   );

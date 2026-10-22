@@ -1,5 +1,4 @@
-// The one "Open in Figma" / "Try prototype" row, under every phone frame. Callers pass links only
-// from private-build data (the strings must not ship in the public bundle).
+// The "Try prototype" action under a phone frame (private build only; callers pass `proto` from private-build data).
 import "./phoneFrame.css";
 import { lazy, Suspense, useEffect, useState } from "react";
 
@@ -21,12 +20,11 @@ function ProtoDialog({ id, onClose }) {
   );
 }
 
-export default function PhoneLinks({ figma, proto }) {
+export default function PhoneLinks({ proto }) {
   const [open, setOpen] = useState(false);
-  if (!figma && !proto) return null;
+  if (!proto) return null;
   return (
     <div className="pf__links">
-      {figma && <a className="fshot-pill" href={figma} target="_blank" rel="noopener noreferrer">Open in Figma ↗</a>}
       {proto && <button type="button" className="fshot-pill" onClick={() => setOpen(true)}>Try prototype</button>}
       {open && <ProtoDialog id={proto} onClose={() => setOpen(false)} />}
     </div>

@@ -422,9 +422,9 @@ const PROTO_STILL = "/figures/scheduled/proto-start.png";
 // centre"): the live prototype sits under an overlay, the still of its first screen with a glass loader in
 // the middle, until the iframe has loaded and had a moment to paint (Figma paints after its load event),
 // then the overlay fades out. If it has not loaded in 15 s (offline, or the file is private and Figma's
-// page never arrives) the still stays and the glass "Open in Figma" button replaces the loader. A private
+// page never arrives) the still stays and the loader simply clears. A private
 // file's sign-in wall still fires `load`, so that case reads as loaded: it cannot be told apart from here.
-function ProtoFrame({ src, title, id, link }) {
+function ProtoFrame({ src, title, id }) {
   const [st, setSt] = useState("loading"); // loading | ready | failed
   const [gone, setGone] = useState(false);
   const loaded = useRef(false);
@@ -447,14 +447,6 @@ function ProtoFrame({ src, title, id, link }) {
           <img className="pe__poster" src={PROTO_STILL} alt="" aria-hidden="true" draggable="false" />
           {st === "loading" && (
             <span className="article__hero-replay pe__badge" role="status" aria-label="Loading the prototype"><i /><i /><i /></span>
-          )}
-          {st === "failed" && (
-            <>
-              <a className="article__hero-replay pe__badge pe__open" href={link || src} target="_blank" rel="noopener noreferrer" aria-label="Open the prototype in Figma" title="Open in Figma">
-                <IconLink width={16} height={16} strokeWidth={1.6} aria-hidden="true" />
-              </a>
-              <span className="pe__msg">Open in Figma</span>
-            </>
           )}
         </div>
       )}
@@ -2363,7 +2355,6 @@ const caseStudies = {
             cueClick: true,
             alt: "The scheduled order prototype, live from Figma",
             // mv2mmvt6: the file is private (see PROTO_EMBED), so a visitor without access meets Figma's sign-in
-            figmaLink: "https://www.figma.com/proto/71cZSn6pTNf4zFzO07O2uv/?node-id=40000084-123917&starting-point-node-id=40000084%3A123917",
           },
         ],
         scene: {
@@ -10082,12 +10073,6 @@ function CaseStudyBodyFull({ cs }) {
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
                     <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
-                      {/* mv2mmvt6 (10 Oct): a glass link to where the prototype lives in Figma */}
-                      {pl.figmaLink && (
-                        <a className="article__hero-replay article__plate-link" href={pl.figmaLink} target="_blank" rel="noopener noreferrer" aria-label="Open the prototype in Figma" title="Open in Figma">
-                          <IconLink width={16} height={16} strokeWidth={1.6} aria-hidden="true" />
-                        </a>
-                      )}
                       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
                           notification scene) over a screen cutout that holds the prototype */}
                       <PhoneFrame interactive={false} enter={false} size="hero" className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
@@ -10099,7 +10084,7 @@ function CaseStudyBodyFull({ cs }) {
                           </span>
                         ) : null}>
                           {PROTO_EMBED ? (
-                            <ProtoFrame src={pl.embed} title={pl.alt || "Figma prototype"} id={`pl-${k}`} link={pl.figmaLink} />
+                            <ProtoFrame src={pl.embed} title={pl.alt || "Figma prototype"} id={`pl-${k}`} />
                           ) : (
                             <img
                               src={PROTO_STILL}
