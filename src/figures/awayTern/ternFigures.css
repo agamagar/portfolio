@@ -1,0 +1,3 @@
+.tern-fig { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 28px 24px; padding: 8px 0; }
+.tern-fig .pf { max-width: 46%; }
+@media (max-width: 720px) { .tern-fig { gap: 22px 12px; } .tern-fig .pf { max-width: 47%; } }

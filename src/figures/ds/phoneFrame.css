@@ -34,3 +34,7 @@
 .fshot-dlg { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; background: rgba(10, 8, 16, .6); padding: 24px; }
 .fshot-dlg__box { position: relative; width: min(960px, 100%); height: min(720px, 100%); border-radius: 18px; overflow: auto; background: var(--bg, #fff); }
 .fshot-dlg__x { position: absolute; top: 10px; right: 10px; z-index: 2; }
+/* honesty labels on a captured screen: Real (running app, real data), Fixture (sample data in the app), Simulated (scripted state, no radios) */
+.pf__tag[data-tone="real"] { color: #3f9b5f; }
+.pf__tag[data-tone="fixture"] { color: #b7791f; }
+.pf__tag[data-tone="simulated"] { color: #6a5bd6; }

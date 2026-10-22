@@ -138,6 +138,9 @@ const AwDisruption = lazyFig(() => import("./figures/awayAgent/AwDisruption"));
 const AwRecap = lazyFig(() => import("./figures/awayAgent/AwRecap"));
 const AwOnboard = lazyFig(() => import("./figures/awayAgent/AwOnboard"));
 const AwPreDep = lazyFig(() => import("./figures/awayAgent/AwPreDep"));
+import { ternFigures } from "./figures/awayTern/TernFigures";
+import { ternSections } from "./figures/awayTern/ternSections";
+import SourceList from "./ui/SourceList";
 import "./figures/awayAgent/awayAgent.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
 const AwIntakeBrief = lazyFig(() => import("./figures/awayAgent/AwIntakeBrief"));
 const AwSearchFlow = lazyFig(() => import("./figures/awayAgent/AwSearchFlow"));
@@ -589,6 +592,7 @@ function AwayLandingFigure() {
 }
 
 const figures = {
+  ...ternFigures, // /work/away-agent, the Tern chapters
   // Scheduled Delivery hero: the 2026 slot-availability tape (liveline), lazy.
   sdAvailabilityHero: () => (
     <Suspense fallback={null}>
@@ -4658,6 +4662,7 @@ const caseStudies = {
           },
         ],
       },
+      ...ternSections, // October 2026 update: Tern, the agent narrowed to flights
       {
         h: "Case map",
         tldr: "The full set of screens and states behind the story, grouped by stage, so this doubles as the build list. The voice tags mark where the agent runs warm and opinionated (win), stays plain and calm (steady), or goes all-warmth in a real crisis.",
@@ -10241,6 +10246,7 @@ function CaseStudyBodyFull({ cs }) {
             </ul>
           )}
           {/* 28 Sep, the presenting cut: the product "so what" that closes a beat */}
+          {s.sources && <SourceList items={s.sources} />}
           {s.soWhat && <p className={"cs-sowhat" + (s.soWhatClose ? " cs-sowhat--close" : "")}>{s.soWhat}</p>}
           {/* mukvom35 (28 Sep): a figure INSIDE the section frame, under the
               explanation (the section and its cards are one idea) */}
