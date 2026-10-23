@@ -20,3 +20,15 @@ The three.js workflow has no multi-angle photographs: ref-clay.webp and the nine
 character in nine styles, and skin-mv/hair-mv are inferred (filled-in) texture atlases, not views. The one source of true depth is the fitted model itself
 (`face.blend` Skin: optimised against that reference), so `fit_head_3d.py` fits the procedural head to ITS silhouettes at 8 known angles (front, +-40, +-90,
 +-35 pitch, back): mean IoU 0.945 (front .937, 3/4 .96, profiles .938, up .94, down .95, back .937). Parameters: `fit_params_3d.json`, views: `fit_3d_views.png`.
+
+## Update: fit to Agam's 11-view turnaround (`turn/agam-turnaround-sheet.webp`)
+`turn_prep.py` cuts the cells and makes a full-head mask (hair + skin, floor shadow removed) and a skin mask. `fit_turnaround.py` fits ONE head (superellipsoid + ears +
+hair cap + 4 swoosh ellipsoids) to all 12 cells at once with a free pose per view (CMA-ES, ~8 min): silhouette IoU 0.87-0.94 per view (mean 0.90), skin recall
+0.92-1.0; fitted yaws agree with the sheet's layout within ~20 degrees (front 4, left profile -108, back 185), so the views now constrain depth and width
+(width 0.92, depth 0.93, height 1.15, ears further back and out). `sculpt_fit.py` builds the clay head from that fit and renders it at each view's pose;
+`turn_compare.py` scores each view against its cell (IoU, SSIM, LPIPS). First numbers (5 views): mean IoU 0.83, SSIM 0.70, LPIPS 0.43; the front is best (IoU 0.89, LPIPS 0.37).
+
+Still wrong, in order: (1) the hair: the swoosh is four ellipsoids and two of them landed in the wrong place (one reads as a dark ball on the forehead, one as a topknot);
+it needs its own sculpt (a real swoosh form, a hairline and sideburns), not an ellipsoid union; (2) the ears are still flat ovals, not the target's folded C; (3) the
+nose and brow/eye proportions (the target's eyes are smaller, the nose longer); (4) soft shading. Silhouette fitting cannot do (1) to (4): they are modelling
+and landmark work. Next: landmark constraints (eye beads, nose tip, mouth corners, ear top and bottom) from the front and profile cells, and a dedicated hair sculpt.
