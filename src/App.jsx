@@ -458,7 +458,7 @@ function ProtoFrame({ src, title, id }) {
 }
 
 const figmaEmbedUrl = (fileKey, nodeId) =>
-  `https://embed.figma.com/proto/${fileKey}?node-id=${nodeId}&embed-host=portfolio&scaling=scale-down-width&footer=false&hotspot-hints=false&viewport-controls=false` +
+  `https://embed.figma.com/proto/${fileKey}?node-id=${nodeId}&embed-host=portfolio&scaling=scale-down-width&footer=false&hide-ui=1&hotspot-hints=false&viewport-controls=false` +
   (FIGMA_EMBED_CLIENT_ID ? `&client-id=${FIGMA_EMBED_CLIENT_ID}` : "");
 // post an Embed API command into a prototype iframe (target origin per the docs)
 const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
@@ -2793,6 +2793,7 @@ const caseStudies = {
         nav: "Go-to-market",
         group: "Process",
         whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
+        whiteboardFloat: true, // mvksqb7g (Agam): combined with the section's text, a quarter of the size, floated beside it
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
@@ -2805,7 +2806,7 @@ const caseStudies = {
         _figure: // muky18to: parked with the figure (a caption alone draws an empty frame)
           "The exact schedule page, plated pixel-for-pixel from Figma, with only the top banner brought to life: a calm scheduled-time motion that frames the feature as you arrive, restrained so it never competes with the instant promise. [The banner motion is a coded stand-in; swap in the production Lottie to match exactly.]",
         // mukx11r8 (28 Sep): the banner playing on the phone, moved down from the top plates row
-        platesStack: false,
+        platesStack: true, // mvksqb2b (Agam): the two plates one below the other, each a full image slot
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
             {
@@ -10108,6 +10109,20 @@ function CaseStudyBodyFull({ cs }) {
                             </Suspense>
                           )}
                       </PhoneFrame>
+                      {/* mvksved3: Figma's own UI is hidden (hide-ui); a glass round Restart returns the prototype to its first frame */}
+                      {PROTO_EMBED && (
+                        <button
+                          type="button"
+                          className="article__hero-replay"
+                          aria-label="Restart the prototype"
+                          onClick={(e) => {
+                            const f = e.currentTarget.parentElement.querySelector("iframe");
+                            if (f) f.src = f.src; // reload = back to the first frame
+                          }}
+                        >
+                          <IconRefresh width={15} height={15} strokeWidth={2} aria-hidden="true" />
+                        </button>
+                      )}
                     </div>
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
