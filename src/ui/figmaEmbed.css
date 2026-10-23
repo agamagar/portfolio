@@ -1,0 +1,17 @@
+/* FigmaEmbed (src/ui/FigmaEmbed.jsx): a fixed box, the still as the floor, the live iframe over it. */
+.fembed { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--fembed-bg, #f4f2f7); }
+.fembed[style*="aspect-ratio"] { height: auto; }
+.dark .fembed { --fembed-bg: #1e1c22; }
+.fembed__frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.fembed__floor { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; transition: opacity .5s ease; }
+.fembed__floor--blank { background: var(--fembed-bg, #f4f2f7); }
+.fembed[data-floor="bottom"] .fembed__floor { object-fit: contain; object-position: bottom; background: #2a2433; }
+.fembed[data-st="ready"] .fembed__floor { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .fembed__floor { transition: none; } }
+.fembed__badge { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%); display: inline-flex; gap: 4px; padding: 8px 10px; border-radius: 99px;
+  background: color-mix(in srgb, #fff 70%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.dark .fembed__badge { background: color-mix(in srgb, #000 45%, transparent); }
+.fembed__badge i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .35; animation: fembed-dot 1s ease-in-out infinite; }
+.fembed__badge i:nth-child(2) { animation-delay: .15s; } .fembed__badge i:nth-child(3) { animation-delay: .3s; }
+@keyframes fembed-dot { 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .fembed__badge i { animation: none; opacity: .6; } }

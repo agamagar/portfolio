@@ -158,6 +158,7 @@ const SchedCartStates = lazyFig(() => import("./figures/scheduled/SchedCartState
 const SchedPageStates = lazyFig(() => import("./figures/scheduled/SchedPageStates"));
 const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
 const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
+const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows")); // the wired Figma prototype paths, live
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
@@ -736,6 +737,7 @@ const figures = {
   schedPageStates: SchedPageStates,
   schedDateSwitch: SchedDateSwitch,
   schedCartHubs: SchedCartHubs,
+  schedFigmaFlows: SchedFigmaFlows,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -2998,6 +3000,21 @@ const caseStudies = {
         fig: "sd:flow-returns-scheduled-exchange-return?case=SE-007",
         figBare: true,
         figure: "Exchange and return in one request, running. Tap through the cases to follow the flow.",
+        divider: true,
+      },
+      // The four prototype paths wired in Figma (Claude: Schedule, R04cmbzFPQk2Q4IockGwqZ), embedded live: an edit in
+      // Figma shows here with no re-export. Starting points: design-playground docs/figma-prototype/*.md
+      {
+        h: "The prototype, live from Figma",
+        nav: "Prototype, live",
+        group: "Process",
+        tldr: "Four paths through the Figma file, running on this page. When the file changes, so do they.",
+        p: [
+          "The main path goes from the cart to a picked slot to a placed order. Beside it: what happens when slots fill up, and the exchange and return paths in support chat. Each one plays from the Figma file itself.",
+        ],
+        fig: "schedFigmaFlows",
+        figBare: true,
+        figure: "Click inside a phone to tap through. Each path starts at its first screen.",
         divider: true,
       },
       {
