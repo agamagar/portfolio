@@ -2725,7 +2725,9 @@ const caseStudies = {
         h: "The go-to-market",
         nav: "Go-to-market",
         group: "Process",
+        stack: true, // mvksqb7g (Agam, "combine this with the section above"): one stacked section, the whiteboard beside its text
         whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
+        whiteboardFloat: true, whiteboardFloatSm: true, // mvksqb7g: floated beside the text, about a quarter the size ("4x smaller")
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
@@ -2738,7 +2740,7 @@ const caseStudies = {
         _figure: // muky18to: parked with the figure (a caption alone draws an empty frame)
           "The exact schedule page, plated pixel-for-pixel from Figma, with only the top banner brought to life: a calm scheduled-time motion that frames the feature as you arrive, restrained so it never competes with the instant promise. [The banner motion is a coded stand-in; swap in the production Lottie to match exactly.]",
         // mukx11r8 (28 Sep): the banner playing on the phone, moved down from the top plates row
-        platesStack: false,
+        platesStack: true, // mvksqb2b (Agam, "move these one below the other and let them take full image slots")
         platesGradient: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         plates: [
             {
@@ -10125,7 +10127,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.glance && <SchedImpactGlance g={s.glance} />}
           {/* mvgndaq6: the whiteboard floats beside the section's text instead of sitting after the figure */}
           {s.whiteboardNext && s.whiteboardFloat && (
-            <EF className="article__figure article__figure--float">
+            <EF className={"article__figure article__figure--float" + (s.whiteboardFloatSm ? " article__figure--float-sm" : "")}>
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
             </EF>
           )}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Refresh } from "iconoir-react";
 import "./figmaEmbed.css";
 
 // THE live Figma embed for the site: a frame or a prototype straight from the Figma file, so an edit
@@ -17,6 +18,7 @@ import "./figmaEmbed.css";
 //           A sign-in wall also fires `load`, so the file must stay "anyone with the link can view".
 // floor     "cover" (a full screen export) | "bottom" (a bottom-sheet export, anchored to the foot)
 // children  a live floor instead of the still (the homepage's coded slot tour); fades out the same way
+// restart   a round glass Restart, bottom right, that reloads the iframe to its first frame (default: on for prototypes)
 // badge     the loading dots over the floor (off where the floor is itself moving)
 //
 // Embed URLs per Figma's Embed Kit 2.0: embed.figma.com/{design|proto}/<file>?node-id=…&embed-host=…
@@ -43,10 +45,11 @@ export const figmaOpenUrl = ({ file = FIGMA_SCHEDULE_FILE, node, start, mode = "
     ? `https://www.figma.com/proto/${file}?node-id=${dash(node)}&starting-point-node-id=${encodeURIComponent(String(start || node).replace("-", ":"))}`
     : `https://www.figma.com/design/${file}?node-id=${dash(node)}`;
 
-export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, className = "", children }) {
+export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", className = "", children }) {
   const root = useRef(null);
   const [near, setNear] = useState(false);
   const [st, setSt] = useState("idle"); // idle | loading | ready | failed
+  const [run, setRun] = useState(0); // bumped by Restart: a fresh iframe starts the prototype at its first frame
   useEffect(() => {
     const el = root.current;
     if (!el || typeof IntersectionObserver === "undefined") { setNear(true); return undefined; }
@@ -66,11 +69,16 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   return (
     <div ref={root} className={"fembed " + className} data-st={st} data-floor={floor} style={aspect ? { aspectRatio: aspect } : undefined}>
       {near && (
-        <iframe className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
+        <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
       )}
       {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
         ? <img className="fembed__floor" src={fallback} alt={alt} loading="lazy" draggable="false" />
         : <span className="fembed__floor fembed__floor--blank" aria-hidden="true" />}
+      {restart && near && (
+        <button type="button" className="theme-toggle dev-glass fembed__restart" aria-label="Restart the prototype" title="Restart" onClick={() => setRun((n) => n + 1)}>
+          <Refresh width={15} height={15} strokeWidth={2} aria-hidden />
+        </button>
+      )}
       {badge && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
     </div>
   );
