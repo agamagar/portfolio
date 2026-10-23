@@ -12,6 +12,7 @@ import { skinById } from "../figures/faces/faceSkins";
 import { resolveFace, PRESETS as FACES } from "../figures/faces/features/core";
 import FeaturesPanel from "../figures/faces/features/FeaturesPanel";
 import { sanitize } from "../figures/faces/features/describe";
+import ClayLab from "./ClayLab";
 import "./faceLab.css";
 
 const SKINS = SKIN_IDS.map((id) => [id, id === "plast" ? "Face system (soft clay)" : skinById(id).label]); // every rig the hero's renderer can wear (loaded on first use)
@@ -233,6 +234,7 @@ export default function FaceLabPage({ onBack }) {
   }), []);
   return (
     <main className="fl-page">
+      <ClayLab />
       <header className="fl-head">
         <button onClick={onBack}>← Back</button>
         <h1>Face lab</h1>

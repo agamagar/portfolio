@@ -57,3 +57,4 @@ tools/face3d/work/
 # Scheduled Delivery story: the design-playground embed bundle (~20 MB, built from ~/design-playground).
 # Regenerate with `npm run sync:sd-playground` (docs/sd-story-sync.md). embedCatalog.json IS tracked.
 public/sd-playground/
+tools/face3d/claudefit/runs/
