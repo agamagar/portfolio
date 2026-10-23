@@ -6,7 +6,8 @@
 .dtr-defs { position: absolute; }
 
 .dtr-row { padding: 26px 0 14px; }
-.dtr-row + .dtr-row { border-top: 1px dashed color-mix(in srgb, var(--ink-text) 16%, transparent); }
+/* mvksqb6v (Agam, "hide the dotted line" again): the dashed rule between the rows is hidden too; restore the border to bring it back */
+.dtr-row + .dtr-row { border-top: 0; }
 .dtr-row__label { display: inline-flex; flex-direction: column; font-weight: 800; font-size: clamp(15px, 2vw, 19px); letter-spacing: .01em; }
 .dtr-row__line { display: grid; grid-template-columns: repeat(var(--n), 232px); width: max-content; margin-top: 4px; }
 .dtr-cell { position: relative; padding-bottom: 12px; min-width: 0; scroll-snap-align: start; }
