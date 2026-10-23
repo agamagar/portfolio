@@ -35,7 +35,7 @@ with coverage masks (uncovered texels mirror-filled from the covered half and cl
 Built by `build_canonical.py` then `unwrap_canonical.py` (`canonical_head.blend`, object `SkinCanon`; checker render `uv-checker.png`):
 - Symmetric: the x <= 0 half is the master; the far half is its exact mirror (28,581 verts, 47,259 faces, mirror distance 0.0, an index `mirror` attribute).
 - One unwrap: islands for face, scalp, side/back, neck, nose, each ear; density now even across the face (p95/p5 ratio 21 from tiny outliers, down from a
-  per-face island soup); 108 flipped faces remain (ears/nose cone) to fix; shape keys (jaw, smile L/R, puff) carried and mirrored.
+  per-face island soup); 108 flipped faces remain (ears/nose cone) to fix; shape keys (jaw, smile L/R, puff) rebuilt on the canonical head (the first push lost them and left the mirrored half unsmoothed; fixed 23 Oct: each Left/Right key now moves one side only).
 - Not yet done: ARKit 52 targets, rebuilt lid geometry with shared UVs, the other parts retopologised/unwrapped, skin re-bakes, glTF-Transform export + Khronos Validator,
   goldens approved, gate vs goldens (SSIM/LPIPS), device checks.
 - `asset/lookdev.py` renders the Eevee goldens (clay first): `asset/goldens/clay/*.png`, sheet `asset/goldens/clay-turntable.png`. The head still wears the
