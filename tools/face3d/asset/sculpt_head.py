@@ -25,7 +25,7 @@ def mat(name, hexc, rough=0.8, sss=0.15, spec=0.18, sss_hex=None):
 SKIN = {"chef": "#f8dcc8"}.get(LOOK, "#f8dcc8")
 M = {"skin": mat("skin", SKIN, sss=0.2), "hair": mat("hair", "#4a2616", rough=0.55, sss=0.0, spec=0.35), "hat": mat("hat", "#f1ece3", rough=0.85, sss=0.12),
      "brow": mat("brow", "#3a1e12", rough=0.6, sss=0, spec=0.3), "eye": mat("eye", "#050404", rough=0.12, sss=0, spec=1.0), "mouth": mat("mouth", "#c98b78", rough=0.75, sss=0.1),
-     "ear": mat("ear", "#f3d0b8", rough=0.8, sss=0.2), "earin": mat("earin", "#e2b79c", rough=0.85, sss=0.15)}
+     "ear": mat("ear", "#f3d0b8", rough=0.8, sss=0.2), "earin": mat("earin", "#d9a98c", rough=0.85, sss=0.12)}
 def obj_from_bm(bm, name, material, smooth=True, subsurf=0):
     me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(name, me); sc.collection.objects.link(o)
     me.materials.append(material)
@@ -95,7 +95,7 @@ def pill(name, c, length, thick, tilt, arch, material):
 for sd in (-1, 1):
     objs.append(pill(f"Brow{sd}", (sd * 0.44, FY + 0.03, 0.58), 0.34, 0.082, radians(-9) * sd * -1 if True else 0, 0.04, M["brow"]))
 # nose: one soft form bulging off the cheek (bridge into a rounded tip), no seam
-nose = meta("Nose", M["skin"], [((0.02, FY - 0.02, 0.14), 0.20, (0.55, 0.8, 1.0), 2.0), ((0.02, FY - 0.07, -0.08), 0.24, (0.7, 0.9, 1.1), 2.0), ((0.02, FY - 0.14, -0.30), 0.25, (1.0, 0.95, 0.85), 2.0)], res=0.02, thr=0.5)
+nose = meta("Nose", M["skin"], [((0.02, FY - 0.02, 0.16), 0.20, (0.55, 0.8, 1.0), 2.0), ((0.02, FY - 0.08, -0.06), 0.25, (0.75, 0.9, 1.15), 2.0), ((0.02, FY - 0.13, -0.26), 0.20, (1.0, 0.95, 0.85), 2.0)], res=0.02, thr=0.5)
 objs += [nose]
 # carved smile: a soft arc with lips, pressed in
 def arc(name, c, r, ang0, ang1, thick, material):
@@ -107,12 +107,13 @@ def arc(name, c, r, ang0, ang1, thick, material):
 objs.append(arc("Smile", (0.0, FY + 0.0, -0.86), 0.62, radians(-36), radians(40), 0.04, M["mouth"]))
 # ears: big and round, with a modelled inner fold (rim torus + concave bowl + small tragus)
 for sd in (-1, 1):
-    ex = sd * 1.07; ey = -0.18; rz = (0, 0, radians(-34) * sd)   # the ears toe in a little so they read from the front, as the sheet's do
-    rim = blob(f"EarRim{sd}", (ex + sd * 0.04, ey, 0.02), (0.18, 0.54, 0.62), M["ear"], rot=rz, seg=48)
-    bowl = blob(f"EarBowl{sd}", (ex + sd * 0.10, ey - 0.04, 0.02), (0.11, 0.36, 0.46), M["earin"], rot=rz, seg=40)
-    fold = blob(f"EarFold{sd}", (ex + sd * 0.15, ey - 0.07, 0.10), (0.08, 0.17, 0.28), M["ear"], rot=rz, seg=32)
-    lobe = blob(f"EarLobe{sd}", (ex + sd * 0.05, ey - 0.02, -0.40), (0.09, 0.2, 0.15), M["ear"], rot=rz, seg=32)
+    ex = sd * 1.10; ey = -0.18; rz = (0, 0, radians(-34) * sd)   # the ears toe in a little so they read from the front, as the sheet's do
+    rim = blob(f"EarRim{sd}", (ex + sd * 0.04, ey, 0.02), (0.20, 0.60, 0.68), M["ear"], rot=rz, seg=48)
+    bowl = blob(f"EarBowl{sd}", (ex + sd * 0.10, ey - 0.04, 0.02), (0.12, 0.40, 0.50), M["earin"], rot=rz, seg=40)
+    fold = blob(f"EarFold{sd}", (ex + sd * 0.15, ey - 0.07, 0.10), (0.09, 0.19, 0.31), M["ear"], rot=rz, seg=32)
+    lobe = blob(f"EarLobe{sd}", (ex + sd * 0.05, ey - 0.02, -0.40), (0.10, 0.23, 0.17), M["ear"], rot=rz, seg=32)
     objs += [rim, bowl, fold, lobe]
+    objs.append(blob(f"Sideburn{sd}", (sd * 0.96, -0.40, 0.62), (0.12, 0.17, 0.50), M["hair"], seg=32))
 # hair: the scalp cap hugging the head plus the swoosh quiff
 def cap():
     bm2 = bmesh.new()
@@ -136,25 +137,25 @@ def cap():
     return obj_from_bm(bm2, "HairCap", M["hair"], subsurf=1)
 objs.append(cap())
 # the swoosh: three overlapping fat forms sweeping up and out to the right, with a fluted end
-wing = meta("Swoosh", M["hair"], [((0.15, -0.30, 1.28), 0.80, (1.0, 1.0, 0.85), 2.0), ((0.42, -0.40, 1.46), 0.82, (1.0, 1.0, 0.85), 2.0), ((0.74, -0.40, 1.66), 0.80, (1.0, 1.0, 0.85), 2.0), ((1.02, -0.38, 1.80), 0.66, (1.0, 0.95, 0.85), 2.0), ((1.12, -0.38, 1.56), 0.52, (1.0, 0.95, 0.85), 2.0), ((0.84, -0.36, 1.40), 0.58, (1.0, 1.0, 0.85), 2.0), ((1.22, -0.42, 1.42), 0.40, (1.0, 1.0, 0.85), 2.0), ((1.0, -0.44, 1.14), 0.36, (1.0, 1.0, 0.85), 2.0)], res=0.03, thr=0.55)
+wing = meta("Swoosh", M["hair"], [((0.10, -0.34, 1.18), 0.95, (1.0, 1.0, 0.85), 2.0), ((0.46, -0.42, 1.42), 0.95, (1.0, 1.0, 0.85), 2.0), ((0.80, -0.42, 1.62), 0.92, (1.0, 1.0, 0.85), 2.0), ((1.08, -0.40, 1.74), 0.74, (1.0, 0.95, 0.85), 2.0), ((1.12, -0.38, 1.56), 0.52, (1.0, 0.95, 0.85), 2.0), ((0.84, -0.36, 1.40), 0.58, (1.0, 1.0, 0.85), 2.0), ((1.22, -0.42, 1.42), 0.40, (1.0, 1.0, 0.85), 2.0), ((1.0, -0.44, 1.14), 0.36, (1.0, 1.0, 0.85), 2.0)], res=0.03, thr=0.55)
 objs.append(wing)
 # the chef hat: a band and five fat puffs, sitting on the head
 if LOOK == "chef":
-    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.98, depth=0.50, location=(-0.62, 0.30, 1.50)); band = bpy.context.object; band.name = "Band"
-    bpy.ops.object.shade_smooth(); band.data.materials.append(M["hat"]); bev = band.modifiers.new("b", "BEVEL"); bev.width = 0.08; bev.segments = 5
-    band.scale = (1.10, 1.0, 1.0); band.rotation_euler = (radians(-4), radians(-26), 0); objs.append(band)
-    for i, (x, y, z, r, h) in enumerate([(-0.55, 0.32, 2.20, 0.74, 0.74), (-1.22, 0.22, 2.02, 0.62, 0.62), (0.05, 0.38, 2.12, 0.56, 0.60), (-0.86, 0.72, 2.10, 0.54, 0.58), (-0.98, -0.16, 2.12, 0.54, 0.58)]):
+    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.96, depth=0.46, location=(-0.40, 0.24, 1.36)); band = bpy.context.object; band.name = "Band"
+    bpy.ops.object.shade_smooth(); band.data.materials.append(M["hat"]); bev = band.modifiers.new("b", "BEVEL"); bev.width = 0.07; bev.segments = 6
+    band.scale = (1.10, 1.0, 1.0); band.rotation_euler = (radians(-4), radians(-16), 0); objs.append(band)
+    for i, (x, y, z, r, h) in enumerate([(-0.38, 0.24, 1.92, 0.78, 0.66), (-0.98, 0.16, 1.80, 0.60, 0.58), (0.18, 0.30, 1.80, 0.56, 0.58), (-0.70, 0.62, 1.80, 0.54, 0.58), (-0.78, -0.22, 1.82, 0.54, 0.58)]):
         objs.append(blob(f"Puff{i}", (x, y, z), (r, r, h), M["hat"], seg=48))
 # ---- the whole head tilts like the sheet's (roll left, a touch of pitch) -----------------------------------------
 root = bpy.data.objects.new("root", None); sc.collection.objects.link(root)
 for o in objs: o.parent = root
-root.rotation_euler = (radians(6), radians(-18), radians(-6))
+root.rotation_euler = (radians(6), radians(-9), radians(-6))
 # ---- light, camera, render ---------------------------------------------------------------------------------------
 w = bpy.data.worlds.new("w"); w.use_nodes = True; w.node_tree.nodes["Background"].inputs[0].default_value = (0.9, 0.9, 0.91, 1); w.node_tree.nodes["Background"].inputs[1].default_value = 0.3; sc.world = w
 def light(name, loc, e, size):
     l = bpy.data.lights.new(name, "AREA"); l.energy = e; l.size = size; o = bpy.data.objects.new(name, l); sc.collection.objects.link(o); o.location = loc
     o.rotation_euler = (-Vector(loc)).to_track_quat("-Z", "Y").to_euler()
-light("key", (-5.0, -6.0, 6.0), 420, 6); light("fill", (4.0, -6.5, 1.0), 170, 8); light("front", (0.0, -9.0, 2.0), 90, 9); light("rim", (1.0, 5.0, 3.0), 110, 4)
+light("key", (-6.5, -5.0, 6.0), 520, 5); light("fill", (5.0, -6.5, 0.5), 110, 9); light("front", (0.0, -9.0, 2.0), 60, 10); light("rim", (1.0, 5.0, 3.0), 110, 4)
 cam = bpy.data.objects.new("c", bpy.data.cameras.new("c")); sc.collection.objects.link(cam); sc.camera = cam; cam.data.lens = 70; cam.data.sensor_width = 36
 d = 9.2; a_ = radians(YAW); b_ = radians(8)
 cam.location = Vector((sin(a_) * cos(b_) * d, -cos(a_) * cos(b_) * d, sin(b_) * d + 0.5)); cam.rotation_euler = (Vector((-0.25, 0, 0.75)) - cam.location).to_track_quat("-Z", "Y").to_euler()

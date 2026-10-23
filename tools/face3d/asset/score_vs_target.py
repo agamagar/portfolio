@@ -29,5 +29,12 @@ rr = np.asarray(Image.alpha_composite(Image.new("RGBA", r.size, (233, 233, 235, 
 rg, rm = frame(rr, rmask)
 iou = (tm & rm).sum() / max(1, (tm | rm).sum())
 s_ = ssim(np.asarray(Image.fromarray(tg).convert("L")), np.asarray(Image.fromarray(rg).convert("L")), data_range=255) if ssim else float("nan")
-print(f"silhouette IoU {iou:.3f}   SSIM {s_:.3f}")
+lp = float("nan")
+try:
+    import torch, lpips
+    net = lpips.LPIPS(net="alex", verbose=False)
+    tt = lambda im: torch.from_numpy(np.asarray(im).astype(np.float32) / 127.5 - 1).permute(2, 0, 1)[None]
+    lp = float(net(tt(tg), tt(rg)))
+except Exception as ex: print("lpips unavailable:", str(ex)[:80])
+print(f"silhouette IoU {iou:.3f}   SSIM {s_:.3f}   LPIPS {lp:.3f} (lower is closer)")
 Image.fromarray(np.concatenate([tg, rg], 1)).save(render.rsplit(".", 1)[0] + "_aligned.png")
