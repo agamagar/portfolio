@@ -2248,4 +2248,3 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 @media (max-width: 760px) { .cpf { grid-template-columns: 1fr; gap: 1.5rem; } .cpf__steps { max-width: none; } }
 
 /* 22 Oct: the caption under the prototype still (the Figma file is private, so the embed is a still on the public site) */
-.article__plate-still-cap { display: block; margin-top: 8px; font-size: 12px; line-height: 1.3; text-align: center; color: var(--muted); }

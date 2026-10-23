@@ -387,85 +387,18 @@ const SchedEtaScroll = lazy(() => import("./figures/scheduled/SchedEtaScroll"));
 const SchedCartGrid = lazy(() => import("./figures/scheduled/SchedCartGrid"));
 const AutoTabs = lazy(() => import("./figures/scheduled/AutoTabs"));
 const PlateCursor = lazy(() => import("./figures/scheduled/PlateCursor")); // mto4v1ka
-// mto4ygd5: Figma Embed Kit 2.0 URL. The client-id (a Figma OAuth app, with the
-// site's origin in its allowed embed origins) unlocks the Embed API; set it in
-// Portfolio/.env.local as VITE_FIGMA_EMBED_CLIENT_ID.
-const FIGMA_EMBED_CLIENT_ID = import.meta.env.VITE_FIGMA_EMBED_CLIENT_ID || "";
 // mtpdtjwt: a "\n" in a case title is a forced line break
 function withBreaks(str) {
   const parts = String(str || "").split("\n");
   return parts.length === 1 ? str : parts.map((t, i) => (i ? [<br key={"b" + i} />, t] : t));
 }
-// LIVE FIGMA EMBEDS ARE OFF (20 Sep 2026: "iu see the figma login here, why?
-// please fix").
-//
-// Because the file is PRIVATE. Checked rather than guessed: the embed URL
-// answers an anonymous request with a 302 (Figma redirecting to sign-in), and
-// the file - "Schedule Order Handoff", 71cZSn... - lives in Agam's personal
-// account, not the Zepto one. So every visitor who is not him, including him on
-// his phone, met a Figma login where a prototype should be.
-//
-// The plate falls back to a still of the prototype's own start frame, exported
-// from that same file (node 40000084:180821, "Today: all slots"), so what shows
-// is still the real design rather than a placeholder.
-//
-// To bring the live prototype back: set that file's share link to "Anyone with
-// the link can view" in Figma, then flip this to true. It cannot be done from
-// here - the REST API has no endpoint for share permissions - and it is worth a
-// deliberate decision rather than a reflex, since it publishes Zepto work from
-// a personal file.
-// mukq9kl9 (28 Sep): ON for presenting on localhost (Agam: "we don't have to
-// worry about public viewability just yet"). The file is still private, so the
-// embed renders only in a browser signed in to a Figma account with access;
-// anyone else sees Figma's sign-in wall. Flip back to false before publishing.
-// 5 Oct (going live): on in dev for presenting, off in any production build
-const PROTO_EMBED = !import.meta.env.PROD;
-const PROTO_STILL = "/figures/scheduled/proto-start.png";
-
-// mv58620u (12 Oct, "I can see it [the embed] loading in the view: a placeholder and a loading thing in the
-// centre"): the live prototype sits under an overlay, the still of its first screen with a glass loader in
-// the middle, until the iframe has loaded and had a moment to paint (Figma paints after its load event),
-// then the overlay fades out. If it has not loaded in 15 s (offline, or the file is private and Figma's
-// page never arrives) the still stays and the loader simply clears. A private
-// file's sign-in wall still fires `load`, so that case reads as loaded: it cannot be told apart from here.
-function ProtoFrame({ src, title, id }) {
-  const [st, setSt] = useState("loading"); // loading | ready | failed
-  const [gone, setGone] = useState(false);
-  const loaded = useRef(false);
-  useEffect(() => {
-    const t = setTimeout(() => { if (!loaded.current) setSt("failed"); }, 15000);
-    return () => clearTimeout(t);
-  }, []);
-  useEffect(() => {
-    if (st !== "ready") return undefined;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = setTimeout(() => setGone(true), reduce ? 0 : 500);
-    return () => clearTimeout(t);
-  }, [st]);
-  const onLoad = () => { loaded.current = true; setTimeout(() => setSt("ready"), 900); };
-  return (
-    <>
-      <iframe src={src} title={title} loading="lazy" allowFullScreen data-embed={id} onLoad={onLoad} />
-      {!gone && (
-        <div className="pe" data-st={st}>
-          <img className="pe__poster" src={PROTO_STILL} alt="" aria-hidden="true" draggable="false" />
-          {st === "loading" && (
-            <span className="article__hero-replay pe__badge" role="status" aria-label="Loading the prototype"><i /><i /><i /></span>
-          )}
-        </div>
-      )}
-    </>
-  );
-}
-
-const figmaEmbedUrl = (fileKey, nodeId) =>
-  `https://embed.figma.com/proto/${fileKey}?node-id=${nodeId}&embed-host=portfolio&scaling=scale-down-width&footer=false&hotspot-hints=false&viewport-controls=false` +
-  (FIGMA_EMBED_CLIENT_ID ? `&client-id=${FIGMA_EMBED_CLIENT_ID}` : "");
-// post an Embed API command into a prototype iframe (target origin per the docs)
-const figmaEmbedPost = (iframe, msg) => iframe?.contentWindow?.postMessage(msg, "https://www.figma.com");
+// The case's live Figma prototype plates go through the shared FigmaEmbed (src/ui/FigmaEmbed.jsx), on the
+// link-shared file Claude: Schedule. The old private file (71cZSn6pTNf4zFzO07O2uv) and its sign-in wall are gone.
+const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start 9:154, rendered from the embed
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import FigmaEmbed from "./ui/FigmaEmbed"; // THE live Figma embed (every Figma iframe goes through it)
 import { animate as motionAnimate } from "motion";
 import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, Expand as IconExpand } from "iconoir-react";
 import { spring as dsSpring, useMediaQuery } from "./figures/ds/hooks";
@@ -2351,16 +2284,14 @@ const caseStudies = {
           },
           {
             auto: false,
-            embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
-            embedClickNode: "40000084:180821",
+            embed: { node: "9:154" }, // Claude: Schedule main path, from the cart (FigmaEmbed)
             bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-            cueBox: [48.5, 30.6, 45, 7.8],
+            cueBox: [69.4, 34.5, 20, 4.3], // the cart's Schedule button, the path's first hotspot
             cueLabel: "Click here",
             cueNoPointer: true,
             cueNoBox: true,
             cueClick: true,
             alt: "The scheduled order prototype, live from Figma",
-            // mv2mmvt6: the file is private (see PROTO_EMBED), so a visitor without access meets Figma's sign-in
           },
         ],
         scene: {
@@ -2905,8 +2836,7 @@ const caseStudies = {
         // plates: [
         //     {
         //       auto: false,
-        //       embed: figmaEmbedUrl("71cZSn6pTNf4zFzO07O2uv", "40000084-123917"),
-        //       embedClickNode: "40000084:180821",
+        //       embed: { node: "9:154" },
         //       bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
         //       cueBox: [48.5, 30.6, 45, 7.8],
         //       cueLabel: "Click here",
@@ -10091,19 +10021,7 @@ function CaseStudyBodyFull({ cs }) {
                             <b>{pl.cueLabel || "Click here"}</b>
                           </span>
                         ) : null}>
-                          {PROTO_EMBED ? (
-                            <ProtoFrame src={pl.embed} title={pl.alt || "Figma prototype"} id={`pl-${k}`} />
-                          ) : (
-                            <img
-                              src={PROTO_STILL}
-                              alt={pl.alt || "The scheduled order prototype"}
-                              loading="lazy"
-                              decoding="async"
-                              width="720"
-                              height="1566"
-                            />
-                          )}
-                          {!PROTO_EMBED && <span className="article__plate-still-cap">A still from the prototype. The live version is not public.</span>}
+                          <FigmaEmbed mode="proto" node={pl.embed.node} title={pl.alt || "Figma prototype"} fallback={PROTO_STILL} alt={pl.alt || "The scheduled order prototype"} />
                           {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
                           {pl.cueBox && !pl.cueNoBox && (
                             <span
@@ -10117,10 +10035,6 @@ function CaseStudyBodyFull({ cs }) {
                             <Suspense fallback={null}>
                               <PlateCursor
                                 target={{ x: pl.cueBox[0] + pl.cueBox[2] / 2, y: pl.cueBox[1] + pl.cueBox[3] / 2 }}
-                                // mto4ygd5: the press drives the prototype to the tab's frame, the
-                                // return leg steps it back (needs the client-id, see figmaEmbedUrl)
-                                onPress={pl.embedClickNode ? () => figmaEmbedPost(document.querySelector(`iframe[data-embed="pl-${k}"]`), { type: "NAVIGATE_TO_FRAME_AND_CLOSE_OVERLAYS", data: { nodeId: pl.embedClickNode } }) : undefined}
-                                onReturn={pl.embedClickNode ? () => figmaEmbedPost(document.querySelector(`iframe[data-embed="pl-${k}"]`), { type: "NAVIGATE_BACKWARD" }) : undefined}
                               />
                             </Suspense>
                           )}

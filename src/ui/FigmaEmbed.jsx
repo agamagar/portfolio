@@ -16,6 +16,8 @@ import "./figmaEmbed.css";
 //           and had time to fetch the file and paint (2.5 s). If Figma never loads (offline, blocked, 15 s), the still stays.
 //           A sign-in wall also fires `load`, so the file must stay "anyone with the link can view".
 // floor     "cover" (a full screen export) | "bottom" (a bottom-sheet export, anchored to the foot)
+// children  a live floor instead of the still (the homepage's coded slot tour); fades out the same way
+// badge     the loading dots over the floor (off where the floor is itself moving)
 //
 // Embed URLs per Figma's Embed Kit 2.0: embed.figma.com/{design|proto}/<file>?node-id=…&embed-host=…
 export const FIGMA_SCHEDULE_FILE = "R04cmbzFPQk2Q4IockGwqZ"; // Claude: Schedule (the organised source)
@@ -41,7 +43,7 @@ export const figmaOpenUrl = ({ file = FIGMA_SCHEDULE_FILE, node, start, mode = "
     ? `https://www.figma.com/proto/${file}?node-id=${dash(node)}&starting-point-node-id=${encodeURIComponent(String(start || node).replace("-", ":"))}`
     : `https://www.figma.com/design/${file}?node-id=${dash(node)}`;
 
-export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, className = "" }) {
+export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, className = "", children }) {
   const root = useRef(null);
   const [near, setNear] = useState(false);
   const [st, setSt] = useState("idle"); // idle | loading | ready | failed
@@ -66,10 +68,10 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
       {near && (
         <iframe className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
       )}
-      {fallback
+      {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
         ? <img className="fembed__floor" src={fallback} alt={alt} loading="lazy" draggable="false" />
         : <span className="fembed__floor fembed__floor--blank" aria-hidden="true" />}
-      {st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
+      {badge && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
     </div>
   );
 }

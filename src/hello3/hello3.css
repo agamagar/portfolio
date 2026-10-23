@@ -1097,25 +1097,11 @@ body:has(.hello[data-page="3"]) .view-menu { left: max(20px, env(safe-area-inset
    this row. */
 .hello[data-page="3"] .ap__controls { display: none; }
 
-/* mtrwwro0: the live Figma prototype in the Scheduled Delivery right phone.
-   Same crop the case's plate uses (index.css .article__plate-screen iframe):
-   the embed paints a 43px bar top and bottom around the prototype, so the
-   iframe is 86px taller than the screen and sits 43px up. The prototype
-   scales to the iframe's width. The tile is a link, so the iframe takes no
-   pointer: you watch it here and use it on the case page. */
+/* mtrwwro0: the live Figma prototype in the Scheduled Delivery right phone (FigmaEmbed, slot tour as its floor).
+   The tile is a link, so the embed takes no pointer: you watch it here and use it on the case page. */
 .hello[data-page="3"] .wg__proto { position: absolute; inset: 0; display: block; overflow: hidden; background: #f3f5f7; }
-.hello[data-page="3"] .wg__proto iframe {
-  position: absolute;
-  left: 0;
-  top: -43px;
-  width: 100%;
-  height: calc(100% + 86px);
-  border: 0;
-  display: block;
-  pointer-events: none;
-  z-index: 2; /* over the slot-tour floor */
-}
-.hello[data-page="3"] .wg__proto .wg__slots { z-index: 1; }
+.hello[data-page="3"] .wg__proto .fembed { --fembed-bg: #f3f5f7; }
+.hello[data-page="3"] .wg__proto .fembed__frame { pointer-events: none; }
 
 /* mtrx14ur: a YouTube embed as a plate in the side-quests run. The plate is a
    box the size of the card and the player fills it; the run is dragged and

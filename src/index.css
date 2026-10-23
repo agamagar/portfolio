@@ -3189,36 +3189,6 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
 }
 /* (the base frame is applied on the Scheduled Delivery page only; the image
    phone layouts elsewhere stay as bare screenshots) */
-/* Figma's viewer pads its canvas (about 86px vertically) and centres the frame,
-   so the iframe is oversized by that padding and clipped to the screen: the
-   prototype then fills it edge to edge. */
-/* The still that stands in for the live prototype while PROTO_EMBED is off.
-   It fills the screen cutout exactly, with NONE of the iframe's -43px/+86px
-   nudge below: that offset exists to crop Figma's own embed chrome, and a plain
-   export of the frame has no chrome to crop. Without this rule the image
-   rendered at its natural 720x1566 and burst out of a 185px phone. */
-.article__plate-screen > img {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  border: 0;
-  background: #fff;
-}
-
-.article__plate-screen iframe {
-  position: absolute;
-  display: block;
-  left: 0;
-  top: -43px;
-  width: 100%;
-  height: calc(100% + 86px);
-  border: 0;
-  background: #fff;
-}
 /* the target: a dotted rectangle around the control, marching slowly */
 .article__plate-cuebox {
   position: absolute;
@@ -8793,16 +8763,6 @@ html .qa-circle[aria-pressed="true"] { box-shadow: 0 0 0 2px #e8930c, 0 4px 14px
 /* mv56vlgg: the scope map's boxes carry the same icon disc above their text */
 .rv-map__node { flex-direction: column; gap: 0.6rem; }
 
-/* mv58620u: the prototype's loading overlay (ProtoFrame in App.jsx): the still of its first screen with a glass
-   loader (the site's glass button, three dots) in the middle; fades out when the embed has loaded */
-.pe { position: absolute; inset: 0; z-index: 4; transition: opacity 450ms ease; }
-.pe[data-st="ready"] { opacity: 0; pointer-events: none; }
-.pe__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; background: #fff; }
-.pe .pe__badge { right: auto; bottom: auto; left: 50%; top: 50%; translate: -50% -50%; z-index: 5; display: inline-flex; align-items: center; justify-content: center; gap: 3px; text-decoration: none; }
-.pe__badge i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: pe-dot 1s ease-in-out infinite; }
-.pe__badge i:nth-child(2) { animation-delay: 0.15s; } .pe__badge i:nth-child(3) { animation-delay: 0.3s; }
-@keyframes pe-dot { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
-@media (prefers-reduced-motion: reduce) { .pe { transition: none; } .pe__badge i { animation: none; opacity: 0.7; } }
 
 /* mv58by9f: the frame's stat rows, now under the scope map: the icon disc at the left, the figure above its line at the right */
 .rv-map__rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; margin-top: 2rem; }

@@ -9,6 +9,8 @@ import { LOCKED, NEW, newestFirst, projectRow } from "./workMeta";
 import usePhone from "./usePhone";
 import useLinkedSpotlight from "./useLinkedSpotlight";
 import FigmaPhone from "./FigmaPhone";
+import FigmaEmbed from "../ui/FigmaEmbed";
+import { PRIVATE_SITE } from "../lib/site";
 import ClipVideo from "../hello/ClipVideo";
 import ScrollBand from "../hello/ScrollBand";
 import { PHONES } from "../hello/helloData";
@@ -365,34 +367,17 @@ const SLOT_SCREENS = [
   { key: "tmrMore", src: "/figures/scheduled/sched-tomorrow-more.png" },
   { key: "tmrAll", src: "/figures/scheduled/sched-tomorrow-all.png" },
 ];
-// THE ACTUAL PROTOTYPE (pin mtrwwro0, "for the second phone bring the actual
-// proto"): the same Figma embed the case's "Two screens, in motion" plate
-// runs (file 71cZSn6pTNf4zFzO07O2uv, node 40000084-123917), the same URL
-// shape as App.jsx's figmaEmbedUrl: scale to width, no footer, hints or
-// viewport controls. It supersedes the SlotTour below, which stays for a
-// swap back. The client-id (VITE_FIGMA_EMBED_CLIENT_ID) is optional, as in
-// the case.
-// eslint-disable-next-line no-unused-vars -- kept for the day the file is shared (PROTO_EMBED)
-const PROTO_URL = `https://embed.figma.com/proto/71cZSn6pTNf4zFzO07O2uv?node-id=40000084-123917&embed-host=portfolio&scaling=scale-down-width&footer=false&hotspot-hints=false&viewport-controls=false${import.meta.env.VITE_FIGMA_EMBED_CLIENT_ID ? `&client-id=${import.meta.env.VITE_FIGMA_EMBED_CLIENT_ID}` : ""}`;
-// mtrxq1us ("sometimes the second frame does not load"): two fixes. The
-// iframe was loading="lazy" while positioned absolutely inside a cropped
-// phone, which is exactly the case where a lazy iframe can sit unloaded;
-// it is eager now. And the slot tour runs UNDERNEATH the iframe as the
-// floor: the embed is transparent until Figma paints, so whatever happens on
-// Figma's side (slow, offline, rate-limited) the phone shows the case's own
-// screens rather than a blank, and once the prototype paints it covers them.
-// mtu4sxky (09 Sep 2026), "I see a weird artifact, can we please remove it":
-// the Figma file is not public, so for anyone who is not signed in (which is
-// every visitor) the embed rendered its LOGIN WALL inside the phone - a white
-// screen reading "Log in to Figma to view this". The iframe is off until the
-// prototype is shared as Anyone with the link can view; the local slot tour,
-// which was always running underneath it as the floor, is the screen now.
-const PROTO_EMBED = false;
+// THE ACTUAL PROTOTYPE (pin mtrwwro0, "for the second phone bring the actual proto"): the case's main path
+// (Claude: Schedule, 9:154) through the shared FigmaEmbed, over the slot tour as its floor (mtrxq1us: whatever
+// happens on Figma's side, the phone shows the case's own screens, and the prototype covers them once painted).
+// Private build only: the case pages on the public site are locked, so the homepage doesn't publish the Zepto file either.
+const PROTO_EMBED = PRIVATE_SITE;
 function ProtoScreen() {
   return (
     <span className="wg__proto">
-      <SlotTour />
-      {PROTO_EMBED && <iframe src={PROTO_URL} title="Scheduled Delivery prototype" loading="eager" allowFullScreen />}
+      {PROTO_EMBED
+        ? <FigmaEmbed mode="proto" node="9:154" title="Scheduled Delivery prototype" badge={false}><SlotTour /></FigmaEmbed>
+        : <SlotTour />}
     </span>
   );
 }
