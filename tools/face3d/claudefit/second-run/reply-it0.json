@@ -1,0 +1,3 @@
+{"scores":{"proportions":6,"ears":6,"nose":6,"brows":6,"eyes":7,"mouth":6,"hair":4},
+ "deltas":{"hair.wing.spine.2.1":1.25,"hair.wing.spine.3.1":1.35,"hair.wing.spine.4.1":1.3,"hair.wing.spine.1.1":1.12,"head.cranium.r.0":0.97,"head.jaw.r.0":0.9,"ear.rz":0.46,"mouth.curve":0.5},
+ "reasons":{"hair.wing.spine.2.1":"the reference wing sweeps low and wide to the right; ours climbs steeply like a horn","hair.wing.spine.3.1":"flatten the wing","hair.wing.spine.4.1":"flatten the tip","hair.wing.spine.1.1":"lower the wing's start","head.cranium.r.0":"reference head is broader across the temples","head.jaw.r.0":"reference jaw and cheeks are fuller","ear.rz":"the ear should be rounder (wider front to back)","mouth.curve":"reference smile is a shallower arc"}}
