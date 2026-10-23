@@ -1,0 +1,683 @@
+{
+ "BrowL": {
+  "verts": 542,
+  "faces": 540,
+  "tris": 0,
+  "quads": 540,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 20,
+   "4": 520,
+   "10": 2
+  },
+  "poles_gt5": 2,
+  "poles_3": 20,
+  "unmirrored_verts": 542,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 540,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.563,
+  "texel_density_px_per_unit": {
+   "p5": 2427.4,
+   "p50": 2864.4,
+   "p95": 3144.6,
+   "max_over_min_p5_p95": 1.3
+  },
+  "uv_bbox_overlap_cells_pct": 52.8,
+  "uv_seam_edges": 1080,
+  "shape_keys": {
+   "browInnerUp": {
+    "max_delta": 0.0929,
+    "verts_moved": 542
+   },
+   "browOuterUpRight": {
+    "max_delta": 0.0823,
+    "verts_moved": 542
+   },
+   "browDownRight": {
+    "max_delta": 0.0822,
+    "verts_moved": 542
+   }
+  },
+  "bbox": [
+   [
+    -0.2,
+    -0.779,
+    0.451
+   ],
+   [
+    -0.507,
+    -0.904,
+    0.574
+   ]
+  ]
+ },
+ "BrowR": {
+  "verts": 542,
+  "faces": 540,
+  "tris": 0,
+  "quads": 540,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 20,
+   "4": 520,
+   "10": 2
+  },
+  "poles_gt5": 2,
+  "poles_3": 20,
+  "unmirrored_verts": 542,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 540,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.603,
+  "texel_density_px_per_unit": {
+   "p5": 2623.1,
+   "p50": 2941.4,
+   "p95": 3151.5,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 49.7,
+  "uv_seam_edges": 1080,
+  "shape_keys": {
+   "browInnerUp": {
+    "max_delta": 0.0926,
+    "verts_moved": 542
+   },
+   "browOuterUpLeft": {
+    "max_delta": 0.0824,
+    "verts_moved": 542
+   },
+   "browDownLeft": {
+    "max_delta": 0.0819,
+    "verts_moved": 542
+   }
+  },
+  "bbox": [
+   [
+    0.2,
+    -0.779,
+    0.451
+   ],
+   [
+    0.507,
+    -0.905,
+    0.574
+   ]
+  ]
+ },
+ "EyeL": {
+  "verts": 386,
+  "faces": 384,
+  "tris": 0,
+  "quads": 384,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 8,
+   "4": 378
+  },
+  "poles_gt5": 0,
+  "poles_3": 8,
+  "unmirrored_verts": 386,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 384,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.642,
+  "texel_density_px_per_unit": {
+   "p5": 2813.6,
+   "p50": 3128.3,
+   "p95": 3408.2,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 59.2,
+  "uv_seam_edges": 768,
+  "bbox": [
+   [
+    -0.199,
+    -0.823,
+    0.187
+   ],
+   [
+    -0.387,
+    -0.955,
+    0.376
+   ]
+  ]
+ },
+ "EyeR": {
+  "verts": 386,
+  "faces": 384,
+  "tris": 0,
+  "quads": 384,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 8,
+   "4": 378
+  },
+  "poles_gt5": 0,
+  "poles_3": 8,
+  "unmirrored_verts": 386,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 384,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.642,
+  "texel_density_px_per_unit": {
+   "p5": 2813.6,
+   "p50": 3128.3,
+   "p95": 3408.2,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 59.2,
+  "uv_seam_edges": 768,
+  "bbox": [
+   [
+    0.366,
+    -0.798,
+    0.187
+   ],
+   [
+    0.554,
+    -0.93,
+    0.376
+   ]
+  ]
+ },
+ "Hair": {
+  "verts": 20519,
+  "faces": 37315,
+  "tris": 33596,
+  "quads": 3719,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 195,
+   "4": 2334,
+   "5": 6602,
+   "6": 7589,
+   "7": 3237,
+   "8": 518,
+   "9": 44
+  },
+  "poles_gt5": 11388,
+  "poles_3": 195,
+  "unmirrored_verts": 15210,
+  "unmirrored_pct": 74.1,
+  "uv_islands": 37315,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.476,
+  "texel_density_px_per_unit": {
+   "p5": 172.0,
+   "p50": 195.3,
+   "p95": 212.3,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 96.4,
+  "uv_seam_edges": 57832,
+  "shape_keys": {
+   "hatCompress": {
+    "max_delta": 0.7897,
+    "verts_moved": 10942
+   }
+  },
+  "bbox": [
+   [
+    -0.916,
+    1.118,
+    -1.018
+   ],
+   [
+    0.916,
+    -1.51,
+    1.605
+   ]
+  ]
+ },
+ "Hat": {
+  "verts": 3474,
+  "faces": 3472,
+  "tris": 0,
+  "quads": 3472,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 80,
+   "4": 3392,
+   "40": 2
+  },
+  "poles_gt5": 2,
+  "poles_3": 80,
+  "unmirrored_verts": 3465,
+  "unmirrored_pct": 99.7,
+  "uv_islands": 3472,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.443,
+  "texel_density_px_per_unit": {
+   "p5": 162.6,
+   "p50": 186.4,
+   "p95": 189.4,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 84.2,
+  "uv_seam_edges": 6944,
+  "bbox": [
+   [
+    1.364,
+    -1.465,
+    0.237
+   ],
+   [
+    -1.465,
+    1.576,
+    1.431
+   ]
+  ]
+ },
+ "HatBand": {
+  "verts": 240,
+  "faces": 240,
+  "tris": 0,
+  "quads": 240,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "4": 240
+  },
+  "poles_gt5": 0,
+  "poles_3": 0,
+  "unmirrored_verts": 240,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 240,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.666,
+  "texel_density_px_per_unit": {
+   "p5": 590.6,
+   "p50": 668.8,
+   "p95": 688.5,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 7.8,
+  "uv_seam_edges": 480,
+  "bbox": [
+   [
+    0.983,
+    -1.042,
+    0.352
+   ],
+   [
+    -1.087,
+    1.188,
+    0.835
+   ]
+  ]
+ },
+ "LidL": {
+  "verts": 2388,
+  "faces": 2384,
+  "tris": 0,
+  "quads": 2384,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 16,
+   "4": 2372
+  },
+  "poles_gt5": 0,
+  "poles_3": 16,
+  "unmirrored_verts": 2388,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 2384,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.408,
+  "texel_density_px_per_unit": {
+   "p5": 1457.1,
+   "p50": 1679.4,
+   "p95": 1804.1,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 64.7,
+  "uv_seam_edges": 4768,
+  "shape_keys": {
+   "eyeBlinkRight": {
+    "max_delta": 0.2202,
+    "verts_moved": 2388
+   },
+   "eyeSquintRight": {
+    "max_delta": 0.1375,
+    "verts_moved": 2388
+   },
+   "eyeWideRight": {
+    "max_delta": 0.0331,
+    "verts_moved": 2388
+   }
+  },
+  "bbox": [
+   [
+    -0.175,
+    -0.798,
+    0.166
+   ],
+   [
+    -0.41,
+    -0.887,
+    0.398
+   ]
+  ]
+ },
+ "LidR": {
+  "verts": 2388,
+  "faces": 2384,
+  "tris": 0,
+  "quads": 2384,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 16,
+   "4": 2372
+  },
+  "poles_gt5": 0,
+  "poles_3": 16,
+  "unmirrored_verts": 2388,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 2384,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.408,
+  "texel_density_px_per_unit": {
+   "p5": 1457.1,
+   "p50": 1679.4,
+   "p95": 1804.1,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 64.7,
+  "uv_seam_edges": 4768,
+  "shape_keys": {
+   "eyeBlinkLeft": {
+    "max_delta": 0.2202,
+    "verts_moved": 2388
+   },
+   "eyeSquintLeft": {
+    "max_delta": 0.1375,
+    "verts_moved": 2388
+   },
+   "eyeWideLeft": {
+    "max_delta": 0.0331,
+    "verts_moved": 2388
+   }
+  },
+  "bbox": [
+   [
+    0.342,
+    -0.773,
+    0.166
+   ],
+   [
+    0.577,
+    -0.862,
+    0.398
+   ]
+  ]
+ },
+ "Mouth": {
+  "verts": 1520,
+  "faces": 1520,
+  "tris": 0,
+  "quads": 1520,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "4": 1520
+  },
+  "poles_gt5": 0,
+  "poles_3": 0,
+  "unmirrored_verts": 1154,
+  "unmirrored_pct": 75.9,
+  "uv_islands": 1520,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.228,
+  "texel_density_px_per_unit": {
+   "p5": 1758.8,
+   "p50": 2025.7,
+   "p95": 2150.7,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 66.0,
+  "uv_seam_edges": 3040,
+  "shape_keys": {
+   "jawOpen": {
+    "max_delta": 0.1935,
+    "verts_moved": 1520
+   },
+   "mouthSmileLeft": {
+    "max_delta": 0.0738,
+    "verts_moved": 1520
+   },
+   "mouthSmileRight": {
+    "max_delta": 0.0745,
+    "verts_moved": 1520
+   },
+   "mouthFrownLeft": {
+    "max_delta": 0.0644,
+    "verts_moved": 1520
+   },
+   "mouthFrownRight": {
+    "max_delta": 0.0653,
+    "verts_moved": 1520
+   },
+   "mouthPucker": {
+    "max_delta": 0.108,
+    "verts_moved": 1520
+   }
+  },
+  "bbox": [
+   [
+    0.143,
+    -0.831,
+    -0.563
+   ],
+   [
+    -0.263,
+    -0.893,
+    -0.66
+   ]
+  ]
+ },
+ "MouthInner": {
+  "verts": 120,
+  "faces": 95,
+  "tris": 0,
+  "quads": 95,
+  "ngons": 0,
+  "boundary_edges": 48,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "2": 4,
+   "3": 44,
+   "4": 72
+  },
+  "poles_gt5": 0,
+  "poles_3": 44,
+  "unmirrored_verts": 109,
+  "unmirrored_pct": 90.8,
+  "uv_islands": 95,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.021,
+  "texel_density_px_per_unit": {
+   "p5": 2926.2,
+   "p50": 2929.7,
+   "p95": 2930.1,
+   "max_over_min_p5_p95": 1.0
+  },
+  "uv_bbox_overlap_cells_pct": 81.7,
+  "uv_seam_edges": 166,
+  "shape_keys": {
+   "jawOpen": {
+    "max_delta": 0.195,
+    "verts_moved": 108
+   },
+   "mouthSmileLeft": {
+    "max_delta": 0.0757,
+    "verts_moved": 120
+   },
+   "mouthSmileRight": {
+    "max_delta": 0.0768,
+    "verts_moved": 120
+   },
+   "mouthFrownLeft": {
+    "max_delta": 0.0662,
+    "verts_moved": 114
+   },
+   "mouthFrownRight": {
+    "max_delta": 0.0671,
+    "verts_moved": 114
+   },
+   "mouthPucker": {
+    "max_delta": 0.109,
+    "verts_moved": 120
+   }
+  },
+  "bbox": [
+   [
+    0.14,
+    -0.85,
+    -0.564
+   ],
+   [
+    -0.26,
+    -0.884,
+    -0.647
+   ]
+  ]
+ },
+ "Pin": {
+  "verts": 1108,
+  "faces": 1100,
+  "tris": 0,
+  "quads": 1100,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "3": 68,
+   "4": 1032,
+   "8": 6,
+   "10": 2
+  },
+  "poles_gt5": 8,
+  "poles_3": 68,
+  "unmirrored_verts": 1108,
+  "unmirrored_pct": 100.0,
+  "uv_islands": 1100,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.472,
+  "texel_density_px_per_unit": {
+   "p5": 2115.9,
+   "p50": 2398.1,
+   "p95": 2543.9,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 40.8,
+  "uv_seam_edges": 2200,
+  "bbox": [
+   [
+    -0.964,
+    0.258,
+    -0.401
+   ],
+   [
+    -1.084,
+    0.57,
+    -0.909
+   ]
+  ]
+ },
+ "Skin": {
+  "verts": 28222,
+  "faces": 46992,
+  "tris": 37520,
+  "quads": 9472,
+  "ngons": 0,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "loose_verts": 0,
+  "valence_hist": {
+   "2": 1,
+   "3": 1240,
+   "4": 5267,
+   "5": 9185,
+   "6": 8663,
+   "7": 3230,
+   "8": 582,
+   "9": 51,
+   "10": 3
+  },
+  "poles_gt5": 12529,
+  "poles_3": 1240,
+  "unmirrored_verts": 11354,
+  "unmirrored_pct": 40.2,
+  "uv_islands": 46992,
+  "uv_flipped_faces": 0,
+  "uv_area_share": 0.571,
+  "texel_density_px_per_unit": {
+   "p5": 198.2,
+   "p50": 222.8,
+   "p95": 239.1,
+   "max_over_min_p5_p95": 1.2
+  },
+  "uv_bbox_overlap_cells_pct": 96.2,
+  "uv_seam_edges": 75224,
+  "shape_keys": {
+   "jawOpen": {
+    "max_delta": 0.1049,
+    "verts_moved": 2681
+   },
+   "mouthSmileLeft": {
+    "max_delta": 0.0538,
+    "verts_moved": 2597
+   },
+   "mouthSmileRight": {
+    "max_delta": 0.054,
+    "verts_moved": 2007
+   },
+   "cheekPuff": {
+    "max_delta": 0.07,
+    "verts_moved": 4887
+   }
+  },
+  "bbox": [
+   [
+    1.2,
+    0.86,
+    1.04
+   ],
+   [
+    -1.2,
+    -1.3,
+    -1.052
+   ]
+  ]
+ }
+}
