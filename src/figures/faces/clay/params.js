@@ -9,17 +9,17 @@ export const DEFAULT = {
     cheek: { x: 0.46, y: -0.3, z: 0.5, r: 0.4 }, cheekBlend: 0.3,
     taper: 0.1,   // the jaw narrows toward the chin (fraction of the width at the chin)
   },
-  ear: { x: 1.16, y: -0.02, z: -0.08, ry: 0.52, rz: 0.4, rx: 0.14, toeIn: 24, bowl: 1.0, fold: 1.0, lobe: 1.0 },
+  ear: { x: 1.16, y: -0.02, z: -0.08, ry: 0.52, rz: 0.4, rx: 0.2, toeIn: 38, bowl: 1.3, fold: 1.0, lobe: 1.0 },
   nose: { bridgeY: 0.28, tipY: -0.3, tipZ: 0.26, r0: 0.075, r1: 0.15, width: 1.0, tilt: 0 },
   eye: { x: 0.4, y: 0.16, r: 0.1, color: "#0b0706", gap: 0 },
   brow: { x: 0.4, y: 0.52, len: 0.42, thick: 0.065, arch: 0.05, tilt: 10, color: "#3a1e12" },
   mouth: { y: -0.68, width: 0.36, curve: 0.45, depth: 0.034, tuck: 0.0, open: 0, smileL: 0, smileR: 0 },
   hair: {
     color: "#4a2616", roughness: 0.5, edgeBlend: 0.05,
-    cap: { thick: 0.07, region: [{ c: [0, 1.18, 0.1], r: [1.5, 0.7, 1.0] }, { c: [0, 0.2, -0.75], r: [1.3, 0.9, 0.95] }] },
+    cap: { thick: 0.07, region: [{ c: [0, 1.18, 0.1], r: [1.5, 0.7, 1.0] }, { c: [0, -0.05, -0.92], r: [1.3, 1.1, 0.78] }, { c: [0, 0.6, -0.35], r: [1.3, 0.62, 0.75] }] },
     // the wing: a spine of [x, y, z, r] sweeping up from the forehead's left and out to the right, tapering; flutes are short spines fanning off its end
     wing: { spine: [[-0.4, 1.0, 0.4, 0.40], [0.0, 1.2, 0.3, 0.46], [0.4, 1.34, 0.15, 0.46], [0.82, 1.4, 0.0, 0.40], [1.15, 1.36, -0.1, 0.26]],
-      flutes: [[[0.45, 1.3, 0.15, 0.34], [0.8, 1.12, 0.1, 0.28], [1.1, 1.02, 0.0, 0.15]], [[0.55, 1.42, 0.2, 0.32], [0.95, 1.62, 0.12, 0.26], [1.25, 1.64, 0.0, 0.12]]] },
+      flutes: [[[0.35, 1.3, 0.18, 0.36], [0.7, 1.12, 0.12, 0.3], [1.0, 0.98, 0.04, 0.16]], [[0.5, 1.4, 0.2, 0.34], [0.95, 1.52, 0.14, 0.28], [1.3, 1.5, 0.04, 0.14]], [[0.3, 1.4, 0.3, 0.3], [0.62, 1.7, 0.2, 0.24], [0.95, 1.86, 0.08, 0.1]]] },
     swooshBlend: 0.3,
   },
   light: { exposure: 1.0 },
