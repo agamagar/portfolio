@@ -5,7 +5,7 @@
 # footprints) were smaller than the features painted in the reference (hose's big black eyes, pixel's blocks), so painted remnants stayed
 # on every emote; and the GLB's own map (the clean one) still carried faint feature rings. This:
 #   1. grows the holes: from the margins (dilated 8 px) outward over pixels where the raw skin differs strongly from a first fill (region
-#      growing, at most 44 px), so the hole matches what is really painted;
+#      growing, at most 130 px), so the hole matches what is really painted;
 #   2. refills them from the skin around (push-pull: coarse averages pushed back in) plus matched grain (noise with the surrounding
 #      high-pass statistics, not a copied patch);
 #   3. writes margins over the grown holes (each hole pixel takes the channel of its nearest original margin: eyes / brows / mouth).
@@ -43,14 +43,20 @@ front = (slice(None), slice(0, HW))
 mf = m.max(2)
 hole0 = nd.binary_dilation(mf > 0.04, iterations=8)
 f0 = pushpull(rw[front], (~hole0).astype(np.float32))
-diff = np.abs(rw[front] - f0).mean(2)
-cand = (diff > 16) & nd.binary_dilation(hole0, iterations=44)
-hole = nd.binary_propagation(hole0, mask=cand | hole0)
+# (against a wide median of the raw skin: f0 equals the raw pixels outside the holes, so it cannot show a feature that lies outside them)
+med = np.stack([nd.median_filter(rw[front][..., c], size=31) for c in range(3)], 2)
+diff = np.abs(rw[front] - med).mean(2)
+cand = (diff > 22) & nd.binary_dilation(hole0, iterations=110)
+# every strong deviation from the surrounding skin near a feature is that feature's paint (the painted smile line starts well outside the
+# margin's mouth footprint, so connectivity to it is not required)
+hole = cand | hole0
+hole = nd.binary_opening(hole, iterations=1) | hole0
 hole = nd.binary_closing(hole, iterations=3) | hole0
 hole = nd.binary_dilation(hole, iterations=3)
 # the clean map (front layer): the GLB map with the grown holes refilled, grain matched
 g = im[front]
 fill = pushpull(g, (~hole).astype(np.float32))
+fill = nd.gaussian_filter(fill, (4, 4, 0))   # (push-pull is blocky at its coarsest levels)
 low = nd.gaussian_filter(g, (3, 3, 0)); hp = g - low
 std = np.array([hp[(~hole) & (nd.binary_dilation(hole, iterations=60))][:, c].std() for c in range(3)])
 noise = nd.gaussian_filter(rng.standard_normal(g.shape).astype(np.float32), (0.8, 0.8, 0)) * std * 1.6
@@ -66,7 +72,8 @@ Image.fromarray(np.clip(clean + 0.5, 0, 255).astype(np.uint8)).save(out_clean, o
 # margins: each hole pixel takes the nearest original margin's channel, edge softened
 idx = nd.distance_transform_edt(~(mf > 0.04), return_indices=True)[1]
 near = m[idx[0], idx[1]]
-mn = np.where(hole[..., None], np.maximum(near, 0.0), 0.0)
+one = (near == near.max(2, keepdims=True)).astype(np.float32)   # the nearest margin's channel, at full strength
+mn = np.where(hole[..., None], one, 0.0)
 mn = np.maximum(mn, m)
 mn = nd.gaussian_filter(mn, (2, 2, 0))
 Image.fromarray(np.clip(mn * 255 + 0.5, 0, 255).astype(np.uint8)).save(out_margins, optimize=True)
