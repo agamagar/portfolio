@@ -1,0 +1,3 @@
+{"scores":{"proportions":6,"ears":5,"nose":6,"brows":6,"eyes":7,"mouth":5,"hair":3},
+ "deltas":{"hair.swoosh.2.1":1.35,"hair.swoosh.3.1":1.4,"hair.swoosh.1.1":1.2,"hair.swoosh.2.3":0.5,"hair.swoosh.3.3":0.42,"head.cranium.r.2":1.0,"hair.cap.thick":0.09,"ear.ry":0.58},
+ "reasons":{"hair.swoosh.2.1":"the reference swoosh is a lower, wider wing that sweeps to the right; ours stands up as a tall topknot","hair.swoosh.3.1":"same: flatten the tip","hair.swoosh.1.1":"same","hair.swoosh.2.3":"widen the wing","hair.swoosh.3.3":"widen the wing tip","head.cranium.r.2":"in profile the reference skull is much deeper behind the ear; ours is too round and short front-to-back","hair.cap.thick":"reference hair mass is chunkier around the skull","ear.ry":"reference ears are taller"}}

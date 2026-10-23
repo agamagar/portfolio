@@ -3,16 +3,18 @@
 // re-renders, scores (IoU / SSIM / LPIPS via tools/face3d/asset/turn_compare.py) and logs every step. The API key comes ONLY from the environment
 // (ANTHROPIC_API_KEY, loaded from a git-ignored .env.local at the repo root); it is never printed, logged or committed.
 //   node tools/face3d/claudefit/fit.mjs [--base http://127.0.0.1:5173] [--iters 6] [--views 1,7,2] [--dry] [--params start.json]
+// CRITIC (one config line, tools/face3d/claudefit/config.json {"critic": "local" | "api"}, or --critic): "local" writes dir/request.json + compare.png and WAITS for dir/reply.json
+// (a person or a local Claude session fills it in, same JSON the API critic returns); "api" calls the Claude API with the key from the environment.
 // --dry: skips the API call (uses no deltas) to check the render / compare / log pipeline. Cost cap: --max-calls (default 8), images at 360 px.
 import { chromium } from "playwright";
 import fs from "node:fs"; import path from "node:path"; import { execFileSync } from "node:child_process";
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i < 0 ? d : (i + 1 >= process.argv.length || process.argv[i + 1].startsWith("--")) ? true : process.argv[i + 1]; };
 const root = path.resolve(new URL("../../..", import.meta.url).pathname), here = path.dirname(new URL(import.meta.url).pathname);
-const base = arg("base", "http://127.0.0.1:5173"), iters = +arg("iters", 6), views = String(arg("views", "1,7,2")).split(",").map(Number), dry = !!arg("dry", false), maxCalls = +arg("max-calls", 8), MODEL = arg("model", "claude-opus-5-5");
+let CFG = {}; try { CFG = JSON.parse(fs.readFileSync(path.join(here, "config.json"), "utf8")); } catch {} const critic = String(arg("critic", CFG.critic || "local")), waitMs = +arg("wait-min", 30) * 60000; const base = arg("base", "http://127.0.0.1:5173"), iters = +arg("iters", 6), views = String(arg("views", CFG.views || "1,7,2")).split(",").map(Number), dry = !!arg("dry", false), maxCalls = +arg("max-calls", 8), MODEL = arg("model", "claude-opus-5-5");
 const PY = process.env.PY || "/opt/anaconda3/bin/python3";
 // .env.local: KEY=VALUE lines; only ANTHROPIC_API_KEY is read
 let KEY = process.env.ANTHROPIC_API_KEY || ""; try { for (const l of fs.readFileSync(path.join(root, ".env.local"), "utf8").split("\n")) { const m = l.match(/^\s*ANTHROPIC_API_KEY\s*=\s*(.+?)\s*$/); if (m && !KEY) KEY = m[1].replace(/^["']|["']$/g, ""); } } catch {}
-if (!KEY && !dry) { console.error("ANTHROPIC_API_KEY is not set (environment or a git-ignored .env.local). Stopping: Agam needs to add it. (Use --dry to test the pipeline without it.)"); process.exit(2); }
+if (critic === "api" && !KEY && !dry) { console.error("ANTHROPIC_API_KEY is not set (environment or a git-ignored .env.local). Stopping: Agam needs to add it. (Use --dry to test the pipeline without it.)"); process.exit(2); }
 const out = path.join(here, "runs", new Date().toISOString().replace(/[:.]/g, "-")); fs.mkdirSync(out, { recursive: true });
 const log = (o) => fs.appendFileSync(path.join(out, "log.jsonl"), JSON.stringify(o) + "\n");
 // the parameters Claude may change, with hard limits (path -> [min, max]); anything else in its reply is ignored
@@ -22,6 +24,7 @@ const LIM = { "head.cranium.r.0": [0.7, 1.1], "head.cranium.r.1": [0.65, 1.1], "
   "eye.x": [0.28, 0.55], "eye.y": [-0.05, 0.4], "eye.r": [0.06, 0.15], "brow.x": [0.28, 0.55], "brow.y": [0.3, 0.75], "brow.len": [0.25, 0.6], "brow.thick": [0.04, 0.1], "brow.arch": [0, 0.15], "brow.tilt": [-15, 25],
   "mouth.y": [-0.85, -0.45], "mouth.width": [0.3, 0.8], "mouth.curve": [0, 1.4], "mouth.depth": [0.02, 0.09],
   "hair.cap.thick": [0.03, 0.14], "hair.swooshBlend": [0.15, 0.5], "hair.edgeBlend": [0.02, 0.15] };
+for (const r of [0, 1]) for (const j of [0, 1, 2, 3, 4, 5]) LIM[`hair.cap.region.${r}.${j < 3 ? "c" : "r"}.${j % 3}`] = j < 3 ? [-1.2, 1.4] : [0.4, 1.7];
 for (let i = 0; i < 4; i++) for (let j = 0; j < 6; j++) { const k = ["cx", "cy", "cz", "rx", "ry", "rz"][j]; LIM[`hair.swoosh.${i}.${j}`] = j < 3 ? [-1.6, 1.8] : [0.15, 0.9]; }
 const getp = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
 const setp = (o, p, v) => { const ks = p.split("."); let a = o; for (let i = 0; i < ks.length - 1; i++) a = a[ks[i]]; a[ks[ks.length - 1]] = v; };
@@ -52,10 +55,18 @@ for (let it = 0; it <= iters; it++) {
   // one side-by-side image per view (the compare sheet is 2 views per row: cut it per view), then ask Claude
   const content = [{ type: "text", text: `Iteration ${it}. Numeric scores so far (mean over views): IoU ${mean[0]}, SSIM ${mean[1]}, LPIPS ${mean[2]} (lower LPIPS is closer). Views, in order, left=reference right=ours:` }];
   content.push({ type: "image", source: { type: "base64", media_type: "image/png", data: png(cmp) } });
-  const cur = {}; for (const k of Object.keys(LIM)) { const v = getp(P, k.replace(/\.(\d+)$/, (m, d) => "." + d).replace(/hair\.swoosh\.(\d+)\.(\d+)/, "hair.swoosh.$1.$2")); if (v !== undefined) cur[k] = +(+v).toFixed(3); }
+  const cur = {}; for (const k of Object.keys(LIM)) { const v = getp(P, k); if (v !== undefined) cur[k] = +(+v).toFixed(3); }
   content.push({ type: "text", text: "Current parameter values (allowed paths):\n" + JSON.stringify(cur) + "\nReply with the JSON only." });
-  let rep; try { rep = await callClaude(content); calls++; } catch (e) { console.error("API error:", String(e.message)); log({ it, error: String(e.message) }); break; }
-  fs.writeFileSync(path.join(dir, "claude.txt"), rep.text); log({ it, usage: rep.usage });
+  let rep;
+  if (critic === "api") { try { rep = await callClaude(content); calls++; } catch (e) { console.error("API error:", String(e.message)); log({ it, error: String(e.message) }); break; } }
+  else {
+    // local critic: hand the request off through files and wait for the reply
+    fs.writeFileSync(path.join(dir, "request.json"), JSON.stringify({ it, rubric: RUBRIC, mean, current: cur, compare: "compare.png", views, reply_to: "reply.json" }, null, 1));
+    console.log(`WAITING for ${path.join(dir, "reply.json")} (critic: local)`); const t0 = Date.now();
+    while (!fs.existsSync(path.join(dir, "reply.json")) && Date.now() - t0 < waitMs) await new Promise((r) => setTimeout(r, 3000));
+    if (!fs.existsSync(path.join(dir, "reply.json"))) { console.error("no reply in time; stopping"); break; }
+    await new Promise((r) => setTimeout(r, 400)); rep = { text: fs.readFileSync(path.join(dir, "reply.json"), "utf8"), usage: null };
+  }
   let j; try { j = JSON.parse(rep.text.slice(rep.text.indexOf("{"), rep.text.lastIndexOf("}") + 1)); } catch { console.error("unparseable reply; stopping"); break; }
   let applied = 0; for (const [k, v] of Object.entries(j.deltas || {}).slice(0, 8)) { if (!LIM[k] || typeof v !== "number" || !isFinite(v)) continue; const val = Math.min(LIM[k][1], Math.max(LIM[k][0], v)); const ks = k.split("."); let tgt = over; for (let q = 0; q < ks.length - 1; q++) { const key = ks[q]; if (tgt[key] === undefined) tgt[key] = Array.isArray(getp(DEFAULT, ks.slice(0, q + 1).join("."))) ? JSON.parse(JSON.stringify(getp(DEFAULT, ks.slice(0, q + 1).join(".")))) : {}; tgt = tgt[key]; } tgt[ks[ks.length - 1]] = val; applied++; }
   log({ it, scores: j.scores, applied, reasons: j.reasons }); console.log("  claude scores", JSON.stringify(j.scores), "applied", applied);
