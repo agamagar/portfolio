@@ -42,9 +42,9 @@ def head_point(u, v):
     cu, su, cv, sv = cos(u), sin(u), cos(v), sin(v)
     x = sgn(cu) * abs(cu) ** e * abs(cv) ** e; y = sgn(su) * abs(su) ** e * abs(cv) ** e; z = sgn(sv) * abs(sv) ** e
     # y is depth: front is -y. width 1.0, depth 0.98, height 1.02
-    X, Y, Z = x * 1.06, y * 0.96, z * 1.16
-    low = ss(0.05, -1.05, Z)            # 0 at the cranium, 1 at the chin
-    X *= 1 - 0.10 * low                   # the jaw narrows
+    X, Y, Z = x * 1.06, y * 0.96, z * 1.36
+    low = ss(0.15, -1.25, Z)            # 0 at the cranium, 1 at the chin
+    X *= 1 - 0.035 * low                   # the jaw narrows
     Y -= 0.0
     # the chin comes forward and rounds; the back of the skull stays full
     if Y < 0: Y *= 1 + 0.06 * low
@@ -81,7 +81,7 @@ def meta(name, material, elems, res=0.025, thr=0.6):
 FY = -0.93   # the front plane
 objs = [head]
 # eyes: glossy beads sunk a little into the face
-for sd in (-1, 1): objs.append(blob(f"Eye{sd}", (sd * 0.44, FY + 0.01, 0.10), (0.094, 0.075, 0.115), M["eye"], seg=32))
+for sd in (-1, 1): objs.append(blob(f"Eye{sd}", (sd * 0.44, FY + 0.01, 0.26), (0.118, 0.09, 0.14), M["eye"], seg=32))
 # brows: thick rounded pills, slightly arched, tilted
 def pill(name, c, length, thick, tilt, arch, material):
     pts = []
@@ -93,9 +93,9 @@ def pill(name, c, length, thick, tilt, arch, material):
     o = bpy.data.objects.new(name, curve); sc.collection.objects.link(o); o.data.materials.append(material)
     o.location = c; o.rotation_euler = (0, tilt, 0); return o
 for sd in (-1, 1):
-    objs.append(pill(f"Brow{sd}", (sd * 0.44, FY + 0.03, 0.42), 0.32, 0.064, radians(-9) * sd * -1 if True else 0, 0.04, M["brow"]))
+    objs.append(pill(f"Brow{sd}", (sd * 0.44, FY + 0.03, 0.58), 0.34, 0.082, radians(-9) * sd * -1 if True else 0, 0.04, M["brow"]))
 # nose: one soft form bulging off the cheek (bridge into a rounded tip), no seam
-nose = meta("Nose", M["skin"], [((0.02, FY - 0.02, 0.02), 0.20, (0.55, 0.8, 1.0), 2.0), ((0.02, FY - 0.07, -0.16), 0.24, (0.7, 0.9, 1.1), 2.0), ((0.02, FY - 0.14, -0.36), 0.25, (1.0, 0.95, 0.85), 2.0)], res=0.02, thr=0.5)
+nose = meta("Nose", M["skin"], [((0.02, FY - 0.02, 0.14), 0.20, (0.55, 0.8, 1.0), 2.0), ((0.02, FY - 0.07, -0.08), 0.24, (0.7, 0.9, 1.1), 2.0), ((0.02, FY - 0.14, -0.30), 0.25, (1.0, 0.95, 0.85), 2.0)], res=0.02, thr=0.5)
 objs += [nose]
 # carved smile: a soft arc with lips, pressed in
 def arc(name, c, r, ang0, ang1, thick, material):
@@ -104,14 +104,14 @@ def arc(name, c, r, ang0, ang1, thick, material):
     for p, q in zip(sp.points, pts): p.co = (q.x, q.y, q.z, 1)
     curve.bevel_depth = thick; curve.bevel_resolution = 6; curve.use_fill_caps = True
     o = bpy.data.objects.new(name, curve); sc.collection.objects.link(o); o.data.materials.append(material); o.location = c; return o
-objs.append(arc("Smile", (0.0, FY + 0.0, -0.76), 0.62, radians(-36), radians(40), 0.04, M["mouth"]))
+objs.append(arc("Smile", (0.0, FY + 0.0, -0.86), 0.62, radians(-36), radians(40), 0.04, M["mouth"]))
 # ears: big and round, with a modelled inner fold (rim torus + concave bowl + small tragus)
 for sd in (-1, 1):
-    ex = sd * 1.04; ey = -0.12; rz = (0, 0, radians(-28) * sd)   # the ears toe in a little so they read from the front, as the sheet's do
-    rim = blob(f"EarRim{sd}", (ex + sd * 0.04, ey, -0.04), (0.16, 0.46, 0.56), M["ear"], rot=rz, seg=48)
-    bowl = blob(f"EarBowl{sd}", (ex + sd * 0.10, ey - 0.04, -0.04), (0.10, 0.30, 0.40), M["earin"], rot=rz, seg=40)
-    fold = blob(f"EarFold{sd}", (ex + sd * 0.15, ey - 0.07, 0.04), (0.07, 0.14, 0.24), M["ear"], rot=rz, seg=32)
-    lobe = blob(f"EarLobe{sd}", (ex + sd * 0.05, ey - 0.02, -0.46), (0.09, 0.2, 0.15), M["ear"], rot=rz, seg=32)
+    ex = sd * 1.07; ey = -0.18; rz = (0, 0, radians(-34) * sd)   # the ears toe in a little so they read from the front, as the sheet's do
+    rim = blob(f"EarRim{sd}", (ex + sd * 0.04, ey, 0.02), (0.18, 0.54, 0.62), M["ear"], rot=rz, seg=48)
+    bowl = blob(f"EarBowl{sd}", (ex + sd * 0.10, ey - 0.04, 0.02), (0.11, 0.36, 0.46), M["earin"], rot=rz, seg=40)
+    fold = blob(f"EarFold{sd}", (ex + sd * 0.15, ey - 0.07, 0.10), (0.08, 0.17, 0.28), M["ear"], rot=rz, seg=32)
+    lobe = blob(f"EarLobe{sd}", (ex + sd * 0.05, ey - 0.02, -0.40), (0.09, 0.2, 0.15), M["ear"], rot=rz, seg=32)
     objs += [rim, bowl, fold, lobe]
 # hair: the scalp cap hugging the head plus the swoosh quiff
 def cap():
@@ -131,35 +131,35 @@ def cap():
             try: bm2.faces.new((rows[j][i], rows[j][(i + 1) % NU], rows[j + 1][(i + 1) % NU], rows[j + 1][i]))
             except ValueError: pass
     # drop faces over the forehead below the hairline (front, low): keep a clean forehead
-    kill = [f for f in bm2.faces if (lambda c: c.y < -0.30 and c.z < 0.78)(f.calc_center_median())]
+    kill = [f for f in bm2.faces if (lambda c: c.y < -0.30 and c.z < 1.02)(f.calc_center_median())]
     bmesh.ops.delete(bm2, geom=kill, context="FACES")
     return obj_from_bm(bm2, "HairCap", M["hair"], subsurf=1)
 objs.append(cap())
 # the swoosh: three overlapping fat forms sweeping up and out to the right, with a fluted end
-wing = meta("Swoosh", M["hair"], [((0.15, -0.30, 0.98), 0.85, (1.0, 1.0, 0.85), 2.0), ((0.45, -0.32, 1.22), 0.95, (1.0, 1.0, 0.85), 2.0), ((0.80, -0.32, 1.46), 0.95, (1.0, 1.0, 0.85), 2.0), ((1.12, -0.32, 1.66), 0.78, (1.0, 0.95, 0.85), 2.0), ((1.18, -0.32, 1.36), 0.62, (1.0, 0.95, 0.85), 2.0), ((0.86, -0.30, 1.16), 0.70, (1.0, 1.0, 0.85), 2.0)], res=0.03, thr=0.55)
+wing = meta("Swoosh", M["hair"], [((0.15, -0.30, 1.28), 0.80, (1.0, 1.0, 0.85), 2.0), ((0.42, -0.40, 1.46), 0.82, (1.0, 1.0, 0.85), 2.0), ((0.74, -0.40, 1.66), 0.80, (1.0, 1.0, 0.85), 2.0), ((1.02, -0.38, 1.80), 0.66, (1.0, 0.95, 0.85), 2.0), ((1.12, -0.38, 1.56), 0.52, (1.0, 0.95, 0.85), 2.0), ((0.84, -0.36, 1.40), 0.58, (1.0, 1.0, 0.85), 2.0), ((1.22, -0.42, 1.42), 0.40, (1.0, 1.0, 0.85), 2.0), ((1.0, -0.44, 1.14), 0.36, (1.0, 1.0, 0.85), 2.0)], res=0.03, thr=0.55)
 objs.append(wing)
 # the chef hat: a band and five fat puffs, sitting on the head
 if LOOK == "chef":
-    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.80, depth=0.40, location=(-0.40, 0.36, 1.34)); band = bpy.context.object; band.name = "Band"
+    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.98, depth=0.50, location=(-0.62, 0.30, 1.50)); band = bpy.context.object; band.name = "Band"
     bpy.ops.object.shade_smooth(); band.data.materials.append(M["hat"]); bev = band.modifiers.new("b", "BEVEL"); bev.width = 0.08; bev.segments = 5
-    band.scale = (1.10, 1.0, 1.0); band.rotation_euler = (radians(-6), radians(-14), 0); objs.append(band)
-    for i, (x, y, z, r, h) in enumerate([(-0.44, 0.36, 1.98, 0.56, 0.62), (-0.86, 0.28, 1.88, 0.40, 0.46), (0.0, 0.38, 1.88, 0.40, 0.46), (-0.64, 0.68, 1.88, 0.38, 0.46), (-0.68, -0.02, 1.90, 0.36, 0.44)]):
+    band.scale = (1.10, 1.0, 1.0); band.rotation_euler = (radians(-4), radians(-26), 0); objs.append(band)
+    for i, (x, y, z, r, h) in enumerate([(-0.55, 0.32, 2.20, 0.74, 0.74), (-1.22, 0.22, 2.02, 0.62, 0.62), (0.05, 0.38, 2.12, 0.56, 0.60), (-0.86, 0.72, 2.10, 0.54, 0.58), (-0.98, -0.16, 2.12, 0.54, 0.58)]):
         objs.append(blob(f"Puff{i}", (x, y, z), (r, r, h), M["hat"], seg=48))
 # ---- the whole head tilts like the sheet's (roll left, a touch of pitch) -----------------------------------------
 root = bpy.data.objects.new("root", None); sc.collection.objects.link(root)
 for o in objs: o.parent = root
-root.rotation_euler = (radians(6), radians(-12), radians(-6))
+root.rotation_euler = (radians(6), radians(-18), radians(-6))
 # ---- light, camera, render ---------------------------------------------------------------------------------------
-w = bpy.data.worlds.new("w"); w.use_nodes = True; w.node_tree.nodes["Background"].inputs[0].default_value = (0.9, 0.9, 0.91, 1); w.node_tree.nodes["Background"].inputs[1].default_value = 0.42; sc.world = w
+w = bpy.data.worlds.new("w"); w.use_nodes = True; w.node_tree.nodes["Background"].inputs[0].default_value = (0.9, 0.9, 0.91, 1); w.node_tree.nodes["Background"].inputs[1].default_value = 0.3; sc.world = w
 def light(name, loc, e, size):
     l = bpy.data.lights.new(name, "AREA"); l.energy = e; l.size = size; o = bpy.data.objects.new(name, l); sc.collection.objects.link(o); o.location = loc
     o.rotation_euler = (-Vector(loc)).to_track_quat("-Z", "Y").to_euler()
-light("key", (-5.0, -5.0, 5.5), 420, 5); light("fill", (5.5, -4.0, 0.5), 70, 7); light("rim", (1.0, 5.0, 3.0), 110, 4)
+light("key", (-5.0, -6.0, 6.0), 420, 6); light("fill", (4.0, -6.5, 1.0), 170, 8); light("front", (0.0, -9.0, 2.0), 90, 9); light("rim", (1.0, 5.0, 3.0), 110, 4)
 cam = bpy.data.objects.new("c", bpy.data.cameras.new("c")); sc.collection.objects.link(cam); sc.camera = cam; cam.data.lens = 70; cam.data.sensor_width = 36
-d = 8.2; a_ = radians(YAW); b_ = radians(8)
-cam.location = Vector((sin(a_) * cos(b_) * d, -cos(a_) * cos(b_) * d, sin(b_) * d + 0.5)); cam.rotation_euler = (Vector((-0.25, 0, 0.55)) - cam.location).to_track_quat("-Z", "Y").to_euler()
+d = 9.2; a_ = radians(YAW); b_ = radians(8)
+cam.location = Vector((sin(a_) * cos(b_) * d, -cos(a_) * cos(b_) * d, sin(b_) * d + 0.5)); cam.rotation_euler = (Vector((-0.25, 0, 0.75)) - cam.location).to_track_quat("-Z", "Y").to_euler()
 sc.render.engine = "BLENDER_EEVEE"; sc.eevee.taa_render_samples = 96; sc.render.resolution_x = sc.render.resolution_y = 900; sc.render.film_transparent = True
-sc.view_settings.view_transform = "Standard"; sc.view_settings.exposure = 0.25
+sc.view_settings.view_transform = "Standard"; sc.view_settings.exposure = 0.45
 sc.render.filepath = OUT; bpy.ops.render.render(write_still=True)
 bpy.ops.wm.save_as_mainfile(filepath=OUT.rsplit(".", 1)[0] + ".blend")
 print("sculpt done")
