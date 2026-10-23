@@ -16,7 +16,7 @@ export function buildClayHead(THREE, over = {}, { n = 96 } = {}) {
   const sk = surfaceNets(union, { min: [-1.8, -1.3, -1.3], max: [1.8, 2.15, 1.7], n });
   const baseC = new THREE.Color(P.skin.color), darkC = baseC.clone().multiplyScalar(0.62), hairC = new THREE.Color(P.hair.color), col = new Float32Array(sk.positions.length);
   for (let i = 0; i < sk.positions.length; i += 3) {
-    const x = sk.positions[i], y = sk.positions[i + 1], z = sk.positions[i + 2], ds = skin(x, y, z), dh = hair(x, y, z), w = Math.max(0, Math.min(1, 0.5 + (ds - dh) / 0.06)), gd = skin.groove(x, y, z), g = Math.max(0, Math.min(1, 1 - gd / (skin.mouthDepth * 2.4)));
+    const x = sk.positions[i], y = sk.positions[i + 1], z = sk.positions[i + 2], ds = skin(x, y, z), dh = hair(x, y, z), w = Math.max(0, Math.min(1, 0.5 + (ds - dh) / 0.06)), gd = skin.groove(x, y, z), g = Math.max(0, Math.min(1, 1 - gd / (skin.mouthDepth * 1.6)));
     const c = baseC.clone().lerp(darkC, g * g * (3 - 2 * g) * (1 - w)).lerp(hairC, w * w * (3 - 2 * w)); col[i] = c.r; col[i + 1] = c.g; col[i + 2] = c.b;
   }
   const skinMat = clayMaterial(THREE, "#ffffff", { roughness: P.skin.roughness, sheen: P.skin.sheen }); skinMat.vertexColors = true; mats.push(skinMat);
