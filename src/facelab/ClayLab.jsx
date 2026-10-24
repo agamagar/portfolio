@@ -8,7 +8,7 @@ import { setHull } from "../figures/faces/clay/claySdf.js";
 export default function ClayLab() {
   const cv = useRef(null), mounted = useRef(false), st = useRef({}), [json, setJson] = useState(() => JSON.stringify(DEFAULT, null, 1)), [yaw, setYaw] = useState(-25), [pitch, setPitch] = useState(8), [n, setN] = useState(96), [info, setInfo] = useState(""), [err, setErr] = useState("");
   const [hullReady, setHullReady] = useState(false);
-  useEffect(() => { let dead = false; Promise.all([fetch("/faces/clay-hull.bin").then((r) => r.arrayBuffer()), fetch("/faces/clay-hull.json").then((r) => r.json())]).then(([b, m]) => { setHull(b, m); if (!dead) setHullReady(true); }).catch(() => { if (!dead) setHullReady(true); }); return () => { dead = true; }; }, []);
+  useEffect(() => { let dead = false; Promise.all([fetch("/faces/clay-hull.bin").then((r) => r.arrayBuffer()), fetch("/faces/clay-hull.json").then((r) => r.json()), fetch("/faces/clay-wing.bin").then((r) => r.arrayBuffer()), fetch("/faces/clay-wing.json").then((r) => r.json())]).then(([b, m, wb, wm]) => { setHull(b, m); setHull(wb, wm, "wing"); if (!dead) setHullReady(true); }).catch(() => { if (!dead) setHullReady(true); }); return () => { dead = true; }; }, []);
   useEffect(() => {
     if (!hullReady) return;
     const r = new THREE.WebGLRenderer({ canvas: cv.current, antialias: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true }); r.setPixelRatio(1); r.setSize(560, 560, false);

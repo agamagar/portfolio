@@ -52,7 +52,8 @@ export function skinSdf(P) {
   { const n = 16; for (let i = 0; i < n; i++) { const pts = [i, i + 1].map((k) => { const t = k / n * 2 - 1, x = t * M.width, sm = x < 0 ? M.smileL : M.smileR, y = M.y + M.curve * t * t * M.width * 0.5 + sm * Math.abs(t) * 0.1; return [x, y, fz(x, y) + M.depth * 0.25]; }); segs.push([...pts[0], ...pts[1]]); } }
   const cornerPts = [-1, 1].map((sd) => { const x = sd * M.width, y = M.y + M.curve * M.width * 0.5 + (sd < 0 ? M.smileL : M.smileR) * 0.1 + M.tuck; return [x, y, fz(x, y) + M.depth * 0.2]; });
   const groove = (x, y, z) => { if (Math.abs(y - M.y) > 0.5 || Math.abs(x) > M.width + 0.2) return 1; let d = 1e9; for (const s of segs) d = Math.min(d, capsule(x, y, z, s[0], s[1], s[2], s[3], s[4], s[5], M.depth)); return d; };
-  const f = (x, y, z) => { let d = smin(base(x, y, z), nose(x, y, z), 0.14); return ssub(d, groove(x, y, z), 0.03); };
+  const earHull = (x, y, z) => (grids.hull && P.ear.useHull && Math.abs(x) > 0.95 && y > -0.75 && y < 0.65 && z > -0.7 && z < 0.55 ? gridAt(grids.hull, x, y, z) + P.ear.hullGrow : 1);
+  const f = (x, y, z) => { let d = smin(base(x, y, z), nose(x, y, z), 0.14); d = smin(d, earHull(x, y, z), 0.04); return ssub(d, groove(x, y, z), 0.03); };
   f.groove = groove; f.mouthDepth = M.depth; return f;
 }
 // a tapered tube swept along a spine of [x, y, z, r] control points (Catmull-Rom resampled): smooth-unioned capsules with varying radius
@@ -64,26 +65,29 @@ export function sweepTube(spine, samples = 10) {
 }
 // ---- the visual hull of the turnaround's silhouettes (tools/face3d/asset/carve_hull.py -> public/faces/clay-hull.bin): a smoothed signed-distance grid in the
 // fit's Blender frame (x right, y back, z up). Set once with setHull(arrayBuffer, meta); sampled trilinearly in three.js axes via a fixed alignment to the head.
-let HULL = null;
+const grids = {};
 const half = (h) => { const e = (h >> 10) & 31, m = h & 1023, sg = h & 0x8000 ? -1 : 1; return e === 0 ? sg * m * 5.960464477539063e-8 : e === 31 ? (m ? NaN : sg * Infinity) : sg * Math.pow(2, e - 15) * (1 + m / 1024); };
-export function setHull(buf, meta) { const u = new Uint16Array(buf), f = new Float32Array(u.length); for (let i = 0; i < u.length; i++) f[i] = half(u[i]); HULL = { f, N: meta.N, lo: meta.lo, hi: meta.hi }; }
-export const hasHull = () => !!HULL;
-// three.js (x right, y up, z to the viewer) -> hull grid; `A` aligns the hull to the head: scale about the origin, then shift
-const A = { s: 1.03, ty: 0.2, tz: 0.12 };
-function hullAt(x, y, z) {
-  const H = HULL, xb = x / A.s, yb = -(z - A.tz) / A.s, zb = (y - A.ty) / A.s, N = H.N;
-  const gx = ((xb - H.lo[0]) / (H.hi[0] - H.lo[0])) * (N - 1), gy = ((yb - H.lo[1]) / (H.hi[1] - H.lo[1])) * (N - 1), gz = ((zb - H.lo[2]) / (H.hi[2] - H.lo[2])) * (N - 1);
-  if (gx < 0 || gy < 0 || gz < 0 || gx > N - 1 || gy > N - 1 || gz > N - 1) { const dx = Math.max(-gx, 0, gx - (N - 1)), dy = Math.max(-gy, 0, gy - (N - 1)), dz = Math.max(-gz, 0, gz - (N - 1)); return 0.2 + Math.hypot(dx, dy, dz) * ((H.hi[0] - H.lo[0]) / (N - 1)); }
+export function setHull(buf, meta, name = "hull") { const u = new Uint16Array(buf), f = new Float32Array(u.length); for (let i = 0; i < u.length; i++) f[i] = half(u[i]); grids[name] = { f, N: meta.N, lo: meta.lo, hi: meta.hi }; }
+export const hasHull = () => !!grids.hull;
+// three.js (x right, y up, z to the viewer) -> hull grid; `A` aligns the hull to the head (registered against the lower face and ears, tools/face3d/asset): scale, then shift
+const A = { s: 1.03, tx: 0, ty: 0.2, tz: 0.12 };
+function gridAt(H, x, y, z) {
+  const xb = x / A.s - A.tx, yb = -(z - A.tz) / A.s, zb = (y - A.ty) / A.s, N = H.N, vx = (H.hi[0] - H.lo[0]) / (N - 1);
+  const gx = (xb - H.lo[0]) / vx, gy = (yb - H.lo[1]) / vx, gz = (zb - H.lo[2]) / vx;
+  if (gx < 0 || gy < 0 || gz < 0 || gx > N - 1 || gy > N - 1 || gz > N - 1) { const dx = Math.max(-gx, 0, gx - (N - 1)), dy = Math.max(-gy, 0, gy - (N - 1)), dz = Math.max(-gz, 0, gz - (N - 1)); return 0.2 + Math.hypot(dx, dy, dz) * vx; }
   const i0 = Math.floor(gx), j0 = Math.floor(gy), k0 = Math.floor(gz), i1 = Math.min(N - 1, i0 + 1), j1 = Math.min(N - 1, j0 + 1), k1 = Math.min(N - 1, k0 + 1), fx = gx - i0, fy = gy - j0, fz = gz - k0, f = H.f, id = (i, j, k) => f[(i * N + j) * N + k];
   const c00 = id(i0, j0, k0) * (1 - fx) + id(i1, j0, k0) * fx, c10 = id(i0, j1, k0) * (1 - fx) + id(i1, j1, k0) * fx, c01 = id(i0, j0, k1) * (1 - fx) + id(i1, j0, k1) * fx, c11 = id(i0, j1, k1) * (1 - fx) + id(i1, j1, k1) * fx;
   return (c00 * (1 - fy) + c10 * fy) * (1 - fz) + (c01 * (1 - fy) + c11 * fy) * fz;
 }
+const hullAt = (x, y, z) => gridAt(grids.hull, x, y, z);
 export function hairSdf(P) {
-  if (HULL && P.hair.useHull) {
+  if (grids.hull && P.hair.useHull) {
     const Hh = P.hair, R = Hh.cap.region, earL = ear(P, -1), earR = ear(P, 1), flutes = Hh.hullFlutes ? (Hh.wing.flutes || []).map((f) => sweepTube(f)) : [];
     return (x, y, z) => {
       const reg = R.reduce((m, q) => smin(m, ellipsoid(x, y, z, q.c[0], q.c[1], q.c[2], q.r[0], q.r[1], q.r[2]), 0.15), 1e9);
       let d = smax(hullAt(x, y, z) + Hh.hullGrow, reg, Hh.napeBlend ?? 0.3);
+      // the wing, carved at 2x resolution over its own box: unioned with a small blend so the sweep keeps its tip
+      if (grids.wing && Hh.useWing) d = smin(d, smax(gridAt(grids.wing, x, y, z) + Hh.hullGrow, reg, 0.1), Hh.wingBlend ?? 0.04);
       for (const fl of flutes) d = smin(d, fl(x, y, z), Hh.fluteBlend ?? 0.07);
       if (Math.abs(x) > 0.7) d = smax(d, -(Math.min(earL(x, y, z), earR(x, y, z)) - 0.05), 0.03);
       return d;

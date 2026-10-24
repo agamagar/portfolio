@@ -14,12 +14,14 @@ export function buildClayHead(THREE, over = {}, { n = 96 } = {}) {
   // ONE surface: skin and hair are unioned (smooth min), then coloured by whichever field is nearer. No shell, no z-fighting, a soft hairline ledge.
   const union = (x, y, z) => smin(skin(x, y, z), hair(x, y, z), P.hair.edgeBlend);
   const sk = surfaceNets(union, { min: [-1.8, -1.3, -1.3], max: [1.8, 2.15, 1.7], n });
-  const baseC = new THREE.Color(P.skin.color), darkC = baseC.clone().multiplyScalar(0.62), hairC = new THREE.Color(P.hair.color), col = new Float32Array(sk.positions.length);
+  const baseC = new THREE.Color(P.skin.color), darkC = baseC.clone().multiplyScalar(0.62), hairC = new THREE.Color(P.hair.color), hiC = new THREE.Color(P.hair.color).lerp(new THREE.Color("#ffffff"), 0.45), col = new Float32Array(sk.positions.length);
   for (let i = 0; i < sk.positions.length; i += 3) {
     const x = sk.positions[i], y = sk.positions[i + 1], z = sk.positions[i + 2], ds = skin(x, y, z), dh = hair(x, y, z), w = Math.max(0, Math.min(1, 0.5 + (ds - dh) / 0.06)), gd = skin.groove(x, y, z), g = Math.max(0, Math.min(1, 1 - gd / (skin.mouthDepth * 1.6)));
     // soft ambient occlusion from the field itself: probe 0.14 out along the normal; creases (ear bowl, nose sides, under the wing) read darker
     const nx = sk.normals[i], ny = sk.normals[i + 1], nz = sk.normals[i + 2], ao = Math.max(0, Math.min(1, union(x + nx * 0.14, y + ny * 0.14, z + nz * 0.14) / 0.14)), shade = 0.74 + 0.26 * ao;
-    const c = baseC.clone().lerp(darkC, g * g * (3 - 2 * g) * (1 - w)).lerp(hairC, w * w * (3 - 2 * w)).multiplyScalar(shade); col[i] = c.r; col[i + 1] = c.g; col[i + 2] = c.b;
+    const c = baseC.clone().lerp(darkC, g * g * (3 - 2 * g) * (1 - w)).lerp(hairC, w * w * (3 - 2 * w)).multiplyScalar(shade);
+    // hair: a soft baked sheen on the faces that look up and toward the key light, so the lock reads glossy-plastic against the matte skin
+    const hl = Math.max(0, nx * -0.35 + ny * 0.75 + nz * 0.55) ** 3 * w * w * 0.5; c.lerp(hiC, hl); col[i] = c.r; col[i + 1] = c.g; col[i + 2] = c.b;
   }
   const skinMat = clayMaterial(THREE, "#ffffff", { roughness: P.skin.roughness, sheen: P.skin.sheen }); skinMat.vertexColors = true; mats.push(skinMat);
   const skinGeo = geo(THREE, sk); skinGeo.setAttribute("color", new THREE.BufferAttribute(col, 3)); const skinMesh = new THREE.Mesh(skinGeo, skinMat); skinMesh.name = "Head"; group.add(skinMesh); geos.push(skinGeo);
