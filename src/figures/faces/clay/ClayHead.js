@@ -17,7 +17,9 @@ export function buildClayHead(THREE, over = {}, { n = 96 } = {}) {
   const baseC = new THREE.Color(P.skin.color), darkC = baseC.clone().multiplyScalar(0.62), hairC = new THREE.Color(P.hair.color), col = new Float32Array(sk.positions.length);
   for (let i = 0; i < sk.positions.length; i += 3) {
     const x = sk.positions[i], y = sk.positions[i + 1], z = sk.positions[i + 2], ds = skin(x, y, z), dh = hair(x, y, z), w = Math.max(0, Math.min(1, 0.5 + (ds - dh) / 0.06)), gd = skin.groove(x, y, z), g = Math.max(0, Math.min(1, 1 - gd / (skin.mouthDepth * 1.6)));
-    const c = baseC.clone().lerp(darkC, g * g * (3 - 2 * g) * (1 - w)).lerp(hairC, w * w * (3 - 2 * w)); col[i] = c.r; col[i + 1] = c.g; col[i + 2] = c.b;
+    // soft ambient occlusion from the field itself: probe 0.14 out along the normal; creases (ear bowl, nose sides, under the wing) read darker
+    const nx = sk.normals[i], ny = sk.normals[i + 1], nz = sk.normals[i + 2], ao = Math.max(0, Math.min(1, union(x + nx * 0.14, y + ny * 0.14, z + nz * 0.14) / 0.14)), shade = 0.74 + 0.26 * ao;
+    const c = baseC.clone().lerp(darkC, g * g * (3 - 2 * g) * (1 - w)).lerp(hairC, w * w * (3 - 2 * w)).multiplyScalar(shade); col[i] = c.r; col[i + 1] = c.g; col[i + 2] = c.b;
   }
   const skinMat = clayMaterial(THREE, "#ffffff", { roughness: P.skin.roughness, sheen: P.skin.sheen }); skinMat.vertexColors = true; mats.push(skinMat);
   const skinGeo = geo(THREE, sk); skinGeo.setAttribute("color", new THREE.BufferAttribute(col, 3)); const skinMesh = new THREE.Mesh(skinGeo, skinMat); skinMesh.name = "Head"; group.add(skinMesh); geos.push(skinGeo);

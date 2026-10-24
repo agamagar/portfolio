@@ -70,9 +70,9 @@ export function hairSdf(P) {
   return (x, y, z) => {
     const e = 0.015, f0 = core(x, y, z), gx = (core(x + e, y, z) - core(x - e, y, z)) / (2 * e), gy = (core(x, y + e, z) - core(x, y - e, z)) / (2 * e), gz = (core(x, y, z + e) - core(x, y, z - e)) / (2 * e), c0 = f0 / Math.max(0.2, Math.hypot(gx, gy, gz));
     const reg = R.reduce((m, q) => smin(m, ellipsoid(x, y, z, q.c[0], q.c[1], q.c[2], q.r[0], q.r[1], q.r[2]), 0.15), 1e9);
-    let d = smax(c0 - t, reg, 0.12);
+    let d = smax(c0 - t, reg, Hh.napeBlend ?? 0.3);
     d = smin(d, main(x, y, z), Hh.swooshBlend);
-    for (const fl of flutes) d = smin(d, fl(x, y, z), Hh.swooshBlend * 0.8);
+    for (const fl of flutes) d = smin(d, fl(x, y, z), Hh.fluteBlend ?? 0.07);
     // keep the hair off the ears: carve the ears (plus a margin) out of it, so the ear's root is skin
     if (Math.abs(x) > 0.7) d = smax(d, -(Math.min(earL(x, y, z), earR(x, y, z)) - 0.05), 0.03);
     return d;
