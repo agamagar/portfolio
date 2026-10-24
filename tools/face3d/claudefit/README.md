@@ -7,3 +7,10 @@ hard limits, applies, re-renders and scores (IoU / SSIM / LPIPS). Every step is 
 `first-run/` holds the first local-critic run: compare sheets, replies and the log. Run: `node tools/face3d/claudefit/fit.mjs --iters 6 [--params start.json]`.
 First finding: the loop works end to end, but four rounds did not improve the numbers (IoU 0.79 -> 0.77): the parameters I can move (ellipsoid sizes, groove, nose cone)
 cannot express the target's swoosh and ear, so deltas trade one view against another. Next: richer hair/ear primitives, not more rounds.
+
+## contour_diff.py (23 Oct)
+`python3 tools/face3d/claudefit/contour_diff.py RENDER_DIR OUT.png` compares our silhouette with each reference cell along 24 rays: where ours bulges (+) or recedes (-),
+by compass sector, plus an overlay (green both, red ours only, blue reference only). Reading `latest-contours.png` (v5): our ears extend too low and wide in the front
+view, the jaw bottom bulges in the 3/4 views, and the reference wing rises higher and reaches further forward over the forehead in profile. Tried three corrections
+(smaller jaw, higher/smaller ears, wing forward and up): IoU went 0.767 -> 0.743 / 0.758, so v5 stays. The silhouette is dominated by the hair mass, and moving
+the wing helps one view while costing another; it needs a hair shape that is not a union of fixed tubes.
