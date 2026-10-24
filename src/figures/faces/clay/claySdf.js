@@ -62,7 +62,36 @@ export function sweepTube(spine, samples = 10) {
   pts.push(P[n - 1].slice());
   return (x, y, z, blend = 0.12) => { let d = 1e9; for (let i = 0; i < pts.length - 1; i++) { const a = pts[i], b = pts[i + 1]; d = smin(d, cone(x, y, z, a[0], a[1], a[2], b[0], b[1], b[2], a[3], b[3]), i === 0 ? 0 : blend * 0.35); } return d; };
 }
+// ---- the visual hull of the turnaround's silhouettes (tools/face3d/asset/carve_hull.py -> public/faces/clay-hull.bin): a smoothed signed-distance grid in the
+// fit's Blender frame (x right, y back, z up). Set once with setHull(arrayBuffer, meta); sampled trilinearly in three.js axes via a fixed alignment to the head.
+let HULL = null;
+const half = (h) => { const e = (h >> 10) & 31, m = h & 1023, sg = h & 0x8000 ? -1 : 1; return e === 0 ? sg * m * 5.960464477539063e-8 : e === 31 ? (m ? NaN : sg * Infinity) : sg * Math.pow(2, e - 15) * (1 + m / 1024); };
+export function setHull(buf, meta) { const u = new Uint16Array(buf), f = new Float32Array(u.length); for (let i = 0; i < u.length; i++) f[i] = half(u[i]); HULL = { f, N: meta.N, lo: meta.lo, hi: meta.hi }; }
+export const hasHull = () => !!HULL;
+// three.js (x right, y up, z to the viewer) -> hull grid; `A` aligns the hull to the head: scale about the origin, then shift
+const A = { s: 1.03, ty: 0.2, tz: 0.12 };
+function hullAt(x, y, z) {
+  const H = HULL, xb = x / A.s, yb = -(z - A.tz) / A.s, zb = (y - A.ty) / A.s, N = H.N;
+  const gx = ((xb - H.lo[0]) / (H.hi[0] - H.lo[0])) * (N - 1), gy = ((yb - H.lo[1]) / (H.hi[1] - H.lo[1])) * (N - 1), gz = ((zb - H.lo[2]) / (H.hi[2] - H.lo[2])) * (N - 1);
+  if (gx < 0 || gy < 0 || gz < 0 || gx > N - 1 || gy > N - 1 || gz > N - 1) { const dx = Math.max(-gx, 0, gx - (N - 1)), dy = Math.max(-gy, 0, gy - (N - 1)), dz = Math.max(-gz, 0, gz - (N - 1)); return 0.2 + Math.hypot(dx, dy, dz) * ((H.hi[0] - H.lo[0]) / (N - 1)); }
+  const i0 = Math.floor(gx), j0 = Math.floor(gy), k0 = Math.floor(gz), i1 = Math.min(N - 1, i0 + 1), j1 = Math.min(N - 1, j0 + 1), k1 = Math.min(N - 1, k0 + 1), fx = gx - i0, fy = gy - j0, fz = gz - k0, f = H.f, id = (i, j, k) => f[(i * N + j) * N + k];
+  const c00 = id(i0, j0, k0) * (1 - fx) + id(i1, j0, k0) * fx, c10 = id(i0, j1, k0) * (1 - fx) + id(i1, j1, k0) * fx, c01 = id(i0, j0, k1) * (1 - fx) + id(i1, j0, k1) * fx, c11 = id(i0, j1, k1) * (1 - fx) + id(i1, j1, k1) * fx;
+  return (c00 * (1 - fy) + c10 * fy) * (1 - fz) + (c01 * (1 - fy) + c11 * fy) * fz;
+}
 export function hairSdf(P) {
+  if (HULL && P.hair.useHull) {
+    const Hh = P.hair, R = Hh.cap.region, earL = ear(P, -1), earR = ear(P, 1), flutes = Hh.hullFlutes ? (Hh.wing.flutes || []).map((f) => sweepTube(f)) : [];
+    return (x, y, z) => {
+      const reg = R.reduce((m, q) => smin(m, ellipsoid(x, y, z, q.c[0], q.c[1], q.c[2], q.r[0], q.r[1], q.r[2]), 0.15), 1e9);
+      let d = smax(hullAt(x, y, z) + Hh.hullGrow, reg, Hh.napeBlend ?? 0.3);
+      for (const fl of flutes) d = smin(d, fl(x, y, z), Hh.fluteBlend ?? 0.07);
+      if (Math.abs(x) > 0.7) d = smax(d, -(Math.min(earL(x, y, z), earR(x, y, z)) - 0.05), 0.03);
+      return d;
+    };
+  }
+  return hairSdfTubes(P);
+}
+function hairSdfTubes(P) {
   const Hh = P.hair, t = Hh.cap.thick, core = headCore(P), R = Hh.cap.region, W = Hh.wing;
   // the wing: a main spine sweeping up from the forehead and out to the viewer's right, plus flutes (shorter tubes fanning off its end)
   const earL = ear(P, -1), earR = ear(P, 1);

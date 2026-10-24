@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { buildClayHead, studioLights } from "../figures/faces/clay/ClayHead.js";
 import { DEFAULT, mergeParams } from "../figures/faces/clay/params.js";
+import { setHull } from "../figures/faces/clay/claySdf.js";
 export default function ClayLab() {
   const cv = useRef(null), mounted = useRef(false), st = useRef({}), [json, setJson] = useState(() => JSON.stringify(DEFAULT, null, 1)), [yaw, setYaw] = useState(-25), [pitch, setPitch] = useState(8), [n, setN] = useState(96), [info, setInfo] = useState(""), [err, setErr] = useState("");
+  const [hullReady, setHullReady] = useState(false);
+  useEffect(() => { let dead = false; Promise.all([fetch("/faces/clay-hull.bin").then((r) => r.arrayBuffer()), fetch("/faces/clay-hull.json").then((r) => r.json())]).then(([b, m]) => { setHull(b, m); if (!dead) setHullReady(true); }).catch(() => { if (!dead) setHullReady(true); }); return () => { dead = true; }; }, []);
   useEffect(() => {
+    if (!hullReady) return;
     const r = new THREE.WebGLRenderer({ canvas: cv.current, antialias: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true }); r.setPixelRatio(1); r.setSize(560, 560, false);
     r.setClearColor("#e9e9eb", 1); r.toneMapping = THREE.NoToneMapping; r.outputColorSpace = THREE.SRGBColorSpace;
     const scene = new THREE.Scene(), cam = new THREE.OrthographicCamera(-2.4, 2.4, 2.4, -2.4, 0.1, 50); cam.position.set(0, 0, 10);
@@ -17,7 +21,7 @@ export default function ClayLab() {
     window.__clay = { set: (over, nn = 96) => { s.build(over, nn); s.draw(0, 0); return s.head.meta; }, render: (yy, pp) => { r.setClearColor("#e9e9eb", 0); s.draw(yy, pp); const u = r.domElement.toDataURL("image/png"); r.setClearColor("#e9e9eb", 1); s.draw(yy, pp); return u; }, get meta() { return s.head?.meta; }, stats: () => { const m = s.head.group.getObjectByName('Head'), c = m.geometry.attributes.color, p = m.geometry.attributes.position; let g = 0, r = 0, f = 0, names = []; s.head.group.traverse((o) => { if (o.isMesh) names.push(o.name); }); for (let i = 0; i < p.count; i++) if (p.getZ(i) > 0.6 && Math.abs(p.getX(i)) < 0.6 && p.getY(i) < 0.4 && p.getY(i) > -0.5) { f++; if (c.getY(i) > c.getX(i)) g++; else r++; } return { f, g, r, names, verts: p.count }; }, probe: (x, y) => { const m = s.head.group.getObjectByName('Head'), c = m.geometry.attributes.color, p = m.geometry.attributes.position; let best = -1, bz = -9; for (let i = 0; i < p.count; i++) if (Math.hypot(p.getX(i) - x, p.getY(i) - y) < 0.03 && p.getZ(i) > bz) { bz = p.getZ(i); best = i; } return best < 0 ? null : { z: bz, rgb: [c.getX(best), c.getY(best), c.getZ(best)], pos: [p.getX(best), p.getY(best), p.getZ(best)], mat: m.material.vertexColors, col: m.material.color.getHexString() }; }, show: (name, on) => { s.head.group.traverse((o) => { if (o.name === name) o.visible = on; }); } };
     s.build(DEFAULT, 96); s.draw(-25, 8); mounted.current = true;
     return () => { s.head?.dispose(); r.dispose(); delete window.__clay; };
-  }, []);
+  }, [hullReady]);
   const apply = () => { try { setErr(""); st.current.build(JSON.parse(json), n); st.current.draw(yaw, pitch); } catch (e) { setErr(String(e.message || e)); } };
   const firstN = useRef(true);
   useEffect(() => { if (firstN.current) { firstN.current = false; return; } apply(); }, [n]); // eslint-disable-line react-hooks/exhaustive-deps
