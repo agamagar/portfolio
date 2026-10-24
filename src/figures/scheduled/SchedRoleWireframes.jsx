@@ -80,7 +80,15 @@ const SLIDES = [
     tag: "Timeline",
     stack: true, // mujwi96y: full width for the horizontal track
     title: "How the six months actually ran.",
+    // mvm8uhad ("move this and the other 3 circles to the section above"): the four circles moved here from Timeline management, under the rail
     kind: "timeline",
+    circles: [
+      ["Ship narrow first", "M1 shipped deliberately narrow in late October so the full multi-shipment version could follow in mid-November."],
+      ["Two directions in parallel", "Two directions ran in parallel early, so the choice was made on evidence, not on the first idea."],
+      ["A checklist for what was missing", "A pending-screens checklist (6 Jan) kept the returns work honest about what was still missing."],
+      // Agam, 27 Sep
+      ["Dates set together", "The PMs owned the dates, set together with design, so the timeline could be managed from day one."],
+    ],
     phases: [
       ["19 to 28 Aug 2025", "Problem on the canvas", "I laid the whole problem space into the file before anyone reviewed it: order lifecycle, edge cases, the cart-entry experiments."],
       ["Late Aug", "First review", "The first PM review set rules that stuck: never negative copy, show the real date, default-select Schedule."],
@@ -100,14 +108,6 @@ const SLIDES = [
     // timelines": it is back, with the four timeline points (cut 28 Sep) and the M1 measures line. The 28 Sep title
     // ("Scoping M1 small was the timeline decision.") stays replaced by the newer heading below.
     stack: true, // mukuo5m5 (28 Sep): vertical, label over title over charts, so the graphs get the width
-    kind: "list",
-    items: [
-      ["Ship narrow first", "M1 shipped deliberately narrow in late October so the full multi-shipment version could follow in mid-November."],
-      ["Two directions in parallel", "Two directions ran in parallel early, so the choice was made on evidence, not on the first idea."],
-      ["A checklist for what was missing", "A pending-screens checklist (6 Jan) kept the returns work honest about what was still missing."],
-      // Agam, 27 Sep
-      ["Dates set together", "The PMs owned the dates, set together with design, so the timeline could be managed from day one."],
-    ],
     // mujvibm1 (27 Sep): the section now shows SPEED, all as graphs: pilot ->
     // first measured month -> full rollout -> scale (sdReport ROLLOUT/MONTHLY)
     speed: true,
@@ -359,13 +359,14 @@ function SpeedStrip() {
 // scale line were one story told twice, so they are ONE chart on the shared month axis: scheduled orders a
 // month as bars (left scale), stores live as a line (right scale). The pilot's first day, 10 Oct 2025, is
 // the October bar (a partial month); September 2026 is left out as it covers 21 days.
+const SHOW_CHART_CAP = false; // mvm8urab ("remove this"): the "Pilot to every store in N days..." line over the growth chart; true brings it back
 function GrowthChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
   const full = ROLLOUT.find((r) => r.mark === "full rollout");
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
   return (
     <div className="rwf__charts rwf__charts--one">
-      <p className="rwf-chart__cap">Pilot to every store in {daysFrom(full.d)} days, then {(peak.sd / 1e6).toFixed(2)}M scheduled orders a month at the peak</p>
+      {SHOW_CHART_CAP && <p className="rwf-chart__cap">Pilot to every store in {daysFrom(full.d)} days, then {(peak.sd / 1e6).toFixed(2)}M scheduled orders a month at the peak</p>}
       <Bars data={rows} valueKey="sd" label="Scheduled orders" yFormat={fmtK} emphasis={(r) => r.m === peak.m}
         overlay={{ key: "stores", label: "Stores live", format: (v) => Math.round(v).toLocaleString("en-IN") }}
         height={230} ariaLabel={`Scheduled orders a month and stores live: from ${rows[0].sd} orders and ${rows[0].stores} stores in the October 2025 pilot to every store by December and a peak of ${(peak.sd / 1e6).toFixed(2)} million orders in ${peak.label}`} />
@@ -732,6 +733,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
           </div>
         )}
         {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
+        {s.circles && <RoleList items={s.circles} vertical={s.vertical} />}
         {s.kind === "list" && (
           <RoleList items={s.items} vertical={s.vertical} />
         )}

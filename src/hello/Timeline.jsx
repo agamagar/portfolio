@@ -799,6 +799,11 @@ const RAIL_BELOW = [
   "Cyware",        // msmq6dnq
 ];
 
+// a leading emoji ("🗺️ Problem on the canvas") is its own span so a layout can stack it above the label
+function RailTagText({ text }) {
+  const m = /^(\p{Extended_Pictographic}\uFE0F?)\s+(.+)$/u.exec(text || "");
+  return m ? <><span className="tlx__rail-emoji" aria-hidden="true">{m[1]}</span><span className="tlx__rail-label">{m[2]}</span></> : text;
+}
 // RESTING PILLS THAT WRAP TO TWO LINES (Agam, 2026-08-13: "Deutsche Bank can be
 // on 2 lines"). Named, like RAIL_BELOW, because it is one card's decision, not a
 // rule. Why it exists: when the lane stagger came out of the rail (flat 48
@@ -2125,7 +2130,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
             data-open="true"
             key={`m-${c.key}`}
           >
-            <span className="tlx__rail-tag">{c.org}</span>
+            <span className="tlx__rail-tag"><RailTagText text={c.org} /></span>
             <RailDetailBody detail={detailOf(c)} fallbackSpan={detailOf(c)?.span || ""} />
           </span>
         ))}
@@ -2229,7 +2234,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
                   the full record. What the resting row says now is who, and
                   where on the timeline - which is all ten of them can say at
                   once without becoming a paragraph. */}
-              <span className="tlx__rail-tag">{c.org}</span>
+              <span className="tlx__rail-tag"><RailTagText text={c.org} /></span>
               {/* what the floating panel used to carry, now inside the card it
                   was always describing. Only the open one renders it, so the
                   other nine stay two-tag labels. */}

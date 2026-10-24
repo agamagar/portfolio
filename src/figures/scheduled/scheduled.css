@@ -1477,8 +1477,8 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    row, so here each lane steps a full card height away from the line: up for
    cards above it, down for cards below. Margin, not translate: the rail's
    hover shift owns translate. Room is reserved above and below for the lanes. */
-.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * -48px); }
-.rwf-glass .tlx__rail-tagcard[data-below="true"]:not(.tlx__rail-measure-card) { margin-top: calc(var(--lane, 0) * 48px); }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); }
+.rwf-glass .tlx__rail-tagcard[data-below="true"]:not(.tlx__rail-measure-card) { margin-top: calc(var(--lane, 0) * var(--rail-lane)); }
 .rwf-glass .tlx__rail { margin-top: 5rem; margin-bottom: 5rem; }
 .rwf__main .rwf__title--second { margin-top: 1.5rem; } /* mukp2jed: a second heading inside a slide */
 /* 28 Sep: no "now" marker on this rail (the project ended); the card was
@@ -1487,8 +1487,8 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* connectors follow their card's lane: a lifted card's leader grows by the same
    48px per lane, upward above the line and downward below it, so every card
    stays joined to its tick (M1 build, Validation study, Returns and refunds) */
-.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * -48px); padding-top: calc(var(--lane, 0) * 48px); }
-.rwf-glass .tlx__rail-leader[data-below="true"] { padding-bottom: calc(var(--lane, 0) * 48px); }
+.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); padding-top: calc(var(--lane, 0) * var(--rail-lane)); }
+.rwf-glass .tlx__rail-leader[data-below="true"] { padding-bottom: calc(var(--lane, 0) * var(--rail-lane)); }
 /* the leader has a fixed height, so under border-box the lane padding was eaten;
    content-box makes the padding ADD length (measured: lifted leaders stopped
    48px short of the rail) */
@@ -1616,8 +1616,8 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .dio__pin[data-side="right"] .dio__card { justify-self: stretch; }
 /* mukqc3av (28 Sep): lifted cards up another 12px (lane step 48 -> 60) so
    M1 build no longer grazes Problem on the canvas; leaders grow to match */
-.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * -60px); }
-.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * -60px); padding-top: calc(var(--lane, 0) * 60px); }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); }
+.rwf-glass .tlx__rail-leader:not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); padding-top: calc(var(--lane, 0) * var(--rail-lane)); }
 
 /* mukqhh5r: an icon on each number box, the leadership icons' disc (filled
    #5b3fd1 on #ece5fc, 5.9:1; dark #b69cea on #2c2344, 6.1:1) */
@@ -2038,11 +2038,14 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    and the stroke is hidden. To bring the stroke back, set --rwf-card-stroke to var(--line) here.
    Without the stroke the cards would vanish into the page, so the resting fill is a faint tint of the ink. */
 .rwf-glass { --rwf-card-stroke: transparent; }
-.rwf-glass .tlx__rail { --rail-card-h: 40px; --rail-lane: 47px; } /* lane step 42 -> 47 so the taller cards keep a 7px gap */
+.rwf-glass .tlx__rail { --rail-card-h: 66px; --rail-lane: 100px; } /* mvm8tzi1: emoji over label, so the card is two rows tall; the lane step clears it (measured: stacked lanes sit 26px closer than the step) */
 .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { padding: 10px 15px; border-color: var(--rwf-card-stroke); }
 .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { background: color-mix(in srgb, var(--fg) 7%, var(--bg)); }
-.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) .tlx__rail-tag { font-size: 12.5px; line-height: 20px; letter-spacing: 0.06em; font-weight: 600; }
-.rwf-glass .tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) { height: calc(var(--rail-card-h) + 20px); }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) .tlx__rail-tag { font-size: 14px; line-height: 20px; letter-spacing: 0.06em; font-weight: 600; }
+.rwf-glass .tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) { height: calc(var(--rail-card-h) + 22px); }
+/* mvm8tzi1: the emoji sits above its label */
+.rwf-glass .tlx__rail-tag:has(> .tlx__rail-emoji) { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.rwf-glass .tlx__rail-emoji { font-size: 17px; line-height: 20px; letter-spacing: 0; }
 /* the label and title start at the same left edge as the section above (its 7.94% frame padding) */
 .page--article .article__body .rwf-run .rwf--left :is(p.rwf__tag, h3.rwf__title) { padding-left: 7.94%; }
 
