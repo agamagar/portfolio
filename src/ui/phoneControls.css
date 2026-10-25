@@ -43,3 +43,11 @@
 .pc-fs:fullscreen { display: grid; place-items: center; background: #0b0a10; overflow: hidden; margin: 0; padding: 0; }
 .pc-fs:fullscreen::backdrop { background: #0b0a10; }
 .pc-fs:fullscreen > * { zoom: var(--pc-fs-k, 1); }
+/* 62 note (25 Oct): on touch the bar sat on the frame's bottom edge at all times, over its key text (the sheet, the
+   CTA: "Schedule needs review"), and no corner is safe across frames (the status bar is shorter than the bar). On a
+   case study, on touch, it waits for a tap on the phone and stays 4 s (PhoneControls sets data-pc-tap); keyboard
+   focus still shows it. Desktop keeps the hover bar. */
+@media (hover: none) {
+  .page--article .pc { opacity: 0; pointer-events: none; }
+  .page--article .pc-host[data-pc-tap] .pc, .page--article .pc-host:focus-within .pc { opacity: 0.9; pointer-events: auto; }
+}
