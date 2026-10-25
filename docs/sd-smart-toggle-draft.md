@@ -27,3 +27,57 @@ figure: Pick the tap you came from. The same Instant and Schedule options open o
 - `schedToggleEntry`, a sibling of `ToggleScenarios` inside `src/figures/scheduled/SchedToggleDemo.jsx`, reusing its plate, chips, `PhoneFrame` and `.std-opt` styles. No new tokens.
 - Three chips, one per entry point (cart Schedule, Edit a booked slot, homepage prompt). Each chip sets the open shipment, the selected option and the two subtexts.
 - If Agam prefers one section (Q7 in the fact base), the chips become a second row on the existing scenario figure instead.
+
+---
+
+# Part 2: Explored, and why we chose (comparison captions)
+
+Five comparisons, each placed where its decision happens in the story. Each one has a two- or three-word title, a verdict line with a bold lead, and one line per frame. The readability layer applies when it renders: the verdict lead is bold, and the frame lines are the sub-points.
+
+## 1. Three toggles, one kept
+In "Instant to Scheduled: the toggle". Replaces the composite still while the recording is missing.
+
+Verdict: **Two cards per shipment won.** Instant and Schedule sit side by side in every shipment, so the choice reads before you tap. [CONFIRM: the reason UT 01's cards beat UT 02 and UT 03]
+
+- UT 01, dual toggle (Picked): two cards inside each shipment. The final page kept them.
+- UT 02, three options (Dropped): Remove Items as a third choice. Remove moved to the shipment header instead. [CONFIRM: why]
+- UT 03, mini toggle (Dropped as the control): one pill per shipment, carrying its state. Its best idea moved to the collapsed card. [CONFIRM: why the pill lost]
+
+## 2. Saying Instant is off
+In "Slot-page states".
+
+Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Unavailable, and adds a callout you can dismiss. [CONFIRM: the reason this beat the others, and the wording that ships]
+
+- "Back soon" chip (Explored): a promise the store couldn't time. [CONFIRM]
+- "Temporarily UNAVAILABLE" tag (Explored): loud, and it sits above the choice. [CONFIRM]
+- "We got you!" callout (Superseded): replaced by the plainer Nov 21 line.
+- Up and down toggle (Explored): Instant above, the schedule list open below. [CONFIRM: why it lost]
+- "Get it now / Get it later" (Explored): new words for a choice people already knew. [CONFIRM]
+
+## 3. The slot you picked
+In "Different ways we explored...", after the test quote.
+
+Verdict: **The collapsed card carries the slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." So every closed shipment shows its window. Five wordings were tried. [CONFIRM: which one shipped]
+
+- "This shipment will be delivered Today, 5 - 6 AM"
+- "Delivering Today morning, 5 - 6 AM"
+- "Delivering Today, 5 - 6 AM", with "Select a slot"
+- "Delivering Today, 5 - 6 AM", in place of the pill
+- "Delivering Tomorrow Morning, 5 - 6 AM", the slot divide
+
+## 4. When Pay can't
+In "Cart-page states". Drops if the outcome isn't known.
+
+Verdict: **[CONFIRM: which experiment won, and why]** When neither store can deliver now, the cart tried two answers.
+
+- Experiment 1: Pay stays, disabled, and the cart asks you to schedule.
+- Experiment 2: Pay gives way to a Schedule button.
+
+## 5. Introducing it, quietly
+In "The go-to-market".
+
+Verdict: **Two touches shipped. The rest stayed in the file.** The banner on the schedule page and a tooltip on the Schedule button made it out. A cart banner, an intro animation and a first-run coach-mark were designed and held back. [CONFIRM: why those three were held back]
+
+- Coach-mark options (Explored): "Orders can now be scheduled", "Plan your deliveries for later", "Schedule for later / Earliest delivery in 45 mins".
+- Top-banner lines (Explored): "Introducing Schedule Delivery", "Skip the last minute rush", three rotating lines.
+- Trust marker (Explored): "No extra charges on schedule orders".
