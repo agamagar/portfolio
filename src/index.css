@@ -8920,3 +8920,16 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
   content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: max(100%, calc(44px / var(--ds-scale, 1))); height: max(100%, calc(44px / var(--ds-scale, 1)));
 }
+
+/* 62.1 (25 Oct): phones, case-study pages: the fixed chrome (top controls, the chapter chip, the left rail) fades out
+   while you scroll down to read and comes back on scroll-up, at the top and at the end (ui/readingChrome.js), so text
+   never sits under it while reading. No layout change; wider screens and other pages keep the chrome as it was. */
+@media (max-width: 720px) {
+  :root[data-chrome="hidden"]:has(.page--article) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"]) {
+    opacity: 0 !important; visibility: hidden; pointer-events: none;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
+  }
+}
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  :root[data-chrome="hidden"]:has(.page--article) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"]) { transition: none; }
+}

@@ -9,6 +9,7 @@ import { startSmoothScroll } from "./ui/smoothScroll";
 import { startScrollHoverGuard } from "./ui/scrollHover";
 import { startVideoGate } from "./ui/videoGate";
 import { startAnimGate } from "./ui/animGate";
+import { startReadingChrome } from "./ui/readingChrome";
 import { startFavicon3d } from "./lib/favicon3d";
 import { introIsPlaying, introRevealed } from "./hello3/useStage";
 import { heroMorphSettledOrTimeout } from "./hello3/heroMorphGate";
@@ -19,6 +20,7 @@ startSmoothScroll();
 startScrollHoverGuard(); // no hover while the page scrolls (ui/scrollHover.js)
 startVideoGate(); // autoplay videos decode only near the viewport (ui/videoGate.js)
 startAnimGate(); // endless CSS animations pause while far off screen (ui/animGate.js)
+startReadingChrome(); // phones: the fixed chrome steps aside while you read a case study (ui/readingChrome.js)
 
 // tab icon morphs through solids, one-sided surfaces and 4D shapes (src/lib/favicon3d.js);
 // static face under reduced motion or without WebGL2.
