@@ -401,6 +401,7 @@ import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
 import usePageTitle from "./lib/usePageTitle"; // 28.1: "<page> · Agam Agarwal" in the tab
+import PlaygroundCopy from "./figures/sdStory/PlaygroundCopy"; // Q21 interim: copy that knows whether the playground bundle is deployed
 import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
 import FigmaEmbed from "./ui/FigmaEmbed"; // THE live Figma embed (every Figma iframe goes through it)
 import { animate as motionAnimate } from "motion";
@@ -2930,7 +2931,8 @@ const caseStudies = {
         tldr: "The slot picker is a live component, not a recording. All eight designed states sit side by side below.",
         p: [
           "The picker holds a lot, so I drew every state it can be in: Instant selected, Instant unavailable, Schedule unavailable, past slots in the morning, a full evening, the next-day pick and tomorrow's full grid. Then I built them as real components and ran them.",
-          "These frames are the playground's own components, embedded. Click one to use it.",
+          // Q21 interim (25 Oct): the click invitation only where the playground bundle is deployed (PlaygroundCopy)
+          <PlaygroundCopy live="These frames are the playground's own components, embedded. Click one to use it." offline="These frames come from the playground's own components." />,
         ],
         fig: "sd:states",
         figBare: true,
