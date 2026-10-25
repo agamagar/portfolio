@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { OpenNewWindow, Refresh } from "iconoir-react";
+import { PhoneLinkSlot } from "../figures/ds/phoneLinkSlot";
+import "../figures/ds/phoneFrame.css"; // .fshot-pill, for a bare embed's own Open in Figma
 import "./figmaEmbed.css";
 
 // THE live Figma embed for the site: a frame or a prototype straight from the Figma file, so an edit
@@ -22,7 +24,9 @@ import "./figmaEmbed.css";
 // badge     the loading dots over the floor (off where the floor is itself moving)
 // phoneStill  on a phone (PHONE_STILL) the iframe never mounts: the floor stays, with an "Open in Figma" link to the
 //           same frame or prototype (critique 18.2, 25 Oct: the live embed is heavy, slow and pinch-zooms inside the
-//           page). Desktop keeps it live. On by default; false keeps the embed live everywhere.
+//           page). Desktop keeps it live. On by default; false keeps the embed live everywhere. Inside a PhoneFrame the
+//           link goes in the frame's link row under the phone (PhoneLinkSlot), so it covers none of the screen; a bare
+//           embed draws a compact pill in its own top-right corner instead.
 // openLink  the phone's "Open in Figma" link; false where the embed already sits inside a link (the homepage card)
 //
 // Embed URLs per Figma's Embed Kit 2.0: embed.figma.com/{design|proto}/<file>?node-id=…&embed-host=…
@@ -69,6 +73,13 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   const still = usePhoneStill() && phoneStill;
   const [near0, setNear] = useState(false);
   const near = near0 && !still; // the iframe mounts only near the viewport, and never as a phone still
+  const slot = useContext(PhoneLinkSlot);
+  const href = still && openLink ? figmaOpenUrl({ file, node, start, mode }) : null;
+  useEffect(() => {
+    if (!slot) return undefined;
+    slot(href);
+    return () => slot(null);
+  }, [slot, href]);
   const [st, setSt] = useState("idle"); // idle | loading | ready | failed
   const [run, setRun] = useState(0); // bumped by Restart: a fresh iframe starts the prototype at its first frame
   useEffect(() => {
@@ -101,10 +112,10 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
         </button>
       )}
       {badge && near && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
-      {still && openLink && (
-        <a className="dev-glass fembed__open" href={figmaOpenUrl({ file, node, start, mode })} target="_blank" rel="noopener noreferrer"
+      {href && !slot && (
+        <a className="fshot-pill fshot-pill--link fembed__open" href={href} target="_blank" rel="noopener noreferrer"
           aria-label={`Open in Figma${title ? `: ${title}` : ""} (opens a new tab)`}>
-          Open in Figma <OpenNewWindow width={13} height={13} strokeWidth={2} aria-hidden />
+          Open in Figma <OpenNewWindow width={12} height={12} strokeWidth={2} aria-hidden />
         </a>
       )}
     </div>

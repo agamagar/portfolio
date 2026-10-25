@@ -398,6 +398,7 @@ const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
 import FigmaEmbed from "./ui/FigmaEmbed"; // THE live Figma embed (every Figma iframe goes through it)
 import { animate as motionAnimate } from "motion";
 import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, Expand as IconExpand } from "iconoir-react";
@@ -10012,10 +10013,13 @@ function CaseStudyBodyFull({ cs }) {
                     // mtmoja90: a live Figma prototype in the plate, inside a
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
+                    // 18.2 (critique, 25 Oct): on a phone the embed is a still, and its Open in Figma link goes under the plate,
+                    // since the plate crops the phone (LinksBelow; the phone passes the link on with linkSlot={false})
+                    <LinksBelow>
                     <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
                       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
                           notification scene) over a screen cutout that holds the prototype */}
-                      <PhoneFrame interactive={false} enter={false} size="hero" className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
+                      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
                           <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
                             <span className="article__plate-cursor">
                               <IconCursor width={20} height={20} strokeWidth={1.6} />
@@ -10042,6 +10046,7 @@ function CaseStudyBodyFull({ cs }) {
                           )}
                       </PhoneFrame>
                     </div>
+                    </LinksBelow>
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
                     <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>

@@ -3149,6 +3149,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   transform: translate(-50%, -50%);
 }
 .article__plate-embed { position: relative; }
+.article__plate > .pf__links { margin-top: 10px; } /* 18.2: the plate phone's Open in Figma, under the plate (phones only) */
 .ifr__bezel,
 .article__plate-bezel {
   position: absolute;
