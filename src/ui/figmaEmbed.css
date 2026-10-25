@@ -18,3 +18,7 @@
 
 /* round glass Restart (the left stack's .theme-toggle .dev-glass tokens), bottom right over the iframe */
 .fembed .fembed__restart { position: absolute; right: 14px; bottom: 14px; z-index: 6; }
+
+/* 18.2: on a phone the still stays and this glass pill opens the same frame or prototype in Figma */
+.fembed .fembed__open { position: absolute; left: 50%; bottom: 14px; z-index: 6; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 13px; box-sizing: border-box; white-space: nowrap; color: var(--dev-ink-hover); font: 600 12px/1 "Google Sans Flex", Inter, sans-serif; text-decoration: none; }
+.fembed .fembed__open:focus-visible { outline: 2px solid var(--dev-ink-hover); outline-offset: 2px; }

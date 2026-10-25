@@ -376,7 +376,7 @@ function ProtoScreen() {
   return (
     <span className="wg__proto">
       {PROTO_EMBED
-        ? <FigmaEmbed mode="proto" node="9:154" title="Scheduled Delivery prototype" badge={false}><SlotTour /></FigmaEmbed>
+        ? <FigmaEmbed mode="proto" node="9:154" title="Scheduled Delivery prototype" badge={false} openLink={false}><SlotTour /></FigmaEmbed>
         : <SlotTour />}
     </span>
   );
