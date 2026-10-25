@@ -8927,13 +8927,13 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
    at the top and at the end. The left rail starts collapsed, at rest too, and comes in on a scroll up or a tap on the
    page. No layout change; wider screens and other pages keep the chrome as it was. */
 @media (max-width: 720px) {
-  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"]),
-  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"]) {
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
+  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]) {
     opacity: 0 !important; visibility: hidden; pointer-events: none;
     transition: opacity 180ms ease, visibility 0s linear 180ms;
   }
 }
 @media (max-width: 720px) and (prefers-reduced-motion: reduce) {
-  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"]),
-  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"]) { transition: none; }
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
+  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]) { transition: none; }
 }

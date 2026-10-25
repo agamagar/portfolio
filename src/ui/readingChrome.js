@@ -7,8 +7,8 @@
 // The layout never changes; the CSS (index.css, "62.1") scopes it to pages with an article or a doc, and wider
 // screens keep the chrome as it was.
 const PHONE = "(max-width: 720px)";
-export const READING_CHROME = ".top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^='Inspect']";
-const RAIL = ".view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^='Inspect']";
+export const READING_CHROME = ".top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^='Inspect'], .qa-circle, [data-agentation-toolbar]";
+const RAIL = ".view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^='Inspect'], .qa-circle, [data-agentation-toolbar]";
 const CONTROL = "a, button, input, select, textarea, label, summary, iframe, video, [role='button'], [role='tab'], [role='slider'], [tabindex]:not([tabindex='-1']), .pc-host, .smo__hit";
 
 export function startReadingChrome() {
