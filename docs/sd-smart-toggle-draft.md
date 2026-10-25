@@ -18,6 +18,8 @@ The worst case is the busy cart. Zepto splits one order into shipments, and the 
 
 So its subject moves with you. [CONFIRM: what moves, title, subtext, default or target shipment] From Schedule, your shipment opens with Schedule Delivery chosen. [CONFIRM] From Edit, Schedule's subtext is the slot you booked, "Arriving today, 4-5 PM", so you start from your own choice. [CONFIRM] From the homepage prompt, Instant carries the reason: "High Demand! Instant delivery is temporarily unavailable. Schedule for later." [CONFIRM] From the cart's main button, [CONFIRM: Notion #13, which shipment opens first and what its toggle defaults to when you arrive from Pay]. Same two options every time. Only what they are about changes.
 
+**Outcome: not measured separately.** The September warehouse report counts scheduled orders by month, slot and lead time, not by the tap that opened the page, so this design has no number of its own. The nearest one is about the choice itself: only about 1.3% chose a slot when instant was fully available.
+
 figure: Pick the tap you came from. The same Instant and Schedule options open on a different subject each time, so the page picks up where your tap left off. [CONFIRM: the strings and defaults per entry point]
 
 ---

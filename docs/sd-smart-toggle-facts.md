@@ -33,6 +33,10 @@ Status: **blocked on Agam.** The main claim of the section (the toggle changes w
 - "The shipment you arrived from expands by default; the rest stay collapsed but visible, status readable at a glance, so context is never lost." Source: App.jsx, "The real work".
 - "Which shipment should be open on arrival" was one of the open questions that took numbered iterations. Source: same section.
 
+### Outcome (66.3)
+- No source measures the smart toggle on its own. `sdReport.js` (the 23 Sep 2026 warehouse pull) breaks scheduled orders down by month, slot band, lead time, on-time, cancellation and basket, never by the entry point or the toggle's default. The draft says "not measured separately".
+- The nearest sourced number, given as context and not as an outcome: "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan." (App.jsx, Impact).
+
 ### Hints, not proof
 - The FTB prototype's screen table has a `focus: "instant" | "schedule"` field on the picker, set only on C-015 ("Picker: schedule selected", shipment 2 of 2, Instant unavailable). Nothing reads it. Source: `design-playground/src/playground/build/cart-ftb/data.ts`.
 - C-018 "Don't schedule: instant selected": shipment 1 of 2 keeps Instant Delivery 9 min selected. C-025: shipment 2 of 2 is marked Scheduled. Source: `docs/flow-map-cart.md`.
