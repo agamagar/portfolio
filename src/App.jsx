@@ -10425,6 +10425,9 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
 
         {/* 28.1: the article is the page's main landmark (role="main" is allowed on <article>; a wrapper would break the grid) */}
         <article className="article" role="main" id="main">
+          {/* 28.1: the page's h1 for assistive tech. The header that carries the visible h1 is display: none for now
+              (index.css, .article__head), which takes its h1 out of the accessibility tree too; drop this when it returns */}
+          <h1 className="sr-only">{String(cs.title || "").replace(/\s*\n\s*/g, " ")}</h1>
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
           {cs.heroFirst ? (<>
         {cs.heroVideo && cs.heroFig && figures[cs.heroFig] && !cs.heroToggleHidden && (
