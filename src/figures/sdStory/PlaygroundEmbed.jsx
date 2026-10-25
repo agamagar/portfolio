@@ -211,9 +211,12 @@ export default function PlaygroundEmbed({
               Done (Esc)
             </button>
           )}
-          <a className="pgE__open" href={fullSrc} target="_blank" rel="noopener noreferrer" aria-label={`Open ${label} full size (new tab)`}>
-            Open full size
-          </a>
+          {/* 37.3: only when the synced bundle is there; without it the link would land on the site's own index */}
+          {bundle && (
+            <a className="pgE__open" href={fullSrc} target="_blank" rel="noopener noreferrer" aria-label={`Open ${label} full size (new tab)`}>
+              Open full size
+            </a>
+          )}
           {import.meta.env.DEV && bundle && <span className="pgE__sync" title={bundle.syncedAt}>playground {bundle.commit}</span>}
         </span>
       </figcaption>
