@@ -63,7 +63,9 @@ export const scheduledPrdData = {
       moat: [
         "The persistent summary is the trust mechanism. Baymard documents users rebuilding carts after discovering a fulfilment split late; the single-page listing is the designed answer to that failure mode.",
       ],
-      v1: "M1 (23 Oct 2025): scheduling enabled only for the narrow entry case, a SINGLE shipment that is unserviceable with slots available; Schedule shows at shipment level and as the PRIMARY cart CTA. Multi-shipment carts (one serviceable, one not) stayed on the BAU flow with no scheduling shown at all. Scoped narrow on purpose.",
+      // 45.2: the case study's first order (10 Oct 2025, 2 stores, sdReport ROLLOUT "pilot starts") came before M1's date in
+      // Agam's release plan (23 Oct 2025); both are sourced, so the line carries both
+      v1: "M1 (23 Oct 2025, after a 2-store pilot that took the first scheduled orders from 10 Oct): scheduling enabled only for the narrow entry case, a SINGLE shipment that is unserviceable with slots available; Schedule shows at shipment level and as the PRIMARY cart CTA. Multi-shipment carts (one serviceable, one not) stayed on the BAU flow with no scheduling shown at all. Scoped narrow on purpose.",
       v2: "M2 (10 Nov 2025): multi-shipment scheduling. Schedule button visible at shipment level in all cases, greyed where slots are unavailable; the cart CTA resolves by shipment mix (see requirements).",
       northStar: "Users confident in the full commitment before pay, not after.",
       openQuestions: [
@@ -491,7 +493,7 @@ export const scheduledPrdData = {
         "Last-mile economics improved: a known future slot can be batched and routed in a way real-time dispatch cannot. [confirm exact figure with ops.]",
       ],
       roadmap: [
-        "M1 (23 Oct 2025): the narrow entry. Scheduling for the single-shipment case only (one unserviceable shipment with slots), Schedule as the primary cart CTA; the single-item re-add reset and the post-purchase slot reset; PDP 'Back soon' suppression for the test cohort.",
+        "M1 (23 Oct 2025, after a 2-store pilot from 10 Oct): the narrow entry. Scheduling for the single-shipment case only (one unserviceable shipment with slots), Schedule as the primary cart CTA; the single-item re-add reset and the post-purchase slot reset; PDP 'Back soon' suppression for the test cohort.",
         "M2 (10 Nov 2025): the expansion. Multi-shipment scheduling, shipment-level Schedule button in all cases (greyed where no slots), the cart-CTA-by-shipment-mix matrix, unserviceable-shipment handling with the bottom-sheet removal/wishlist flow, the schedule-page state set, GTM banner + nudge, the back-soon update across EDLP layouts, and slot-label fixes (last window reads 12 AM, not PM).",
         "Later (M3+): fuller post-order editing and reschedule (in-flow slot edits shipped at launch); the parked auto-remove-vs-explicit-intent wishlist decision; the residual failure items (at-wake-up live-stock re-check, reflow-to-pickup as an alternative to auto-cancel); WhatsApp reminders (engine); Dynamic Island; seamless cross-day scroll.",
         "Adjacent tracks (kept separate): Returns and Refunds (reuses the slot picker for pickup), customer-delight / support chat.",
