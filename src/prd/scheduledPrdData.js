@@ -24,7 +24,8 @@ export const scheduledPrdData = {
       "Precision is the promise. Fixed one-hour committed windows, no discount-for-vagueness lever. The moment you sell a looser window at a discount, you concede that precision is a premium, and precision is the whole argument.",
     ],
     northStarMetric:
-      "Proposed (WIP): on-time-within-window rate, the share of scheduled orders delivered inside the chosen one-hour slot without a miss. It is the literal measure of whether 'later' is trustworthy. Paired with scheduled adoption and scheduled AOV so trust is never bought by suppressing volume. Guardrail metric: instant's own conversion and speed must not move, proving scheduling did not dilute the core. [confirm: no north-star was formally defined in source; this is a proposal.]",
+      // 45.1: the marker said the sources define no north-star; the line now says so itself, so nothing is left to confirm
+      "Proposed (WIP), since the project's sources define no north-star metric: on-time-within-window rate, the share of scheduled orders delivered inside the chosen one-hour slot without a miss. It is the literal measure of whether 'later' is trustworthy. Paired with scheduled adoption and scheduled AOV so trust is never bought by suppressing volume. Guardrail metric: instant's own conversion and speed must not move, proving scheduling did not dilute the core.",
     whyNowProblem:
       "Three high-intent users keep abandoning full carts, and none of them is failing to find the product, they are failing to commit to the timing. The commuter builds a cart on the train but cannot receive a 10-minute delivery from a moving train. The user on a coverage edge finds instant unavailable after about 9pm and reads it as a broken promise. The weekly-shop planner wants a 40-item basket the impulse-tuned 10-minute mode was never built to hold. The intent is present; only the timing is wrong. Quick-commerce demand is splitting from 'impulse vs planned' into 'need now vs can wait', so one brand now has to serve both intents.",
     visionPrinciples: [
@@ -34,7 +35,10 @@ export const scheduledPrdData = {
       "Speak first when something slips. Most delivery anxiety is caused by the missing heads-up, not the delay itself, so the product surfaces a problem before the user has to go looking.",
     ],
     strategicContext:
-      "[UNVERIFIED, postdates the design work] In January 2026 India's labour ministry reportedly asked Blinkit, Swiggy Instamart, and Zepto to drop the '10-minute' marketing promise (TechCrunch). If the instant promise is under regulatory pressure, a credible 'later' stops being a side feature and becomes a strategic hedge. Forward-looking only; confirm before any external use.",
+      // 45.1: checked against the public record (PTI via The Week, 13 Jan 2026; Exchange4media; Storyboard18). The TechCrunch
+      // source could not be found, so it is not cited. "Postdates the design work" was not safe (the Figma work runs to Jun
+      // 2026); it postdates the full rollout (12 Dec 2025, sdReport ROLLOUT).
+      "After the full rollout, in January 2026, India's Labour Ministry asked quick-commerce platforms to drop the '10-minute' promise from their marketing. Blinkit dropped its claim, and Zepto and Swiggy Instamart were reported to follow (PTI, 13 Jan 2026). If the instant promise is under regulatory pressure, a credible 'later' stops being a side feature and becomes a strategic hedge. Forward-looking only.",
   },
 
   pillars: [
