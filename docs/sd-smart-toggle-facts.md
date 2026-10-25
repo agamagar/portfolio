@@ -316,3 +316,5 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
+
+**#13 answered (Agam accepted the recommendation, 26 Oct, routing list accepted-2026-10-26.md): A, the starting mode follows the entry point.** Pay starts every shipment that can come now on Instant; a group's Schedule link opens that shipment on Schedule, expanded. This is the design (the prototype side is under prototype fixes), so the draft says "the design", not "the app".
