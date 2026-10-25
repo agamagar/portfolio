@@ -374,10 +374,10 @@ function GrowthChart() {
       <LineChart area data={rows} series={[{ key: "sd", label: "Scheduled orders a month" }]} yFormat={fmtK} height={230} legend={false}
         annotations={[
           { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
-          { i: at(full.d), label: `Every store, ${n(full.stores)}`, anchor: "start", below: true },
+          { i: at(full.d), label: `All stores live (${n(full.stores)})`, anchor: "start", below: true }, // Agam on 3.6, 25 Oct: "switch to all stores live"
           { i: rows.indexOf(peak), label: `Peak, ${(peak.sd / 1e6).toFixed(2)}M`, anchor: "middle" },
         ]}
-        ariaLabel={`Scheduled orders a month: ${n(rows[0].sd)} in the October 2025 pilot, which began in ${pilot.stores} stores; every store, ${n(full.stores)}, by ${full.label}; and a peak of ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`} />
+        ariaLabel={`Scheduled orders a month: ${n(rows[0].sd)} in the October 2025 pilot, which began in ${pilot.stores} stores; all stores live (${n(full.stores)}) by ${full.label}; and a peak of ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`} />
     </div>
   );
 }
