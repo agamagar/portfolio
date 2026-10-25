@@ -1,3 +1,5 @@
 /* two by two at every width: four phones at full size don't fit the case column in one row, and 3 + 1 reads lopsided */
 .sdflows { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; gap: 32px 40px; padding: 8px 0; }
-@media (max-width: 720px) { .sdflows { gap: 20px 12px; } }
+/* on a phone the embeds are stills (18.2), so the figure gets the full-page expand button in its bottom-right corner
+   (ExpandableFigure, always shown on touch); the strip below the grid keeps it off the last "Open in Figma" */
+@media (max-width: 720px) { .sdflows { gap: 20px 12px; padding-bottom: 52px; } }

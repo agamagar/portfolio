@@ -3149,6 +3149,7 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   transform: translate(-50%, -50%);
 }
 .article__plate-embed { position: relative; }
+.article__plate > .pf__links { margin-top: 10px; } /* 18.2: the plate phone's Open in Figma, under the plate (phones only) */
 .ifr__bezel,
 .article__plate-bezel {
   position: absolute;
@@ -7495,7 +7496,9 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
    Note what this costs while it is on: `display: none` hides the box from
    assistive tech as well as from the screen, and the h1 goes with it, so the
    page currently has no first-level heading. Fine for "for now"; not something
-   to leave in. */
+   to leave in. (28.1, 25 Oct: CaseStudy now renders a screen-reader-only h1 with the case title while this rule is
+   on, and the header's title is a <p> (76.2), so there is one h1; if the header comes back, make its title the h1 again
+   and remove the screen-reader one.) */
 .article__head { display: none; }
 .article__head--facts .article__title--display {
   font-family: var(--type-display-family);
@@ -8908,3 +8911,29 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 /* mvigzb44: the lines are white (a faint violet shadow keeps them readable on the pale light-mode orb); a prism lens drifts over the figure */
 .rv-pack__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
 .rv-pack__lens { position: absolute; inset: 0; pointer-events: none; backdrop-filter: saturate(1.1); backdrop-filter: url(#rv-lens) saturate(1.1); -webkit-mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); } /* mvj9tks3: static, covers the whole figure, feathered so it has no visible edge */
+
+/* 28.4 (a11y, 25 Oct): a 44px touch target with no change to the look. A centred ::after at least 44 x 44 around the
+   control; in a fit-scaled figure (useFitScale sets --ds-scale) it grows by 1 / scale so it stays 44px on screen.
+   The year switch is already positioned; the pill under a phone becomes relative. (The persona chips clip their own
+   overflow, so theirs is a sibling, .smo__hit in scheduled.css.) */
+.fshot-pill { position: relative; }
+.tlh__year::after, .fshot-pill::after {
+  content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: max(100%, calc(44px / var(--ds-scale, 1))); height: max(100%, calc(44px / var(--ds-scale, 1)));
+}
+
+/* 62.1 + 72.1 (25 Oct): phones, case-study and doc pages: the fixed chrome stays off the reading column
+   (ui/readingChrome.js). Scrolling down hides it all; the top controls and the chapter chip come back on scroll-up,
+   at the top and at the end. The left rail starts collapsed, at rest too, and comes in on a scroll up or a tap on the
+   page. No layout change; wider screens and other pages keep the chrome as it was. */
+@media (max-width: 720px) {
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
+  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]) {
+    opacity: 0 !important; visibility: hidden; pointer-events: none;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
+  }
+}
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
+  :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]) { transition: none; }
+}

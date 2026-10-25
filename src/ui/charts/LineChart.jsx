@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useChart, niceTicks, clamp, spread, CAT } from "./shared";
+import { useChart, niceTicks, clamp, spread, CAT, useChartName, nameChart, describeSeries } from "./shared";
 import Axis from "./Axis";
 import Tooltip from "./Tooltip";
 import Legend from "./Legend";
@@ -8,9 +8,11 @@ import "./charts.css";
 // Line / Area. One y-scale, up to four series, each direct-labelled at its last
 // real point (identity never rests on colour alone). Nulls break the line. The
 // line draws on once when scrolled into view; `area` adds a soft fade beneath.
+// annotations: [{ i, label, anchor: "start" | "middle" | "end", below }] mark points on the first series with a dot
+// and a short label, for milestones that belong to the line but not on its scale (no second axis).
 export default function LineChart({
   data, series, xKey = "label", colors = CAT, height = 220, yFormat = (v) => String(v),
-  domainMin = 0, domainMax, area = false, legend, ariaLabel, caption, className = "", xLabelEvery,
+  domainMin = 0, domainMax, area = false, legend, ariaLabel, caption, className = "", xLabelEvery, annotations = [],
 }) {
   const { ref, w: W, on } = useChart();
   const [hi, setHi] = useState(null);
@@ -49,7 +51,8 @@ export default function LineChart({
     if (e.key === "ArrowLeft") { e.preventDefault(); setHi((h) => clamp((h ?? n) - 1, 0, n - 1)); }
     if (e.key === "Escape") setHi(null);
   };
-  const lab = ariaLabel || `${series.map((s) => s.label).join(", ")} over ${xKey}`;
+  const host = useChartName();
+  const lab = ariaLabel || nameChart(host, series.map((s) => describeSeries(data, s.key, xKey, yFormat, s.label)).filter(Boolean).join("; ")); // 28.3
   const showLegend = legend ?? multi;
 
   return (
@@ -80,6 +83,17 @@ export default function LineChart({
           {(multi || series[0].short) && series.map((s, si) => lastOf(s) < 0 ? null : (
             <text key={s.key} x={x(lastOf(s)) + 9} y={labelY[si] + 3.5} className="ch-end" fill={col(s, si)}>{s.short || s.label}</text>
           ))}
+          {annotations.map((a, k) => {
+            const v = data[a.i]?.[series[0].key];
+            if (v == null) return null;
+            const ax = x(a.i), ay = y(v), anchor = a.anchor || "middle";
+            return (
+              <g key={k} className="ch-ann">
+                <circle cx={ax} cy={ay} r={3.5} className="ch-dot" fill={col(series[0], 0)} />
+                <text x={ax + (anchor === "start" ? 6 : anchor === "end" ? -6 : 0)} y={a.below ? ay + 17 : ay - 10} textAnchor={anchor} className="ch-ann__t">{a.label}</text>
+              </g>
+            );
+          })}
           {hi != null && <line x1={x(hi)} x2={x(hi)} y1={P.t} y2={H - P.b} className="ch-cross" />}
           {hi != null && series.map((s, si) => data[hi][s.key] == null ? null : (
             <circle key={s.key} cx={x(hi)} cy={y(data[hi][s.key])} r={4.5} className="ch-dot" fill={col(s, si)} />

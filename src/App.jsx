@@ -390,7 +390,9 @@ const PlateCursor = lazy(() => import("./figures/scheduled/PlateCursor")); // mt
 // mtpdtjwt: a "\n" in a case title is a forced line break
 function withBreaks(str) {
   const parts = String(str || "").split("\n");
-  return parts.length === 1 ? str : parts.map((t, i) => (i ? [<br key={"b" + i} />, t] : t));
+  // 28.1: a space before each break, so the words don't run together when read ("Schedule Delivery", not
+  // "ScheduleDelivery"); a space at a line end doesn't show
+  return parts.length === 1 ? str : parts.map((t, i) => (i ? [" ", <br key={"b" + i} />, t] : t));
 }
 // The case's live Figma prototype plates go through the shared FigmaEmbed (src/ui/FigmaEmbed.jsx), on the
 // link-shared file Claude: Schedule. The old private file (71cZSn6pTNf4zFzO07O2uv) and its sign-in wall are gone.
@@ -398,6 +400,9 @@ const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import usePageTitle from "./lib/usePageTitle"; // 28.1: "<page> · Agam Agarwal" in the tab
+import PlaygroundCopy from "./figures/sdStory/PlaygroundCopy"; // Q21 interim: copy that knows whether the playground bundle is deployed
+import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
 import FigmaEmbed from "./ui/FigmaEmbed"; // THE live Figma embed (every Figma iframe goes through it)
 import { animate as motionAnimate } from "motion";
 import { Refresh as IconRefresh, CursorPointer as IconCursor, Link as IconLink, Expand as IconExpand } from "iconoir-react";
@@ -410,6 +415,7 @@ const SchedUseCases = lazyFig(() => import("./figures/scheduled/SchedUseCases"))
 import SchedRoleWireframes, { ROLE_STATS, STAT_ICON } from "./figures/scheduled/SchedRoleWireframes";
 import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
 import { windowSceneOn } from "./lib/sceneFlag";
+import PrdSkeleton from "./prd/PrdSkeleton"; // 72.2: the doc route's loading state, in the doc's own layout
 // Art mode (src/art/ArtMode.jsx) is no longer mounted: removed with read mode (mtqpu3f2 + the 07 Sep ask); the file stays.
 const MotionCheck = lazy(() => import("./hello/MotionCheck"));
 // The Away PRD, rendered as native portfolio DOM (was an iframe → unscannable by
@@ -1409,6 +1415,9 @@ function ScrollScene({ scene: sceneIn }) {
   const [W, H] = isDefault ? [1512, 982] : scene.aspect || [1392, 862];
   return (
     <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.bg }}>
+      {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
+          are painted as CSS masks, which a screen reader never sees) */}
+      {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
       {scene.base && <img className="sscene__base" src={scene.base} alt="" draggable="false" />}
       {scene.title && <p className="sscene__title">{scene.title}</p>}
       {hasOneShot && (
@@ -1519,7 +1528,7 @@ function PlatesStack({ stack, gradient, children }) {
 // travels the viewport: top of the phone showing as the section enters at the
 // bottom, the bottom showing as it leaves at the top. Scroll-linked, so it is
 // interruptible by nature; no easing, the scroll is the easing.
-function ScrollPhone({ src, long }) {
+function ScrollPhone({ src, long, alt = "" }) {
   const ref = useRef(null);
   // mv54coar: click opens the full-page view; every phone card on the page is in
   // the set, so next / previous step between them
@@ -1567,7 +1576,7 @@ function ScrollPhone({ src, long }) {
     <div className={"sp" + (long ? " sp--long" : "")} ref={ref} data-expand="" data-open={lb ? "" : undefined}
       role="button" tabIndex={0} aria-haspopup="dialog" aria-label="Open this screen full page" title="Click to expand"
       onClick={openLb} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(); } }}>
-      <PhoneFrame className="sp__phone" screen={src} interactive={false} enter={false} shadow="none" />
+      <PhoneFrame className="sp__phone" screen={src} alt={alt} interactive={false} enter={false} shadow="none" />
       {/* mv56ivr6 (12 Oct): the site's glass button (.article__hero-replay, the one the replay and
           Open-in-Figma controls use: 38px, nav glass, same hover / press / focus), bottom right */}
       <span className="article__hero-replay sp__hint" aria-hidden="true">
@@ -1644,6 +1653,7 @@ function SectionFigure({
   whiteboard,
   reel,
   still,
+  stillAlt,
   stillParallax,
   scene,
   cover,
@@ -1672,7 +1682,7 @@ function SectionFigure({
   }
   // mtmlfoo3: a still without a reel (the video moved to the lab)
   if (still && stillParallax) {
-    return <ScrollPhone src={still} long={stillParallax === "long"} />;
+    return <ScrollPhone src={still} alt={stillAlt} long={stillParallax === "long"} />;
   }
   if (reel) {
     return <ReelFigure name={reel} variant={variant} />;
@@ -2191,6 +2201,7 @@ const caseStudies = {
       "Impact",
     ],
     cover: "Zepto",
+    pageTitle: "Scheduled Delivery", // 28.1: the tab title, "Scheduled Delivery · Agam Agarwal"
     lead:
       "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested internally through design and then validated, after launch, with a 45-user mixed-method study. The payoff lands in the order itself: a scheduled order was worth about ₹1,450 against ₹543 for an instant one in August 2026, and a year of data later the feature is quietly becoming the channel large appliances are delivered through.",
     deck: scheduledDeck,
@@ -2254,6 +2265,7 @@ const caseStudies = {
         // from here (the reel lives in the lab, /lab); only the parallax still
         // stays. Earlier: mtmglh43 (toggle), mtmguhc9 (parallax, group 460-53124).
         still: "/figures/scheduled/in-motion-screen.png", // bare screen (460-53125); the frame is the base iPhone
+        stillAlt: "The Zepto schedule page: three shipments, the first open with Instant Delivery (9 min) and Schedule Delivery cards, Today and Tomorrow tabs, one-hour slots from 7-8 AM to 10-11 PM, and Confirm.", // 28.2
         stillParallax: true,
         figBare: true,
         // mtmqmw9z: caption removed; the parallax needs no line under it.
@@ -2295,6 +2307,8 @@ const caseStudies = {
           },
         ],
         scene: {
+          // 28.2: the scene's one description (its layers are pictures of text, so the words go here)
+          alt: "Context: when people hear Zepto they think 10-min delivery, internally known as \u2018now\u2019. Objective: building a feature to enable scheduled deliveries. We called it \u2018later\u2019.",
           aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
           bg: "transparent", // mtpeowii: no box fill, no stroke
           noframe: true,
@@ -2386,6 +2400,7 @@ const caseStudies = {
         // Annotation mtmgxe0z: image frame from Figma Portfolio 2026 node 480-23182.
         // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
         scene: {
+          alt: "The five reasons, each with its icon: out of hours, disruptions, beyond coverage, out of stock, at capacity.", // 28.2
           aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
           bg: "transparent", noframe: true /* mvgf46bv (Agam, "remove the fill and stroke"): no box fill, no border; was var(--sd-reasons-bg, #f7f7f7) */, // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
           // muiejocv: the heading moved inside the box (was figureTop, above it)
@@ -2433,6 +2448,7 @@ const caseStudies = {
         // Annotation mtmgd7ug: image frame from Figma Portfolio 2026 node 460-53090.
         // Annotation mtmh68zb: the card flips up as you scroll (photo + card as layers).
         scene: {
+          alt: "Ripe mangoes in a purple crate, under a scheduled shipment card: Arriving tomorrow, 4-5 PM. Shipment scheduled, with an Edit link.", // 28.2
           aspect: [1392, 862],
           base: "/figures/scheduled/mango-photo.png",
           layers: [{ src: "/figures/scheduled/mango-card.png", x: 16.9, y: 40.7, w: 66.21, fx: "flip" }],
@@ -2488,6 +2504,7 @@ const caseStudies = {
         // through, between the purple ground and the egg cartons. Desktop MCP
         // was off, so the timing is scroll-linked rather than Figma's keyframes.
         scene: {
+          alt: "The words Now and Later, one under the other and repeating, down a purple ground between egg cartons.", // 28.2
           aspect: [1392, 862],
           base: "/figures/scheduled/role/photo.png",
           layers: [
@@ -2533,6 +2550,7 @@ const caseStudies = {
         // (mtmj7y2h): the phone is the ground, the notification card drops in
         // like a real banner when the section is reached.
         scene: {
+          alt: "A phone's home screen with a Zepto notification dropping in: Your order is scheduled, arriving on Aug 13, 5-6 PM.", // 28.2
           aspect: [1392, 862],
           bg: "radial-gradient(circle at 100% 0%, #c4a5f5 0%, #8b5cf6 100%)",
           layers: [
@@ -2914,7 +2932,8 @@ const caseStudies = {
         tldr: "The slot picker is a live component, not a recording. All eight designed states sit side by side below.",
         p: [
           "The picker holds a lot, so I drew every state it can be in: Instant selected, Instant unavailable, Schedule unavailable, past slots in the morning, a full evening, the next-day pick and tomorrow's full grid. Then I built them as real components and ran them.",
-          "These frames are the playground's own components, embedded. Click one to use it.",
+          // Q21 interim (25 Oct): the click invitation only where the playground bundle is deployed (PlaygroundCopy)
+          <PlaygroundCopy live="These frames are the playground's own components, embedded. Click one to use it." offline="These frames come from the playground's own components." />,
         ],
         fig: "sd:states",
         figBare: true,
@@ -2967,15 +2986,16 @@ const caseStudies = {
         group: "Outcome",
         stack: true, // mvgntthg (Agam, "make the layout vertical"): heading, TL;DR and photo in one column instead of side by side
         sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
+        sideAlt: "A paper grocery bag with a purple band, left on a doormat outside a door.", // 28.2
         // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
         // one-sentence version (adoption, 3x value, cancellation, appliances)
         // mv59ku9w (12 Oct, "make these bullet points, and write the impact accordingly"): six bullets, each leading with its number.
         // Every figure is on the page or in sdReport.js: ROLLOUT (2 to 1,144 stores, 63 days), MONTHLY (May 1,809,603 = 1.72%; Aug 1.44%, Sep 1.39%),
         // the 1.3% / eight-in-ten fallback reading (the Impact text and the post-launch study), VS_INSTANT (1,452 v 543, 5.85 v 4.65, cancelled 27.4 v about 11),
         // ONTIME (Aug 82.5, Feb 92.6), ELECTRONICS (21.3% Jun, 54.0% Sep, partial) and APPLIANCE_AUG (cancelled 34.4 v 26.6). Was: "Adoption peaked at 1.72% of
-        // all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
+        // all orders and settled near 1.4%. A scheduled cart is worth 2.7 times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
         tldr: [
-          "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and every store could take one by 12 December.",
+          "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and the rollout was complete on 12 December, at 1,144 stores.", // 37.2: the report marks 12 Dec as "full rollout"; the count kept rising after (1,156 on 23 Dec), so not "every store"
           "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
           "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
           "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65.",
@@ -2988,7 +3008,7 @@ const caseStudies = {
         // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances' share of GMV rising (no figure, a partial month).
         glance: {
           label: "Impact at a glance",
-          head: ["A small slice of Zepto’s orders, and each one worth almost ", "three", " times an instant one."],
+          head: ["A small slice of Zepto’s orders, and each one worth ", "2.7", " times an instant one."], // 37.2b follow-up: ₹1,452 against ₹543 is 2.7x, the figure the page uses elsewhere (was "almost three")
           bars: [
             { v: 82.5, d: "of scheduled orders arrived inside the booked hour in August 2026, down from 92.6% in February" },
             { v: 27.4, d: "of scheduled orders were cancelled in August 2026, against about 11% for instant" },
@@ -9903,7 +9923,8 @@ function LockedCaseStudy({ cs, slug }) {
         </div>
         {/* Native portfolio DOM (not an iframe) so Agentation can scan/annotate
             every element of the PRD. `cs.doc` selects which PRD to mount. */}
-        <Suspense fallback={null}>
+        {/* the docs built on PrdRenderer with narration or agent copy show the Read / Listen switch; the skeleton holds its place */}
+        <Suspense fallback={<PrdSkeleton modes={!["away-analytics", "prompt-library", "team-prompts", "color-system"].includes(cs.doc)} />}>
           {cs.doc === "dassh" ? <DasshPrdDoc /> : cs.doc === "scheduled" ? <ScheduledPrdDoc /> : cs.doc === "jarvis" ? <JarvisPrdDoc /> : cs.doc === "zepiris" ? <ZepirisPrdDoc /> : cs.doc === "away-analytics" ? <AwayAnalyticsDoc /> : cs.doc === "prompt-library" ? <PromptLibraryDoc /> : cs.doc === "team-prompts" ? <TeamPromptsDoc /> : cs.doc === "color-system" ? <ColorSystemDoc /> : <PrdDoc />}
         </Suspense>
       </div>
@@ -10012,10 +10033,13 @@ function CaseStudyBodyFull({ cs }) {
                     // mtmoja90: a live Figma prototype in the plate, inside a
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
+                    // 18.2 (critique, 25 Oct): on a phone the embed is a still, and its Open in Figma link goes under the plate,
+                    // since the plate crops the phone (LinksBelow; the phone passes the link on with linkSlot={false})
+                    <LinksBelow>
                     <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
                       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
                           notification scene) over a screen cutout that holds the prototype */}
-                      <PhoneFrame interactive={false} enter={false} size="hero" className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
+                      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
                           <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
                             <span className="article__plate-cursor">
                               <IconCursor width={20} height={20} strokeWidth={1.6} />
@@ -10042,6 +10066,7 @@ function CaseStudyBodyFull({ cs }) {
                           )}
                       </PhoneFrame>
                     </div>
+                    </LinksBelow>
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
                     <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>
@@ -10109,14 +10134,16 @@ function CaseStudyBodyFull({ cs }) {
               body); figures after it stay full width. SecWrap is a Fragment
               everywhere else, so other case studies' DOM is unchanged. */}
           <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
-          {s.split || s.roleFrame ? null : s.noHeading ? <span id={`sec-${i}`} /> : <h2 id={`sec-${i}`}>{s.h}</h2>}
+          {/* a11y (25 Oct, the last jump after #28): a section that hides its heading keeps it for assistive tech, as a
+              screen-reader-only h2 (same sr-only utility as the page h1, so no layout) */}
+          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{s.h}</h2>}
           {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
               first under the heading */}
           {s.serif && <p className="article__serif">{s.serif}</p>}
           {/* a big open question, set large (Before we start) */}
           {s.ask && <p className="article__ask">{s.ask}</p>}
           {/* muky37n5: a photo beside the heading and TL;DR, 50/50 */}
-          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt="" loading="lazy" />}
+          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} loading="lazy" />}
           {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
             <p className="article__tldr">
               <span className="article__tldr-label">TL;DR</span>
@@ -10233,6 +10260,7 @@ function CaseStudyBodyFull({ cs }) {
                 whiteboard={s.whiteboard}
                 reel={s.reel}
                 still={s.still}
+                stillAlt={s.stillAlt}
                 stillParallax={s.stillParallax}
                 scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
@@ -10252,6 +10280,7 @@ function CaseStudyBodyFull({ cs }) {
                 whiteboard={s.whiteboard}
                 reel={s.reel}
                 still={s.still}
+                stillAlt={s.stillAlt}
                 stillParallax={s.stillParallax}
                 scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
@@ -10334,6 +10363,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   // tools/export-pdf.mjs to hit hard page caps (MIIPS 20pp, GSD 30pp); cases
   // without a pdfSections list render in full regardless of the param.
   const base = caseStudies[slug] || caseStudies.sample;
+  usePageTitle(base.pageTitle || String(base.title || "").replace(/\s*\n\s*/g, " ")); // 28.1
   const compact =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("cut") === "compact" &&
@@ -10399,7 +10429,13 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           }
         />
 
-        <article className="article">
+        {/* 28.1: the article is the page's main landmark (role="main" is allowed on <article>; a wrapper would break the grid) */}
+        <article className="article" role="main" id="main">
+          {/* 28.1: the page's h1 for assistive tech. The header that carries the title is display: none for now
+              (index.css, .article__head), which takes it out of the accessibility tree too. 76.2: the header's title is a
+              <p> while that rule is on, so the page has one h1; when the header returns, make its title the h1 again and
+              drop this one */}
+          <h1 className="sr-only">{String(cs.title || "").replace(/\s*\n\s*/g, " ")}</h1>
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
           {cs.heroFirst ? (<>
         {cs.heroVideo && cs.heroFig && figures[cs.heroFig] && !cs.heroToggleHidden && (
@@ -10489,7 +10525,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // eyebrow, no meta line. The lead moves up here from the body.
           <header className="article__head article__head--facts">
             <div className="article__head-main">
-              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10504,7 +10540,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           ) : (
           <header className="article__head">
           <p className="article__eyebrow">{cs.eyebrow}</p>
-          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__title">{withBreaks(cs.title)}</p>
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}
@@ -10516,7 +10552,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // eyebrow, no meta line. The lead moves up here from the body.
           <header className="article__head article__head--facts">
             <div className="article__head-main">
-              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10531,7 +10567,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           ) : (
           <header className="article__head">
           <p className="article__eyebrow">{cs.eyebrow}</p>
-          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__title">{withBreaks(cs.title)}</p>
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}

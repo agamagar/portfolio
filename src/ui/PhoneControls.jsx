@@ -69,6 +69,15 @@ export default function PhoneControls({ expand = true, label = "Phone" }) {
     const leave = () => { if (!touch) off(); };
     host.addEventListener("pointerenter", enter); host.addEventListener("pointerleave", leave);
     host.addEventListener("focusin", enter); host.addEventListener("focusout", leave);
+    // 62 note: on touch a tap on the phone shows the bar for 4 s (the CSS hides it at rest on a case study, so it no
+    // longer sits over the frame's key text); a tap on the bar itself restarts the clock
+    let tapT = 0;
+    const tap = (e) => {
+      if (e.pointerType !== "touch" && e.pointerType !== "pen") return;
+      host.setAttribute("data-pc-tap", ""); clearTimeout(tapT);
+      tapT = setTimeout(() => host.removeAttribute("data-pc-tap"), 4000);
+    };
+    host.addEventListener("pointerdown", tap);
     fit();
     const ro = new ResizeObserver(() => { fit(); lift(); }); ro.observe(host);
     const fsChange = () => {
@@ -78,7 +87,7 @@ export default function PhoneControls({ expand = true, label = "Phone" }) {
     };
     document.addEventListener("fullscreenchange", fsChange);
     return () => {
-      clearTimeout(t); ro.disconnect(); document.removeEventListener("fullscreenchange", fsChange); io?.disconnect(); cancelAnimationFrame(raf); live = 1; off();
+      clearTimeout(t); clearTimeout(tapT); host.removeEventListener("pointerdown", tap); host.removeAttribute("data-pc-tap"); ro.disconnect(); document.removeEventListener("fullscreenchange", fsChange); io?.disconnect(); cancelAnimationFrame(raf); live = 1; off();
       host.removeEventListener("pointerenter", resolve); host.removeEventListener("pointerenter", enter); host.removeEventListener("pointerleave", leave);
       host.removeEventListener("focusin", resolve); host.removeEventListener("focusin", enter); host.removeEventListener("focusout", leave);
       host.classList.remove("pc-host");

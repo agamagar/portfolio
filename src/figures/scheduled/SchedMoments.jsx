@@ -112,11 +112,15 @@ export default function SchedMoments() {
   // muifkzti: every tag can be picked up and dragged; it lifts while held.
   // mujk8cpo: it stays wherever it is dropped.
   // translate only, so it never fights the open/close transitions.
+  // 28.4: the press may land on the tag's 44px hit target (.smo__hit, its next sibling); the tag moves either way,
+  // and the hit target moves with it
   const dragTag = (e) => {
     if (e.button !== 0) return;
-    const n = e.currentTarget;
+    const t = e.currentTarget;
+    const n = t.classList.contains("smo__hit") ? t.previousElementSibling : t;
+    const hit = n.nextElementSibling?.classList.contains("smo__hit") ? n.nextElementSibling : null;
     e.preventDefault();
-    try { n.setPointerCapture(e.pointerId); } catch { /* synthetic pointer */ }
+    try { t.setPointerCapture(e.pointerId); } catch { /* synthetic pointer */ }
     const x0 = e.clientX - (n._dx || 0), y0 = e.clientY - (n._dy || 0);
     const sx = e.clientX, sy = e.clientY;
     n._moved = false;
@@ -125,19 +129,20 @@ export default function SchedMoments() {
       if (Math.hypot(m.clientX - sx, m.clientY - sy) > 4) n._moved = true; // a drag, not a click
       n._dx = m.clientX - x0; n._dy = m.clientY - y0;
       n.style.translate = `${n._dx}px ${n._dy}px`;
+      if (hit) hit.style.translate = n.style.translate;
     };
     // mujk8cpo: a dropped tag STAYS where it is put (was: spring home); the
     // next pick-up continues from there via n._dx / n._dy
     const up = () => {
-      n.removeEventListener("pointermove", move);
-      n.removeEventListener("pointerup", up);
-      n.removeEventListener("pointercancel", up);
+      t.removeEventListener("pointermove", move);
+      t.removeEventListener("pointerup", up);
+      t.removeEventListener("pointercancel", up);
       n.classList.remove("is-held");
       if (n._moved) feedback("select"); // a drag that lands; a plain tap is the toggle's sound
     };
-    n.addEventListener("pointermove", move);
-    n.addEventListener("pointerup", up);
-    n.addEventListener("pointercancel", up);
+    t.addEventListener("pointermove", move);
+    t.addEventListener("pointerup", up);
+    t.addEventListener("pointercancel", up);
   };
   return (
     <div className="smo" ref={ref} data-reduce={reduce ? "true" : undefined}>
@@ -169,6 +174,11 @@ export default function SchedMoments() {
                   <span className="smo__word">{m.label}</span>
                 </span>
               </span>
+              {/* 28.4: a 44px touch target over the tag's centre, for pointers only (the tag itself keeps the keyboard).
+                  The tag clips its own overflow for the open animation, so its hit area can't grow from inside. */}
+              <span className="smo__hit" aria-hidden="true" style={{ left: X(m.tag[0]) + "%", top: Y(m.tag[1]) + "%" }}
+                onPointerDown={dragTag}
+                onClick={(e) => { if (!e.currentTarget.previousElementSibling._moved) toggle(m.key); }} />
             </li>
           );
         })}

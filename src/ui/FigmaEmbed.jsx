@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Refresh } from "iconoir-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { OpenNewWindow, Refresh } from "iconoir-react";
+import { PhoneLinkSlot } from "../figures/ds/phoneLinkSlot";
+import "../figures/ds/phoneFrame.css"; // .fshot-pill, for a bare embed's own Open in Figma
 import "./figmaEmbed.css";
 
 // THE live Figma embed for the site: a frame or a prototype straight from the Figma file, so an edit
@@ -18,8 +20,16 @@ import "./figmaEmbed.css";
 //           A sign-in wall also fires `load`, so the file must stay "anyone with the link can view".
 // floor     "cover" (a full screen export) | "bottom" (a bottom-sheet export, anchored to the foot)
 // children  a live floor instead of the still (the homepage's coded slot tour); fades out the same way
-// restart   a round glass Restart, bottom right, that reloads the iframe to its first frame (default: on for prototypes)
+// restart   a round glass Restart that reloads the iframe to its first frame (default: on for prototypes). Inside a
+//           PhoneFrame it sits right-aligned in the link row under the phone (PhoneLinkSlot; Agam, 25 Oct: "the glass
+//           reload button should not be inside the phone frame"); a bare embed keeps it at its own bottom right
 // badge     the loading dots over the floor (off where the floor is itself moving)
+// phoneStill  on a phone (PHONE_STILL) the iframe never mounts: the floor stays, with an "Open in Figma" link to the
+//           same frame or prototype (critique 18.2, 25 Oct: the live embed is heavy, slow and pinch-zooms inside the
+//           page). Desktop keeps it live. On by default; false keeps the embed live everywhere. Inside a PhoneFrame the
+//           link goes in the frame's link row under the phone (PhoneLinkSlot), so it covers none of the screen; a bare
+//           embed draws a compact pill in its own top-right corner instead.
+// openLink  the phone's "Open in Figma" link; false where the embed already sits inside a link (the homepage card)
 //
 // Embed URLs per Figma's Embed Kit 2.0: embed.figma.com/{design|proto}/<file>?node-id=…&embed-host=…
 export const FIGMA_SCHEDULE_FILE = "R04cmbzFPQk2Q4IockGwqZ"; // Claude: Schedule (the organised source)
@@ -45,9 +55,34 @@ export const figmaOpenUrl = ({ file = FIGMA_SCHEDULE_FILE, node, start, mode = "
     ? `https://www.figma.com/proto/${file}?node-id=${dash(node)}&starting-point-node-id=${encodeURIComponent(String(start || node).replace("-", ":"))}`
     : `https://www.figma.com/design/${file}?node-id=${dash(node)}`;
 
-export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", className = "", children }) {
+export const PHONE_STILL = "(max-width: 720px)";
+const phoneNow = () => typeof window !== "undefined" && !!window.matchMedia?.(PHONE_STILL).matches;
+function usePhoneStill() {
+  const [on, setOn] = useState(phoneNow);
+  useEffect(() => {
+    const mq = window.matchMedia?.(PHONE_STILL);
+    if (!mq) return undefined;
+    const ch = () => setOn(mq.matches);
+    ch();
+    mq.addEventListener("change", ch);
+    return () => mq.removeEventListener("change", ch);
+  }, []);
+  return on;
+}
+
+export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children }) {
   const root = useRef(null);
-  const [near, setNear] = useState(false);
+  const still = usePhoneStill() && phoneStill;
+  const [near0, setNear] = useState(false);
+  const near = near0 && !still; // the iframe mounts only near the viewport, and never as a phone still
+  const slot = useContext(PhoneLinkSlot);
+  const href = still && openLink ? figmaOpenUrl({ file, node, start, mode }) : null;
+  const canRestart = restart && near;
+  useEffect(() => {
+    if (!slot) return undefined;
+    slot(href || canRestart ? { figma: href, restart: canRestart ? () => setRun((n) => n + 1) : undefined } : null);
+    return () => slot(null);
+  }, [slot, href, canRestart]);
   const [st, setSt] = useState("idle"); // idle | loading | ready | failed
   const [run, setRun] = useState(0); // bumped by Restart: a fresh iframe starts the prototype at its first frame
   useEffect(() => {
@@ -67,19 +102,25 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   // Without a client-id the embed sends no paint event, so this is a timed hold.
   const onLoad = () => setTimeout(() => setSt((s) => (s === "failed" ? s : "ready")), 2500);
   return (
-    <div ref={root} className={"fembed " + className} data-st={st} data-floor={floor} style={aspect ? { aspectRatio: aspect } : undefined}>
+    <div ref={root} className={"fembed " + className} data-st={still ? "still" : st} data-floor={floor} style={aspect ? { aspectRatio: aspect } : undefined}>
       {near && (
         <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
       )}
       {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
         ? <img className="fembed__floor" src={fallback} alt={alt} loading="lazy" draggable="false" />
         : <span className="fembed__floor fembed__floor--blank" aria-hidden="true" />}
-      {restart && near && (
+      {canRestart && !slot && (
         <button type="button" className="theme-toggle dev-glass fembed__restart" aria-label="Restart the prototype" title="Restart" onClick={() => setRun((n) => n + 1)}>
           <Refresh width={15} height={15} strokeWidth={2} aria-hidden />
         </button>
       )}
-      {badge && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
+      {badge && near && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
+      {href && !slot && (
+        <a className="fshot-pill fshot-pill--link fembed__open" href={href} target="_blank" rel="noopener noreferrer"
+          aria-label={`Open in Figma${title ? `: ${title}` : ""} (opens a new tab)`}>
+          Open in Figma <OpenNewWindow width={12} height={12} strokeWidth={2} aria-hidden />
+        </a>
+      )}
     </div>
   );
 }

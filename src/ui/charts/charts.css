@@ -40,6 +40,10 @@
 .ch[data-in="true"] .ch-line { stroke-dashoffset: 0; }
 .ch-area { opacity: 0; transition: opacity 700ms ease 500ms; }
 .ch[data-in="true"] .ch-area { opacity: 1; }
+/* annotations: milestone dots and labels on a line, shown once the line has drawn */
+.ch-ann { opacity: 0; transition: opacity 400ms ease 900ms; }
+.ch[data-in="true"] .ch-ann { opacity: 1; }
+.ch-ann__t { fill: var(--ch-ink); font-size: 11.5px; font-weight: 600; paint-order: stroke; stroke: var(--bg, #fff); stroke-width: 3px; stroke-linejoin: round; }
 .ch-cross { stroke: var(--ch-mute); stroke-width: 1; stroke-dasharray: 3 3; opacity: .6; }
 .ch-dot { stroke: var(--bg, #fff); stroke-width: 2; }
 .ch-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; color: var(--ch-mute); font-size: 12px; }
@@ -55,9 +59,9 @@
 .ch-tip b { margin-left: auto; padding-left: 14px; font-weight: 600; color: var(--ch-ink); }
 .ch-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) {
-  .ch-seg, .ch-line, .ch-area, .ch-val, .ch-tip { transition: none !important; }
+  .ch-seg, .ch-line, .ch-area, .ch-val, .ch-tip, .ch-ann { transition: none !important; }
   .ch-seg--v, .ch-seg--h { transform: none; }
-  .ch-line { stroke-dashoffset: 0; } .ch-area, .ch-val { opacity: 1; }
+  .ch-line { stroke-dashoffset: 0; } .ch-area, .ch-val, .ch-ann { opacity: 1; }
 }
 .ch .ch-legend, .ch .ch-legend li { font-size: 12px !important; line-height: 1.3 !important; margin-bottom: 0; }
 .ch table, .ch figcaption { font-size: 12px; }

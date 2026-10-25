@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { watchSection, sectionPlayActive } from "../sectionPlay";
 
 // Shared chart plumbing: colour ramps (all CSS vars, theme aware), formatters,
@@ -12,6 +12,27 @@ export const ramp = (n) =>
     const t = n === 1 ? 50 : Math.round((i / (n - 1)) * 100);
     return `color-mix(in oklab, var(--ch-seq-hi) ${t}%, var(--ch-seq-lo))`;
   });
+
+// 28.3 (a11y, 25 Oct): a chart's accessible name says its point, never "Values by label". A host that states the
+// takeaway (a claim, a card title) provides it through ChartName; the chart adds what its own data says (start,
+// end, peak or highest and lowest). An explicit ariaLabel on the chart still wins.
+export const ChartName = createContext(null);
+export const useChartName = () => useContext(ChartName);
+export const nameChart = (head, summary) => {
+  const h = (head || "").trim();
+  if (!summary) return h;
+  return h ? `${h}${/[.!?]$/.test(h) ? "" : "."} ${summary}` : summary;
+};
+// one series over its categories: "Scheduled orders: 383 in Oct 25 to 1.54M in Aug 26, peak 1.81M in May 26" (a peak
+// only when it beats both ends)
+export function describeSeries(data, key, xKey, fmt, label) {
+  const pts = data.map((r) => [r[xKey], r[key]]).filter(([, v]) => v != null && typeof v !== "object");
+  if (!pts.length) return "";
+  const [x0, v0] = pts[0], [x1, v1] = pts[pts.length - 1];
+  const [xm, vm] = pts.reduce((a, b) => (b[1] > a[1] ? b : a));
+  const peak = vm > v1 && vm > v0 ? `, peak ${fmt(vm)} in ${xm}` : "";
+  return `${label ? label + ": " : ""}${fmt(v0)} in ${x0} to ${fmt(v1)} in ${x1}${peak}`;
+}
 
 export const SEQ5 = ramp(5);
 export const SEQ7 = ramp(7);

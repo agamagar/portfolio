@@ -34,7 +34,9 @@ export function groupEntries(entries) {
 export function useIndexPill(ref, deps) {
   const place = () => {
     const nav = ref.current;
-    const a = nav?.querySelector("a.is-active");
+    // the entries live in the rail's own list; the case's Design / PRD tabs sit in the rail's top block and carry
+    // is-active too, and the pill followed them on the Away case (found with mvnr1knd, 25 Oct)
+    const a = nav?.querySelector(":scope > ul a.is-active");
     if (!nav || !a) return;
     const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
     nav.style.setProperty("--pill-y", `${(r.top - n.top + nav.scrollTop).toFixed(1)}px`);
@@ -51,6 +53,51 @@ export function useIndexPill(ref, deps) {
     return () => window.removeEventListener("resize", place);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
+  useClearOfControls(ref);
+}
+
+// 76.1 (25 Oct): the bottom-left controls (the eye and Replay, the case's Design / PRD tabs, and in dev Inspect, the
+// palette, QA and Agentation) stack in a column under the fixed rail's lower entries and covered their first letters.
+// The rail ends above the highest of them instead, and scrolls inside, as it already does when it runs out of room.
+// Only while the rail is fixed (>= 1100px); controls mount late or grow (Replay), so it re-fits on their resize.
+const LEFT_CONTROLS = ".view-menu, .article__index-tabs, .cs-tabs--circles, .pal__btn, button[aria-label^='Inspect'], .qa-circle, [data-agentation-toolbar]";
+const CLEAR_GAP = 12;
+function useClearOfControls(ref) {
+  useEffect(() => {
+    const nav = ref.current;
+    if (!nav) return undefined;
+    let raf = 0;
+    const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
+    function fit() {
+      raf = 0;
+      nav.style.maxHeight = "";
+      if (getComputedStyle(nav).position !== "fixed") return;
+      const n = nav.getBoundingClientRect();
+      let top = Infinity;
+      for (const el of document.querySelectorAll(LEFT_CONTROLS)) {
+        ro.observe(el);
+        const r = el.getBoundingClientRect();
+        if (r.width < 2 || r.height < 2 || r.right <= n.left || r.left >= n.right || r.top <= n.top) continue;
+        top = Math.min(top, r.top);
+      }
+      const css = parseFloat(getComputedStyle(nav).maxHeight);
+      const room = Math.floor(top - CLEAR_GAP - n.top);
+      if (room < (Number.isNaN(css) ? Infinity : css)) nav.style.maxHeight = `${Math.max(120, room)}px`;
+    }
+    const later = [0, 600, 2000, 5000].map((ms) => setTimeout(fit, ms));
+    // dev tools (Agentation) portal into <body> whenever their lazy chunk lands
+    const mo = new MutationObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
+    mo.observe(document.body, { childList: true });
+    window.addEventListener("resize", fit);
+    return () => {
+      later.forEach(clearTimeout);
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      mo.disconnect();
+      window.removeEventListener("resize", fit);
+      nav.style.maxHeight = "";
+    };
+  }, [ref]);
 }
 
 export function IndexSlider() {

@@ -11,7 +11,23 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const pg = resolve(process.env.PLAYGROUND_DIR || join(homedir(), "design-playground"));
 const script = join(pg, "scripts", "sync-embed.mjs");
+// --if-missing (the `prebuild` step, critique 37.3, 25 Oct): a clean checkout has no public/sd-playground (git-ignored),
+// so `vite build` shipped a case page whose playground embeds were all offline. Before a build, sync once if the bundle
+// is missing and a playground checkout is here; otherwise say so and let the build go on. A CI host such as Amplify
+// has no design-playground checkout, so there it warns and changes nothing.
+const ifMissing = process.argv.includes("--if-missing");
+const syncedFile = join(root, "public/sd-playground/SYNCED.json");
+if (ifMissing && existsSync(syncedFile)) {
+  try {
+    const j = JSON.parse(readFileSync(syncedFile, "utf8"));
+    if (typeof j.commit === "string") { console.log(`sd-playground: already synced (playground ${j.commit}), skipping`); process.exit(0); }
+  } catch { /* unreadable: sync again */ }
+}
 if (!existsSync(script)) {
+  if (ifMissing) {
+    console.warn(`sd-playground: no design-playground checkout at ${pg}, not synced. The case page's playground embeds will show their offline posters.`);
+    process.exit(0);
+  }
   console.error(`Playground not found at ${pg}. Set PLAYGROUND_DIR to your design-playground checkout.`);
   process.exit(1);
 }
