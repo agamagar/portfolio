@@ -57,7 +57,7 @@ Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Una
 ## 3. The slot you picked
 In "Different ways we explored...", after the test quote.
 
-Verdict: **The collapsed card carries the slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." So every closed shipment shows its window. Five wordings were tried. [CONFIRM: which one shipped]
+Verdict: **The collapsed card carries the slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." So in the design, every closed shipment shows its window. Five wordings were tried. [CONFIRM: which one shipped]
 
 - "This shipment will be delivered Today, 5 - 6 AM"
 - "Delivering Today morning, 5 - 6 AM"
@@ -89,17 +89,17 @@ Verdict: **Two touches shipped. The rest stayed in the file.** The banner on the
 ## D1. Coming back to the cart
 Under the cart-side Schedule entry. A rule, so it's one line and a verdict, with no comparison row.
 
-Verdict: **Leave on the cart, and the schedule resets.** Close the app on the cart, open it again, and you land back on the cart with the Schedule Reset sheet, which resets the schedule there. In the M1 case the cart goes back to Store Unserviceable, with Schedule offered again. [CONFIRM: why it resets instead of keeping the slot] [CONFIRM: what resets, the slot or the Instant and Schedule choice too, and for which shipments]
+Verdict: **In the design, leaving on the cart resets the schedule.** Close the app on the cart, open it again, and the design lands you back on the cart with the Schedule Reset sheet, which resets the schedule there. In the M1 case the cart goes back to Store Unserviceable, with Schedule offered again. [CONFIRM: why it resets instead of keeping the slot] [CONFIRM: what resets, the slot or the Instant and Schedule choice too, and for which shipments]
 
 ## D2. One status on a closed card
-Next to comparison 3, "The slot you picked": that one settles the words on a closed card, this one settles how much it shows. Figure to make: a single pill against the toggle mirrored, with three shipments stacked in each.
+Next to comparison 3, "The slot you picked": that one settles the words on a closed card, this one settles how much it shows. Figure to make, labelled "Prototype, 2026": a single pill against the toggle mirrored, with three shipments stacked in each.
 
-Verdict: **A closed card shows one status.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home". [CONFIRM: which reason leads; this draft leads with input against output]
+Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home". [CONFIRM: which reason leads; this draft leads with input against output]
 
 - Three shipments read as one column, for example "10 mins", "Today, 7 - 8 PM", "22 mins". Two options each would be six labels, half of them off.
 - A scheduled shipment's slot is the thing to read, and a second option crowds it out.
 - Two options look like a switch, and tapping Schedule on a closed card can't finish the choice, because there's no slot yet.
 - The cost, said plainly: the second and third shipments start closed, so the other option is out of sight. People come to this page by choosing to schedule, so they know it's there.
-- Even an untouched card keeps the rule. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
+- Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
 
 What the design does: every closed card carries a single pill, the mode or the slot. [CONFIRM: shipped in the app, or the design only]
