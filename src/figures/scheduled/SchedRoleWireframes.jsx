@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate as motionAnimate } from "motion";
 import { DrawIcon } from "./SchedInsight"; // mv5iv45e: the insight header's own draw-on stroke icon
-import { Bars, fmtK } from "../../ui/charts";
+import { LineChart, fmtK } from "../../ui/charts";
 import { watchSection } from "../../ui/sectionPlay";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
@@ -356,20 +356,28 @@ function SpeedStrip() {
   );
 }
 // Annotation mvgl98l2-ksoqpj ("instead of 2 graphs build common graph"): the rollout line and the monthly
-// scale line were one story told twice, so they are ONE chart on the shared month axis: scheduled orders a
-// month as bars (left scale), stores live as a line (right scale). The pilot's first day, 10 Oct 2025, is
-// the October bar (a partial month); September 2026 is left out as it covers 21 days.
+// scale line were one story told twice, so they are ONE chart on the shared month axis. The pilot's first day,
+// 10 Oct 2025, is the October point (a partial month); September 2026 is left out as it covers 21 days.
+// Critique 3.6 (25 Oct, docs critiques-2026-10-25.md): orders and stores no longer share one plot on two scales.
+// One line, scheduled orders a month; the store milestones (pilot, every store) and the peak are annotations on it.
 const SHOW_CHART_CAP = false; // mvm8urab ("remove this"): the "Pilot to every store in N days..." line over the growth chart; true brings it back
 function GrowthChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
+  const pilot = ROLLOUT[0];
   const full = ROLLOUT.find((r) => r.mark === "full rollout");
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
+  const at = (d) => rows.findIndex((r) => r.m === d.slice(0, 7));
+  const n = (v) => v.toLocaleString("en-IN");
   return (
     <div className="rwf__charts rwf__charts--one">
       {SHOW_CHART_CAP && <p className="rwf-chart__cap">Pilot to every store in {daysFrom(full.d)} days, then {(peak.sd / 1e6).toFixed(2)}M scheduled orders a month at the peak</p>}
-      <Bars data={rows} valueKey="sd" label="Scheduled orders" yFormat={fmtK} emphasis={(r) => r.m === peak.m}
-        overlay={{ key: "stores", label: "Stores live", format: (v) => Math.round(v).toLocaleString("en-IN") }}
-        height={230} ariaLabel={`Scheduled orders a month and stores live: from ${rows[0].sd} orders and ${rows[0].stores} stores in the October 2025 pilot to every store by December and a peak of ${(peak.sd / 1e6).toFixed(2)} million orders in ${peak.label}`} />
+      <LineChart area data={rows} series={[{ key: "sd", label: "Scheduled orders a month" }]} yFormat={fmtK} height={230} legend={false}
+        annotations={[
+          { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
+          { i: at(full.d), label: `Every store, ${n(full.stores)}`, anchor: "start", below: true },
+          { i: rows.indexOf(peak), label: `Peak, ${(peak.sd / 1e6).toFixed(2)}M`, anchor: "middle" },
+        ]}
+        ariaLabel={`Scheduled orders a month: ${n(rows[0].sd)} in the October 2025 pilot, which began in ${pilot.stores} stores; every store, ${n(full.stores)}, by ${full.label}; and a peak of ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`} />
     </div>
   );
 }
