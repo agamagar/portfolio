@@ -2478,11 +2478,11 @@ const caseStudies = {
             "Managing expectations with the C-suite",
             "Partnering with the Senior Director of New Category", // mukpnlvb: ", in product" removed
           ],
-          statement: "I led the interaction design end-to-end with my manager, across product, content, and operations, over two 2025 releases.",
+          statement: "I led the interaction design end-to-end with my manager, across product, content, engineering and QA, and operations, over two 2025 releases.",
           // the body is the ORIGINAL role paragraph, as the Figma frame sets it
           body: "I led the interaction design end-to-end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right, it didn't account for the real spread of cases. So the bulk of my work was mapping every flow and edge case, running the exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November, with product, content, engineering, operations and QA, and an engineering group that pushed hard on the edge cases. The post-launch validation study I ran with the PMs.",
         },
-        tldr: "I led the interaction design end to end with my manager, across product, content and operations, over two 2025 releases.",
+        tldr: "I led the interaction design end to end with my manager, across product, content, engineering and QA, and operations, over two 2025 releases.",
         p: [
           "I led the interaction design end to end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right. It didn't account for the real spread of cases, so I set it aside and started again from the map.",
         ],
