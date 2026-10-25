@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Legend from "./Legend";
+import { ChartName } from "./shared";
 
 // Dashboard furniture for chart grids: Card (with a table view), SectionHead, Kpis, SmallMultiples (styles: .sdc__* in index.css)
 export function SmallMultiples({ panels, min = 240 }) {
@@ -35,7 +36,7 @@ export function Card({ title, kicker, children, shows, reads, needs, wide, tall,
         </div>
       ) : (
         <>
-          {children}
+          <ChartName.Provider value={title}>{children}</ChartName.Provider>{/* 28.3: the card's title names its chart */}
           {legend && <Legend items={legend} />}
         </>
       )}

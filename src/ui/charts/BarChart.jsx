@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useChart, niceTicks, clamp, CAT } from "./shared";
+import { useChart, niceTicks, clamp, CAT, useChartName, nameChart, describeSeries } from "./shared";
 import Axis from "./Axis";
 import Tooltip from "./Tooltip";
 import Legend from "./Legend";
@@ -105,7 +105,16 @@ function Core({
   const xt = !horizontal ? data.map((r, i) => ({ pos: cat(i), label: r[xKey], i })).filter((t) => t.i % every === 0) : [];
   const yt = ticks.map((t) => ({ pos: horizontal ? vx(t) : vy(t), label: yFormat(t) }));
 
-  const lab = ariaLabel || `${series.map((s) => s.label).filter(Boolean).join(", ") || "Values"} by ${xKey}`;
+  // 28.3: the host's takeaway, then what the bars say. Stacked shares list their parts and span; a few bars read in
+  // full; a long single series gives its start, end and peak.
+  const host = useChartName();
+  const span = n > 1 ? `, ${data[0][xKey]} to ${data[n - 1][xKey]}` : "";
+  const barsSay = stacked
+    ? `${percent ? "Shares of " : ""}${series.map((s) => s.label).filter(Boolean).join(", ")}${span}`
+    : n <= 4
+      ? data.map((r) => `${r[xKey]}: ${series.map((s) => `${k > 1 && s.label ? s.label + " " : ""}${fmt(r[s.key] ?? 0, r, s.key)}`).join(", ")}`).join("; ")
+      : series.map((s) => describeSeries(data, s.key, xKey, (v) => fmt(v), k > 1 ? s.label : s.label || "")).join("; ");
+  const lab = ariaLabel || nameChart(host, barsSay);
   const tipRows = (r) => [...series.map((s, si) => ({ label: s.label, color: col(s, si), value: fmt(percent && stacked ? val(r, s) : r[s.key] || 0, r, s.key) })), ...(overlay ? [{ label: overlay.label, color: ovColor, swatch: "line", value: ovFmt(r[overlay.key] || 0) }] : [])];
   const tipX = hi == null ? 0 : horizontal ? clamp(P.l + pw * 0.45, 90, W - 90) : clamp(cat(hi), 90, W - 90);
   const tipY = hi == null ? 0 : horizontal ? cat(hi) : P.t;

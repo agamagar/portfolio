@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useChart, niceTicks, clamp, spread, CAT } from "./shared";
+import { useChart, niceTicks, clamp, spread, CAT, useChartName, nameChart, describeSeries } from "./shared";
 import Axis from "./Axis";
 import Tooltip from "./Tooltip";
 import Legend from "./Legend";
@@ -51,7 +51,8 @@ export default function LineChart({
     if (e.key === "ArrowLeft") { e.preventDefault(); setHi((h) => clamp((h ?? n) - 1, 0, n - 1)); }
     if (e.key === "Escape") setHi(null);
   };
-  const lab = ariaLabel || `${series.map((s) => s.label).join(", ")} over ${xKey}`;
+  const host = useChartName();
+  const lab = ariaLabel || nameChart(host, series.map((s) => describeSeries(data, s.key, xKey, yFormat, s.label)).filter(Boolean).join("; ")); // 28.3
   const showLegend = legend ?? multi;
 
   return (

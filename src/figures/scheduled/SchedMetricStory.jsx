@@ -1,5 +1,5 @@
 import "./scheduled.css";
-import { StackedBars, Bars, LineChart, CAT, ramp, STATUS, fmtK, fmtPct0, fmtPct1, fmtInr } from "../../ui/charts";
+import { StackedBars, Bars, LineChart, CAT, ramp, STATUS, fmtK, fmtPct0, fmtPct1, fmtInr, ChartName } from "../../ui/charts";
 import {
   MONTHLY, ROLLOUT, SLOT_BANDS, SLOT_MIX, LEAD_BUCKETS, LEAD_TIME, ONTIME,
   ARRIVAL_RATING, VS_INSTANT, REPEAT_JUNE, SELLOUT_MONTHLY, WATCHED_HOURS,
@@ -190,7 +190,7 @@ export default function SchedMetricStory({ acts }) {
               <span className="rwf__n msty__n" aria-hidden>{String(n).padStart(2, "0")}</span>
               <h3 className="rwf__title">{b.claim}</h3>
               <p className="rwf__lead msty__body">{b.body}</p>
-              <div className="msty__chart">{b.chart}</div>
+              <div className="msty__chart"><ChartName.Provider value={b.claim}>{b.chart}</ChartName.Provider></div>{/* 28.3: the claim names its chart */}
             </div>
           </section>
         );
