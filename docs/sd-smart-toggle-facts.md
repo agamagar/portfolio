@@ -160,7 +160,8 @@ Placed in "Cart-page states".
   - Experiment 1 keeps Pay, disabled, and asks you to schedule: C-057, 137:7581.
   - Experiment 2 replaces Pay with a schedule button: C-060, 137:8842.
 - Source: flow-map-cart.md, "Cart composition", dev-ready.
-- **Open:** which experiment won, and why. The flow map lists it as an open question. **[CONFIRM]**. If neither is known, this comparison drops and a slot opens for "Slots full" (in the parked list below).
+- **Open:** which experiment won, and why. The flow map lists it as an open question. **[CONFIRM]**.
+- **Stills problem:** in Claude: Schedule's rebuild, C-057 and C-060 render the same (both show an enabled "Click to Pay ₹212"), so the rebuild doesn't show the difference. If this comparison stays, it needs the original frames from the Zepto handoff file (C-057 at 42:45530 and C-060 at 42:47849 in 71cZSn6pTNf4zFzO07O2uv). Until then it isn't in `SchedExplored`. If neither is known, this comparison drops and a slot opens for "Slots full" (in the parked list below).
 
 ### 5. Introducing it, quietly
 Placed in "The go-to-market".
