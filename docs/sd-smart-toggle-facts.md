@@ -26,6 +26,7 @@ Status: **blocked on Agam.** The main claim of the section (the toggle changes w
 - Scheduling on the product page was killed ("it fought the booking model and read as a negative listing"). Source: App.jsx, the parked "Explorations" list.
 - The cart header states (M3, status final) give two ways in. "Schedule" on the "Schedule for later" header opens the schedule page. "Edit" on a scheduled shipment ("Arriving today, 4-5 PM / Shipment scheduled") reopens the slot picker. Source: `docs/flow-map-schedule.md` (S-061 to S-070, exits) and `schedule-b/CartHeaderStates.tsx`.
 - The FTB dev handover: "Tap Schedule / Schedule Now on the cart" opens the picker, and "View items -> Schedule" opens it too. Source: `docs/flow-map-cart.md` (C-013 to C-029), `docs/build-cart-ftb.md`.
+- The cart's main button (66.2, 25 Oct): it reads Pay when everything can come now, and "Select delivery options" when any shipment is unserviceable with slots. In M1 a single unserviceable shipment made Schedule the primary cart CTA. Source: Agam's M1 and M2 release plan in the Drive hand-off note (`scheduled-delivery-handoff.md`). What shipment 1's toggle defaults to when someone arrives from it is open: Notion #13, question 25.
 - First visit: a pop-up introduces Schedule Delivery (C-001). Returning users get a bottom tray highlight instead (C-002). Source: `docs/flow-map-cart.md`.
 
 ### The page follows the tap (shipment level)
@@ -305,6 +306,9 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 **One status on a collapsed card (D2)**
 22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet.
 23. Did the single-status collapsed card ship in the Zepto app, or is it the design only?
+
+**The cart's main button (66.2)**
+25. Notion #13: when someone arrives on the Schedule page from the cart's main button (Pay, or "Select delivery options"), which shipment opens first, and what does its toggle default to?
 
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
