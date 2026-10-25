@@ -144,7 +144,7 @@ Placed in "Slot-page states".
 - **Latest:** the Nov 21 set, a dismissible "High Demand! Instant delivery is temporarily unavailable. Schedule for later." banner (S-041 to S-043, TimeOfDay.tsx).
 - **What M4 shows:** a greyed Instant card marked Unavailable, with a callout you can dismiss (index card 07). M4's demand line is "Unavailable due to demand, schedule for later" (S-003, frame 84:169, playground `schedule/data.ts`).
 - **Open:**
-  - The chip copy has six variants across boards (flow map, inconsistencies). Which wording ships: **[CONFIRM]**.
+  - Which wording shipped: **answered (Q10, A, Agam accepted 26 Oct)**: M4's "Unavailable due to demand, schedule for later". Comparison 2 marks it the winner over Nov 21's "High Demand!" banner. (The chip copy had six variants across boards.)
   - Why the greyed card and callout beat the chip, tag, up / down toggle and "Get it now / later": **[CONFIRM]**.
 
 ### 3. The slot on the collapsed card

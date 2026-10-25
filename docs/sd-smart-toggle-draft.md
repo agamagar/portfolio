@@ -48,7 +48,7 @@ Verdict: **Two cards per shipment won.** Instant and Schedule sit side by side i
 ## 2. Saying Instant is off
 In "Slot-page states".
 
-Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Unavailable, and adds a callout you can dismiss. [CONFIRM: the reason this beat the others, and the wording that ships]
+Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Unavailable, and adds a callout you can dismiss. Its line, "Unavailable due to demand, schedule for later", is the one that shipped, over Nov 21's "High Demand!" banner (Q10). [CONFIRM: the reason this beat the others]
 
 - "Back soon" chip (Explored): a promise the store couldn't time. [CONFIRM]
 - "Temporarily UNAVAILABLE" tag (Explored): loud, and it sits above the choice. [CONFIRM]

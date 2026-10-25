@@ -24,9 +24,9 @@ export const EXPLORED = {
   instantOff: {
     title: "Saying Instant is off",
     lead: "Grey the card, say why, offer later.",
-    note: "M4 greys Instant, marks it Unavailable and adds a callout you can dismiss.", // [Q 10, 11] the wording that ships, and why it won
+    note: "M4 greys Instant, marks it Unavailable and adds a callout you can dismiss. Its line, \"Unavailable due to demand, schedule for later\", is the one that shipped, over Nov 21's \"High Demand! Instant delivery is temporarily unavailable.\"", // Q10 answered (A, 26 Oct); [Q 11] why it won is still open
     items: [
-      { src: S("off-m4"), node: "84:169", tag: "Picked", cap: "M4: a greyed Instant card and a callout you can dismiss", alt: "M4 schedule page: callout 'Unavailable due to demand, schedule for later' above a greyed Instant card marked Unavailable" },
+      { src: S("off-m4"), node: "84:169", tag: "Shipped", cap: "M4: a greyed Instant card and a callout you can dismiss", alt: "M4 schedule page: callout 'Unavailable due to demand, schedule for later' above a greyed Instant card marked Unavailable" },
       { src: S("off-backsoon"), node: "113:5468", tag: "Explored", cap: "A 'Back soon' chip on Instant", alt: "Instant Delivery card captioned Back soon beside Schedule Delivery" },
       { src: S("off-tag"), node: "113:5731", tag: "Explored", cap: "A 'Temporarily UNAVAILABLE' tag above the choice", alt: "A Temporarily UNAVAILABLE strip above the Instant and Schedule cards" },
       { src: S("off-gotyou"), node: "113:5997", tag: "Superseded", cap: "The 'We got you!' callout, replaced by the Nov 21 line", alt: "Callout: We got you! Instant delivery is temporarily unavailable. Schedule for later." },
