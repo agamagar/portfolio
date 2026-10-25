@@ -602,6 +602,13 @@
               background 200ms ease;
 }
 .smo__pill:not([data-on]):hover, .smo__pill:not([data-on]):focus-visible { background: #6b2ee0; }
+/* 28.4: the tag's 44px touch target, a transparent square over its centre, above it (the tag clips its own overflow).
+   Touch only: a mouse keeps the tag's own hover. */
+.smo__hit { display: none; position: absolute; z-index: 4; width: 44px; height: 44px; transform: translate(-50%, -50%); -webkit-tap-highlight-color: transparent; }
+@media (pointer: coarse) { .smo__hit { display: block; } }
+/* in the collage a tag sits by its top-left corner (no centring translate) as a calc(4.6cqw + 8px) circle at rest,
+   so the target takes the same corner and moves back by half of 44 less half the circle */
+.smo__collage .smo__hit { transform: translate(calc((4.6cqw + 8px) / 2 - 22px), calc((4.6cqw + 8px) / 2 - 22px)); }
 .smo__pill:active { scale: 0.92; }              /* the squash, on the way open */
 .smo__pill[data-on] { max-width: 30em; padding: 0 18px; }
 .smo__pill:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }

@@ -8909,3 +8909,13 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 /* mvigzb44: the lines are white (a faint violet shadow keeps them readable on the pale light-mode orb); a prism lens drifts over the figure */
 .rv-pack__defs { position: absolute; width: 0; height: 0; pointer-events: none; }
 .rv-pack__lens { position: absolute; inset: 0; pointer-events: none; backdrop-filter: saturate(1.1); backdrop-filter: url(#rv-lens) saturate(1.1); -webkit-mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); mask-image: radial-gradient(closest-side, #000 88%, transparent 100%); } /* mvj9tks3: static, covers the whole figure, feathered so it has no visible edge */
+
+/* 28.4 (a11y, 25 Oct): a 44px touch target with no change to the look. A centred ::after at least 44 x 44 around the
+   control; in a fit-scaled figure (useFitScale sets --ds-scale) it grows by 1 / scale so it stays 44px on screen.
+   The year switch is already positioned; the pill under a phone becomes relative. (The persona chips clip their own
+   overflow, so theirs is a sibling, .smo__hit in scheduled.css.) */
+.fshot-pill { position: relative; }
+.tlh__year::after, .fshot-pill::after {
+  content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: max(100%, calc(44px / var(--ds-scale, 1))); height: max(100%, calc(44px / var(--ds-scale, 1)));
+}
