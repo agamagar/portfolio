@@ -182,7 +182,8 @@ Placed in "The go-to-market".
 
 **Save gating**
 - User 01 asked for Save to stay off until a slot is picked (S-106, S-107).
-- The M4 file draws Confirm enabled with "No slot selected". **[CONFIRM]** whether gating shipped.
+- The M4 file draws Confirm enabled with "No slot selected".
+- Decided in the design: Confirm waits for every shipment (critique decision 1.2 / 1.8, below). Whether Zepto shipped the gating in 2025 is still unknown, and the case study doesn't claim it.
 
 **Other explorations with no verdict recorded:**
 - Many shipments, 1 of 3 to 3 of 3 (S-029 to S-032). Shipment counts disagree across boards.
