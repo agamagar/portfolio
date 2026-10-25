@@ -1413,6 +1413,9 @@ function ScrollScene({ scene: sceneIn }) {
   const [W, H] = isDefault ? [1512, 982] : scene.aspect || [1392, 862];
   return (
     <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.bg }}>
+      {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
+          are painted as CSS masks, which a screen reader never sees) */}
+      {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
       {scene.base && <img className="sscene__base" src={scene.base} alt="" draggable="false" />}
       {scene.title && <p className="sscene__title">{scene.title}</p>}
       {hasOneShot && (
@@ -1523,7 +1526,7 @@ function PlatesStack({ stack, gradient, children }) {
 // travels the viewport: top of the phone showing as the section enters at the
 // bottom, the bottom showing as it leaves at the top. Scroll-linked, so it is
 // interruptible by nature; no easing, the scroll is the easing.
-function ScrollPhone({ src, long }) {
+function ScrollPhone({ src, long, alt = "" }) {
   const ref = useRef(null);
   // mv54coar: click opens the full-page view; every phone card on the page is in
   // the set, so next / previous step between them
@@ -1571,7 +1574,7 @@ function ScrollPhone({ src, long }) {
     <div className={"sp" + (long ? " sp--long" : "")} ref={ref} data-expand="" data-open={lb ? "" : undefined}
       role="button" tabIndex={0} aria-haspopup="dialog" aria-label="Open this screen full page" title="Click to expand"
       onClick={openLb} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(); } }}>
-      <PhoneFrame className="sp__phone" screen={src} interactive={false} enter={false} shadow="none" />
+      <PhoneFrame className="sp__phone" screen={src} alt={alt} interactive={false} enter={false} shadow="none" />
       {/* mv56ivr6 (12 Oct): the site's glass button (.article__hero-replay, the one the replay and
           Open-in-Figma controls use: 38px, nav glass, same hover / press / focus), bottom right */}
       <span className="article__hero-replay sp__hint" aria-hidden="true">
@@ -1648,6 +1651,7 @@ function SectionFigure({
   whiteboard,
   reel,
   still,
+  stillAlt,
   stillParallax,
   scene,
   cover,
@@ -1676,7 +1680,7 @@ function SectionFigure({
   }
   // mtmlfoo3: a still without a reel (the video moved to the lab)
   if (still && stillParallax) {
-    return <ScrollPhone src={still} long={stillParallax === "long"} />;
+    return <ScrollPhone src={still} alt={stillAlt} long={stillParallax === "long"} />;
   }
   if (reel) {
     return <ReelFigure name={reel} variant={variant} />;
@@ -2259,6 +2263,7 @@ const caseStudies = {
         // from here (the reel lives in the lab, /lab); only the parallax still
         // stays. Earlier: mtmglh43 (toggle), mtmguhc9 (parallax, group 460-53124).
         still: "/figures/scheduled/in-motion-screen.png", // bare screen (460-53125); the frame is the base iPhone
+        stillAlt: "The Zepto schedule page: three shipments, the first open with Instant Delivery (9 min) and Schedule Delivery cards, Today and Tomorrow tabs, one-hour slots from 7-8 AM to 10-11 PM, and Confirm.", // 28.2
         stillParallax: true,
         figBare: true,
         // mtmqmw9z: caption removed; the parallax needs no line under it.
@@ -2300,6 +2305,8 @@ const caseStudies = {
           },
         ],
         scene: {
+          // 28.2: the scene's one description (its layers are pictures of text, so the words go here)
+          alt: "Context: when people hear Zepto they think 10-min delivery, internally known as \u2018now\u2019. Objective: building a feature to enable scheduled deliveries. We called it \u2018later\u2019.",
           aspect: "default", // muifb2es: this box DEFINES --case-study-frame-default
           bg: "transparent", // mtpeowii: no box fill, no stroke
           noframe: true,
@@ -2391,6 +2398,7 @@ const caseStudies = {
         // Annotation mtmgxe0z: image frame from Figma Portfolio 2026 node 480-23182.
         // Annotation mtmh6om7: the five reasons arrive one at a time on scroll.
         scene: {
+          alt: "The five reasons, each with its icon: out of hours, disruptions, beyond coverage, out of stock, at capacity.", // 28.2
           aspect: [1392, 1034], // muif89sl: 20% taller (862 -> 1034) for breathing room
           bg: "transparent", noframe: true /* mvgf46bv (Agam, "remove the fill and stroke"): no box fill, no border; was var(--sd-reasons-bg, #f7f7f7) */, // muiejocv: the box is back; muikq572: a var so dark mode can repaint it
           // muiejocv: the heading moved inside the box (was figureTop, above it)
@@ -2438,6 +2446,7 @@ const caseStudies = {
         // Annotation mtmgd7ug: image frame from Figma Portfolio 2026 node 460-53090.
         // Annotation mtmh68zb: the card flips up as you scroll (photo + card as layers).
         scene: {
+          alt: "Ripe mangoes in a purple crate, under a scheduled shipment card: Arriving tomorrow, 4-5 PM. Shipment scheduled, with an Edit link.", // 28.2
           aspect: [1392, 862],
           base: "/figures/scheduled/mango-photo.png",
           layers: [{ src: "/figures/scheduled/mango-card.png", x: 16.9, y: 40.7, w: 66.21, fx: "flip" }],
@@ -2493,6 +2502,7 @@ const caseStudies = {
         // through, between the purple ground and the egg cartons. Desktop MCP
         // was off, so the timing is scroll-linked rather than Figma's keyframes.
         scene: {
+          alt: "The words Now and Later, one under the other and repeating, down a purple ground between egg cartons.", // 28.2
           aspect: [1392, 862],
           base: "/figures/scheduled/role/photo.png",
           layers: [
@@ -2538,6 +2548,7 @@ const caseStudies = {
         // (mtmj7y2h): the phone is the ground, the notification card drops in
         // like a real banner when the section is reached.
         scene: {
+          alt: "A phone's home screen with a Zepto notification dropping in: Your order is scheduled, arriving on Aug 13, 5-6 PM.", // 28.2
           aspect: [1392, 862],
           bg: "radial-gradient(circle at 100% 0%, #c4a5f5 0%, #8b5cf6 100%)",
           layers: [
@@ -2972,6 +2983,7 @@ const caseStudies = {
         group: "Outcome",
         stack: true, // mvgntthg (Agam, "make the layout vertical"): heading, TL;DR and photo in one column instead of side by side
         sideImage: "/figures/scheduled/photos/bag-doorstep.webp", // muky37n5
+        sideAlt: "A paper grocery bag with a purple band, left on a doormat outside a door.", // 28.2
         // muky37n5 (28 Sep): streamlined, "really difficult to read"; was the long
         // one-sentence version (adoption, 3x value, cancellation, appliances)
         // mv59ku9w (12 Oct, "make these bullet points, and write the impact accordingly"): six bullets, each leading with its number.
@@ -10125,7 +10137,7 @@ function CaseStudyBodyFull({ cs }) {
           {/* a big open question, set large (Before we start) */}
           {s.ask && <p className="article__ask">{s.ask}</p>}
           {/* muky37n5: a photo beside the heading and TL;DR, 50/50 */}
-          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt="" loading="lazy" />}
+          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} loading="lazy" />}
           {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
             <p className="article__tldr">
               <span className="article__tldr-label">TL;DR</span>
@@ -10242,6 +10254,7 @@ function CaseStudyBodyFull({ cs }) {
                 whiteboard={s.whiteboard}
                 reel={s.reel}
                 still={s.still}
+                stillAlt={s.stillAlt}
                 stillParallax={s.stillParallax}
                 scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
@@ -10261,6 +10274,7 @@ function CaseStudyBodyFull({ cs }) {
                 whiteboard={s.whiteboard}
                 reel={s.reel}
                 still={s.still}
+                stillAlt={s.stillAlt}
                 stillParallax={s.stillParallax}
                 scene={s.sceneHidden ? undefined : s.scene}
                 variant="article"
