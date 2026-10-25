@@ -158,10 +158,9 @@ const ACTS = [
       {
         claim: `${REPEAT_JUNE.repeatPct}% came back within a month.`,
         body: `Of the ${(REPEAT_JUNE.customers / 1e5).toFixed(1)} lakh people who scheduled in June, ${(REPEAT_JUNE.repeatWithin30d / 1e5).toFixed(2)} lakh scheduled again within 30 days. Most used it once: a tool for the days that need it, not a habit.`,
-        // 37.1b: two different windows (another order within 30 days, which can run into July; exactly one order in June,
-        // the report's wording in SdImpactCharts), so they are not parts of one whole and are labelled as what they measure.
-        // Which pair to show is Agam's call (question 19).
-        chart: <Bars horizontal data={[{ label: "Scheduled again within 30 days", v: REPEAT_JUNE.repeatPct }, { label: "Placed exactly one in June", v: REPEAT_JUNE.onceOnlyPct }]} valueKey="v" yFormat={fmtPct1} max={100} />,
+        // Q19 (b, Agam accepted, 26 Oct): one measure and its complement, so the two bars are one whole (18.3% + 81.7%).
+        // (37.1b had paired it with "Placed exactly one in June", a different window.)
+        chart: <Bars horizontal data={[{ label: "Scheduled again within 30 days", v: REPEAT_JUNE.repeatPct }, { label: "Didn't schedule again within 30 days", v: +(100 - REPEAT_JUNE.repeatPct).toFixed(1) }]} valueKey="v" yFormat={fmtPct1} max={100} />,
       },
     ],
   },
