@@ -28,6 +28,10 @@ import {
 const SEQ5 = ramp(5), SEQ7 = ramp(7);
 const live = MONTHLY.filter((m) => m.sd > 1000);
 const fullCxl = live.filter((m) => !m.partial && m.sdCancelPct != null).map((m) => m.sdCancelPct); // full months only
+// 37.4: the report's last month is partial (1 to 21 Sep 2026). Every chart that shows it marks it with an asterisk, and
+// the source line under the story says what the asterisk means; the growth chart already leaves it out.
+const PARTIAL = MONTHLY.find((m) => m.partial && m.m !== MONTHLY[0].m);
+const star = (rows) => rows.map((r) => (r.label === PARTIAL.label ? { ...r, label: `${r.label}*` } : r));
 const pk = live.reduce((a, b) => (b.sd > a.sd ? b : a));
 const firstM = live.find((m) => m.sd >= 1e6);
 const full = ROLLOUT.find((r) => r.mark === "full rollout");
@@ -71,7 +75,7 @@ const ACTS = [
         body: `In the first month ${lead0.u1}% of slots were booked under an hour out. By August it was ${leadN.u1}%, and the median booking sat about ${leadN.median} hours ahead.`,
         chart: (
           <>
-            <StackedBars percent data={LEAD_TIME} series={LEAD_BUCKETS} colors={SEQ7} yFormat={fmtPct0} valueFormat={fmtPct1} height={200} />
+            <StackedBars percent data={star(LEAD_TIME)} series={LEAD_BUCKETS} colors={SEQ7} yFormat={fmtPct0} valueFormat={fmtPct1} height={200} />
           </>
         ),
       },
@@ -80,7 +84,7 @@ const ACTS = [
         body: `Evenings led at launch with ${am0.eve}% of orders. By August the 6 to 10 AM slots led with ${amN.am}%: groceries for the day, booked the night before.`,
         chart: (
           <>
-            <StackedBars percent data={SLOT_MIX} series={SLOT_BANDS} colors={SEQ5} yFormat={fmtPct0} valueFormat={fmtPct1} height={200} />
+            <StackedBars percent data={star(SLOT_MIX)} series={SLOT_BANDS} colors={SEQ5} yFormat={fmtPct0} valueFormat={fmtPct1} height={200} />
           </>
         ),
       },
@@ -101,7 +105,7 @@ const ACTS = [
       {
         claim: "The tail has a name: appliances.",
         body: `Electronics and appliances went from a small share of scheduled GMV in December to a large and growing one by September. Around ₹${GMV_TOTAL_CR} Cr of scheduled GMV since December, and that is a floor: the bridge matches only about 55% of orders.`,
-        chart: <LineChart data={ELECTRONICS} series={[{ key: "shareOfSdGmv", label: "Appliances, % of GMV" }]} colors={[CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={60} height={200} />,
+        chart: <LineChart data={star(ELECTRONICS)} series={[{ key: "shareOfSdGmv", label: "Appliances, % of GMV" }]} colors={[CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={60} height={200} />,
       },
     ],
   },
@@ -114,7 +118,7 @@ const ACTS = [
         body: `Between ${Math.min(...fullCxl)}% and ${Math.max(...fullCxl)}% a month, against ${cxl("Aug 26").allCancelPct}% for all orders. About ${(CANCELLED_TOTAL / 1e6).toFixed(2)}M scheduled orders never made it.`,
         chart: (
           <>
-            <LineChart data={live.map((m) => ({ label: m.label, sd: m.sdCancelPct, all: m.allCancelPct }))} series={[{ key: "sd", label: "Scheduled" }, { key: "all", label: "All orders" }]} colors={[CAT[0], CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={35} height={200} />
+            <LineChart data={star(live.map((m) => ({ label: m.label, sd: m.sdCancelPct, all: m.allCancelPct })))} series={[{ key: "sd", label: "Scheduled" }, { key: "all", label: "All orders" }]} colors={[CAT[0], CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={35} height={200} />
           </>
         ),
       },
@@ -128,7 +132,7 @@ const ACTS = [
         body: `Deliveries inside the booked hour went from ${ot("Dec 25").within}% to ${ot("Feb 26").within}% by February, then eased to ${ot("Aug 26").within}% in August as volume doubled. The growth was in early arrivals, and it was not the move to mornings: that explains ${EARLY_SHIFT_SHARE.parts[2].v} of the ${EARLY_SHIFT_SHARE.total} points.`,
         chart: (
           <>
-            <StackedBars percent data={ONTIME} yFormat={fmtPct0} valueFormat={fmtPct1} series={[{ key: "within", label: "Within slot" }, { key: "early", label: "Early" }, { key: "late", label: "Late" }]} colors={STATUS} height={200} />
+            <StackedBars percent data={star(ONTIME)} yFormat={fmtPct0} valueFormat={fmtPct1} series={[{ key: "within", label: "Within slot" }, { key: "early", label: "Early" }, { key: "late", label: "Late" }]} colors={STATUS} height={200} />
           </>
         ),
       },
@@ -147,7 +151,7 @@ const ACTS = [
         body: `In May the 6 AM slot got ${SIX_AM_RELEASE.openLift}% more store-slots and ${SIX_AM_RELEASE.capacityLift}% more capacity. Its sell-out rate went from ${SIX_AM_RELEASE.soldOutApr}% in April to ${soN.h6.so}% by September, and every watched hour followed.`,
         chart: (
           <>
-            <LineChart data={SELLOUT_MONTHLY.map((r) => ({ label: r.label, ...Object.fromEntries(WATCHED_HOURS.map((h) => [h.key, r[h.key]?.so ?? null])) }))} series={WATCHED_HOURS} colors={CAT} yFormat={fmtPct0} domainMin={0} height={200} />
+            <LineChart data={star(SELLOUT_MONTHLY.map((r) => ({ label: r.label, ...Object.fromEntries(WATCHED_HOURS.map((h) => [h.key, r[h.key]?.so ?? null])) })))} series={WATCHED_HOURS} colors={CAT} yFormat={fmtPct0} domainMin={0} height={200} />
           </>
         ),
       },
@@ -200,7 +204,7 @@ export default function SchedMetricStory({ acts }) {
           </section>
         );
       }))}
-      <p className="msty__src">{SOURCE_NOTE} Order values match about 55% of scheduled orders to the GMV table, so money figures are indicative.</p>
+      <p className="msty__src">{SOURCE_NOTE} {PARTIAL.label}* covers {PARTIAL.note}, a partial month. Order values match about 55% of scheduled orders to the GMV table, so money figures are indicative.</p>
     </div>
   );
 }
