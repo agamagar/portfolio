@@ -248,6 +248,7 @@ Source: Agam's Figma annotations on the Schedule button variants page in Claude:
   - For a scheduled shipment the slot time is what matters, and a two-option pill crowds it out.
   - A two-option pill looks like a switch. But tapping Schedule on a collapsed card can't finish the choice, because there's no slot yet.
   - The counterpoint: shipments 2 and 3 start collapsed (M4 "Default arrival: the shipment you came from expanded, the rest collapsed but visible", App.jsx "Slot-page states"), so the other option is hidden. The answer is intent: people come to the Schedule page by choosing to.
+- Addendum, Agam's choice (option A, 25 Oct, relayed by CoS: Figma): an untouched collapsed card really starts on Instant and shows one pill with the default, "Delivering in 10 mins". There are no offer chips, even before a choice, and the card opens on a tap. That closes the gap in the counterpoint: the single-pill rule holds everywhere, with no exception.
 - Ties back to: comparison 3, "The slot you picked". That one settles what the collapsed card says (User 02, the five wordings); D2 settles how much it shows.
 - Shipped or design: the single pill is the design. Whether the Zepto app shipped it is **[CONFIRM]** (question 23).
 - Figure to make: one collapsed card with a single pill beside the same card mirroring the toggle (two pills), with three shipments stacked in each, built from the shared figure parts.

@@ -100,5 +100,6 @@ Verdict: **A closed card shows one status.** The obvious move was to mirror the 
 - A scheduled shipment's slot is the thing to read, and a second option crowds it out.
 - Two options look like a switch, and tapping Schedule on a closed card can't finish the choice, because there's no slot yet.
 - The cost, said plainly: the second and third shipments start closed, so the other option is out of sight. People come to this page by choosing to schedule, so they know it's there.
+- Even an untouched card keeps the rule. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
 
 What the design does: every closed card carries a single pill, the mode or the slot. [CONFIRM: shipped in the app, or the design only]
