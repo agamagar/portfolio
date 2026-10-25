@@ -97,6 +97,7 @@ import "./figures/design/design.css"; // kept eager: global rules the case pages
 const DesignFigure = lazyFig(() => import("./figures/design/DesignFigure"));
 import "./figures/whiteboard.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
 const Whiteboard = lazyFig(() => import("./figures/Whiteboard"));
+const SchedExplored = lazyFig(() => import("./figures/scheduled/SchedExplored")); // Q15 (26 Oct): one "what was explored" row per decision, `explored: <key>` on its section
 import { SD_BOARDS } from "./figures/board/boards.scheduledDelivery"; // 11 Oct: whiteboards written by the board engine (src/figures/board)
 import ReelFigure, { ReelPresets, reels } from "./figures/reel/Reel";
 import "./figures/crosssell/crosssell.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
@@ -2651,6 +2652,7 @@ const caseStudies = {
         // boxes; the title, TL;DR and the three assets are still to come
         // mukxmirl (28 Sep): this and Two directions below are ONE section now
         h: "Different ways we explored how schedule could exist on the app",
+        explored: "collapsedSlot", // Q15: the "collapsedSlot" comparison row (SchedExplored), at the end of this section
         nav: "Ways to exist",
         group: "Process",
         stack: true, // mvgmceoe (Agam, "make this a vertical layout"): heading above the text, not in a label column beside it
@@ -2715,6 +2717,7 @@ const caseStudies = {
         // goes in public/figures/scheduled/instant-to-scheduled-toggle.mp4 (placeholder until then).
         // [CONFIRM] the caption's last line once the recording is in: what the motion does, in his words.
         h: "Instant to Scheduled: the toggle",
+        explored: "toggle", // Q15: the "toggle" comparison row (SchedExplored), at the end of this section
         nav: "The toggle",
         group: "Process",
         tldr: "One control moves the order from now to later.", // wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
@@ -2747,6 +2750,7 @@ const caseStudies = {
       },
       {
         h: "The go-to-market",
+        explored: "gtm", // Q15: the "gtm" comparison row (SchedExplored), at the end of this section
         nav: "Go-to-market",
         group: "Process",
         stack: true, // mvksqb7g (Agam, "combine this with the section above"): one stacked section, the whiteboard beside its text
@@ -2831,6 +2835,7 @@ const caseStudies = {
       },
       {
         h: "Slot-page states",
+        explored: "instantOff", // Q15: the "instantOff" comparison row (SchedExplored), at the end of this section
         nav: "Slot states",
         group: "Process",
         tldr:
@@ -10311,6 +10316,12 @@ function CaseStudyBodyFull({ cs }) {
           {s.whiteboardNext && !s.whiteboardFloat && (
             <EF className="article__figure">
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
+            </EF>
+          )}
+          {/* Q15 (Agam accepted, 26 Oct): what was explored for this section's decision, the stills and the verdict, at its end */}
+          {s.explored && (
+            <EF className="article__figure">
+              <SchedExplored k={s.explored} />
             </EF>
           )}
           {/* mukub9lc (28 Sep): a second scroll scene right after the main one */}

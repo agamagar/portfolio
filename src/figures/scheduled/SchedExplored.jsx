@@ -14,7 +14,7 @@ export const EXPLORED = {
   toggle: {
     title: "Three toggles, one kept",
     lead: "Two cards per shipment won.",
-    note: "UT 01, 02 and 03 went in front of three people on Oct 29. The final page kept UT 01's pair of cards, and UT 03's best idea moved onto the collapsed card.", // [Q 8] the reason
+    note: "UT 01, 02 and 03 went in front of three people on Oct 29. The final page kept UT 01's pair of cards, and UT 03's pill, carrying the slot, was tried again on the collapsed card.", // [Q 8] the reason; 88.2: v4 shows "Scheduled" there, so the idea was tried, not kept
     items: [
       { src: S("ut01"), node: "125:11802", tag: "Picked", cap: "UT 01: Instant and Schedule as two cards in each shipment", alt: "UT 01: shipment 1 of 3 open with Instant and Schedule Delivery cards, day tabs and slots; shipments 2 and 3 collapsed as Scheduled and Unserviceable" },
       { src: S("ut02"), node: "125:12967", tag: "Dropped", cap: "UT 02: Remove Items as a third option. Remove moved to the shipment header", alt: "UT 02: Instant Delivery, Schedule Delivery and Remove Items as three radio options in one shipment" }, // [Q 8] why

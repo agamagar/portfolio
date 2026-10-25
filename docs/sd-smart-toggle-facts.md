@@ -297,6 +297,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
     - Cart-page states: the Pay experiment.
     - The go-to-market: the coach-marks and banners.
     BxGy stays off the page, since it's on hold and internal.
+    **Answered (Q15 / #28, A, Agam accepted 26 Oct): placed as planned.** Wired with `explored: <key>` on each section, the row at the section's end: toggle, instantOff, collapsedSlot and gtm. The Pay row waits: which experiment won is still open (comparison 4), and the rebuild's stills don't show the difference, so it needs the handoff frames (C-057 42:45530, C-060 42:47849) before it can go in.
 
 **The Schedule Reset sheet (D1)**
 17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed.
