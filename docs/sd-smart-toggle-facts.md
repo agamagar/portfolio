@@ -216,6 +216,18 @@ Placed in "The go-to-market".
 - **Stills:** 2x exports of the Claude: Schedule frames listed above, as webp in `public/figures/scheduled/explored/`. No live iframes: about 18 of them on one page would be too heavy, and the site's still-first rule already covers this.
 - **No new tokens.** The plate reuses the toggle demo's lavender plate and the site's figure tags.
 - The toggle section's current stand-in is the composite still of UT 01, 02 and 03. It would repeat comparison 1, so comparison 1 replaces it until the recording arrives.
+## Critique decisions (Agam's own answers)
+
+Source: `design-playground/docs/critique-decisions.md`, kept by the Design critiques session. Each entry is Agam's decision and reasoning on the Schedule prototype and the Figma file, which makes it a sourced fact. These are decisions on the current design (the RN prototype and Claude: Schedule). They say nothing about what Zepto shipped in 2025, so the case study writes them as the design, not as shipped.
+
+**1.2 / 1.8: the Confirm button and its helper text** (logged 25 Oct)
+- Decision: Confirm stays disabled until every shipment has a choice. There is no caption counting what's left, and the footer progress text ("2 of 3 scheduled") was declined.
+- Reasoning: Agam, relayed by CoS: Figma: "pick a slot for 3 more shipments … not needed".
+- Craft detail: the pending count survives only as a VoiceOver hint on the disabled button (`rn/src/schedule/shipments.ts`, `pendingHint`).
+- The thread back to the research: User 01 asked on Oct 29, "Don't let me save if something is pending" (S-106). The M4 file still drew Confirm enabled with "No slot selected".
+- In the case study: one line in the explorations layer, under "Slot-page states", reading "**Confirm waits for every shipment.**", with Agam's reason. It can also be the honest close of comparison 1, since the research ask was acted on in the design.
+- Settles Q16, written as the design rather than as shipped.
+
 ## One list for Agam (both parts)
 
 Answers can be short. Where I've written a guess, a yes or no is enough.
@@ -256,4 +268,4 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
     BxGy stays off the page, since it's on hold and internal.
 
 **Optional, not blocking**
-16. Did "Save stays off until a slot is picked" (User 01's ask) ship? The M4 file draws Confirm enabled.
+16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
