@@ -390,7 +390,9 @@ const PlateCursor = lazy(() => import("./figures/scheduled/PlateCursor")); // mt
 // mtpdtjwt: a "\n" in a case title is a forced line break
 function withBreaks(str) {
   const parts = String(str || "").split("\n");
-  return parts.length === 1 ? str : parts.map((t, i) => (i ? [<br key={"b" + i} />, t] : t));
+  // 28.1: a space before each break, so the words don't run together when read ("Schedule Delivery", not
+  // "ScheduleDelivery"); a space at a line end doesn't show
+  return parts.length === 1 ? str : parts.map((t, i) => (i ? [" ", <br key={"b" + i} />, t] : t));
 }
 // The case's live Figma prototype plates go through the shared FigmaEmbed (src/ui/FigmaEmbed.jsx), on the
 // link-shared file Claude: Schedule. The old private file (71cZSn6pTNf4zFzO07O2uv) and its sign-in wall are gone.
@@ -398,6 +400,7 @@ const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import usePageTitle from "./lib/usePageTitle"; // 28.1: "<page> · Agam Agarwal" in the tab
 import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
 import FigmaEmbed from "./ui/FigmaEmbed"; // THE live Figma embed (every Figma iframe goes through it)
 import { animate as motionAnimate } from "motion";
@@ -2192,6 +2195,7 @@ const caseStudies = {
       "Impact",
     ],
     cover: "Zepto",
+    pageTitle: "Scheduled Delivery", // 28.1: the tab title, "Scheduled Delivery · Agam Agarwal"
     lead:
       "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested internally through design and then validated, after launch, with a 45-user mixed-method study. The payoff lands in the order itself: a scheduled order was worth about ₹1,450 against ₹543 for an instant one in August 2026, and a year of data later the feature is quietly becoming the channel large appliances are delivered through.",
     deck: scheduledDeck,
@@ -10339,6 +10343,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   // tools/export-pdf.mjs to hit hard page caps (MIIPS 20pp, GSD 30pp); cases
   // without a pdfSections list render in full regardless of the param.
   const base = caseStudies[slug] || caseStudies.sample;
+  usePageTitle(base.pageTitle || String(base.title || "").replace(/\s*\n\s*/g, " ")); // 28.1
   const compact =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("cut") === "compact" &&
@@ -10404,7 +10409,8 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           }
         />
 
-        <article className="article">
+        {/* 28.1: the article is the page's main landmark (role="main" is allowed on <article>; a wrapper would break the grid) */}
+        <article className="article" role="main" id="main">
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
           {cs.heroFirst ? (<>
         {cs.heroVideo && cs.heroFig && figures[cs.heroFig] && !cs.heroToggleHidden && (
