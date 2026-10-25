@@ -36,8 +36,8 @@ export const EXPLORED = {
   },
   collapsedSlot: {
     title: "The slot you picked",
-    lead: "The collapsed card says it's scheduled.",
-    note: "A tester said it plainly: \"I might forget the time slot selected for shipment 1.\" Five wordings put the slot on the closed card. In the design, every closed shipment says it's scheduled.", // [Q 12] slot in the pill, and which wording (88.2: v4 Figma and RN show only "Scheduled")
+    lead: "A scheduled card says Scheduled, not its slot.",
+    note: "A tester said it plainly: \"I might forget the time slot selected for shipment 1.\" Five wordings put the slot on the closed card. In the design, a closed shipment shows one status: its Instant time, or Scheduled.", // [Q 12] slot in the pill, and which wording (88.2, 92.1: v4 Figma and RN show "Scheduled" or "⚡ 10 mins")
     items: [
       { src: S("slot-a"), node: "91:3321", tag: "Explored", cap: "\"This shipment will be delivered Today, 5 - 6 AM\"", alt: "Collapsed shipment 1 of 3 with the line: This shipment will be delivered Today, 5 - 6 AM" },
       { src: S("slot-b"), node: "91:4384", tag: "Explored", cap: "\"Delivering Today morning, 5 - 6 AM\"", alt: "Collapsed shipment with the line: Delivering Today morning, 5 - 6 AM" },

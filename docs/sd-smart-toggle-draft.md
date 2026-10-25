@@ -59,7 +59,7 @@ Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Una
 ## 3. The slot you picked
 In "Different ways we explored...", after the test quote.
 
-Verdict: **The collapsed card says it's scheduled.** One tester said it plainly: "I might forget the time slot selected for shipment 1." Five wordings put the slot on the closed card. In the design, every closed shipment says it's scheduled. [CONFIRM: Q12, whether the slot goes in the pill, and which wording]
+Verdict: **A scheduled card says Scheduled, not its slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." Five wordings put the slot on the closed card. In the design, a closed shipment shows one status: its Instant time, or Scheduled. [CONFIRM: Q12, whether the slot goes in the pill, and which wording]
 
 - "This shipment will be delivered Today, 5 - 6 AM"
 - "Delivering Today morning, 5 - 6 AM"
@@ -98,10 +98,10 @@ Next to comparison 3, "The slot you picked": that one settles the words on a clo
 
 Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home". [CONFIRM: which reason leads; this draft leads with input against output]
 
-- Three shipments read as one column, for example "10 mins", "Today, 7 - 8 PM", "22 mins". Two options each would be six labels, half of them off.
-- A scheduled shipment's slot is the thing to read, and a second option crowds it out.
+- Three shipments read as one column of single pills: "⚡ 10 mins", "Scheduled", "⚡ 22 mins". Two options each would be six labels, half of them off.
+- A shipment's status is the thing to read, and a second option crowds it out.
 - Two options look like a switch, and tapping Schedule on a closed card can't finish the choice, because there's no slot yet.
 - The cost, said plainly: the second and third shipments start closed, so the other option is out of sight. People come to this page by choosing to schedule, so they know it's there.
-- Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
+- Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, its Instant time, such as "⚡ 10 mins", with no offer chips, until a tap opens it.
 
-What the design does: every closed card carries a single pill, "Scheduled" or "Delivering in 10 mins". [CONFIRM: shipped in the app, or the design only] [CONFIRM: Q12, the slot in place of "Scheduled"]
+What the design does: every closed card carries a single pill: its Instant time, such as "⚡ 10 mins", or "Scheduled". The short form replaced "Delivering in 10 mins", which ran into the chevron. [CONFIRM: shipped in the app, or the design only] [CONFIRM: Q12, the slot in place of "Scheduled"]
