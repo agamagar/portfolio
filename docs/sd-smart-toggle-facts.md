@@ -229,6 +229,16 @@ Source: `design-playground/docs/critique-decisions.md`, kept by the Design criti
 - In the case study: one line in the explorations layer, under "Slot-page states", reading "**Confirm waits for every shipment.**", with Agam's reason. It can also be the honest close of comparison 1, since the research ask was acted on in the design.
 - Settles Q16, written as the design rather than as shipped.
 
+## Decisions from Agam's walk through the variants page
+
+Source: Agam's Figma annotations on the Schedule button variants page in Claude: Schedule, relayed by CoS: Figma and logged in `design-playground/docs/decisions-board.csv`. Each one goes in the explorations layer where its decision sits in the story.
+
+**D1: the Schedule Reset sheet** (annotation 327:312090; decisions board row 43, "Prototype · Flow", Done, 25 Oct)
+- The rule: when someone closes the app on the cart and opens it again, they land back on the cart, and the M1 "Schedule Reset" bottom sheet resets the schedule state there.
+- The M1 case it matches: C-021, "Schedule reset: cart". The condition is "Previously scheduled" and the outcome is "Cart returns to Store Unserviceable / Schedule state" (`docs/flow-map-cart.md`, M1 FTB handover, designed). The cart Delivery Options exploration also drew a Reset link beside Edit slot (S-090, "Delivery scheduled / Reset / Edit slot").
+- Placement: under the cart-side Schedule entry. It's a rule about when the reset appears, not a visual choice.
+- Open: why the schedule resets instead of waiting for the user, and exactly what resets. **[CONFIRM]** (questions 17 and 18).
+
 ## One list for Agam (both parts)
 
 Answers can be short. Where I've written a guess, a yes or no is enough.
@@ -267,6 +277,10 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
     - Cart-page states: the Pay experiment.
     - The go-to-market: the coach-marks and banners.
     BxGy stays off the page, since it's on hold and internal.
+
+**The Schedule Reset sheet (D1)**
+17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed.
+18. What exactly resets: only the chosen slot, or the shipment's Instant or Schedule choice too? And every shipment in the cart, or only the scheduled one?
 
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.

@@ -81,3 +81,12 @@ Verdict: **Two touches shipped. The rest stayed in the file.** The banner on the
 - Coach-mark options (Explored): "Orders can now be scheduled", "Plan your deliveries for later", "Schedule for later / Earliest delivery in 45 mins".
 - Top-banner lines (Explored): "Introducing Schedule Delivery", "Skip the last minute rush", three rotating lines.
 - Trust marker (Explored): "No extra charges on schedule orders".
+
+---
+
+# Part 3: Agam's decisions from the variants page
+
+## D1. Coming back to the cart
+Under the cart-side Schedule entry. A rule, so it's one line and a verdict, with no comparison row.
+
+Verdict: **Leave on the cart, and the schedule resets.** Close the app on the cart, open it again, and you land back on the cart with the Schedule Reset sheet, which resets the schedule there. In the M1 case the cart goes back to Store Unserviceable, with Schedule offered again. [CONFIRM: why it resets instead of keeping the slot] [CONFIRM: what resets, the slot or the Instant and Schedule choice too, and for which shipments]
