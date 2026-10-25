@@ -239,6 +239,19 @@ Source: Agam's Figma annotations on the Schedule button variants page in Claude:
 - Placement: under the cart-side Schedule entry. It's a rule about when the reset appears, not a visual choice.
 - Open: why the schedule resets instead of waiting for the user, and exactly what resets. **[CONFIRM]** (questions 17 and 18).
 
+**D2: one status on a collapsed shipment card** (Agam, 25 Oct, relayed by CoS: Figma)
+- The decision: a collapsed shipment card on the Schedule page shows a single status pill, the chosen mode or slot. It doesn't show both options the way the toggle does.
+- Who raised it: Agam, as an interesting problem. Why one status, when two would mirror the toggle?
+- The reasons, put to him by the coordinator; he chose single. Which one is his own, or which he'd lead with, is **[CONFIRM]** (question 22).
+  - The toggle is an input, so it shows the choices. The collapsed card is an output, so it shows the outcome, the way an iOS Settings row reads "Wi-Fi: Home".
+  - Three stacked shipments read as one column of statuses ("10 mins", "Today, 7 - 8 PM", "22 mins"). Two each would be six labels, half of them inactive. The 10 and 22 minute ETAs match the dark-store and super-store lines in the M1 cart composition (C-050, C-054); the slot is an example.
+  - For a scheduled shipment the slot time is what matters, and a two-option pill crowds it out.
+  - A two-option pill looks like a switch. But tapping Schedule on a collapsed card can't finish the choice, because there's no slot yet.
+  - The counterpoint: shipments 2 and 3 start collapsed (M4 "Default arrival: the shipment you came from expanded, the rest collapsed but visible", App.jsx "Slot-page states"), so the other option is hidden. The answer is intent: people come to the Schedule page by choosing to.
+- Ties back to: comparison 3, "The slot you picked". That one settles what the collapsed card says (User 02, the five wordings); D2 settles how much it shows.
+- Shipped or design: the single pill is the design. Whether the Zepto app shipped it is **[CONFIRM]** (question 23).
+- Figure to make: one collapsed card with a single pill beside the same card mirroring the toggle (two pills), with three shipments stacked in each, built from the shared figure parts.
+
 ## One list for Agam (both parts)
 
 Answers can be short. Where I've written a guess, a yes or no is enough.
@@ -286,6 +299,10 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 19. The repeat chart shows two different windows. 18.3% scheduled again within 30 days (173,288 of 946,088); 85.7% placed exactly one order in June. They're labelled as what they measure now. Which should it show? (a) both, as now; (b) 18.3% with its complement, 81.7% "didn't schedule again within 30 days" (arithmetic on the report's counts); (c) 18.3% alone.
 20. The growth chart's annotation reads "All stores live (1,144)" (your 3.6 call), and the prose now says "the rollout was complete on 12 December, at 1,144 stores", because the store count kept rising after it (1,156 on 23 Dec, 1,263 by April). Keep "All stores live (1,144)", or match the prose with "Rollout complete (1,144)"?
 21. The deployed private site builds on Amplify without the playground bundle, so its live-state embeds show posters. Options: (a) accept the posters; "Open full size" no longer shows without the bundle, but the line "Click one to use it" should then change; (b) commit the built bundle (about 20 MB) so Amplify ships it; (c) host the bundle elsewhere and point VITE_SD_PLAYGROUND_URL at it.
+
+**One status on a collapsed card (D2)**
+22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet.
+23. Did the single-status collapsed card ship in the Zepto app, or is it the design only?
 
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
