@@ -59,7 +59,7 @@ Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Una
 ## 3. The slot you picked
 In "Different ways we explored...", after the test quote.
 
-Verdict: **The collapsed card carries the slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." So in the design, every closed shipment shows its window. Five wordings were tried. [CONFIRM: which one shipped]
+Verdict: **The collapsed card says it's scheduled.** One tester said it plainly: "I might forget the time slot selected for shipment 1." Five wordings put the slot on the closed card. In the design, every closed shipment says it's scheduled. [CONFIRM: Q12, whether the slot goes in the pill, and which wording]
 
 - "This shipment will be delivered Today, 5 - 6 AM"
 - "Delivering Today morning, 5 - 6 AM"
@@ -104,4 +104,4 @@ Verdict: **The design shows one status on a closed card.** The obvious move was 
 - The cost, said plainly: the second and third shipments start closed, so the other option is out of sight. People come to this page by choosing to schedule, so they know it's there.
 - Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
 
-What the design does: every closed card carries a single pill, the mode or the slot. [CONFIRM: shipped in the app, or the design only]
+What the design does: every closed card carries a single pill, "Scheduled" or "Delivering in 10 mins". [CONFIRM: shipped in the app, or the design only] [CONFIRM: Q12, the slot in place of "Scheduled"]

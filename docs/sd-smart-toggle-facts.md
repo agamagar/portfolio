@@ -128,7 +128,7 @@ Placed in "Instant to Scheduled: the toggle".
 - **Won:** UT 01's two Instant / Schedule cards per shipment. The final M4 page draws two DeliveryModeCards side by side in every shipment card. Source: index card 09, Figma Flow 141:2 metadata.
 - **Dropped:**
   - UT 02's third option. Remove moved to the shipment header (index card 10, sd-story-notes CONFIRM 4). Reason: **[CONFIRM]**.
-  - UT 03's pill as the main control (index card 11). Reason: **[CONFIRM]**. Its idea stayed: the collapsed card shows the slot (see 3).
+  - UT 03's pill as the main control (index card 11). Reason: **[CONFIRM]**. Its idea was tried: the slot on the collapsed card (see 3). v4 shows only "Scheduled" there (88.2).
 - **Tested:** Oct 29, three people, five quotes (Oct29Research.tsx). Which person saw which prototype isn't in the file. **[CONFIRM]**.
 - **Conflict to settle:** the live "Different ways we explored..." section says the session pitted a tabbed flow against a single page. The Figma research page says UT 01, 02 and 03, which are all one-page stacks, and its dimmed Approaches block says "two approaches". **[CONFIRM]** whether the tabbed sheet was in the same session.
 
@@ -155,9 +155,9 @@ Placed in "Different ways we explored...", after the test quote.
   - "Delivering Today, 5 - 6 AM" plus "Select a slot": S-046, 91:5068.
   - "Delivering Today, 5 - 6 AM" replacing the pill: S-047, 91:5950.
   - The slot divide, "Delivering Tomorrow Morning, 5 - 6 AM": S-048, 91:6645.
-- **Won:** the idea. The collapsed card shows the slot (index card 15). The live "Slot-page states" says "A slot picked: the chosen one-hour window held in the running summary".
+- **Won:** not the slot, so far. v4 Figma and the RN build show only "Scheduled" on a closed card (critique 88.2, 25 Oct). The index card 15 reading, "the collapsed card shows the slot", was wrong. The slot itself is held in the running summary: the live "Slot-page states" says "A slot picked: the chosen one-hour window held in the running summary".
 - **Why:** User 02 said "I might forget the time slot selected for shipment 1, as I select a slot for shipment 2". The research note says "instead of saying schedule we can show the time slot in the pill in the collapsed state" (Oct29Research.tsx S-108).
-- **Open:** which of the five wordings shipped. **[CONFIRM]**.
+- **Open:** whether the slot goes in the pill, and if so which of the five wordings (Q12). **[CONFIRM]**. If Agam answers with the slot in the pill, the draft line goes back to "every closed shipment shows its window".
 
 ### 4. When nothing in the cart can come now
 Placed in "Cart-page states".
@@ -281,7 +281,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 11. Why did the greyed card with a dismissible callout win? Guesses, one each: the "Back soon" chip promised a time the store couldn't keep; the "Temporarily UNAVAILABLE" tag was loud and sat above the choice; "Get it now / Get it later" renamed a choice people already knew. No guess for the up/down toggle.
 
 **The slot on the collapsed card**
-12. Which wording shipped? (a) "This shipment will be delivered Today, 5 - 6 AM" (b) "Delivering Today morning, 5 - 6 AM" (c) "Delivering Today, 5 - 6 AM" plus "Select a slot" (d) "Delivering Today, 5 - 6 AM" in place of the pill (e) the slot divide, "Delivering Tomorrow Morning, 5 - 6 AM"
+12. v4 Figma and the RN build show only "Scheduled" on a closed card (88.2). Should the slot go in the pill? If yes, which wording: (a) "This shipment will be delivered Today, 5 - 6 AM" (b) "Delivering Today morning, 5 - 6 AM" (c) "Delivering Today, 5 - 6 AM" plus "Select a slot" (d) "Delivering Today, 5 - 6 AM" in place of the pill (e) the slot divide, "Delivering Tomorrow Morning, 5 - 6 AM"
 
 **The cart when nothing can come now**
 13. Which won, and why: Experiment 1 (Pay disabled, the cart asks you to schedule) or Experiment 2 (Pay replaced by a Schedule button)? If you don't know, I'll swap in "Slots full" instead. Then the question is which of the greyed chip, the "SLOT FULL" tag or the whole-day-booked panel shipped.
