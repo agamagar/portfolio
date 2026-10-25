@@ -415,6 +415,7 @@ const SchedUseCases = lazyFig(() => import("./figures/scheduled/SchedUseCases"))
 import SchedRoleWireframes, { ROLE_STATS, STAT_ICON } from "./figures/scheduled/SchedRoleWireframes";
 import { manualTheme, setManualTheme, themeForTime } from "./lib/autoTheme";
 import { windowSceneOn } from "./lib/sceneFlag";
+import PrdSkeleton from "./prd/PrdSkeleton"; // 72.2: the doc route's loading state, in the doc's own layout
 // Art mode (src/art/ArtMode.jsx) is no longer mounted: removed with read mode (mtqpu3f2 + the 07 Sep ask); the file stays.
 const MotionCheck = lazy(() => import("./hello/MotionCheck"));
 // The Away PRD, rendered as native portfolio DOM (was an iframe → unscannable by
@@ -9922,7 +9923,7 @@ function LockedCaseStudy({ cs, slug }) {
         </div>
         {/* Native portfolio DOM (not an iframe) so Agentation can scan/annotate
             every element of the PRD. `cs.doc` selects which PRD to mount. */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<PrdSkeleton />}>
           {cs.doc === "dassh" ? <DasshPrdDoc /> : cs.doc === "scheduled" ? <ScheduledPrdDoc /> : cs.doc === "jarvis" ? <JarvisPrdDoc /> : cs.doc === "zepiris" ? <ZepirisPrdDoc /> : cs.doc === "away-analytics" ? <AwayAnalyticsDoc /> : cs.doc === "prompt-library" ? <PromptLibraryDoc /> : cs.doc === "team-prompts" ? <TeamPromptsDoc /> : cs.doc === "color-system" ? <ColorSystemDoc /> : <PrdDoc />}
         </Suspense>
       </div>

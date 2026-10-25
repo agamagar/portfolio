@@ -1383,3 +1383,11 @@ html.dark .prd-bmx__row-head { background: var(--bg, #0b0b0b); }
 html.dark .prd-bmx__theme { border-color: rgba(255, 255, 255, 0.12); }
 html.dark .prd-bmx__r.is-ok { background: rgba(74, 222, 128, 0.14); color: #4ade80; }
 html.dark .prd-bmx__r.is-fail { background: rgba(248, 113, 113, 0.14); color: #f87171; }
+
+/* 72.2: the loading state (PrdSkeleton), in the doc's own layout. Bars take the muted ink at low strength, so they
+   follow light and dark; a slow fade under motion, still under reduced motion. */
+.prd-skel { display: block; height: 0.8em; margin: 0.55em 0; border-radius: 6px; background: color-mix(in srgb, currentColor 9%, transparent); animation: prd-skel 1.4s ease-in-out infinite; }
+.prd-skel--title { height: 1em; }
+.prd--skeleton .prd__kick, .prd--skeleton .prd__title, .prd--skeleton .prd__lead { color: var(--muted, #8a8a8a); }
+@keyframes prd-skel { 50% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) { .prd-skel { animation: none; } }
