@@ -31,6 +31,7 @@ import { rise } from "../../ui/useSectionPlay";
 import PhoneLinks from "./PhoneLinks";
 import { PhoneLinkSlot } from "./phoneLinkSlot";
 import "./phoneFrame.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 export const IPHONE_FRAME_SRC = "/figures/frames/iphone-17-pro.png";
 export const PHONE_SIZES = { xs: 120, sm: 168, md: 208, lg: 300, hero: 340 };
@@ -70,12 +71,12 @@ export default function PhoneFrame({
       {tag && <span className="pf__tag" data-tone={tagTone || String(tag).toLowerCase()}>{tag}</span>}
       <div className="pf__dev ifr">
         <div className="ifr__screen">
-          {screen ? <img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
+          {screen ? <Img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
           {statusBar && <StatusBar tone={statusBar === "light" ? "light" : "dark"} />}
           {island && <span className="pf__island" aria-hidden="true" />}
         </div>
         {on && <PhoneControls label={alt || caption || "Phone"} />}
-        <img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
+        <Img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
         {overlay}
       </div>
       {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} onRestart={restart} />}

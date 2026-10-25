@@ -1,4 +1,5 @@
 import "./scheduled.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // Design Mode: the scheduled SLOT-PICKER state set as a contact sheet of real
 // Zepto schedule-page screens (Schedule Order Handoff). From schedule-selected
@@ -25,7 +26,7 @@ export default function SchedPageStates() {
     <div className="sdh" role="region" aria-label="Slot-page states, scroll sideways" tabIndex={0}>
       {TILES.map((t) => (
         <figure className="sdh__tile" key={t.src}>
-          <img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} loading="lazy" />
+          <Img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} loading="lazy" />
           <figcaption className="sdh__cap">{t.cap}</figcaption>
         </figure>
       ))}

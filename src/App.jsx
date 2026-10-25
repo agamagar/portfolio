@@ -400,6 +400,7 @@ const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import Img, { imgSrc } from "./ui/Img"; // THE figure <img>: reserved size, lazy, WebP where converted (stack-audit pick 2)
 import usePageTitle from "./lib/usePageTitle"; // 28.1: "<page> · Agam Agarwal" in the tab
 import PlaygroundCopy from "./figures/sdStory/PlaygroundCopy"; // Q21 interim: copy that knows whether the playground bundle is deployed
 import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
@@ -494,7 +495,7 @@ function Collage({ images, variant }) {
     return (
       <div className="fig-collage fig-collage--slide" role="img">
         {items.map((it, i) => (
-          <img key={i} src={it.src} alt="" loading="lazy" />
+          <Img key={i} src={it.src} alt="" />
         ))}
       </div>
     );
@@ -502,11 +503,10 @@ function Collage({ images, variant }) {
   return (
     <div className="fig-collage" role="img">
       {items.map((it, i) => (
-        <img
+        <Img
           key={i}
           src={it.src}
           alt=""
-          loading="lazy"
           className={
             it.w === "half"
               ? "fig-collage__img--half"
@@ -1418,7 +1418,7 @@ function ScrollScene({ scene: sceneIn }) {
       {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
           are painted as CSS masks, which a screen reader never sees) */}
       {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
-      {scene.base && <img className="sscene__base" src={scene.base} alt="" draggable="false" />}
+      {scene.base && <Img eager className="sscene__base" src={scene.base} alt="" draggable="false" />}
       {scene.title && <p className="sscene__title">{scene.title}</p>}
       {hasOneShot && (
         <button type="button" className="sscene__replay" aria-label="Replay the animation" onClick={replay}>
@@ -1438,7 +1438,7 @@ function ScrollScene({ scene: sceneIn }) {
             // mu3jl3kt: a `tint` layer is a FLAT-COLOUR export (the Figma slide's
             // own type), so it is painted as a mask in the theme's ink rather
             // than shown as a picture - see .sscene__layer--tint
-            style={{ left: l.x + "%", top: l.y + "%", width: l.w + "%", ...(l.tint ? { "--tint-src": `url(${l.src})` } : null), ...(l.split ? { "--split-src": `url(${l.src})`, "--split": l.split + "%" } : null) }}
+            style={{ left: l.x + "%", top: l.y + "%", width: l.w + "%", ...(l.tint ? { "--tint-src": `url(${imgSrc(l.src)})` } : null), ...(l.split ? { "--split-src": `url(${imgSrc(l.src)})`, "--split": l.split + "%" } : null) }}
             {...(l.fx === "magic" ? {
               role: "button", tabIndex: 0, "aria-label": l.alt ? `Reveal: ${l.alt}` : "Reveal the text",
               onClick: (e) => magicLayer(e.currentTarget),
@@ -1446,10 +1446,10 @@ function ScrollScene({ scene: sceneIn }) {
             } : {})}
           >
             {/* mtmkl036: a layer may pivot from a named point (a bubble's tail) */}
-            <img src={l.src} alt="" draggable="false" style={l.origin ? { transformOrigin: l.origin } : undefined} />
+            <Img eager src={l.src} alt="" draggable="false" style={l.origin ? { transformOrigin: l.origin } : undefined} />
             {/* mto5bsxs had a light sweep through the glyphs here; mtp78lno: removed, the sharpening alone is the reveal */}
             {/* mtp67ai5: only the text blurs; the box under it stays crisp (a second export, behind) */}
-            {l.under && <img className="sscene__under" src={l.under} alt="" draggable="false" />}
+            {l.under && <Img eager className="sscene__under" src={l.under} alt="" draggable="false" />}
           </div>
         );
         // mtmk2odv: a layer can be clipped to a box on the plate (a phone's
@@ -1617,11 +1617,10 @@ function ReelOrStill({ reel, still, parallax, variant }) {
       ) : parallax ? (
         <ScrollPhone src={still} />
       ) : (
-        <img
+        <Img
           className={slide ? "slide__media-img slide__media-img--real" : "article__figure-img article__figure-img--real"}
           src={still}
           alt=""
-          loading="lazy"
         />
       )}
     </div>
@@ -1741,7 +1740,7 @@ function SectionFigure({
   }
   if (image) {
     return (
-      <img
+      <Img
         className={
           slide
             ? "slide__media-img slide__media-img--real"
@@ -1749,7 +1748,6 @@ function SectionFigure({
         }
         src={image}
         alt=""
-        loading="lazy"
       />
     );
   }
@@ -10081,7 +10079,7 @@ function CaseStudyBodyFull({ cs }) {
                     // mukxxiz5: a box on the same card ground, waiting for its content
                     <div className="article__plate-video article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }} aria-hidden="true" />
                   ) : pl.src ? (
-                    <img className="article__figure-img article__figure-img--real" src={pl.src} alt={pl.alt || ""} loading="lazy" />
+                    <Img className="article__figure-img article__figure-img--real" src={pl.src} alt={pl.alt || ""} />
                   ) : (
                     <div className="article__plate-empty" aria-hidden="true"><span>Plate {k + 1}</span></div>
                   )}
@@ -10109,7 +10107,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.fig ? (
             <SectionFigure fig={s.fig} variant="article" bare />
           ) : (
-            <img className="article__figure-img article__figure-img--real" src={s.image} alt="" loading="lazy" />
+            <Img className="article__figure-img article__figure-img--real" src={s.image} alt="" />
           )}
           {s.figure && <figcaption>{s.figure}</figcaption>}
           {/* Figma 120 (14:57): a display-size line under the figure, kept visible past hideCaptions */}
@@ -10143,7 +10141,7 @@ function CaseStudyBodyFull({ cs }) {
           {/* a big open question, set large (Before we start) */}
           {s.ask && <p className="article__ask">{s.ask}</p>}
           {/* muky37n5: a photo beside the heading and TL;DR, 50/50 */}
-          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} loading="lazy" />}
+          {s.sideImage && <Img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} />}
           {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
             <p className="article__tldr">
               <span className="article__tldr-label">TL;DR</span>
@@ -10512,7 +10510,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
           <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
-            <img className="article__hero-img" src={cs.heroImage} alt="" />
+            <Img priority className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
           // the departure-board frame is Away-specific; other projects get a
@@ -10645,7 +10643,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
           <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
-            <img className="article__hero-img" src={cs.heroImage} alt="" />
+            <Img priority className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
           // the departure-board frame is Away-specific; other projects get a

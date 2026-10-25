@@ -9,6 +9,7 @@ import { Rail } from "../../hello/Timeline";
 import "../../hello/timeline.css";
 import { PenNib, ChatCircleText, Package, TextAa, RocketLaunch, Truck, UsersThree, ArrowUUpLeft, ShieldCheck, ShoppingCartSimple, CalendarX, WarningCircle, ChartBar, CalendarBlank } from "@phosphor-icons/react";
 import { MONTHLY, SLOT_BANDS, SLOT_MIX, VS_INSTANT, SOURCE_NOTE, ROLLOUT } from "../sdAvailability/sdReport";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // 27 Sep 2026 ("create a lot more detail slides for my role ... just wireframe
 // them ... collaboration with different teams, timeline management, team
@@ -466,7 +467,7 @@ function Diorama({ d, groups }) {
   return (
     <figure className="dio">
       <div className="dio__stage" ref={stage} data-pop={pop ? "on" : "wait"}>
-        <img src={d.src} alt={d.alt} loading="lazy" />
+        <Img src={d.src} alt={d.alt} loading="lazy" />
         {d.pins.map((p, i) => (
           <button type="button" className="dio__pin" key={p.g}
             // mukqb0zz: anchored by an EDGE, not the centre, so the name stays

@@ -22,6 +22,7 @@ import { createPortal } from "react-dom";
 import { lockBackgroundScroll } from "./smoothScroll";
 import { feedback } from "./feedback";
 import "./phoneLightbox.css";
+import { imgSrc } from "./Img"; // the frame's WebP copy, the same file the page already loaded
 
 const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -223,7 +224,7 @@ export default function PhoneLightbox({ items, start, frame, onClose }) {
             <div className="pl__screen" ref={screen} data-lenis-prevent tabIndex={0} role="group" aria-label="Screen, scrolls">
               <img key={item.src} src={item.src} alt={item.alt || ""} draggable="false" />
             </div>
-            <img className="pl__bezel" src={frame} alt="" draggable="false" />
+            <img className="pl__bezel" src={imgSrc(frame)} alt="" draggable="false" />
           </div>
         </>
       )}

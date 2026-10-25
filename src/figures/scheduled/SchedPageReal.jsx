@@ -3,6 +3,7 @@ import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
 import PhoneFrame from "../ds/IphoneFrame";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // "One scroll across midnight" — the real Schedule states inside the real device
 // frame (Schedule Order Handoff, section 40000019:69582), driven by the glass
@@ -74,7 +75,7 @@ export default function SchedPageReal() {
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
           <PhoneFrame className="slotreal-device" width={260} enter={false} alt="Slot page">
               {SCREENS.map((s, i) => (
-                <img key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
+                <Img eager key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
               ))}
               <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
             

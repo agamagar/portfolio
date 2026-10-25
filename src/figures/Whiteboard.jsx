@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import "./whiteboard.css";
+import Img from "../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // Mini whiteboard — a section-level figure: any image sits on the surface of a
 // hand-drawn whiteboard easel (the illustration exported from Figma), and on
@@ -85,14 +86,14 @@ export default function Whiteboard({ src, alt, caption, board }) {
         onClick={() => setOpen(true)}
         aria-label={alt ? `Expand: ${alt}` : board ? "Expand whiteboard" : "Expand whiteboard image"}
       >
-        <img className="wb__easel" src={EASEL} alt="" aria-hidden="true" />
+        <Img className="wb__easel" src={EASEL} alt="" aria-hidden="true" />
         <span className="wb__board">
           {board ? (
             <Suspense fallback={null}>
               <Board spec={board} animate={false} className="wb__live" />
             </Suspense>
           ) : (
-            <img className="wb__img" src={src} alt={alt || ""} />
+            <Img className="wb__img" src={src} alt={alt || ""} />
           )}
         </span>
         <span className="wb__zoom" aria-hidden="true">

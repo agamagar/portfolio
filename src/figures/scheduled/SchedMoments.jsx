@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../ds/hooks";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // "Meeting users where they are…" — Figma 120, file HBBgHT1u7e5jsz7BEEZ3fT node
 // 3:3321, with its Dev Mode annotation "Pictionary game".
@@ -152,7 +153,7 @@ export default function SchedMoments() {
           const [x, y, w, h] = m.box;
           return (
             <li className="smo__cell" key={m.key}>
-              <img
+              <Img
                 className="smo__photo" src={`${SRC}${m.key}-v2.webp`} alt={m.alt} loading="lazy" decoding="async"
                 style={{ left: X(x) + "%", top: Y(y) + "%", width: X(w) + "%", height: (h / 1581) * 100 + "%" }}
               />
@@ -168,7 +169,7 @@ export default function SchedMoments() {
                 {/* muiflkz2: Google's animated Noto emoji (CC BY 4.0), self-hosted at
                     72px; decorative, the label carries the name. Outside the clip so
                     it shows, centred, while the tag is collapsed. */}
-                <img className="smo__emoji smo__emoji--anim" src={`${SRC.replace("moments/", "emoji/")}${m.key}.webp`} alt="" width="72" height="72" decoding="async" />
+                <Img eager className="smo__emoji smo__emoji--anim" src={`${SRC.replace("moments/", "emoji/")}${m.key}.webp`} alt="" width="72" height="72" decoding="async" />
                 {/* the clip is Figma's "Text Reveal": the word is wiped out of it */}
                 <span className="smo__clip" aria-hidden>
                   <span className="smo__word">{m.label}</span>
