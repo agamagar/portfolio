@@ -1,22 +1,13 @@
-/* The ONE section index (SectionIndex.jsx): the desktop rail (a continuous grey line, a 12px
-   frosted glass pill with violet dispersion sliding on it, grouped labels) and the phone /
-   tablet pill + bottom sheet. Used by every page with section navigation. */
+/* The ONE section index (SectionIndex.jsx): the desktop rail (a 12px frosted glass pill with
+   violet dispersion sliding beside the labels, grouped labels) and the phone / tablet pill +
+   bottom sheet. Used by every page with section navigation. */
 /* Case-study rail (nav.article__index.article__index--spy): ONE glass pill slides behind the active
    entry. A thin #9674db line sits under it, and its light disperses through the glass
    (a soft violet / blue / pink bloom under the pill's blur). No other active state;
    weight stays constant so nothing reflows. */
 .article__index.article__index--spy > ul { padding: 0 0 0 21px; position: relative; }
-/* ONE continuous grey hairline down the whole index (every group and header); the
-   6px glass pill is centred on it (pill 0-6px, line at its middle). Headers and labels
-   share one offset from the line. */
-.article__index.article__index--spy > ul::before {
-  content: "";
-  position: absolute;
-  left: 5.5px; top: 0; bottom: 0;
-  width: 1px;
-  background: var(--line);
-  pointer-events: none;
-}
+/* No grey hairline down the index (removed, Agam mvnr1knd, 25 Oct): the pill alone marks the active entry.
+   Headers and labels keep one offset from the pill's track. */
 .article__index.article__index--spy .article__index-group-list { margin: 0; padding: 0; border-left: 0; }
 .article__index.article__index--spy .article__index-group-list li a { --o: 0px; }
 .article__index.article__index--spy li a { position: relative; z-index: 1; }
@@ -127,11 +118,7 @@ html.dark .article__index-glow { opacity: 0.8; }
 }
 .cis__grab { width: 2.25rem; height: 4px; margin: 0 auto 0.6rem; border-radius: 4px; background: var(--line); }
 .cis__sheet ul { list-style: none; margin: 0; padding: 0; position: relative; }
-/* one continuous grey hairline; the 6px glass pill is centred on it */
-.cis__sheet ul::before {
-  content: ""; position: absolute; left: 5.5px; top: 0; bottom: 0; width: 1px;
-  background: var(--line); pointer-events: none;
-}
+/* no grey hairline here either (mvnr1knd): the glass pill marks the active entry on its own */
 .cis__group {
   display: block;
   padding: 0.9rem 0 0.2rem 1.4rem;
