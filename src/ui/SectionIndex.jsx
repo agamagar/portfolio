@@ -34,7 +34,9 @@ export function groupEntries(entries) {
 export function useIndexPill(ref, deps) {
   const place = () => {
     const nav = ref.current;
-    const a = nav?.querySelector("a.is-active");
+    // the entries live in the rail's own list; the case's Design / PRD tabs sit in the rail's top block and carry
+    // is-active too, and the pill followed them on the Away case (found with mvnr1knd, 25 Oct)
+    const a = nav?.querySelector(":scope > ul a.is-active");
     if (!nav || !a) return;
     const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
     nav.style.setProperty("--pill-y", `${(r.top - n.top + nav.scrollTop).toFixed(1)}px`);
