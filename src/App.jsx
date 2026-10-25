@@ -10130,7 +10130,9 @@ function CaseStudyBodyFull({ cs }) {
               body); figures after it stay full width. SecWrap is a Fragment
               everywhere else, so other case studies' DOM is unchanged. */}
           <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
-          {s.split || s.roleFrame ? null : s.noHeading ? <span id={`sec-${i}`} /> : <h2 id={`sec-${i}`}>{s.h}</h2>}
+          {/* a11y (25 Oct, the last jump after #28): a section that hides its heading keeps it for assistive tech, as a
+              screen-reader-only h2 (same sr-only utility as the page h1, so no layout) */}
+          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{s.h}</h2>}
           {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
               first under the heading */}
           {s.serif && <p className="article__serif">{s.serif}</p>}
