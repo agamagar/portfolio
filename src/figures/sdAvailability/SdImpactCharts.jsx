@@ -563,7 +563,7 @@ export default function SdImpactCharts() {
       <SectionHead
         n="04"
         title="The basket, and what is actually in it"
-        blurb="Scheduled orders carry nearly three times the order value and get the worst experience in the business. Then the July data names the thing the mean was hiding: more than half of every scheduled rupee is now a large appliance, and scheduling is quietly becoming the appliance-delivery channel."
+        blurb="Scheduled orders carry 2.7 times the order value and get the worst experience in the business. Then the July data names the thing the mean was hiding: more than half of every scheduled rupee is now a large appliance, and scheduling is quietly becoming the appliance-delivery channel."
       />
 
       <Card

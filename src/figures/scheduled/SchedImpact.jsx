@@ -2,7 +2,13 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import { PhoneWindow, Shimmer, Caption, CountUp } from "../ds/Scaffold";
 import { ICheck, ICal } from "./icons";
+import { VS_INSTANT } from "../sdAvailability/sdReport";
 import "./scheduled.css";
+
+// 37.2b: the order-value multiple from the data (₹1,452 against ₹543 in Aug 2026 is 2.7x), the figure the page uses
+// elsewhere; was "Nearly 3x"
+const AOV = VS_INSTANT.find((r) => r.label === "Average order value");
+const AOV_X = (AOV.scheduled / AOV.instant).toFixed(1);
 
 // "Impact." The behavioural shift is the story: because the order is for later,
 // people plan and build a bigger, more deliberate cart. Figures updated to the
@@ -42,7 +48,7 @@ export default function SchedImpact() {
                 <div className="sd-confirm__row"><span className="sd-ava" style={{ width: 26, height: 26, borderRadius: 8 }} /><span style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}><Shimmer w="48%" h={7} r={4} /><Shimmer w="30%" h={6} r={3} /></span></div>
               </div>
             </div>
-            {beat >= 1 && <Caption mode="purple" label="Nearly 3x the order value" style={{ left: "50%", bottom: 12, transform: "translateX(-50%)" }} />}
+            {beat >= 1 && <Caption mode="purple" label={`${AOV_X}x the order value`} style={{ left: "50%", bottom: 12, transform: "translateX(-50%)" }} />}
           </PhoneWindow>
 
           <div className="sd-rail">
