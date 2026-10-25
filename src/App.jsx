@@ -2990,7 +2990,7 @@ const caseStudies = {
         // Every figure is on the page or in sdReport.js: ROLLOUT (2 to 1,144 stores, 63 days), MONTHLY (May 1,809,603 = 1.72%; Aug 1.44%, Sep 1.39%),
         // the 1.3% / eight-in-ten fallback reading (the Impact text and the post-launch study), VS_INSTANT (1,452 v 543, 5.85 v 4.65, cancelled 27.4 v about 11),
         // ONTIME (Aug 82.5, Feb 92.6), ELECTRONICS (21.3% Jun, 54.0% Sep, partial) and APPLIANCE_AUG (cancelled 34.4 v 26.6). Was: "Adoption peaked at 1.72% of
-        // all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
+        // all orders and settled near 1.4%. A scheduled cart is worth 2.7 times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
         tldr: [
           "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and the rollout was complete on 12 December, at 1,144 stores.", // 37.2: the report marks 12 Dec as "full rollout"; the count kept rising after (1,156 on 23 Dec), so not "every store"
           "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
@@ -3005,7 +3005,7 @@ const caseStudies = {
         // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances' share of GMV rising (no figure, a partial month).
         glance: {
           label: "Impact at a glance",
-          head: ["A small slice of Zepto’s orders, and each one worth almost ", "three", " times an instant one."],
+          head: ["A small slice of Zepto’s orders, and each one worth ", "2.7", " times an instant one."], // 37.2b follow-up: ₹1,452 against ₹543 is 2.7x, the figure the page uses elsewhere (was "almost three")
           bars: [
             { v: 82.5, d: "of scheduled orders arrived inside the booked hour in August 2026, down from 92.6% in February" },
             { v: 27.4, d: "of scheduled orders were cancelled in August 2026, against about 11% for instant" },
