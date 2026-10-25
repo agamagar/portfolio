@@ -10430,8 +10430,10 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
 
         {/* 28.1: the article is the page's main landmark (role="main" is allowed on <article>; a wrapper would break the grid) */}
         <article className="article" role="main" id="main">
-          {/* 28.1: the page's h1 for assistive tech. The header that carries the visible h1 is display: none for now
-              (index.css, .article__head), which takes its h1 out of the accessibility tree too; drop this when it returns */}
+          {/* 28.1: the page's h1 for assistive tech. The header that carries the title is display: none for now
+              (index.css, .article__head), which takes it out of the accessibility tree too. 76.2: the header's title is a
+              <p> while that rule is on, so the page has one h1; when the header returns, make its title the h1 again and
+              drop this one */}
           <h1 className="sr-only">{String(cs.title || "").replace(/\s*\n\s*/g, " ")}</h1>
           {/* mtpavlcs: the hero can sit above the header (cs.heroFirst) */}
           {cs.heroFirst ? (<>
@@ -10522,7 +10524,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // eyebrow, no meta line. The lead moves up here from the body.
           <header className="article__head article__head--facts">
             <div className="article__head-main">
-              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10537,7 +10539,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           ) : (
           <header className="article__head">
           <p className="article__eyebrow">{cs.eyebrow}</p>
-          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__title">{withBreaks(cs.title)}</p>
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}
@@ -10549,7 +10551,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // eyebrow, no meta line. The lead moves up here from the body.
           <header className="article__head article__head--facts">
             <div className="article__head-main">
-              <h1 className="article__title article__title--display">{withBreaks(cs.title)}</h1>
+              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10564,7 +10566,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           ) : (
           <header className="article__head">
           <p className="article__eyebrow">{cs.eyebrow}</p>
-          <h1 className="article__title">{withBreaks(cs.title)}</h1>
+          <p className="article__title">{withBreaks(cs.title)}</p>
           <p className="article__meta">{cs.meta}</p>
         </header>
           )}

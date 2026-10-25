@@ -7497,7 +7497,8 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
    assistive tech as well as from the screen, and the h1 goes with it, so the
    page currently has no first-level heading. Fine for "for now"; not something
    to leave in. (28.1, 25 Oct: CaseStudy now renders a screen-reader-only h1 with the case title while this rule is
-   on; remove that h1 if the header comes back.) */
+   on, and the header's title is a <p> (76.2), so there is one h1; if the header comes back, make its title the h1 again
+   and remove the screen-reader one.) */
 .article__head { display: none; }
 .article__head--facts .article__title--display {
   font-family: var(--type-display-family);
