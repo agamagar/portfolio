@@ -972,7 +972,7 @@ function fireLayer(node, i) {
 // copies under it to compare (Agam: "make copy of this and do 1 and 3 and 2 as
 // new copies"). Same facts as the frame: statement, the three leadership lines,
 // ROLE_STATS. Each copy carries an "Option" tag so they can be told apart.
-const ROLE_PARTNERS = ["Design leadership and the CPO", "Expectations with the C-suite", "Senior Director, New Category"];
+const ROLE_PARTNERS = ["Design leadership and the CPO", "The C-suite", "Senior Director, New Category"]; // 94.2: a partner, not the activity ("Expectations with the C-suite")
 const ROLE_FUNCTIONS = ["Design", "Product", "Content", "Engineering and QA", "Operations"];
 function RoleOptionTag({ n, name }) {
   return <p className="rv__tag">Option {n} · {name}</p>;
@@ -1009,7 +1009,7 @@ function RoleEditorial({ s }) {
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
 const SHOW_MAP_TREE = false; // mvgjw15e: Circles is the only My role map view and the Tree/Circles toggle is hidden; true brings the Tree and the toggle back
-const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "Expectations with the C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
+const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "The C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
   const packRef = useRef(null);
   useEffect(() => { // pause the orbit and the pulse while the figure is off-screen
