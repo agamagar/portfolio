@@ -1009,6 +1009,9 @@ function RoleEditorial({ s }) {
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
 const SHOW_MAP_TREE = false; // mvgjw15e: Circles is the only My role map view and the Tree/Circles toggle is hidden; true brings the Tree and the toggle back
+// each orbit: [name, start angle, radius (cqw), circle size (cqw), kind, seconds per turn]
+const PACK_ORBITS = [...ROLE_PARTNERS.map((n, k) => [n, -90 + k * 120, 24 + [0, -1.5, 1][k], 24, "who", 48]),
+  ...ROLE_FUNCTIONS.map((n, k) => [n, [-45, 5, 90, 190, 235][k], 41 + [0, -1, -2, -1, 0][k], 17, "fn", 58])];
 const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "The C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
   const packRef = useRef(null);
@@ -1040,12 +1043,11 @@ function RoleScopeMap({ s, i }) {
         <div className="rv-pack" ref={packRef} role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
           {/* mvgkpgjn: the circles revolve around the lead designer (one orbit ~48 / 58 s, a phase and radius stagger each), the lines
               ride the same rotating wrapper, labels counter-rotate to stay upright; the orb gradient pulses on ::before. CSS transforms only. */}
-          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
-          {[...ROLE_PARTNERS.map((n, k) => [n, -90 + k * 120, 24 + [0, -1.5, 1][k], 24, "who", 48]),
-            ...ROLE_FUNCTIONS.map((n, k) => [n, [-45, 5, 90, 190, 235][k], 41 + [0, -1, -2, -1, 0][k], 17, "fn", 58])].map(([n, a0, r, d, k, dur]) => (
+          {/* the lens prisms what is painted before it: the lines orbit under it, the labels (a second set of the same orbits,
+              same angle and duration, so they move as one) over it, so the labels stay crisp (CoS, 26 Oct: the lens fringed them) */}
+          {PACK_ORBITS.map(([n, a0, r, d, , dur]) => (
             <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
               <i className="rv-pack__ln" />
-              <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
             </span>
           ))}
           {/* mvigzb44: a slowly drifting prism lens over the whole figure: backdrop-filter with an RGB split + slight magnify (SVG filter),
@@ -1064,6 +1066,12 @@ function RoleScopeMap({ s, i }) {
             </filter>
           </svg>
           <span className="rv-pack__lens" aria-hidden="true" />
+          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
+          {PACK_ORBITS.map(([n, a0, r, d, k, dur]) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
+              <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
+            </span>
+          ))}
         </div>
       ) : (
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
