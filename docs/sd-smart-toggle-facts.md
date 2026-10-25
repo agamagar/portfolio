@@ -308,7 +308,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 21. The deployed private site builds on Amplify without the playground bundle, so its live-state embeds show posters. Options: (a) accept the posters; "Open full size" no longer shows without the bundle, but the line "Click one to use it" should then change; (b) commit the built bundle (about 20 MB) so Amplify ships it; (c) host the bundle elsewhere and point VITE_SD_PLAYGROUND_URL at it.
 
 **One status on a collapsed card (D2)**
-22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet.
+22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet. **Answered (#30.4, Agam accepted the recommendation, 26 Oct): (a) leads, (b) the column of statuses supports.**
 23. Did the single-status collapsed card ship in the Zepto app, or is it the design only?
 
 **The cart's main button (66.2)**

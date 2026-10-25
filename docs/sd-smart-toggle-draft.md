@@ -96,7 +96,7 @@ Verdict: **In the design, leaving on the cart resets the schedule.** Close the a
 ## D2. One status on a closed card
 Next to comparison 3, "The slot you picked": that one settles the words on a closed card, this one settles how much it shows. Figure to make, labelled "Prototype, 2026": a single pill against the toggle mirrored, with three shipments stacked in each.
 
-Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home". [CONFIRM: which reason leads; this draft leads with input against output]
+Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home".
 
 - Three shipments read as one column of single pills: "⚡ 10 mins", "Scheduled", "⚡ 22 mins". Two options each would be six labels, half of them off.
 - A shipment's status is the thing to read, and a second option crowds it out.
