@@ -36,6 +36,11 @@
 .fshot-pill--link::after { content: ""; position: absolute; inset: -6px 0; }
 .fshot-pill--link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .article__body .pf__links a.fshot-pill--link, .pf__links a.fshot-pill--link { color: inherit; text-decoration: none; } /* a pill, not an article link */
+/* a live prototype's glass Restart (the header's theme-toggle glass), right-aligned under the phone, 44px hit area */
+.pf__links[data-restart] { align-self: stretch; justify-content: flex-end; }
+.pf__links[data-restart] > :not(.pf__restart) { margin-right: auto; }
+.pf__restart { position: relative; flex: none; }
+.pf__restart::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; }
 .fshot-dlg { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; background: rgba(10, 8, 16, .6); padding: 24px; }
 .fshot-dlg__box { position: relative; width: min(960px, 100%); height: min(720px, 100%); border-radius: 18px; overflow: auto; background: var(--bg, #fff); }
 .fshot-dlg__x { position: absolute; top: 10px; right: 10px; z-index: 2; }

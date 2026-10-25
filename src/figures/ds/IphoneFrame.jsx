@@ -18,8 +18,8 @@
 // caption / tag / proto: caption under the phone, a status chip over it, and the
 //         "Try prototype" action under it (private build only)
 // figma   an "Open in Figma" link under the phone; a screen inside can also set it through PhoneLinkSlot
-//         (FigmaEmbed does, on phones, where it shows its still instead of the live prototype)
-// linkSlot  false lets that link pass to an outer catcher (LinksBelow), for a phone its plate crops
+//         (FigmaEmbed does: Open in Figma on phones, where it shows its still, and its Restart while live)
+// linkSlot  false lets those controls pass to an outer catcher (LinksBelow), for a phone its plate crops
 // interactive  hover bar with play / restart / scrub / expand (PhoneControls); on by default
 // enter   scroll entrance on the section-play controller (fade-up); off for hero phones that
 //         have their own load sequence
@@ -53,8 +53,9 @@ export default function PhoneFrame({
   className = "", style, children, controls, ...rest
 }) {
   const root = useRef(null);
-  const [slotHref, setSlotHref] = useState(null);
-  const figmaHref = figma ?? slotHref;
+  const [slotted, setSlotted] = useState(null); // { figma, restart } from a screen inside (PhoneLinkSlot)
+  const figmaHref = figma ?? slotted?.figma;
+  const restart = slotted?.restart;
   const w = width ?? (typeof size === "number" ? size : PHONE_SIZES[size] ?? PHONE_SIZES.md);
   const on = controls ?? interactive;
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function PhoneFrame({
       {tag && <span className="pf__tag" data-tone={tagTone || String(tag).toLowerCase()}>{tag}</span>}
       <div className="pf__dev ifr">
         <div className="ifr__screen">
-          {screen ? <img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotHref}>{children}</PhoneLinkSlot.Provider> : children}
+          {screen ? <img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
           {statusBar && <StatusBar tone={statusBar === "light" ? "light" : "dark"} />}
           {island && <span className="pf__island" aria-hidden="true" />}
         </div>
@@ -77,7 +78,7 @@ export default function PhoneFrame({
         <img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
         {overlay}
       </div>
-      {(proto || figmaHref) && <PhoneLinks proto={proto} figma={figmaHref} />}
+      {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} onRestart={restart} />}
       {caption && <figcaption className="pf__cap">{caption}</figcaption>}
     </figure>
   );
