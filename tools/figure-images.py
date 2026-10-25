@@ -62,6 +62,19 @@ def rgba(im):
     return im.convert("RGB")
 
 
+def as_shown(im0, im):
+    """The pixels a browser shows. A PNG with a gAMA chunk and no sRGB or ICC chunk is decoded with its own gamma
+    (Chrome honours it; 0.45455 means a 2.2 curve, not sRGB's), so move those pixels to sRGB: the WebP copy is untagged
+    sRGB and would otherwise render a shade off (the 25 Oct render-diff caught 5 such files)."""
+    g = im0.info.get("gamma")
+    if not g or "srgb" in im0.info or "icc_profile" in im0.info:
+        return im
+    a = np.asarray(im, dtype=np.float64) / 255.0
+    lin = a[..., :3] ** (1.0 / g)
+    a[..., :3] = np.where(lin <= 0.0031308, 12.92 * lin, 1.055 * lin ** (1 / 2.4) - 0.055)
+    return Image.fromarray(np.clip(np.round(a * 255), 0, 255).astype(np.uint8), im.mode)
+
+
 def planes(im):
     """The image over white and over black, as float arrays, so alpha differences count too."""
     a = np.asarray(im.convert("RGBA"), dtype=np.float32)
@@ -85,7 +98,7 @@ def metrics(a, b, width):
 
 
 def passes(m, t):
-    return m["mean"] <= t["mean"] and m["p999"] <= t["p999"] and m["psnr"] >= t["psnr"]
+    return bool(m["mean"] <= t["mean"] and m["p999"] <= t["p999"] and m["psnr"] >= t["psnr"])
 
 
 def encode(im, fmt, **kw):
@@ -99,7 +112,7 @@ def convert(job):
     src = os.path.join(PUBLIC, path.lstrip("/"))
     size0 = os.path.getsize(src)
     with Image.open(src) as im0:
-        im = rgba(im0)
+        im = as_shown(im0, rgba(im0))
     widths = [(k, min(im.size[0], round(v * DPR.get(k, 2)))) for k, v in shown.items() if v]
     alpha = im.mode == "RGBA"
     cands = [("lossless", dict(lossless=True, quality=90, method=6))]
@@ -119,7 +132,7 @@ def convert(job):
             best = (name, len(data), data)
     if best and best[1] <= 0.9 * size0:
         out = os.path.splitext(src)[0] + ".webp"
-        if os.path.exists(out):
+        if os.path.exists(out) and path not in OURS:
             rep["skipped"] = "a .webp of that name already exists"
         else:
             with open(out, "wb") as fh:
@@ -136,6 +149,11 @@ def convert(job):
     except Exception as e:  # noqa: BLE001 (report only)
         rep["avif"] = dict(error=str(e))
     return rep
+
+
+# copies this tool wrote before (a re-run replaces them; any other .webp of the same name is left alone)
+_man = os.path.join(UI, "imgWebp.json")
+OURS = json.load(open(_man)) if os.path.exists(_man) else {}
 
 
 def webp(sizes_file, jobs=3, report=None):
