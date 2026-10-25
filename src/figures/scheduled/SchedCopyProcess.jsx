@@ -35,7 +35,8 @@ export default function SchedCopyProcess() {
     <div className="cpr" data-exp-skip>
       {GROUPS.map((g, gi) => (
         <section className="cpr__group" key={g.move} aria-labelledby={`cpr-g${gi}`}>
-          <h4 className="cpr__move" id={`cpr-g${gi}`}><span className="cpr__n" aria-hidden="true">{gi + 1}</span>{g.move}</h4>
+          {/* 28.5: an H3 under the section's H2 (was H4, a level skipped); the look is the class's, unchanged */}
+          <h3 className="cpr__move" id={`cpr-g${gi}`}><span className="cpr__n" aria-hidden="true">{gi + 1}</span>{g.move}</h3>
           <ul className="cpr__list">
             {g.pairs.map((p) => (
               <li className="cpr__pair" key={p.was}>
