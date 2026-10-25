@@ -282,5 +282,10 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed.
 18. What exactly resets: only the chosen slot, or the shipment's Instant or Schedule choice too? And every shipment in the cart, or only the scheduled one?
 
+**Numbers on the page (critique #37)**
+19. The repeat chart shows two different windows. 18.3% scheduled again within 30 days (173,288 of 946,088); 85.7% placed exactly one order in June. They're labelled as what they measure now. Which should it show? (a) both, as now; (b) 18.3% with its complement, 81.7% "didn't schedule again within 30 days" (arithmetic on the report's counts); (c) 18.3% alone.
+20. The growth chart's annotation reads "All stores live (1,144)" (your 3.6 call), and the prose now says "the rollout was complete on 12 December, at 1,144 stores", because the store count kept rising after it (1,156 on 23 Dec, 1,263 by April). Keep "All stores live (1,144)", or match the prose with "Rollout complete (1,144)"?
+21. The deployed private site builds on Amplify without the playground bundle, so its live-state embeds show posters. Options: (a) accept the posters; "Open full size" no longer shows without the bundle, but the line "Click one to use it" should then change; (b) commit the built bundle (about 20 MB) so Amplify ships it; (c) host the bundle elsewhere and point VITE_SD_PLAYGROUND_URL at it.
+
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
