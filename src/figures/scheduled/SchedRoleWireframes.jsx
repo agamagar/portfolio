@@ -650,12 +650,11 @@ const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was 
 const SHOW_RWF_KEYBOX = false; // mvgn7qr3 ("hide this"): the dashed legend + source box under the speed charts; true brings it back
 const SHOW_RL_TOGGLE = false; // mvgnqfi5 ("hide this"): the List / Circles toggle; Circles is the only view while it is off, true brings the toggle and the List back
 const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
-const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): the detail paragraph under the Circles view; true brings it back
+const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): each point's detail line; true brings it back, under its point
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
 // overlapping outlined circles, one per point, with the detail of the picked one beneath
 function RoleList({ items, vertical }) {
   const [view, setView] = useState("circles"); // mvgl5d7w: Circles is the default tab
-  const [on, setOn] = useState(0);
   const rows = items.map((it) => (Array.isArray(it) ? it : [null, it]));
   return (
     <div className="rwf__rl">
@@ -675,19 +674,18 @@ function RoleList({ items, vertical }) {
           ))}
         </ol>
       ) : (
-        <div className="rwf__rl-circles">
-          <ol className="rwf__rl-row">
-            {rows.map(([head, text], i) => (
-              <li key={i}>
-                <button type="button" className="rwf__rl-c" data-on={i === on ? "" : undefined} aria-pressed={i === on} onClick={() => setOn(i)} onMouseEnter={() => setOn(i)}>
-                  {SHOW_RL_NUM && <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>}
-                  <span className="rwf__rl-t">{head || text}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
-          {SHOW_RL_DETAIL && <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>}
-        </div>
+        // mvntahzh (Agam, 25 Oct): no circles and no purple rings, for every list; the points sit in four left-aligned
+        // columns (two on a phone). Nothing is hidden behind a hover any more, so they're a list, not buttons, and each
+        // point is a heading under the slide's h3 (94.3).
+        <ol className="rwf__rl-cols">
+          {rows.map(([head, text], i) => (
+            <li key={i}>
+              {SHOW_RL_NUM && <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>}
+              <h4 className="rwf__rl-t">{head || text}</h4>
+              {SHOW_RL_DETAIL && head && <p className="rwf__rl-detail">{text}</p>}
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   );
@@ -741,8 +739,9 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
             ))}
           </div>
         )}
-        {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
+        {/* mvntahzh ("move these up"): the four points sit above the rail, under the title */}
         {s.circles && <RoleList items={s.circles} vertical={s.vertical} />}
+        {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
         {s.kind === "list" && (
           <RoleList items={s.items} vertical={s.vertical} />
         )}
