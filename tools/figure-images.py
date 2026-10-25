@@ -46,6 +46,8 @@ def dims(folders):
             for f in sorted(files):
                 if not f.lower().endswith(RASTER):
                     continue
+                if f.lower().endswith(".webp") and any(os.path.exists(os.path.join(dp, os.path.splitext(f)[0] + e)) for e in (".png", ".jpg", ".jpeg")):
+                    continue  # a converted copy: Img looks it up by the original's name
                 p = os.path.join(dp, f)
                 try:
                     with Image.open(p) as im:
