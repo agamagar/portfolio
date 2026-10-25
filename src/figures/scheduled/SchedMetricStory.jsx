@@ -51,7 +51,7 @@ const ACTS = [
     beats: [
       {
         claim: `From ${ROLLOUT[0].stores} stores to ${full.stores.toLocaleString("en-IN")} in ${days} days.`,
-        body: `The first scheduled order landed on 10 Oct 2025, ${ROLLOUT[0].orders} of them that day. By 12 Dec every store could take one.`,
+        body: `The first scheduled order landed on 10 Oct 2025, ${ROLLOUT[0].orders} of them that day. The rollout was complete on 12 Dec, at ${full.stores.toLocaleString("en-IN")} stores.`, // 37.2: "full rollout" is the report's mark; the store count kept rising after it
         chart: (
           <LineChart area data={ROLLOUT} series={[{ key: "stores", label: "Stores live" }]} colors={[CAT[0]]} yFormat={(v) => Math.round(v).toLocaleString("en-IN")} domainMin={0} height={200} />
         ),

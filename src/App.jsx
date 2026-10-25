@@ -2992,7 +2992,7 @@ const caseStudies = {
         // ONTIME (Aug 82.5, Feb 92.6), ELECTRONICS (21.3% Jun, 54.0% Sep, partial) and APPLIANCE_AUG (cancelled 34.4 v 26.6). Was: "Adoption peaked at 1.72% of
         // all orders and settled near 1.4%. A scheduled cart is worth almost three times an instant one. The real problem was cancellation, not lateness, and appliances are now over half the money."
         tldr: [
-          "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and every store could take one by 12 December.",
+          "From 2 stores to 1,144 in 63 days: the first scheduled order landed on 10 October 2025, and the rollout was complete on 12 December, at 1,144 stores.", // 37.2: the report marks 12 Dec as "full rollout"; the count kept rising after (1,156 on 23 Dec), so not "every store"
           "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
           "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
           "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65.",
