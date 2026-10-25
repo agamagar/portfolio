@@ -1386,8 +1386,18 @@ html.dark .prd-bmx__r.is-fail { background: rgba(248, 113, 113, 0.14); color: #f
 
 /* 72.2: the loading state (PrdSkeleton), in the doc's own layout. Bars take the muted ink at low strength, so they
    follow light and dark; a slow fade under motion, still under reduced motion. */
-.prd-skel { display: block; height: 0.8em; margin: 0.55em 0; border-radius: 6px; background: color-mix(in srgb, currentColor 9%, transparent); animation: prd-skel 1.4s ease-in-out infinite; }
-.prd-skel--title { height: 1em; }
-.prd--skeleton .prd__kick, .prd--skeleton .prd__title, .prd--skeleton .prd__lead { color: var(--muted, #8a8a8a); }
+/* 80.1: a bar is one line box of its parent (1lh), the visible bar inset within it, so the skeleton's lines take the
+   real lines' heights, and the bar is text-sized (0.62em) in the middle of it; phone-only lines (the kicker's and the title's second) show at 720px and under. */
+.prd-skel { display: block; position: relative; height: 1lh; width: var(--w, 100%); }
+.prd-skel::before { content: ""; position: absolute; inset: calc((1lh - 0.62em) / 2) 0; border-radius: 6px; background: color-mix(in srgb, currentColor 9%, transparent); animation: prd-skel 1.4s ease-in-out infinite; }
+.prd-skel--phone { display: none; }
+@media (max-width: 720px) {
+  .prd-skel { width: var(--wp, var(--w, 100%)); }
+  .prd-skel--phone { display: block; }
+}
+/* the Read / Listen switch's place: the real .prd-modeswitch with its labels' sizes, the labels not drawn */
+.prd-skel-tab { display: inline-block; font-size: 0.8125rem; padding: 0.34rem 1.05rem; border-radius: 999px; color: transparent; }
+.prd-skel-tab:first-child { background: color-mix(in srgb, currentColor 9%, transparent); }
+.prd--skeleton .prd__kick, .prd--skeleton .prd__title, .prd--skeleton .prd__lead, .prd--skeleton .prd-modeswitch { color: var(--muted, #8a8a8a); }
 @keyframes prd-skel { 50% { opacity: 0.55; } }
-@media (prefers-reduced-motion: reduce) { .prd-skel { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .prd-skel::before { animation: none; } }

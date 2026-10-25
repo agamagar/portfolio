@@ -9923,7 +9923,8 @@ function LockedCaseStudy({ cs, slug }) {
         </div>
         {/* Native portfolio DOM (not an iframe) so Agentation can scan/annotate
             every element of the PRD. `cs.doc` selects which PRD to mount. */}
-        <Suspense fallback={<PrdSkeleton />}>
+        {/* the docs built on PrdRenderer with narration or agent copy show the Read / Listen switch; the skeleton holds its place */}
+        <Suspense fallback={<PrdSkeleton modes={!["away-analytics", "prompt-library", "team-prompts", "color-system"].includes(cs.doc)} />}>
           {cs.doc === "dassh" ? <DasshPrdDoc /> : cs.doc === "scheduled" ? <ScheduledPrdDoc /> : cs.doc === "jarvis" ? <JarvisPrdDoc /> : cs.doc === "zepiris" ? <ZepirisPrdDoc /> : cs.doc === "away-analytics" ? <AwayAnalyticsDoc /> : cs.doc === "prompt-library" ? <PromptLibraryDoc /> : cs.doc === "team-prompts" ? <TeamPromptsDoc /> : cs.doc === "color-system" ? <ColorSystemDoc /> : <PrdDoc />}
         </Suspense>
       </div>
