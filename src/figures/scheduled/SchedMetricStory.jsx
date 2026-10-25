@@ -27,6 +27,7 @@ import {
 
 const SEQ5 = ramp(5), SEQ7 = ramp(7);
 const live = MONTHLY.filter((m) => m.sd > 1000);
+const fullCxl = live.filter((m) => !m.partial && m.sdCancelPct != null).map((m) => m.sdCancelPct); // full months only
 const pk = live.reduce((a, b) => (b.sd > a.sd ? b : a));
 const firstM = live.find((m) => m.sd >= 1e6);
 const full = ROLLOUT.find((r) => r.mark === "full rollout");
@@ -109,7 +110,8 @@ const ACTS = [
     beats: [
       {
         claim: "Scheduled orders cancel at twice the rate.",
-        body: `Between ${cxl("Nov 25").sdCancelPct}% and ${Math.max(...live.map((m) => m.sdCancelPct || 0))}% a month, against ${cxl("Aug 26").allCancelPct}% for all orders. About ${(CANCELLED_TOTAL / 1e6).toFixed(2)}M scheduled orders never made it.`,
+        // 37.1: the range is the lowest and highest full month (was November's 27.7% as the floor, which June's 26.4% undercuts)
+        body: `Between ${Math.min(...fullCxl)}% and ${Math.max(...fullCxl)}% a month, against ${cxl("Aug 26").allCancelPct}% for all orders. About ${(CANCELLED_TOTAL / 1e6).toFixed(2)}M scheduled orders never made it.`,
         chart: (
           <>
             <LineChart data={live.map((m) => ({ label: m.label, sd: m.sdCancelPct, all: m.allCancelPct }))} series={[{ key: "sd", label: "Scheduled" }, { key: "all", label: "All orders" }]} colors={[CAT[0], CAT[1]]} yFormat={fmtPct0} domainMin={0} domainMax={35} height={200} />
