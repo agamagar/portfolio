@@ -2751,7 +2751,7 @@ const caseStudies = {
         group: "Process",
         stack: true, // mvksqb7g (Agam, "combine this with the section above"): one stacked section, the whiteboard beside its text
         whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
-        whiteboardFloat: true, whiteboardFloatSm: true, // mvksqb7g: floated beside the text, about a quarter the size ("4x smaller")
+        whiteboardFloat: true, whiteboardFloatHalf: true, // mvksqb7g: floated beside the text; mvnbgret ("make 50% smaller"): half the column, about 408px
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
@@ -10160,7 +10160,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.glance && <SchedImpactGlance g={s.glance} />}
           {/* mvgndaq6: the whiteboard floats beside the section's text instead of sitting after the figure */}
           {s.whiteboardNext && s.whiteboardFloat && (
-            <EF className={"article__figure article__figure--float" + (s.whiteboardFloatSm ? " article__figure--float-sm" : "")}>
+            <EF className={"article__figure article__figure--float" + (s.whiteboardFloatHalf ? " article__figure--float-half" : "")}>
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
             </EF>
           )}
