@@ -19,7 +19,7 @@ export const scheduledPrdData = {
     governingRules: [
       "Instant is untouchable. Scheduling sits beside instant as a peer, never as the sad fallback. Any treatment that makes instant feel optional is wrong.",
       "The user owns the commitment. Every shipment and its chosen slot stay visible until pay; a summary you can see is itself a trust mechanism, because people commit to 'later' only when they can see exactly what they committed to.",
-      "Positive copy, always. Titles and states never lead with the negative. Three reviewers (Nishit, Ciara, Harish) independently killed negative framing across ten months; even a bad state (unserviceable, slot expired, items moved) is stated factually, not apologetically.",
+      "Positive copy, always. Titles and states never lead with the negative. Three reviewers independently killed negative framing across ten months; even a bad state (unserviceable, slot expired, items moved) is stated factually, not apologetically.",
       "Architecture invariant: the shipment is the atom. A cart splits by hub into one to four shipments; scheduling, state, and slots all resolve per shipment, never per order.",
       "Precision is the promise. Fixed one-hour committed windows, no discount-for-vagueness lever. The moment you sell a looser window at a discount, you concede that precision is a premium, and precision is the whole argument.",
     ],
@@ -57,7 +57,7 @@ export const scheduledPrdData = {
         "Inline expand/collapse per shipment on the cart; scheduling itself opens the dedicated schedule page that lists every shipment.",
         "Cart CTA copy resolves by shipment mix (M2): all shipments serviceable, 'Click to Pay'; any shipment unserviceable with slots, 'Select delivery options'; one instant + one unserviceable (no slots), 'Remove Unserviceable' (retain the existing flow); one unserviceable-with-slots + one unserviceable-no-slots, 'Select delivery options' into the schedule page with the bottom-sheet removal flow.",
         "Multi-shipment scroll affordance (users may not know to scroll past shipment 1), flagged as a recurring UX risk by the PM in Aug 2025.",
-        "Default-select the Schedule CTA when the user taps schedule (Nishit Raj rule).",
+        "Default-select the Schedule CTA when the user taps schedule (the PM's rule).",
       ],
       keySurfaces: ["Cart, full view", "Cart, scheduled state", "Per-shipment Schedule control"],
       moat: [
@@ -114,7 +114,7 @@ export const scheduledPrdData = {
       oneLiner:
         "The difference between a feature that works in the demo and one that works in the world. Every Schedule-button and scheduled-page state, drawn.",
       lockedDecisions: [
-        "Per-shipment Schedule-button states: instant+schedule both available; schedule disabled (no slots open, greyed not hidden); schedule hidden (the delivery PIN code / area is not enabled for scheduling, geographic serviceability); schedule-only highlighted (instant unavailable, the only action); store unserviceable (neither works); scheduling limit reached (BOTH caps are live: max 2 ongoing scheduled orders at a time, and 5 scheduled orders per day per Ciara's 'Only 5 orders can be scheduled per day' copy); first-run education modal (one-time); items auto-moved to another shipment + save-to-wishlist; slot expired before pay.",
+        "Per-shipment Schedule-button states: instant+schedule both available; schedule disabled (no slots open, greyed not hidden); schedule hidden (the delivery PIN code / area is not enabled for scheduling, geographic serviceability); schedule-only highlighted (instant unavailable, the only action); store unserviceable (neither works); scheduling limit reached (BOTH caps are live: max 2 ongoing scheduled orders at a time, and 5 scheduled orders per day per the content designer's 'Only 5 orders can be scheduled per day' copy); first-run education modal (one-time); items auto-moved to another shipment + save-to-wishlist; slot expired before pay.",
         "Scheduled-page states: schedule selected (no slot yet); default picker; slot picked; instant+scheduled mix; partial day (some slots full, greyed but visible); cross-day late night; tomorrow full (no slots); scheduled pickup OTP.",
       ],
       requirements: [
@@ -376,7 +376,7 @@ export const scheduledPrdData = {
       summary:
         "The real arguments that shaped the feature, from the Schedule Order Handoff file, Aug 2025 to Jun 2026.",
       positiveCopyRule:
-        "Three reviewers independently killed negative framing: Nishit ('the title of the bottom sheet shouldn't be negative'), Ciara (humanising 'Failed to load slots' into 'Your order will be packed closer to your delivery time slot'), Harish (softening 'instant pickup unavailable' into a next-eligible-date statement).",
+        "Three reviewers independently killed negative framing: the PM ('the title of the bottom sheet shouldn't be negative'), the content designer (humanising 'Failed to load slots' into 'Your order will be packed closer to your delivery time slot'), and a third reviewer (softening 'instant pickup unavailable' into a next-eligible-date statement).",
       killedExplorations: [
         "Product-page placement: killed (negative listing, fought the booking model).",
         "Tabbed, one tab per shipment: killed in testing (hides the other shipments' choices; 'doesn't look clickable, too much white space', 'this interaction seems weird').",
@@ -403,7 +403,7 @@ export const scheduledPrdData = {
         body: "Both variants keep the cart CTA as 'Click to Pay' if any shipment is serviceable. They differ only when BOTH shipments are unserviceable. Test 1: the primary CTA is DISABLED until a shipment becomes serviceable or any shipment is scheduled. Test 2: the primary CTA becomes 'Schedule order' and opens the schedule page. These are the live form of the early 'Pay disabled' vs 'Pay replaced with a schedule button' experiments.",
       },
       concurrencyCap:
-        "Two caps, both live: max 2 ONGOING scheduled orders at a time (2 shipments or 2 orders), AND max 5 scheduled orders per day (Ciara's 'Only 5 orders can be scheduled per day' copy). A further attempt past either shows an error.",
+        "Two caps, both live: max 2 ONGOING scheduled orders at a time (2 shipments or 2 orders), AND max 5 scheduled orders per day (the content designer's 'Only 5 orders can be scheduled per day' copy). A further attempt past either shows an error.",
       feeWaivers:
         "Scheduling waives premiums: no surge fee when the store is on surge, no rain fee when it is raining, no night fee for a morning slot. Instant shipments keep surge and rain fees as BAU. So scheduling is implicitly the cheaper path during a surge, a real price effect worth noting against the 'no discount lever' trade-off.",
       bothUnserviceable:
