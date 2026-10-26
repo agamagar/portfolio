@@ -2213,6 +2213,9 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 
 /* mvg9bvbv (Agam, "this text should be title case"): the Scheduled rail's card labels are not upper-cased */
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; } /* outranks the type-pass rule that upper-cases it */
+/* mvorf9wi (Agam, 26 Oct, "make this font bigger"): every tag on this rail one step up the SD scale, label (12px) to
+   caption (14px; 13px on phones, from the scale's own phone step). The homepage rail is untouched. */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { font-size: var(--sd-cap-size); line-height: var(--sd-cap-lh); }
 
 /* list <-> circles toggle on the role-slide point lists */
 .rwf__rl { display: grid; gap: 1.25rem; min-width: 0; }
