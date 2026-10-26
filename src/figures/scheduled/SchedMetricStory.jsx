@@ -196,7 +196,7 @@ export default function SchedMetricStory({ acts }) {
             <p className="rwf__tag">{k === 0 ? a.act : ""}</p>
             <div className="rwf__main">
               <span className="rwf__n msty__n" aria-hidden>{String(n).padStart(2, "0")}</span>
-              <h3 className="rwf__title">{b.claim}</h3>
+              <h3 className="rwf__title">{b.claim.replace(/\s+(\S+)$/, "\u00a0$1")}</h3>
               <p className="rwf__lead msty__body">{b.body}</p>
               <div className="msty__chart"><ChartName.Provider value={b.claim}>{b.chart}</ChartName.Provider></div>{/* 28.3: the claim names its chart */}
             </div>

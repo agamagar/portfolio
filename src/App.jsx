@@ -1162,7 +1162,7 @@ function RoleFrame({ s, i }) {
   useRise(ref, { lead: 100 }); // section play: fades up, staggered, at the viewport centre
   return (
     <div className="role-frame" ref={ref}>
-      <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{s.h}</h2>
+      <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{noWidow(s.h)}</h2>
       <div className="role-frame__main">
         <p className="role-frame__statement role-frame__statement--solo" data-rise>{s.roleFrame.statement}</p>
         {/* mujvays4 (27 Sep): the three-column body removed ("remove these");
@@ -1264,7 +1264,7 @@ function SplitSection({ s, i }) {
   return (
     <div className={"article__split" + (s.splitStack ? " article__split--stack" : "")} ref={ref}>
       <div className="article__split-side">
-        <h2 id={`sec-${i}`} data-rise>{s.h}</h2>
+        <h2 id={`sec-${i}`} data-rise>{noWidow(s.h)}</h2>
         {s.tldr && !s.hideTldr && (
           // muie8ipv: the WRAP carries the drag, the tilt and the shadow (a
           // drop-shadow, so it traces the paper's real outline); the paper
@@ -1512,6 +1512,8 @@ function DuoFigure({ figure, plates }) {
 // mtmrira8: a stack of plates that read as windows onto ONE gradient. The
 // wrapper measures where each plate sits in the stack and hands every plate
 // ground the same gradient sized to the whole stack, offset to its position.
+// layout only: a heading never ends on a lone word (the last two words are tied)
+const noWidow = (t) => (typeof t === "string" ? t.replace(/\s+(\S+)$/, "\u00a0$1") : t);
 function PlatesStack({ stack, gradient, children }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -10222,7 +10224,7 @@ function CaseStudyBodyFull({ cs }) {
           <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
           {/* a11y (25 Oct, the last jump after #28): a section that hides its heading keeps it for assistive tech, as a
               screen-reader-only h2 (same sr-only utility as the page h1, so no layout) */}
-          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{s.h}</h2>}
+          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{noWidow(s.h)}</h2>}
           {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
               first under the heading */}
           {s.serif && <p className="article__serif">{s.serif}</p>}

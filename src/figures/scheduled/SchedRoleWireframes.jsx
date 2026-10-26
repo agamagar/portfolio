@@ -715,7 +715,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
   }, [s.left]);
   const body = (
       <div className="rwf__main">
-        {s.title && <h3 className="rwf__title">{s.title}</h3>}
+        {s.title && <h3 className="rwf__title">{typeof s.title === "string" ? s.title.replace(/\s+(\S+)$/, "\u00a0$1") : s.title}</h3>}
         {SHOW_RWF_LEAD && s.lead && <p className="rwf__lead">{s.lead}</p>}
         {s.leadership && (
           <ul className="rwf__leadership">{s.leadership.map((l) => <li key={l}>{l}</li>)}</ul>
