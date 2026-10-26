@@ -2982,6 +2982,7 @@ const caseStudies = {
       {
         h: "All 326 cases",
         nav: "The full map",
+        hidden: true, // mvorf9wn (Agam, 26 Oct, "hide this also"): the section that held the map, heading, text and divider; delete to bring it back
         group: "Process",
         tldr: "Thirty-two flows and 326 cases are mapped from the design file, and every one has a screen you can open.",
         p: [
