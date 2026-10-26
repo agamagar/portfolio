@@ -2,15 +2,16 @@
 
 Agam's question, 26 Oct: "have we shown all screens?" A read-only audit of the case study (`/work/scheduled-delivery` on branch `claude/sd-smart-toggle-a80586`) against both prototypes. Figma was read through the Figma MCP only (get_metadata, small screenshots); nothing in Figma changed.
 
-**Short answer: no.** The current design file has 326 case screens. The page shows 126 of them, 34 of those only inside the four live Figma paths. Whole areas don't appear at all: tracking, the in-app return, pickup and refunds, and the cart's offer and limit cases. The earlier prototype's cross-midnight screens appear nowhere, though "One scroll across midnight" is the detail the case calls its proudest.
+**Short answer: no.** The current design file has 326 case screens. The page shows 130 of them, 38 of those only inside the four live phones (the main path from Figma, and three built flows). Whole areas don't appear at all: tracking, the in-app return, pickup and refunds, and the cart's offer and limit cases. The earlier prototype's cross-midnight screens appear nowhere, though "One scroll across midnight" is the detail the case calls its proudest.
 
 Counted as the page stands on this branch, with two caveats:
 - **The master map.** The "All 326 cases" map (`sd:map`) is about to come off the page (annotations mvorf9wm and mvorf9wn), so it isn't counted as showing anything.
-- **The live paths.** Agam has asked to replace them with the playground's built flows. This table describes the Figma embeds as they are today, and gets updated after the swap.
+- **The live paths (updated 26 Oct, after the swap).** Agam asked for the built flows instead of the Figma prototype. Slots full, exchange and return now run the playground's flows, so every case those flows hold counts as shown. The main path is still the Figma prototype, because no single built flow walks it.
 
 How a screen can be shown:
 - **live Figma embed:** a reader can tap through it. Only screens reachable from a path's start are counted.
-- **playground embed:** the design playground's built flow, running.
+- **built flow:** the design playground's flow, running in the same phone. Every case it holds counts.
+- **playground embed:** a playground view outside the phones (the states row, the returns family).
 - **still, plate, crossfade, marquee, scroll scene, FigmaShot, explored row:** pictures on the page.
 
 The confidence marks are the audit's own:
@@ -40,16 +41,16 @@ Below Section 3, a board of eight frames (`40000966:360643` to `40000966:362236`
 
 ## 2. The current prototype: "Claude: Schedule" `R04cmbzFPQk2Q4IockGwqZ`, Flow page `141:2`
 
-Five wired paths, all of whose frames still exist:
+Five wired Figma paths, all of whose frames still exist:
 - main from `9:154`;
 - slots full from `11:3`;
 - support chat exchange from `7:3`;
 - support chat return from `10:3`;
 - return in the app from `10:837`.
 
-The page embeds the first four. Three wired screens can't be reached from any start the page uses: C-001 (first-time introduction), C-027 (cart, no slots for a shipment) and S-005 (past slots greyed; it is in the playground's states embed).
+The page embedded the first four; since 26 Oct only the main path is still Figma, and the other three are the playground's built flows (`flow-schedule-slots-unavailable-feedback`, `flow-returns-cs-chat-exchange`, `flow-returns-cs-chat-return`). C-001 (first-time introduction) can't be reached from the main path's start. S-005 (past slots greyed) is in the playground's states embed.
 
-Current file: 326 case frames, 126 shown on the page, 200 not shown.
+Current file: 326 case frames, 130 shown on the page, 196 not shown.
 
 | Figma section | frames | shown | not shown |
 |---|---|---|---|
@@ -60,7 +61,7 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 | ✅ Cart cases | 15 | 4 | 11 |
 | 🧾 Pay and track | 8 | 2 | 6 |
 | 🏠 Orders and home | 10 | 3 | 7 |
-| 🚫 Slots full | 8 | 4 | 4 |
+| 🚫 Slots full | 8 | 8 | 0 |
 | 💬 Exchange by chat | 26 | 26 | 0 |
 | 💬 Return by chat | 7 | 7 | 0 |
 | 📲 Return in the app | 17 | 0 | 17 |
@@ -91,8 +92,8 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 | case | screen | node | shown in the case study |
 |---|---|---|---|
 | C-001 | 📣 First-time introduction | `9:3` | no (on a wired path, but no start reaches it) |
-| C-002 | 📱 Returning user tray | `9:154` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
-| C-012 | 🛒 Delivery scheduled on cart | `9:1540` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
+| C-002 | 📱 Returning user tray | `9:154` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
+| C-012 | 🛒 Delivery scheduled on cart | `9:1540` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
 | C-003 | 🚫 Items unserviceable Schedule | `9:302` | no |
 | C-004 | 🚫 Items unavailable Schedule | `9:443` | no |
 | C-005 | ⚠️ Scheduled limit baseline | `9:584` | The cart is a complex construct (FigmaShot still, guess) |
@@ -107,10 +108,10 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| C-014 | ⏳ Picker loading shimmer | `9:1820` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
-| C-015 | 📅 Picker schedule selected | `9:1904` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
-| C-022 | 📅 Confirm schedule | `9:2745` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
-| C-027 | 🚫 No slots available | `9:3444` | no (on a wired path, but no start reaches it) |
+| C-014 | ⏳ Picker loading shimmer | `9:1820` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
+| C-015 | 📅 Picker schedule selected | `9:1904` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
+| C-022 | 📅 Confirm schedule | `9:2745` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
+| C-027 | 🚫 No slots available | `9:3444` | no (it was on the Figma slots-full path, but no start reached it; the built flow doesn't hold it) |
 | C-013 | 🚫 Cart unserviceable store | `9:1671` | no |
 | C-016 | 🚫 Picker instant unavailable | `9:2042` | no |
 | C-017 | 📅 Picker unable load slots | `9:2176` | no |
@@ -129,9 +130,9 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| S-002 | ⚡ Instant delivery selected | `30:3` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate); Every state, running (playground embed, exact) |
-| S-001 | 📅 Default Schedule selected | `4:3` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate); The explorations (Detour) (still, likely); Slot-page states (still strip, likely); Every state, running (playground embed, exact) |
-| S-008 | 📅 Tomorrow tab more slots | `4:896` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate); Every state, running (playground embed, exact) |
+| S-002 | ⚡ Instant delivery selected | `30:3` | live Figma embed, main path (The prototype, live; also the Context and objective plate); Every state, running (playground embed, exact) |
+| S-001 | 📅 Default Schedule selected | `4:3` | live Figma embed, main path (The prototype, live; also the Context and objective plate); The explorations (Detour) (still, likely); Slot-page states (still strip, likely); Every state, running (playground embed, exact) |
+| S-008 | 📅 Tomorrow tab more slots | `4:896` | live Figma embed, main path (The prototype, live; also the Context and objective plate); Every state, running (playground embed, exact) |
 | S-005 | 🚫 Morning window past slots | `4:496` | Every state, running (playground embed, exact) |
 | S-003 | 🚫 Edge Instant unavailable | `4:250` | Instant to Scheduled: the toggle (coded mock, guess); Slot-page states (end) (explored row, exact); Every state, running (playground embed, exact) |
 | S-004 | 🚫 Edge Schedule unavailable | `4:403` | Every state, running (playground embed, exact) |
@@ -150,8 +151,8 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| S-030 | 📅 Shipment no slot selected | `11:1997` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate); Slot-page states (still strip, likely) |
-| S-029 | 🚫 Three shipments scheduled | `11:1871` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate); Slot-page states (still strip, likely) |
+| S-030 | 📅 Shipment no slot selected | `11:1997` | live Figma embed, main path (The prototype, live; also the Context and objective plate); Slot-page states (still strip, likely) |
+| S-029 | 🚫 Three shipments scheduled | `11:1871` | live Figma embed, main path (The prototype, live; also the Context and objective plate); Slot-page states (still strip, likely) |
 | S-031 | 📱 Same two cases re-drawn on | `11:2124` | no |
 | S-032 | 📅 All vars three shipments | `11:2221` | no |
 
@@ -159,7 +160,7 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| S-086 | ✅ Order Scheduled Successfully | `18:3989` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
+| S-086 | ✅ Order Scheduled Successfully | `18:3989` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
 | S-072 | 🚫 Items unserviceable | `18:1972` | The explorations (Detour) (still, likely) |
 | S-073 | 🚫 Some items unavailable | `18:2128` | The explorations (Detour) (still, likely) |
 | S-074 | 🚫 Store unserviceable due rain | `18:2283` | no |
@@ -179,8 +180,8 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| C-031 | ✅ Order confirmed | `9:3811` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
-| C-032 | 📦 Tracking scheduled tomorrow | `9:3827` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
+| C-031 | ✅ Order confirmed | `9:3811` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
+| C-032 | 📦 Tracking scheduled tomorrow | `9:3827` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
 | C-030 | ⏳ Payment processing (MAIN-PATH "wire later") | `9:3782` | no |
 | C-033 | 📦 Tracking scheduled today (MAIN-PATH "wire later") | `9:3875` | no |
 | C-034 | 📦 Tracking regular order (MAIN-PATH "wire later") | `9:3922` | no |
@@ -192,7 +193,7 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| C-039 | 📦 Orders scheduled order | `15:58` | live Figma embed, main path (The prototype, live from Figma; also the Context and objective plate) |
+| C-039 | 📦 Orders scheduled order | `15:58` | live Figma embed, main path (The prototype, live; also the Context and objective plate) |
 | C-038 | 🏠 PDP schedule later info (MAIN-PATH "wire later") | `15:3` | The explorations (Detour, after the section) (FigmaShot still, guess) |
 | C-040 | 📦 Orders Dev Ready 2 scheduled order (MAIN-PATH "wire later") | `15:213` | no |
 | C-041 | 🗂️ Cancel scheduled order (MAIN-PATH "wire later") | `33:586` | no |
@@ -207,57 +208,57 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| S-017 | 🚫 Some slots unavailable | `11:3` | live Figma embed, slots full (The prototype, live from Figma); Slot-page states (still strip, likely) |
-| S-018 | 🚫 Some slots unavailable SLOT | `11:193` | live Figma embed, slots full (The prototype, live from Figma) |
-| S-019 | 🚫 No slots available on | `11:384` | live Figma embed, slots full (The prototype, live from Figma); Slot-page states (still strip, likely) |
-| S-020 | 📣 Schedule Introducing | `30:105` | Scheduled delivery, in motion (still, likely); Context and objective (plate 1) (plate, likely); The go-to-market (plate 1) (plate, likely) |
-| S-021 | ↩️ Returns pickup slot picker | `11:678` | no |
-| S-022 | ↩️ Returns pickup person | `11:909` | no |
-| S-023 | ↩️ Returns pickup Expanded | `11:1120` | no |
-| S-024 | ↩️ Returns pickup Next Day tab | `11:1350` | no |
+| S-017 | 🚫 Some slots unavailable | `11:3` | built flow, slots full (The prototype, live); Slot-page states (still strip, likely) |
+| S-018 | 🚫 Some slots unavailable SLOT | `11:193` | built flow, slots full (The prototype, live) |
+| S-019 | 🚫 No slots available on | `11:384` | built flow, slots full (The prototype, live); Slot-page states (still strip, likely) |
+| S-020 | 📣 Schedule Introducing | `30:105` | built flow, slots full (The prototype, live); Scheduled delivery, in motion (still, likely); Context and objective (plate 1) (plate, likely); The go-to-market (plate 1) (plate, likely) |
+| S-021 | ↩️ Returns pickup slot picker | `11:678` | built flow, slots full (The prototype, live) |
+| S-022 | ↩️ Returns pickup person | `11:909` | built flow, slots full (The prototype, live) |
+| S-023 | ↩️ Returns pickup Expanded | `11:1120` | built flow, slots full (The prototype, live) |
+| S-024 | ↩️ Returns pickup Next Day tab | `11:1350` | built flow, slots full (The prototype, live) |
 
 #### 💬 Exchange by chat
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| EX-001 | 💬 Entry Help Support lists | `7:3` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-002 | 💬 Order Help lists issue | `7:98` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-003 | 📱 Item selection eligible | `7:165` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-004 | 📱 Select issue item | `7:291` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-005 | 📱 Quantity photos videos | `7:444` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-006 | 📱 Summary before submitting | `7:636` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-007 | 💬 Chat echoes submitted issue | `7:778` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-008 | 💬 Bot offers exchange | `7:873` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-009 | 🔁 Availability confirmation | `7:982` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-010 | 🔁 Exchange confirmed | `45:3` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-011 | 💬 Escalation human agent | `7:1293` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-012 | 🔁 Item OOS before exchange | `7:1458` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-013 | 🔁 Item OOS after exchange | `7:1567` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-014 | 🔁 Item already exchanged block | `7:1740` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-015 | 🚫 Store unserviceable | `7:1927` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-016 | 📱 Maximum active child orders | `7:2049` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-017 | 🚫 CS window closed | `7:2157` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-018 | 🔁 RTO exchange flow suggest | `7:2209` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-019 | 🔁 Cancelled exchange flow | `7:2315` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-020 | 🔁 Exchange declined need | `7:2421` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-021 | 🛵 Instant pickup unavailable | `7:2556` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-022 | 🚫 Items ineligible | `7:2748` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-023 | 📱 Multi-product issue | `7:2881` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-024 | ↩️ OOS pivot confirmed Return | `7:2995` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-026 | ✅ Clear details confirmation | `27:3` | live Figma embed, exchange (The prototype, live from Figma) |
-| EX-025 | ↩️ Pick refund method after OOS | `7:3380` | live Figma embed, exchange (The prototype, live from Figma) |
+| EX-001 | 💬 Entry Help Support lists | `7:3` | built flow, exchange in support chat (The prototype, live) |
+| EX-002 | 💬 Order Help lists issue | `7:98` | built flow, exchange in support chat (The prototype, live) |
+| EX-003 | 📱 Item selection eligible | `7:165` | built flow, exchange in support chat (The prototype, live) |
+| EX-004 | 📱 Select issue item | `7:291` | built flow, exchange in support chat (The prototype, live) |
+| EX-005 | 📱 Quantity photos videos | `7:444` | built flow, exchange in support chat (The prototype, live) |
+| EX-006 | 📱 Summary before submitting | `7:636` | built flow, exchange in support chat (The prototype, live) |
+| EX-007 | 💬 Chat echoes submitted issue | `7:778` | built flow, exchange in support chat (The prototype, live) |
+| EX-008 | 💬 Bot offers exchange | `7:873` | built flow, exchange in support chat (The prototype, live) |
+| EX-009 | 🔁 Availability confirmation | `7:982` | built flow, exchange in support chat (The prototype, live) |
+| EX-010 | 🔁 Exchange confirmed | `45:3` | built flow, exchange in support chat (The prototype, live) |
+| EX-011 | 💬 Escalation human agent | `7:1293` | built flow, exchange in support chat (The prototype, live) |
+| EX-012 | 🔁 Item OOS before exchange | `7:1458` | built flow, exchange in support chat (The prototype, live) |
+| EX-013 | 🔁 Item OOS after exchange | `7:1567` | built flow, exchange in support chat (The prototype, live) |
+| EX-014 | 🔁 Item already exchanged block | `7:1740` | built flow, exchange in support chat (The prototype, live) |
+| EX-015 | 🚫 Store unserviceable | `7:1927` | built flow, exchange in support chat (The prototype, live) |
+| EX-016 | 📱 Maximum active child orders | `7:2049` | built flow, exchange in support chat (The prototype, live) |
+| EX-017 | 🚫 CS window closed | `7:2157` | built flow, exchange in support chat (The prototype, live) |
+| EX-018 | 🔁 RTO exchange flow suggest | `7:2209` | built flow, exchange in support chat (The prototype, live) |
+| EX-019 | 🔁 Cancelled exchange flow | `7:2315` | built flow, exchange in support chat (The prototype, live) |
+| EX-020 | 🔁 Exchange declined need | `7:2421` | built flow, exchange in support chat (The prototype, live) |
+| EX-021 | 🛵 Instant pickup unavailable | `7:2556` | built flow, exchange in support chat (The prototype, live) |
+| EX-022 | 🚫 Items ineligible | `7:2748` | built flow, exchange in support chat (The prototype, live) |
+| EX-023 | 📱 Multi-product issue | `7:2881` | built flow, exchange in support chat (The prototype, live) |
+| EX-024 | ↩️ OOS pivot confirmed Return | `7:2995` | built flow, exchange in support chat (The prototype, live) |
+| EX-026 | ✅ Clear details confirmation | `27:3` | built flow, exchange in support chat (The prototype, live) |
+| EX-025 | ↩️ Pick refund method after OOS | `7:3380` | built flow, exchange in support chat (The prototype, live) |
 
 #### 💬 Return by chat
 
 | case | screen | node | shown in the case study |
 |---|---|---|---|
-| RT-001 | 💬 Bot eligible Return | `10:3` | live Figma embed, return (The prototype, live from Figma) |
-| RT-002 | ↩️ Return availability | `10:115` | live Figma embed, return (The prototype, live from Figma) |
-| RT-003 | 🔁 Return flow suggests | `10:261` | live Figma embed, return (The prototype, live from Figma) |
-| RT-004 | ↩️ CS window closed | `10:369` | live Figma embed, return (The prototype, live from Figma) |
-| RT-005 | ↩️ Store unserviceable | `10:421` | live Figma embed, return (The prototype, live from Figma) |
-| RT-006 | 💬 Return declined Need further | `10:543` | live Figma embed, return (The prototype, live from Figma) |
-| RT-007 | 💬 Agent handoff | `10:675` | live Figma embed, return (The prototype, live from Figma) |
+| RT-001 | 💬 Bot eligible Return | `10:3` | built flow, return in support chat (The prototype, live) |
+| RT-002 | ↩️ Return availability | `10:115` | built flow, return in support chat (The prototype, live) |
+| RT-003 | 🔁 Return flow suggests | `10:261` | built flow, return in support chat (The prototype, live) |
+| RT-004 | ↩️ CS window closed | `10:369` | built flow, return in support chat (The prototype, live) |
+| RT-005 | ↩️ Store unserviceable | `10:421` | built flow, return in support chat (The prototype, live) |
+| RT-006 | 💬 Return declined Need further | `10:543` | built flow, return in support chat (The prototype, live) |
+| RT-007 | 💬 Agent handoff | `10:675` | built flow, return in support chat (The prototype, live) |
 
 #### 📲 Return in the app
 
@@ -600,7 +601,7 @@ Current file: 326 case frames, 126 shown on the page, 200 not shown.
 2. **"After you book" (parked), or a three-phone row after the main path:** C-032 tracking for tomorrow, C-039 the order card, and C-044 or C-045 the home strip. Or embed the playground's `flow-cart-order-placing-and-tracking`. The case ends at "order placed" today.
 3. **The returns family: the in-app return** (`flow-returns-in-app-exchange-return`, or the IA path), beside the chat paths. It's the version most shoppers would use.
 4. **The broken-promise sections, once their [CONFIRM]s close:** the limit and error cases (C-106 to C-114; the playground's `flow-cart-oos-limit-and-edge-cases`), next to the prototype screenshots for recovery and the price lock.
-5. **"Slot-page states" or the slots-full path:** C-027 (the cart, no slots for a shipment). Wire it into the path or show it as a tile. It's the slots-full story's cart-side end.
+5. **"Slot-page states" or the slots-full path:** C-027 (the cart, no slots for a shipment). Show it as a tile, or add it to the slots-full flow (the built flow holds S-017 to S-024, not the cart side). It's the slots-full story's cart-side end.
 6. **Fix the six labels in section 4.** They're small, but each one tells a reviewer the screen is something it isn't.
 
 Leave out: Buy X get Y and Swap and save (off on purpose, Q15), the Oct 29 research board's remaining frame, and the duplicate "· old" frames.
