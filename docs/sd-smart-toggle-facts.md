@@ -270,7 +270,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 4. Why was it built this way? Guess: someone who just tapped Schedule shouldn't have to choose it again.
 5. What was the worst case before this? For example, did the page once open on Instant, or on shipment 1, after a tap on a different shipment?
 6. Did it ship in the app, or is it in the final design only?
-7. Should it be its own section right after "Instant to Scheduled: the toggle", with its own figure? Or a second row of chips on the existing scenario figure?
+7. Should it be its own section right after "Instant to Scheduled: the toggle", with its own figure? Or a second row of chips on the existing scenario figure? **Answered (Q7 / #20, B, Agam accepted 26 Oct): a second row of entry-point chips on the existing scenario figure, in "Instant to Scheduled: the toggle"; not a new section.**
 
 **The three toggle prototypes**
 8. Why did UT 01's two cards per shipment beat UT 02 (Remove as a third option) and UT 03 (the mini pill)? Guess for the verdict line: the choice reads before you tap.

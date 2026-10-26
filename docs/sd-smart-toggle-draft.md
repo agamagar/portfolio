@@ -1,6 +1,6 @@
 # Smart toggle: section draft (Sauer)
 
-Register: Sauer. Sits in the Scheduled Delivery case study, group "Process", straight after "Instant to Scheduled: the toggle" and before "One scroll across midnight". Facts and sources: `docs/sd-smart-toggle-facts.md`.
+Register: Sauer. Folds into "Instant to Scheduled: the toggle" (Q7, B, Agam accepted 26 Oct): the copy below joins that section, and its figure is a second row of chips on the section's existing scenario figure, not a new section. Facts and sources: `docs/sd-smart-toggle-facts.md`.
 
 Standing rules carried in: no em dash, no tilde, every unsourced claim marked, and nothing goes into App.jsx while a marker is open. "The detail I am proudest of" is already used in the midnight section, so this one does not borrow it.
 
@@ -26,9 +26,9 @@ figure: Pick the tap you came from. The same Instant and Schedule options open o
 
 ## Figure plan (build after the answers)
 
-- `schedToggleEntry`, a sibling of `ToggleScenarios` inside `src/figures/scheduled/SchedToggleDemo.jsx`, reusing its plate, chips, `PhoneFrame` and `.std-opt` styles. No new tokens.
+- A second row of chips on the existing scenario figure (`ToggleScenarios` in `src/figures/scheduled/SchedToggleDemo.jsx`), reusing its plate, chips, `PhoneFrame` and `.std-opt` styles. No new figure, no new tokens (Q7, B).
 - Four chips, one per entry point (cart Schedule, Edit a booked slot, homepage prompt, the cart's main button: Pay or "Select delivery options"). Each chip sets the open shipment, the selected option and the two subtexts.
-- If Agam prefers one section (Q7 in the fact base), the chips become a second row on the existing scenario figure instead.
+- Built once the entry-point facts are answered (Q1 to Q6): the chips can only show what each tap really does.
 
 ---
 
