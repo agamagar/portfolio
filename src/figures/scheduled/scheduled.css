@@ -2254,3 +2254,19 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 @media (max-width: 760px) { .cpf { grid-template-columns: 1fr; gap: 1.5rem; } .cpf__steps { max-width: none; } }
 
 /* 22 Oct: the caption under the prototype still (the Figma file is private, so the embed is a still on the public site) */
+
+/* mvp5e90i-u6ak3y (Agam, 26 Oct): the phase rail's labels sit on the page with no fill and no hover state; the heading under
+   the emoji is bigger, and the dates are its subtext. */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { background: none; border-color: transparent; box-shadow: none; pointer-events: none; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard:not([data-open="true"]) .tlx__rail-tag { font-size: 20px; line-height: 26px; font-weight: 600; }
+.rwf-glass .tlx__rail-sub { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--muted); white-space: nowrap; }
+/* mvp5e90g-fafsko: each point is its icon on the left and its text on the right, in four equal columns */
+.rwf__rl-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.rwf__rl-cols > li { display: flex; flex-direction: row; align-items: flex-start; gap: 0.75rem; }
+.rwf__rl-cols > li .rwf__stat-icon { flex: 0 0 auto; margin: 0; }
+.rwf__rl-cols > li .rwf__rl-t { flex: 1 1 0; min-width: 0; }
+/* mvp5e90i-iefs0g: the growth chart fills its column, its height following its width */
+.rwf__charts--one .ch__svg { width: 100%; height: auto; }
+.rwf--stack .rwf__main:has(.rwf__charts--one) { align-items: stretch; width: 100%; }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { height: auto; min-height: 0; overflow: visible; }
+@media (max-width: 720px) { .rwf__rl-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

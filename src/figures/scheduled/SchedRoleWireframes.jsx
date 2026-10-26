@@ -561,7 +561,7 @@ function phaseRailModel(phases) {
   const years = [{ label: "2025", x: 0, i: 0 }];
   const jan = months.findIndex((c) => c.m === 2026 * 12);
   if (jan > 0) years.push({ label: "2026", x: (jan / n) * 100, i: jan });
-  const cards = spans.map((sp) => ({ key: `p${sp.k}`, tid: `p${sp.k}`, org: sp.what, role: null, x: (sp.i0 / n) * 100, i0: sp.i0, i1: sp.i1 }));
+  const cards = spans.map((sp) => ({ key: `p${sp.k}`, tid: `p${sp.k}`, org: sp.what, role: null, sub: phases[sp.k][0], x: (sp.i0 / n) * 100, i0: sp.i0, i1: sp.i1 }));
   const details = new Map(phases.map(([when, what, detail], k) => [`p${k}`, { id: `p${k}`, org: phaseLabel(what), kind: "", rawKind: "work", role: null, dates: when, span: when, outs: [], summary: PHASE_BULLETS[what] ? null : detail, bullets: PHASE_BULLETS[what] ? PHASE_BULLETS[what].map((t, j) => ({ icon: PHASE_BULLET_ICONS[what]?.[j], text: sentenceCase(t) })) : null }]));
   return { model: { months, n, years, cards }, details };
 }

@@ -25,3 +25,8 @@
 .article__body--nocaps .sxp figcaption { display: revert; }
 /* the figure's expand button sits at the bottom right; the verdict keeps clear of it (44px + a gap) */
 .sxp__verdict { padding-right: 52px; }
+/* mvp5f9zq-9schik (Agam, 26 Oct): no purple ground; the plate sits on the page and its ink is the page's */
+.sxp { --sxp-plate: none; --sxp-ink: var(--ink); }
+.sxp .sxp__plate { background: none; padding-inline: 0; }
+.page--article .article__body .sxp p.sxp__title { margin-inline: 0; }
+.sxp .pf__tag { background: none; }
