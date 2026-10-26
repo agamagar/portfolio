@@ -10,13 +10,13 @@ Standing rules carried in: no em dash, no tilde, every unsourced claim marked, a
 
 nav: Smart toggle
 
-tldr: The toggle opens already knowing which tap brought you there. [CONFIRM: the toggle's subject changes with the entry point, and which part changes]
+tldr: The toggle opens already knowing which tap brought you there: the shipment it is about, and the option you meant.
 
 Nobody lands on the schedule page by accident. They tapped Schedule on a shipment in the cart, or Edit on a slot they had already booked, or the homepage prompt that only shows when demand is high and the cart cannot be served. Or they pressed the cart's main button, Pay, which reads "Select delivery options" when a shipment can't come now. Each of those taps is already an answer. The toggle should not ask the question twice.
 
 The worst case is the busy cart. Zepto splits one order into shipments, and the page lists every one of them. Tap Schedule on shipment 2 of 3, land on shipment 1 with Instant selected, and you have to find your shipment and say "later" a second time. [CONFIRM: that a version or a test session opened this way] The design already opens the shipment you arrived from. The toggle had to follow the same tap.
 
-So its subject moves with you. [CONFIRM: what moves, title, subtext, default or target shipment] From a shipment's Schedule link, that shipment opens, expanded, with Schedule Delivery chosen. From Edit, Schedule's subtext is the slot you booked, "Arriving today, 4-5 PM", so you start from your own choice. [CONFIRM] From the homepage prompt, Instant carries the reason: "High Demand! Instant delivery is temporarily unavailable. Schedule for later." [CONFIRM] From the cart's main button, Pay, every shipment that can come now starts on Instant. Same two options every time. Only what they are about changes.
+So its subject moves with you: which shipment opens, and which option is already chosen. From a shipment's Schedule link, that shipment opens, expanded, with Schedule Delivery chosen. From Edit, Schedule's subtext is the slot you booked, "Arriving today, 4-5 PM", so you start from your own choice. [CONFIRM] From the homepage prompt, Instant carries the reason: "High Demand! Instant delivery is temporarily unavailable. Schedule for later." [CONFIRM] From the cart's main button, Pay, every shipment that can come now starts on Instant. Same two options every time. Only what they are about changes.
 
 **Outcome: not measured separately.** The September warehouse report counts scheduled orders by month, slot and lead time, not by the tap that opened the page, so this design has no number of its own. The nearest one is about the choice itself: only about 1.3% chose a slot when instant was fully available.
 

@@ -265,7 +265,7 @@ Source: Agam's Figma annotations on the Schedule button variants page in Claude:
 Answers can be short. Where I've written a guess, a yes or no is enough.
 
 **Smart toggle (new section "Where you tapped")**
-1. What changes with the tap: the title, the subtext, the option already selected, or the shipment the toggle acts on?
+1. What changes with the tap: the title, the subtext, the option already selected, or the shipment the toggle acts on? **Answered from sources (26 Oct): e, which is c + d, the option already selected and the shipment the toggle acts on. "The shipment you arrived from expands by default" (App.jsx, "Where it landed"), and #13 (accepted): a group's Schedule link opens that shipment on Schedule, expanded; Pay starts every shipment that can come now on Instant.**
 2. Which taps count? Sourced: (a) Schedule on the cart's "Schedule for later" header, (b) Edit on a scheduled shipment, (c) the homepage prompt when demand is high, (d) Schedule from View items. Any others?
 3. What does the toggle show for each? Guess: (a) that shipment opens with Schedule chosen; (b) Schedule chosen, with the booked slot ("Arriving today, 4-5 PM") as its subtext; (c) Schedule chosen, with the high-demand line on Instant.
 4. Why was it built this way? Guess: someone who just tapped Schedule shouldn't have to choose it again.
