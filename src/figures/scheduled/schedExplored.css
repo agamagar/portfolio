@@ -19,3 +19,9 @@
 .sxp .pf__tag:not([data-tone="shipped"]):not([data-tone="rejected"]) { color: var(--sxp-ink); }
 
 .sxp__verdict { margin: 0; font-size: 15px; line-height: 1.5; text-wrap: pretty; }
+
+/* The SD case hides figure captions (hideCaptions, mtmvvzbk). On these rows the verdict and each phone's line are the
+   comparison itself, not a caption under a picture, so they stay on here, and only here. */
+.article__body--nocaps .sxp figcaption { display: revert; }
+/* the figure's expand button sits at the bottom right; the verdict keeps clear of it (44px + a gap) */
+.sxp__verdict { padding-right: 52px; }
