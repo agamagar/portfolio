@@ -238,11 +238,12 @@ Source: `design-playground/docs/critique-decisions.md`, kept by the Design criti
 
 Source: Agam's Figma annotations on the Schedule button variants page in Claude: Schedule, relayed by CoS: Figma and logged in `design-playground/docs/decisions-board.csv`. Each one goes in the explorations layer where its decision sits in the story.
 
-**D1: the Schedule Reset sheet** (annotation 327:312090; decisions board row 43, "Prototype · Flow", Done, 25 Oct)
-- The rule: when someone closes the app on the cart and opens it again, they land back on the cart, and the M1 "Schedule Reset" bottom sheet resets the schedule state there.
+**D1: the "Schedule needs review" sheet** (annotation 327:312090, where Agam called it "Schedule Reset"; decisions board row 43, "Prototype · Flow", Done, 25 Oct; corrected by the Notion source pass, 26 Oct)
+- The rule: when someone closes the app on the cart and opens it again and item availability has changed, a bottom sheet asks them to review: title "Schedule needs review", body "Some items may not be available for delivery. Review your scheduled order.", button "Review Schedule" (Claude: Schedule 327:312090, read 26 Oct). It is a review prompt triggered by availability, not a silent reset.
+- The QA spec for the same case: "On returning to the cart/schedule screen after closing the app, a 'Schedule needs review' bottom sheet appears: 'Product availability has changed since your last visit' + a 'Review Schedule' button" (Claude/Case Studies/2026-06-29_scheduled-delivery-qa-experiment.md, line 20, marked "SPECCED (partial)").
 - The M1 case it matches: C-021, "Schedule reset: cart". The condition is "Previously scheduled" and the outcome is "Cart returns to Store Unserviceable / Schedule state" (`docs/flow-map-cart.md`, M1 FTB handover, designed). The cart Delivery Options exploration also drew a Reset link beside Edit slot (S-090, "Delivery scheduled / Reset / Edit slot").
 - Placement: under the cart-side Schedule entry. It's a rule about when the reset appears, not a visual choice.
-- Open: why the schedule resets instead of waiting for the user, and exactly what resets. **[CONFIRM]** (questions 17 and 18).
+- Answered by the sources (Q17): why it appears, a change in item availability. Still open (Q18): exactly what the review clears. **[CONFIRM]**.
 
 **D2: one status on a collapsed shipment card** (Agam, 25 Oct, relayed by CoS: Figma)
 - The decision: a collapsed shipment card on the Schedule page shows a single status pill, the chosen mode or slot. It doesn't show both options the way the toggle does.
@@ -300,7 +301,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
     **Answered (Q15 / #28, A, Agam accepted 26 Oct): placed as planned.** Wired with `explored: <key>` on each section, the row at the section's end: toggle, instantOff, collapsedSlot and gtm. The Pay row waits: which experiment won is still open (comparison 4), and the rebuild's stills don't show the difference, so it needs the handoff frames (C-057 42:45530, C-060 42:47849) before it can go in.
 
 **The Schedule Reset sheet (D1)**
-17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed.
+17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed. **Answered by the source pass (26 Oct): it isn't a reset. A "Schedule needs review" sheet appears when item availability has changed (Figma 327:312090; the QA spec, line 20).**
 18. What exactly resets: only the chosen slot, or the shipment's Instant or Schedule choice too? And every shipment in the cart, or only the scheduled one?
 
 **Numbers on the page (critique #37)**

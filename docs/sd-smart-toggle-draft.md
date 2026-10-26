@@ -91,7 +91,9 @@ Verdict: **Two touches shipped. The rest stayed in the file.** The banner on the
 ## D1. Coming back to the cart
 Under the cart-side Schedule entry. A rule, so it's one line and a verdict, with no comparison row.
 
-Verdict: **In the design, leaving on the cart resets the schedule.** Close the app on the cart, open it again, and the design lands you back on the cart with the Schedule Reset sheet, which resets the schedule there. In the M1 case the cart goes back to Store Unserviceable, with Schedule offered again. [CONFIRM: why it resets instead of keeping the slot] [CONFIRM: what resets, the slot or the Instant and Schedule choice too, and for which shipments]
+Verdict: **Come back to the cart and the design asks you to review, not start over.** Close the app on the cart and open it again, and if item availability has changed, a sheet says so: "Schedule needs review. Some items may not be available for delivery. Review your scheduled order.", with one button, Review Schedule. The trigger is what is in stock, not the time away, so nothing is reset behind your back. [CONFIRM: what the review clears, the slot or the Instant and Schedule choice too, and for which shipments (Q18)]
+
+Sources: the sheet in Claude: Schedule (327:312090); the QA spec for the same case, "Product availability has changed since your last visit" with a Review Schedule button (Claude/Case Studies/2026-06-29_scheduled-delivery-qa-experiment.md, line 20, specced).
 
 ## D2. One status on a closed card
 Next to comparison 3, "The slot you picked": that one settles the words on a closed card, this one settles how much it shows. Figure to make, labelled "Prototype, 2026": a single pill against the toggle mirrored, with three shipments stacked in each.
