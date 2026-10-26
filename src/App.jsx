@@ -160,6 +160,9 @@ const SchedPageStates = lazyFig(() => import("./figures/scheduled/SchedPageState
 const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
 const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
 const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows")); // the wired Figma prototype paths, live
+const SchedAfterFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedAfterFlows }))); // after booking, built flows
+const SchedInAppFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedInAppFlow }))); // the in-app return, built flow
+const SchedLimitsFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedLimitsFlow }))); // the cart's limits and errors, built flow
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
@@ -678,6 +681,9 @@ const figures = {
   schedDateSwitch: SchedDateSwitch,
   schedCartHubs: SchedCartHubs,
   schedFigmaFlows: SchedFigmaFlows,
+  schedAfterFlows: SchedAfterFlows,
+  schedInAppFlow: SchedInAppFlow,
+  schedLimitsFlow: SchedLimitsFlow,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -2885,7 +2891,8 @@ const caseStudies = {
       },
       // 27 Sep, Figma 273:5431: the order packed, what booking sets in motion
       {
-        hidden: true, // muky6p44 + muky6uaw (28 Sep): hidden for now, with its post-booking figure
+        // 26 Oct (Agam, via CoS: "add all things in the schedule case study"): on the page again, short, with the built
+        // flows for tracking, My Orders and the home strip. Hidden 28 Sep (muky6p44, muky6uaw) with its coded figure.
         h: "After you book",
         // mukukpft (28 Sep): moved here from the central question; the tracking
         // card IS the after-booking promise. mukub9lc: the mango scene, duplicated with a different
@@ -2893,29 +2900,34 @@ const caseStudies = {
         // 284:6334: the purple crates, and the "Scheduled / Arriving today,
         // 7-8 AM" tracking card flipping up in the centre (586 x 642 on the
         // 1392 x 862 frame: x 28.95%, y 12.77%, w 42.1%).
-        sceneAfter: {
+        _sceneAfter: {
           aspect: [1392, 862],
           base: "/figures/scheduled/tracking-crates.webp",
           layers: [{ src: "/figures/scheduled/tracking-card.webp", x: 28.95, y: 12.77, w: 42.1, fx: "flip" }],
         },
-        group: "Outcome",
+        group: "Process",
         tldr:
-          "Later is only trustworthy if it arrives, so most of the trust work sits after checkout: tracking built for a slot, reminders, and a hand-off back to instant.",
+          "Most of a scheduled order's life comes after you pay, so every screen it shows up on leads with the slot.",
         p: [
-          "A scheduled order spends almost all of its life after you have paid, and that is exactly where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\"; for a scheduled order that line is wrong. So I designed a new card that leads with the commitment, \"Scheduled for Today, 6 to 7 PM\", and carries the same status onto the home page and into My Orders. The promise stays in front of you the whole time, not buried in a confirmation email.",
+          "A scheduled order spends almost all of its life after you have paid, and that is where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\", and for a scheduled order that line is wrong. So the tracking card leads with the commitment, \"Scheduled for Today, 7-8 PM\", and the same status sits at the top of My Orders and in a strip at the foot of the home page. The promise stays in front of you the whole time.",
+        ],
+        // parked with the section's 28 Sep hide: reminders, the hand-off back to instant, cancel rules, the rider screen
+        _p: [
           "Because the order is hours away, it has to come find you. Reminders fan out across the channels people actually watch: a push notification, an in-app banner pinned to the foot of the home page, and a WhatsApp message. [WhatsApp was designed for; we did not have a WhatsApp engine live, so treat it as the intended reach, not a shipped channel.]",
           "The moment that matters most is the hand-off. Roughly half an hour before your slot the order \"wakes up\" and rejoins the normal flow: a rider is assigned, heads to the store, and the experience becomes the familiar 10-minute one, just landing inside your window instead of right now. The 10-minute promise is not abandoned for scheduling. It is deferred, then honoured. And you keep control of it: the slot is editable before you confirm, and the order is cancellable up to 30 minutes before the window, through the support chat. Fuller post-order editing came later. Riders get their own scheduled-order screen, so the operational side keeps up. And on the rare miss the feature stays honest rather than hopeful: if the slot slips you can cancel once it passes, and a longer breach auto-cancels with an apology and a ₹50 credit, so a broken promise ends cleanly instead of leaving you watching a countdown that never resolves.",
         ],
-        ul: [
+        _ul: [
           "A \"Scheduled for\" tracking card that replaces the default 10-minute line, mirrored on home and in My Orders",
           "Reminders across push, in-app (pinned at the home foot) and WhatsApp (designed-for)",
           "The roughly 30-minute wake-up: rider assigned, reaching the store, then the 10-minute experience inside your slot",
           "Slot edits before you confirm, and cancel up to 30 minutes before via the support chat (fuller post-order reschedule came later), plus a dedicated rider screen for scheduled orders",
           "A delight layer explored: an iOS Dynamic-Island live activity carrying the slot and rider status on the lock screen",
         ],
-        fig: "schedPostBooking",
-        figBare: true, // mtmrnolv: no figure card around coded figures
-        figure:
+        fig: "schedAfterFlows",
+        figBare: true,
+        figure: "Tracking, My Orders and the home strip, running. Click inside a phone to tap through its states.",
+        _fig: "schedPostBooking",
+        _figure:
           "The order's second life: a \"Scheduled for 6 to 7 PM\" tracking card, reminders across push, in-app and WhatsApp, and the roughly 30-minute wake-up where a rider is assigned and the 10-minute experience resumes inside your slot, carried on a Dynamic-Island live activity. [Plate the real tracking card and rider screen.]",
         divider: true,
       },
@@ -2960,10 +2972,13 @@ const caseStudies = {
         tldr: "Exchange and return reuse the slot picker for pickup, so one pattern now does two jobs.",
         p: [
           "One request can exchange some items and return others. Pick the items, say what you want for each, and the review shows two pickup partners, the refund method and a pickup time. That pickup time is the slot picker again.",
+          // 26 Oct ("add all things"): the in-app return, IA-001 to IA-017, as its built flow
+          "The same request starts inside the app too, from Order Details. Each item says whether it can be exchanged or returned and until when, and when Instant pickup isn't available the review offers a scheduled one.",
         ],
         fig: "sd:flow-returns-scheduled-exchange-return?case=SE-007",
         figBare: true,
         figure: "Exchange and return in one request, running. Tap through the cases to follow the flow.",
+        figNext: "schedInAppFlow",
         divider: true,
       },
       // The four prototype paths wired in Figma (Claude: Schedule, R04cmbzFPQk2Q4IockGwqZ), embedded live: an edit in
