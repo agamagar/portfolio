@@ -33,7 +33,7 @@ export const PROJECT_ROWS = [
 export const projectRow = (href) => PROJECT_ROWS.find((r) => r.href === href);
 
 // Shown but not openable: no link, no route prefetch, no project transition.
-export const LOCKED = new Set(["/work/away-agent", "/work/cross-sell"]);
+export const LOCKED = new Set(["/work/away-agent", "/work/cross-sell", "/work/scheduled-delivery"]);
 // the newest Zepto project carries a "New" tag (mv58rul2)
 export const NEW = new Set(["/work/scheduled-delivery"]);
 export const LOCK_COPY = "Awaiting approval: shared under NDA";
