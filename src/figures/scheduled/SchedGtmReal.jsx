@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFitScale } from "../ds/hooks";
 import LayerMap from "../ds/LayerMap";
 import schedulePageLayers from "./schedulePageLayers";
-import PhoneFrame from "../ds/IphoneFrame";
+import PhoneFrame, { PhoneScreen } from "../ds/IphoneFrame";
 import PhoneControls from "../../ui/PhoneControls";
 import "./scheduled.css";
 import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
@@ -64,13 +64,13 @@ export function SchedGtmRealOne({ dim = false }) {
     <div className="gtmr-one">
       <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare" ref={root}>
-            <Img className="gtmr-plate" src={IMG} alt={ALT} />
+            <PhoneScreen className="gtmr-plate" src={IMG} alt={ALT} />
             {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}
             {dim && <span className="gtmr-scrim" aria-hidden />}
             {motion ? (
               <div className="gtmr-scroll" aria-hidden>
                 <div className="gtmr-pan" ref={pan}>
-                  <Img className="gtmr-plate" src={IMG} alt="" draggable="false" />
+                  <PhoneScreen className="gtmr-plate" src={IMG} alt="" draggable="false" />
                   <div className="gtmr-region">{video}</div>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export function SchedGtmCartOne() {
     <div className="gtmr-one">
       <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare">
-            <Img className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
+            <PhoneScreen className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
             <PhoneControls label="Cart page" />
           </div>
       </PhoneFrame>
@@ -120,7 +120,7 @@ export function SchedGtmTooltipOne() {
     <div className="gtmr-one">
       <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
           <div className="gtmr-device gtmr-device--bare">
-            <Img className="gtmr-plate" src="/figures/scheduled/gtm-tooltip-plate.webp" alt="The Zepto cart with a Scheduled order tooltip on the Schedule button: Plan your deliveries, Choose a time slot." />
+            <PhoneScreen className="gtmr-plate" src="/figures/scheduled/gtm-tooltip-plate.webp" alt="The Zepto cart with a Scheduled order tooltip on the Schedule button: Plan your deliveries, Choose a time slot." />
             <PhoneControls label="Cart tooltip" />
           </div>
       </PhoneFrame>
@@ -137,11 +137,11 @@ export default function SchedGtmReal() {
           {/* mtmrp7er: the first phone is the cart page (Schedule Order Handoff
               8205-78448) with the "Introducing scheduled delivery" banner in place */}
           <div className="gtmr-device ibz">
-            <Img className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
+            <PhoneScreen className="gtmr-plate" src="/figures/scheduled/gtm-first-plate.png" alt="The Zepto cart: Special Offers, the Introducing scheduled delivery banner, and the Schedule for later prompt above the items." />
             <PhoneControls label="Cart page" />
           </div>
           <div className="gtmr-device ibz">
-            <Img className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
+            <PhoneScreen className="gtmr-plate" src="/figures/scheduled/schedule-page-ui.png" alt="The Zepto schedule page: header, the promo banner, the instant-versus-scheduled toggle, and the slot grid." />
             <div className="gtmr-region">
               <video className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay muted loop playsInline />
             </div>

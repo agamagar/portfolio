@@ -8946,3 +8946,7 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
   :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
   :root:not([data-rail="shown"]):has(.page--article, .page--locked-doc) :is(.view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]) { transition: none; }
 }
+
+/* Standing rule (Agam, 26 Oct): a phone frame never sits on a colour or gradient ground. Any plate that holds a phone
+   (a live screen, a frame, a phone video) shows the plain page, whatever the case data sets on it. */
+.article__plate-ground:has(.fembed, .pf, .ifr, iframe) { background: none !important; }

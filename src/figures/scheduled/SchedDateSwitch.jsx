@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import Cursor from "../ds/Cursor";
 import "./scheduled.css";
-import PhoneFrame from "../ds/IphoneFrame";
+import PhoneFrame, { PhoneScreen } from "../ds/IphoneFrame";
 import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // Design Mode: the real Today <-> Tomorrow date switch (Schedule Order Handoff,
@@ -67,10 +67,8 @@ export default function SchedDateSwitch() {
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
           <PhoneFrame className="slotreal-device" width={260} enter={false} alt="Day switch">
-              {SCREENS.map((s, i) => (
-                <Img eager key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
-              ))}
-              <Cursor x={touch.x} y={touch.y} visible={touch.visible} hover={touch.hover} press={touch.press} clickN={touch.n} size={24} />
+              {/* one source: the coded slot page, live; the reader switches the day (the scripted switch is not built) */}
+              <PhoneScreen className="slotreal-img" src={SCREENS[0].src} alt={SCREENS[0].alt} />
             
             </PhoneFrame>
 

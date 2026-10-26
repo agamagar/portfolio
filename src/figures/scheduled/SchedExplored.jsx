@@ -54,7 +54,6 @@ export const EXPLORED = {
       { src: S("gtm-coach62"), node: "118:9438", tag: "Not shipped", cap: "A coach-mark in the cart: \"Orders can now be scheduled\"", alt: "Cart with a dark coach-mark on the Schedule button: Orders can now be scheduled" },
       { src: S("gtm-coach66"), node: "118:9629", tag: "Not shipped", cap: "\"Plan your deliveries for later\"", alt: "Cart coach-mark: Orders can also be scheduled, Plan your deliveries for later" },
       { src: S("gtm-coach61"), node: "118:9270", tag: "Not shipped", cap: "\"Schedule for later, earliest delivery in 45 mins\"", alt: "Cart header: Schedule for later, Earliest delivery in 45 mins, with a Schedule button" },
-      { src: S("gtm-banner-later"), node: "115:7028", tag: "Explored", cap: "Banner copy: \"Introducing Schedule for Later\"", alt: "Schedule page with a large Introducing Schedule for Later banner" },
       { src: S("gtm-trust"), node: "115:7727", tag: "Explored", cap: "A trust line: \"No extra charges on schedule orders\"", alt: "Schedule page with a thin No extra charges on schedule orders strip" },
     ],
   },

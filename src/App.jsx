@@ -1433,7 +1433,7 @@ function ScrollScene({ scene: sceneIn }) {
   const isDefault = scene.aspect === "default";
   const [W, H] = isDefault ? [1512, 982] : scene.aspect || [1392, 862];
   return (
-    <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.bg }}>
+    <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.layers?.some((l) => /phone/.test(l.src || "")) ? undefined : scene.bg /* a phone sits on the plain page, never on a colour ground */ }}>
       {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
           are painted as CSS masks, which a screen reader never sees) */}
       {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
@@ -10073,7 +10073,7 @@ const CASE_NARRATIONS = {
 function PlatePhone({ pe, gradient }) {
   return (
     <LinksBelow>
-    <div className="article__plate-embed article__plate-ground" style={gradient ? undefined : { background: pe.bg }}>
+    <div className="article__plate-embed article__plate-ground" style={undefined /* a phone sits on the plain page, never on a colour ground */}>
       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
           notification scene) over a screen cutout that holds the prototype */}
       <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className={"article__plate-phone" + (pe.crop === "top" ? " article__plate-phone--top" : "")} overlay={pe.cueBox && !pe.cueNoPointer ? (

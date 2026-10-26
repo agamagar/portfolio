@@ -79,9 +79,9 @@ function usePhoneStill() {
 
 export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children , playground, caseId}) {
   const root = useRef(null);
-  const still = usePhoneStill() && phoneStill;
-  const [near0, setNear] = useState(false);
   const pg = playground ? getEmbed(playground) : null;
+  const still = usePhoneStill() && phoneStill && !pg; // a coded screen runs live at every width
+  const [near0, setNear] = useState(false);
   const [bundle, setBundle] = useState(pg ? undefined : true); // a playground flow waits for the deployed bundle
   useEffect(() => { if (!pg) return undefined; let live = true; loadSynced().then((j) => live && setBundle(j)); return () => { live = false; }; }, [pg]);
   const near = near0 && !still && !!bundle; // the iframe mounts only near the viewport, never as a phone still

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import "./scheduled.css";
-import PhoneFrame from "../ds/IphoneFrame";
+import PhoneFrame, { PhoneScreen } from "../ds/IphoneFrame";
 import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // Design Mode: the real "cart that stays stuck" — when items can't make the
@@ -36,7 +36,7 @@ export default function SchedStuckCart() {
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
           <PhoneFrame className="slotreal-device slotreal-device--tall" width={282} enter={false} alt="Stuck cart">
-              <Img className="slotreal-img" src={SCREEN} alt="The cart with a Schedule needs review sheet: some items may not be available for the chosen slot, with a Review Schedule action." draggable={false} data-on="true" />
+              <PhoneScreen className="slotreal-img" src={SCREEN} alt="The cart with a Schedule needs review sheet: some items may not be available for the chosen slot, with a Review Schedule action." draggable={false} data-on="true" />
             
             </PhoneFrame>
 
