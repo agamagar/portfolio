@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { OpenNewWindow, Refresh } from "iconoir-react";
 import { PhoneLinkSlot } from "../figures/ds/phoneLinkSlot";
+import { embedUrl, getEmbed, loadSynced, useSiteTheme } from "../figures/sdStory/playgroundBase";
 import "../figures/ds/phoneFrame.css"; // .fshot-pill, for a bare embed's own Open in Figma
 import "./figmaEmbed.css";
 
@@ -30,6 +31,11 @@ import "./figmaEmbed.css";
 //           link goes in the frame's link row under the phone (PhoneLinkSlot), so it covers none of the screen; a bare
 //           embed draws a compact pill in its own top-right corner instead.
 // openLink  the phone's "Open in Figma" link; false where the embed already sits inside a link (the homepage card)
+// playground  a built flow from the design playground (its embedCatalog id, e.g. "flow-returns-cs-chat-return"), in place
+//           of the Figma file (Agam, 26 Oct: "use all the developed flows instead of figma prototype"); caseId opens it on
+//           a case. Everything else is the same: the floor, the phone-still rule, Restart and the link row, whose link
+//           reads "Open full size". The playground pads its 360px screen by 16px; that is cropped and the screen scaled
+//           to the box. When the bundle isn't deployed (Q21), the iframe never mounts and there is no link: the still stays.
 //
 // Embed URLs per Figma's Embed Kit 2.0: embed.figma.com/{design|proto}/<file>?node-id=…&embed-host=…
 export const FIGMA_SCHEDULE_FILE = "R04cmbzFPQk2Q4IockGwqZ"; // Claude: Schedule (the organised source)
@@ -70,19 +76,33 @@ function usePhoneStill() {
   return on;
 }
 
-export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children }) {
+export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children , playground, caseId}) {
   const root = useRef(null);
   const still = usePhoneStill() && phoneStill;
   const [near0, setNear] = useState(false);
-  const near = near0 && !still; // the iframe mounts only near the viewport, and never as a phone still
+  const pg = playground ? getEmbed(playground) : null;
+  const [bundle, setBundle] = useState(pg ? undefined : true); // a playground flow waits for the deployed bundle
+  useEffect(() => { if (!pg) return undefined; let live = true; loadSynced().then((j) => live && setBundle(j)); return () => { live = false; }; }, [pg]);
+  const near = near0 && !still && !!bundle; // the iframe mounts only near the viewport, never as a phone still
   const slot = useContext(PhoneLinkSlot);
-  const href = still && openLink ? figmaOpenUrl({ file, node, start, mode }) : null;
-  const canRestart = restart && near;
+  const dark = useSiteTheme() === "dark";
+  const href = !still || !openLink ? null : pg ? (bundle ? embedUrl(pg, { case: caseId, theme: dark ? "dark" : "light" }) : null) : figmaOpenUrl({ file, node, start, mode });
+  const label = pg ? "Open full size" : "Open in Figma";
+  const canRestart = (restart || !!pg) && near;
   useEffect(() => {
     if (!slot) return undefined;
-    slot(href || canRestart ? { figma: href, restart: canRestart ? () => setRun((n) => n + 1) : undefined } : null);
+    slot(href || canRestart ? { figma: href, label, restart: canRestart ? () => setRun((n) => n + 1) : undefined } : null);
     return () => slot(null);
-  }, [slot, href, canRestart]);
+  }, [slot, href, label, canRestart]);
+  // a playground screen is 360px wide inside 16px of padding: scale it to the box and crop the padding
+  const [k, setK] = useState(0);
+  useEffect(() => {
+    const el = root.current;
+    if (!pg || !el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(([en]) => setK(en.contentRect.width / 360));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [pg]);
   const [st, setSt] = useState("idle"); // idle | loading | ready | failed
   const [run, setRun] = useState(0); // bumped by Restart: a fresh iframe starts the prototype at its first frame
   useEffect(() => {
@@ -100,11 +120,17 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   }, [near]);
   // Figma fetches the file after its load event (a white page with a blue bar); hold the still over that.
   // Without a client-id the embed sends no paint event, so this is a timed hold.
-  const onLoad = () => setTimeout(() => setSt((s) => (s === "failed" ? s : "ready")), 2500);
+  const onLoad = () => setTimeout(() => setSt((s) => (s === "failed" ? s : "ready")), pg ? 300 : 2500); // the playground paints at load
   return (
     <div ref={root} className={"fembed " + className} data-st={still ? "still" : st} data-floor={floor} style={aspect ? { aspectRatio: aspect } : undefined}>
       {near && (
-        <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
+        pg ? (
+          <iframe key={run} className="fembed__frame fembed__frame--pg" title={title || pg.title} loading="lazy" onLoad={onLoad}
+            src={embedUrl(pg, { case: caseId, theme: dark ? "dark" : "light", bg: "transparent", motion: typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "reduce" : undefined })}
+            style={{ width: pg.size.w, height: pg.size.h, transform: `scale(${k}) translate(-16px, -16px)`, visibility: k ? "visible" : "hidden" }} />
+        ) : (
+          <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
+        )
       )}
       {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
         ? <img className="fembed__floor" src={fallback} alt={alt} loading="lazy" draggable="false" />
@@ -114,11 +140,11 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
           <Refresh width={15} height={15} strokeWidth={2} aria-hidden />
         </button>
       )}
-      {badge && near && st === "loading" && <span className="fembed__badge" role="status" aria-label="Loading from Figma"><i /><i /><i /></span>}
+      {badge && near && st === "loading" && <span className="fembed__badge" role="status" aria-label={pg ? "Loading the prototype" : "Loading from Figma"}><i /><i /><i /></span>}
       {href && !slot && (
         <a className="fshot-pill fshot-pill--link fembed__open" href={href} target="_blank" rel="noopener noreferrer"
-          aria-label={`Open in Figma${title ? `: ${title}` : ""} (opens a new tab)`}>
-          Open in Figma <OpenNewWindow width={12} height={12} strokeWidth={2} aria-hidden />
+          aria-label={`${label}${title ? `: ${title}` : ""} (opens a new tab)`}>
+          {label} <OpenNewWindow width={12} height={12} strokeWidth={2} aria-hidden />
         </a>
       )}
     </div>

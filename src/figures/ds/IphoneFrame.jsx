@@ -79,7 +79,7 @@ export default function PhoneFrame({
         <Img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
         {overlay}
       </div>
-      {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} onRestart={restart} />}
+      {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} linkLabel={figma ? undefined : slotted?.label} onRestart={restart} />}
       {caption && <figcaption className="pf__cap">{caption}</figcaption>}
     </figure>
   );
