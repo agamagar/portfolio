@@ -16,13 +16,13 @@ const TAG = { shipped: "Shipped", killed: "Rejected", scale: "Didn't scale", con
 const ROWS = [
   { label: "Placement", ink: "#2fb5a6", chips: [
     { t: "On the PDP", v: "killed", figma: "pdp" },
-    { t: "Home prompt", v: "shipped", screen: "/figures/scheduled/sched-home-strip.png" },
+    { t: "Home strip", v: "shipped", screen: "/figures/scheduled/sched-home-strip.png" }, // 26 Oct: the still is the home screen's "Your order is ongoing" strip, so the chip says so (was "Home prompt")
     { t: "Cart, per shipment", v: "shipped", screen: "/figures/scheduled/sched-cart-prompted.png" },
   ] },
   { label: "Cart structure", ink: "#e26fcf", chips: [
     { t: "Tabbed, one per shipment", v: "killed", screen: "/figures/scheduled/sched-dir-tabbed.png" },
     { t: "Bottom sheet", v: "scale", figma: "sheet" },
-    { t: "One combined cart", v: "killed", screen: "/figures/scheduled/sched-cart-both.png" },
+    { t: "One combined cart", v: "killed", note: "No screen of this direction is on the page." }, // 26 Oct: its still was the shipped per-shipment cart (Items Unserviceable), the opposite of this rejected direction
     { t: "Single-page listing", v: "shipped", screen: "/figures/scheduled/sched-pg-default.png" },
   ] },
   { label: "Slot picker", ink: "#6c76f0", chips: [
