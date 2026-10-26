@@ -163,6 +163,8 @@ const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlow
 const SchedAfterFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedAfterFlows }))); // after booking, built flows
 const SchedInAppFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedInAppFlow }))); // the in-app return, built flow
 const SchedLimitsFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedLimitsFlow }))); // the cart's limits and errors, built flow
+const SchedPromiseSlot = lazyFig(() => import("./figures/scheduled/SchedPromise").then((m) => ({ default: m.SchedPromiseSlot }))); // slot recovery, prototype screens
+const SchedPromisePrice = lazyFig(() => import("./figures/scheduled/SchedPromise").then((m) => ({ default: m.SchedPromisePrice }))); // the price lock, prototype screens
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
@@ -684,6 +686,8 @@ const figures = {
   schedAfterFlows: SchedAfterFlows,
   schedInAppFlow: SchedInAppFlow,
   schedLimitsFlow: SchedLimitsFlow,
+  schedPromiseSlot: SchedPromiseSlot,
+  schedPromisePrice: SchedPromisePrice,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -2929,6 +2933,45 @@ const caseStudies = {
         _fig: "schedPostBooking",
         _figure:
           "The order's second life: a \"Scheduled for 6 to 7 PM\" tracking card, reminders across push, in-app and WhatsApp, and the roughly 30-minute wake-up where a rider is assigned and the 10-minute experience resumes inside your slot, carried on a Dynamic-Island live activity. [Plate the real tracking card and rider screen.]",
+        divider: true,
+      },
+      // 26 Oct (#40, #42, #43, accepted by Agam; "add all things in the schedule case study", item 4): when a scheduled
+      // promise breaks after Confirm. The design, built in the RN prototype; facts and sources in
+      // docs/sd-promise-sections-draft.md (Coachmark's promise-case-study-facts.md). Sauer gate 0/0, no open [CONFIRM].
+      {
+        h: "When the slot can't happen",
+        nav: "Slot recovery",
+        group: "Process",
+        tldr: "When a booked slot can't happen, the design tells you first and fixes it in one tap.",
+        p: [
+          "A slot booked hours ahead can fail for reasons you can't see from home: the store closes early, heavy rain pauses deliveries, there are no riders nearby. You may not open the app before the slot, so the design starts with a push: \"Your 7 - 8 PM slot isn't possible tonight\", with the reason, \"Heavy rain has paused deliveries near you.\"",
+          "The sheet on your next open does the fixing. A chip names the reason, the title repeats, and the next three slots sit right there, grouped by day: Tonight 9 - 10 PM, 10 - 11 PM, Tomorrow 7 - 8 AM. One tap books the new slot, with no second Confirm. If the order had free delivery, it stays, and the sheet says so. The only button is \"Refund instead\".",
+          "You didn't cause the break, so the fix shouldn't cost you a flow. The next slots are the likely answer, so they sit where the problem is stated.",
+          "Running late gets the same shape, earlier. The cart said \"Arriving 7 - 8 PM\", and until now nothing happened at 8:05 except waiting. In the design, the push comes before the window ends: \"Running about 15 min late. Heavy traffic on the way to you. Your 7 - 8 PM order should arrive by 8:15 PM.\" The sheet offers \"I'll wait\" or \"Cancel for free\". Free, because the cancel rule only ran one way (\"cancel up to 30 min prior\") and needed its mirror: when Zepto is the one late, leaving costs you nothing.",
+          // C-106 to C-114, the cart's limits and errors, as their built flow (figNext)
+          "Some breaks show before you pay, and the cart's states already name them: an order limit, high demand, heavy rain, a closed store. In rain, the cart says deliveries are paused and still offers Schedule.",
+          "A broken slot is the design's problem, not yours. One structure carries the slot and the delay: a push, then a sheet with the reason, what next, and the choices.",
+        ],
+        fig: "schedPromiseSlot",
+        figBare: true,
+        figure: "The design, in the prototype: the push, the recovery sheet, the same sheet with free delivery kept, and the late notice. Below, the cart in rain, running.",
+        figNext: "schedLimitsFlow",
+        divider: true,
+      },
+      {
+        h: "The price lock",
+        nav: "Price lock",
+        group: "Process",
+        tldr: "The price you confirmed is the price you pay.",
+        p: [
+          "Vegetable prices move every day, and a scheduled order is packed hours after you confirm it. So which price applies? In the design, the one you confirmed. Confirm says it once, in the line above the button: \"Prices are locked when you confirm.\"",
+          "At packing there are three outcomes. If a price went up, you pay what you confirmed. If it went down, you pay the lower price: the lock is a ceiling, not a floor. If an item is out of stock, Confirm has already asked what you want, Refund or Replace, with Refund as the default. A refund gives back the confirmed price, and a replacement costs no more than it.",
+          "Telling you was a decision of its own. Three directions were weighed: a push at packing with a sheet on next open, the receipt alone, or a live order card. The push won, because it speaks at the one moment the promise is tested, and only when something moved: \"Prices changed on 3 items. You pay no more than you confirmed, and ₹407 comes back to you.\" The sheet lists only what moved, each item tagged \"Price locked\", \"Cheaper now\", \"Out of stock\" or \"Replaced\", and ends on what you pay.",
+          "One voice for a broken promise. The price uses the same push and sheet as the slot recovery, so a shopper learns the shape once.",
+        ],
+        fig: "schedPromisePrice",
+        figBare: true,
+        figure: "The design, in the prototype: the push at packing, and the sheet with Replace chosen, where the swapped item costs no more than the one you confirmed.",
         divider: true,
       },
       // 27 Sep, Figma 273:5432: the order landed at the door, before the results

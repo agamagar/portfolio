@@ -1,5 +1,4 @@
-import "./scheduled.css";
-import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
+import ScreenStrip from "./ScreenStrip";
 
 // Design Mode: the scheduled SLOT-PICKER state set as a contact sheet of real
 // Zepto schedule-page screens (Schedule Order Handoff). From schedule-selected
@@ -17,19 +16,8 @@ const TILES = [
   { src: "sched-pg-otp.png", cap: "Pickup OTP, for an exchange" }, // 26 Oct: the still is an exchange pickup OTP (OT-001), not a scheduled delivery's
 ];
 
-// mukxrqfz (28 Sep): "make this into a horizontal scroll, the bigger images".
-// The fitted contact sheet (every screen shrunk to fit one frame) became a
-// horizontal strip of full-size screens that scroll and snap one at a time.
-// Nothing animates on its own any more: the reader drives it.
+// mukxrqfz (28 Sep): "make this into a horizontal scroll, the bigger images". The fitted contact sheet (every screen
+// shrunk to fit one frame) became a horizontal strip of full-size screens (ScreenStrip).
 export default function SchedPageStates() {
-  return (
-    <div className="sdh" role="region" aria-label="Slot-page states, scroll sideways" tabIndex={0}>
-      {TILES.map((t) => (
-        <figure className="sdh__tile" key={t.src}>
-          <Img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} loading="lazy" />
-          <figcaption className="sdh__cap">{t.cap}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
+  return <ScreenStrip label="Slot-page states, scroll sideways" tiles={TILES.map((t) => ({ ...t, src: `/figures/scheduled/${t.src}` }))} />;
 }

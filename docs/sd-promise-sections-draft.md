@@ -1,6 +1,8 @@
 # When a scheduled promise breaks: two section drafts (Sauer)
 
-For the Scheduled Delivery case study (#40, #42, #43, accepted by Agam on 26 Oct). Status: **the design (prototype)**, built in the RN prototype; nothing here shipped, and the figures carry "Prototype, 2026". Facts and sources: `side-session-notes/local_d5d260ee-…/promise-case-study-facts.md` (Coachmark spotlight, RN commits f58c291, f348a82, 057ede9). Not on the page while a [CONFIRM] is open.
+For the Scheduled Delivery case study (#40, #42, #43, accepted by Agam on 26 Oct). Status: **the design (prototype)**, built in the RN prototype; nothing here shipped, and the figures carry "Prototype, 2026". Facts and sources: `side-session-notes/local_d5d260ee-…/promise-case-study-facts.md` (Coachmark spotlight, RN commits f58c291, f348a82, 057ede9). On the page since 26 Oct (sections "When the slot can't happen" and "The price lock"), with the [CONFIRM]s resolved from the accepted answers: no refund-timing claim, price drops are "in the design", and out of stock is asked at Confirm, Refund or Replace with Refund by default (#41 C). The copy as shipped is in src/App.jsx; this draft is the record of how it was sourced.
+
+Shipped figures: push-slot, recovery-sheet, recovery-waiver and late-push (slot), push-price and price-sheet-replaced (price), in public/figures/scheduled/promise, with Expo Go's floating tools button removed. Left out because the button covered copy: the store-closed sheet, the late sheet, the refund price sheet and the refund confirm. The Confirm line is quoted, not shown. The cart's limits and errors (C-106 to C-114) run as their built flow from C-111 (rain, Schedule still open).
 
 ---
 
