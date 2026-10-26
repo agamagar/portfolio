@@ -3149,6 +3149,13 @@ html.dark .page-control { background: #1c1c20; color: #b5b5b5; }
   transform: translate(-50%, -50%);
 }
 .article__plate-embed { position: relative; }
+/* 26 Oct: two built flows side by side in one plate (plates[].embeds), each its own cropped plate phone at the same scale */
+.article__plate-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.article__plate-pair .article__plate-embed { aspect-ratio: 696 / 862; }
+.article__plate-pair-item { min-width: 0; }
+.article__plate-pair .article__plate-embed .article__plate-phone { width: 74%; }
+/* crop: "top" shows the screen's upper part (the plate phone is otherwise centred high, so its lower half shows) */
+.article__plate-embed .article__plate-phone.article__plate-phone--top { top: calc(76% - 4px); }
 .article__plate > .pf__links { margin-top: 10px; } /* 18.2: the plate phone's Open in Figma, under the plate (phones only) */
 .ifr__bezel,
 .article__plate-bezel {

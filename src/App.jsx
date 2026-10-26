@@ -2303,14 +2303,16 @@ const caseStudies = {
           },
           {
             auto: false,
-            embed: { node: "9:154" }, // Claude: Schedule main path, from the cart (FigmaEmbed)
+            // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): the Figma main path (9:154) gives way to
+            // two built flows side by side, the cart entry and the slot picker; the cue sits on the cart's Schedule button
+            embeds: [
+              { playground: "flow-cart-ftb-cart-entry-states", caseId: "C-002", still: "/figures/scheduled/flows/cart-entry-C-002.png",
+                cueBox: [69.4, 32.6, 20, 3.9], cueLabel: "Click here", cueNoPointer: true, cueNoBox: true, cueClick: true,
+                alt: "The cart, running: a returning user's cart with the Schedule entry on the shipment that can't come now" },
+              { playground: "flow-schedule-slot-picker-m4", caseId: "S-002", still: "/figures/scheduled/flows/slot-picker-S-002.png", crop: "top",
+                alt: "The schedule page, running: Instant or Schedule for each shipment, then a slot" },
+            ],
             bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-            cueBox: [69.4, 34.5, 20, 4.3], // the cart's Schedule button, the path's first hotspot
-            cueLabel: "Click here",
-            cueNoPointer: true,
-            cueNoBox: true,
-            cueClick: true,
-            alt: "The scheduled order prototype, live from Figma",
           },
         ],
         scene: {
@@ -2970,10 +2972,10 @@ const caseStudies = {
         h: "The prototype, live",
         nav: "Prototype, live",
         group: "Process",
-        // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): three of the four now run the built flows
-        tldr: "Four paths, running on this page: the main path from the Figma file, and three flows as they were built.",
+        // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): all four phones run the built flows
+        tldr: "Four flows as they were built, running on this page.",
         p: [
-          "The main path goes from the cart to a picked slot to a placed order, played from the Figma file. Beside it, the built flows: what happens when slots fill up, and the exchange and return paths in support chat.",
+          "The schedule page, where each shipment gets Instant or Schedule and then a slot. Beside it: what happens when slots fill up, and the exchange and return paths in support chat.",
         ],
         fig: "schedFigmaFlows",
         figBare: true,
@@ -10006,6 +10008,47 @@ const CASE_NARRATIONS = {
 // render ONE body from one place; CaseStudy calls it right where the block
 // used to be. Exported for src/hello/PhoneDetail3.jsx.
 // mujvribt: the role-slide layout for a section's prose, or nothing at all
+// The plate's live phone (mtmoja90): a prototype in a phone frame on the card ground, with an optional tap cue at
+// [x%, y%] of the screen. One per plate, or two side by side (`embeds`, 26 Oct: the cart entry beside the slot picker).
+// `pe`: { node } for a Figma prototype or { playground, caseId } for a built flow, plus still, cueBox, cueLabel, cue flags, alt, bg,
+// and crop: "top" to show the screen's top instead of its lower half (a screen whose content sits at the top).
+function PlatePhone({ pe, gradient }) {
+  return (
+    <LinksBelow>
+    <div className="article__plate-embed article__plate-ground" style={gradient ? undefined : { background: pe.bg }}>
+      {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
+          notification scene) over a screen cutout that holds the prototype */}
+      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className={"article__plate-phone" + (pe.crop === "top" ? " article__plate-phone--top" : "")} overlay={pe.cueBox && !pe.cueNoPointer ? (
+          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pe.cueBox[1] + pe.cueBox[3] / 2)) + "%" }} aria-hidden="true">
+            <span className="article__plate-cursor">
+              <IconCursor width={20} height={20} strokeWidth={1.6} />
+            </span>
+            <b>{pe.cueLabel || "Click here"}</b>
+          </span>
+        ) : null}>
+          <FigmaEmbed mode="proto" node={pe.node} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} />
+          {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
+          {pe.cueBox && !pe.cueNoBox && (
+            <span
+              className="article__plate-cuebox"
+              style={{ left: pe.cueBox[0] + "%", top: pe.cueBox[1] + "%", width: pe.cueBox[2] + "%", height: pe.cueBox[3] + "%" }}
+              aria-hidden="true"
+            />
+          )}
+          {/* mto4v1ka: a cursor that goes and clicks the cue box's centre, looping in view */}
+          {pe.cueBox && pe.cueClick && (
+            <Suspense fallback={null}>
+              <PlateCursor
+                target={{ x: pe.cueBox[0] + pe.cueBox[2] / 2, y: pe.cueBox[1] + pe.cueBox[3] / 2 }}
+              />
+            </Suspense>
+          )}
+      </PhoneFrame>
+    </div>
+    </LinksBelow>
+  );
+}
+
 function SecWrap({ on, stack, center, side, row, children }) {
   // `stack` (28 Sep): label on top, then heading, explanation and figure, one column
   // `center` (mukwatlg): the stacked content centred, text centre-aligned
@@ -10040,44 +10083,18 @@ function CaseStudyBodyFull({ cs }) {
                         <AutoTabs />
                       </Suspense>
                     </div>
+                  ) : pl.embeds ? (
+                    // 26 Oct (Agam, "use all the developed flows"): two built flows side by side, each its own plate phone
+                    <div className="article__plate-pair">
+                      {pl.embeds.map((pe, j) => <div className="article__plate-pair-item" key={j}><PlatePhone pe={{ bg: pl.bg, ...pe }} gradient={s.platesGradient} /></div>)}
+                    </div>
                   ) : pl.embed ? (
                     // mtmoja90: a live Figma prototype in the plate, inside a
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
                     // 18.2 (critique, 25 Oct): on a phone the embed is a still, and its Open in Figma link goes under the plate,
                     // since the plate crops the phone (LinksBelow; the phone passes the link on with linkSlot={false})
-                    <LinksBelow>
-                    <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
-                      {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
-                          notification scene) over a screen cutout that holds the prototype */}
-                      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
-                          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
-                            <span className="article__plate-cursor">
-                              <IconCursor width={20} height={20} strokeWidth={1.6} />
-                            </span>
-                            <b>{pl.cueLabel || "Click here"}</b>
-                          </span>
-                        ) : null}>
-                          <FigmaEmbed mode="proto" node={pl.embed.node} title={pl.alt || "Figma prototype"} fallback={PROTO_STILL} alt={pl.alt || "The scheduled order prototype"} />
-                          {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
-                          {pl.cueBox && !pl.cueNoBox && (
-                            <span
-                              className="article__plate-cuebox"
-                              style={{ left: pl.cueBox[0] + "%", top: pl.cueBox[1] + "%", width: pl.cueBox[2] + "%", height: pl.cueBox[3] + "%" }}
-                              aria-hidden="true"
-                            />
-                          )}
-                          {/* mto4v1ka: a cursor that goes and clicks the cue box's centre, looping in view */}
-                          {pl.cueBox && pl.cueClick && (
-                            <Suspense fallback={null}>
-                              <PlateCursor
-                                target={{ x: pl.cueBox[0] + pl.cueBox[2] / 2, y: pl.cueBox[1] + pl.cueBox[3] / 2 }}
-                              />
-                            </Suspense>
-                          )}
-                      </PhoneFrame>
-                    </div>
-                    </LinksBelow>
+                    <PlatePhone pe={{ ...pl, node: pl.embed.node }} gradient={s.platesGradient} />
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
                     <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>

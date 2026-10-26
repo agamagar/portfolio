@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { OpenNewWindow, Refresh } from "iconoir-react";
 import { PhoneLinkSlot } from "../figures/ds/phoneLinkSlot";
 import { embedUrl, getEmbed, loadSynced, useSiteTheme } from "../figures/sdStory/playgroundBase";
+import { imgSrc } from "./Img"; // the floor still's WebP copy, where one exists
 import "../figures/ds/phoneFrame.css"; // .fshot-pill, for a bare embed's own Open in Figma
 import "./figmaEmbed.css";
 
@@ -133,7 +134,7 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
         )
       )}
       {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
-        ? <img className="fembed__floor" src={fallback} alt={alt} loading="lazy" draggable="false" />
+        ? <img className="fembed__floor" src={imgSrc(fallback)} alt={alt} loading="lazy" draggable="false" />
         : <span className="fembed__floor fembed__floor--blank" aria-hidden="true" />}
       {canRestart && !slot && (
         <button type="button" className="theme-toggle dev-glass fembed__restart" aria-label="Restart the prototype" title="Restart" onClick={() => setRun((n) => n + 1)}>
