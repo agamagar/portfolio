@@ -2967,12 +2967,13 @@ const caseStudies = {
       // The four prototype paths wired in Figma (Claude: Schedule, R04cmbzFPQk2Q4IockGwqZ), embedded live: an edit in
       // Figma shows here with no re-export. Starting points: design-playground docs/figma-prototype/*.md
       {
-        h: "The prototype, live from Figma",
+        h: "The prototype, live",
         nav: "Prototype, live",
         group: "Process",
-        tldr: "Four paths through the Figma file, running on this page. When the file changes, so do they.",
+        // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): three of the four now run the built flows
+        tldr: "Four paths, running on this page: the main path from the Figma file, and three flows as they were built.",
         p: [
-          "The main path goes from the cart to a picked slot to a placed order. Beside it: what happens when slots fill up, and the exchange and return paths in support chat. Each one plays from the Figma file itself.",
+          "The main path goes from the cart to a picked slot to a placed order, played from the Figma file. Beside it, the built flows: what happens when slots fill up, and the exchange and return paths in support chat.",
         ],
         fig: "schedFigmaFlows",
         figBare: true,
