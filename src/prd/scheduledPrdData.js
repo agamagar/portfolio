@@ -84,7 +84,7 @@ export const scheduledPrdData = {
         "Buckets: Earliest (dynamic, the next bookable block from now), Afternoon, Evening, Night, Late Night, Early Morning.",
         "Store type drives the slot set: a DARK STORE shows same-day slots only (Today tab; last window 11 PM-12 AM; if none are left, Schedule is disabled for that shipment, and scheduling is off entirely in the nightly scenario), while a SUPERSTORE shows Today / Tomorrow / Later (multi-day, 'up to X days') and stays schedulable even with no same-day slot, defaulting a closed store to tomorrow's earliest slot. A calendar was rejected as overkill for this range. This split is the engine under the buckets: the dark store is the near-you 10-minute store, the superstore is the planning store.",
         "Picker surface (resolved): the forward cart schedule is a dedicated NEW PAGE (not a bottom sheet over the cart) listing every shipment; the slot picker opens per shipment there (QA: a bottom-sheet picker with Today/Tomorrow tabs, earliest pre-highlighted). The slots-inline-on-the-same-page treatment was built for the RETURNS AND REFUNDS flow, not the forward cart, so 'inline, never a bottom sheet' describes R&R, not this.",
-        "AM/PM on every slot pill (Kavya Jain); a separator so pills do not visually hang; selected-slot fill explored in pink/magenta; one slot per shipment, selection highlighted and persisted across collapse.",
+        "AM/PM on every slot pill (one of the PMs); a separator so pills do not visually hang; selected-slot fill explored in pink/magenta; one slot per shipment, selection highlighted and persisted across collapse.",
         "0-slots: do not grey out the day tab, show it with 0 and default-open the day that has at least one slot; an explicit 'No slots available' empty state.",
       ],
       requirements: [
@@ -380,7 +380,7 @@ export const scheduledPrdData = {
       killedExplorations: [
         "Product-page placement: killed (negative listing, fought the booking model).",
         "Tabbed, one tab per shipment: killed in testing (hides the other shipments' choices; 'doesn't look clickable, too much white space', 'this interaction seems weird').",
-        "Bottom sheet: did not scale past a couple of shipments (tried in the current layout first to minimise FE cost, per Shreya).",
+        "Bottom sheet: did not scale past a couple of shipments (tried in the current layout first to minimise FE cost, per my design manager).",
         "One combined cart: designed, user-tested, killed. In a real eight-item mixed cart, state changed at the item level all at once and users started 'confirming the hell out of it' (blind-tapping); per-item timings made arrival impossible to reason about. The split-card model wins because it resolves state at the shipment level.",
       ],
       researchMoment:
@@ -427,7 +427,7 @@ export const scheduledPrdData = {
       id: "prd-research",
       title: "User research (n=45 validation study)",
       summary:
-        "A mixed-method study, not just interviews: large CDP sampling frames per behavioral cohort (about 1,520 SS schedulers, 1,424 DS schedulers, 1,216 WIMO users, 499 cart-to-PTP dropoffs), 45 moderated phone interviews across those cohorts (13-18 Nov 2025, just after M2), and a 454-ticket support analysis. 12+ cities, order-frequency 1 to 551, run by PMs Kavya and Shriya. Qualitative numbers are directional, not powered.",
+        "A mixed-method study, not just interviews: large CDP sampling frames per behavioral cohort (about 1,520 SS schedulers, 1,424 DS schedulers, 1,216 WIMO users, 499 cart-to-PTP dropoffs), 45 moderated phone interviews across those cohorts (13-18 Nov 2025, just after M2), and a 454-ticket support analysis. 12+ cities, order-frequency 1 to 551, run by the PMs. Qualitative numbers are directional, not powered.",
       callout: {
         label: "The one finding that reframes everything",
         body: "8 in 10 who placed a scheduled order did so as a FALLBACK because instant was unavailable, not as a plan. Of 19 placers, only 4 scheduled from a serviceable cart by choice. Current demand is mostly instant-unavailability fallback; the planned-ahead segment is real but smaller than the personas assumed.",
