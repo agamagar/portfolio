@@ -2987,9 +2987,7 @@ const caseStudies = {
         p: [
           "Schedule Delivery has 111 cases, returns and exchange 101, and cart and offers 114. Dev-ready flows sit next to ones still in progress, on hold or exploring, and the file's own status travels with each one. A few research and asset cases are small viewers rather than full screens.",
         ],
-        fig: "sd:map",
-        figBare: true,
-        figure: "The master map. Filter by cluster, flow or status.",
+        // mvorf9wm (Agam, 26 Oct, "don't need this"): the master map (sd:map) is off the page; the playground embed stays shared
         divider: true,
       },
       {
