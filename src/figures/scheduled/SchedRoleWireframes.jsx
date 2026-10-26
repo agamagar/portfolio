@@ -7,7 +7,7 @@ import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
 import "../../hello/timeline.css";
-import { PenNib, ChatCircleText, Package, TextAa, RocketLaunch, ArrowsSplit, ListChecks, CalendarCheck, Truck, UsersThree, ArrowUUpLeft, ShieldCheck, ShoppingCartSimple, CalendarX, WarningCircle, ChartBar, CalendarBlank } from "@phosphor-icons/react";
+import { PenNib, ChatCircleText, Package, TextAa, RocketLaunch, Signpost, ListChecks, CalendarCheck, Truck, UsersThree, ArrowUUpLeft, ShieldCheck, ShoppingCartSimple, CalendarX, WarningCircle, ChartBar, CalendarBlank } from "@phosphor-icons/react";
 import { MONTHLY, SLOT_BANDS, SLOT_MIX, VS_INSTANT, SOURCE_NOTE, ROLLOUT } from "../sdAvailability/sdReport";
 import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
@@ -512,7 +512,7 @@ const wk = (d) => Math.max(0, Math.floor((new Date(d) - WK0) / (7 * 864e5)));
 export const STAT_ICON = { "2 releases": RocketLaunch, "6 months": CalendarBlank, "5 functions": UsersThree, "506 comments": ChatCircleText };
 // mvorf9wg (Agam, 26 Oct, "add icon for each"): one icon per point in the four columns, the stats' own style (filled, 24px,
 // the slide purple), so the two read as one family. Reverses mvntahzh's "no icons" for these points.
-const RL_ICON = { "Ship narrow first": RocketLaunch, "Two directions in parallel": ArrowsSplit, "A checklist for what was missing": ListChecks, "Dates set together": CalendarCheck };
+const RL_ICON = { "Ship narrow first": RocketLaunch, "Two directions in parallel": Signpost, "A checklist for what was missing": ListChecks, "Dates set together": CalendarCheck };
 const PHASE_EMOJI = {
   "Problem on the canvas": "🗺️", "First review": "👀", "M1 build and handoff": "🛠️", "Content pass": "✍️",
   "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Hardening": "🛡️",
