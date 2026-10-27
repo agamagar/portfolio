@@ -171,6 +171,7 @@ const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplora
 const SchedExplorationsDetour = lazyFig(() => import("./figures/scheduled/SchedExplorationsDetour"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmRealOneDim, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import { SchedStatesRow, SchedReturnsFlow } from "./figures/scheduled/SchedLiveRows"; // live states and flow, each in the shared phone frame and row
 import SchedStatCards from "./figures/scheduled/SchedStatCards"; // Impact, At a glance: the stat-card view
 import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
 import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
@@ -677,6 +678,8 @@ const figures = {
   schedSinglePage: SchedSinglePage,
   schedStuckCart: SchedStuckCart,
   schedImpact: SchedImpact,
+  schedStatesRow: SchedStatesRow,
+  schedReturnsFlow: SchedReturnsFlow,
   schedSplit: SchedSplit,
   schedMoments: SchedMoments,
   schedCartStates: SchedCartStates,
@@ -3007,7 +3010,7 @@ const caseStudies = {
           // Q21 interim (25 Oct): the click invitation only where the playground bundle is deployed (PlaygroundCopy)
           <PlaygroundCopy live="These frames are the playground's own components, embedded. Click one to use it." offline="These frames come from the playground's own components." />,
         ],
-        fig: "sd:states",
+        fig: "schedStatesRow",
         figBare: true,
         figure: "All eight states, side by side. Click a frame to interact; Escape hands the keyboard back.",
         divider: true,
@@ -3022,7 +3025,7 @@ const caseStudies = {
           // 26 Oct ("add all things"): the in-app return, IA-001 to IA-017, as its built flow
           "The same request starts inside the app too, from Order Details. Each item says whether it can be exchanged or returned and until when, and when Instant pickup isn't available the review offers a scheduled one.",
         ],
-        fig: "sd:flow-returns-scheduled-exchange-return?case=SE-007",
+        fig: "schedReturnsFlow",
         figBare: true,
         figure: "Exchange and return in one request, running. Tap through the cases to follow the flow.",
         figNext: "schedInAppFlow",

@@ -2333,3 +2333,18 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 /* mvqcgh0b-hpje5e (Agam, 27 Oct): every vertical line meets its box. The leaders are measured from --rail-card-h, so the resting card is
    exactly that tall (55px here: label, date and their padding) and the line's end is the card's edge, with no gap, on all nine. */
 .rwf-glass.tlx, .rwf-glass { --rail-card-h: 55px; }
+
+/* mvqnxwre-eh9pxw, mvqnyyep-6d1ni2 (Agam, 27 Oct, "phone frames too big"): a phone in a row is at most 230px wide, 190px on a phone */
+@media (min-width: 701px) { .sdh, .sdrow .sdh, .sdflows.sdh { grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); } }
+@media (max-width: 700px) { .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(58vw, 190px); } }
+/* mvqnxlmk-wxnbie (Agam, 27 Oct): every section is vertical: the heading or label on top, the content under it, never label left and
+   content right. */
+.article__body .iq, .article__body .rwf:not(.rwf--stack) { grid-template-columns: minmax(0, 1fr); }
+.article__body .iq > *, .article__body .rwf > * { grid-column: 1 / -1; grid-row: auto; }
+.article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr); }
+.article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
+/* the running-flows row (.sdflows) is the same grid; this outranks schedFigmaFlows.css's older flex rule */
+@media (min-width: 701px) { html .article__body .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); justify-content: center; gap: 1.25rem; overflow: visible; } html .article__body .sdflows.sdh > .pf.sdh__tile { width: 100%; flex: none; } }
+/* belt and braces: whatever the row's tile width, a phone in a row never exceeds 230px (190px on a phone) */
+.sdh .pf, .sdrow .pf { max-width: 230px; margin-inline: auto; }
+@media (max-width: 700px) { .sdh .pf, .sdrow .pf { max-width: 190px; } }
