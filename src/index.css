@@ -8966,9 +8966,6 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 .page--article .article__body :is(h2, h3, h4, .rwf__title, .rwf__rl-t) { text-wrap: balance; }
 .page--article .article__body :is(p, li, figcaption) { text-wrap: pretty; }
 
-/* mvq2lseu-pmb4se (Agam, 27 Oct): the role map fills the column and nothing is clipped, so the turning labels can pass its edge */
-.rv-pack { width: 100%; aspect-ratio: 8 / 5; overflow: visible; }
-
 /* mvq3328y-iwi3b1 (Agam, 27 Oct): a plate phone's Restart and Open links sit inside the plate, bottom right, not under it */
 .article__plate { position: relative; }
 .article__plate > .pf__links { position: absolute; right: 14px; bottom: 14px; margin: 0; z-index: 6; justify-content: flex-end; }

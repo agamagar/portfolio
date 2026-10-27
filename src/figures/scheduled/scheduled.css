@@ -2279,7 +2279,10 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .rwf-glass .tlx__rail-tagcard:hover .tlx__rail-sub, .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-sub { opacity: 1; }
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 20px; line-height: 26px; font-weight: 600; }
 /* mvq1lgid-uwtf0v (Agam, 27 Oct): the phase rail has no hover states at all, no emojis, and its type is 8px smaller (20px to 12px). */
-.rwf-glass .tlx__rail-hit, .rwf-glass .tlx__rail-tagcard { pointer-events: none !important; }
+.rwf-glass .tlx__rail-hit { pointer-events: none !important; }
+/* mvq34dit-aaxl4s (Agam, 27 Oct): hover is back, only on the glass pills (the labels): pointing at one fills it with the glass */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { pointer-events: auto !important; transition: background-color 160ms ease, border-color 160ms ease; }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):hover, .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card)[data-open="true"] { background: color-mix(in srgb, var(--fg) 8%, transparent) !important; border-color: var(--rwf-card-stroke, var(--line)) !important; }
 .rwf-glass .tlx__rail-emoji { display: none !important; }
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { font-size: 12px; line-height: 16px; }
 .rwf-glass .tlx__rail-sub { opacity: 1; font-size: 11px; line-height: 14px; }
