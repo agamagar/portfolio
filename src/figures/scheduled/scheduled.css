@@ -2270,3 +2270,11 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .rwf--stack .rwf__main:has(.rwf__charts--one) { align-items: stretch; width: 100%; }
 .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { height: auto; min-height: 0; overflow: visible; }
 @media (max-width: 720px) { .rwf__rl-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* mvpxf1qf-knn4wa (Agam, 27 Oct): the phase rail shows no date at rest; pointing at a label reveals only its date. The
+   hover no longer opens the card's panel here, so the card keeps its resting look. */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { pointer-events: auto; background: none; border-color: transparent; box-shadow: none; height: auto; min-height: 0; overflow: visible; }
+.rwf-glass .tlx__rail-tagcard .tlx__rail-detail, .rwf-glass .tlx__rail-tagcard .tlx__rail-detail-bullets { display: none; }
+.rwf-glass .tlx__rail-sub { opacity: 0; transition: opacity 160ms ease; }
+.rwf-glass .tlx__rail-tagcard:hover .tlx__rail-sub, .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-sub { opacity: 1; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 20px; line-height: 26px; font-weight: 600; }

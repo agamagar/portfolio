@@ -652,6 +652,7 @@ const SHOW_LEADING_WITH_DESIGN = false; // mvgnrq1v ("hide this"): the whole "Le
 const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
 const SHOW_RWF_KEYBOX = false; // mvgn7qr3 ("hide this"): the dashed legend + source box under the speed charts; true brings it back
 const SHOW_RL_TOGGLE = false; // mvgnqfi5 ("hide this"): the List / Circles toggle; Circles is the only view while it is off, true brings the toggle and the List back
+const SHOW_RL_SHIP_NARROW = false; // mvpxe7bd-4rwcx4 ("hide this"): the Ship narrow first / Two directions / Checklist / Dates row; true brings it back
 const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
 const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): each point's detail line; true brings it back, under its point
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
@@ -659,6 +660,7 @@ const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): each point's detail lin
 function RoleList({ items, vertical }) {
   const [view, setView] = useState("circles"); // mvgl5d7w: Circles is the default tab
   const rows = items.map((it) => (Array.isArray(it) ? it : [null, it]));
+  if (!SHOW_RL_SHIP_NARROW && rows.some(([h]) => h === "Ship narrow first")) return null; // mvpxe7bd-4rwcx4 ("hide this"): the four-point row is parked
   return (
     <div className="rwf__rl">
       {SHOW_RL_TOGGLE && <div className="rwf-tabs rwf__rl-toggle" role="group" aria-label="Points view">
