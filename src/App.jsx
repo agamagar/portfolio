@@ -4012,6 +4012,26 @@ const caseStudies = {
         ],
         divider: true,
       },
+      // DRAFT, hidden until Agam answers the [CONFIRM]s (27 Oct, "add a section for designing for landscape and the iPhone Duo").
+      // Nothing in the Away case data, the Drive notes (Active - Away/Claude, away-design-system, away-app) or the playground
+      // mentions landscape or the Duo, so every mechanism, number and claim below is a [CONFIRM]. Never render with these open.
+      {
+        h: "Landscape and the Duo",
+        hidden: true,
+        tldr: "[CONFIRM 1: what the design decided for landscape and the iPhone Duo, in one sentence.]",
+        p: [
+          "A trip is not planned in one posture. [CONFIRM 2: where and when travellers hold the phone sideways, or open a Duo, while using Away: at a desk, in an airport queue, on a plane tray, with a boarding pass in the other hand.] If the layout only works held upright, the moments when the agent matters most, a delay at the gate, a seat change at the counter, are the ones where it breaks.",
+          "The constraint has two parts. Landscape gives the same screen a different shape: [CONFIRM 3: the landscape width and height you designed to, and what the keyboard takes from it]. The iPhone Duo is a different problem: [CONFIRM 4: what the iPhone Duo is here, a real or planned two-screen device, its screen sizes, and its hinge or fold]. The cards, the thread and the verdict were drawn for one tall column, and a second screen asks what each of them is for.",
+          "[CONFIRM 5: the decisions. Default draft: in landscape the thread keeps its width and the card it is drawing moves beside it, so the question and the control are on screen together. On the Duo, one screen holds the conversation and the other holds the card or the result, so the agent never covers what it is asking you to decide. Which of these did the design take, and in what order?]",
+          "[CONFIRM 6: what was rejected. Default draft: stretching the portrait column to fill the width, because lines of text run too long; and splitting one card across the fold, because the content then breaks at the hinge.]",
+        ],
+        ul: [
+          "[CONFIRM 7: one line per layout rule, for example which components change in landscape and which do not.]",
+          "[CONFIRM 8: one line on what the Duo's posture changes, for example laptop posture versus book posture.]",
+        ],
+        // _fig: [CONFIRM 9: which existing Away landscape or Duo screens to show; none are in the repo or the Drive notes. Phones sit on the plain page, never on the purple gradient.]
+        divider: true,
+      },
       /* Onboarding section hidden per annotation (mqnrmrjj) — uncomment to restore
       {
         h: "Onboarding",
