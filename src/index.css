@@ -8910,7 +8910,7 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 @keyframes rv-unorbit { to { transform: translate(-50%, -50%) rotate(calc(var(--a0) * -1 - 360deg)); } }
 /* mvnt94gx (Agam, 25 Oct): the lines from Lead designer are soft, a blur over a 2px stroke a touch brighter so they still read;
    top: -0.5px keeps the stroke centred where the 1px line was */
-.rv-pack__ln { position: absolute; left: 10cqw; top: -0.5px; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 2px solid rgba(255, 255, 255, 0.85); filter: blur(1.2px) drop-shadow(0 0 1px rgba(60, 20, 120, 0.55)); }
+.rv-pack__ln { position: absolute; left: 10cqw; top: -0.5px; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 1px solid rgba(255, 255, 255, 0.85); filter: blur(0.6px) drop-shadow(0 0 1px rgba(60, 20, 120, 0.55)); }
 .rv-pack:hover .rv-pack__o, .rv-pack:hover .rv-pack__o > .rv-pack__c, .rv-pack[data-off]::before, .rv-pack[data-off] .rv-pack__o, .rv-pack[data-off] .rv-pack__o > .rv-pack__c { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .rv-pack::before, .rv-pack__o, .rv-pack__o > .rv-pack__c { animation: none; } }
 
