@@ -21,3 +21,6 @@
 .std-opt[data-off] { opacity: 0.75; background: #f6f3fa; }
 @keyframes std-sub { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .std-opt__sub { animation: none; } }
+
+/* three separate phone screens, side by side, wrapping on a phone */
+.std__three { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.5rem; width: 100%; }

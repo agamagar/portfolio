@@ -172,3 +172,14 @@ html.dark .article__index-glow { opacity: 0.8; }
   }
 }
 .article__index.article__index--flow { padding: 16px 20px; margin: -16px -20px; }
+
+/* Agam, 27 Oct (mvpxjrhi, mvpxk5x6): the labels sit flush left, no left padding, and the active entry's pill is a fully
+   rounded glass capsule behind its label, a little larger than the text, instead of the slim bar beside the list. */
+.article__index.article__index--spy > ul { padding: 0; }
+.article__index.article__index--spy .article__index-slider { left: -12px; width: calc(100% + 24px); }
+.article__index.article__index--spy .article__index-glass { width: 100%; top: -3px; bottom: -3px; border-radius: 999px; corner-shape: round; }
+.article__index.article__index--spy .article__index-glass::after { display: none; }
+.article__index.article__index--spy .article__index-glow { display: none; }
+/* the rail scrolls, so it clips whatever sticks out: the nav gets room for the capsule's ends, and sits that much further left so the labels don't move */
+.article__index.article__index--spy { left: calc(1.5rem - 14px); width: calc(164px + 28px); padding: 6px 14px; margin: 0; box-sizing: border-box; }
+.article__index.article__index--spy .article__index-slider { left: 4px; width: calc(100% - 8px); }

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import FigmaShot from "./FigmaShot";
 import PhoneControls from "../../ui/PhoneControls";
 import PhoneFrame from "../ds/IphoneFrame";
 import "./schedToggleDemo.css";
@@ -70,7 +69,14 @@ export default function SchedToggleDemo() {
           aria-label="The delivery mode toggle switching from Instant to Scheduled"
           onLoadedData={() => setOk(true)} onError={() => setOk(false)} />
         {ok && <PhoneControls label="Delivery toggle demo" />}
-        {!ok && <FigmaShot k="toggle-demo" bare alt="Three toggle prototypes side by side: UT 01 dual toggle, UT 02 three options, UT 03 mini toggle with per-shipment pills." />}
+        {!ok && (
+          // mvpxit0k-1vw31b: the three user-test toggles as three separate screens, each the coded prototype running live
+          <div className="std__three">
+            {[["ut01", "UT 01: Instant and Schedule as two cards", "UT 01 dual toggle"], ["ut02", "UT 02: three options in one list", "UT 02 three options"], ["ut03", "UT 03: one mini toggle with the slot in the pill", "UT 03 mini toggle with per-shipment pills"]].map(([k, cap, alt]) => (
+              <PhoneFrame key={k} size="md" screen={`/figures/scheduled/explored/${k}.webp`} alt={alt} caption={cap} interactive={false} />
+            ))}
+          </div>
+        )}
       </div>
       <ToggleScenarios />
     </div>
