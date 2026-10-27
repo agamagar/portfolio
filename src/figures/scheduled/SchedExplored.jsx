@@ -1,5 +1,4 @@
-import PhoneFrame from "../ds/IphoneFrame";
-import "./schedExplored.css";
+import ScreenStrip from "./ScreenStrip";
 
 // 25 Oct (Agam, "show more of what was explored and the decisions that were made"): one comparison per decision,
 // placed where that decision happens in the story. A row of the shared PhoneFrame with a status chip and one line
@@ -62,19 +61,9 @@ export const EXPLORED = {
 export default function SchedExplored({ k }) {
   const d = EXPLORED[k];
   if (!d) return null;
+  // the shared phone row: the same template every other row of phones on the page uses
   return (
-    <figure className="sxp">
-      <div className="sxp__plate">
-        <p className="sxp__title">{d.title}</p>
-        <ul className="sxp__row" data-n={d.items.length} tabIndex={0} aria-label={`${d.title}: what was explored`}>
-          {d.items.map((it) => (
-            <li key={it.src} className="sxp__item">
-              <PhoneFrame screen={it.src} alt={it.alt} size="md" tag={it.tag} tagTone={TONE[it.tag]} caption={it.cap} interactive={false} enter={false} shadow="sm" />
-            </li>
-          ))}
-        </ul>
-      </div>
-      <figcaption className="sxp__verdict"><b>{d.lead}</b> {d.note}</figcaption>
-    </figure>
+    <ScreenStrip title={d.title} label={`${d.title}: what was explored`} verdict={{ lead: d.lead, note: d.note }}
+      tiles={d.items.map((it) => ({ src: it.src, cap: it.cap, alt: it.alt, tag: it.tag, tagTone: TONE[it.tag] }))} />
   );
 }

@@ -2287,3 +2287,15 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 12px; line-height: 16px; }
 /* mvq2mtm6-gg75ao (Agam, 27 Oct, "hide this and 2026"): the phase rail's year labels are hidden */
 .rwf-glass .tlx__rail-year { display: none !important; }
+
+/* The shared phone row (ScreenStrip): one heading, one row of phones, one verdict, the same on every section that shows phones
+   side by side. The old per-section row (.sxp) is gone. */
+.sdrow { margin: 0; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.page--article .article__body .sdrow p.sdrow__title { margin: 0; font: 600 15px/1.25 "Google Sans Flex", Inter, sans-serif; color: var(--ink); }
+.sdrow .sdh { width: 0; min-width: 100%; justify-content: safe center; padding: 4px 0 0.75rem; }
+.sdrow .sdh__tile { flex: 0 0 auto; scroll-snap-align: start; margin: 0; }
+.sdrow .pf__cap { font-size: 12px; opacity: 0.85; }
+.sdrow .pf__tag { background: none; }
+.sdrow__verdict { margin: 0; font-size: 15px; line-height: 1.5; text-wrap: pretty; padding-right: 52px; }
+/* the SD case hides figure captions; a phone's line and the verdict are the comparison itself, so they stay on */
+.article__body--nocaps .sdrow figcaption { display: revert; }
