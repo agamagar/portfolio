@@ -8,3 +8,8 @@
 .sdflows--n1 { grid-template-columns: auto; }
 @media (min-width: 721px) { .sdflows--n3 { grid-template-columns: repeat(3, auto); gap: 32px 28px; } }
 @media (max-width: 720px) { .sdflows--n3 > :last-child { grid-column: 1 / -1; justify-self: center; } }
+
+/* mvq1e8mp-rvi0jp (Agam, 27 Oct, "phone carousel like the other sections, fix across the page"): a row of running flows is the
+   shared carousel (.sdh, ScreenStrip): one row, scroll and snap, never a grid. */
+.sdflows.sdh { display: flex; grid-template-columns: none; justify-content: safe center; gap: 1.25rem; padding: 8px 0 0.75rem; }
+.sdflows.sdh > .sdh__tile { flex: 0 0 auto; }

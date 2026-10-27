@@ -27,9 +27,9 @@ export default function SchedFigmaFlows({ only }) {
   const phone = usePhone();
   const flows = only ? FIGMA_FLOWS.filter((f) => only.includes(f.k)) : FIGMA_FLOWS.filter((f) => !f.extra);
   return (
-    <div className={"sdflows sdflows--n" + flows.length}>
+    <div className={"sdflows sdflows--n" + flows.length + (flows.length > 1 ? " sdh" : "")} role={flows.length > 1 ? "region" : undefined} aria-label={flows.length > 1 ? "The running flows, scroll sideways" : undefined} tabIndex={flows.length > 1 ? 0 : undefined}>
       {flows.map((f) => (
-        <PhoneFrame key={f.k} width={phone ? 156 : 208} interactive={false} caption={f.label}>
+        <PhoneFrame key={f.k} width={phone ? 156 : 208} interactive={false} caption={f.label} className={flows.length > 1 ? "sdh__tile" : undefined}>
           <FigmaEmbed mode="proto" node={f.start} start={f.start} playground={f.pg} caseId={f.case} title={f.alt}
             fallback={f.still || `/figures/scheduled/figma/flow-${f.k}.png`} alt={f.alt} />
         </PhoneFrame>
