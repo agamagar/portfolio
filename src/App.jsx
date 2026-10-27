@@ -1434,7 +1434,7 @@ function ScrollScene({ scene: sceneIn }) {
   const isDefault = scene.aspect === "default";
   const [W, H] = isDefault ? [1512, 982] : scene.aspect || [1392, 862];
   return (
-    <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.layers?.some((l) => /phone/.test(l.src || "")) ? undefined : scene.bg /* a phone sits on the plain page, never on a colour ground */ }}>
+    <div className={"sscene" + (scene.draggable ? " sscene--drag" : "")+ (scene.noframe ? " sscene--noframe" : "")} ref={ref} style={{ aspectRatio: isDefault ? "var(--case-study-frame-default)" : `${W} / ${H}`, background: scene.bg }}>
       {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
           are painted as CSS masks, which a screen reader never sees) */}
       {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
