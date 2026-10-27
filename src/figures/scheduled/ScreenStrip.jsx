@@ -11,7 +11,7 @@ export default function ScreenStrip({ tiles, label, title, verdict, className = 
   return (
     <figure className={"sdrow " + className}>
       {title && <p className="sdrow__title">{title}</p>}
-      <div className="sdh" role="region" aria-label={label || title} tabIndex={0}>
+      <div className="sdh" data-many={tiles.length > 4 ? "" : undefined} style={{ "--n": tiles.length }} role="region" aria-label={label || title} tabIndex={0}>
         {tiles.map((t) => (
           <div className="sdh__tile" key={t.src}>
             <PhoneFrame screen={t.src} alt={t.alt || t.cap} size="lg" tag={t.tag} tagTone={t.tagTone} caption={t.cap} interactive={false} enter={false} shadow="sm" />

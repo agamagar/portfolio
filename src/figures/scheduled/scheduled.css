@@ -1876,13 +1876,9 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mukxrqfz (28 Sep): slot-page states as a horizontal scroll of big screens */
 .sdh { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 0.75rem; scrollbar-width: thin; }
 .sdh__tile { flex: 0 0 min(300px, 72vw); margin: 0; scroll-snap-align: start; }
-.sdh__tile img { display: block; width: 100%; height: auto; border-radius: 20px; border: 1px solid var(--line); }
 .article__body .sdh figcaption.sdh__cap, .article__body--nocaps .sdh figcaption.sdh__cap { display: block; margin-top: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 .sdh:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
-/* mukxvvub (28 Sep): one height for every screen (the exports differ in
-   length), width follows each image's own ratio */
-.sdh__tile { flex: 0 0 auto; }
-.sdh__tile img { width: auto; height: min(640px, 70vh); }
+/* (the old bare-image rules `.sdh__tile img` are gone: they resized the PhoneFrame's bezel and screen picture, so the bezel outgrew the screen) */
 /* mukxwvur (28 Sep): the cart-state marquee (SchedCartStrip) */
 .cstrip { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
 .cstrip__track { display: flex; gap: 1.25rem; width: max-content; animation: cstrip-slide 48s linear infinite; }
@@ -2312,3 +2308,24 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 @media (max-width: 720px) { .stv__top, .stv__cards { grid-template-columns: 1fr; } }
 /* the Impact view toggle: the shared fig-toggle, left aligned under the TL;DR */
 .stv-toggle { justify-content: flex-start; margin: 1rem 0 1.25rem; }
+
+/* THE phone row, final (Agam, 27 Oct, "phone frames still breaking"). A frame scales to its slot: width 100% of the slot, the
+   device's fixed aspect, the screen inset in percent, so the screen fills the bezel at any width. A row of N phones is an
+   N-column grid that fits the article (each phone at most 300px, centred), so nothing is clipped or overlaps; labels sit
+   centred under each phone. Under 700px the row scrolls sideways and snaps, one phone at a time. */
+.sdh .pf, .sdrow .pf { width: 100%; max-width: 100%; }
+@media (min-width: 701px) {
+  .sdh:not([data-many]), .sdrow .sdh:not([data-many]), .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 300px)); justify-content: center; gap: 1.25rem; overflow: visible; scroll-snap-type: none; width: 100%; min-width: 0; padding: 4px 0 0.5rem; }
+  .sdh:not([data-many]) > .sdh__tile, .sdflows.sdh:not([data-many]) > .sdh__tile { flex: none; min-width: 0; width: 100%; }
+  /* five or more phones: one scrolling, snapping row at a fixed phone width, so each stays big enough to read */
+  .sdh[data-many] { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .sdh[data-many] > .sdh__tile { flex: 0 0 240px; scroll-snap-align: start; }
+}
+@media (max-width: 700px) {
+  .sdh { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(72vw, 260px); scroll-snap-align: center; }
+  .sdh[data-many] > .sdh__tile { flex: 0 0 min(72vw, 260px); }
+}
+/* the live screen always fills the bezel opening, and its replay stays inside it, bottom right */
+.pf .ifr__screen > .fembed { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pf .fembed .fembed__restart { right: 10px; bottom: 10px; }
