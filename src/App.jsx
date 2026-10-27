@@ -2315,15 +2315,15 @@ const caseStudies = {
           },
           {
             auto: false,
-            // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): the Figma main path (9:154) gives way to
-            // two built flows side by side, the cart entry and the slot picker; the cue sits on the cart's Schedule button
-            embeds: [
-              { playground: "flow-cart-ftb-cart-entry-states", caseId: "C-002", still: "/figures/scheduled/flows/cart-entry-C-002.png",
-                cueBox: [69.4, 32.6, 20, 3.9], cueLabel: "Click here", cueNoPointer: true, cueNoBox: true, cueClick: true,
-                alt: "The cart, running: a returning user's cart with the Schedule entry on the shipment that can't come now" },
-              { playground: "flow-schedule-slot-picker-m4", caseId: "S-002", still: "/figures/scheduled/flows/slot-picker-S-002.png", crop: "top",
-                alt: "The schedule page, running: Instant or Schedule for each shipment, then a slot" },
-            ],
+            // Agam, 27 Oct ("use the Figma prototype here, the version we had about a week ago"): the Figma main path (9:154)
+            // is back in this plate, replacing the two built flows of 26 Oct
+            embed: { node: "9:154" }, // Claude: Schedule main path, from the cart (FigmaEmbed)
+            cueBox: [69.4, 34.5, 20, 4.3], // the cart's Schedule button, the path's first hotspot
+            cueLabel: "Click here",
+            cueNoPointer: true,
+            cueNoBox: true,
+            cueClick: true,
+            alt: "The scheduled order prototype, live from Figma",
             bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
           },
         ],
