@@ -2285,3 +2285,5 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .rwf-glass .tlx__rail-sub { opacity: 1; font-size: 11px; line-height: 14px; }
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard:not([data-open="true"]) .tlx__rail-tag,
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 12px; line-height: 16px; }
+/* mvq2mtm6-gg75ao (Agam, 27 Oct, "hide this and 2026"): the phase rail's year labels are hidden */
+.rwf-glass .tlx__rail-year { display: none !important; }

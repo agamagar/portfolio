@@ -8965,3 +8965,6 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 /* Case-study layout pass (Agam, 26 Oct): headings never end on a lone word, and body text avoids a short last line. */
 .page--article .article__body :is(h2, h3, h4, .rwf__title, .rwf__rl-t) { text-wrap: balance; }
 .page--article .article__body :is(p, li, figcaption) { text-wrap: pretty; }
+
+/* mvq2lseu-pmb4se (Agam, 27 Oct): the role map fills the column and nothing is clipped, so the turning labels can pass its edge */
+.rv-pack { width: 100%; aspect-ratio: 8 / 5; overflow: visible; }
