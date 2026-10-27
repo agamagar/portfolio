@@ -25,3 +25,7 @@ h1.hv4__head { width: 1012px !important; }
 h1.hv4__head { padding-right: 0px !important; }
 section.hello-hero { column-gap: 280px !important; }
 section.hello-hero { row-gap: 240px !important; }
+
+/* 2026-10-27T02:52:42.771Z */
+div.cs-sec:nth-child(20) { row-gap: 48px !important; }
+ul.article__terms > li:nth-child(3) { row-gap: 24px !important; }

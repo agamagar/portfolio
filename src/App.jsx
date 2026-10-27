@@ -171,6 +171,7 @@ const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplora
 const SchedExplorationsDetour = lazyFig(() => import("./figures/scheduled/SchedExplorationsDetour"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmRealOneDim, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import SchedStatCards from "./figures/scheduled/SchedStatCards"; // Impact, At a glance: the stat-card view
 import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
 import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
@@ -3080,6 +3081,21 @@ const caseStudies = {
         // an "Impact at a glance" after it in the layout of Agam's reference (headline with one word highlighted, three
         // bars, a source). Numbers only from the bullets above: 1.72% peak share, ₹1,452 v ₹543, 82.5% in the booked hour
         // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances' share of GMV rising (no figure, a partial month).
+        // Agam, 27 Oct ("add a toggle on the impact section and build this in our purple theme"): the stat-card view. The three metrics
+        // are the section's own bullets above: 2 to 1,144 stores in 63 days, 2.7x the order value (1,452 v 543, Aug 2026), 82.5% inside
+        // the booked hour (Aug 2026, 92.6% in February). Heading is the glance heading; the columns are the 1.72% peak and the 1.3% reading.
+        statCards: {
+          head: "A small slice of Zepto’s orders, and each one worth 2.7 times an instant one.",
+          cols: [
+            "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
+            "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
+          ],
+          cards: [
+            { tone: "brand", icon: "stores", title: "Stores live in 63 days", value: "1,144", unit: "stores", caption: "Up from 2 stores. The first scheduled order landed on 10 October 2025, and the rollout was complete on 12 December." },
+            { tone: "tint", icon: "value", title: "Order value against an instant order", value: "2.7", unit: "x", caption: "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65." },
+            { tone: "deep", icon: "time", title: "Arrived inside the booked hour", value: "82.5", unit: "%", caption: "In August 2026, down from 92.6% in February. The bigger miss is cancellation: 27.4% against about 11% for instant." },
+          ],
+        },
         glance: {
           label: "Impact at a glance",
           head: ["A small slice of Zepto’s orders, and each one worth ", "2.7", " times an instant one."], // 37.2b follow-up: ₹1,452 against ₹543 is 2.7x, the figure the page uses elsewhere (was "almost three")
@@ -10138,6 +10154,8 @@ function SecWrap({ on, stack, center, side, row, children }) {
 
 function CaseStudyBodyFull({ cs }) {
   const bodyRef = useBlockReveal(); // one scroll reveal for every block of the article
+  const [impactView, setImpactView] = useState("story"); // the Impact toggle: "story" (default) or "glance" (stat cards)
+  const glanceOn = (sec) => !!sec.statCards && impactView === "glance";
   const explorationsVariant = useExplorationsVariant(); // the Detour version replaces the old board unless "original" is picked
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
@@ -10261,7 +10279,15 @@ function CaseStudyBodyFull({ cs }) {
             </p>
           )}
           {/* mvgj0x67 (Agam, "move this to the impact section"): the glance sits right under the Impact heading and TL;DR, not after the divider */}
-          {s.glance && <SchedImpactGlance g={s.glance} />}
+          {s.statCards && (
+            <div className="fig-toggle stv-toggle" role="group" aria-label="Impact view">
+              {[["story", "The story"], ["glance", "At a glance"]].map(([k, label]) => (
+                <button key={k} type="button" className={"fig-toggle__btn" + (impactView === k ? " is-active" : "")} aria-pressed={impactView === k} onClick={() => setImpactView(k)}>{label}</button>
+              ))}
+            </div>
+          )}
+          {glanceOn(s) && <SchedStatCards c={s.statCards} />}
+          {s.glance && !glanceOn(s) && <SchedImpactGlance g={s.glance} />}
           {/* mvgndaq6: the whiteboard floats beside the section's text instead of sitting after the figure */}
           {s.whiteboardNext && s.whiteboardFloat && (
             <EF className={"article__figure article__figure--float" + (s.whiteboardFloatHalf ? " article__figure--float-half" : "")}>
@@ -10340,7 +10366,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.table && <SmartTable table={s.table} />}
           {s.chart && <DataViz chart={s.chart} />}
           {/* extra figures after the main one: [{ fig, caption, bare }] */}
-          {(s.figsAfter || []).map((f, k) => (
+          {(glanceOn(s) ? [] : (s.figsAfter || [])).map((f, k) => (
             <EF className="article__figure" key={`fa-${k}`}>
               {/* mtp8qt8d: an extra figure may be a scene or a still, not only a coded fig */}
               <SectionFigure fig={f.fig} scene={f.scene} still={f.still} variant="article" bare={f.bare} />
@@ -10352,7 +10378,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.insightBefore && <SchedUseCases />}
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
-          {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && (
+          {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && !glanceOn(s) && (
             <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}
               {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}

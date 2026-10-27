@@ -2299,3 +2299,13 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .sdrow__verdict { margin: 0; font-size: 15px; line-height: 1.5; text-wrap: pretty; padding-right: 52px; }
 /* the SD case hides figure captions; a phone's line and the verdict are the comparison itself, so they stay on */
 .article__body--nocaps .sdrow figcaption { display: revert; }
+
+/* Impact, At a glance (SchedStatCards): heading left, two text columns right, three stat cards below; the cards stack on a phone */
+.stv { display: flex; flex-direction: column; gap: 32px; width: 100%; margin: 0.5rem 0 0; }
+.stv__top { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 24px 32px; align-items: start; }
+.page--article .article__body .stv h3.stv__head { margin: 0; font: 400 clamp(1.5rem, 2.6vw, 2.1rem)/1.15 "Google Sans Flex", Inter, sans-serif; text-wrap: balance; }
+.page--article .article__body .stv p.stv__col { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+.stv__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 720px) { .stv__top, .stv__cards { grid-template-columns: 1fr; } }
+/* the Impact view toggle: the shared fig-toggle, left aligned under the TL;DR */
+.stv-toggle { justify-content: flex-start; margin: 1rem 0 1.25rem; }
