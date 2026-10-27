@@ -183,7 +183,7 @@ import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
 import { topprDeck } from "./decks/toppr.deck";
 import Tooltips from "./ui/Tooltips";
-import { useRise, rise } from "./ui/useSectionPlay"; // section play: one controller for scroll entrances
+import { useRise, rise, useBlockReveal } from "./ui/useSectionPlay"; // section play: one controller for scroll entrances
 import { PRIVATE_SITE } from "./lib/site";
 import LockScreen from "./ui/LockScreen";
 import "./ui/lockScreen.css";
@@ -10116,6 +10116,7 @@ function SecWrap({ on, stack, center, side, row, children }) {
 }
 
 function CaseStudyBodyFull({ cs }) {
+  const bodyRef = useBlockReveal(); // one scroll reveal for every block of the article
   const explorationsVariant = useExplorationsVariant(); // the Detour version replaces the old board unless "original" is picked
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
@@ -10186,7 +10187,7 @@ function CaseStudyBodyFull({ cs }) {
     );
   };
   return (
-    <div className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
+    <div ref={bodyRef} className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
       {!cs.headFacts && <p className="article__lead">{cs.lead}</p>}
 
       {/* muky55mj (28 Sep): `hidden: true` parks a whole section (page, index) */}
