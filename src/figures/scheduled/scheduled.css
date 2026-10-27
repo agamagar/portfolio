@@ -1379,6 +1379,9 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .dio { margin: 0; width: 100%; }
 .dio__stage { position: relative; border-radius: 16px; overflow: visible; }
 .dio__stage > img { display: block; width: 100%; height: auto; border-radius: 16px; }
+/* mvqpcbak (Agam): the diorama sits on a plain ground, white in light and the dark ground in dark, with a drop shadow */
+.dio__stage { background: #fff; box-shadow: 0 18px 40px rgba(20, 8, 40, .18), 0 2px 8px rgba(20, 8, 40, .10); }
+.dark .dio__stage { background: #141218; box-shadow: 0 18px 40px rgba(0, 0, 0, .6), 0 2px 10px rgba(0, 0, 0, .45); }
 .dio__pin {
   position: absolute; translate: -50% -50%; display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.2rem 0.6rem 0.2rem 0.2rem; border: 0; border-radius: 999px; corner-shape: round;
@@ -1487,6 +1490,10 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); }
 .rwf-glass .tlx__rail-tagcard[data-below="true"]:not(.tlx__rail-measure-card) { margin-top: calc(var(--lane, 0) * var(--rail-lane)); }
 .rwf-glass .tlx__rail { margin-top: 5rem; margin-bottom: 5rem; }
+/* mvqpbfrn (Agam): the glass pills 2px thicker (1px to 3px border) and 12px taller (66px to 78px; the 4px of border adds 4, the padding adds 8) */
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { border-width: 3px; }
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { height: calc(var(--rail-card-h) + 12px); }
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) { height: calc(var(--rail-card-h) + 34px); }
 .rwf__main .rwf__title--second { margin-top: 1.5rem; } /* mukp2jed: a second heading inside a slide */
 /* 28 Sep: no "now" marker on this rail (the project ended); the card was
    already hidden, now its line and dot go too */

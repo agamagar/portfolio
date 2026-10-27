@@ -8276,10 +8276,12 @@ html.dark.glass-lens .article__hero-replay,
    the frame, as the My role frame does. Phones: no ratio, as elsewhere. */
 .article__body .cs-sec {
   aspect-ratio: var(--case-study-frame-default);
-  padding: var(--case-study-frame-default-padding);
+  padding: 24px; /* mvqp89uj (Agam): 24px on every section frame */
   align-content: center;
   margin: 1rem 0 2rem;
 }
+/* the sections that carry a full colour plate or photos keep the frame's own proportional padding */
+.article__body .cs-sec:has(img, .article__plate) { padding: var(--case-study-frame-default-padding); }
 @media (max-width: 700px) { .article__body .cs-sec { aspect-ratio: auto; padding-inline: 0; } }
 /* a section that is only its heading (its figure follows) is not an empty 530px frame */
 .article__body .cs-sec:has(> h2:only-child) { aspect-ratio: auto; padding-block: 0; }

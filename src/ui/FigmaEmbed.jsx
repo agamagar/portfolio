@@ -97,10 +97,11 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   }, [slot, href, label, canRestart]);
   // a playground screen is 360px wide inside 16px of padding: scale it to the box and crop the padding
   const [k, setK] = useState(0);
+  const [vh, setVh] = useState(0); // the box's height in playground px: the iframe is exactly the visible screen, so its bottom bar lands inside the bezel
   useEffect(() => {
     const el = root.current;
     if (!pg || !el || typeof ResizeObserver === "undefined") return undefined;
-    const ro = new ResizeObserver(([en]) => setK(en.contentRect.width / 360));
+    const ro = new ResizeObserver(([en]) => { const s = en.contentRect.width / 360; setK(s); setVh(s ? en.contentRect.height / s : 0); });
     ro.observe(el);
     return () => ro.disconnect();
   }, [pg]);
@@ -128,7 +129,7 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
         pg ? (
           <iframe key={run} className="fembed__frame fembed__frame--pg" title={title || pg.title} loading="lazy" onLoad={onLoad}
             src={embedUrl(pg, { case: caseId, theme: dark ? "dark" : "light", bg: "transparent", motion: typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "reduce" : undefined })}
-            style={{ width: pg.size.w, height: pg.size.h, transform: `scale(${k}) translate(-16px, -16px)`, visibility: k ? "visible" : "hidden" }} />
+            style={{ width: pg.size.w, height: vh ? vh + 16 : pg.size.h, transform: `scale(${k}) translate(-16px, -16px)`, visibility: k ? "visible" : "hidden" }} />
         ) : (
           <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
         )
