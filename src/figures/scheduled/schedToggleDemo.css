@@ -24,3 +24,5 @@
 
 /* three separate phone screens, side by side, wrapping on a phone */
 .std__three { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.5rem; width: 100%; }
+/* mvq1iwmx-ajimh1 (Agam, 27 Oct): no purple ground and no card around the phones; the three toggles are the shared carousel on the page */
+.std__plate { background: none; min-height: 0; padding: 0; overflow: visible; display: block; }
