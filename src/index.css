@@ -8969,3 +8969,7 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 /* mvq3328y-iwi3b1 (Agam, 27 Oct): a plate phone's Restart and Open links sit inside the plate, bottom right, not under it */
 .article__plate { position: relative; }
 .article__plate > .pf__links { position: absolute; right: 14px; bottom: 14px; margin: 0; z-index: 6; justify-content: flex-end; }
+
+/* mvq37xpb-9nd89e (Agam, 27 Oct): in a figure that can expand, the scene's replay and the expand button were both at the bottom
+   right, one over the other. The replay steps left of the expand button (32px + a 8px gap). */
+figure[data-exp] .sscene__replay, .article__figure .sscene__replay { right: 52px; }
