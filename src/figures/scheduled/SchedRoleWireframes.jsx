@@ -100,7 +100,7 @@ const SLIDES = [
       // confirmed by Agam, 27 Sep: the study ran in November
       ["Nov 2025", "Validation study", "The 45-user mixed-method study, run with the PMs just after launch."],
       ["Dec 2025 to Jan 2026", "Returns and refunds", "The slot picker extended into the returns pickup flow."],
-      ["Jan to Feb 2026", "Hardening", "Edge cases with engineering: zero slots, API failure, analytics."],
+      ["Jan to Feb 2026", "Reiterating", "Edge cases with engineering: zero slots, API failure, analytics."],
     ],
   },
   {
@@ -332,7 +332,7 @@ function SlotChart() {
 const STEP_ICON = {
   "Problem on the canvas": PenNib, "First review": ChatCircleText, "M1 build and handoff": Package,
   "Content pass": TextAa, "M1 ships": RocketLaunch, "M2 ships": Truck, "Validation study": UsersThree,
-  "Returns and refunds": ArrowUUpLeft, "Hardening": ShieldCheck,
+  "Returns and refunds": ArrowUUpLeft, "Reiterating": ShieldCheck,
 };
 
 // ---- mujvibm1: speed. Every number from sdReport (warehouse pull, 23 Sep 2026)
@@ -515,7 +515,7 @@ export const STAT_ICON = { "2 releases": RocketLaunch, "6 months": CalendarBlank
 const RL_ICON = { "Ship narrow first": RocketLaunch, "Two directions in parallel": Signpost, "A checklist for what was missing": ListChecks, "Dates set together": CalendarCheck };
 const PHASE_EMOJI = {
   "Problem on the canvas": "🗺️", "First review": "👀", "M1 build and handoff": "🛠️", "Content pass": "✍️",
-  "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Hardening": "🛡️",
+  "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Reiterating": "🛡️",
 };
 // mukpq377 (28 Sep): the expanded card reads as bullets, split from each step's
 // own sentence (nothing added)
@@ -528,11 +528,11 @@ const PHASE_BULLETS = {
   "M2 ships": ["Full multi-shipment scheduling", "The go-to-market, with the lead PM"],
   "Validation study": ["The 45-user mixed-method study", "Run with the PMs, just after launch"],
   "Returns and refunds": ["The slot picker, extended into returns pickup"],
-  "Hardening": ["Edge cases with engineering", "Zero slots", "API failure", "Analytics"],
+  "Reiterating": ["Edge cases with engineering", "Zero slots", "API failure", "Analytics"],
 };
 // mukpz799 (28 Sep): a Google Material Symbols icon per bullet, matched to what
 // the bullet says (loaded as a subset in index.html; add a name there too)
-const PHASE_BULLET_ICONS = {"Problem on the canvas": ["map", "sync", "science"], "First review": ["rule", "sentiment_satisfied", "calendar_today", "check_circle"], "M1 build and handoff": ["grid_view", "help"], "Content pass": ["trending_up", "forum", "edit_note"], "M1 ships": ["rocket_launch"], "M2 ships": ["local_shipping", "campaign"], "Validation study": ["groups", "handshake"], "Returns and refunds": ["assignment_return"], "Hardening": ["engineering", "event_busy", "cloud_off", "analytics"]};
+const PHASE_BULLET_ICONS = {"Problem on the canvas": ["map", "sync", "science"], "First review": ["rule", "sentiment_satisfied", "calendar_today", "check_circle"], "M1 build and handoff": ["grid_view", "help"], "Content pass": ["trending_up", "forum", "edit_note"], "M1 ships": ["rocket_launch"], "M2 ships": ["local_shipping", "campaign"], "Validation study": ["groups", "handshake"], "Returns and refunds": ["assignment_return"], "Reiterating": ["engineering", "event_busy", "cloud_off", "analytics"]};
 // 22 Oct (Agam): rail labels and bullets are sentence case (was title case, mvds04yi / mvg9bvbv)
 const sentenceCase = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 // mvg9bvbv (Agam): the rail's card labels read in title case (and the rail no longer upper-cases them)

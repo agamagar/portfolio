@@ -1056,8 +1056,8 @@ function RoleScopeMap({ s, i }) {
               ride the same rotating wrapper, labels counter-rotate to stay upright; the orb gradient pulses on ::before. CSS transforms only. */}
           {/* the lens prisms what is painted before it: the lines orbit under it, the labels (a second set of the same orbits,
               same angle and duration, so they move as one) over it, so the labels stay crisp (CoS, 26 Oct: the lens fringed them) */}
-          {PACK_ORBITS.map(([n, a0, r, d, , dur]) => (
-            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
+          {PACK_ORBITS.map(([n, a0, r, d, , dur], oi) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s`, "--dl": `${-((oi * 11) % dur)}s` }}>
               <i className="rv-pack__ln" />
             </span>
           ))}
@@ -1078,8 +1078,8 @@ function RoleScopeMap({ s, i }) {
           </svg>
           <span className="rv-pack__lens" aria-hidden="true" />
           <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
-          {PACK_ORBITS.map(([n, a0, r, d, k, dur]) => (
-            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
+          {PACK_ORBITS.map(([n, a0, r, d, k, dur], oi) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s`, "--dl": `${-((oi * 11) % dur)}s` }}>
               <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
             </span>
           ))}

@@ -8904,10 +8904,14 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
    counter-rotates to stay upright, its line is a 1px rule along the spinner's x axis. */
 .rv-pack::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle closest-side at 50% 50%, var(--pk-0) 0%, var(--pk-22) 22%, var(--pk-30) 30%, var(--pk-38) 38%, var(--pk-50) 50%, var(--pk-66) 66%, var(--pk-755) 75.5%, var(--pk-85) 85%, var(--pk-100) 100%); animation: rv-pulse 6s ease-in-out infinite alternate; }
 @keyframes rv-pulse { from { transform: scale(0.95); opacity: 0.92; } to { transform: scale(1.05); opacity: 1; } }
-.rv-pack__o { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(var(--a0)); animation: rv-orbit var(--dur) linear infinite; }
-@keyframes rv-orbit { to { transform: rotate(calc(var(--a0) + 360deg)); } }
-.rv-pack__o > .rv-pack__c { left: calc(var(--r) * 1cqw); top: 0; transform: translate(-50%, -50%) rotate(calc(var(--a0) * -1)); animation: rv-unorbit var(--dur) linear infinite; }
-@keyframes rv-unorbit { to { transform: translate(-50%, -50%) rotate(calc(var(--a0) * -1 - 360deg)); } }
+/* mvq1m7er-jrl6s0 (Agam, 27 Oct): the labels no longer spin in the plane. Each spoke turns about the lead designer like the spokes
+   of a sphere (a turn about the y axis, tilted by the spoke's own angle, under a perspective), and its label turns the
+   opposite way so the text stays fixed and flat to the reader while its position and size move in depth. --dl staggers the phases. */
+.rv-pack { perspective: 110cqw; perspective-origin: 50% 50%; }
+.rv-pack__o { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: rotateZ(var(--a0)) rotateY(0deg); animation: rv-orbit var(--dur) linear var(--dl, 0s) infinite; }
+@keyframes rv-orbit { from { transform: rotateZ(var(--a0)) rotateY(0deg); } to { transform: rotateZ(var(--a0)) rotateY(360deg); } }
+.rv-pack__o > .rv-pack__c { left: calc(var(--r) * 1cqw); top: 0; transform: translate(-50%, -50%) rotateY(0deg) rotateZ(calc(var(--a0) * -1)); animation: rv-unorbit var(--dur) linear var(--dl, 0s) infinite; }
+@keyframes rv-unorbit { from { transform: translate(-50%, -50%) rotateY(0deg) rotateZ(calc(var(--a0) * -1)); } to { transform: translate(-50%, -50%) rotateY(-360deg) rotateZ(calc(var(--a0) * -1)); } }
 /* mvnt94gx (Agam, 25 Oct): the lines from Lead designer are soft, a blur over a 2px stroke a touch brighter so they still read;
    top: -0.5px keeps the stroke centred where the 1px line was */
 .rv-pack__ln { position: absolute; left: 10cqw; top: -0.5px; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 1px solid rgba(255, 255, 255, 0.85); filter: blur(0.6px) drop-shadow(0 0 1px rgba(60, 20, 120, 0.55)); }
