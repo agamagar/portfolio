@@ -8908,10 +8908,13 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
    of a sphere (a turn about the y axis, tilted by the spoke's own angle, under a perspective), and its label turns the
    opposite way so the text stays fixed and flat to the reader while its position and size move in depth. --dl staggers the phases. */
 .rv-pack { perspective: 110cqw; perspective-origin: 50% 50%; }
-.rv-pack__o { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: rotateZ(var(--a0)) rotateY(0deg); animation: rv-orbit var(--dur) linear var(--dl, 0s) infinite; }
-@keyframes rv-orbit { from { transform: rotateZ(var(--a0)) rotateY(0deg); } to { transform: rotateZ(var(--a0)) rotateY(360deg); } }
-.rv-pack__o > .rv-pack__c { left: calc(var(--r) * 1cqw); top: 0; transform: translate(-50%, -50%) rotateY(0deg) rotateZ(calc(var(--a0) * -1)); animation: rv-unorbit var(--dur) linear var(--dl, 0s) infinite; }
-@keyframes rv-unorbit { from { transform: translate(-50%, -50%) rotateY(0deg) rotateZ(calc(var(--a0) * -1)); } to { transform: translate(-50%, -50%) rotateY(-360deg) rotateZ(calc(var(--a0) * -1)); } }
+/* mvqcdi18-acw8qa (Agam, 27 Oct, "the text should never overlap"): a spoke no longer makes a full turn, where labels swung through the
+   centre and over each other. It sways 32 degrees either side of its own direction, so every label stays in its own sector and the
+   text never meets another label. The label counter-turns, so it stays flat and fixed to the reader. */
+.rv-pack__o { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: rotateZ(var(--a0)) rotateY(-32deg); animation: rv-orbit calc(var(--dur) / 6) ease-in-out var(--dl, 0s) infinite alternate; }
+@keyframes rv-orbit { from { transform: rotateZ(var(--a0)) rotateY(-32deg); } to { transform: rotateZ(var(--a0)) rotateY(32deg); } }
+.rv-pack__o > .rv-pack__c { left: calc(var(--r) * 1cqw); top: 0; transform: translate(-50%, -50%) rotateY(32deg) rotateZ(calc(var(--a0) * -1)); animation: rv-unorbit calc(var(--dur) / 6) ease-in-out var(--dl, 0s) infinite alternate; }
+@keyframes rv-unorbit { from { transform: translate(-50%, -50%) rotateY(32deg) rotateZ(calc(var(--a0) * -1)); } to { transform: translate(-50%, -50%) rotateY(-32deg) rotateZ(calc(var(--a0) * -1)); } }
 /* mvnt94gx (Agam, 25 Oct): the lines from Lead designer are soft, a blur over a 2px stroke a touch brighter so they still read;
    top: -0.5px keeps the stroke centred where the 1px line was */
 .rv-pack__ln { position: absolute; left: 10cqw; top: -0.5px; width: calc((var(--r) - 10 - var(--d) / 2) * 1cqw); border-top: 1px solid rgba(255, 255, 255, 0.85); filter: blur(0.6px) drop-shadow(0 0 1px rgba(60, 20, 120, 0.55)); }
