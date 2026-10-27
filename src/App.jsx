@@ -2367,19 +2367,6 @@ const caseStudies = {
       // before the three cards. The plates section is gone from here; the hero
       // banner mp4 and the prototype embed still exist as assets and helpers.
       // muic2lhk (26 Sep): moved to sit just below Context & problem (was after the question); the phone moves up with it (muic1wk2)
-      {
-        // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
-        // 16 Sep 2026, read back from Figma 120 (3:3321): the slide is SIX
-        // photographs now, with six different labels, and it carries a Dev Mode
-        // annotation reading "Pictionary game" - so the labels are word cards
-        // you guess. The old `scene` of duplicated card PNGs is gone; the
-        // component owns the grid, the pills and the reveal.
-        h: "Six moments",
-        noHeading: true,
-        fig: "schedMoments",
-        figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
-        // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
-      },
       // mvgewwfq (Agam, "move this 2 sections down"): "Context & problem" (the "When instant delivery fails" scene) now sits after "Six moments"
       {
         h: "Context & problem",
@@ -2481,6 +2468,20 @@ const caseStudies = {
         },
         figure:
           "The promise, written down. A scheduled shipment is a card that says a time and keeps it, with one word left for changing your mind.",
+      },
+      // mvqp1fmz-yzvypg (Agam, 27 Oct, "move this down"): Six moments sits one section lower, after The central question
+      {
+        // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
+        // 16 Sep 2026, read back from Figma 120 (3:3321): the slide is SIX
+        // photographs now, with six different labels, and it carries a Dev Mode
+        // annotation reading "Pictionary game" - so the labels are word cards
+        // you guess. The old `scene` of duplicated card PNGs is gone; the
+        // component owns the grid, the pills and the reveal.
+        h: "Six moments",
+        noHeading: true,
+        fig: "schedMoments",
+        figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
+        // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
       },
       {
         h: "My role",

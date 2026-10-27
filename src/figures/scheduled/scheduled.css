@@ -2339,8 +2339,9 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 @media (max-width: 700px) { .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(58vw, 190px); } }
 /* mvqnxlmk-wxnbie (Agam, 27 Oct): every section is vertical: the heading or label on top, the content under it, never label left and
    content right. */
-.article__body .iq, .article__body .rwf:not(.rwf--stack) { grid-template-columns: minmax(0, 1fr); }
-.article__body .iq > *, .article__body .rwf > * { grid-column: 1 / -1; grid-row: auto; }
+/* mvqp0s9s-4u16kk (Agam, 27 Oct): the intro question stays horizontal, label left and question right */
+.article__body .rwf:not(.rwf--stack) { grid-template-columns: minmax(0, 1fr); }
+.article__body .rwf > * { grid-column: 1 / -1; grid-row: auto; }
 .article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr); }
 .article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
 /* the running-flows row (.sdflows) is the same grid; this outranks schedFigmaFlows.css's older flex rule */
