@@ -13,3 +13,8 @@
 .stat__value { font: 400 clamp(2.5rem, 25cqw, 4.75rem)/1 "Google Sans Flex", Inter, sans-serif; letter-spacing: -0.03em; }
 .stat__unit { font: 500 clamp(0.95rem, 8cqw, 1.5rem)/1 "Google Sans Flex", Inter, sans-serif; }
 .page--article .article__body .stat p.stat__cap { margin: auto 0 0; font-size: 0.875rem; line-height: 1.45; color: var(--st-sub); text-wrap: pretty; }
+
+/* Titles share one height: room for three lines of the title's own size, so the big numbers line up across cards in a row
+   whatever each title's length (a phone stacks them and drops the reserve). */
+.stat__top { min-height: calc(3 * 1.25 * clamp(1rem, 1.5vw, 1.2rem)); }
+@media (max-width: 720px) { .stat__top { min-height: 0; } }
