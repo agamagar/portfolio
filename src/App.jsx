@@ -2315,10 +2315,11 @@ const caseStudies = {
           },
           {
             auto: false,
-            // Agam, 27 Oct ("use the Figma prototype here, the version we had about a week ago"): the Figma main path (9:154)
-            // is back in this plate, replacing the two built flows of 26 Oct
-            embed: { node: "9:154" }, // Claude: Schedule main path, from the cart (FigmaEmbed)
-            cueBox: [69.4, 34.5, 20, 4.3], // the cart's Schedule button, the path's first hotspot
+            // Agam, 27 Oct (mvq32new, "use the week prior version"): the Figma frame of 19 to 22 Oct, the main-path prototype in the
+            // Zepto file (71cZSn6pTNf4zFzO07O2uv, node 40000084:123917), not the Claude: Schedule copy. The file is private, so a visitor
+            // without access meets Figma's sign-in (mv2mmvt6).
+            embed: { file: "71cZSn6pTNf4zFzO07O2uv", node: "40000084:123917", start: "40000084:123917" },
+            cueBox: [48.5, 30.6, 45, 7.8],
             cueLabel: "Click here",
             cueNoPointer: true,
             cueNoBox: true,
@@ -10106,7 +10107,7 @@ function PlatePhone({ pe, gradient }) {
             <b>{pe.cueLabel || "Click here"}</b>
           </span>
         ) : null}>
-          <FigmaEmbed mode="proto" node={pe.node} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} />
+          <FigmaEmbed mode="proto" file={pe.file} node={pe.node} start={pe.start} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} />
           {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
           {pe.cueBox && !pe.cueNoBox && (
             <span
@@ -10175,7 +10176,7 @@ function CaseStudyBodyFull({ cs }) {
                     // tap cue at [x%, y%] of the screen
                     // 18.2 (critique, 25 Oct): on a phone the embed is a still, and its Open in Figma link goes under the plate,
                     // since the plate crops the phone (LinksBelow; the phone passes the link on with linkSlot={false})
-                    <PlatePhone pe={{ ...pl, node: pl.embed.node }} gradient={s.platesGradient} />
+                    <PlatePhone pe={{ ...pl, file: pl.embed.file, node: pl.embed.node, start: pl.embed.start }} gradient={s.platesGradient} />
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
                     <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>

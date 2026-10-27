@@ -16,9 +16,6 @@ export const LIVE_SCREENS = {
   "cart-hubs": SAME("flow-cart-cart-composition-ds-ss", "C-048"),
   "sched-stuck-cart": SAME("flow-schedule-cart-cases-m1-dev-ready", "S-072"),
   "dir-sheet": SAME("flow-schedule-delivery-options-bottomsheet", "S-095"), "sched-dir-tabbed": SAME("flow-schedule-delivery-options-bottomsheet", "S-091"),
-  "schedule-page-ui": SAME("flow-schedule-intro-banner-and-assets", "S-050"),
-  "gtm-first-plate": SAME("flow-cart-ftb-cart-entry-states", "C-001"),
-  "gtm-tooltip-plate": SAME("flow-cart-ftb-cart-entry-states", "C-001"),
   // explored directions
   "slot-a": SAME("flow-schedule-collapsed-card-slot-summary", "S-044"), "slot-b": SAME("flow-schedule-collapsed-card-slot-summary", "S-045"),
   "slot-c": SAME("flow-schedule-collapsed-card-slot-summary", "S-046"), "slot-d": SAME("flow-schedule-collapsed-card-slot-summary", "S-047"),
