@@ -10558,7 +10558,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
 
   return (
     <>
-    <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
+    <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug} style={{ "--case-accent": cs.accent }}>
       <div className="article__layout">
         <SectionIndex
           entries={indexEntries}
