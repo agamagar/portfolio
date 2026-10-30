@@ -1,4 +1,4 @@
-// Presentation deck for the Dassh (Stella) case study.
+// Presentation deck for the Dassh (formerly Stella) case study.
 // Composed from the slide-archetype library in App.jsx (see buildSlides / Slide).
 // Recipe: title -> central premise -> set the table -> the evidence -> five
 // phases (The bet, Four people one product, Anyone can create an agent,
@@ -21,7 +21,7 @@ export const dasshDeck = [
     "items": [
       {
         "label": "Overview",
-        "body": "Stella, an AI recruiter that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, keeping the ATS current. The people stay free for judgement."
+        "body": "Dassh, formerly Stella, a recruiting agent that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, keeping the ATS current. The people stay free for judgement."
       },
       {
         "label": "Role",
@@ -62,17 +62,17 @@ export const dasshDeck = [
     "type": "phaseDivider",
     "n": "01",
     "name": "The bet",
-    "sub": "An AI employee, not another tool"
+    "sub": "A teammate, not another tool"
   },
   {
     "type": "figure",
-    "h": "You brief her, you don't configure her",
+    "h": "You brief it, you don't configure it",
     "p": [
-      "The obvious version of this product is a dashboard with AI features bolted on, a smarter ATS. We killed that direction early: more buttons is the opposite of the problem. The execution load does not drop when you add a feature, it drops when someone else does the work.",
-      "So Stella is a teammate you brief, the way you brief a new hire: tell her the role, hand her the criteria, point her at the candidates. Where a normal SaaS would show a settings panel, we showed a conversation."
+      "The obvious version of this product is a dashboard with smart features bolted on, a smarter ATS. We killed that direction early: more buttons is the opposite of the problem. The execution load does not drop when you add a feature, it drops when someone else does the work.",
+      "So Dassh is a teammate you brief, the way you brief a new hire: tell it the role, hand it the criteria, point it at the candidates. Where a normal SaaS would show a settings panel, we showed a conversation."
     ],
     "image": "/figures/dassh/stella-chat.jpg",
-    "figure": "Stella's conversational home: a hiring manager briefs a role instead of filling out a form.",
+    "figure": "Dassh's conversational home: a hiring manager briefs a role instead of filling out a form.",
     "layout": "split"
   },
   {
@@ -87,7 +87,7 @@ export const dasshDeck = [
     "h": "Hiring is not one user",
     "items": [
       {
-        "title": "Stella, chat-first",
+        "title": "Dassh, chat-first",
         "body": "Full screen, almost no chrome. The founder asks a question; the conversation is the interface."
       },
       {
@@ -112,7 +112,7 @@ export const dasshDeck = [
       "Not all four went equally deep at once: the screening agent and the daily report shipped deepest first, with the other surfaces designed and staged on the roadmap behind them."
     ],
     "fig": "stellaOnboarding",
-    "figure": "Stella greets you and guides setup, connect the ATS, set preferences, pick a plan, ticking the checklist off as you go.",
+    "figure": "Dassh greets you and guides setup, connect the ATS, set preferences, pick a plan, ticking the checklist off as you go.",
     "layout": "split"
   },
   {
@@ -134,13 +134,13 @@ export const dasshDeck = [
       "Set what happens next"
     ],
     "fig": "agentWizardFff",
-    "figure": "The four-step creation flow, the same spine for every agent type. Every step offers a template, an AI draft from the job description, or your own upload.",
+    "figure": "The four-step creation flow, the same spine for every agent type. Every step offers a template, a draft written from the job description, or your own upload.",
     "layout": "split"
   },
   {
     "type": "methodFinding",
     "h": "The screening agent shows its work",
-    "finding": "Each criterion is tagged Essential, Valuable or Not preferred, so the recruiter's priorities are legible to the AI and to any human reviewer.",
+    "finding": "Each criterion is tagged Essential, Valuable or Not preferred, so the recruiter's priorities are legible to the agents and to any human reviewer.",
     "p": [
       "And the screening agent returns more than a yes or no: a match score, skill and experience breakdowns, a gap analysis and a priority ranking, so a human can audit the call in seconds instead of re-reading the CV."
     ]
@@ -156,7 +156,7 @@ export const dasshDeck = [
     "h": "The misread we almost built",
     "finding": "In every early conversation, users asked for agent performance. They actually cared about job performance.",
     "p": [
-      "How many CVs did the screening agent read overnight, which agent is pulling its weight. It sounded like exactly the right question for an AI product, and we came close to shipping a control panel for the machines.",
+      "How many CVs did the screening agent read overnight, which agent is pulling its weight. It sounded like exactly the right question for an agent product, and we came close to shipping a control panel for the machines.",
       "Then we mocked it and put it in front of a recruiter. She glanced at the overnight count, said okay, and every question that followed walked straight past the number: which of these do I need to look at, is my req going to close, if one candidate is wrong it is my name in the room."
     ]
   },
@@ -213,7 +213,7 @@ export const dasshDeck = [
     "h": "The homepage is a daily report",
     "p": [
       "Different every time, because it reflects what changed since you were last there. It answers three questions in order of urgency: what is broken, what needs you, what happened.",
-      "The same report adapts to its reader, dense and numbers-forward for the agency recruiter, a short narrative with health cards for the manager, and it reaches you where you already are: in the app, as a morning email, as a WhatsApp message from Stella."
+      "The same report adapts to its reader, dense and numbers-forward for the agency recruiter, a short narrative with health cards for the manager, and it reaches you where you already are: in the app, as a morning email, as a WhatsApp message from Dassh."
     ],
     "fig": "dailyReport",
     "figure": "The briefing that writes itself: broken first, decisions second, momentum last, regenerated since your last visit.",
@@ -240,16 +240,16 @@ export const dasshDeck = [
     "type": "figure",
     "h": "Pilots, live at real enterprises",
     "p": [
-      "Zydus Lifesciences, Increff, Cholamandalam, HCPL, Atomberg and Tophire ran live hiring on Stella, across pharma, retail, manufacturing and insurance, all inside each customer's existing ATS."
+      "Zydus Lifesciences, Increff, Cholamandalam, HCPL, Atomberg and Tophire ran live hiring on Dassh, across pharma, retail, manufacturing and insurance, all inside each customer's existing ATS."
     ],
     "image": "/figures/dassh/clients.jpg",
-    "figure": "The enterprises running live hiring on Stella.",
+    "figure": "The enterprises running live hiring on Dassh.",
     "layout": "media"
   },
   {
     "type": "impact",
     "mark": "Impact",
-    "h": "The execution load moved to Stella. The judgement stayed human.",
+    "h": "The execution load moved to Dassh. The judgement stayed human.",
     "metrics": [
       {
         "value": "2 days",
@@ -274,7 +274,7 @@ export const dasshDeck = [
     "h": "The rule the pilots left us: job performance is the end, agent performance is the means.",
     "p": [
       "Every surface leads with the outcome a person is accountable for, and the machines surface only when something needs tuning. That rule came from watching real recruiters work, not from a design review.",
-      "I would still sequence the four experiences more ruthlessly: take Stella all the way to excellent and let it pull the others, rather than advancing all four at once."
+      "I would still sequence the four experiences more ruthlessly: take the chat all the way to excellent and let it pull the others, rather than advancing all four at once."
     ],
     "kind": "outcome"
   },
@@ -282,7 +282,7 @@ export const dasshDeck = [
     "type": "closing",
     "h": "Thank you",
     "p": [
-      "Stella went from zero to running live hiring in a year. The execution moved to the agent. The judgement, the interview and the decision stayed exactly where they belong, with people."
+      "Dassh went from zero to running live hiring in a year. The execution moved to the agent. The judgement, the interview and the decision stayed exactly where they belong, with people."
     ],
     "kind": "thanks"
   }
