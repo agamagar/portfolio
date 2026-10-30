@@ -3642,6 +3642,34 @@ const caseStudies = {
         divider: true,
       },
       {
+        h: "Talking to the lead",
+        tldr: "Dassh now leads eight specialists, but the recruiter only ever talks to Dassh: one Composer, six things you can say, and a plan on screen before anything changes.",
+        p: [
+          "Once Dassh became a lead with a team of eight specialists under it, Screening and Call among them [CONFIRM: when this lead-agent redesign happened, 2026 after the 2025 engagement?], every specialist could have had its own chat. The spec keeps one voice instead. The recruiter talks only to Dassh, and Dassh routes the work, quotes the specialist whose view matters and reports back. Four separate inputs in the product (the chat composer, the chat input, the start field and the start-a-job box) collapse into one Composer, and it is the only way to talk to Dassh from anywhere. It knows where you are and shows it as a removable chip, so \"why is this late?\" on a job page means that job. Cmd+K opens it on any page, every decision card and widget carries \"Ask about this\", and the home's empty state is the Composer itself.",
+          "What a recruiter can say fits in six intents. Ask why (\"Why is Senior PM late?\") gets cited reasons. Instruct (\"Pause calls on Senior PM\") gets a plan, then the action. Change autonomy (\"Ask me before any rejection\") shows which stages change. Start a job drafts the brief and opens it. Find returns a table of candidates. Decide acts on the matching decision card, with Undo.",
+          "The rule that carries the most weight is plans before actions. Anything that changes state shows its consequence first, in the same shape as a decision card: \"Pause calls on Senior PM: stops 6 scheduled calls, Call goes idle on this job. Resume any time.\" Internal changes run on Confirm and offer Undo. Invites, rejections and emails need an explicit Confirm and wait in Next with a veto window. When an instruction sounds lasting, Dassh asks whether to save it as a rule for all jobs, this job, or just now, and rules that change autonomy update the team map, so the two never disagree.",
+          "The voice holds the same line. Dassh speaks as \"I\", names specialists by role, leads with numbers and cites every claim to a CV, a call or a scorecard. It never says \"As an AI\" and never pads with apology. When it does not know, it says so and offers the next step: \"I can ask Call to check with the reference.\"",
+          "We tested the spec against two existing screens, the home zero state and a chat thread, rebuilt on a shared canvas at 1.41% and 1.29% pixel mismatch against the Figma originals. The audit was blunt. The home put three feature tiles in competition with the Composer, and six saved chats all carried the same name, Conduct interviews. The thread created a job with no plan, no Confirm and no Undo, showed its work as loose messages with no Stop, and showed a calling stage at 5 of 10 for a job that had only just been drafted. The recommended versions turn the tiles into intent presets under one Composer, name chats by role and city, and let the thread show one step list with a Stop, quote Screening, then show a plan to open the job.",
+        ],
+        ul: [
+          "One Composer replaces four inputs, with a context chip and Cmd+K from anywhere",
+          "Six intents: ask why, instruct, change autonomy, start a job, find, decide",
+          "Every state change shows a plan first, and external actions need an explicit Confirm and keep a veto window",
+          "Lasting instructions become standing rules for all jobs, one job, or just now",
+          "Still open: whether the command palette merges into the Composer, whether the panel stays docked on wide screens, and whether a recruiter can address a specialist directly while the reply still comes through Dassh",
+        ],
+        // The chat flow pilot (Doop canvas kckfn9aCW4, page Chat flow): Original | Recommended, zero state then thread
+        collage: [
+          { src: "/figures/dassh/chat-home-before.jpg", w: "full" },
+          { src: "/figures/dassh/chat-home-after.jpg", w: "full" },
+          { src: "/figures/dassh/chat-thread-before.jpg", w: "full" },
+          { src: "/figures/dassh/chat-thread-after.jpg", w: "full" },
+        ],
+        figure:
+          "The pilot, before and after. Each pair shows the screen as designed, with numbered pins on the audit findings, then the recommended proposal. On the home, three tiles become one Composer with intent presets. In the thread, loose messages become one step list, a quote from Screening and a plan to confirm.",
+        divider: true,
+      },
+      {
         h: "A design system that wrote its own code",
         tldr: "To ship four experiences with a tiny team, I built a design system wired to an engine that turned approved Figma frames into production React.",
         p: [
