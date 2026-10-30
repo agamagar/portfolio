@@ -3514,31 +3514,42 @@ const caseStudies = {
     accent: "#EA580C",
     deck: dasshDeck,
     eyebrow: "Dassh · Case study",
-    title: "Building a B2B SaaS from the ground up",
-    meta: "Design consultant & Director · Dassh · 2025",
+    // 30 Oct 2026: the opening follows Figma Portfolio 2026 page Dassh (1772:44587, draft 1772:55682): hero, the
+    // noise headline, cognitive load to clarity, the problem statement, then the journey from a dashboard to a
+    // Dassh-Board. Built on the CaratLane / Schedule system (slideLayout: label left, statement right).
+    // Name: Dassh everywhere, "formerly Stella" once. The 2026 redesign is a prototype, not shipped.
+    slideLayout: true,
+    expandFigures: true,
+    title: "Hiring is mostly noise,\nDassh digs out what needs you",
+    meta: "Design consultant & Director · Dassh · 2025, home redesign 2026",
     // Compact PDF cut (?cut=compact).
     pdfSections: [
       "Context & problem",
+      "Problem statement",
       "My role",
-      "The bet: an AI employee, not another tool",
+      "The bet: a teammate, not another tool",
       "Designing the call",
       "What the pilots changed",
       "Asking about the day, not the dashboard",
       "The homepage is a daily report",
+      "The Dassh-Board",
       "From pilots to a company",
       "Outcomes & reflection",
     ],
-    heroFig: "dasshSlide",
+    // real product: the v3 home draft (Radical layout), captured headless from Build home 2026-09-29/site, sample data
+    heroImage: "/figures/dassh/dassh-board-home.jpg",
+    heroAlt: "The Dassh home: a written summary of the day, the Composer, four anchors and the jobs list",
     cover: "Dassh",
     lead:
-      "Dassh builds Stella, an AI recruiter that does the execution work of hiring: screening CVs, calling and messaging candidates, running first-round interviews, and keeping the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build the product from zero, the four experiences it ships as, the agent system underneath, including the conversation design of the calls Stella makes to real candidates, and the design system that turned Figma files into production code. Stella now runs live hiring for enterprises like Zydus Lifesciences and Increff. Over 2025 the work took it from zero to those pilots and, as the year closed, a ₹1.2 crore raise.",
+      "A recruiter's day fills with CVs, calls, messages, scheduling and status chasing. Dassh, formerly Stella, takes that execution work on: it screens CVs, calls and messages candidates, runs first-round interviews and keeps the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build it from zero: the four experiences it ships as, the agent system underneath, the conversation design of the calls it makes to real candidates, and the design system that turned Figma files into production code. Over 2025 the work took it from zero to live hiring at enterprises like Zydus Lifesciences and Increff and, as the year closed, a ₹1.2 crore raise. In 2026 I redesigned the home around a team of agents that Dassh leads. That redesign is a prototype, not shipped.",
     sections: [
       {
         h: "Context & problem",
-        tldr: "Most of recruiting is not judgement, it is execution, and the execution load is what breaks hiring.",
+        tldr: "Hiring is mostly noise. At first it looked like a cognitive load problem. As we looked deeper, it became a clarity problem.",
         p: [
           "Sit with any recruiter and the same pattern shows up. A role gets posted and within a day or two the inbox is buried. At Zydus Lifesciences, one posting pulled a flood of CVs across multiple roles within one to two days. At Increff, a tech hiring push brought in more than 3,000 resumes in a single week. The people meant to evaluate that talent were instead drowning in the mechanics of moving it: screening, ranking, chasing candidates for availability, scheduling, taking notes, updating the ATS.",
           "We framed the problem as a split. About 70 percent of recruiting is execution, the repeatable work of screening, calling, scheduling and record-keeping. The other 30 percent, the final interview, the contextual read, the actual hiring decision, is where human judgement earns its keep. The trouble is that the execution load is so heavy it crowds the judgement out. Recruiters become bottlenecks, panels go unavailable, good candidates go cold, and interview-to-offer conversion suffers.",
+          "That was the cognitive load reading, and it was true as far as it went. The pilots showed a deeper problem. Recruiters were not short of information, they were short of a clear view of it. Our first dashboard showed everything and answered nothing, and the recruiter who asked how many CVs an agent had read was really asking whether her role would close. The rest of this story is that shift, from less work to a clearer view of the work.",
         ],
         ul: [
           "Zydus: a large CV inflow within one to two days of posting, decentralised hiring, and an ATS talent pool sitting underused",
@@ -3551,6 +3562,27 @@ const caseStudies = {
         divider: true,
       },
       {
+        h: "Problem statement",
+        tldr: "A digital surface that streamlines noise.",
+        p: [
+          "Everything that fills a recruiter's day arrives as noise: a CV, a missed call, a message, a reschedule, a status someone has to chase. The surface has one job. It takes all of that in and hands back only what needs a person: what is broken, what is waiting on you, and what moved. The rest is work the agents do, and it stays one tap deep for the day something goes wrong.",
+        ],
+      },
+      {
+        h: "From a dashboard to a Dassh-Board",
+        nav: "The journey",
+        tldr: "The journey from a dashboard to a Dassh-Board ran through three homes, and each one answered the question the last one missed.",
+        p: [
+          "The home is where the clarity problem shows first, so it is the thread through this case.",
+        ],
+        ul: [
+          "2025, the dashboard: every metric, every agent, every pipeline at once. It looked complete and left the reader to do the reading",
+          "2025, the daily report: a generated briefing, broken first, decisions second, momentum last. This is the version the pilots ran on",
+          "2026, the Dassh-Board: Dassh leads a team of eight specialists, the home composes itself in front of you, and the decisions that need you sit on top as a stack of cards. A prototype, not shipped",
+        ],
+        divider: true,
+      },
+      {
         h: "My role",
         tldr: "Design consultant and director: I owned product design from zero and helped turn pilots into a company.",
         p: [
@@ -3559,16 +3591,17 @@ const caseStudies = {
         ],
       },
       {
-        h: "The bet: an AI employee, not another tool",
-        tldr: "We deliberately rejected building one more recruiting dashboard and designed Stella as a teammate you hire, not a tool you operate.",
+        h: "The bet: a teammate, not another tool",
+        nav: "The bet",
+        tldr: "We deliberately rejected building one more recruiting dashboard and designed Dassh as a teammate you hire, not a tool you operate.",
         p: [
-          "The obvious version of this product is a dashboard with AI features bolted on, a smarter ATS. We killed that direction early. The market is full of tools that give recruiters more buttons to push, and more buttons is the opposite of the problem. The execution load does not drop when you add a feature, it drops when someone else does the work.",
-          "So we framed Stella as an AI employee, not an automation tool. The line we kept coming back to put it plainly: recruiters do not need another tool, they need a teammate. You do not configure Stella so much as brief her, the way you brief a new hire: tell her the role, hand her the criteria, point her at the candidates. She works continuously, goes live in about a day or two, runs several roles at once, and evaluates every candidate the same way. The framing was not a tagline, it set the design bar. Every screen had to read like working with a capable colleague, not operating software. Where a normal SaaS would show a settings panel, we showed a conversation.",
+          "The obvious version of this product is a dashboard with smart features bolted on, a smarter ATS. We killed that direction early. The market is full of tools that give recruiters more buttons to push, and more buttons is the opposite of the problem. The execution load does not drop when you add a feature, it drops when someone else does the work.",
+          "So we framed Dassh as an employee, not an automation tool. The line we kept coming back to put it plainly: recruiters do not need another tool, they need a teammate. You do not configure Dassh so much as brief it, the way you brief a new hire: tell it the role, hand it the criteria, point it at the candidates. It works continuously, goes live in about a day or two, runs several roles at once, and evaluates every candidate the same way. The framing was not a tagline, it set the design bar. Every screen had to read like working with a capable colleague, not operating software. Where a normal SaaS would show a settings panel, we showed a conversation.",
         ],
         split: "media",
         image: "/figures/dassh/stella-chat.jpg",
         figure:
-          "Stella as a teammate: the conversational home where a hiring manager briefs a role instead of filling out a form.",
+          "Dassh as a teammate: the conversational home where a hiring manager briefs a role instead of filling out a form.",
         divider: true,
       },
       {
@@ -3576,11 +3609,11 @@ const caseStudies = {
         tldr: "The same hiring data, surfaced as four purpose-built experiences, because a founder, an agency recruiter, a manager and a candidate do not want the same product.",
         p: [
           "Hiring is not one user. The founder who wants to ask a question, the agency recruiter living in the product eight hours a day, the manager checking in between meetings, and the candidate on the other end all think differently. Rather than ship one interface and water it down for everyone, I designed four, all reading from the same underlying data and all anchored to the same atomic unit, the job.",
-          "Stella is the chat-first experience: full screen, almost no chrome, the conversation is the interface. The agency view is the dense power-user surface: tables, filters, kanban, bulk actions, built for speed. The manager view is summary-first, the system writes the first thing you see, with green, amber and red health signals so a glance is enough. The candidate experience is a light portal plus the messages, calls and interviews the agents run, designed to feel like texting a helpful person rather than navigating a portal. Two rules hold that last surface together: density follows the audience, the operator needs the detail but the candidate only needs the meaning, so their components distil rather than display; and wherever a candidate meets Stella, app, email, WhatsApp or a call, it is the same voice carrying one continuing conversation.",
+          "The chat is the first: full screen, almost no chrome, the conversation is the interface. The agency view is the dense power-user surface: tables, filters, kanban, bulk actions, built for speed. The manager view is summary-first, the system writes the first thing you see, with green, amber and red health signals so a glance is enough. The candidate experience is a light portal plus the messages, calls and interviews the agents run, designed to feel like texting a helpful person rather than navigating a portal. Two rules hold that last surface together: density follows the audience, the operator needs the detail but the candidate only needs the meaning, so their components distil rather than display; and wherever a candidate meets Dassh, app, email, WhatsApp or a call, it is the same voice carrying one continuing conversation.",
         ],
         fig: "stellaOnboarding",
         figure:
-          "Onboarding is a conversation: Stella greets you and guides setup, connect the ATS, set preferences, pick a plan, ticking the checklist off as you go.",
+          "Onboarding is a conversation: Dassh greets you and guides setup, connect the ATS, set preferences, pick a plan, ticking the checklist off as you go.",
         divider: true,
       },
       {
@@ -3588,10 +3621,10 @@ const caseStudies = {
         tldr: "The deepest design problem was the calling agent, and we earned it with research: persona-tuned call flows at Zydus, and a 43-call field study that found the calls dying inside our own system, not at the candidate's no.",
         p: [
           "Of all the agents, the calling agent carried the hardest problem, and it is not a modelling problem. A first-round phone screen looks like the most automatable object in hiring: short, repetitive, the same few fitment questions every time. Now take the other end of the line. The candidate is often answering in their second or third language, from a noisy room or a shared phone, and they need the job far more than the system needs them. That power asymmetry changes everything downstream: tone, pacing, what counts as an acceptable failure. The recruiter wants a fast filter, and designed carelessly, that filter becomes a fast, cheap, multilingual machine for humiliating people at scale. So we made a deliberate call: on this one surface, the candidate, not the recruiter, is the primary user.",
-          "The first lessons came from running real calls at Zydus, where the roles that needed AI calling most were factory workers. Pickup was the first wall, and it fell to timing, not pitch: reachability turned out to be persona-dependent, a factory worker and a mid-manager answer at different hours, and pickup improved substantially once calls moved to each persona's hour (directional, the exact lift was not logged). Completion was the real nightmare, and it only cracked when we customised the conversation flow per persona: some people need to be greeted and warmed up first, others want the point straight away, and one script cannot serve both. Because the hires were Ahmedabad-based, the flows also had to carry little bits of Gujarati woven into the conversation, since that is how the callers actually speak. The lesson that stuck, and it became a house rule: the agent is only as good as the user research behind it.",
-          "So the research went formal, and I owned it end to end, the research and the UX; the engineers owned the calling stack. The base ran to about 300 people across the pilots. The sharpest instrument inside it was a field study for a tech-recruiting deployment that treated every candidate as a user of the calling experience: a 43-call log over ten days, every outcome coded into six candidate-experience categories, every recruiter note kept. The headline finding inverted our assumption. The dominant failure mode was not candidates saying no, it was the system breaking: about a quarter of the calls, 10 of the 43, connected and then died before a single question was asked. The mechanism is latency. Production voice agents respond in 1.4 to 1.7 seconds where a human expects a gap of roughly 200 milliseconds, and past about a second of dead air people decide the call is broken and hang up. The log held sharper injuries too: one candidate was dialled 3 times in a single week, and another told us the brand 'always calls but never follows up with real opportunities', which in a market averaging 16.8 spam calls per person per month is exactly how a recruiter becomes spam. The highest-leverage fix was never persuasion; it was making the system stop collapsing on the people who did answer.",
-          "Those findings set the call's design contract, the decisions no default is allowed to make. The agent discloses it is an AI early and plainly (which India's telecom rules now mandate for AI calls in any case), asks the candidate's preferred language, and switches fully to it, because real callers code-switch mid-sentence and rarely stay in one language. The structure is agent-led: a small set of concrete, answerable questions, one at a time, with the load-bearing facts, experience, location, availability, confirmed explicitly. The opening frames the stakes down, a quick fitment check rather than a pass or fail interrogation, because fear is what makes people freeze or hang up. And repair is where the craft went: misrecognition and dead air are normal, not exceptional, so the agent recovers out loud instead of going silent, rephrases, offers an easier way to answer, and the repair path is designed three failures deep, because the third failure is where systems abandon people. Every call closes the same way regardless of fitment: what happens next, when, and how to reach a human.",
-          "Customisation was the deep second half: an HR person has to be able to tune this call without being a conversation designer, and without being able to break the parts that protect the person on the other end. The resolution was a split. The recruiter owns what the call asks: the questions, the criteria checklist with each item tagged Essential, Valuable or Not preferred, the persona-fit of the flow, the language mix. The system owns how the call behaves: disclosure, pacing, confirmation, repair, the respectful close. You can make Stella ask about a forklift certification; you cannot make her interrogate someone.",
+          "The first lessons came from running real calls at Zydus, where the roles that needed automated calling most were factory workers. Pickup was the first wall, and it fell to timing, not pitch: reachability turned out to be persona-dependent, a factory worker and a mid-manager answer at different hours, and pickup improved substantially once calls moved to each persona's hour (directional, the exact lift was not logged). Completion was the real nightmare, and it only cracked when we customised the conversation flow per persona: some people need to be greeted and warmed up first, others want the point straight away, and one script cannot serve both. Because the hires were Ahmedabad-based, the flows also had to carry little bits of Gujarati woven into the conversation, since that is how the callers actually speak. The lesson that stuck, and it became a house rule: the agent is only as good as the user research behind it.",
+          "So the research went formal, and I owned it end to end, the research and the UX; the engineers owned the calling stack. The base ran to about 300 people across the pilots. The sharpest instrument inside it was a field study for a tech-recruiting deployment that treated every candidate as a user of the calling experience: a 43-call log over ten days, every outcome coded into six candidate-experience categories, every recruiter note kept. The headline finding inverted our assumption. The dominant failure mode was not candidates saying no, it was the system breaking: about a quarter of the calls, 10 of the 43, connected and then died before a single question was asked. The mechanism is latency. Production voice agents respond in 1.4 to 1.7 seconds where a human expects a gap of roughly 200 milliseconds, and past about a second of dead air people decide the call is broken and hang up. The log held sharper injuries too: one candidate was dialled 3 times in a single week, and another told us the brand 'always calls but never follows up with real opportunities', which in a market averaging 16.8 spam calls per person per month is exactly how a recruiter becomes spam. The fix that mattered most was never persuasion. It was making the system stop collapsing on the people who did answer.",
+          "Those findings set the call's design contract, the decisions no default is allowed to make. The agent says early and plainly that it is not a person (which India's telecom rules now require of such calls in any case), asks the candidate's preferred language, and switches fully to it, because real callers code-switch mid-sentence and rarely stay in one language. The structure is agent-led: a small set of concrete, answerable questions, one at a time, with the load-bearing facts, experience, location, availability, confirmed explicitly. The opening frames the stakes down, a quick fitment check rather than a pass or fail interrogation, because fear is what makes people freeze or hang up. And repair is where the craft went: misrecognition and dead air are normal, not exceptional, so the agent recovers out loud instead of going silent, rephrases, offers an easier way to answer, and the repair path is designed three failures deep, because the third failure is where systems abandon people. Every call closes the same way regardless of fitment: what happens next, when, and how to reach a human.",
+          "Customisation was the deep second half: an HR person has to be able to tune this call without being a conversation designer, and without being able to break the parts that protect the person on the other end. The resolution was a split. The recruiter owns what the call asks: the questions, the criteria checklist with each item tagged Essential, Valuable or Not preferred, the persona-fit of the flow, the language mix. The system owns how the call behaves: disclosure, pacing, confirmation, repair, the respectful close. You can make Dassh ask about a forklift certification. You cannot make it interrogate someone.",
           "The output side holds the same line. The call writes structured facts back to the pipeline, and where it produces a fitment read, that read has to be explainable and contestable, because nobody should be silently filtered out by an accent the model handled poorly. And this is the part I can say plainly: it all shipped. The dead-air recovery, the dedup lock, the concurrency cap tied to backend throughput, the compliance stack with disclosure built in. The number moved with it: of the calls that connect, 71% now complete the whole screen, up from 35 to 40% before the work. The pilot rates are a separate measure and stay separate: about 4 in 10 dials reached a human at all. The one piece still directional is the equity evaluation, disaggregating outcomes by language and dialect, which waits on the next instrumented run.",
         ],
         ul: [
@@ -3609,8 +3642,8 @@ const caseStudies = {
         h: "What the pilots changed",
         tldr: "Users kept asking for agent performance. They actually cared about job performance. Catching that misread reshaped the whole reporting layer.",
         p: [
-          "The strongest input was never a design review, it was watching Stella run live roles at Zydus and Increff. Putting an AI recruiter in front of real candidates and real recruiters surfaced things no mockup would. The clearest example was a misread we almost built.",
-          "In every early conversation, users asked for agent performance: how many CVs did the screening agent read overnight, how accurate is it, which agent is pulling its weight. It sounded like exactly the right question for an AI product, the metrics already existed in our framework, and honestly we felt the same pull, because a wall of live counters looks like proof the thing works. We came close to shipping a control panel for the machines.",
+          "The strongest input was never a design review, it was watching Dassh run live roles at Zydus and Increff. Putting an automated recruiter in front of real candidates and real recruiters surfaced things no mockup would. The clearest example was a misread we almost built.",
+          "In every early conversation, users asked for agent performance: how many CVs did the screening agent read overnight, how accurate is it, which agent is pulling its weight. It sounded like exactly the right question for an agent product, the metrics already existed in our framework, and honestly we felt the same pull, because a wall of live counters looks like proof the thing works. We came close to shipping a control panel for the machines.",
           "Then we mocked it and put it in front of a recruiter. She glanced at the overnight screening count, said okay, and every question that followed walked straight past the number: which of these do I actually need to look at, is my req going to close, if I forward this shortlist and one candidate is wrong it is my name in the room, not the agent's. That was the tell. She was asking about the machine because no tool had ever shown her the job. Agent performance was the doorway; job performance was the room.",
           "The correction became a rule we still design by: job performance is the end, agent performance is the means. Every surface now leads with the outcome the person is accountable for, is this role going to close, well, fast and fairly, in their own register, and agent activity is demoted to a drill-down you open only when a job is off-track and you need to know which agent to tune. Nobody checks the calling agent's connect rate because it is Tuesday; they check it because a role went cold and they want to know why. The founder never sees an agent counter at all. The recruiter gets the agent's reasoning behind each shortlisted candidate, the trust layer one tap in. And the candidate sees no machine anywhere, just her status, a real date, and a human behind the decision.",
         ],
@@ -3634,7 +3667,7 @@ const caseStudies = {
         tldr: "Instead of a dashboard you have to read, the homepage is a generated briefing: what is broken, what needs you, what happened.",
         p: [
           "Most hiring software opens to a dashboard and leaves you to do the reading. I designed the Dassh homepage as a generated report instead, different every time because it reflects what actually changed since you were last there. It answers three questions in order of urgency: what is broken, a stalled pipeline or a failing agent, comes first; what needs you, the decisions only a human can make, like approving a shortlist, comes next; and what happened, the momentum, comes last. This is the agent-versus-job correction from the pilots, shipped: the report is about the jobs and the people, and the machines only surface when something needs tuning.",
-          "The same report adapts to the reader. The agency recruiter gets it dense and numbers-forward. The manager gets it as a short written narrative with health cards. In chat, Stella simply tells you, and can act on it in the same breath. It reaches people where they already are, in the app, as a morning email, and as a WhatsApp message from Stella.",
+          "The same report adapts to the reader. The agency recruiter gets it dense and numbers-forward. The manager gets it as a short written narrative with health cards. In chat, Dassh simply tells you, and can act on it in the same breath. It reaches people where they already are, in the app, as a morning email, and as a WhatsApp message from Dassh.",
         ],
         fig: "dailyReport",
         figure:
@@ -3642,13 +3675,27 @@ const caseStudies = {
         divider: true,
       },
       {
+        h: "The Dassh-Board",
+        tldr: "In the 2026 redesign a team of agents composes the home in front of you, and the decisions that need you arrive as a stack of cards.",
+        p: [
+          "The daily report told you what happened. The redesign shows who did it. The direction was set on 30 October 2026. The primary user is the recruiter, who triages, wants density and works from the keyboard. The agents are a team with visible handoffs, not one assistant and not an invisible tool. Dassh leads eight specialists: the six already in code, Screening, Call, Interviews, Note-taker, Assessments and Scheduler, plus Sourcing and Analyst.",
+          "The home reads in a fixed order. Four anchors come first and never animate: Waiting on you, Roles at risk, Interviews this week, and Time to fill against the goal. Tap one and the home filters to it. Then Now, the decisions waiting on you, pinned as a stack of cards. Then a timeline. Past is a \"Done for you\" log grouped by job. Next holds only what cannot be taken back or leaves the building, invites, rejections and emails, with a window to veto it. Internal work just happens and shows up in Past with Undo.",
+          "The card is where the team shows. When two specialists read a candidate differently, the card says so instead of averaging them away. In the prototype, Interviews sees the best panel score of the month while Screening sees a candidate asking 12% above the band, and a Dassh analysis weighs both: the gap is pay, not fit. The recruiter answers from the keyboard, A to approve, E to edit, R to reject, S to skip, Z to undo.",
+          "The look holds the same restraint. The home is near monochrome, colour is kept for status, the summary is a sentence with its facts set as chips, and Undo is the only filled button. It is a prototype, not shipped.",
+        ],
+        // beside the statement, as the Figma board pairs its photos with the statement (cs-sec--side)
+        sideImage: "/figures/dassh/decision-stack.jpg",
+        sideAlt: "A decision in the Now stack, from the prototype with sample data: Interviews and Screening disagree about an offer, a Dassh analysis weighs both, and the recruiter acts from the keyboard",
+        divider: true,
+      },
+      {
         h: "Talking to the lead",
         tldr: "Dassh now leads eight specialists, but the recruiter only ever talks to Dassh: one Composer, six things you can say, and a plan on screen before anything changes.",
         p: [
-          "Once Dassh became a lead with a team of eight specialists under it, Screening and Call among them [CONFIRM: when this lead-agent redesign happened, 2026 after the 2025 engagement?], every specialist could have had its own chat. The spec keeps one voice instead. The recruiter talks only to Dassh, and Dassh routes the work, quotes the specialist whose view matters and reports back. Four separate inputs in the product (the chat composer, the chat input, the start field and the start-a-job box) collapse into one Composer, and it is the only way to talk to Dassh from anywhere. It knows where you are and shows it as a removable chip, so \"why is this late?\" on a job page means that job. Cmd+K opens it on any page, every decision card and widget carries \"Ask about this\", and the home's empty state is the Composer itself.",
+          "Once Dassh became a lead with a team of eight specialists under it, Screening and Call among them, every specialist could have had its own chat. The spec keeps one voice instead. The recruiter talks only to Dassh, and Dassh routes the work, quotes the specialist whose view matters and reports back. Four separate inputs in the product (the chat composer, the chat input, the start field and the start-a-job box) collapse into one Composer, and it is the only way to talk to Dassh from anywhere. It knows where you are and shows it as a removable chip, so \"why is this late?\" on a job page means that job. Cmd+K opens it on any page, every decision card and widget carries \"Ask about this\", and the home's empty state is the Composer itself.",
           "What a recruiter can say fits in six intents. Ask why (\"Why is Senior PM late?\") gets cited reasons. Instruct (\"Pause calls on Senior PM\") gets a plan, then the action. Change autonomy (\"Ask me before any rejection\") shows which stages change. Start a job drafts the brief and opens it. Find returns a table of candidates. Decide acts on the matching decision card, with Undo.",
           "The rule that carries the most weight is plans before actions. Anything that changes state shows its consequence first, in the same shape as a decision card: \"Pause calls on Senior PM: stops 6 scheduled calls, Call goes idle on this job. Resume any time.\" Internal changes run on Confirm and offer Undo. Invites, rejections and emails need an explicit Confirm and wait in Next with a veto window. When an instruction sounds lasting, Dassh asks whether to save it as a rule for all jobs, this job, or just now, and rules that change autonomy update the team map, so the two never disagree.",
-          "The voice holds the same line. Dassh speaks as \"I\", names specialists by role, leads with numbers and cites every claim to a CV, a call or a scorecard. It never says \"As an AI\" and never pads with apology. When it does not know, it says so and offers the next step: \"I can ask Call to check with the reference.\"",
+          "The voice holds the same line. Dassh speaks as \"I\", names specialists by role, leads with numbers and cites every claim to a CV, a call or a scorecard. It never talks about what it is and never pads with apology. When it does not know, it says so and offers the next step: \"I can ask Call to check with the reference.\"",
           "We tested the spec against two existing screens, the home zero state and a chat thread, rebuilt on a shared canvas at 1.41% and 1.29% pixel mismatch against the Figma originals. The audit was blunt. The home put three feature tiles in competition with the Composer, and six saved chats all carried the same name, Conduct interviews. The thread created a job with no plan, no Confirm and no Undo, showed its work as loose messages with no Stop, and showed a calling stage at 5 of 10 for a job that had only just been drafted. The recommended versions turn the tiles into intent presets under one Composer, name chats by role and city, and let the thread show one step list with a Stop, quote Screening, then show a plan to open the job.",
         ],
         ul: [
@@ -3685,20 +3732,20 @@ const caseStudies = {
         h: "From pilots to a company",
         tldr: "The product was also the pitch: real enterprise pilots became the evidence that built a team and raised a round.",
         p: [
-          "Because I was a director as much as a designer, the product and the company were the same work. The enterprise pilots were not just customers, they were proof. Zydus moved to real-time shortlisting, engagement and first-round interviews within two days of a posting, with the AI working inside their existing ATS, which helped them centralise hiring and stand up a global capability centre. Increff put Stella against that 3,000-resume week and got instant screening, stack-ranked candidates, and automated outreach over WhatsApp and AI calls.",
+          "Because I was a director as much as a designer, the product and the company were the same work. The enterprise pilots were not just customers, they were proof. Zydus moved to real-time shortlisting, engagement and first-round interviews within two days of a posting, with Dassh working inside their existing ATS, which helped them centralise hiring and stand up a global capability centre. Increff put Dassh against that 3,000-resume week and got instant screening, stack-ranked candidates, and automated outreach over WhatsApp and automated calls.",
           "Those stories did the convincing. They anchored the deck, the one-pagers and the fundraising conversations, and the named logos, Zydus, Increff, Cholamandalam, HCPL, Atomberg, Tophire, became the credibility the company raised on. As the year closed, that evidence turned into a ₹1.2 crore round, and the company that started as four people grew to around twenty.",
         ],
         split: "media",
         image: "/figures/dassh/clients.jpg",
         figure:
-          "The enterprises running live hiring on Stella, the proof the deck and the fundraise were built on.",
+          "The enterprises running live hiring on Dassh, the proof the deck and the fundraise were built on.",
         divider: true,
       },
       {
         h: "Outcomes & reflection",
         tldr: "Live with named enterprises, faster and more consistent hiring on a tiny team, and one honest thing I would do differently.",
         p: [
-          "Stella went from an idea to a product running live hiring for enterprises across pharma, retail, manufacturing and insurance. The honest headline is concrete even where it is qualitative: shortlisting, engagement and first-round interviews compressed from weeks to about two days, thousands of resumes handled without adding recruiters, and evaluation made consistent across recruiters and locations, all inside the customer's existing ATS.",
+          "Dassh went from an idea to a product running live hiring for enterprises across pharma, retail, manufacturing and insurance. The honest headline is concrete even where it is qualitative: shortlisting, engagement and first-round interviews compressed from weeks to about two days, thousands of resumes handled without adding recruiters, and evaluation made consistent across recruiters and locations, all inside the customer's existing ATS.",
         ],
         ul: [
           "Live enterprise pilots: Zydus Lifesciences, Increff, Cholamandalam, HCPL, Atomberg, Tophire",
@@ -3711,12 +3758,13 @@ const caseStudies = {
         h: "What I would revisit",
         tldr: "Shipping four experiences at once was the right strategic bet, but it stretched a tiny team thin.",
         p: [
-          "Four experiences in parallel was the right call for the pitch and the wrong call for depth. Some surfaces went deep while others stayed shallow longer than I would have liked. If I did it again I would sequence the four more ruthlessly: take one experience, almost certainly Stella, all the way to excellent and let it pull the others, rather than advancing all four at once.",
+          "Four experiences in parallel was the right call for the pitch and the wrong call for depth. Some surfaces went deep while others stayed shallow longer than I would have liked. If I did it again I would sequence the four more ruthlessly: take one experience, almost certainly the chat, all the way to excellent and let it pull the others, rather than advancing all four at once.",
           "Wearing both hats taught me the same lesson from the company side. Being the designer and a director at once meant I sometimes optimised for the pitch when I should have optimised for the product. Knowing which hat to wear, and when, is the part of this I am still sharpening.",
         ],
       },
     ],
     todo: [
+      "2026-10-30: opening restructured to Figma Portfolio 2026 page Dassh (1772:44587 / 1772:55682): slideLayout, real v3 home capture as hero (was the Dropbox Dash slide, dasshSlide, now unused here), Context & problem carries the board's noise / cognitive load to clarity lines, new Problem statement and journey sections, new The Dassh-Board section (sources: memory dassh-product-direction, dashboard-visual-reference.md, the v3 prototype). Stella renamed to Dassh on this page (\"formerly Stella\" once, in the lead); the deck, PRD tab and narration still say Stella. Sauer gate 0 FAIL",
       "Pilot-outcome metrics with baselines: time-to-hire reduction, cost saving, interview-to-offer lift (still open)",
       "Marketing claims ('100+ CVs in about 3 minutes', 'about 95% accuracy') DROPPED entirely per Agam 2026-07-05; do not reintroduce",
       "Client names CONFIRMED for public use per Agam 2026-07-05, but mention SPARINGLY: full six-name roster appears once (From pilots to a company + outcomes list); lead trimmed to Zydus + Increff; story mentions keep only where load-bearing",
