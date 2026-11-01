@@ -3077,7 +3077,8 @@ const caseStudies = {
         group: "Process",
         tldr: "Nine flows run in code, from Home to the cart to a placed order, then offers, returns and tracking. Every step below is a capture of the build.",
         p: [
-          "Figma shows the path. Code shows whether it holds. So every flow was wired in the build: each control emits a tap, and one graph decides where it leads. The same graph drives the web build, the React Native app and the design canvas, so all three walk the same steps.",
+          // 2 Nov (SD story session): the rebuild line, from the benji draft; 13 components per design-playground docs/schedule/design-dev-sync.md
+          "Figma shows the path. Code shows whether it holds. So I rebuilt the schedule screens as a working prototype, in React for the web and React Native for the phone, on thirteen shared components. It is a rebuild, not Zepto's production code. Every flow was wired in it: each control emits a tap, and one graph decides where it leads. The same graph drives the web build, the React Native app and the design canvas, so all three walk the same steps.",
           "Below, each flow is laid out in tap order, captured from the build at twice its size. Under them, the build itself: pick a flow and tap through it.",
         ],
         fig: "schedWiredFlows",
@@ -3105,6 +3106,8 @@ const caseStudies = {
         tldr: "Eighteen screens made the final cut. Each one is built in code and matches its Figma final to within 3% of pixels.",
         p: [
           "This is the final set: home with the store offline, the cart in every header state, the intro banner that teaches Schedule, and the schedule page from open slots to collapsed shipments. They're the coded versions, captured straight from the build, not mockups.",
+          // 2 Nov (SD story session): the gate mechanism, from the benji draft; 38/38 per design-playground docs/schedule/STATE.md
+          "To keep code honest against design, each one goes through a pixel gate. A script renders the Figma frame at 2x, renders the coded screen headless at 2x, and diffs the two. A screen passes only if at most 3% of its pixels differ. All 38 gated web screens pass.",
         ],
         fig: "schedFinals",
         figBare: true,
