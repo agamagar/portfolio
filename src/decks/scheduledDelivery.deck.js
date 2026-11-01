@@ -1,19 +1,20 @@
 // Presentation deck for the Scheduled Delivery (Zepto) case study.
-// Rebuilt 2026-07-05 to the DOUBLE DIAMOND (Discover / Define / Develop / Deliver),
-// following the flow of the reference deck (Portfolio Landing Page, Figma node
-// 1819-87061): centered cover -> interactive contents -> business goals -> the four
-// D's, each opened by a phase-divider "section start". The reference's orange
-// section headings set the structure; the content is the case study's own material
-// (unchanged), re-slotted into this flow. New connective slides (Overview,
-// Competitors, the three explored directions, Designers Assemble, etc.) are built
-// from the same case-study / PRD material.
+// Reworked 2026-11-01 into TEN CHAPTERS for a five-minute hiring-manager skim. The
+// same array drives the case page ("Deck drives page"), so every slide carries:
+//   chapter  one of the ten chapter ids below
+//   skim     true on the hero slides, one idea and one visual each, headline first
+//   tuck     true on depth material the page folds away
+// Slides with neither flag are deck only (cover, contents, dividers, the spoken
+// connective beats and duplicates of a skim slide). Nothing from the old Double
+// Diamond deck was deleted: every old slide is still here, regrouped.
 //
 // Voice: LOCKED presentation-mode tone (memory: presentation-mode-tone): spoken,
-// contractions, plain words, short beats. The deck is talked, not read. No em-dash,
-// no tilde. Full loosening pass 2026-07-05.
+// contractions, plain words, short beats. No em-dash, no tilde. A claim still open
+// with Agam carries a visible [CONFIRM n]; the numbers match docs/sd-story-notes.md
+// (17 is new, see the hand-over note).
 //
 // Renders through buildSlides / Slide in App.jsx. The `contents` slide links to each
-// section by an `id` on its phase divider and jumps to it in present mode.
+// chapter by the `id` on its phase divider and jumps to it in present mode.
 
 import {
   sdDiscover,
@@ -27,12 +28,22 @@ import {
   sdDeliver,
 } from "./scheduledDelivery.story";
 
+// Pull one story slide by its headline and lay the deck's fields over it. Throws if
+// the story file renames a slide, so a silent drop can't happen.
+const pick = (list, h, extra = {}) => {
+  const s = list.find((x) => x.h === h);
+  if (!s) throw new Error(`scheduledDelivery.deck: no story slide "${h}"`);
+  return { ...s, ...extra };
+};
+
+const divider = (id, n, name, sub) => ({ type: "phaseDivider", id, chapter: id, n, name, sub });
+
 export const scheduledDeck = [
-  // 1 - Cover: the reusable "case study" title archetype — native/coded to match
-  // the reference deck's title frame (Figma Portfolio-Landing-Page node 1773-446):
-  // white slate, coral flagged "CASE STUDY" eyebrow up top, serif title centred.
+  // Cover: the reusable "case study" title archetype (Figma Portfolio-Landing-Page
+  // node 1773-446): white slate, coral flagged eyebrow, serif title centred.
   {
     type: "title",
+    chapter: "hook",
     frame: "casestudy",
     eyebrow: "Case study",
     title: "Bringing Scheduled Delivery to a 10-minute platform",
@@ -40,25 +51,79 @@ export const scheduledDeck = [
     lead: null,
   },
 
-  // 2 - Contents (interactive index; each row jumps to its section). Uses the global
-  // "index" archetype: the white-slate + coral flagged-eyebrow treatment shared with
-  // the title frame (Figma 1773-446), with the interactive jump list kept.
+  // Contents (interactive index; each row jumps to its chapter).
   {
     type: "index",
+    chapter: "hook",
     kicker: "Contents",
     items: [
-      { n: "", label: "Business goals", to: "goals" },
-      { n: "01", label: "Discover", to: "discover" },
-      { n: "02", label: "Define", to: "define" },
-      { n: "03", label: "Develop", to: "develop" },
-      { n: "04", label: "Deliver", to: "deliver" },
+      { n: "01", label: "What shipped", to: "hook" },
+      { n: "02", label: "The problem", to: "problem" },
+      { n: "03", label: "Role and constraints", to: "role" },
+      { n: "04", label: "The cart", to: "cart" },
+      { n: "05", label: "Explorations", to: "explore" },
+      { n: "06", label: "Three decisions", to: "decisions" },
+      { n: "07", label: "The system", to: "system" },
+      { n: "08", label: "Beyond the cart", to: "beyond" },
+      { n: "09", label: "Proof", to: "proof" },
+      { n: "10", label: "Impact", to: "impact-ch" },
     ],
   },
 
-  // 3 - Business goals
+  // ===================== 01 WHAT SHIPPED =====================
+  divider("hook", "01", "What shipped", "Decide now, receive later"),
+  {
+    type: "figure",
+    chapter: "hook",
+    skim: true,
+    kicker: "In motion",
+    h: "Decide now, receive later",
+    p: [
+      "One phone, one take: the schedule toggle, the slot list running past midnight, and a confirmed slot.",
+    ],
+    reel: "schedDelivery",
+    layout: "split",
+  },
+  {
+    type: "gallery",
+    chapter: "hook",
+    skim: true,
+    h: "Here's what shipped: eighteen finals [CONFIRM 6]",
+    p: [
+      "Home with the store offline, the cart in every header state, the intro banner that teaches Schedule, and the schedule page from open slots to collapsed shipments. Each one is built in code and matches its Figma final to within 3% of pixels.",
+    ],
+    fig: "schedFinals",
+  },
+
+  // ===================== 02 THE PROBLEM =====================
+  divider("problem", "02", "The problem", "Where now falls apart"),
+  {
+    type: "statement",
+    chapter: "problem",
+    kicker: "Overview",
+    text: "Zepto runs on one promise: groceries in ten minutes. The brief was to add a way to order for later, without letting the two ideas bleed into each other.",
+  },
+  {
+    type: "gallery",
+    chapter: "problem",
+    skim: true,
+    h: "Six moments",
+    p: [
+      "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
+    ],
+    fig: "schedMoments",
+  },
+  {
+    type: "statement",
+    chapter: "problem",
+    skim: true,
+    kicker: "The question",
+    text: "Zepto means now. How do you promise later without breaking the trust of 10-min delivery?",
+  },
   {
     type: "numbered",
-    id: "goals",
+    chapter: "problem",
+    tuck: true,
     kicker: "Business goals",
     items: [
       {
@@ -75,22 +140,10 @@ export const scheduledDeck = [
       },
     ],
   },
-
-  // ===================== 01 DISCOVER =====================
-  {
-    type: "phaseDivider",
-    id: "discover",
-    n: "01",
-    name: "Discover",
-    sub: "Get the lay of the land: the business, the users, the market",
-  },
-  {
-    type: "statement",
-    kicker: "Overview",
-    text: "Zepto runs on one promise: groceries in ten minutes. The brief was to add a way to order for later, without letting the two ideas bleed into each other.",
-  },
   {
     type: "splitLabeled",
+    chapter: "problem",
+    tuck: true,
     h: "Questions I took to the business",
     items: [
       { label: "Isn't Zepto a 10-minute delivery platform? So why schedule?", body: "The whole company is speed. So asking someone to wait sounds like the opposite of the product. But that's exactly the point: every time ten minutes can't happen, that demand doesn't wait, it just leaves. Scheduling is how we catch it instead of losing it." },
@@ -100,6 +153,8 @@ export const scheduledDeck = [
   },
   {
     type: "splitLabeled",
+    chapter: "problem",
+    tuck: true,
     h: "Questions I asked about the users",
     items: [
       { label: "How do I ask without putting the idea in their heads?", body: "Straight out of The Mom Test: don't pitch scheduling and ask if they'd use it. Ask about their life. So instead of \"where would you want scheduled delivery,\" I asked where ordering now just doesn't work for them." },
@@ -109,6 +164,8 @@ export const scheduledDeck = [
   },
   {
     type: "splitLabeled",
+    chapter: "problem",
+    tuck: true,
     h: "Questions I asked about the product",
     items: [
       { label: "What kind of problem is this, really?", body: "A trust problem before a UX one. You're asking people to believe later will show up exactly when promised, from the one app built on never making them wait." },
@@ -118,8 +175,10 @@ export const scheduledDeck = [
   },
   {
     type: "figure",
+    chapter: "problem",
+    tuck: true,
     layout: "text",
-    kicker: "Discover · Competitors",
+    kicker: "The problem · Competitors",
     h: "Where scheduling sits in the market",
     p: [
       "People have stopped ranking speed first. McKinsey had delivery speed at #1 in 2022 and #5 by 2024. Reliability is what they want now. And if a slower tier is nearly as good as the fast one, the slow one starts eating into the premium. So the smart players treat scheduling as a trust play, not just convenience.",
@@ -131,24 +190,42 @@ export const scheduledDeck = [
       "Where we lead: the split-cart summary that stays put, and the relabel across midnight. Where we hold back: fixed one-hour windows and no discount lever, because precision is the whole promise",
     ],
   },
-  ...sdDiscover,
-
-  // ===================== 02 DEFINE =====================
+  pick(sdDiscover, "Then the feedback said: slots run out", {
+    chapter: "problem",
+    tuck: true,
+    kicker: "The problem · Product feedback [CONFIRM 2, 3]",
+  }),
   {
-    type: "phaseDivider",
-    id: "define",
-    n: "02",
-    name: "Define",
-    sub: "Landscaping the problem statement",
-  },
-  {
+    // The old "Framing the problem" line; the skim question above says it shorter.
     type: "statement",
+    chapter: "problem",
     kicker: "Framing the problem",
     text: "How do you make \"later\" trustworthy without spending the trust that makes \"now\" work? It's a trust problem before it's a UX one.",
   },
+
+  // ===================== 03 ROLE AND CONSTRAINTS =====================
+  divider("role", "03", "Role and constraints", "Who did what, inside which limits"),
+  {
+    type: "figure",
+    chapter: "role",
+    skim: true,
+    layout: "text",
+    kicker: "My role",
+    h: "I led the interaction design, end to end",
+    p: [
+      "Across product, content and operations, over two 2025 releases: a narrow first cut in late October, then the full multi-shipment version in mid-November. I worked with design leadership and the CPO, the C-suite and the Senior Director of New Category, and ran the post-launch study with the PMs.",
+    ],
+    ul: [
+      "One-hour slots, on shaky ground",
+      "Booked and live orders, side by side",
+      "Keeping the slot to the hour, on about ninety minutes of margin",
+    ],
+  },
   {
     type: "numbered",
-    kicker: "Define · Constraints",
+    chapter: "role",
+    tuck: true,
+    kicker: "Role · Constraints",
     h: "What are our constraints",
     items: [
       { title: "One-hour slots", body: "Slots could only be an hour wide. And early on, we couldn't even count on them being available." },
@@ -156,17 +233,25 @@ export const scheduledDeck = [
       { title: "Trust isn't up for grabs", body: "A 6 to 7pm promise had to land 6 to 7pm, every time. Behind that one-hour window sits about ninety minutes of dark-store margin to make it hold." },
     ],
   },
-  {
-    type: "methodFinding",
-    h: "Where to place scheduling",
-    finding: "On the product page, scheduling fought the booking model and read like a listing telling you what you couldn't have.",
-    p: [
-      "Scheduling isn't something you go discover. It's something you reach for once you've already decided what to buy. So it belongs on the cart, where the deciding is done.",
-    ],
-    fig: "schedExplorations",
-  },
+
+  // ===================== 04 THE CART =====================
+  divider("cart", "04", "The cart", "One cart, many shipments"),
   {
     type: "figure",
+    chapter: "cart",
+    skim: true,
+    h: "The cart is a complex construct",
+    p: [
+      "Zepto ships from tiered hubs, so one cart splits into several shipments, each needing its own slot. The worst case split four ways.",
+    ],
+    fig: "schedCartHubs",
+    figure: "A mixed cart ships in pieces, up to four. The worst case: four shipments at once, one scheduled, one unavailable, one closed.",
+    layout: "split",
+  },
+  {
+    // The old "One cart, many hubs" slide; the skim slide above carries its point.
+    type: "figure",
+    chapter: "cart",
     h: "One cart, many hubs",
     p: [
       "Zepto ships from tiered hubs, so a mixed cart splits by store, up to four shipments. Scheduling sits on each shipment, so every one answers the slot question for itself.",
@@ -177,26 +262,54 @@ export const scheduledDeck = [
   },
   {
     type: "gallery",
-    h: "Cart states: a matrix, not a screen",
+    chapter: "cart",
+    tuck: true,
+    h: "The whole cart, top to bottom",
     p: [
-      "The Schedule button alone can be open, disabled, hidden, the only action, or just gone, depending on what each shipment's store can actually do. I drew every one of those cells, and shipped them.",
+      "Every shipment, its slot and its reason, in one long scroll.",
     ],
-    fig: "schedCartStates",
+    fig: "schedCartPageFlat",
   },
-  ...sdDefine,
+  pick(sdDefine, "Two questions decide every shipment card", { chapter: "cart", tuck: true, kicker: "The cart · The case breakdown" }),
+  pick(sdDefine, "1 of 3, 2 of 3, 3 of 3", { chapter: "cart", tuck: true, kicker: "The cart · Multi-shipment" }),
 
-  // ===================== 03 DEVELOP =====================
-  {
-    type: "phaseDivider",
-    id: "develop",
-    n: "03",
-    name: "Develop",
-    sub: "Mapping directions",
-  },
+  // ===================== 05 EXPLORATIONS =====================
+  divider("explore", "05", "Explorations", "Mapping directions"),
   {
     type: "figure",
+    chapter: "explore",
+    skim: true,
+    kicker: "Explorations",
+    h: "One sentence in testing killed the tidier direction",
+    p: [
+      "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\" A tab per shipment hid every earlier choice. The single page kept them all in view, and a summary you can see is itself a trust mechanism.",
+    ],
+    fig: "schedDirections",
+    figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
+    layout: "split",
+  },
+  {
+    type: "methodFinding",
+    chapter: "explore",
+    tuck: true,
+    h: "Where to place scheduling",
+    finding: "On the product page, scheduling fought the booking model and read like a listing telling you what you couldn't have.",
+    p: [
+      "Scheduling isn't something you go discover. It's something you reach for once you've already decided what to buy. So it belongs on the cart, where the deciding is done.",
+    ],
+    fig: "schedExplorations",
+  },
+  pick(sdDiscover, "Three people, one task: schedule what can't ship now", {
+    chapter: "explore",
+    tuck: true,
+    kicker: "Explorations · Oct 29 session [CONFIRM 1]",
+  }),
+  {
+    type: "figure",
+    chapter: "explore",
+    tuck: true,
     layout: "text",
-    kicker: "Develop · Mapping directions",
+    kicker: "Explorations · Mapping directions",
     h: "Three ways scheduling could live in the cart",
     p: [
       "With placement settled on the cart, I mapped three ways to build it, from the lightest surface to the most structured. Each made a different trade between how fast it was to ship and how much of the order stayed in view.",
@@ -209,6 +322,7 @@ export const scheduledDeck = [
   },
   {
     type: "figure",
+    chapter: "explore",
     kicker: "Exploring directions #1",
     h: "Bottom sheet",
     p: [
@@ -218,6 +332,7 @@ export const scheduledDeck = [
   },
   {
     type: "figure",
+    chapter: "explore",
     kicker: "Exploring directions #2",
     h: "Progressive flow",
     p: [
@@ -227,6 +342,7 @@ export const scheduledDeck = [
   },
   {
     type: "figure",
+    chapter: "explore",
     kicker: "Exploring directions #3",
     h: "Full page",
     p: [
@@ -236,8 +352,10 @@ export const scheduledDeck = [
   },
   {
     type: "figure",
+    chapter: "explore",
+    tuck: true,
     layout: "text",
-    kicker: "Develop · Exploring slot selection",
+    kicker: "Explorations · Slot selection",
     h: "Then the slot picker itself",
     p: [
       "Placing scheduling was one problem; picking a slot was another. I explored how to show a day of one-hour windows without it turning into a booking form: a picker that opens per shipment, Today and Tomorrow as tabs, and the earliest open slot pre-selected so the fast path stays fast.",
@@ -245,11 +363,13 @@ export const scheduledDeck = [
   },
   {
     type: "statement",
+    chapter: "explore",
     kicker: "Designers assemble",
     text: "We put all three in front of the team, product, content, and engineering, and held each one to a single bar: can you always see the full commitment before you pay?",
   },
   {
     type: "figure",
+    chapter: "explore",
     layout: "text",
     kicker: "Running with option 2 and 3",
     h: "Two survived the crit",
@@ -259,12 +379,14 @@ export const scheduledDeck = [
   },
   {
     type: "statement",
+    chapter: "explore",
     kicker: "Research",
     text: "I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.",
     cite: "Usability test participant",
   },
   {
     type: "compare",
+    chapter: "explore",
     h: "Option 3 wins",
     a: {
       label: "Tab per shipment",
@@ -274,13 +396,15 @@ export const scheduledDeck = [
     b: {
       label: "One single page",
       body: "Every shipment switchable in place, every slot you picked visible at once. That summary sitting there is itself a trust mechanism.",
-      verdict: "Shipped",
+      verdict: "Shipped [CONFIRM 6]",
     },
     winner: "b",
     note: "You commit to \"later\" because you can see exactly what you committed to.",
   },
   {
     type: "figure",
+    chapter: "explore",
+    tuck: true,
     kicker: "Micro-details",
     h: "The real work: where every control lives",
     p: [
@@ -295,9 +419,29 @@ export const scheduledDeck = [
     figure: "Switching Today and Tomorrow re-animates the slot list. Today is partial because earlier slots have passed; tomorrow opens a full day.",
     layout: "split",
   },
-  ...sdDevelopToggle,
+  pick(sdDevelopToggle, "Three ways to choose between now and later", { chapter: "explore", tuck: true, kicker: "Explorations · The toggle" }),
+  pick(sdDevelopToggle, "The pill that remembers", { chapter: "explore", tuck: true, kicker: "Explorations · The toggle" }),
+
+  // ===================== 06 THREE DECISIONS =====================
+  divider("decisions", "06", "Three decisions", "The toggle, midnight, the stuck cart"),
   {
     type: "figure",
+    chapter: "decisions",
+    skim: true,
+    kicker: "Decision 1",
+    h: "One toggle moves the order from now to later",
+    p: [
+      "The toggle carries the reason. Its subtext changes with the situation, so people never have to guess why Instant is off or what Schedule offers.",
+    ],
+    fig: "schedToggleDemo",
+    layout: "split",
+  },
+  pick(sdDevelopToggle, "What the page kept", { chapter: "decisions", tuck: true, kicker: "Decision 1 · Where it landed [CONFIRM 4]" }),
+  {
+    type: "figure",
+    chapter: "decisions",
+    skim: true,
+    kicker: "Decision 2",
     h: "One scroll across midnight",
     p: ["Someone picking a slot at 11pm is planning tonight a little later, not tomorrow."],
     ul: [
@@ -311,17 +455,22 @@ export const scheduledDeck = [
     layout: "split",
   },
   {
-    type: "gallery",
-    h: "Slot-page states: density without confusion",
+    type: "methodFinding",
+    chapter: "decisions",
+    skim: true,
+    kicker: "Decision 3 [CONFIRM 17]",
+    h: "The stuck cart, shown in plain sight",
+    finding: "The instinct is to hide the broken thing. I did the opposite.",
     p: [
-      "The one screen where all the complexity has to feel effortless. Empty and failure states got the same care as the happy path.",
+      "The hardest state: a cart that stays unserviceable even with a schedule. I flagged it in place, said the consequence up front, and offered a reopen slot where a store is just closed. And when we miss a slot, a late breach auto-cancels with an apology and a credit, instead of leaving you watching a countdown that never resolves.",
     ],
-    fig: "schedPageStates",
+    fig: "schedStuckCart",
   },
-  ...sdDevelopSlots,
   {
     type: "numbered",
-    kicker: "Serviceability",
+    chapter: "decisions",
+    tuck: true,
+    kicker: "Decision 3 · Serviceability",
     h: "Why a store can be unserviceable",
     items: [
       { title: "Out of hours", body: "The store's closed for that window. Superstores shut overnight, and every site keeps its own hours." },
@@ -331,29 +480,77 @@ export const scheduledDeck = [
       { title: "Something breaks", body: "Weather, blocked roads, or a store-side outage pauses fulfilment for the area." },
     ],
   },
+
+  // ===================== 07 THE SYSTEM =====================
+  divider("system", "07", "The system", "Every state, every line of copy"),
+  pick(sdDevelopSlots, "Eight states, one screen", {
+    chapter: "system",
+    skim: true,
+    kicker: "The system · Every state, running",
+  }),
   {
-    type: "methodFinding",
-    kicker: "Crisis",
-    h: "The stuck cart, shown in plain sight",
-    finding: "The instinct is to hide the broken thing. I did the opposite.",
+    type: "gallery",
+    chapter: "system",
+    tuck: true,
+    h: "Cart states: a matrix, not a screen",
     p: [
-      "The hardest state: a cart that stays unserviceable even with a schedule. I flagged it in place, said the consequence up front, and offered a reopen slot where a store is just closed. And when we miss a slot, a late breach auto-cancels with an apology and a credit, instead of leaving you watching a countdown that never resolves.",
+      "The Schedule button alone can be open, disabled, hidden, the only action, or just gone, depending on what each shipment's store can actually do. I drew every one of those cells, and shipped them. [CONFIRM 6]",
     ],
-    fig: "schedStuckCart",
+    fig: "schedCartStates",
   },
-  ...sdDevelopCart,
+  {
+    type: "gallery",
+    chapter: "system",
+    tuck: true,
+    h: "Slot-page states: density without confusion",
+    p: [
+      "The one screen where all the complexity has to feel effortless. Empty and failure states got the same care as the happy path.",
+    ],
+    fig: "schedPageStates",
+  },
+  pick(sdDevelopSlots, "Slots sell out, so the picker says so", { chapter: "system", tuck: true, kicker: "The system · When a slot's gone [CONFIRM 3]" }),
+  pick(sdDefine, "The cart says why, in one line", { chapter: "system", tuck: true, kicker: "The system · Reason codes" }),
+  pick(sdDefine, "Four rules the cases follow", { chapter: "system", tuck: true, kicker: "The system · Principles [CONFIRM 12]" }),
+  pick(sdDevelopCart, "How people meet it in the cart", { chapter: "system", tuck: true, kicker: "The system · The cart [CONFIRM 8]" }),
   {
     type: "figure",
+    chapter: "system",
+    tuck: true,
+    kicker: "The system · Copy",
+    h: "The copy, from first principles",
+    p: [
+      "The copy was rewritten line by line, and the rewrites show one habit: say what the person needs at that moment.",
+    ],
+    fig: "schedCopyProcess",
+    layout: "split",
+  },
+  pick(sdDevelopSystem, "Motion is a small set of named moves", { chapter: "system", tuck: true, kicker: "The system · Motion" }),
+  pick(sdDevelopSystem, "The system underneath", { chapter: "system", tuck: true, kicker: "The system · Tokens [CONFIRM 15]" }),
+  pick(sdDeliver, "326 cases, 32 flows, all prototyped", { chapter: "system", tuck: true, kicker: "The system · The full map [CONFIRM 16]" }),
+  pick(sdDeliver, "What the full map caught", { chapter: "system", tuck: true, kicker: "The system · Learnings [CONFIRM 10]" }),
+
+  // ===================== 08 BEYOND THE CART =====================
+  divider("beyond", "08", "Beyond the cart", "Returns, offers, the order's second life, go-to-market"),
+  {
+    type: "figure",
+    chapter: "beyond",
+    tuck: true,
     layout: "text",
-    kicker: "Develop · Scaling the pattern",
+    kicker: "Beyond the cart · Scaling the pattern",
     h: "The same picker, now for returns and refunds",
     p: [
       "Once the slot picker earned its trust on the forward cart, it became a pattern, not a one-off. The returns and refunds flow reused it to book a pickup window, this time with the slots laid out inline on the page instead of in a sheet. One picker, two jobs.",
     ],
   },
-  ...sdDevelopReturns,
+  pick(sdDevelopReturns, "Exchange some, return the rest, in one go", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Exchange and return" }),
+  pick(sdDevelopReturns, "Pickup is the same idea", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Pickup slots [CONFIRM 9]" }),
+  pick(sdDevelopReturns, "Or ask in chat", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · In chat [CONFIRM 10]" }),
+  pick(sdDevelopReturns, "Tracking has two chains", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Tracking and refunds [CONFIRM 11]" }),
+  pick(sdDevelopReturns, "The rider needs the OTP", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Handover" }),
   {
     type: "figure",
+    chapter: "beyond",
+    tuck: true,
     kicker: "Booked",
     h: "The order's second life",
     p: [
@@ -365,7 +562,9 @@ export const scheduledDeck = [
   },
   {
     type: "numbered",
-    kicker: "Post booking",
+    chapter: "beyond",
+    tuck: true,
+    kicker: "Post booking [CONFIRM 7, 17]",
     h: "Keeping the promise in front of you",
     items: [
       { title: "A card built for a slot", body: "\"Scheduled for 6 to 7 PM\" takes the place of the 10-minute line, on home and in My Orders." },
@@ -376,26 +575,21 @@ export const scheduledDeck = [
   },
   {
     type: "methodFinding",
-    kicker: "Customer support",
+    chapter: "beyond",
+    tuck: true,
+    kicker: "Customer support [CONFIRM 7, 17]",
     h: "Cancellation, and where it lived in v1",
     finding: "Cancelling a scheduled order ran through the support chat, not a button on the order. A deliberate compromise, and one I'll own.",
     p: [
       "Editing a slot before you confirm is a first-class control. Cancelling after that routed through support chat in v1, on purpose, to handle abuse and refunds safely while the flow was young. It belongs as a first-class control next, held to the same honesty rules as the rest, alongside the auto-cancel-and-credit for when we're the ones who miss.",
     ],
   },
-  ...sdDevelopOffers,
-  ...sdDevelopSystem,
-
-  // ===================== 04 DELIVER =====================
-  {
-    type: "phaseDivider",
-    id: "deliver",
-    n: "04",
-    name: "Deliver",
-    sub: "Ship it, measure it, and be honest about what it did",
-  },
+  pick(sdDevelopOffers, "Offers got complicated fast", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Offers, on hold [CONFIRM 13, 14]" }),
+  pick(sdDevelopOffers, "When the cart can't ship", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Edge cases, on hold [CONFIRM 13]" }),
   {
     type: "figure",
+    chapter: "beyond",
+    tuck: true,
     kicker: "GTM",
     h: "The go-to-market: restraint",
     p: [
@@ -409,11 +603,36 @@ export const scheduledDeck = [
     figure: "The real schedule page, with just the top banner brought to life. Calm motion that never fights the instant promise.",
     layout: "split",
   },
+
+  // ===================== 09 PROOF =====================
+  divider("proof", "09", "Proof", "Built in code, within 3% of Figma"),
+  {
+    type: "figure",
+    chapter: "proof",
+    skim: true,
+    kicker: "Proof",
+    h: "The prototype runs live, and the code matches Figma to 3%",
+    p: [
+      "Four paths through the Figma file, running on this page: cart to a picked slot to a placed order, slots filling up, and exchange and return in support chat. The eighteen finals are built in code and match their Figma frames to within 3% of pixels.",
+    ],
+    fig: "schedFigmaFlows",
+    figure: "Click inside a phone to tap through. Each path starts at its first screen.",
+    layout: "split",
+  },
+  pick(sdDevelopSlots, "This is the real component", { chapter: "proof", tuck: true, kicker: "Proof · Try it" }),
+  pick(sdDeliver, "All eight states, on one canvas", { chapter: "proof", tuck: true, kicker: "Proof · The canvas" }),
+  pick(sdDeliver, "Five journeys, walked end to end", { chapter: "proof", tuck: true, kicker: "Proof · Journeys" }),
+  pick(sdDeliver, "What's ready, what's waiting", { chapter: "proof", tuck: true, kicker: "Proof · Status [CONFIRM 6]" }),
+
+  // ===================== 10 IMPACT AND REFLECTION =====================
+  divider("impact-ch", "10", "Impact", "What it did, and what I'd change"),
   {
     type: "impact",
     id: "impact",
+    chapter: "impact-ch",
+    skim: true,
     mark: "Metrics",
-    h: "The bar was simple: does it pay for itself without watering down instant. It did.",
+    h: "Does it pay for itself without watering down instant? It did.",
     metrics: [
       { value: "54%", label: "Of every scheduled-delivery rupee is now a large appliance. A fridge needs a time slot, a snack doesn't. We built a grocery feature and it became a delivery channel" },
       { value: "1.72%", label: "Adoption at its peak, May 2026; about 1.4% now. Roughly 1.3% when instant's fully available, so the rest is people falling back from a window we couldn't serve" },
@@ -423,6 +642,8 @@ export const scheduledDeck = [
   },
   {
     type: "methodFinding",
+    chapter: "impact-ch",
+    tuck: true,
     h: "What 45 users told us, just after launch",
     finding: "Roughly 8 in 10 scheduled as a fallback, because instant wasn't available, not because they'd planned ahead.",
     p: [
@@ -435,10 +656,11 @@ export const scheduledDeck = [
       { k: "#1 ask", v: "finer slots, 15 to 30 minutes" },
     ],
   },
-  ...sdDeliver,
   {
     type: "closing",
     id: "reflection",
+    chapter: "impact-ch",
+    skim: true,
     h: "Reflections: the subtlest problem wasn't UX. It was perception.",
     p: [
       "Zepto means instant, and a scheduled option can feel like it cuts against that. The answer was restraint, show it only when it genuinely helps.",
@@ -447,7 +669,30 @@ export const scheduledDeck = [
     kind: "outcome",
   },
   {
+    type: "numbered",
+    chapter: "impact-ch",
+    tuck: true,
+    kicker: "What I'd do differently",
+    h: "One thread I left open",
+    items: [
+      { title: "The 11 PM case", body: "The 11 PM case, where no same-day slots remain, was flagged in the first review and still needed handling." },
+      { title: "Trust the instinct, then check it", body: "Sometimes the first instinct is right. But on a feature whose outcome is hard to measure, it takes tangential research to be certain enough to commit to it." },
+    ],
+  },
+  {
+    type: "splitLabeled",
+    chapter: "impact-ch",
+    tuck: true,
+    h: "Who I worked with",
+    items: [
+      { label: "Design and product", body: "Me as lead designer, with a design manager and partner through both releases. A PM for the first release, a lead PM from the second onward, and product partners." },
+      { label: "Content, engineering and QA", body: "The October copy pass, content partners and the returns copy. Engineers on the build and QA on every release, twelve people in all." },
+      { label: "Supply chain and leadership", body: "Supply chain was part of the planning from the start and part of shipping at the very end. Design leadership and the CPO, the C-suite and the Senior Director of New Category." },
+    ],
+  },
+  {
     type: "closing",
+    chapter: "impact-ch",
     h: "Thank you",
     p: [
       "Instant is still the moat. But this proved there's a real, high-value group whose need is the exact opposite of instant, and serving them made the core product stronger.",
