@@ -1889,6 +1889,16 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .sdh__tile[data-tall] img { height: auto; width: calc(min(640px, 70vh) * 360 / 780); border: 0; border-radius: 0; }
 .sdh[data-size="board"] .sdh__tile img { height: min(280px, 40vh); border-radius: 12px; }
 .sdfinals { display: grid; gap: 1.5rem; }
+/* ScreenStrip size="bar": the single cart headers (336 by 56), a short row */
+.sdh[data-size="bar"] .sdh__tile img { height: 56px; border-radius: 8px; }
+/* SchedWiredFlows: the nine wired flows, one strip each, then the build as a click-through */
+.sdwired { display: grid; gap: 3rem; }
+.sdwired__flow { display: grid; gap: 1rem; }
+.sdwired__head { display: grid; gap: 0.25rem; }
+.sdwired__title { margin: 0; font-size: 1.125rem; font-weight: 500; color: var(--fg); }
+.sdwired__num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 0.25rem; }
+.sdwired__line { margin: 0; color: var(--muted); text-wrap: pretty; }
+.sdwired__live { display: grid; gap: 2rem; }
 /* mukxwvur (28 Sep): the cart-state marquee (SchedCartStrip) */
 .cstrip { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
 .cstrip__track { display: flex; gap: 1.25rem; width: max-content; animation: cstrip-slide 48s linear infinite; }

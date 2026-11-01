@@ -13,11 +13,13 @@ export const catalogStats = { flows: catalog.flows, cases: catalog.cases, genera
 
 // "#embed/flow/returns/cs-chat-exchange" + { case, state, theme, motion, bg } -> full iframe URL.
 // The playground reads its query from INSIDE the hash.
-export function embedUrl(entry, opts = {}) {
+// `base` points at another built copy (bundleBase), e.g. the screen-flows build in public/sd-flows/.
+export const bundleBase = (dir) => `${import.meta.env.BASE_URL}${dir}/`;
+export function embedUrl(entry, opts = {}, base = PLAYGROUND_BASE) {
   const q = new URLSearchParams();
   for (const k of ["case", "state", "theme", "motion", "bg"]) if (opts[k]) q.set(k, opts[k]);
   const qs = q.toString();
-  return `${PLAYGROUND_BASE}index.html${entry.hash}${qs ? `?${qs}` : ""}`;
+  return `${base}index.html${entry.hash}${qs ? `?${qs}` : ""}`;
 }
 
 // Offline fallback: a small tracked poster per embed (public/sd-story-posters/<embedId>.png, written by
@@ -26,13 +28,13 @@ export const embedPoster = (entry) => (entry.kind === "flow" ? `${import.meta.en
 
 // Is the bundle actually deployed? A single-page-app host answers a missing file with
 // index.html and a 200, so check that SYNCED.json parses and carries a commit.
-let syncedPromise = null;
-export function loadSynced() {
-  if (!syncedPromise) {
-    syncedPromise = fetch(`${PLAYGROUND_BASE}SYNCED.json`, { cache: "no-cache" })
+const synced = new Map();
+export function loadSynced(base = PLAYGROUND_BASE) {
+  if (!synced.has(base)) {
+    synced.set(base, fetch(`${base}SYNCED.json`, { cache: "no-cache" })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => (j && typeof j.commit === "string" ? j : null))
-      .catch(() => null);
+      .catch(() => null));
   }
-  return syncedPromise;
+  return synced.get(base);
 }

@@ -1,0 +1,7 @@
+{
+ "from": "design-playground",
+ "branch": "claude/schedule-code-build-fec319",
+ "commit": "8633986",
+ "note": "built copy plus the #embed/screen-flows route (ScreenFlows initial prop), not yet upstream",
+ "syncedAt": "2026-11-01T11:52:50Z"
+}

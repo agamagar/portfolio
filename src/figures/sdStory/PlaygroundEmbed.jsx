@@ -7,6 +7,7 @@ import "./playgroundEmbed.css";
 //
 //   <PlaygroundEmbed id="flow-returns-cs-chat-exchange" caseId="EX-003" />
 //   <PlaygroundEmbed id="states" fit="fill" />
+//   <PlaygroundEmbed entry={{ id, title, hash, size }} base={bundleBase("sd-flows")} />   a view of another built copy, not in the catalog
 //
 // fit="auto"   height follows the embed's own {source:'sd-playground',type:'size'} message (page view)
 // fit="scale"  the embed keeps its catalog size and is scaled down to fit its box (deck slides)
@@ -33,6 +34,8 @@ function useSiteTheme(explicit) {
 
 export default function PlaygroundEmbed({
   id,
+  entry: entryProp,
+  base = PLAYGROUND_BASE,
   caseId,
   state,
   theme,
@@ -43,7 +46,7 @@ export default function PlaygroundEmbed({
   maxHeight,
   className = "",
 }) {
-  const entry = getEmbed(id);
+  const entry = entryProp || getEmbed(id);
   const wrapRef = useRef(null);
   const boxRef = useRef(null);
   const frameRef = useRef(null);
@@ -58,9 +61,9 @@ export default function PlaygroundEmbed({
 
   useEffect(() => {
     let live = true;
-    loadSynced().then((j) => live && setBundle(j));
+    loadSynced(base).then((j) => live && setBundle(j));
     return () => { live = false; };
-  }, []);
+  }, [base]);
 
   // Mount when near the viewport, unmount again when far (frees the iframe's memory).
   useEffect(() => {
@@ -142,8 +145,8 @@ export default function PlaygroundEmbed({
     theme: siteTheme,
     motion: prefersReduced() ? "reduce" : undefined,
     bg: frame === "none" ? "transparent" : undefined,
-  });
-  const fullSrc = embedUrl(entry, { case: caseId, state, theme: siteTheme });
+  }, base);
+  const fullSrc = embedUrl(entry, { case: caseId, state, theme: siteTheme }, base);
   // fit="scale" lays the embed out at its natural size; the embed's own reported height wins when it is taller than the catalog's
   const nw = entry.size.w;
   const nh = fit === "scale" ? Math.max(entry.size.h, autoH || 0) : entry.size.h;

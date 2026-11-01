@@ -168,6 +168,7 @@ const SchedFinals = lazyFig(() => import("./figures/scheduled/SchedFinals"));
 const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
 const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
 const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows")); // the wired Figma prototype paths, live
+const SchedWiredFlows = lazyFig(() => import("./figures/scheduled/SchedWiredFlows")); // the nine flows wired in code, step by step and clickable
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
@@ -696,6 +697,7 @@ const figures = {
   schedDateSwitch: SchedDateSwitch,
   schedCartHubs: SchedCartHubs,
   schedFigmaFlows: SchedFigmaFlows,
+  schedWiredFlows: SchedWiredFlows,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -2985,6 +2987,22 @@ const caseStudies = {
         fig: "schedFigmaFlows",
         figBare: true,
         figure: "Click inside a phone to tap through. Each path starts at its first screen.",
+        divider: true,
+      },
+      // 1 Nov (Agam, "add the wired flows to the case study"): the nine flows wired in code (design-playground
+      // claude/schedule-code-build-fec319), captured step by step, then the build itself from public/sd-flows/
+      {
+        h: "Every flow, wired in code",
+        nav: "Flows, wired",
+        group: "Process",
+        tldr: "Nine flows run in code, from Home to the cart to a placed order, then offers, returns and tracking. Every step below is a capture of the build.",
+        p: [
+          "Figma shows the path. Code shows whether it holds. So every flow was wired in the build: each control emits a tap, and one graph decides where it leads. The same graph drives the web build, the React Native app and the design canvas, so all three walk the same steps.",
+          "Below, each flow is laid out in tap order, captured from the build at twice its size. Under them, the build itself: pick a flow and tap through it.",
+        ],
+        fig: "schedWiredFlows",
+        figBare: true,
+        figure: "Scroll each strip sideways. The long cart scrolls down inside its frame. Click a prototype to use it; Escape hands the keyboard back.",
         divider: true,
       },
       {
