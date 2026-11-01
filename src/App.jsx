@@ -10790,8 +10790,8 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
 }
 
 // Cases whose page is rendered from their deck (ui/DeckPage reads each slide's chapter,
-// skim and tuck). The old section page stays at /work/<slug>/legacy until Agam signs
-// the new one off.
+// skim and tuck). Agam kept the long section page at /work/<slug>; the deck-rendered
+// page lives at /work/<slug>/deck.
 const DECK_PAGES = new Set(["scheduled-delivery"]);
 
 function DeckCaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
@@ -11684,9 +11684,10 @@ export default function App() {
   // Old case URLs that were merged into another entry keep resolving.
   const CASE_ALIASES = { "occasion-buying": "cross-sell" };
   const rawPathSlug = path.startsWith("/work/") ? path.slice("/work/".length) : null;
-  // /work/<slug>/legacy keeps the old section page of a deck-rendered case reachable
-  const legacyCase = !!rawPathSlug && rawPathSlug.endsWith("/legacy");
-  const rawSlug = legacyCase ? rawPathSlug.slice(0, -"/legacy".length) : rawPathSlug;
+  // /work/<slug>/deck opens the deck-rendered page; /legacy, its old opt-out, still lands on the section page
+  const deckCase = !!rawPathSlug && rawPathSlug.endsWith("/deck");
+  const suffix = deckCase ? "/deck" : rawPathSlug && rawPathSlug.endsWith("/legacy") ? "/legacy" : "";
+  const rawSlug = suffix ? rawPathSlug.slice(0, -suffix.length) : rawPathSlug;
   const slug = rawSlug ? CASE_ALIASES[rawSlug] || rawSlug : null;
   // SCAN IS THE DEFAULT. The index opens on the scannable list rather than the
   // read-through page, so the first thing a visitor gets is the whole body of
@@ -12090,7 +12091,7 @@ export default function App() {
         caseStudies[slug] && caseStudies[slug].locked ? (
           <LockedCaseStudyPage cs={caseStudies[slug]} slug={slug} />
         ) : (
-          DECK_PAGES.has(slug) && !legacyCase && PRIVATE_SITE ? (
+          DECK_PAGES.has(slug) && deckCase && PRIVATE_SITE ? (
             <DeckCaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
           ) : (
             <CaseStudyPage slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
