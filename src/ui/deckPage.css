@@ -1,0 +1,142 @@
+/* DeckPage: a case page rendered from its deck (ui/DeckPage.jsx). The cards are the
+   deck's own .slide-card; this file only adds the page variant, the chapter heads and
+   the tucked disclosure. Colours and type come from the global tokens. */
+
+.deck-page {
+  --deck-scale: 1;
+  --deck-card-h: min(84vh, 900px);
+  --deck-card-w: calc(var(--deck-card-h) * 1512 / 982);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: 2rem 1rem 6rem;
+}
+.deck-page__body {
+  width: 100%;
+  max-width: var(--max);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* the unscaled card is wider than the column; never let it size the track */
+  gap: 1.5rem;
+}
+/* wide enough for the rail: the column grows into the room between the rail and the right edge */
+@media (min-width: 1100px) {
+  .deck-page__body {
+    max-width: min(var(--deck-card-w), calc(100vw - 26rem));
+  }
+}
+
+/* the card at its present size, scaled to the column; the frame reserves the scaled height */
+.deck-page__frame {
+  width: 100%;
+  min-width: 0;
+  height: calc(var(--deck-card-h) * var(--deck-scale));
+  scroll-margin-top: 2rem;
+}
+.slide-card.slide-card--page {
+  width: var(--deck-card-w);
+  height: var(--deck-card-h);
+  max-width: none;
+  transform: scale(var(--deck-scale));
+  transform-origin: top left;
+  animation: none;
+}
+
+.deck-page__chapter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  scroll-margin-top: 1.5rem;
+}
+.deck-page__chapter + .deck-page__chapter {
+  margin-top: 3rem;
+}
+.deck-page__head {
+  display: grid;
+  gap: 0.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.deck-page__num {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.deck-page__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.deck-page__sub {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* the tucked slides: a native disclosure, closed by default; the cards open at full column width */
+.deck-page__more > summary {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+  list-style: none;
+}
+.deck-page__more > summary::-webkit-details-marker { display: none; }
+.deck-page__more > summary::after {
+  content: "+";
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform var(--m3-dur-spatial-fast) var(--m3-spatial-standard-fast);
+}
+.deck-page__more[open] > summary::after { transform: rotate(45deg); }
+.deck-page__more > summary:hover { background: var(--hover); }
+.deck-page__more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.deck-page__more-count {
+  margin-left: auto;
+  font-weight: 400;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.deck-page__more-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+/* phone: a scaled present card would be unreadable, so the card flows at the column width */
+@media (max-width: 720px) {
+  .deck-page { padding-top: 1rem; }
+  .deck-page__frame { height: auto; }
+  .slide-card.slide-card--page {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+    transform: none;
+    overflow: hidden;
+    padding: 1.5rem 1.25rem;
+  }
+  /* the deck's one-column phone grid, held to the card so wide media cannot size it */
+  .slide-card--page .slide--split,
+  .slide-card--page .slide--media { grid-template-columns: minmax(0, 1fr); }
+  /* a figure with a fixed minimum (two phones side by side) scrolls instead of clipping */
+  .slide-card--page .slide__media { overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-page__more > summary::after { transition: none; }
+}

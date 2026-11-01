@@ -364,6 +364,7 @@ import ViewMenu from "./ui/ViewMenu";
 import { CASE_NAV } from "./caseNav";
 import SectionIndex, { scrollToId, useScrollSpyIds } from "./ui/SectionIndex"; // THE section index: rail + phone sheet
 import HeroSwitch from "./ui/HeroSwitch";
+import DeckPage from "./ui/DeckPage"; // a case page rendered from its deck (one source)
 import ExplorationsSwitch from "./ui/ExplorationsSwitch";
 import { useExplorationsVariant } from "./ui/explorationsVariant";
 const SceneControls = lazy(() => import("./scene/window/SceneControls"));
@@ -10788,6 +10789,31 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
   );
 }
 
+// Cases whose page is rendered from their deck (ui/DeckPage reads each slide's chapter,
+// skim and tuck). The old section page stays at /work/<slug>/legacy until Agam signs
+// the new one off.
+const DECK_PAGES = new Set(["scheduled-delivery"]);
+
+function DeckCaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
+  const cs = caseStudies[slug];
+  usePageTitle(cs.pageTitle || String(cs.title || "").replace(/\s*\n\s*/g, " "));
+  const slides = useMemo(() => buildSlides(cs), [cs]);
+  return (
+    <>
+      <main className="page page--article page--deck" data-case={cs.styleKey || slug} id="main">
+        <h1 className="sr-only">{String(cs.title || "").replace(/\s*\n\s*/g, " ")}</h1>
+        <DeckPage
+          slides={slides}
+          renderSlide={(slide, { onGoto, idMap }) => <Slide slide={slide} onGoto={onGoto} idMap={idMap} />}
+          top={<div className="article__index-top"><CaseStudyTabs slug={slug} className="article__index-tabs" /></div>}
+        />
+      </main>
+      <Footer credits={cs.credits} />
+      {presenting && <Presentation cs={cs} onExit={onExitPresent} theme={theme} toggleTheme={toggleTheme} />}
+    </>
+  );
+}
+
 // The case study's page element, with the load reveal's state held here (see
 // the muzdylub note inside). CaseStudy renders this element's children, so when
 // `revealed` flips only this div's attribute and the LoadRevealContext readers
@@ -11657,7 +11683,10 @@ export default function App() {
   const isWriting = path === "/writing" && WritingPage;
   // Old case URLs that were merged into another entry keep resolving.
   const CASE_ALIASES = { "occasion-buying": "cross-sell" };
-  const rawSlug = path.startsWith("/work/") ? path.slice("/work/".length) : null;
+  const rawPathSlug = path.startsWith("/work/") ? path.slice("/work/".length) : null;
+  // /work/<slug>/legacy keeps the old section page of a deck-rendered case reachable
+  const legacyCase = !!rawPathSlug && rawPathSlug.endsWith("/legacy");
+  const rawSlug = legacyCase ? rawPathSlug.slice(0, -"/legacy".length) : rawPathSlug;
   const slug = rawSlug ? CASE_ALIASES[rawSlug] || rawSlug : null;
   // SCAN IS THE DEFAULT. The index opens on the scannable list rather than the
   // read-through page, so the first thing a visitor gets is the whole body of
@@ -12061,7 +12090,11 @@ export default function App() {
         caseStudies[slug] && caseStudies[slug].locked ? (
           <LockedCaseStudyPage cs={caseStudies[slug]} slug={slug} />
         ) : (
-          <CaseStudyPage slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
+          DECK_PAGES.has(slug) && !legacyCase && PRIVATE_SITE ? (
+            <DeckCaseStudy slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
+          ) : (
+            <CaseStudyPage slug={slug} presenting={presenting} onExitPresent={() => setPresenting(false)} theme={theme} toggleTheme={toggleTheme} />
+          )
         )
       ) : isPortfolio ? (
         <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
