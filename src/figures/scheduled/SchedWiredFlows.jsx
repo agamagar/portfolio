@@ -76,6 +76,17 @@ const FLOWS = [
       ["t1-cancelled", "Order cancelled"],
     ],
   },
+  {
+    k: "edge", title: "Edge states", plain: true,
+    line: "The other states of Offers, Returns and Tracking: loading, empty, errors, closed windows and a live order.",
+    steps: [
+      ["o1-loading", "Offers: loading"], ["o1-empty", "Offers: no offers yet"], ["o1-error", "Offers: couldn't load"],
+      ["r1-loading", "Returns: loading"], ["r1-closed", "Returns: window closed"], ["r2-failed", "Returns: photo upload failed"],
+      ["r3-noslots", "Returns: no pickup slots"],
+      ["t1-ontheway", "Tracking: on the way"], ["t1-late", "Tracking: running late"], ["t1-delivered", "Tracking: delivered"],
+      ["t1-loading", "Tracking: loading"], ["t1-error", "Tracking: couldn't load"], ["t3-closed", "Cancel: too late to cancel"],
+    ],
+  },
 ];
 const tiles = (rows) => rows.map(([id, cap, tall], i) => ({ id, tall: !!tall, cap: `${i + 1}. ${cap}`, src: `${DIR}/${id}.webp` }));
 const plain = (rows) => rows.map(([id, cap]) => ({ id, cap, src: `${DIR}/${id}.webp` }));
@@ -95,7 +106,7 @@ export default function SchedWiredFlows() {
             </h3>
             <p className="sdwired__line">{f.line} {f.steps.length + (f.boards?.length || 0) + (f.bars?.length || 0)} screens.</p>
           </header>
-          <ScreenStrip tiles={tiles(f.steps)} label={`${f.title}, step by step, scroll sideways`} />
+          <ScreenStrip tiles={f.plain ? plain(f.steps) : tiles(f.steps)} label={`${f.title}, ${f.plain ? "state by state" : "step by step"}, scroll sideways`} />
           {f.boards && <ScreenStrip tiles={plain(f.boards)} label={`${f.title}: the header boards`} size="board" />}
           {f.bars && <ScreenStrip tiles={plain(f.bars)} label={`${f.title}: each header alone, tapped from the board`} size="bar" />}
         </section>
