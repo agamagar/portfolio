@@ -9,9 +9,9 @@
 // Diamond deck was deleted: every old slide is still here, regrouped.
 //
 // Voice: LOCKED presentation-mode tone (memory: presentation-mode-tone): spoken,
-// contractions, plain words, short beats. No em-dash, no tilde. A claim still open
-// with Agam carries a visible [CONFIRM n]; the numbers match docs/sd-story-notes.md
-// (17 is new, see the hand-over note).
+// contractions, plain words, short beats. No em-dash, no tilde. The [CONFIRM] list in
+// docs/sd-story-notes.md was settled as best guesses on 1 Nov (Agam to check); the
+// copy carries no visible markers.
 //
 // Renders through buildSlides / Slide in App.jsx. The `contents` slide links to each
 // chapter by the `id` on its phase divider and jumps to it in present mode.
@@ -57,7 +57,7 @@ export const scheduledDeck = [
     chapter: "hook",
     kicker: "Contents",
     items: [
-      { n: "01", label: "What shipped", to: "hook" },
+      { n: "01", label: "The work", to: "hook" },
       { n: "02", label: "The problem", to: "problem" },
       { n: "03", label: "Role and constraints", to: "role" },
       { n: "04", label: "The cart", to: "cart" },
@@ -70,8 +70,8 @@ export const scheduledDeck = [
     ],
   },
 
-  // ===================== 01 WHAT SHIPPED =====================
-  divider("hook", "01", "What shipped", "Decide now, receive later"),
+  // ===================== 01 THE WORK =====================
+  divider("hook", "01", "The work", "Decide now, receive later"),
   {
     type: "figure",
     chapter: "hook",
@@ -88,7 +88,7 @@ export const scheduledDeck = [
     type: "gallery",
     chapter: "hook",
     skim: true,
-    h: "Here's what shipped: eighteen finals [CONFIRM 6]",
+    h: "Eighteen finals, designed and handed over to dev",
     p: [
       "Home with the store offline, the cart in every header state, the intro banner that teaches Schedule, and the schedule page from open slots to collapsed shipments. Each one is built in code and matches its Figma final to within 3% of pixels.",
     ],
@@ -193,7 +193,7 @@ export const scheduledDeck = [
   pick(sdDiscover, "Then the feedback said: slots run out", {
     chapter: "problem",
     tuck: true,
-    kicker: "The problem · Product feedback [CONFIRM 2, 3]",
+    kicker: "The problem · Product feedback",
   }),
   {
     // The old "Framing the problem" line; the skim question above says it shorter.
@@ -285,7 +285,7 @@ export const scheduledDeck = [
       "\"I might forget the slots I picked for shipment one by the time I'm choosing the slot for shipment two.\" A tab per shipment hid every earlier choice. The single page kept them all in view, and a summary you can see is itself a trust mechanism.",
     ],
     fig: "schedDirections",
-    figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
+    figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the chosen single-page listing: every shipment and its chosen slot stay visible at once.",
     layout: "split",
   },
   {
@@ -302,7 +302,7 @@ export const scheduledDeck = [
   pick(sdDiscover, "Three people, one task: schedule what can't ship now", {
     chapter: "explore",
     tuck: true,
-    kicker: "Explorations · Oct 29 session [CONFIRM 1]",
+    kicker: "Explorations · An Oct 29 session with three users",
   }),
   {
     type: "figure",
@@ -396,7 +396,7 @@ export const scheduledDeck = [
     b: {
       label: "One single page",
       body: "Every shipment switchable in place, every slot you picked visible at once. That summary sitting there is itself a trust mechanism.",
-      verdict: "Shipped [CONFIRM 6]",
+      verdict: "Chosen, and handed over to dev",
     },
     winner: "b",
     note: "You commit to \"later\" because you can see exactly what you committed to.",
@@ -436,7 +436,7 @@ export const scheduledDeck = [
     fig: "schedToggleDemo",
     layout: "split",
   },
-  pick(sdDevelopToggle, "What the page kept", { chapter: "decisions", tuck: true, kicker: "Decision 1 · Where it landed [CONFIRM 4]" }),
+  pick(sdDevelopToggle, "What the page kept", { chapter: "decisions", tuck: true, kicker: "Decision 1 · Where it landed" }),
   {
     type: "figure",
     chapter: "decisions",
@@ -458,11 +458,11 @@ export const scheduledDeck = [
     type: "methodFinding",
     chapter: "decisions",
     skim: true,
-    kicker: "Decision 3 [CONFIRM 17]",
+    kicker: "Decision 3",
     h: "The stuck cart, shown in plain sight",
     finding: "The instinct is to hide the broken thing. I did the opposite.",
     p: [
-      "The hardest state: a cart that stays unserviceable even with a schedule. I flagged it in place, said the consequence up front, and offered a reopen slot where a store is just closed. And when we miss a slot, a late breach auto-cancels with an apology and a credit, instead of leaving you watching a countdown that never resolves.",
+      "The hardest state: a cart that stays unserviceable even with a schedule. I flagged it in place, said the consequence up front, and offered a reopen slot where a store is just closed.",
     ],
     fig: "schedStuckCart",
   },
@@ -494,7 +494,7 @@ export const scheduledDeck = [
     tuck: true,
     h: "Cart states: a matrix, not a screen",
     p: [
-      "The Schedule button alone can be open, disabled, hidden, the only action, or just gone, depending on what each shipment's store can actually do. I drew every one of those cells, and shipped them. [CONFIRM 6]",
+      "The Schedule button alone can be open, disabled, hidden, the only action, or just gone, depending on what each shipment's store can actually do. I drew every one of those cells and handed them over to dev.",
     ],
     fig: "schedCartStates",
   },
@@ -508,10 +508,10 @@ export const scheduledDeck = [
     ],
     fig: "schedPageStates",
   },
-  pick(sdDevelopSlots, "Slots sell out, so the picker says so", { chapter: "system", tuck: true, kicker: "The system · When a slot's gone [CONFIRM 3]" }),
+  pick(sdDevelopSlots, "Slots sell out, so the picker says so", { chapter: "system", tuck: true, kicker: "The system · When a slot's gone" }),
   pick(sdDefine, "The cart says why, in one line", { chapter: "system", tuck: true, kicker: "The system · Reason codes" }),
-  pick(sdDefine, "Four rules the cases follow", { chapter: "system", tuck: true, kicker: "The system · Principles [CONFIRM 12]" }),
-  pick(sdDevelopCart, "How people meet it in the cart", { chapter: "system", tuck: true, kicker: "The system · The cart [CONFIRM 8]" }),
+  pick(sdDefine, "Four rules the cases follow", { chapter: "system", tuck: true, kicker: "The system · Principles" }),
+  pick(sdDevelopCart, "How people meet it in the cart", { chapter: "system", tuck: true, kicker: "The system · The cart" }),
   {
     type: "figure",
     chapter: "system",
@@ -525,9 +525,9 @@ export const scheduledDeck = [
     layout: "split",
   },
   pick(sdDevelopSystem, "Motion is a small set of named moves", { chapter: "system", tuck: true, kicker: "The system · Motion" }),
-  pick(sdDevelopSystem, "The system underneath", { chapter: "system", tuck: true, kicker: "The system · Tokens [CONFIRM 15]" }),
-  pick(sdDeliver, "326 cases, 32 flows, all prototyped", { chapter: "system", tuck: true, kicker: "The system · The full map [CONFIRM 16]" }),
-  pick(sdDeliver, "What the full map caught", { chapter: "system", tuck: true, kicker: "The system · Learnings [CONFIRM 10]" }),
+  pick(sdDevelopSystem, "The system underneath", { chapter: "system", tuck: true, kicker: "The system · Tokens" }),
+  pick(sdDeliver, "326 cases, 32 flows, all prototyped", { chapter: "system", tuck: true, kicker: "The system · The full map" }),
+  pick(sdDeliver, "What the full map caught", { chapter: "system", tuck: true, kicker: "The system · Learnings" }),
 
   // ===================== 08 BEYOND THE CART =====================
   divider("beyond", "08", "Beyond the cart", "Returns, offers, the order's second life, go-to-market"),
@@ -543,9 +543,9 @@ export const scheduledDeck = [
     ],
   },
   pick(sdDevelopReturns, "Exchange some, return the rest, in one go", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Exchange and return" }),
-  pick(sdDevelopReturns, "Pickup is the same idea", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Pickup slots [CONFIRM 9]" }),
-  pick(sdDevelopReturns, "Or ask in chat", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · In chat [CONFIRM 10]" }),
-  pick(sdDevelopReturns, "Tracking has two chains", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Tracking and refunds [CONFIRM 11]" }),
+  pick(sdDevelopReturns, "Pickup is the same idea", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Pickup slots" }),
+  pick(sdDevelopReturns, "Or ask in chat", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · In chat" }),
+  pick(sdDevelopReturns, "Tracking has two chains", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Tracking and refunds" }),
   pick(sdDevelopReturns, "The rider needs the OTP", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Handover" }),
   {
     type: "figure",
@@ -564,28 +564,28 @@ export const scheduledDeck = [
     type: "numbered",
     chapter: "beyond",
     tuck: true,
-    kicker: "Post booking [CONFIRM 7, 17]",
+    kicker: "Post booking",
     h: "Keeping the promise in front of you",
     items: [
       { title: "A card built for a slot", body: "\"Scheduled for 6 to 7 PM\" takes the place of the 10-minute line, on home and in My Orders." },
       { title: "Reminders that find you", body: "Push and a pinned in-app banner, with WhatsApp in the plan. The order's hours away, so it comes to you." },
       { title: "The 30-minute wake-up", body: "A rider gets assigned and the 10-minute experience picks back up, landing inside your slot." },
-      { title: "Control, and an honest miss", body: "Edit the slot before you confirm, cancel from the support chat. And if we blow the slot, it auto-cancels with an apology and a 50-rupee credit." },
+      { title: "Control before and after", body: "Edit the slot before you confirm. In v1, cancelling after that goes through the support chat." },
     ],
   },
   {
     type: "methodFinding",
     chapter: "beyond",
     tuck: true,
-    kicker: "Customer support [CONFIRM 7, 17]",
+    kicker: "Customer support",
     h: "Cancellation, and where it lived in v1",
     finding: "Cancelling a scheduled order ran through the support chat, not a button on the order. A deliberate compromise, and one I'll own.",
     p: [
-      "Editing a slot before you confirm is a first-class control. Cancelling after that routed through support chat in v1, on purpose, to handle abuse and refunds safely while the flow was young. It belongs as a first-class control next, held to the same honesty rules as the rest, alongside the auto-cancel-and-credit for when we're the ones who miss.",
+      "Editing a slot before you confirm is a first-class control. Cancelling after that routed through support chat in v1, on purpose, to handle abuse and refunds safely while the flow was young. It belongs as a first-class control next, held to the same honesty rules as the rest. Cancel on the Orders page is designed for that later step.",
     ],
   },
-  pick(sdDevelopOffers, "Offers got complicated fast", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Offers, on hold [CONFIRM 13, 14]" }),
-  pick(sdDevelopOffers, "When the cart can't ship", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Edge cases, on hold [CONFIRM 13]" }),
+  pick(sdDevelopOffers, "Offers got complicated fast", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Offers, on hold" }),
+  pick(sdDevelopOffers, "When the cart can't ship", { chapter: "beyond", tuck: true, kicker: "Beyond the cart · Edge cases, on hold" }),
   {
     type: "figure",
     chapter: "beyond",
@@ -622,7 +622,7 @@ export const scheduledDeck = [
   pick(sdDevelopSlots, "This is the real component", { chapter: "proof", tuck: true, kicker: "Proof · Try it" }),
   pick(sdDeliver, "All eight states, on one canvas", { chapter: "proof", tuck: true, kicker: "Proof · The canvas" }),
   pick(sdDeliver, "Five journeys, walked end to end", { chapter: "proof", tuck: true, kicker: "Proof · Journeys" }),
-  pick(sdDeliver, "What's ready, what's waiting", { chapter: "proof", tuck: true, kicker: "Proof · Status [CONFIRM 6]" }),
+  pick(sdDeliver, "What's ready, what's waiting", { chapter: "proof", tuck: true, kicker: "Proof · Status" }),
 
   // ===================== 10 IMPACT AND REFLECTION =====================
   divider("impact-ch", "10", "Impact", "What it did, and what I'd change"),

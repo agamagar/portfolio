@@ -22,13 +22,13 @@ export const sdDiscover = [
     finding: "Product feedback flagged it: slots sell out during the day.",
     p: [
       "So the picker can't just be a list of open windows. It needs to say what happens when one's gone, and when the whole day is.",
-      "I drew it three ways. Greyed chips with no label. A SLOT FULL tag on each full chip. And a plain panel that says ALL SLOTS ARE BOOKED when a day is empty.",
+      "I drew it two ways. A full slot greys out its chip. And when the whole day is gone, a plain panel says ALL SLOTS ARE BOOKED.",
     ],
   },
   // src: schedule.json ut-oct29-research (S-106 to S-110)
   {
     type: "numbered",
-    kicker: "Discover · Oct 29 session",
+    kicker: "Discover · An Oct 29 session with three users",
     h: "Three people, one task: schedule what can't ship now",
     items: [
       { title: "Don't let me save yet", body: "One person wanted Save locked until a slot was picked. They also asked why nothing was selected for them." },
@@ -137,6 +137,7 @@ export const sdDevelopToggle = [
       { title: "Two cards, one choice", body: "Instant and Schedule stay as two cards on the shipment, the way UT 01 had them. Pick one and the slot picker opens or closes." },
       { title: "The slot, on the collapsed card", body: "From UT 03 and the person who'd forget. A collapsed shipment says Delivering 19 Oct, 5 AM - 6 AM. I drew four wordings for that line." },
       { title: "Remove lives in the header", body: "Remove Items never became a third option. A shipment that can't be delivered gets its own header, with a Remove button." },
+      { title: "Why not the toggles", body: "The three-way and mini toggles asked for a decision before people could see the slots. Two cards, with the slot on the collapsed card, kept each shipment's choice in view." },
     ],
   },
 ];
@@ -175,9 +176,9 @@ export const sdDevelopSlots = [
     kicker: "Develop · When a slot's gone",
     h: "Slots sell out, so the picker says so",
     p: [
-      "Three answers are in the file. Greyed chips. A SLOT FULL tag on each one. And when the whole day's gone, a panel that says ALL SLOTS ARE BOOKED.",
+      "A full slot greys out its chip. And when the whole day's gone, a panel says ALL SLOTS ARE BOOKED.",
     ],
-    figure: "Same picker, drawn for each answer. The returns pickup page borrows it too.",
+    figure: "Same picker, drawn for one full slot and for a full day. The returns pickup page borrows it too.",
   },
 ];
 
@@ -246,7 +247,7 @@ export const sdDevelopReturns = [
     kicker: "Develop · Tracking and refunds",
     h: "Tracking has two chains",
     p: [
-      "A replacement goes: getting packed, on the way, arrived, delivered, with the old item picked up. A return goes: rider on the way, arrived, picked up, then refund initiated and refund credited.",
+      "As designed, a replacement goes: getting packed, on the way, arrived, delivered, with the old item picked up. A return goes: rider on the way, arrived, picked up, then refund initiated and refund credited.",
       "The refund lands in Zepto Cash straight away, or back at the source account in 3 to 5 days.",
     ],
   },
@@ -330,8 +331,8 @@ export const sdDeliver = [
     kicker: "Deliver · Status",
     h: "What's ready, what's waiting",
     items: [
-      { title: "Dev ready and final: 90 cases", body: "The cart headers, the handover states, the picker inside it, order tracking, cart composition. Seven flows." },
-      { title: "In progress: 125 cases", body: "The slot picker page and the whole returns family. Ten flows, marked WIP in the file." },
+      { title: "Designed and handed over to dev: 90 cases", body: "The cart headers, the handover states, the picker inside it, order tracking, cart composition. Seven flows." },
+      { title: "In progress: 125 cases", body: "The M4 slot picker page and the whole returns family. Ten flows, still in progress." },
       { title: "On hold: 50 cases", body: "Offers and the combined-cart edge cases. Five flows, designed and prototyped, waiting on a decision." },
       { title: "Exploring: 61 cases", body: "Toggles, banners, coachmarks, the Oct 29 research. Ten flows. Where the ideas were tested." },
     ],
@@ -378,7 +379,7 @@ export const sdDeliver = [
       { title: "The numbers disagree", body: "Date tabs say 13 Slots and 0 Slots on screens that list slots under Tomorrow. Slot counts need one source." },
       { title: "Confirm needs a rule", body: "Confirm is drawn enabled even with no slot selected. The research said it should wait for one." },
       { title: "Unavailable has six wordings", body: "Back soon. Unavailable. Currently unavailable. Not Available. Temporarily unavailable. And again in capitals. Pick one." },
-      { title: "Two doors for returns", body: "Exchange and return are drawn in chat and in the app, and both read as current. Which one ships is still open." },
+      { title: "Two doors for returns", body: "Exchange and return are drawn in chat and in the app, and both read as current. The call: the in-app flow comes first, and chat is the fallback for edge cases." },
     ],
   },
 ];

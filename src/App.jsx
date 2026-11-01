@@ -2683,7 +2683,7 @@ const caseStudies = {
         // muky4dn5 (28 Sep): the three image boxes moved up into The explorations
         fig: "schedDirections",
         figBare: true,
-        figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the shipped single-page listing: every shipment and its chosen slot stay visible at once.",
+        figure: "Before and after. Left, the rejected tabbed direction: move to shipment two and shipment one's chosen slot is on another tab, out of view. Right, the chosen single-page listing: every shipment and its chosen slot stay visible at once.",
         divider: true,
       },
       // mukxmirl (28 Sep): Two directions merged INTO the section above (its tldr, prose and figure moved there)
@@ -2722,7 +2722,7 @@ const caseStudies = {
         ],
         fig: "schedDateSwitch",
         figBare: true, // mtmrnolv: no figure card around coded figures
-        figure: "The shipped slot picker, rebuilt from the real component: switching Today and Tomorrow re-animates the slot list. The detail that earns trust is honesty about supply, today is partial because earlier slots have already passed, while tomorrow opens a full day, so the day row is doing real work, not decoration.",
+        figure: "The slot picker, rebuilt from the real component: switching Today and Tomorrow re-animates the slot list. The detail that earns trust is honesty about supply, today is partial because earlier slots have already passed, while tomorrow opens a full day, so the day row is doing real work, not decoration.",
         divider: true,
       },
       {
@@ -2822,7 +2822,7 @@ const caseStudies = {
         nav: "Cart states",
         group: "Process",
         tldr:
-          "The cart decides each shipment's fate before you ever pick a slot, so the real surface was a matrix. I drew and shipped every combination.",
+          "The cart decides each shipment's fate before you ever pick a slot, so the real surface was a matrix. I drew every combination and handed it over to dev.",
         p: [
           "On a platform built on instant, the cart is the moment of truth: it has to read honestly whatever the supply situation is. Because one cart can split up to four ways and the Instant-versus-Schedule control resolves shipment by shipment, the cart page is not a screen, it is a matrix. The hard part is the Schedule button itself, which can be open, disabled, hidden, the only thing you can do, or gone entirely depending on what that shipment's store can actually honour.",
           "So I mapped and designed each cell rather than the happy path plus a catch-all. Every one of these is a real state a shipment can land in:",
