@@ -31,6 +31,14 @@ const AgentWizardFigure = lazyFig(() => import("./figures/AgentWizard"));
 const AgentWizardCompare = lazyFig(() => import("./figures/agentWizard/Compare"));
 const AgentWizardFFF = lazyFig(() => import("./figures/agentWizard/AgentWizardFFF"));
 const DasshSlide = lazyFig(() => import("./figures/dassh/DasshSlide"));
+// the Dassh opening, Figma 1772:55682 sections 121 to 118 rebuilt live (one module, seven frames)
+const DasshLogoHero = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshLogoHero })));
+const DasshNoise = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshNoise })));
+const DasshClarity = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshClarity })));
+const DasshMark = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshMark })));
+const DasshWire = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshWire })));
+const DasshProblem = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshProblem })));
+const DasshJourney = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshJourney })));
 const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
 const AnnotationDemo = lazyFig(() => import("./figures/scaffold/AnnotationDemo"));
 const SeqDemo = lazyFig(() => import("./figures/systemExplainer/SeqDemo"));
@@ -634,6 +642,14 @@ const figures = {
   agentWizardFff: AgentWizardFFF,
   stellaOnboarding: StellaOnboarding,
   dasshSlide: DasshSlide, // the Dash slide, rebuilt in code (hero of /work/dassh)
+  // Figma 1772:55682: 121 hero, 122, 127, 126, 128, 107, 118
+  dasshLogoHero: DasshLogoHero,
+  dasshNoise: DasshNoise,
+  dasshClarity: DasshClarity,
+  dasshMark: DasshMark,
+  dasshWire: DasshWire,
+  dasshProblem: DasshProblem,
+  dasshJourney: DasshJourney,
   executionFlood: ExecutionFlood,
   callJourney: CallJourney,
   stellaSim: StellaSim,
@@ -3537,12 +3553,19 @@ const caseStudies = {
       "Outcomes & reflection",
     ],
     // real product: the v3 home draft (Radical layout), captured headless from Build home 2026-09-29/site, sample data
+    // 1 Nov 2026: Figma 121, the Dassh lockup, leads; the product capture stays as the fallback
+    heroFig: "dasshLogoHero",
     heroImage: "/figures/dassh/dassh-board-home.jpg",
     heroAlt: "The Dassh home: a written summary of the day, the Composer, four anchors and the jobs list",
     cover: "Dassh",
     lead:
       "A recruiter's day fills with CVs, calls, messages, scheduling and status chasing. Dassh, formerly Stella, takes that execution work on: it screens CVs, calls and messages candidates, runs first-round interviews and keeps the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build it from zero: the four experiences it ships as, the agent system underneath, the conversation design of the calls it makes to real candidates, and the design system that turned Figma files into production code. Over 2025 the work took it from zero to live hiring at enterprises like Zydus Lifesciences and Increff and, as the year closed, a ₹1.2 crore raise. In 2026 I redesigned the home around a team of agents that Dassh leads. That redesign is a prototype, not shipped.",
     sections: [
+      // Figma 122, 127, 126, 128: the noise headline, cognitive load to clarity, the mark, the board's outline
+      { breaker: true, fig: "dasshNoise" },
+      { breaker: true, fig: "dasshClarity" },
+      { breaker: true, fig: "dasshMark" },
+      { breaker: true, fig: "dasshWire" },
       {
         h: "Context & problem",
         tldr: "Hiring is mostly noise. At first it looked like a cognitive load problem. As we looked deeper, it became a clarity problem.",
@@ -3561,6 +3584,7 @@ const caseStudies = {
           "The execution flood: a role goes live and CVs pour in faster than anyone can read, the work that buries hiring.",
         divider: true,
       },
+      { breaker: true, fig: "dasshProblem" }, // Figma 107
       {
         h: "Problem statement",
         tldr: "A digital surface that streamlines noise.",
@@ -3568,6 +3592,7 @@ const caseStudies = {
           "Everything that fills a recruiter's day arrives as noise: a CV, a missed call, a message, a reschedule, a status someone has to chase. The surface has one job. It takes all of that in and hands back only what needs a person: what is broken, what is waiting on you, and what moved. The rest is work the agents do, and it stays one tap deep for the day something goes wrong.",
         ],
       },
+      { breaker: true, fig: "dasshJourney" }, // Figma 118
       {
         h: "From a dashboard to a Dassh-Board",
         nav: "The journey",

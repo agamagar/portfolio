@@ -1,0 +1,76 @@
+/* Dassh opening (Figma 1772:55682). Type sizes are Figma px x --fp with a
+   reading floor, so the 816 column keeps the frame and a phone stays legible. */
+.dsh {
+  --dsh-ink: var(--fg);
+  --dsh-then: color-mix(in srgb, var(--fg) 38%, transparent);
+  --dsh-violet: #33095e; /* Figma: black text under a rgba(51,23,124,.7) inner shadow, as .iq */
+  --dsh-wire: rgba(0, 0, 0, 0.06);
+  --dsh-sans: "Atkinson Hyperlegible Next", var(--type-display-family, system-ui), sans-serif;
+  --dsh-ssh: "Stack Sans Headline Variable", "Stack Sans Headline", sans-serif;
+  color: var(--dsh-ink);
+}
+:root.dark .dsh { --dsh-violet: #b69cea; --dsh-wire: rgba(255, 255, 255, 0.12); }
+.article__body .dsh p { margin: 0; }
+
+/* 121 + 126 + 128: the lockup and the mark, painted in the theme ink */
+.dsh__logo, .dsh__mark {
+  background: var(--dsh-ink);
+  -webkit-mask: url(/figures/dassh/dassh-logo.svg) center / contain no-repeat;
+  mask: url(/figures/dassh/dassh-logo.svg) center / contain no-repeat;
+}
+.dsh__mark {
+  display: block;
+  width: 51%; height: 60%; margin: 20% auto 0;
+  -webkit-mask-image: url(/figures/dassh/dassh-mark.svg);
+  mask-image: url(/figures/dassh/dassh-mark.svg);
+}
+
+/* 122 */
+.article__body .dsh__head {
+  font-family: var(--dsh-sans); font-weight: 500; text-align: center;
+  font-size: max(calc(48 * var(--fp)), 1.375rem); line-height: 1.29; color: var(--dsh-ink);
+}
+.article__body .dsh__sub {
+  font-family: "Open Sans", var(--dsh-sans); font-weight: 400; text-align: center;
+  font-size: max(calc(28 * var(--fp)), 1rem); line-height: 1.43; color: var(--dsh-ink);
+}
+.dsh__photo > img { object-fit: contain; }
+
+/* 127: the card centres its two lines */
+.dsh__card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: calc(24 * var(--fp)); padding: calc(60 * var(--fp)); text-align: center;
+}
+.article__body .dsh__line {
+  font-family: var(--dsh-sans); font-weight: 400;
+  font-size: max(calc(48 * var(--fp)), 1.0625rem); line-height: 1.29; color: var(--dsh-ink);
+}
+.article__body .dsh__line--then { color: var(--dsh-then); }
+.dsh__tile > img { object-fit: contain; }
+
+/* 128: a wireframe; the Figma strokes are 10% on glass, which reads as about 6% on the page */
+.dsh__wire, .dsh__wirepanel { box-shadow: inset 0 0 0 1px var(--dsh-wire); }
+.dsh__wirepanel { --dsh-wire: color-mix(in srgb, var(--fg) 4%, transparent); }
+
+/* 107 + 118: Stack Sans in the violet ink */
+.article__body .dsh__label {
+  font-family: var(--dsh-ssh); font-weight: 300; color: var(--dsh-violet);
+  font-size: max(calc(36 * var(--fp)), 1.0625rem); line-height: 1.3;
+}
+.article__body .dsh__statement {
+  font-family: var(--dsh-ssh); font-weight: 400; color: var(--dsh-violet);
+  font-size: max(calc(48 * var(--fp)), 1.375rem); line-height: 1.29; text-wrap: pretty;
+}
+.dsh--problem .dsh__label { margin-bottom: calc(40 * var(--fp)) !important; padding-left: calc(12 * var(--fp)); }
+.dsh__moments { display: flex; flex-direction: column; gap: calc(60 * var(--fp)); }
+.dsh__moments > img { width: 100%; height: auto; aspect-ratio: 3 / 2; display: block; }
+
+@media (max-width: 700px) {
+  .fs--stack.dsh { padding: 1.5rem 0; }
+  .article__body .dsh__head, .article__body .dsh__sub, .article__body .dsh__line { text-wrap: balance; }
+  .dsh--noise .dsh__photo { order: 0; }
+  .dsh--problem .dsh__photo { width: 100%; aspect-ratio: 756 / 982; max-height: 70vh; }
+  .dsh--problem .dsh__photo > img { object-fit: cover; object-position: center 40%; }
+  .dsh--journey .dsh__copy--q { order: 1; }
+  .dsh--journey .dsh__moments { order: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+}
