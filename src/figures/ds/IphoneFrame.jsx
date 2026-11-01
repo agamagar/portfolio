@@ -29,11 +29,22 @@ import { useEffect, useRef, useState } from "react";
 import PhoneControls from "../../ui/PhoneControls";
 import { rise } from "../../ui/useSectionPlay";
 import PhoneLinks from "./PhoneLinks";
+import FigmaEmbed from "../../ui/FigmaEmbed";
+import { liveFor } from "../sdStory/liveScreens";
 import { PhoneLinkSlot } from "./phoneLinkSlot";
 import "./phoneFrame.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 export const IPHONE_FRAME_SRC = "/figures/frames/iphone-17-pro.png";
 export const PHONE_SIZES = { xs: 120, sm: 168, md: 208, lg: 300, hero: 340 };
+
+// A screen inside the frame: the coded prototype's live screen when it draws this one (liveScreens.js), else the picture.
+// The live screen fills the screen box; the picture stays under it as the poster.
+export function PhoneScreen({ src, alt = "", className, ...rest }) {
+  const lv = liveFor(src);
+  if (lv) return <FigmaEmbed mode="proto" playground={lv.pg} caseId={lv.case} title={alt} fallback={src} alt={alt} badge={false} />;
+  return <Img className={className} src={src} alt={alt} loading="lazy" draggable="false" {...rest} />;
+}
 
 function StatusBar({ tone }) {
   return (
@@ -58,6 +69,7 @@ export default function PhoneFrame({
   const restart = slotted?.restart;
   const w = width ?? (typeof size === "number" ? size : PHONE_SIZES[size] ?? PHONE_SIZES.md);
   const on = controls ?? interactive;
+  // one source for the screens: a still the coded prototype draws (liveScreens.js) is mounted live instead, its still the poster
   useEffect(() => {
     const el = root.current;
     if (!enter || !el) return undefined;
@@ -70,15 +82,15 @@ export default function PhoneFrame({
       {tag && <span className="pf__tag" data-tone={tagTone || String(tag).toLowerCase()}>{tag}</span>}
       <div className="pf__dev ifr">
         <div className="ifr__screen">
-          {screen ? <img className="ifr__img" src={screen} alt={alt} loading="lazy" draggable="false" /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
+          {screen ? <PhoneScreen className="ifr__img" src={screen} alt={alt} /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
           {statusBar && <StatusBar tone={statusBar === "light" ? "light" : "dark"} />}
           {island && <span className="pf__island" aria-hidden="true" />}
         </div>
         {on && <PhoneControls label={alt || caption || "Phone"} />}
-        <img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
+        <Img className="ifr__bezel" src={IPHONE_FRAME_SRC} alt="" draggable="false" aria-hidden="true" />
         {overlay}
       </div>
-      {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} onRestart={restart} />}
+      {(proto || figmaHref || restart) && <PhoneLinks proto={proto} figma={figmaHref} linkLabel={figma ? undefined : slotted?.label} onRestart={restart} />}
       {caption && <figcaption className="pf__cap">{caption}</figcaption>}
     </figure>
   );

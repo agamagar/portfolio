@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../ds/hooks";
 import IphoneFrame from "../ds/IphoneFrame";
 import "./scheduled.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // The whole cart page, top to bottom (mvf9leyc, 19 Oct 2026): the export laid out flat at full height, not scrolling
 // inside a phone, with numbered callouts that point at its key parts. Each callout is a dot on the page, a leader line
@@ -61,7 +62,7 @@ export default function SchedCartPageFlat() {
           <div className="cpf__scroll" ref={scroller} tabIndex={0} role="region" aria-label="The full cart page; scroll it"
             onWheel={() => setHeld(true)} onTouchStart={() => setHeld(true)} onPointerDown={() => setHeld(true)}>
             <div className="cpf__pg" ref={pg}>
-              <img className="cpf__page" src={SRC} alt="The full Zepto cart page, top to bottom: offers, shipments, items, prescription, add-ons, bill and the pay buttons." width="720" height="7452" loading="lazy" decoding="async" />
+              <Img className="cpf__page" src={SRC} alt="The full Zepto cart page, top to bottom: offers, shipments, items, prescription, add-ons, bill and the pay buttons." width="720" height="7452" loading="lazy" decoding="async" />
               <span className="cpf__spot" aria-hidden="true" style={{ "--t": cur.a + "%", "--h": (cur.b - cur.a) + "%" }} />
             </div>
           </div>

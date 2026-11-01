@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useReducedMotion, useFitScale, useInViewLoop } from "../ds/hooks";
 import "./scheduled.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // Design Mode: the per-shipment CART STATE MATRIX as a contact sheet of real
 // Zepto cart screens (Schedule Order Handoff). Each tile is a distinct state the
@@ -44,7 +45,7 @@ export default function SchedCartStates() {
           <div className="sdg-grid">
             {TILES.map((t, i) => (
               <div className="sdg-tile" key={t.src} data-on={i < shown ? "true" : "false"} data-active={i === active ? "true" : "false"}>
-                <div className="sdg-screen"><img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} /></div>
+                <div className="sdg-screen"><Img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} /></div>
                 <div className="sdg-cap">{t.cap}</div>
               </div>
             ))}

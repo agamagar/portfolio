@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { animate } from "motion";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // muilckke (26 Sep 2026): Portfolio 2026 node 1167:43070, four stacked
 // 1512 x 982 frames (so each is the case study frame default): a light label
@@ -121,7 +122,7 @@ function Orb({ id, sp, delay }) {
         </filter>
       </svg>
       <span className="suc__bubble" style={{ animationDelay: `${delay}s` }}>
-        <img src={CLIPS.has(sp[3]) ? `/figures/scheduled/use-cases/${sp[3]}.webp` : `/figures/scheduled/moments/${sp[3]}-v2.webp`} alt="" draggable="false" style={{ filter: `url(#${id})` }} />
+        <Img eager src={CLIPS.has(sp[3]) ? `/figures/scheduled/use-cases/${sp[3]}.webp` : `/figures/scheduled/moments/${sp[3]}-v2.webp`} alt="" draggable="false" style={{ filter: `url(#${id})` }} />
         {CLIPS.has(sp[3]) && !REDUCED && <BubbleVideo name={sp[3]} style={{ filter: `url(#${id})` }} />}
       </span>
     </span>

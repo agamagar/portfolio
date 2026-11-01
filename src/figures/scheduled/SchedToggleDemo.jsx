@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import FigmaShot from "./FigmaShot";
 import PhoneControls from "../../ui/PhoneControls";
-import PhoneFrame from "../ds/IphoneFrame";
+import ScreenStrip from "./ScreenStrip";
 import "./schedToggleDemo.css";
 
 // mv59m6yi (12 Oct): the Instant -> Scheduled toggle, shown as Agam's own screen
@@ -11,45 +10,7 @@ import "./schedToggleDemo.css";
 // No coded replica: the real toggle's motion only exists in the recording.
 export const DEMO_SRC = "/figures/scheduled/instant-to-scheduled-toggle.mp4";
 
-// 22 Oct (Agam, "the smart toggle: its whole subtext changes based on scenarios"): the same two-option toggle with the
-// subtext it shows in each situation. Every string is the playground's own (design-playground schedule-b:
-// DeliveryOptionsSheet and CartHeaderStates S-061..S-069, TimeOfDay's high-demand banner). A "slots filling fast"
-// scenario was asked for but has no copy in the file, so it is not here.
-const SCENARIOS = [
-  { k: "open", chip: "Instant available", inst: "9 min", sched: "Order now, get it later", on: "instant" },
-  { k: "off", chip: "Instant unavailable", inst: "Instant delivery is unavailable", sched: "Order now, get it later", on: "schedule", off: true },
-  { k: "demand", chip: "High demand", inst: "High Demand! Instant delivery is temporarily unavailable. Schedule for later.", sched: "Order now, get it later", on: "schedule", off: true },
-  { k: "closed", chip: "Store closed", inst: "Store re-opens at 6AM", sched: "Add to cart now and place order later", on: "schedule", off: true },
-  { k: "rain", chip: "Rain", inst: "Deliveries paused due to rain", sched: "Order now, get it later", on: "schedule", off: true },
-  { k: "done", chip: "Everything scheduled", inst: "9 min", sched: "Arriving today, 4-5 PM", on: "schedule" },
-];
-
-function ToggleScenarios() {
-  const [k, setK] = useState("open");
-  const sc = SCENARIOS.find((x) => x.k === k);
-  const opt = (kind, title, sub, off) => (
-    <div className="std-opt" data-kind={kind} data-on={sc.on === kind ? "" : undefined} data-off={off ? "" : undefined}>
-      <b>{title}</b>
-      <span key={sc.k + kind} className="std-opt__sub" aria-live="polite">{sub}</span>
-    </div>
-  );
-  return (
-    <div className="std__plate std__plate--sc">
-      <div className="std-chips" role="group" aria-label="Scenario">
-        {SCENARIOS.map((x) => (
-          <button key={x.k} type="button" aria-pressed={x.k === k} onClick={() => setK(x.k)}>{x.chip}</button>
-        ))}
-      </div>
-      <PhoneFrame size="md" interactive={false} enter={false} alt="The delivery toggle in the selected scenario">
-        <div className="std-screen">
-          <p className="std-screen__h">Delivery options</p>
-          {opt("instant", "Instant Delivery", sc.inst, sc.off)}
-          {opt("schedule", "Schedule Delivery", sc.sched, false)}
-        </div>
-      </PhoneFrame>
-    </div>
-  );
-}
+// mvq1flyx-2ng7w5 (Agam, 27 Oct, "remove this section"): the six-scenario toggle plate that sat under the demo is removed.
 
 export default function SchedToggleDemo() {
   const wrap = useRef(null);
@@ -70,9 +31,15 @@ export default function SchedToggleDemo() {
           aria-label="The delivery mode toggle switching from Instant to Scheduled"
           onLoadedData={() => setOk(true)} onError={() => setOk(false)} />
         {ok && <PhoneControls label="Delivery toggle demo" />}
-        {!ok && <FigmaShot k="toggle-demo" bare alt="Three toggle prototypes side by side: UT 01 dual toggle, UT 02 three options, UT 03 mini toggle with per-shipment pills." />}
+        {!ok && (
+          // mvq1e8mp-rvi0jp: the three user-test toggles are a phone carousel, the one ScreenStrip every section uses
+          <ScreenStrip label="The three user-test toggles, scroll sideways" tiles={[
+            { src: "/figures/scheduled/explored/ut01.webp", cap: "UT 01: Instant and Schedule as two cards", alt: "UT 01 dual toggle" },
+            { src: "/figures/scheduled/explored/ut02.webp", cap: "UT 02: three options in one list", alt: "UT 02 three options" },
+            { src: "/figures/scheduled/explored/ut03.webp", cap: "UT 03: one mini toggle with the slot in the pill", alt: "UT 03 mini toggle with per-shipment pills" },
+          ]} />
+        )}
       </div>
-      <ToggleScenarios />
     </div>
   );
 }

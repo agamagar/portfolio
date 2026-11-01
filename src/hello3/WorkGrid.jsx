@@ -367,16 +367,17 @@ const SLOT_SCREENS = [
   { key: "tmrMore", src: "/figures/scheduled/sched-tomorrow-more.png" },
   { key: "tmrAll", src: "/figures/scheduled/sched-tomorrow-all.png" },
 ];
-// THE ACTUAL PROTOTYPE (pin mtrwwro0, "for the second phone bring the actual proto"): the case's main path
-// (Claude: Schedule, 9:154) through the shared FigmaEmbed, over the slot tour as its floor (mtrxq1us: whatever
-// happens on Figma's side, the phone shows the case's own screens, and the prototype covers them once painted).
+// THE ACTUAL PROTOTYPE (pin mtrwwro0, "for the second phone bring the actual proto"): the schedule page as the design
+// playground built it (flow-schedule-slot-picker-m4; was the Figma main path 9:154 until Agam's 26 Oct "use all the
+// developed flows"), through the shared FigmaEmbed, over the slot tour as its floor (mtrxq1us: the phone shows the
+// case's own screens until the flow has painted; with no deployed playground bundle the tour simply stays).
 // Private build only: the case pages on the public site are locked, so the homepage doesn't publish the Zepto file either.
 const PROTO_EMBED = PRIVATE_SITE;
 function ProtoScreen() {
   return (
     <span className="wg__proto">
       {PROTO_EMBED
-        ? <FigmaEmbed mode="proto" node="9:154" title="Scheduled Delivery prototype" badge={false} openLink={false}><SlotTour /></FigmaEmbed>
+        ? <FigmaEmbed mode="proto" playground="flow-schedule-slot-picker-m4" caseId="S-002" title="Scheduled Delivery, the schedule page running" badge={false} openLink={false}><SlotTour /></FigmaEmbed>
         : <SlotTour />}
     </span>
   );

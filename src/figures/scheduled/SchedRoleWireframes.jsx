@@ -7,8 +7,9 @@ import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
 import { Rail } from "../../hello/Timeline";
 import "../../hello/timeline.css";
-import { PenNib, ChatCircleText, Package, TextAa, RocketLaunch, Truck, UsersThree, ArrowUUpLeft, ShieldCheck, ShoppingCartSimple, CalendarX, WarningCircle, ChartBar, CalendarBlank } from "@phosphor-icons/react";
+import { PenNib, ChatCircleText, Package, TextAa, RocketLaunch, Signpost, ListChecks, CalendarCheck, Truck, UsersThree, ArrowUUpLeft, ShieldCheck, ShoppingCartSimple, CalendarX, WarningCircle, ChartBar, CalendarBlank } from "@phosphor-icons/react";
 import { MONTHLY, SLOT_BANDS, SLOT_MIX, VS_INSTANT, SOURCE_NOTE, ROLLOUT } from "../sdAvailability/sdReport";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // 27 Sep 2026 ("create a lot more detail slides for my role ... just wireframe
 // them ... collaboration with different teams, timeline management, team
@@ -99,7 +100,7 @@ const SLIDES = [
       // confirmed by Agam, 27 Sep: the study ran in November
       ["Nov 2025", "Validation study", "The 45-user mixed-method study, run with the PMs just after launch."],
       ["Dec 2025 to Jan 2026", "Returns and refunds", "The slot picker extended into the returns pickup flow."],
-      ["Jan to Feb 2026", "Hardening", "Edge cases with engineering: zero slots, API failure, analytics."],
+      ["Jan to Feb 2026", "Reiterating", "Edge cases with engineering: zero slots, API failure, analytics."],
     ],
   },
   {
@@ -331,7 +332,7 @@ function SlotChart() {
 const STEP_ICON = {
   "Problem on the canvas": PenNib, "First review": ChatCircleText, "M1 build and handoff": Package,
   "Content pass": TextAa, "M1 ships": RocketLaunch, "M2 ships": Truck, "Validation study": UsersThree,
-  "Returns and refunds": ArrowUUpLeft, "Hardening": ShieldCheck,
+  "Returns and refunds": ArrowUUpLeft, "Reiterating": ShieldCheck,
 };
 
 // ---- mujvibm1: speed. Every number from sdReport (warehouse pull, 23 Sep 2026)
@@ -374,7 +375,7 @@ function GrowthChart() {
       <LineChart area data={rows} series={[{ key: "sd", label: "Scheduled orders a month" }]} yFormat={fmtK} height={230} legend={false}
         annotations={[
           { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
-          { i: at(full.d), label: `All stores live (${n(full.stores)})`, anchor: "start", below: true }, // Agam on 3.6, 25 Oct: "switch to all stores live"
+          { i: at(full.d), label: `Rollout complete (${n(full.stores)})`, anchor: "start", below: true }, // Q20 (accepted 26 Oct): "Rollout complete"; it read "All stores live" after 3.6 (25 Oct)
           { i: rows.indexOf(peak), label: `Peak, ${(peak.sd / 1e6).toFixed(2)}M`, anchor: "middle" },
         ]}
         ariaLabel={`Scheduled orders a month: ${n(rows[0].sd)} in the October 2025 pilot, which began in ${pilot.stores} stores; all stores live (${n(full.stores)}) by ${full.label}; and a peak of ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`} />
@@ -466,7 +467,7 @@ function Diorama({ d, groups }) {
   return (
     <figure className="dio">
       <div className="dio__stage" ref={stage} data-pop={pop ? "on" : "wait"}>
-        <img src={d.src} alt={d.alt} loading="lazy" />
+        <Img src={d.src} alt={d.alt} loading="lazy" />
         {d.pins.map((p, i) => (
           <button type="button" className="dio__pin" key={p.g}
             // mukqb0zz: anchored by an EDGE, not the centre, so the name stays
@@ -509,9 +510,12 @@ const wk = (d) => Math.max(0, Math.floor((new Date(d) - WK0) / (7 * 864e5)));
 // mukp8kvi (28 Sep): an emoji before each card label, one per step
 // mukqhh5r (28 Sep): an icon for each number box, in the leadership icons' style
 export const STAT_ICON = { "2 releases": RocketLaunch, "6 months": CalendarBlank, "5 functions": UsersThree, "506 comments": ChatCircleText };
+// mvorf9wg (Agam, 26 Oct, "add icon for each"): one icon per point in the four columns, the stats' own style (filled, 24px,
+// the slide purple), so the two read as one family. Reverses mvntahzh's "no icons" for these points.
+const RL_ICON = { "Ship narrow first": RocketLaunch, "Two directions in parallel": Signpost, "A checklist for what was missing": ListChecks, "Dates set together": CalendarCheck };
 const PHASE_EMOJI = {
   "Problem on the canvas": "🗺️", "First review": "👀", "M1 build and handoff": "🛠️", "Content pass": "✍️",
-  "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Hardening": "🛡️",
+  "M1 ships": "🚀", "M2 ships": "📦", "Validation study": "🎙️", "Returns and refunds": "🔁", "Reiterating": "🛡️",
 };
 // mukpq377 (28 Sep): the expanded card reads as bullets, split from each step's
 // own sentence (nothing added)
@@ -524,11 +528,11 @@ const PHASE_BULLETS = {
   "M2 ships": ["Full multi-shipment scheduling", "The go-to-market, with the lead PM"],
   "Validation study": ["The 45-user mixed-method study", "Run with the PMs, just after launch"],
   "Returns and refunds": ["The slot picker, extended into returns pickup"],
-  "Hardening": ["Edge cases with engineering", "Zero slots", "API failure", "Analytics"],
+  "Reiterating": ["Edge cases with engineering", "Zero slots", "API failure", "Analytics"],
 };
 // mukpz799 (28 Sep): a Google Material Symbols icon per bullet, matched to what
 // the bullet says (loaded as a subset in index.html; add a name there too)
-const PHASE_BULLET_ICONS = {"Problem on the canvas": ["map", "sync", "science"], "First review": ["rule", "sentiment_satisfied", "calendar_today", "check_circle"], "M1 build and handoff": ["grid_view", "help"], "Content pass": ["trending_up", "forum", "edit_note"], "M1 ships": ["rocket_launch"], "M2 ships": ["local_shipping", "campaign"], "Validation study": ["groups", "handshake"], "Returns and refunds": ["assignment_return"], "Hardening": ["engineering", "event_busy", "cloud_off", "analytics"]};
+const PHASE_BULLET_ICONS = {"Problem on the canvas": ["map", "sync", "science"], "First review": ["rule", "sentiment_satisfied", "calendar_today", "check_circle"], "M1 build and handoff": ["grid_view", "help"], "Content pass": ["trending_up", "forum", "edit_note"], "M1 ships": ["rocket_launch"], "M2 ships": ["local_shipping", "campaign"], "Validation study": ["groups", "handshake"], "Returns and refunds": ["assignment_return"], "Reiterating": ["engineering", "event_busy", "cloud_off", "analytics"]};
 // 22 Oct (Agam): rail labels and bullets are sentence case (was title case, mvds04yi / mvg9bvbv)
 const sentenceCase = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 // mvg9bvbv (Agam): the rail's card labels read in title case (and the rail no longer upper-cases them)
@@ -557,7 +561,7 @@ function phaseRailModel(phases) {
   const years = [{ label: "2025", x: 0, i: 0 }];
   const jan = months.findIndex((c) => c.m === 2026 * 12);
   if (jan > 0) years.push({ label: "2026", x: (jan / n) * 100, i: jan });
-  const cards = spans.map((sp) => ({ key: `p${sp.k}`, tid: `p${sp.k}`, org: sp.what, role: null, x: (sp.i0 / n) * 100, i0: sp.i0, i1: sp.i1 }));
+  const cards = spans.map((sp) => ({ key: `p${sp.k}`, tid: `p${sp.k}`, org: sp.what, role: null, sub: String(phases[sp.k][0]).replace(/\b\d{1,2}\s+(to\s+\d{1,2}\s+)?(?=[A-Z][a-z]{2}\b)/g, ""), /* mvq2n3cf-e57fun: no day numbers on the rail */ x: (sp.i0 / n) * 100, i0: sp.i0, i1: sp.i1 }));
   const details = new Map(phases.map(([when, what, detail], k) => [`p${k}`, { id: `p${k}`, org: phaseLabel(what), kind: "", rawKind: "work", role: null, dates: when, span: when, outs: [], summary: PHASE_BULLETS[what] ? null : detail, bullets: PHASE_BULLETS[what] ? PHASE_BULLETS[what].map((t, j) => ({ icon: PHASE_BULLET_ICONS[what]?.[j], text: sentenceCase(t) })) : null }]));
   return { model: { months, n, years, cards }, details };
 }
@@ -648,14 +652,15 @@ const SHOW_LEADING_WITH_DESIGN = false; // mvgnrq1v ("hide this"): the whole "Le
 const SHOW_RWF_LEAD = false; // mvgizm2i ("hide this"): the lead / "what M1 was set to measure" paragraph under the points; true brings it back
 const SHOW_RWF_KEYBOX = false; // mvgn7qr3 ("hide this"): the dashed legend + source box under the speed charts; true brings it back
 const SHOW_RL_TOGGLE = false; // mvgnqfi5 ("hide this"): the List / Circles toggle; Circles is the only view while it is off, true brings the toggle and the List back
+const SHOW_RL_SHIP_NARROW = false; // mvpxe7bd-4rwcx4 ("hide this"): the Ship narrow first / Two directions / Checklist / Dates row; true brings it back
 const SHOW_RL_NUM = false; // mvgl6151 ("hide this and the code text above it"): the small 01..05 label inside each circle; true brings it back
-const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): the detail paragraph under the Circles view; true brings it back
+const SHOW_RL_DETAIL = false; // mvgizhxf ("hide this"): each point's detail line; true brings it back, under its point
 // list <-> circles toggle (annotation mvg9dlbz): the default is the numbered list; the second view is a row of
 // overlapping outlined circles, one per point, with the detail of the picked one beneath
 function RoleList({ items, vertical }) {
   const [view, setView] = useState("circles"); // mvgl5d7w: Circles is the default tab
-  const [on, setOn] = useState(0);
   const rows = items.map((it) => (Array.isArray(it) ? it : [null, it]));
+  if (!SHOW_RL_SHIP_NARROW && rows.some(([h]) => h === "Ship narrow first")) return null; // mvpxe7bd-4rwcx4 ("hide this"): the four-point row is parked
   return (
     <div className="rwf__rl">
       {SHOW_RL_TOGGLE && <div className="rwf-tabs rwf__rl-toggle" role="group" aria-label="Points view">
@@ -674,19 +679,19 @@ function RoleList({ items, vertical }) {
           ))}
         </ol>
       ) : (
-        <div className="rwf__rl-circles">
-          <ol className="rwf__rl-row">
-            {rows.map(([head, text], i) => (
-              <li key={i}>
-                <button type="button" className="rwf__rl-c" data-on={i === on ? "" : undefined} aria-pressed={i === on} onClick={() => setOn(i)} onMouseEnter={() => setOn(i)}>
-                  {SHOW_RL_NUM && <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>}
-                  <span className="rwf__rl-t">{head || text}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
-          {SHOW_RL_DETAIL && <p className="rwf__rl-detail" aria-live="polite">{(rows[on] || rows[0])[1]}</p>}
-        </div>
+        // mvntahzh (Agam, 25 Oct): no circles and no purple rings, for every list; the points sit in four left-aligned
+        // columns (two on a phone). Nothing is hidden behind a hover any more, so they're a list, not buttons, and each
+        // point is a heading under the slide's h3 (94.3).
+        <ol className="rwf__rl-cols">
+          {rows.map(([head, text], i) => (
+            <li key={i}>
+              {SHOW_RL_NUM && <span className="rwf__rl-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>}
+              {RL_ICON[head] && (() => { const I = RL_ICON[head]; return <span className="rwf__stat-icon" aria-hidden><I weight="fill" /></span>; })()}
+              <h4 className="rwf__rl-t">{head || text}</h4>
+              {SHOW_RL_DETAIL && head && <p className="rwf__rl-detail">{text}</p>}
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   );
@@ -712,7 +717,7 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
   }, [s.left]);
   const body = (
       <div className="rwf__main">
-        {s.title && <h3 className="rwf__title">{s.title}</h3>}
+        {s.title && <h3 className="rwf__title">{typeof s.title === "string" ? s.title.replace(/\s+(\S+)$/, "\u00a0$1") : s.title}</h3>}
         {SHOW_RWF_LEAD && s.lead && <p className="rwf__lead">{s.lead}</p>}
         {s.leadership && (
           <ul className="rwf__leadership">{s.leadership.map((l) => <li key={l}>{l}</li>)}</ul>
@@ -740,8 +745,9 @@ function Slide({ s: s0, embedded, compact, noCad, part }) {
             ))}
           </div>
         )}
-        {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
+        {/* mvntahzh ("move these up"): the four points sit above the rail, under the title */}
         {s.circles && <RoleList items={s.circles} vertical={s.vertical} />}
+        {s.kind === "timeline" && <PhaseGlassRail phases={s.phases} />}
         {s.kind === "list" && (
           <RoleList items={s.items} vertical={s.vertical} />
         )}

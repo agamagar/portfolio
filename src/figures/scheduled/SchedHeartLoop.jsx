@@ -9,6 +9,7 @@ import { feedback, feedbackCoalesced } from "../../ui/feedback";
 import { LoadRevealContext } from "../../ui/loadReveal"; // muzdylub: the clock waits for the page's reveal
 import { withAudio } from "../../ui/sound";
 import { voice } from "../../ui/motion-sound/synth.js"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // mujk4cl5 (27 Sep 2026): the Scheduled Delivery hero, rebuilt from Figma
 // HBBgHT1u7e5jsz7BEEZ3fT node 231:8842 ("228"). One 5.48s loop, every track
@@ -184,6 +185,7 @@ function InlineSvg({ src }) {
 export function preloadHeart() {
   const decode = (src) => {
     const im = new Image();
+    im.fetchPriority = "high"; // the hero: first in the queue (stack-audit pick 2)
     im.src = src;
     return im.decode().catch(() => {});
   };
@@ -291,7 +293,7 @@ function Icon({ p }) {
         <span className="shl__cal-body" />
         <span className="shl__cal-ring shl__cal-ring--l" />
         <span className="shl__cal-ring shl__cal-ring--r" />
-        <img className="shl__cal-heart" src={SRC + "icon-heart.svg"} alt="" draggable="false" />
+        <Img priority className="shl__cal-heart" src={SRC + "icon-heart.svg"} alt="" draggable="false" />
       </span>
     </motion.div>
   );
@@ -398,7 +400,7 @@ export default function SchedHeartLoop() {
           <Layer key={h.id} node={h} p={p} className="shl__heart"
             style={{ left: h.box[0], top: h.box[1], width: h.box[2], height: h.box[3] }}>
             {/* the svg overhangs its node box by the frame's insets (the blur) */}
-            <img src={SRC + h.src} alt="" draggable="false"
+            <Img priority src={SRC + h.src} alt="" draggable="false"
               style={{ left: `-${h.inset[1]}%`, top: `-${h.inset[0]}%`, width: `${100 + 2 * h.inset[1]}%`, height: `${100 + 2 * h.inset[0]}%` }} />
           </Layer>
         ))}

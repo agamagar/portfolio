@@ -3,6 +3,7 @@ import PhoneLinks from "../ds/PhoneLinks";
 import FigmaEmbed from "../../ui/FigmaEmbed";
 import { FIGMA_SCREENS } from "./figmaScreens";
 import "./figmaShot.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // One screen from the Zepto Figma file, in the site's shared PhoneFrame (live from Figma when the entry has a `node`), with a status tag and, in the private
 // build only, "Try prototype" where a live playground case matches.
@@ -23,7 +24,7 @@ export default function FigmaShot({ k, alt, width, size = "md", bare = false, ta
     return (
       <figure className={"fshot " + className} data-status={m.status}>
         {tag && <span className="fshot__tag" data-status={m.status}>{TAG[m.status]}</span>}
-        <img className="fshot__bare" src={m.src} alt={alt} loading="lazy" draggable="false" />
+        <Img className="fshot__bare" src={m.src} alt={alt} loading="lazy" draggable="false" />
         <FigmaLinks k={k} />
       </figure>
     );

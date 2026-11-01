@@ -1,0 +1,5 @@
+/* Img.jsx: the width / height attributes reserve an image's space before it loads. Without a global img reset
+   (no Tailwind preflight here), a CSS width would leave the attribute's height in place and stretch the image, so the
+   height follows the ratio unless a component sets one. :where() keeps this at zero specificity: any component rule
+   still wins, while the attribute hint (lower than every author rule) does not. */
+:where(img.fimg) { height: auto; }

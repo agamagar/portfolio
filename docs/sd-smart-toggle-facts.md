@@ -144,7 +144,7 @@ Placed in "Slot-page states".
 - **Latest:** the Nov 21 set, a dismissible "High Demand! Instant delivery is temporarily unavailable. Schedule for later." banner (S-041 to S-043, TimeOfDay.tsx).
 - **What M4 shows:** a greyed Instant card marked Unavailable, with a callout you can dismiss (index card 07). M4's demand line is "Unavailable due to demand, schedule for later" (S-003, frame 84:169, playground `schedule/data.ts`).
 - **Open:**
-  - The chip copy has six variants across boards (flow map, inconsistencies). Which wording ships: **[CONFIRM]**.
+  - Which wording shipped: **answered (Q10, A, Agam accepted 26 Oct)**: M4's "Unavailable due to demand, schedule for later". Comparison 2 marks it the winner over Nov 21's "High Demand!" banner. (The chip copy had six variants across boards.)
   - Why the greyed card and callout beat the chip, tag, up / down toggle and "Get it now / later": **[CONFIRM]**.
 
 ### 3. The slot on the collapsed card
@@ -238,22 +238,23 @@ Source: `design-playground/docs/critique-decisions.md`, kept by the Design criti
 
 Source: Agam's Figma annotations on the Schedule button variants page in Claude: Schedule, relayed by CoS: Figma and logged in `design-playground/docs/decisions-board.csv`. Each one goes in the explorations layer where its decision sits in the story.
 
-**D1: the Schedule Reset sheet** (annotation 327:312090; decisions board row 43, "Prototype · Flow", Done, 25 Oct)
-- The rule: when someone closes the app on the cart and opens it again, they land back on the cart, and the M1 "Schedule Reset" bottom sheet resets the schedule state there.
+**D1: the "Schedule needs review" sheet** (annotation 327:312090, where Agam called it "Schedule Reset"; decisions board row 43, "Prototype · Flow", Done, 25 Oct; corrected by the Notion source pass, 26 Oct)
+- The rule: when someone closes the app on the cart and opens it again and item availability has changed, a bottom sheet asks them to review: title "Schedule needs review", body "Some items may not be available for delivery. Review your scheduled order.", button "Review Schedule" (Claude: Schedule 327:312090, read 26 Oct). It is a review prompt triggered by availability, not a silent reset.
+- The QA spec for the same case: "On returning to the cart/schedule screen after closing the app, a 'Schedule needs review' bottom sheet appears: 'Product availability has changed since your last visit' + a 'Review Schedule' button" (Claude/Case Studies/2026-06-29_scheduled-delivery-qa-experiment.md, line 20, marked "SPECCED (partial)").
 - The M1 case it matches: C-021, "Schedule reset: cart". The condition is "Previously scheduled" and the outcome is "Cart returns to Store Unserviceable / Schedule state" (`docs/flow-map-cart.md`, M1 FTB handover, designed). The cart Delivery Options exploration also drew a Reset link beside Edit slot (S-090, "Delivery scheduled / Reset / Edit slot").
 - Placement: under the cart-side Schedule entry. It's a rule about when the reset appears, not a visual choice.
-- Open: why the schedule resets instead of waiting for the user, and exactly what resets. **[CONFIRM]** (questions 17 and 18).
+- Answered by the sources (Q17): why it appears, a change in item availability. Still open (Q18): exactly what the review clears. **[CONFIRM]**.
 
 **D2: one status on a collapsed shipment card** (Agam, 25 Oct, relayed by CoS: Figma)
 - The decision: a collapsed shipment card on the Schedule page shows a single status pill, the chosen mode or slot. It doesn't show both options the way the toggle does.
 - Who raised it: Agam, as an interesting problem. Why one status, when two would mirror the toggle?
 - The reasons, put to him by the coordinator; he chose single. Which one is his own, or which he'd lead with, is **[CONFIRM]** (question 22).
   - The toggle is an input, so it shows the choices. The collapsed card is an output, so it shows the outcome, the way an iOS Settings row reads "Wi-Fi: Home".
-  - Three stacked shipments read as one column of statuses ("10 mins", "Today, 7 - 8 PM", "22 mins"). Two each would be six labels, half of them inactive. The 10 and 22 minute ETAs match the dark-store and super-store lines in the M1 cart composition (C-050, C-054); the slot is an example.
+  - Three stacked shipments read as one column of statuses ("⚡ 10 mins", "Scheduled", "⚡ 22 mins", as v4 and the prototype draw them, 92.1). Two each would be six labels, half of them inactive. The 10 and 22 minute ETAs match the dark-store and super-store lines in the M1 cart composition (C-050, C-054).
   - For a scheduled shipment the slot time is what matters, and a two-option pill crowds it out.
   - A two-option pill looks like a switch. But tapping Schedule on a collapsed card can't finish the choice, because there's no slot yet.
   - The counterpoint: shipments 2 and 3 start collapsed (M4 "Default arrival: the shipment you came from expanded, the rest collapsed but visible", App.jsx "Slot-page states"), so the other option is hidden. The answer is intent: people come to the Schedule page by choosing to.
-- Addendum, Agam's choice (option A, 25 Oct, relayed by CoS: Figma): an untouched collapsed card really starts on Instant and shows one pill with the default, "Delivering in 10 mins". There are no offer chips, even before a choice, and the card opens on a tap. That closes the gap in the counterpoint: the single-pill rule holds everywhere, with no exception.
+- Addendum, Agam's choice (option A, 25 Oct, relayed by CoS: Figma): an untouched collapsed card really starts on Instant and shows one pill with the default, "⚡ N mins" (v4 and the prototype; the long form, "Delivering in 10 mins", ran into the chevron and was cut on 25 Oct, 92.1). There are no offer chips, even before a choice, and the card opens on a tap. That closes the gap in the counterpoint: the single-pill rule holds everywhere, with no exception.
 - Ties back to: comparison 3, "The slot you picked". That one settles what the collapsed card says (User 02, the five wordings); D2 settles how much it shows.
 - Shipped or design (66.1): the single pill, the untouched-card addendum and the scroll-to-shipment highlight (being built) are prototype behaviour. Their figures carry the label "Prototype, 2026", and the verdicts say "the design does…" until question 23 is answered. D1, the Schedule Reset sheet, is logged as "Prototype · Flow" too, so it reads the same way.
 - Shipped or design: the single pill is the design. Whether the Zepto app shipped it is **[CONFIRM]** (question 23).
@@ -264,13 +265,13 @@ Source: Agam's Figma annotations on the Schedule button variants page in Claude:
 Answers can be short. Where I've written a guess, a yes or no is enough.
 
 **Smart toggle (new section "Where you tapped")**
-1. What changes with the tap: the title, the subtext, the option already selected, or the shipment the toggle acts on?
+1. What changes with the tap: the title, the subtext, the option already selected, or the shipment the toggle acts on? **Answered from sources (26 Oct): e, which is c + d, the option already selected and the shipment the toggle acts on. "The shipment you arrived from expands by default" (App.jsx, "Where it landed"), and #13 (accepted): a group's Schedule link opens that shipment on Schedule, expanded; Pay starts every shipment that can come now on Instant.**
 2. Which taps count? Sourced: (a) Schedule on the cart's "Schedule for later" header, (b) Edit on a scheduled shipment, (c) the homepage prompt when demand is high, (d) Schedule from View items. Any others?
 3. What does the toggle show for each? Guess: (a) that shipment opens with Schedule chosen; (b) Schedule chosen, with the booked slot ("Arriving today, 4-5 PM") as its subtext; (c) Schedule chosen, with the high-demand line on Instant.
 4. Why was it built this way? Guess: someone who just tapped Schedule shouldn't have to choose it again.
 5. What was the worst case before this? For example, did the page once open on Instant, or on shipment 1, after a tap on a different shipment?
 6. Did it ship in the app, or is it in the final design only?
-7. Should it be its own section right after "Instant to Scheduled: the toggle", with its own figure? Or a second row of chips on the existing scenario figure?
+7. Should it be its own section right after "Instant to Scheduled: the toggle", with its own figure? Or a second row of chips on the existing scenario figure? **Answered (Q7 / #20, B, Agam accepted 26 Oct): a second row of entry-point chips on the existing scenario figure, in "Instant to Scheduled: the toggle"; not a new section.**
 
 **The three toggle prototypes**
 8. Why did UT 01's two cards per shipment beat UT 02 (Remove as a third option) and UT 03 (the mini pill)? Guess for the verdict line: the choice reads before you tap.
@@ -297,9 +298,10 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
     - Cart-page states: the Pay experiment.
     - The go-to-market: the coach-marks and banners.
     BxGy stays off the page, since it's on hold and internal.
+    **Answered (Q15 / #28, A, Agam accepted 26 Oct): placed as planned.** Wired with `explored: <key>` on each section, the row at the section's end: toggle, instantOff, collapsedSlot and gtm. The Pay row waits: which experiment won is still open (comparison 4), and the rebuild's stills don't show the difference, so it needs the handoff frames (C-057 42:45530, C-060 42:47849) before it can go in.
 
 **The Schedule Reset sheet (D1)**
-17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed.
+17. Why does the schedule reset when someone comes back to the cart, instead of keeping their slot? Guess: the slot may have filled or passed while the app was closed. **Answered by the source pass (26 Oct): it isn't a reset. A "Schedule needs review" sheet appears when item availability has changed (Figma 327:312090; the QA spec, line 20).**
 18. What exactly resets: only the chosen slot, or the shipment's Instant or Schedule choice too? And every shipment in the cart, or only the scheduled one?
 
 **Numbers on the page (critique #37)**
@@ -308,7 +310,7 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 21. The deployed private site builds on Amplify without the playground bundle, so its live-state embeds show posters. Options: (a) accept the posters; "Open full size" no longer shows without the bundle, but the line "Click one to use it" should then change; (b) commit the built bundle (about 20 MB) so Amplify ships it; (c) host the bundle elsewhere and point VITE_SD_PLAYGROUND_URL at it.
 
 **One status on a collapsed card (D2)**
-22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet.
+22. Of the reasons for a single status pill, which is yours, and which would you lead with? (a) input against output: the toggle shows choices, the closed card shows the outcome, like "Wi-Fi: Home"; (b) the column: three shipments read as one column of statuses, not six labels; (c) the slot time is what matters and two options crowd it out; (d) two options look like a switch that can't finish the choice, because there's no slot yet. **Answered (#30.4, Agam accepted the recommendation, 26 Oct): (a) leads, (b) the column of statuses supports.**
 23. Did the single-status collapsed card ship in the Zepto app, or is it the design only?
 
 **The cart's main button (66.2)**
@@ -316,3 +318,5 @@ Answers can be short. Where I've written a guess, a yes or no is enough.
 
 **Optional, not blocking**
 16. RESOLVED by critique decision 1.2 / 1.8 (Confirm waits for every shipment, no helper text), written as the design, not as shipped.
+
+**#13 answered (Agam accepted the recommendation, 26 Oct, routing list accepted-2026-10-26.md): A, the starting mode follows the entry point.** Pay starts every shipment that can come now on Instant; a group's Schedule link opens that shipment on Schedule, expanded. This is the design (the prototype side is under prototype fixes), so the draft says "the design", not "the app".

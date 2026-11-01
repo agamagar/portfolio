@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { embedPoster, embedUrl, getEmbed, loadSynced, PLAYGROUND_BASE } from "./playgroundBase";
+import { embedPoster, embedUrl, getEmbed, loadSynced, PLAYGROUND_BASE, useSiteTheme } from "./playgroundBase";
 import "./playgroundEmbed.css";
 
 // A live chromeless view of the design playground (the same React components the
@@ -17,20 +17,7 @@ import "./playgroundEmbed.css";
 // arrow keys / Esc keep driving the deck. Esc (same-origin bundle), the Done button or a
 // click anywhere outside gives control back.
 
-const siteIsDark = () => document.documentElement.classList.contains("dark");
 const prefersReduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-function useSiteTheme(explicit) {
-  const [t, setT] = useState(() => explicit || (siteIsDark() ? "dark" : "light"));
-  useEffect(() => {
-    if (explicit) return setT(explicit);
-    const mo = new MutationObserver(() => setT(siteIsDark() ? "dark" : "light"));
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    setT(siteIsDark() ? "dark" : "light");
-    return () => mo.disconnect();
-  }, [explicit]);
-  return t;
-}
 
 export default function PlaygroundEmbed({
   id,

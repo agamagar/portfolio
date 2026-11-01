@@ -12,13 +12,36 @@ import { Colour, Type, Components } from "../system/SystemPage";
 import "../system/system.css";
 import "./palettePanel.css";
 
-const PREFIXES = ["--sd-", "--sdc-", "--rv-", "--rex-", "--ig-", "--sdr-"];
+// Which custom-property families belong to which case study (keyed by the page's data-case). A case not listed owns none:
+// it shows its own accent (--case-accent, set on the page by App.jsx from the case's data) and nothing borrowed from another case.
+const CASE_PREFIXES = {
+  "scheduled-delivery": ["--sd-", "--sdc-", "--rv-", "--rex-", "--ig-", "--sdr-"],
+  dassh: ["--ds-"],
+};
+const SITE_DEFAULT_ACCENT = "#9674db";
+// the case on screen right now: re-read on every route change (history API + popstate), not once at mount
+function useCase() {
+  const read = () => {
+    const el = document.querySelector(".page[data-case]");
+    return { key: el?.getAttribute("data-case") || "", accent: el ? getComputedStyle(el).getPropertyValue("--case-accent").trim() : "" };
+  };
+  const [c, setC] = useState(read);
+  useEffect(() => {
+    const upd = () => setC((o) => { const n = read(); return n.key === o.key && n.accent === o.accent ? o : n; });
+    const mo = new MutationObserver(upd);
+    mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-case", "style"] });
+    window.addEventListener("popstate", upd);
+    upd();
+    return () => { mo.disconnect(); window.removeEventListener("popstate", upd); };
+  }, []);
+  return c;
+}
 const noop = () => {};
 
 function* rules(list) {
   for (const r of list) { yield r; if (r.cssRules && !(r instanceof CSSStyleRule)) yield* rules(r.cssRules); }
 }
-function readCaseTokens() {
+function readCaseTokens(prefixes) {
   const out = new Map();
   for (const ss of document.styleSheets) {
     let list; try { list = ss.cssRules; } catch { continue; }
@@ -26,7 +49,7 @@ function readCaseTokens() {
       if (!(r instanceof CSSStyleRule)) continue;
       for (let i = 0; i < r.style.length; i++) {
         const n = r.style[i];
-        if (!PREFIXES.some((p) => n.startsWith(p))) continue;
+        if (!prefixes.some((p) => n.startsWith(p))) continue;
         const v = r.style.getPropertyValue(n).trim();
         if (!out.has(n)) out.set(n, { name: n, values: [] });
         out.get(n).values.push({ v, sel: r.selectorText });
@@ -54,17 +77,23 @@ function hue(c) {
 const isPinkPurple = (c) => { const h = c && hue(c); return h != null && h >= 255 && h <= 345; };
 
 function CasePalette() {
-  const [only, setOnly] = useState(true);
+  const cur = useCase();
+  const prefixes = CASE_PREFIXES[cur.key] || [];
+  const [only, setOnly] = useState(false);
   const [copied, setCopied] = useState("");
-  const rows = useMemo(() => readCaseTokens().map((t) => {
+  const accent = cur.accent || SITE_DEFAULT_ACCENT;
+  const rows = useMemo(() => [
+    { name: "--case-accent", values: [{ v: accent }] },
+    ...readCaseTokens(prefixes),
+  ].map((t) => {
     const first = t.values[0], c = probe(first.v);
     return { ...t, c, raw: first.v, more: t.values.slice(1) };
-  }).filter((r) => r.c), []);
+  }).filter((r) => r.c), [cur.key, accent]); // eslint-disable-line react-hooks/exhaustive-deps
   const shown = only ? rows.filter((r) => isPinkPurple(r.c)) : rows;
   const copy = (txt) => { try { navigator.clipboard.writeText(txt); } catch { /* clipboard blocked */ } setCopied(txt); setTimeout(() => setCopied((x) => (x === txt ? "" : x)), 1200); };
   return (
     <>
-      <p className="sys-note">Every colour custom property the case study's own stylesheets declare, read live ({PREFIXES.join(" ")}). Click a swatch to copy its hex.</p>
+      <p className="sys-note">The colours of the case study on screen ({cur.key || "site default"}): its accent, then {prefixes.length ? prefixes.join(" ") : "no further token families"}, read live. Click a swatch to copy its hex.</p>
       <label className="pal__only"><input type="checkbox" checked={only} onChange={(e) => setOnly(e.target.checked)} /> Pink and purple only <small>{shown.length} of {rows.length}</small></label>
       <div className="pal__grid">
         {shown.map((r) => (
@@ -120,7 +149,7 @@ function Combos() {
           const t = `${hex2(c.f)} on ${hex2(c.b)}`;
           return (
             <button key={t} type="button" className="pal__combo" onClick={() => copy(t)} title={c.sels.join("\n")}>
-              <span className="pal__combo-s" style={{ color: `rgb(${c.f.r},${c.f.g},${c.f.b})`, background: `rgba(${c.b.r},${c.b.g},${c.b.b},${c.b.a})` }}>Aa Scheduled</span>
+              <span className="pal__combo-s" style={{ color: `rgb(${c.f.r},${c.f.g},${c.f.b})`, background: `rgba(${c.b.r},${c.b.g},${c.b.b},${c.b.a})` }}>Aa Sample</span>
               <b>{copied === t ? "Copied" : t}</b>
               <em className={c.ratio >= 4.5 ? "ok" : c.ratio >= 3 ? "mid" : "low"}>{c.ratio.toFixed(2)}:1 {c.ratio >= 4.5 ? "AA" : c.ratio >= 3 ? "large only" : "fails"}</em>
               <code>{c.sels[0]}</code>

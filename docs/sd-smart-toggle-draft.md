@@ -1,6 +1,6 @@
 # Smart toggle: section draft (Sauer)
 
-Register: Sauer. Sits in the Scheduled Delivery case study, group "Process", straight after "Instant to Scheduled: the toggle" and before "One scroll across midnight". Facts and sources: `docs/sd-smart-toggle-facts.md`.
+Register: Sauer. Folds into "Instant to Scheduled: the toggle" (Q7, B, Agam accepted 26 Oct): the copy below joins that section, and its figure is a second row of chips on the section's existing scenario figure, not a new section. Facts and sources: `docs/sd-smart-toggle-facts.md`.
 
 Standing rules carried in: no em dash, no tilde, every unsourced claim marked, and nothing goes into App.jsx while a marker is open. "The detail I am proudest of" is already used in the midnight section, so this one does not borrow it.
 
@@ -10,13 +10,13 @@ Standing rules carried in: no em dash, no tilde, every unsourced claim marked, a
 
 nav: Smart toggle
 
-tldr: The toggle opens already knowing which tap brought you there. [CONFIRM: the toggle's subject changes with the entry point, and which part changes]
+tldr: The toggle opens already knowing which tap brought you there: the shipment it is about, and the option you meant.
 
 Nobody lands on the schedule page by accident. They tapped Schedule on a shipment in the cart, or Edit on a slot they had already booked, or the homepage prompt that only shows when demand is high and the cart cannot be served. Or they pressed the cart's main button, Pay, which reads "Select delivery options" when a shipment can't come now. Each of those taps is already an answer. The toggle should not ask the question twice.
 
 The worst case is the busy cart. Zepto splits one order into shipments, and the page lists every one of them. Tap Schedule on shipment 2 of 3, land on shipment 1 with Instant selected, and you have to find your shipment and say "later" a second time. [CONFIRM: that a version or a test session opened this way] The design already opens the shipment you arrived from. The toggle had to follow the same tap.
 
-So its subject moves with you. [CONFIRM: what moves, title, subtext, default or target shipment] From Schedule, your shipment opens with Schedule Delivery chosen. [CONFIRM] From Edit, Schedule's subtext is the slot you booked, "Arriving today, 4-5 PM", so you start from your own choice. [CONFIRM] From the homepage prompt, Instant carries the reason: "High Demand! Instant delivery is temporarily unavailable. Schedule for later." [CONFIRM] From the cart's main button, [CONFIRM: Notion #13, which shipment opens first and what its toggle defaults to when you arrive from Pay]. Same two options every time. Only what they are about changes.
+So its subject moves with you: which shipment opens, and which option is already chosen. From a shipment's Schedule link, that shipment opens, expanded, with Schedule Delivery chosen. From Edit, Schedule's subtext is the slot you booked, "Arriving today, 4-5 PM", so you start from your own choice. [CONFIRM] From the homepage prompt, Instant carries the reason: "High Demand! Instant delivery is temporarily unavailable. Schedule for later." [CONFIRM] From the cart's main button, Pay, every shipment that can come now starts on Instant. Same two options every time. Only what they are about changes.
 
 **Outcome: not measured separately.** The September warehouse report counts scheduled orders by month, slot and lead time, not by the tap that opened the page, so this design has no number of its own. The nearest one is about the choice itself: only about 1.3% chose a slot when instant was fully available.
 
@@ -26,9 +26,9 @@ figure: Pick the tap you came from. The same Instant and Schedule options open o
 
 ## Figure plan (build after the answers)
 
-- `schedToggleEntry`, a sibling of `ToggleScenarios` inside `src/figures/scheduled/SchedToggleDemo.jsx`, reusing its plate, chips, `PhoneFrame` and `.std-opt` styles. No new tokens.
+- A second row of chips on the existing scenario figure (`ToggleScenarios` in `src/figures/scheduled/SchedToggleDemo.jsx`), reusing its plate, chips, `PhoneFrame` and `.std-opt` styles. No new figure, no new tokens (Q7, B).
 - Four chips, one per entry point (cart Schedule, Edit a booked slot, homepage prompt, the cart's main button: Pay or "Select delivery options"). Each chip sets the open shipment, the selected option and the two subtexts.
-- If Agam prefers one section (Q7 in the fact base), the chips become a second row on the existing scenario figure instead.
+- Built once the entry-point facts are answered (Q1 to Q6): the chips can only show what each tap really does.
 
 ---
 
@@ -48,7 +48,7 @@ Verdict: **Two cards per shipment won.** Instant and Schedule sit side by side i
 ## 2. Saying Instant is off
 In "Slot-page states".
 
-Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Unavailable, and adds a callout you can dismiss. [CONFIRM: the reason this beat the others, and the wording that ships]
+Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Unavailable, and adds a callout you can dismiss. Its line, "Unavailable due to demand, schedule for later", is the one that shipped, over Nov 21's "High Demand!" banner (Q10). [CONFIRM: the reason this beat the others]
 
 - "Back soon" chip (Explored): a promise the store couldn't time. [CONFIRM]
 - "Temporarily UNAVAILABLE" tag (Explored): loud, and it sits above the choice. [CONFIRM]
@@ -59,7 +59,7 @@ Verdict: **Grey the card, say why, offer later.** M4 greys Instant, marks it Una
 ## 3. The slot you picked
 In "Different ways we explored...", after the test quote.
 
-Verdict: **The collapsed card says it's scheduled.** One tester said it plainly: "I might forget the time slot selected for shipment 1." Five wordings put the slot on the closed card. In the design, every closed shipment says it's scheduled. [CONFIRM: Q12, whether the slot goes in the pill, and which wording]
+Verdict: **A scheduled card says Scheduled, not its slot.** One tester said it plainly: "I might forget the time slot selected for shipment 1." Five wordings put the slot on the closed card. In the design, a closed shipment shows one status: its Instant time, or Scheduled. [CONFIRM: Q12, whether the slot goes in the pill, and which wording]
 
 - "This shipment will be delivered Today, 5 - 6 AM"
 - "Delivering Today morning, 5 - 6 AM"
@@ -91,17 +91,19 @@ Verdict: **Two touches shipped. The rest stayed in the file.** The banner on the
 ## D1. Coming back to the cart
 Under the cart-side Schedule entry. A rule, so it's one line and a verdict, with no comparison row.
 
-Verdict: **In the design, leaving on the cart resets the schedule.** Close the app on the cart, open it again, and the design lands you back on the cart with the Schedule Reset sheet, which resets the schedule there. In the M1 case the cart goes back to Store Unserviceable, with Schedule offered again. [CONFIRM: why it resets instead of keeping the slot] [CONFIRM: what resets, the slot or the Instant and Schedule choice too, and for which shipments]
+Verdict: **Come back to the cart and the design asks you to review, not start over.** Close the app on the cart and open it again, and if item availability has changed, a sheet says so: "Schedule needs review. Some items may not be available for delivery. Review your scheduled order.", with one button, Review Schedule. The trigger is what is in stock, not the time away, so nothing is reset behind your back. [CONFIRM: what the review clears, the slot or the Instant and Schedule choice too, and for which shipments (Q18)]
+
+Sources: the sheet in Claude: Schedule (327:312090); the QA spec for the same case, "Product availability has changed since your last visit" with a Review Schedule button (Claude/Case Studies/2026-06-29_scheduled-delivery-qa-experiment.md, line 20, specced).
 
 ## D2. One status on a closed card
 Next to comparison 3, "The slot you picked": that one settles the words on a closed card, this one settles how much it shows. Figure to make, labelled "Prototype, 2026": a single pill against the toggle mirrored, with three shipments stacked in each.
 
-Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home". [CONFIRM: which reason leads; this draft leads with input against output]
+Verdict: **The design shows one status on a closed card.** The obvious move was to mirror the toggle and show Instant and Schedule on every collapsed shipment, the chosen one lit. It lost. The toggle is an input, so it shows the choices. A closed card is an output, so it shows the outcome, the way a Settings row reads "Wi-Fi: Home".
 
-- Three shipments read as one column, for example "10 mins", "Today, 7 - 8 PM", "22 mins". Two options each would be six labels, half of them off.
-- A scheduled shipment's slot is the thing to read, and a second option crowds it out.
+- Three shipments read as one column of single pills: "⚡ 10 mins", "Scheduled", "⚡ 22 mins". Two options each would be six labels, half of them off.
+- A shipment's status is the thing to read, and a second option crowds it out.
 - Two options look like a switch, and tapping Schedule on a closed card can't finish the choice, because there's no slot yet.
 - The cost, said plainly: the second and third shipments start closed, so the other option is out of sight. People come to this page by choosing to schedule, so they know it's there.
-- Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, "Delivering in 10 mins", with no offer chips, until a tap opens it.
+- Even an untouched card keeps the rule in the design. It starts on Instant and shows that one pill, its Instant time, such as "⚡ 10 mins", with no offer chips, until a tap opens it.
 
-What the design does: every closed card carries a single pill, "Scheduled" or "Delivering in 10 mins". [CONFIRM: shipped in the app, or the design only] [CONFIRM: Q12, the slot in place of "Scheduled"]
+What the design does: every closed card carries a single pill: its Instant time, such as "⚡ 10 mins", or "Scheduled". The short form replaced "Delivering in 10 mins", which ran into the chevron. [CONFIRM: shipped in the app, or the design only] [CONFIRM: Q12, the slot in place of "Scheduled"]

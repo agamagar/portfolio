@@ -15,3 +15,14 @@
     animation: sp-rise var(--sp-dur, 700ms) var(--sp-ease, cubic-bezier(0.22, 1, 0.36, 1)) calc(var(--sp-lead, 100ms) + var(--sp-i, 0) * var(--sp-step, 120ms)) backwards;
   }
 }
+
+/* One reveal for a whole article (useBlockReveal): a top-level block with no entrance of its own fades up like a [data-sp-rise]
+   child: same distance, duration and ease. */
+@media (prefers-reduced-motion: no-preference) {
+  html.sp-on [data-sp-block]:not([data-sp]) { opacity: 0; transform: translateY(var(--sp-rise, 28px)); }
+  html.sp-on [data-sp-block][data-sp="in"] { animation: sp-rise var(--sp-dur, 700ms) var(--sp-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--sp-lead, 100ms) backwards; }
+}
+/* print and any no-motion path: nothing waits hidden */
+@media print {
+  [data-sp-block], [data-sp-rise], [data-play] [data-sp-rise], .pf__dev { opacity: 1 !important; transform: none !important; animation: none !important; }
+}

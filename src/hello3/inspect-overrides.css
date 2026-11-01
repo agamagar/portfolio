@@ -19,3 +19,13 @@ section.wg { padding-top: 180px !important; }
 
 /* 2026-10-18T09:30:20.661Z */
 h1.hv2__head { row-gap: 0px !important; }
+
+/* 2026-10-27T02:43:30.827Z */
+h1.hv4__head { width: 1012px !important; }
+h1.hv4__head { padding-right: 0px !important; }
+section.hello-hero { column-gap: 280px !important; }
+section.hello-hero { row-gap: 240px !important; }
+
+/* 2026-10-27T02:52:42.771Z */
+div.cs-sec:nth-child(20) { row-gap: 48px !important; }
+ul.article__terms > li:nth-child(3) { row-gap: 24px !important; }

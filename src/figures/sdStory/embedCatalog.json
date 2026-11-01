@@ -1,7 +1,7 @@
 {
  "note": "Append ?theme=dark|light&motion=reduce&bg=transparent to any hash. The embed posts {source:'sd-playground',type:'size',hash,height} to its parent.",
- "flows": 32,
- "cases": 326,
+ "flows": 77,
+ "cases": 1416,
  "embeds": [
   {
    "id": "schedule",
@@ -703,7 +703,7 @@
    "cases": [
     {
      "id": "S-061",
-     "title": "Scheduleable: 'Schedule for later'",
+     "title": "Schedulable: 'Schedule for later'",
      "designStatus": "final",
      "thumb": "flow/map/thumbs/schedule/HD-00.png"
     },
@@ -828,7 +828,7 @@
     },
     {
      "id": "S-079",
-     "title": "Multi-shipment page with 'No Slots Avaialable' (2 of 2) and +3 items",
+     "title": "Multi-shipment page with 'No Slots Available' (2 of 2) and +3 items",
      "designStatus": "dev-ready",
      "thumb": "flow/map/thumbs/schedule/NC-07.png"
     },
@@ -1576,7 +1576,7 @@
     },
     {
      "id": "PK-005",
-     "title": "Alternative 01: \"Less co2 emmisions\"",
+     "title": "Alternative 01: \"Less co2 emissions\"",
      "designStatus": "exploration",
      "thumb": null
     },
@@ -2670,6 +2670,7311 @@
      "title": "Store closed",
      "designStatus": "designed",
      "thumb": "flow/map/thumbs/cart/9381-20140.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-shell-gates",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-shell-gates",
+   "title": "Launch gates and shell listeners",
+   "summary": "Everything that runs before a product screen: splash, fonts, OTA and force update, route guards, push, share and deep-link listeners, SDK init.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-shell-gates",
+   "caseHash": "#embed/flow/away/aw-shell-gates?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-001",
+     "title": "Native splash held until fonts and animation",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-001.png"
+    },
+    {
+     "id": "AW-002",
+     "title": "Animated splash overlay plays then unmounts",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-001.png"
+    },
+    {
+     "id": "AW-003",
+     "title": "Blank while fonts or Clerk load",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-004",
+     "title": "Font load error does not block",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-005",
+     "title": "OTA check skipped in dev",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-006",
+     "title": "OTA check throttled to once per 5 minutes",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-007",
+     "title": "OTA update found: blocking update screen",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-008",
+     "title": "UpdateScreen visual",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-009",
+     "title": "OTA check fails silently",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-010",
+     "title": "OTA re-check on foreground",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-011",
+     "title": "Force update: build below remote minimum",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-012",
+     "title": "Force update screen layout",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-013",
+     "title": "Force update CTA disabled without store URL",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-014",
+     "title": "Force update never fires with default config",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-015",
+     "title": "Force update re-evaluates live",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-016",
+     "title": "Profile loader (currently unreachable)",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-017",
+     "title": "TEMP PREVIEW BYPASS: onboarding guard off",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-018",
+     "title": "TEMP PREVIEW BYPASS: invite guard off",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-019",
+     "title": "Signed-out guard",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-020",
+     "title": "Signed-in stack",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-021",
+     "title": "Unregistered routes still exist",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-022",
+     "title": "Concierge overlay only after onboarding",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-023",
+     "title": "Pusher provider only when signed in",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-024",
+     "title": "404 redirects home",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-025",
+     "title": "Native intent redirect for OneLink and share URLs",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-026",
+     "title": "Push token registered after sign-in",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-027",
+     "title": "Push skipped on simulator or when denied",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-028",
+     "title": "Foreground notifications shown",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-029",
+     "title": "Push tap: concierge booking chat",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-030",
+     "title": "Push tap: deep search complete",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-031",
+     "title": "Push tap works from cold start",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-032",
+     "title": "Deep link: flight search",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-033",
+     "title": "Deep link: booking",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-034",
+     "title": "AppsFlyer skipped without dev key",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-035",
+     "title": "AppsFlyer: ATT prompt then init",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-036",
+     "title": "Firebase Remote Config and analytics init",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-037",
+     "title": "Sentry init gated on DSN and Remote Config rates",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-038",
+     "title": "PostHog autocapture",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-039",
+     "title": "Route changes sent over Pusher",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-040",
+     "title": "Home screen (iPhone) before launch",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-system-resilience",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-system-resilience",
+   "title": "Offline, errors, retry and resume",
+   "summary": "How the app and agent behave when the world fails: offline banner, SSL pinning takeover, dropped stream, retry, resume, timeout, session expiry, airline unreachable.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-system-resilience",
+   "caseHash": "#embed/flow/away/aw-system-resilience?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-041",
+     "title": "Offline banner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-042",
+     "title": "Reachability unknown keeps previous state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-043",
+     "title": "SSL pinning failure takeover",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-044",
+     "title": "Pinning state is sticky",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-045",
+     "title": "Pinning retry",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-046",
+     "title": "SSL pinning only in release builds",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-047",
+     "title": "Attachment too large",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-048",
+     "title": "Dropped stream",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-049",
+     "title": "Chat list failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-050",
+     "title": "Chat retry and upload behaviour in the app",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-051",
+     "title": "Chat onError reports to Sentry",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-052",
+     "title": "Reconnect URL rebuilt",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-053",
+     "title": "History heal only if server knows at least as much",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-054",
+     "title": "Concierge overlay history fetch is non-blocking",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-055",
+     "title": "Cold-start offline keeps loader",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-056",
+     "title": "API client error shape",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-057",
+     "title": "Session / auth expiry",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-058",
+     "title": "Airline system unreachable",
+     "designStatus": "specced",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-auth",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-auth",
+   "title": "Welcome and phone OTP login",
+   "summary": "Welcome screen, phone entry, OTP entry, resend and throttle states, silent sign-up, push permission after login.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-auth",
+   "caseHash": "#embed/flow/away/aw-auth?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-059",
+     "title": "Welcome screen",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-020.png"
+    },
+    {
+     "id": "AW-060",
+     "title": "Welcome animation fails to load",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-061",
+     "title": "Phone entry default",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-056.png"
+    },
+    {
+     "id": "AW-062",
+     "title": "Phone input sanitised",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-057.png"
+    },
+    {
+     "id": "AW-063",
+     "title": "Continue disabled until valid",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-064",
+     "title": "Invalid phone message",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-065",
+     "title": "Country sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-066",
+     "title": "Existing user: send sign-in OTP",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-061.png"
+    },
+    {
+     "id": "AW-067",
+     "title": "New user: silent sign-up",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-068",
+     "title": "Send rate-limited",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-069",
+     "title": "Send failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-070",
+     "title": "Clerk not loaded when Continue pressed",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-071",
+     "title": "OTP step layout",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-061.png"
+    },
+    {
+     "id": "AW-072",
+     "title": "Edit number",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-073",
+     "title": "Status row texts",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-068.png"
+    },
+    {
+     "id": "AW-074",
+     "title": "SMS autofill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-075",
+     "title": "Auto-verify on sixth digit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-076",
+     "title": "Verify success",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-068.png"
+    },
+    {
+     "id": "AW-077",
+     "title": "Incorrect code",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-078",
+     "title": "Verification other failure",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-079",
+     "title": "Additional verification required",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-080",
+     "title": "Resend disabled during countdown",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-068.png"
+    },
+    {
+     "id": "AW-081",
+     "title": "Resend OTP",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-082",
+     "title": "Resend failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-083",
+     "title": "Push permission prompt after login",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-033.png"
+    },
+    {
+     "id": "AW-084",
+     "title": "Invited path: Login with Phone Number / Google",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-085",
+     "title": "OTP can't land — senior on a UK SIM, flying for a funeral",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-010.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-invite",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-invite",
+   "title": "Invite code, waitlist and request access",
+   "summary": "Invite redeem, AppsFlyer auto-apply, redeem success and errors, waitlist, request-access form.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-invite",
+   "caseHash": "#embed/flow/away/aw-invite?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-086",
+     "title": "Invite entry screen",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-079.png"
+    },
+    {
+     "id": "AW-087",
+     "title": "Verify disabled when empty",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-080.png"
+    },
+    {
+     "id": "AW-088",
+     "title": "Manual verify",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-089",
+     "title": "Auto-apply AppsFlyer code",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-090",
+     "title": "Auto-apply survives remount",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-091",
+     "title": "Prefilled hint",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-092",
+     "title": "Redeem success with inviter name",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-085.png"
+    },
+    {
+     "id": "AW-093",
+     "title": "Redeem success without inviter name",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-094",
+     "title": "Continue to home",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-095",
+     "title": "Redeem error",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-088.png"
+    },
+    {
+     "id": "AW-096",
+     "title": "Expired or exhausted code message",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-089.png"
+    },
+    {
+     "id": "AW-097",
+     "title": "Join waitlist",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-043.png"
+    },
+    {
+     "id": "AW-098",
+     "title": "On the list state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-099",
+     "title": "Request access form: initial",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-093.png"
+    },
+    {
+     "id": "AW-100",
+     "title": "Request access: accordion auto-advance",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-093.png"
+    },
+    {
+     "id": "AW-101",
+     "title": "Request access: same airport",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-094.png"
+    },
+    {
+     "id": "AW-102",
+     "title": "Request access: summary rows",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-095.png"
+    },
+    {
+     "id": "AW-103",
+     "title": "Request access: submit disabled",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-092.png"
+    },
+    {
+     "id": "AW-104",
+     "title": "Request access: submitted (local only)",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-097.png"
+    },
+    {
+     "id": "AW-105",
+     "title": "Chat view with invite gate",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-026.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-onboarding",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-onboarding",
+   "title": "First-time onboarding",
+   "summary": "Pitch, name capture, welcome lines, the dead preference quiz, the older build's intro slides, revamp concepts.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-onboarding",
+   "caseHash": "#embed/flow/away/aw-onboarding?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-106",
+     "title": "Intro loader",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-107",
+     "title": "Name step",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-099.png"
+    },
+    {
+     "id": "AW-108",
+     "title": "Continue disabled until name typed",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-100.png"
+    },
+    {
+     "id": "AW-109",
+     "title": "Name saved",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-110",
+     "title": "Name save fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-111",
+     "title": "Welcome lines roll in",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-103.png"
+    },
+    {
+     "id": "AW-112",
+     "title": "Onboarding completes and routes to invite",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-113",
+     "title": "[DEAD] Quiz Q1: where do you fly from",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-764.png"
+    },
+    {
+     "id": "AW-114",
+     "title": "[DEAD] Quiz Q2: how often",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-106.png"
+    },
+    {
+     "id": "AW-115",
+     "title": "[DEAD] Quiz Q3: what wins",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-107.png"
+    },
+    {
+     "id": "AW-116",
+     "title": "[DEAD] Quiz Q4: connections",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-108.png"
+    },
+    {
+     "id": "AW-117",
+     "title": "[DEAD] Quiz footer buttons",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-109.png"
+    },
+    {
+     "id": "AW-118",
+     "title": "[DEAD] Home FTUE intro step",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-110.png"
+    },
+    {
+     "id": "AW-119",
+     "title": "[DEAD] Home FTUE claim credits",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-111.png"
+    },
+    {
+     "id": "AW-120",
+     "title": "The four-story pitch",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-758.png"
+    },
+    {
+     "id": "AW-121",
+     "title": "Onboarding page (45 top-level items)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-122",
+     "title": "Onboarding recommendation: demo-as-welcome, honest settle framing",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-123",
+     "title": "Returning-user fast path",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-124",
+     "title": "Pre-auth \"taste\" (Beat 0)",
+     "designStatus": "idea",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-ftue-demo",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-ftue-demo",
+   "title": "FTUE negotiation demo",
+   "summary": "USP, negotiating, negotiated and claim screens, in Final, power-pass v2, Final Cut and Backup generations.",
+   "status": "designed",
+   "hash": "#embed/flow/away/aw-ftue-demo",
+   "caseHash": "#embed/flow/away/aw-ftue-demo?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-125",
+     "title": "Negotiated: saving revealed",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-005.png"
+    },
+    {
+     "id": "AW-126",
+     "title": "USP screen A: \"Fare you're used to? That's not REAL\"",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-001.png"
+    },
+    {
+     "id": "AW-127",
+     "title": "Negotiating: price as the centre piece",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-004.png"
+    },
+    {
+     "id": "AW-128",
+     "title": "Claim: reward screen",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-006.png"
+    },
+    {
+     "id": "AW-129",
+     "title": "Delight exercise: Away declines to negotiate one",
+     "designStatus": "idea",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-freemium",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-freemium",
+   "title": "Freemium gate and join-to-book",
+   "summary": "Search and negotiate without an invite, then 'Join Away to complete booking' and the waitlist.",
+   "status": "designed",
+   "hash": "#embed/flow/away/aw-freemium",
+   "caseHash": "#embed/flow/away/aw-freemium?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-130",
+     "title": "Home: Default",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-031.png"
+    },
+    {
+     "id": "AW-131",
+     "title": "Invite gate: the whole agent is free, only booking is invite-only",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AG-011.png"
+    },
+    {
+     "id": "AW-132",
+     "title": "Main (June): Fremium flow WIP (20 frames: Search results, Progress, Agent chat, Success state)",
+     "designStatus": "archived",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-home",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-home",
+   "title": "Home: hero slot, trip cards and lifecycle states",
+   "summary": "Tab shell, hero precedence, negotiation and trip cards, last-search pill, lifecycle states and home variants.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-home",
+   "caseHash": "#embed/flow/away/aw-home?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-133",
+     "title": "Tab bar: native glass tabs",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-112.png"
+    },
+    {
+     "id": "AW-134",
+     "title": "Tab bar: JS fallback",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-135",
+     "title": "Tab bar hidden on concierge tab",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-136",
+     "title": "Hotspots tab is dead",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-137",
+     "title": "Home data fetch and polling",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-138",
+     "title": "Home focus resets agent context",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-139",
+     "title": "Header: wallet and profile buttons",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-140",
+     "title": "Hero slot precedence",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-141",
+     "title": "Negotiations card: processing",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-032.png"
+    },
+    {
+     "id": "AW-142",
+     "title": "Negotiations card: completed",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-033.png"
+    },
+    {
+     "id": "AW-143",
+     "title": "Negotiations card: only processing/completed shown",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-144",
+     "title": "Negotiation tap: processing",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-145",
+     "title": "Negotiation tap: completed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-146",
+     "title": "Negotiation tap: expired",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-075.png"
+    },
+    {
+     "id": "AW-147",
+     "title": "Negotiation tap: failed",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-148",
+     "title": "Live update when negotiation finishes",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-149",
+     "title": "Ongoing trip card",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-150",
+     "title": "Upcoming trip only when actionable",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-151",
+     "title": "Trip card: fetching tickets",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-152",
+     "title": "Trip card: PNR copy",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-153",
+     "title": "Trip card: Away Advance awaiting payment",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-073.png"
+    },
+    {
+     "id": "AW-154",
+     "title": "Trip card tap",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-155",
+     "title": "Last search pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-156",
+     "title": "Last search tap",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-157",
+     "title": "Greeting copy computed but not rendered",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-158",
+     "title": "Category selector not rendered",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-159",
+     "title": "Home with four preference cards",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-112.png"
+    },
+    {
+     "id": "AW-160",
+     "title": "Home mockup: \"Away is ready to negotiate\"",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/away/AP-773.png"
+    },
+    {
+     "id": "AW-161",
+     "title": "Section 9: Default",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-162",
+     "title": "Section 9: Closed Minimised",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-163",
+     "title": "Section 9: Start Conversing",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-164",
+     "title": "Section 9: Click to Expand",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-165",
+     "title": "Home: Negotiating while booked",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-166",
+     "title": "Homepage v1: Start (783)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-167",
+     "title": "Homepage v1: Start (900, scrolled)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-168",
+     "title": "Homepage v1: Start (last)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-169",
+     "title": "Section 20: 22 Start frames + complete-negotiation (grouped)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-170",
+     "title": "Homepage v2: Start",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-171",
+     "title": "Homepage v2: Start (tall 1535)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-172",
+     "title": "Variant 02: Light",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-173",
+     "title": "Variant 02: Vibrant",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-174",
+     "title": "Recent Activities A: Flat list",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-175",
+     "title": "Recent Activities B: Status timeline",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-176",
+     "title": "Recent Activities C: Paged deck",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-177",
+     "title": "Recent Activities D: Dense table",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-178",
+     "title": "Recent Activities E: Hero + collapsed",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-179",
+     "title": "Variation 3",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-180",
+     "title": "Variation 4",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-181",
+     "title": "Adaptive home: stranger, acquaintance, regular",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-182",
+     "title": "Day-1 / 7 / 30 ambient cadence",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-183",
+     "title": "stranger home, route-low discovery card",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-020.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-intent",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-intent",
+   "title": "Intent capture: pill, composer, voice and screenshot",
+   "summary": "The AI search pill, structured fields, connected search, voice, screenshot upload.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-intent",
+   "caseHash": "#embed/flow/away/aw-intent?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-184",
+     "title": "Composer: criteria box",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-044.png"
+    },
+    {
+     "id": "AW-185",
+     "title": "Pill state: Incomplete",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-053.png"
+    },
+    {
+     "id": "AW-186",
+     "title": "Composer: swap needs destination",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-187",
+     "title": "Composer: passengers cycle",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-188",
+     "title": "Composer: class cycle",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-189",
+     "title": "Composer: city picker",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-190",
+     "title": "Composer: departure date",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-191",
+     "title": "Composer: return date",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-192",
+     "title": "Composer: add a screenshot",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-146.png"
+    },
+    {
+     "id": "AW-193",
+     "title": "Screenshot picker error",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-194",
+     "title": "Search Flights CTA disabled",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-195",
+     "title": "Search Flights CTA is a no-op on Home",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-196",
+     "title": "Flow: Scroll-Sticks",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-050.png"
+    },
+    {
+     "id": "AW-197",
+     "title": "Flow: Listening mode",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-048.png"
+    },
+    {
+     "id": "AW-198",
+     "title": "Flow: Collapsed pill",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-049.png"
+    },
+    {
+     "id": "AW-199",
+     "title": "Pill state: Base",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-051.png"
+    },
+    {
+     "id": "AW-200",
+     "title": "impossible brief, calm nearest-viable fix",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-022.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-search-form",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-search-form",
+   "title": "Manual search form and sheets",
+   "summary": "Airport, date, traveller and cabin sheets, the form page and the search-flow variant states.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-search-form",
+   "caseHash": "#embed/flow/away/aw-search-form?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-201",
+     "title": "Manual search sheet: step with home/profile chips",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-202",
+     "title": "Prefill from params",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-203",
+     "title": "Defaults",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-204",
+     "title": "Sections shown",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-205",
+     "title": "Airport sheet open",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-158.png"
+    },
+    {
+     "id": "AW-206",
+     "title": "Airport search no match",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-207",
+     "title": "Nearby airports",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-208",
+     "title": "Same-airport check missing on this form",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-161.png"
+    },
+    {
+     "id": "AW-209",
+     "title": "Trip type switch",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-210",
+     "title": "Date picker title and confirm",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-163.png"
+    },
+    {
+     "id": "AW-211",
+     "title": "Date cells",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-212",
+     "title": "Travellers limits",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-165.png"
+    },
+    {
+     "id": "AW-213",
+     "title": "Cabin options",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-165.png"
+    },
+    {
+     "id": "AW-214",
+     "title": "Floating Search Flights button",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-215",
+     "title": "Search disabled",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-168.png"
+    },
+    {
+     "id": "AW-216",
+     "title": "Submit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-217",
+     "title": "Submit success",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-170.png"
+    },
+    {
+     "id": "AW-218",
+     "title": "Submit failure is silent",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-219",
+     "title": "Auto search from link",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-220",
+     "title": "[DEAD] TravelClassBottemSheet",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-221",
+     "title": "[DEAD] flightSearchHome",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-222",
+     "title": "State registry",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-223",
+     "title": "Main app has no surfaces",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-224",
+     "title": "manual.base",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-225",
+     "title": "manual city / date / pax states",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-226",
+     "title": "Hotels tab stub",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-227",
+     "title": "ai.search",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-228",
+     "title": "pill.expanded reward",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-229",
+     "title": "Pill accessibility label",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-230",
+     "title": "page.full sections",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-231",
+     "title": "trip.webCheckIn",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-232",
+     "title": "trip.today",
+     "designStatus": "exploration",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-globe",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-globe",
+   "title": "Globe component",
+   "summary": "The globe on Home: idle, routes, fan out, unlocked, drag.",
+   "status": "designed",
+   "hash": "#embed/flow/away/aw-globe",
+   "caseHash": "#embed/flow/away/aw-globe?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-233",
+     "title": "Globe reacts to route",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-257.png"
+    },
+    {
+     "id": "AW-234",
+     "title": "Dragging globe collapses fields",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-235",
+     "title": "Globe / Body · Close: View=BLR-fan",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-236",
+     "title": "Globe / Pin (Origin, Destination)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-237",
+     "title": "Globe / State · Fan out",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-261.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-brief",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-brief",
+   "title": "The brief: reflect, clarify, launch",
+   "summary": "The agent reflects the brief, asks one clarifying question, then launches deep search.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-brief",
+   "caseHash": "#embed/flow/away/aw-brief?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-238",
+     "title": "Contextual question mid-search",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-239",
+     "title": "Reflected brief with a point of view",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-240",
+     "title": "Clarify card: ask, never guess",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-027.png"
+    },
+    {
+     "id": "AW-241",
+     "title": "Launch nudge",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-242",
+     "title": "Vague query: a slate of destinations (V1 to V3)",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-243",
+     "title": "Single-slot defaults and language signals",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-244",
+     "title": "cheap vs lie-flat fight, DEL→SIN",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-030.png"
+    },
+    {
+     "id": "AW-245",
+     "title": "long-weekend spike, BLR→GOI",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-031.png"
+    },
+    {
+     "id": "AW-246",
+     "title": "death in family, one-way home tonight, no return",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-032.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-results-listing",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-results-listing",
+   "title": "Flight listing and chat results",
+   "summary": "Listing page with shimmer, tags, pagination, navbar, empty and error states, and the chat search results.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-results-listing",
+   "caseHash": "#embed/flow/away/aw-results-listing?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-247",
+     "title": "Initial load: five shimmer cards",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-170.png"
+    },
+    {
+     "id": "AW-248",
+     "title": "Gradient wrapper loading state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-249",
+     "title": "Navbar shimmer until legs arrive",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-250",
+     "title": "Poll every 3 seconds while not completed/failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-251",
+     "title": "Polling timeout after 5 minutes",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-252",
+     "title": "Results with price, per person and tags",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-258.png"
+    },
+    {
+     "id": "AW-253",
+     "title": "Passenger-count price label",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-254",
+     "title": "Stops label on flight line",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-255",
+     "title": "Tag chips arrive over Pusher",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-258.png"
+    },
+    {
+     "id": "AW-256",
+     "title": "No tag yet / tagsLoading",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-257",
+     "title": "Deep-search potential not shown on card",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-258",
+     "title": "Pagination via onEndReached",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-259",
+     "title": "Next-page shimmer footer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-260",
+     "title": "AwayFooter hidden when empty",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-261",
+     "title": "No flights found",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-268.png"
+    },
+    {
+     "id": "AW-262",
+     "title": "Failed status shows the same empty state",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-263",
+     "title": "Query error is not surfaced",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-264",
+     "title": "Leg tabs only for round trips",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-265",
+     "title": "Tab labels with shortlist counts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-266",
+     "title": "Open on return tab",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-267",
+     "title": "Switching tab scrolls list to top; per-leg results/filters preserved",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-268",
+     "title": "Navbar: manual search summary",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-258.png"
+    },
+    {
+     "id": "AW-269",
+     "title": "Navbar: AI search description",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-270",
+     "title": "Back with no history",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-271",
+     "title": "Navbar collapses on scroll down",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-272",
+     "title": "Applying filter re-shows navbar and scrolls to top",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-273",
+     "title": "Shimmer overlay during AI bulk filter",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-274",
+     "title": "Listing metadata mirrored to chat",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-275",
+     "title": "Loader fallback when args missing",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-276",
+     "title": "City list truncation",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-277",
+     "title": "Fare calendar tool",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-278",
+     "title": "Tool output-error never rendered in prod",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-279",
+     "title": "Backend error codes",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-280",
+     "title": "No results",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-281",
+     "title": "FTUE shortlist banner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-282",
+     "title": "Sort tabs with counts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-283",
+     "title": "View all flights",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-284",
+     "title": "Return trip header shows \"NaN Invalid Date (Return)\"",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-268.png"
+    },
+    {
+     "id": "AW-285",
+     "title": "Standard search results",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-286",
+     "title": "New explorations: Start 5 (Indigo 6E 870)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-287",
+     "title": "New explorations: Start 6 (Negotiated Flights, Best value)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-288",
+     "title": "Section 1: Start (Ask Away AI, Indigo 6E 870, Best value)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-289",
+     "title": "Section 1: Start (tall 1357: How would like to travel to London)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-290",
+     "title": "Section 1: Start (mid)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-291",
+     "title": "Section 1: Frame (798)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-292",
+     "title": "Section 1: complete-negotiation card",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-293",
+     "title": "Section 2: Start",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-294",
+     "title": "Section 2: Frame 718 (Cheapest / Curated)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-295",
+     "title": "Section 3: Start (Negotiated Flights)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-296",
+     "title": "Section 3: Start (last)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-297",
+     "title": "Section 4: Start (Cheapest ₹28,000 Indigo)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-298",
+     "title": "Problem Statement #1: 37 flights are not shown",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-299",
+     "title": "Problem Statement #1: Edit / Depart by",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-300",
+     "title": "Negotiations *WIP*: Normal Flight Listing (15 frames)",
+     "designStatus": "archived",
+     "thumb": null
+    },
+    {
+     "id": "AW-301",
+     "title": "Protos: Section 4 (Delhi/Detroit 28-30 Apr listing frames, 25)",
+     "designStatus": "archived",
+     "thumb": null
+    },
+    {
+     "id": "AW-302",
+     "title": "The slate: three that span the trade",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-050.png"
+    },
+    {
+     "id": "AW-303",
+     "title": "Slate ladder: it never pads itself to three",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-304",
+     "title": "Domestic and thin: argue about the clock",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-305",
+     "title": "Price landscape: price by date as evidence",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-060.png"
+    },
+    {
+     "id": "AW-306",
+     "title": "Nothing clean: no fake best",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-061.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-filters",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-filters",
+   "title": "Filters and Filter with AI",
+   "summary": "Quick pills, AI filter, filter sheet with sort, stops, times, airlines.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-filters",
+   "caseHash": "#embed/flow/away/aw-filters?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-307",
+     "title": "Filter with AI: Editing AI Search",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-308",
+     "title": "Default filter row",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-284.png"
+    },
+    {
+     "id": "AW-309",
+     "title": "Filter count badge",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-310",
+     "title": "Cheapest pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-311",
+     "title": "Fastest pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-312",
+     "title": "Direct pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-313",
+     "title": "Early departure pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-314",
+     "title": "Late departure pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-315",
+     "title": "Pills are mutually exclusive; active pill shows X",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-316",
+     "title": "Filter with AI pill",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-182.png"
+    },
+    {
+     "id": "AW-317",
+     "title": "AI filter chip active",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-183.png"
+    },
+    {
+     "id": "AW-318",
+     "title": "AI payload switches leg",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-319",
+     "title": "AI bulk fetch",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-320",
+     "title": "Sheet title per leg",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-186.png"
+    },
+    {
+     "id": "AW-321",
+     "title": "Sort By options from backend",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-322",
+     "title": "Stops options",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-323",
+     "title": "Departure and arrival time windows",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-324",
+     "title": "Airlines section (conditional, expandable)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-325",
+     "title": "Airport sections gated by data",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-326",
+     "title": "Other popular filters: Hide nearby airports",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-327",
+     "title": "Nearby-airport conflict",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-328",
+     "title": "Apply Filters",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-329",
+     "title": "Reset All",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-330",
+     "title": "Filter change resets leg list",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-331",
+     "title": "Filtered to zero",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-332",
+     "title": "Recording: filter sheet with price histogram and radial time dial",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/away/AP-782.png"
+    },
+    {
+     "id": "AW-333",
+     "title": "Filters: Search state",
+     "designStatus": "designed",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-return-flights",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-return-flights",
+   "title": "Return flights: onward and return on one page",
+   "summary": "Onward and return selection, bars, landing state, agent zero states, ideation.",
+   "status": "designed",
+   "hash": "#embed/flow/away/aw-return-flights",
+   "caseHash": "#embed/flow/away/aw-return-flights?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-334",
+     "title": "Edge case: next day + different landing airport",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-128.png"
+    },
+    {
+     "id": "AW-335",
+     "title": "Return: Agent zero state: location not found (\"Where are you flying from?\")",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-336",
+     "title": "Final: Post Scroll State",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-103.png"
+    },
+    {
+     "id": "AW-337",
+     "title": "Final: Return Selection",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-104.png"
+    },
+    {
+     "id": "AW-338",
+     "title": "Final: Selection Change (collapsed view)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-339",
+     "title": "Final: Return selected",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-127.png"
+    },
+    {
+     "id": "AW-340",
+     "title": "Final: No Selected (bar)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-341",
+     "title": "Final: 50-50 case",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-112.png"
+    },
+    {
+     "id": "AW-342",
+     "title": "Final: landing State",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-114.png"
+    },
+    {
+     "id": "AW-343",
+     "title": "Final: Single View",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-115.png"
+    },
+    {
+     "id": "AW-344",
+     "title": "Return: Agent zero state: \"Starting your search...\"",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-117.png"
+    },
+    {
+     "id": "AW-345",
+     "title": "Return: Agent zero state: \"Flight search ready\"",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-346",
+     "title": "Return: Agent zero state: Flights to Peru",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-347",
+     "title": "v2 WIP: Default (Scanned 214 flights across 14 airline...)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-121.png"
+    },
+    {
+     "id": "AW-348",
+     "title": "v2 WIP: Scroll",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-349",
+     "title": "States: Onward",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-139.png"
+    },
+    {
+     "id": "AW-350",
+     "title": "States: Middle (3-leg)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-351",
+     "title": "States: Return",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-352",
+     "title": "Booking selection: Select onward",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-108.png"
+    },
+    {
+     "id": "AW-353",
+     "title": "Booking selection: Onward selected",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-354",
+     "title": "Booking selection: Select return",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-355",
+     "title": "Booking selection: Return selected (\"Both flights selected\")",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-192.png"
+    },
+    {
+     "id": "AW-356",
+     "title": "List: Selected state (BLR +3 - LIM +1)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-357",
+     "title": "Handoff: Agent > Return v1 (Standard Search frames)",
+     "designStatus": "archived",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-flight-details",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-flight-details",
+   "title": "Flight details sheet",
+   "summary": "Header, route with layovers, verdict, add to shortlist, weather and flight info.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-flight-details",
+   "caseHash": "#embed/flow/away/aw-flight-details?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-358",
+     "title": "Rapid taps ignored for 500ms",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-359",
+     "title": "Tap same selected card deselects",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-360",
+     "title": "Switching card while sheet open",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-361",
+     "title": "Detail shimmer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-362",
+     "title": "Verdict loading text",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-363",
+     "title": "Header: flight, date, cabin, route, live status",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    },
+    {
+     "id": "AW-364",
+     "title": "On-time hint",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    },
+    {
+     "id": "AW-365",
+     "title": "SAVE UPTO pill (remote config)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-366",
+     "title": "Price and tag",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    },
+    {
+     "id": "AW-367",
+     "title": "Add to shortlist",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-368",
+     "title": "Remove from shortlist",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-369",
+     "title": "VERDICT RECOMMENDED",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AG-062.png"
+    },
+    {
+     "id": "AW-370",
+     "title": "VERDICT NOT RECOMMENDED",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    },
+    {
+     "id": "AW-371",
+     "title": "Insight request fails",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-372",
+     "title": "Route layout with layover and terminal change",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    },
+    {
+     "id": "AW-373",
+     "title": "Long layover warning",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-374",
+     "title": "Flight info section (conditional)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-375",
+     "title": "Weather section (conditional)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-376",
+     "title": "Accordion arrow scrolls to route details",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-377",
+     "title": "Overview block is commented out in listing sheet",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-313.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-results-ia-spec",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-results-ia-spec",
+   "title": "Results page structure and card spec",
+   "summary": "Flights L1 PRD v1/v2 frames, results IA A to E, the price x time widget.",
+   "status": "designed",
+   "hash": "#embed/flow/away/aw-results-ia-spec",
+   "caseHash": "#embed/flow/away/aw-results-ia-spec?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-378",
+     "title": "PRD v1 L1-1 · Shortlist · anchor + timeline",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-161.png"
+    },
+    {
+     "id": "AW-379",
+     "title": "PRD v1 L1-2 · The collapsed card",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-162.png"
+    },
+    {
+     "id": "AW-380",
+     "title": "PRD v1 L1-3 · Expanded · every risk, worst first",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-163.png"
+    },
+    {
+     "id": "AW-381",
+     "title": "PRD v1 L1-4 · What we removed",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-382",
+     "title": "PRD v1 L1-5 · Returns · one leg, then totals",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-165.png"
+    },
+    {
+     "id": "AW-383",
+     "title": "PRD v1 L1-6 · Negotiation · the moment",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-166.png"
+    },
+    {
+     "id": "AW-384",
+     "title": "PRD v1 L1-7 · The swap screen",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-167.png"
+    },
+    {
+     "id": "AW-385",
+     "title": "PRD v1 L1-8 · AI bar · one state, two doors",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-168.png"
+    },
+    {
+     "id": "AW-386",
+     "title": "PRD v1 L1-9 · Preferences · push down, never hide",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-387",
+     "title": "PRD v1 L1-10 · Batch and compare-all",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-178.png"
+    },
+    {
+     "id": "AW-388",
+     "title": "Results IA A: range plus position",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-171.png"
+    },
+    {
+     "id": "AW-389",
+     "title": "PRD v2 V2-2 · Sliders · the tradeoff is felt",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-172.png"
+    },
+    {
+     "id": "AW-390",
+     "title": "PRD v2 V2-5 · Card states · all six",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-175.png"
+    },
+    {
+     "id": "AW-391",
+     "title": "PRD v2 V2-6 · Timeline · position only, drag to filter",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-176.png"
+    },
+    {
+     "id": "AW-392",
+     "title": "Results-page IA: 5 structures A-E (range+position, trade ledger, bands, one pick, frontier strip)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-393",
+     "title": "Results IA B: trade ledger",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-394",
+     "title": "Results IA C: bands, not tabs (recommended default)",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-395",
+     "title": "Results IA D: one pick plus reasons to switch (agent-native bet)",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-396",
+     "title": "Results IA E: frontier strip",
+     "designStatus": "prototyped",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-shortlist",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-shortlist",
+   "title": "Shortlist and the deep-search cart",
+   "summary": "Shortlist pills, limit of three, cart sheet, the ten-second auto-fill that starts negotiation.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-shortlist",
+   "caseHash": "#embed/flow/away/aw-shortlist?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-397",
+     "title": "Shortlist pill states",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-330.png"
+    },
+    {
+     "id": "AW-398",
+     "title": "Shortlist FTUE tooltip on first card",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-399",
+     "title": "Remove from cart",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-400",
+     "title": "Per-direction limit of 3",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-401",
+     "title": "Add to cart syncs everywhere",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-402",
+     "title": "Round-trip tab counts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-403",
+     "title": "Auto-open cart sheet at max",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-404",
+     "title": "Single owner of cart sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-405",
+     "title": "Cart sheet content",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-338.png"
+    },
+    {
+     "id": "AW-406",
+     "title": "10-second auto-fill starts negotiation",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-014.png"
+    },
+    {
+     "id": "AW-407",
+     "title": "Button disabled with spinner while review/initiate pending",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-408",
+     "title": "Review without trip id",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-409",
+     "title": "Review/initiate error is swallowed",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-410",
+     "title": "Initiation validation",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-411",
+     "title": "Initiation success",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-412",
+     "title": "Low-balance check is computed but unused",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-413",
+     "title": "Legacy DeepSearchCart (dead)",
+     "designStatus": "dead",
+     "thumb": "flow/map/thumbs/away/AP-258.png"
+    },
+    {
+     "id": "AW-414",
+     "title": "Recording: round-trip listing with fare total and Negotiate",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/away/AP-783.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-deep-search",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-deep-search",
+   "title": "Deep search: the wait as visible work",
+   "summary": "The fifteen-step timeline, progress, Pusher steps, trip card, notify me, banners, timeout.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-deep-search",
+   "caseHash": "#embed/flow/away/aw-deep-search?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-415",
+     "title": "Header and progress",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-194.png"
+    },
+    {
+     "id": "AW-416",
+     "title": "Back prefetches home",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-417",
+     "title": "Progress defaults to 1",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-418",
+     "title": "Remaining time label (fixed 120s model)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-419",
+     "title": "Timeline initial state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-420",
+     "title": "Reconnect/reload from current_step_id",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-421",
+     "title": "Pusher step_update active",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-422",
+     "title": "Pusher step_update completed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-423",
+     "title": "Text step cycles subtitles every 2s",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-424",
+     "title": "Airline step",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-425",
+     "title": "Route step",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-426",
+     "title": "Airport step",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-427",
+     "title": "Active step without metadata renders no body",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-428",
+     "title": "Unknown step_id ignored",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-429",
+     "title": "Terminal event",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-430",
+     "title": "Failed/timeout/expired has no UI here",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-431",
+     "title": "Already complete on mount",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-432",
+     "title": "Completed while watching",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-433",
+     "title": "Polling stop conditions",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-434",
+     "title": "Request retry",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-435",
+     "title": "Trip to {city} card with negotiating flights",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-436",
+     "title": "Onward/Return tabs only when both exist",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-437",
+     "title": "Deep search in progress banner and Notify me",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-438",
+     "title": "Minimise",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-439",
+     "title": "Notification banners are commented out",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-440",
+     "title": "Negotiating (progress)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-038.png"
+    },
+    {
+     "id": "AW-441",
+     "title": "In-progress 13: 95%, Loading fares",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-442",
+     "title": "Success delight state (In-progress 15)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-196.png"
+    },
+    {
+     "id": "AW-443",
+     "title": "Smaller waits before text streams",
+     "designStatus": "specced",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-negotiation",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-negotiation",
+   "title": "Negotiation: lanes, expired details, supplier email",
+   "summary": "Negotiation lanes, expired negotiation details and re-run, supplier email viewer.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-negotiation",
+   "caseHash": "#embed/flow/away/aw-negotiation?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-444",
+     "title": "Loading spinner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-445",
+     "title": "Header summary",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-446",
+     "title": "Flight cards without prices",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-447",
+     "title": "Re-run guard",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-448",
+     "title": "Re-run success navigation",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-449",
+     "title": "Re-run failure",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-450",
+     "title": "History routing by status",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-451",
+     "title": "Home card routing by status",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-452",
+     "title": "Pill shown only for supplier-email messages",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-453",
+     "title": "View attachment pill is conditional",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-454",
+     "title": "Sheet opens when id set",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-455",
+     "title": "Loading",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-456",
+     "title": "Load error",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-457",
+     "title": "Attachments list",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-458",
+     "title": "HTML body preferred",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-459",
+     "title": "Text-only fallback",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-460",
+     "title": "Empty body",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-461",
+     "title": "Ideate: Agent Negotiate 01",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-462",
+     "title": "Ideate: Agent Negotiate (1862 wide)",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-463",
+     "title": "Ideate: Negotiate on the same page",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-464",
+     "title": "Ideate: Addition",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-465",
+     "title": "Ideate: Small Card",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-466",
+     "title": "Ideate: Negotiated",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-467",
+     "title": "Ideate: Direction 2",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-468",
+     "title": "Negotiation in progress: three honest lanes",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-082.png"
+    },
+    {
+     "id": "AW-469",
+     "title": "Negotiation lane vocabulary must be audited",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-470",
+     "title": "Mixed baskets (flights plus dates)",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-471",
+     "title": "Negotiations preset block",
+     "designStatus": "specced",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-deep-results",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-deep-results",
+   "title": "Deep search results and fare details",
+   "summary": "Five fare categories, rows, cash applied, fare details sheet, continue, expired sheet.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-deep-results",
+   "caseHash": "#embed/flow/away/aw-deep-results?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-472",
+     "title": "Skeleton while loading with no fare categories",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-473",
+     "title": "Header title",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-474",
+     "title": "Results: five fare categories",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-775.png"
+    },
+    {
+     "id": "AW-475",
+     "title": "Chip bar hidden when no categories",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-476",
+     "title": "Tap chip scrolls to section",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-477",
+     "title": "Leg tabs only when both legs have fare categories",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-478",
+     "title": "Credits applied at checkout",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-479",
+     "title": "Result row",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-034.png"
+    },
+    {
+     "id": "AW-480",
+     "title": "Policy summary row",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-481",
+     "title": "Policy cancellation amount",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-482",
+     "title": "Add to booking / Added pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-483",
+     "title": "Floating Continue CTA with total",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-484",
+     "title": "Round trip missing leg prompts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-485",
+     "title": "Creating booking",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-486",
+     "title": "Booking creation error",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-487",
+     "title": "Fare details sheet: recommendation",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-488",
+     "title": "Fare tabs inside sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-489",
+     "title": "Fare overview chips",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-490",
+     "title": "No parsed fare rules",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-491",
+     "title": "Cancellation/Date change policy timeline",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-492",
+     "title": "Add to booking inside sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-493",
+     "title": "Sheet also shows flight details",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-494",
+     "title": "Expired deep search",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-495",
+     "title": "Re-run Negotiation",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-496",
+     "title": "Go Back from expired sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-497",
+     "title": "Failed or empty results render a blank list",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-498",
+     "title": "Refetch on focus",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-499",
+     "title": "Legacy results card with debug button (dead)",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-500",
+     "title": "Honest no-win",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-501",
+     "title": "family of four, multi-flight reveal",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-045.png"
+    },
+    {
+     "id": "AW-502",
+     "title": "del–bom, fare already at floor",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-046.png"
+    },
+    {
+     "id": "AW-503",
+     "title": "funeral travel, rates aged out abroad",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-047.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-verdict",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-verdict",
+   "title": "Vet and verdict",
+   "summary": "The absolute-anchored verdict, trap flags, honest no-win, flight card tags, innovation ideas.",
+   "status": "specced",
+   "hash": "#embed/flow/away/aw-verdict",
+   "caseHash": "#embed/flow/away/aw-verdict?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-504",
+     "title": "Verdict copy pattern for time versus price",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-505",
+     "title": "VerdictCard hero block states",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-506",
+     "title": "All traps: least bad",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-065.png"
+    },
+    {
+     "id": "AW-507",
+     "title": "Flight Index: absolute-anchored scoring",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-508",
+     "title": "Verdict-layer data: COLD versus live",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-509",
+     "title": "Flight card tags: Tier 1 Away verdict tags",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-510",
+     "title": "Flight card tags: Tier 3 visa and document warnings",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-511",
+     "title": "Flight card tags: Tier 5 time and arrival",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-512",
+     "title": "Flight card tags: Tier 7 alliance and loyalty",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-513",
+     "title": "Innovation idea: Ask about this flight",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-514",
+     "title": "Innovation idea: The honest total",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-515",
+     "title": "Innovation idea: The verdict that knows you",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-516",
+     "title": "loyalty optimizer, miles are bad value",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-079.png"
+    },
+    {
+     "id": "AW-517",
+     "title": "senior companion, self-transfer trap, no SIM",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-080.png"
+    },
+    {
+     "id": "AW-518",
+     "title": "all-traps no-win on a thin route",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-081.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-prebooking",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-prebooking",
+   "title": "Pre-booking review and the confirm gate",
+   "summary": "Review page, bill, fare rules, review and confirm sheet, price changed, fare unavailable.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-prebooking",
+   "caseHash": "#embed/flow/away/aw-prebooking?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-519",
+     "title": "Booking is created from the deep-search cart",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-520",
+     "title": "Booking creation fails (no UI)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-521",
+     "title": "Page shimmer while booking or ancillaries load",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-522",
+     "title": "Onward and Return trip cards",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-523",
+     "title": "Fare rules bottom sheet per leg",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-524",
+     "title": "Bill summary card",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-441.png"
+    },
+    {
+     "id": "AW-525",
+     "title": "Bill add-ons row expands",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-526",
+     "title": "Primary button label: passengers incomplete",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-527",
+     "title": "Primary button label: ready to pay",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-528",
+     "title": "Tap Continue while passenger section visible",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-529",
+     "title": "Tap Continue while passenger section off-screen",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-530",
+     "title": "Standard Pay opens review gate",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-531",
+     "title": "BNPL enabled: main button runs Away flow",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-532",
+     "title": "\"Ask Away to Pay\" card (legacy BNPL entry)",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-450.png"
+    },
+    {
+     "id": "AW-533",
+     "title": "17-day departure threshold",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-534",
+     "title": "Payment method chip (Pay With)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-535",
+     "title": "Default payment method is UPI",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-536",
+     "title": "Review & confirm sheet",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AG-088.png"
+    },
+    {
+     "id": "AW-537",
+     "title": "Review: travellers summary",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-538",
+     "title": "Review Continue -> pay",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-539",
+     "title": "Review Continue -> away",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-540",
+     "title": "Pass/ancillary re-submit decision",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-541",
+     "title": "Duplicate tap guard",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-542",
+     "title": "Verifying details sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-543",
+     "title": "Android back blocked while verifying",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-544",
+     "title": "Error state",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-212.png"
+    },
+    {
+     "id": "AW-545",
+     "title": "Booking not ready after submit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-546",
+     "title": "processPayment throws after submit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-547",
+     "title": "Floating Pay bar hidden when screen not focused",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-548",
+     "title": "Return from cancelled Cashfree restores the bar",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-549",
+     "title": "Pusher booking-price-updated",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-550",
+     "title": "Fare no longer available",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-551",
+     "title": "No change",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-552",
+     "title": "Prices changed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-553",
+     "title": "Accept",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-554",
+     "title": "Search for alternatives",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-555",
+     "title": "Per-leg rows read fields never produced",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-556",
+     "title": "Booking flow: Chat entry",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-557",
+     "title": "No auto-book, ever",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-558",
+     "title": "Ticket structure legible pre-commit",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-559",
+     "title": "self-transfer commit, fabricated EU261 payout",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-099.png"
+    },
+    {
+     "id": "AW-560",
+     "title": "price moved mid-verify, infant-on-lap, draft invents the infant fare",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-101.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-passengers",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-passengers",
+   "title": "Add passengers",
+   "summary": "Passenger sections by type, saved list, add/edit sheet, passport hints, chat tool.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-passengers",
+   "caseHash": "#embed/flow/away/aw-passengers?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-561",
+     "title": "Passenger section per type",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-562",
+     "title": "Empty type: compact \"Add new\" pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-563",
+     "title": "Saved passengers list with checkboxes",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-564",
+     "title": "Passengers section header",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-565",
+     "title": "Selecting a saved passenger beyond the allowed count",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-566",
+     "title": "Single-slot swap",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-567",
+     "title": "Deselect a manual entry",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-568",
+     "title": "Passport missing hint (international)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-569",
+     "title": "Domestic skips passport requirement",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-570",
+     "title": "Passenger list highlight",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-571",
+     "title": "Add/edit passenger sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-572",
+     "title": "Form fields",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-573",
+     "title": "International-only fields",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-574",
+     "title": "Date of birth picker modal",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-575",
+     "title": "Passport expiry picker modal",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-576",
+     "title": "Passenger type derived from DOB",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-577",
+     "title": "DOB rejected when it exceeds booked counts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-578",
+     "title": "Save disabled until complete",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-579",
+     "title": "Save-time count check",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-580",
+     "title": "Save writes back locally only",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-581",
+     "title": "Saved + unmodified passenger reused",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-582",
+     "title": "Saved + modified passenger updated",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-583",
+     "title": "New passenger created",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-584",
+     "title": "Passengers attached to every leg",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-585",
+     "title": "ImportPassengersBottomSheet is unreferenced",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-586",
+     "title": "Passenger tab strip commented out in AddPassenger",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-587",
+     "title": "Cancelled-search output renderer disabled",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-588",
+     "title": "Saved travel pick summary",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-589",
+     "title": "Passenger text pluralisation",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-590",
+     "title": "Add passengers entry button",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-591",
+     "title": "Passenger names list",
+     "designStatus": "built",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-ancillaries",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-ancillaries",
+   "title": "Seats, meals and baggage",
+   "summary": "Seat map, meal and bag steppers, limits, persistence on pay.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-ancillaries",
+   "caseHash": "#embed/flow/away/aw-ancillaries?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-592",
+     "title": "Add-on rows only if the flight supports them",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-593",
+     "title": "Row shows count and Add or price",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-594",
+     "title": "Ancillaries sheet title",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-595",
+     "title": "Infants excluded from limits",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-596",
+     "title": "Skeleton on open and on tab/segment switch",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-597",
+     "title": "Empty: no ancillaries for segment",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-598",
+     "title": "Meals and baggage with price 0 are hidden",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-599",
+     "title": "Seat cell states",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-600",
+     "title": "Seat totals footer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-601",
+     "title": "Seat selection limit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-602",
+     "title": "Tap selected seat again",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-603",
+     "title": "Meal stepper",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-604",
+     "title": "Meal limit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-605",
+     "title": "Baggage stepper",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-606",
+     "title": "Baggage limit",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-607",
+     "title": "Continue disabled until a selection exists",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-608",
+     "title": "Skip/Continue advance to next segment with same type",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-609",
+     "title": "Switching segment to a leg lacking current type",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-610",
+     "title": "Ancillaries persisted on Pay",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-611",
+     "title": "Ancillary fetch error unhandled",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-612",
+     "title": "Legacy PreBookingFlights screen",
+     "designStatus": "dead",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-payment-gateway",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-payment-gateway",
+   "title": "Pay with a gateway and verify",
+   "summary": "Payment methods, fee, Razorpay and Cashfree, failure and retry, verification polling.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-payment-gateway",
+   "caseHash": "#embed/flow/away/aw-payment-gateway?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-613",
+     "title": "Payable amount formula",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-614",
+     "title": "Gateway fee % by method",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-615",
+     "title": "Payment method sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-616",
+     "title": "Fee badge",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-617",
+     "title": "Initiate payment",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-618",
+     "title": "Price changed at initiate",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-619",
+     "title": "Contact details are hard-coded",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-620",
+     "title": "Razorpay native SDK",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-621",
+     "title": "Razorpay WebView fallback",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-622",
+     "title": "Cashfree web checkout",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-623",
+     "title": "Cashfree cancel events",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-624",
+     "title": "Cashfree SDK error",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-625",
+     "title": "Razorpay dismissed / failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-626",
+     "title": "Razorpay success",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-627",
+     "title": "Cashfree handoff",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-628",
+     "title": "Payment failure toast",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-629",
+     "title": "Retry after failure",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-630",
+     "title": "Money in flight: payment verify polling",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-631",
+     "title": "Payment confirmed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-632",
+     "title": "Gateway reports failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-633",
+     "title": "Created with no attempt (user dismissed)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-634",
+     "title": "Still pending",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-635",
+     "title": "Timeout CTA destination",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-636",
+     "title": "Network errors while polling",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-637",
+     "title": "Missing params",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-638",
+     "title": "Back navigation locked while polling",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-639",
+     "title": "Route registered as modal",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-640",
+     "title": "retry() exported but unused",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-641",
+     "title": "Entries to this screen",
+     "designStatus": "built",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-away-advance",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-away-advance",
+   "title": "Away Advance: ticket first, pay later",
+   "summary": "USP, OTP to commit, locking the fare, slow-airline state, ticket secured, advance due, failure.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-away-advance",
+   "caseHash": "#embed/flow/away/aw-away-advance?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-642",
+     "title": "Entry from Bookings card (resume)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-643",
+     "title": "Ticket-first pay-after (Away Advance)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-644",
+     "title": "Sending OTP",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-645",
+     "title": "OTP send fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-646",
+     "title": "OTP entry",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-647",
+     "title": "Wrong OTP",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-648",
+     "title": "Resend code",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-649",
+     "title": "Securing your ticket",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-218.png"
+    },
+    {
+     "id": "AW-650",
+     "title": "Phase-to-stage mapping",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-651",
+     "title": "Advance due: pay now",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-220.png"
+    },
+    {
+     "id": "AW-652",
+     "title": "Method prefill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-653",
+     "title": "Paying",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-654",
+     "title": "Pay: Cashfree",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-655",
+     "title": "Pay: Razorpay",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-656",
+     "title": "Pay fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-657",
+     "title": "You are all set",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AG-107.png"
+    },
+    {
+     "id": "AW-658",
+     "title": "Ticket could not be secured",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-659",
+     "title": "Call support",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-660",
+     "title": "Resume loader",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-661",
+     "title": "Back behaviour",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-662",
+     "title": "Flag gate",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-663",
+     "title": "Handoff: 0% convenience fee notice",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-441.png"
+    },
+    {
+     "id": "AW-664",
+     "title": "Steps: slow airline (\"This is taking some time\")",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-219.png"
+    },
+    {
+     "id": "AW-665",
+     "title": "24h hold",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-666",
+     "title": "away advance, senior on a series fare, settle lands mid-trip",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-100.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-confirmation",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-confirmation",
+   "title": "Confirmation and the first hours",
+   "summary": "Booking confirmation, ticketing gap, charged-twice guard, read-back, documents check, GST invoice.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-confirmation",
+   "caseHash": "#embed/flow/away/aw-confirmation?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-667",
+     "title": "Paid, not yet ticketed (ticketing gap)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-668",
+     "title": "Will the airline actually honour this?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-669",
+     "title": "Did I get exactly what I paid for, per traveller?",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-670",
+     "title": "Confirmation do-next row",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-671",
+     "title": "GST invoice, generated not requested",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-672",
+     "title": "Charged-twice guard",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-673",
+     "title": "Documents check, caught early",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-674",
+     "title": "two debits after a UPI retry, before panic-rebook",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-112.png"
+    },
+    {
+     "id": "AW-675",
+     "title": "hidden transit visa on a self-routed connection",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-113.png"
+    },
+    {
+     "id": "AW-676",
+     "title": "issuance failed for a senior who booked on her son's phone",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-114.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-bookings",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-bookings",
+   "title": "Bookings list and booking details",
+   "summary": "Bookings tab, booking details with chat/trip switcher, timeline, tickets, payments, trip flight details.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-bookings",
+   "caseHash": "#embed/flow/away/aw-bookings?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-677",
+     "title": "Entry from booking details",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-678",
+     "title": "Header",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-679",
+     "title": "Loading shimmer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-680",
+     "title": "Single flight filter",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-681",
+     "title": "Ticketing in progress",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-682",
+     "title": "Bookings tab",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-092.png"
+    },
+    {
+     "id": "AW-683",
+     "title": "Status filter",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-684",
+     "title": "Refetch on focus + pull to refresh",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-685",
+     "title": "Loading",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-686",
+     "title": "Empty list",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-687",
+     "title": "List fetch error",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-688",
+     "title": "Booking card header",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-689",
+     "title": "Leg card contents",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-690",
+     "title": "Fetching tickets",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-691",
+     "title": "PNR issued",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-692",
+     "title": "Web check-in open",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-693",
+     "title": "Away advance awaiting payment banner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-694",
+     "title": "Tap routing",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-695",
+     "title": "Cancelled / ticketing_failed cards",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-696",
+     "title": "Bottom spacer for floating chat",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-697",
+     "title": "Deep link",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-698",
+     "title": "Push notification",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-699",
+     "title": "Header title/subtitle",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-585.png"
+    },
+    {
+     "id": "AW-700",
+     "title": "Back behaviour",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-701",
+     "title": "Param tab ignored",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-702",
+     "title": "Chat / Trip Details switcher",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-585.png"
+    },
+    {
+     "id": "AW-703",
+     "title": "Chat empty state with skills",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-585.png"
+    },
+    {
+     "id": "AW-704",
+     "title": "Chat input",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-585.png"
+    },
+    {
+     "id": "AW-705",
+     "title": "Chat session",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-706",
+     "title": "Sub-tab pills",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-592.png"
+    },
+    {
+     "id": "AW-707",
+     "title": "Loading",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-708",
+     "title": "Timeline: leg cards with live status",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-592.png"
+    },
+    {
+     "id": "AW-709",
+     "title": "View more opens flight details",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-710",
+     "title": "Onward/Return toggle",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-711",
+     "title": "Polling",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-712",
+     "title": "Passengers section",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-713",
+     "title": "Ticket open error",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-714",
+     "title": "Payments section",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-715",
+     "title": "Payments empty",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-716",
+     "title": "Away Pay due card",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-717",
+     "title": "Pay result",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-718",
+     "title": "Check-in banner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-719",
+     "title": "Legacy bookingDetails page",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-720",
+     "title": "Booking Chat tab: Tickets",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-769.png"
+    },
+    {
+     "id": "AW-721",
+     "title": "Booking Chat tab: Passengers and Activities",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/away/AP-770.png"
+    },
+    {
+     "id": "AW-722",
+     "title": "Booking Chat tab: Transactions",
+     "designStatus": "exploration",
+     "thumb": "flow/map/thumbs/away/AP-771.png"
+    },
+    {
+     "id": "AW-723",
+     "title": "Flight status: Live (Boarding, On time)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-097.png"
+    },
+    {
+     "id": "AW-724",
+     "title": "Post-booking use-case flowcharts (Figma)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-725",
+     "title": "Post-booking screens (Figma)",
+     "designStatus": "prototyped",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-trip-watch",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-trip-watch",
+   "title": "Trip hub and the watch",
+   "summary": "Hub at rest, money ledger, rewards, fare-drop and schedule watching, silent steward.",
+   "status": "specced",
+   "hash": "#embed/flow/away/aw-trip-watch",
+   "caseHash": "#embed/flow/away/aw-trip-watch?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-726",
+     "title": "Price-drop callback",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-076.png"
+    },
+    {
+     "id": "AW-727",
+     "title": "The hub at rest",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-728",
+     "title": "The win, paid back honestly",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-729",
+     "title": "The money ledger",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-730",
+     "title": "Rewards, report card, share",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-731",
+     "title": "Loyalty crediting",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-732",
+     "title": "Fare-drop and schedule watching, offered explicitly",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-733",
+     "title": "Monitoring reassurance",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-734",
+     "title": "Proactive doc check (T-60d)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-735",
+     "title": "Far-out schedule change",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-736",
+     "title": "Watch handoff after receipt",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-737",
+     "title": "Skills layer: ask, do not just narrate",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-738",
+     "title": "Nothing-happened pushes are forbidden",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-739",
+     "title": "price-drop callback, change-fee math must clear",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-128.png"
+    },
+    {
+     "id": "AW-740",
+     "title": "silent steward diary, calm middle, no nag",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-129.png"
+    },
+    {
+     "id": "AW-741",
+     "title": "away advance settle lands mid-trip, senior, auto-debit declines",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-130.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-manage-booking",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-manage-booking",
+   "title": "Cancel, change and refund",
+   "summary": "Cancel and amend chat skills, reschedule, refund status.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-manage-booking",
+   "caseHash": "#embed/flow/away/aw-manage-booking?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-742",
+     "title": "Chat skills for cancel / amend",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AP-585.png"
+    },
+    {
+     "id": "AW-743",
+     "title": "Icon map only knows two skill types",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-744",
+     "title": "Default config shape mismatch",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-745",
+     "title": "Cancel tool UI",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-746",
+     "title": "Cancel booking passenger picker",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-747",
+     "title": "Cancel submit returns structured output",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-748",
+     "title": "Cancel booking: review (You get back)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-749",
+     "title": "Reschedule: new flight",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-750",
+     "title": "Refund status",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-751",
+     "title": "Handoff: Agent > Cancel & modify booking (bottom sheets: Select flights, Cancellation charges)",
+     "designStatus": "archived",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-predeparture",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-predeparture",
+   "title": "Pre-departure: web check-in and leave-by",
+   "summary": "One surface that morphs by the clock, check-in, leave-by, trip sheet.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-predeparture",
+   "caseHash": "#embed/flow/away/aw-predeparture?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-752",
+     "title": "Web check-in open",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-753",
+     "title": "Web check-in not open",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-754",
+     "title": "Web check-in closed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-755",
+     "title": "Check-in via AWAY (Fast check-in, Free)",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-094.png"
+    },
+    {
+     "id": "AW-756",
+     "title": "Check-in: add-ons",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-757",
+     "title": "Check-in: find booking (Not booked on AWAY?)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-758",
+     "title": "The surface morphs by the clock",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-759",
+     "title": "Leave-by",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-760",
+     "title": "Marketplace layer kept separate from reassurance",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-761",
+     "title": "The trip sheet",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-762",
+     "title": "Smart pin: one chat, every output",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-763",
+     "title": "auto check-in trips a 6-month passport rule",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-140.png"
+    },
+    {
+     "id": "AW-764",
+     "title": "day-of leave-by, with a quiet seat upsell",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-142.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-in-transit",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-in-transit",
+   "title": "In transit: connection monitoring",
+   "summary": "Connection arithmetic, missed connection (protected and self-transfer).",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-in-transit",
+   "caseHash": "#embed/flow/away/aw-in-transit?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-765",
+     "title": "Connection arithmetic",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-766",
+     "title": "Missed connection: protected",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-148.png"
+    },
+    {
+     "id": "AW-767",
+     "title": "Missed connection: self-transfer",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-145.png"
+    },
+    {
+     "id": "AW-768",
+     "title": "Half-state: delayed, connection uncertain",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-769",
+     "title": "In-the-moment requests",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-770",
+     "title": "senior alone, no working SIM, nothing out tonight",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-150.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-disruption",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-disruption",
+   "title": "Disruption and rescue",
+   "summary": "Decision anatomy, rescue surface, rights engines, intake ladder, hand-off.",
+   "status": "specced",
+   "hash": "#embed/flow/away/aw-disruption",
+   "caseHash": "#embed/flow/away/aw-disruption?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-771",
+     "title": "Decision-mode surface on the IndiGo fixture (Figma)",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-772",
+     "title": "7-part decision anatomy",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-773",
+     "title": "Rescue surface: EK 1 cancelled, protected ticket",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-153.png"
+    },
+    {
+     "id": "AW-774",
+     "title": "DisruptionTakeover hero states",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-141.png"
+    },
+    {
+     "id": "AW-775",
+     "title": "Intake ladder: infer, ask, defer",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-776",
+     "title": "Forwarded live ticket routes to rescue, not search",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-023.png"
+    },
+    {
+     "id": "AW-777",
+     "title": "Hand-off, never the wheel",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-778",
+     "title": "Schedule change or cancellation: prominence by runway",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-779",
+     "title": "Rights engine: India (DGCA CAR S3/M/IV)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-780",
+     "title": "Rights engine: EU / UK (EU261)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-781",
+     "title": "Rights engine: US (DOT)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-782",
+     "title": "Rights engine: Montreal Convention",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-783",
+     "title": "Rights engine: Canada (APPR)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-784",
+     "title": "Rights engine: Brazil (ANAC 400)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-785",
+     "title": "Rights engine: Australia (ACL / ACCC)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-786",
+     "title": "Rights engine: GCC: UAE (GCAA)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-787",
+     "title": "Rights line variants on the surface",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-788",
+     "title": "Concurrent decisions (disruption plus expired passport)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-789",
+     "title": "Self-transfer rebooking suggestion",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-790",
+     "title": "fog cancel, india jurisdiction, refund-vs-rebook",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-171.png"
+    },
+    {
+     "id": "AW-791",
+     "title": "munich delay, EU261 €600, fake-urgency dark pattern",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-172.png"
+    },
+    {
+     "id": "AW-792",
+     "title": "senior, wheelchair-assist, self-transfer break, no comp",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-173.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-recap-claim",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-recap-claim",
+   "title": "Recap, claims and remember",
+   "summary": "Four-parameter recap, claim what you are owed, refund status.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-recap-claim",
+   "caseHash": "#embed/flow/away/aw-recap-claim?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-793",
+     "title": "The recap: four-parameter echo",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-179.png"
+    },
+    {
+     "id": "AW-794",
+     "title": "Claim what you are owed",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-180.png"
+    },
+    {
+     "id": "AW-795",
+     "title": "death in the family, trip abandoned mid-way",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-181.png"
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-wallet",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-wallet",
+   "title": "Wallet, AWAY Cash and top-up",
+   "summary": "Balance, history, missions, tiers, insufficient balance sheet, top-up payment.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-wallet",
+   "caseHash": "#embed/flow/away/aw-wallet?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-796",
+     "title": "Wallet loading",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-797",
+     "title": "Wallet empty",
+     "designStatus": "partial",
+     "thumb": "flow/map/thumbs/away/AF-228.png"
+    },
+    {
+     "id": "AW-798",
+     "title": "Wallet populated",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-226.png"
+    },
+    {
+     "id": "AW-799",
+     "title": "Balance loading spinner",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-800",
+     "title": "Date filter tabs",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-801",
+     "title": "Tab with no rows",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-802",
+     "title": "Transaction row",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-231.png"
+    },
+    {
+     "id": "AW-803",
+     "title": "Pagination",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-804",
+     "title": "Insufficient balance sheet",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-805",
+     "title": "Package tapped",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-806",
+     "title": "Purchase cancelled by user",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-807",
+     "title": "Purchase initiation fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-808",
+     "title": "Payment captured",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-809",
+     "title": "Payment failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-810",
+     "title": "Payment not confirmed (Cashfree)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-811",
+     "title": "Payment still processing",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-812",
+     "title": "Polling cadence",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-813",
+     "title": "[DEAD] SuccessBottomSheet",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-814",
+     "title": "W0 · Wallet L0 · fetches · error",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-229.png"
+    },
+    {
+     "id": "AW-815",
+     "title": "W2 · AWAY Cash history · error",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-816",
+     "title": "Visuals v2: \"Sukesh's Wallet\" chat",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-817",
+     "title": "FAQ",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-818",
+     "title": "Terms and Conditions",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-819",
+     "title": "Balance tier: No Money",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-820",
+     "title": "Balance tier: 200",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-821",
+     "title": "Balance tier: 400",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-822",
+     "title": "Balance tier: 600(+)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-823",
+     "title": "Mission tile: Live",
+     "designStatus": "designed",
+     "thumb": "flow/map/thumbs/away/AF-243.png"
+    },
+    {
+     "id": "AW-824",
+     "title": "Mission tile: Expiring on 16 Aug",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-825",
+     "title": "Mission tile: Completed",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-826",
+     "title": "Mission tile: Expired",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-827",
+     "title": "Mission tile: Coming soon",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-828",
+     "title": "Credits: removed in spec, live in app and PRD",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-829",
+     "title": "The burn loop already exists",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-830",
+     "title": "No cap, no budget for now",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-831",
+     "title": "V1 is not a page",
+     "designStatus": "specced",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-referral",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-referral",
+   "title": "Refer tab and referral",
+   "summary": "Refer header, code, WhatsApp share, reward slots.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-referral",
+   "caseHash": "#embed/flow/away/aw-referral?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-832",
+     "title": "Refer header",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-774.png"
+    },
+    {
+     "id": "AW-833",
+     "title": "Refer: code still generating",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-834",
+     "title": "Refer: WhatsApp share",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-835",
+     "title": "Refer: share message",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-836",
+     "title": "Refer: copy code",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-837",
+     "title": "Refer: rewards slots",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-838",
+     "title": "Refer: pull to refresh and reward fallback",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-839",
+     "title": "Refer: pin carousel caption",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-840",
+     "title": "[ORPHAN] Invite Friends page",
+     "designStatus": "dead",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-history-profile",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-history-profile",
+   "title": "History and profile",
+   "summary": "History filters and grouping, negotiation status routing, profile hero, passengers, log out.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-history-profile",
+   "caseHash": "#embed/flow/away/aw-history-profile?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-841",
+     "title": "History filter tabs",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-842",
+     "title": "History empty",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-843",
+     "title": "History grouping",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AF-066.png"
+    },
+    {
+     "id": "AW-844",
+     "title": "Search item tap",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-845",
+     "title": "Negotiation card status pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-846",
+     "title": "History: Expired L2",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-847",
+     "title": "Negotiation tap: completed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-848",
+     "title": "Negotiation tap: in progress or failed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-849",
+     "title": "Chat item tap",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-850",
+     "title": "Profile hero",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-851",
+     "title": "Profile account rows",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-852",
+     "title": "Passengers by type",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-853",
+     "title": "Delete passenger confirm",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-854",
+     "title": "Delete passenger result",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-855",
+     "title": "Passenger editor toasts",
+     "designStatus": "built",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-settings-feedback",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-settings-feedback",
+   "title": "Settings, support and report an issue",
+   "summary": "Notification row, support, policy links, shake-to-report sheet.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-settings-feedback",
+   "caseHash": "#embed/flow/away/aw-settings-feedback?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-856",
+     "title": "Notification settings row",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-857",
+     "title": "Support phone",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-858",
+     "title": "Support email copy",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-859",
+     "title": "Report issue row",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-860",
+     "title": "Policy links",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-861",
+     "title": "Developer section",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-862",
+     "title": "Log out",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-863",
+     "title": "Version footer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-864",
+     "title": "Shake trigger",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-865",
+     "title": "Shake works when signed out too",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-866",
+     "title": "Profile button trigger",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-867",
+     "title": "Already open guard",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-868",
+     "title": "Screenshot capture fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-869",
+     "title": "Session ids snapshot",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-870",
+     "title": "Sheet with screenshot",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-871",
+     "title": "Sheet without screenshot",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-872",
+     "title": "Message field",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-873",
+     "title": "Submit disabled",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-874",
+     "title": "Photo permission denied",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-875",
+     "title": "Replacement image too large",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-876",
+     "title": "Submitting state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-877",
+     "title": "Submit success",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-878",
+     "title": "Submit failure",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-879",
+     "title": "Cancel and dismiss",
+     "designStatus": "built",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-concierge",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-concierge",
+   "title": "Concierge overlay and full-screen tab",
+   "summary": "Floating card at three heights, greeting, composer, suggestions, history drawer, resume.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-concierge",
+   "caseHash": "#embed/flow/away/aw-concierge?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-880",
+     "title": "Hidden when signed out or hideConcierge",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-881",
+     "title": "Hidden on routes without screen-driven UI",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-882",
+     "title": "Not mounted before onboarding / invite redeem",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-883",
+     "title": "Initial arrow icon then pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-884",
+     "title": "Concierge entry and status",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-111.png"
+    },
+    {
+     "id": "AW-885",
+     "title": "Tap on Home routes to full-screen page",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-886",
+     "title": "Drag disabled on Home collapsed pill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-887",
+     "title": "Drag snap points skip step 1",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-888",
+     "title": "Assistant reply preview card",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-111.png"
+    },
+    {
+     "id": "AW-889",
+     "title": "Agent progress message card",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-890",
+     "title": "Empty chat shows greeting",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-630.png"
+    },
+    {
+     "id": "AW-891",
+     "title": "Composer placeholder and send",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-631.png"
+    },
+    {
+     "id": "AW-892",
+     "title": "Send while streaming calls stop()",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-893",
+     "title": "Suggestion chips above composer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-894",
+     "title": "Scroll-to-bottom button",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-895",
+     "title": "Typing dots in thread",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-631.png"
+    },
+    {
+     "id": "AW-896",
+     "title": "Pending input prefill",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-897",
+     "title": "Autocomplete suggest worker (disabled UI)",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-898",
+     "title": "Replacement component takes over card",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-111.png"
+    },
+    {
+     "id": "AW-899",
+     "title": "Floating button component with fixed bottom button",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-900",
+     "title": "Cart pill on collapsed card",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-258.png"
+    },
+    {
+     "id": "AW-901",
+     "title": "Path change resets overlay state",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-902",
+     "title": "Deep search completed banner (auto-dismiss 10s)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-903",
+     "title": "Tool parts render even when collapsed",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-904",
+     "title": "Quick entry routes",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-905",
+     "title": "Tab version hides tab bar",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-906",
+     "title": "Mount resume probe for interrupted turn",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-907",
+     "title": "Foreground resume after >3s background",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-908",
+     "title": "Four suggested prompts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-909",
+     "title": "Auto-focus composer when empty",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-910",
+     "title": "Send disabled states",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-911",
+     "title": "Chat messages with large bottom spacer after send",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-912",
+     "title": "Begin with no onward flight toasts",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-913",
+     "title": "History drawer list loading",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-914",
+     "title": "History drawer empty",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-915",
+     "title": "History grouping and titles",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-916",
+     "title": "Selecting a thread loads history",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-917",
+     "title": "New chat row",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-918",
+     "title": "Thread title updates via Pusher",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-919",
+     "title": "Threads list refetched when a turn ends",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-920",
+     "title": "Homebase change posts preference",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-921",
+     "title": "Budget picks card in chat",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-766.png"
+    },
+    {
+     "id": "AW-922",
+     "title": "Non-stop answer with flight links in chat",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-767.png"
+    },
+    {
+     "id": "AW-923",
+     "title": "Chat: ongoing",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-924",
+     "title": "Chat: completed",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-925",
+     "title": "Agent: Zero state + keyboard (recent searches)",
+     "designStatus": "designed",
+     "thumb": null
+    },
+    {
+     "id": "AW-926",
+     "title": "Handoff: Agent > Agent States (zero-states, light-mode)",
+     "designStatus": "archived",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-chat-engine",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-chat-engine",
+   "title": "Chat tools, rendering, Pusher and attachments",
+   "summary": "Tool registry, message rendering, Pusher events, image attachments and the OS share sheet.",
+   "status": "built",
+   "hash": "#embed/flow/away/aw-chat-engine",
+   "caseHash": "#embed/flow/away/aw-chat-engine?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-927",
+     "title": "Share-sheet image held until ready",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-928",
+     "title": "Share-sheet image too large",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-929",
+     "title": "Share-sheet image handoff fails",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-930",
+     "title": "Share-sheet image success",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-931",
+     "title": "Tool: Request flight details",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-932",
+     "title": "Tool to component map",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-933",
+     "title": "Same loader across streaming and executing",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-934",
+     "title": "Tool: Generic fallback",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-935",
+     "title": "Bubble wrapper",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-936",
+     "title": "Second-mount block for old messages",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-937",
+     "title": "Auto-send after tool completion",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-938",
+     "title": "Dead interactive renderers",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-939",
+     "title": "Tool: Search flights / refine search",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-631.png"
+    },
+    {
+     "id": "AW-940",
+     "title": "Tool: Filter flights",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-941",
+     "title": "Tool: Initiate flight search",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-942",
+     "title": "Tool: Navigate",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-943",
+     "title": "Authorizer retries",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-944",
+     "title": "Reconnect backoff",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-945",
+     "title": "Subscribe retry max 8",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-946",
+     "title": "Events buffered for late listeners",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-947",
+     "title": "agent-progress filter",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-948",
+     "title": "agent-reply (async supplier/agent message)",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-949",
+     "title": "Push notification deep links",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-950",
+     "title": "Client events batcher is disabled",
+     "designStatus": "dead",
+     "thumb": null
+    },
+    {
+     "id": "AW-951",
+     "title": "Non-image ignored",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-952",
+     "title": "Share/upload prefilled composer",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-953",
+     "title": "Only one attachment",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-954",
+     "title": "Uploading overlay",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-955",
+     "title": "Upload error chip",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-956",
+     "title": "Allowed types and R2 failure",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-957",
+     "title": "User bubble renders image chips",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-958",
+     "title": "Web links get favicon",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-959",
+     "title": "Airline logo links",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-960",
+     "title": "Custom system message",
+     "designStatus": "built",
+     "thumb": "flow/map/thumbs/away/AP-630.png"
+    },
+    {
+     "id": "AW-961",
+     "title": "Empty parts skipped",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-962",
+     "title": "Legacy FloatingChat / MessageContainer unused",
+     "designStatus": "dead",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-genui-blocks",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-genui-blocks",
+   "title": "Generative-UI block kit",
+   "summary": "The 14 semantic blocks, render_surface, per-stage block kit, reference picker.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-genui-blocks",
+   "caseHash": "#embed/flow/away/aw-genui-blocks?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-963",
+     "title": "Tool: Render surface",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-964",
+     "title": "Action tap becomes structured output",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-965",
+     "title": "Money-moving actions only on confirm_gate",
+     "designStatus": "exploration",
+     "thumb": null
+    },
+    {
+     "id": "AW-966",
+     "title": "Contract drift findings",
+     "designStatus": "built",
+     "thumb": null
+    },
+    {
+     "id": "AW-967",
+     "title": "Error state in prod depends on registry",
+     "designStatus": "partial",
+     "thumb": null
+    },
+    {
+     "id": "AW-968",
+     "title": "Stage 01 Onboard: 3 blocks (BootLoader, OTPInput, FreemiumGate)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-182.png"
+    },
+    {
+     "id": "AW-969",
+     "title": "Stage 02 Home + intent: 4 blocks (AdaptiveHome, IntentInput, BloomingPickers, EditableTicket)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-183.png"
+    },
+    {
+     "id": "AW-970",
+     "title": "Stage 03 The brief: 3 blocks (ReflectedBriefChip, ClarifyCard, LaunchNudge)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-184.png"
+    },
+    {
+     "id": "AW-971",
+     "title": "Stage 04 The wait: 3 blocks (DeepSearchTimeline, SavingsReveal, ContextualQuestionCard)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-185.png"
+    },
+    {
+     "id": "AW-972",
+     "title": "Stage 05 Vet + verdict: 6 blocks (VettedListing, TradeoffStrips, VerdictCard, RuledOutDossier, FlightIndex, PriceLandscape)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-186.png"
+    },
+    {
+     "id": "AW-973",
+     "title": "Stage 06 Book: 5 blocks (TicketStructureCard, SeatsBagsPicker, TapToPay, PaymentStates, AwayAdvance)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-187.png"
+    },
+    {
+     "id": "AW-974",
+     "title": "Stage 07 First hours: 5 blocks (ConfirmationCard, TicketingGap, ChargedTwiceGuard, ReadBack, DocumentsCheck)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-188.png"
+    },
+    {
+     "id": "AW-975",
+     "title": "Stage 08 The watch: 4 blocks (SilentSteward, AnticipationCard, PriceDropCallback, AwayAdvanceReminder)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-189.png"
+    },
+    {
+     "id": "AW-976",
+     "title": "Stage 09 Pre-departure: 4 blocks (TripSurface, CheckInCard, LeaveByCard, TakeoverCard)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-190.png"
+    },
+    {
+     "id": "AW-977",
+     "title": "Stage 10 In motion: 2 blocks (ConnectionArithmetic, MissedConnectionFork)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-191.png"
+    },
+    {
+     "id": "AW-978",
+     "title": "Stage 11 Disruption → Rescue: 3 blocks (DisruptionTakeover, RightsEngine, SmartMoveHandoff)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-192.png"
+    },
+    {
+     "id": "AW-979",
+     "title": "Stage 12 Recap: 3 blocks (TripPlayback, CompensationClaim, ForwardHandoff)",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-193.png"
+    },
+    {
+     "id": "AW-980",
+     "title": "Block: agent_line",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-981",
+     "title": "Block: brief_ticket",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-982",
+     "title": "Block: price_landscape",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-983",
+     "title": "Block: watch_card",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-984",
+     "title": "Block: chips",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-985",
+     "title": "Block: text",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-986",
+     "title": "Reference picker",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-234.png"
+    },
+    {
+     "id": "AW-987",
+     "title": "Agent kit (light-surface) screens",
+     "designStatus": "prototyped",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-genui-eval",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-genui-eval",
+   "title": "Validators, composition rules and eval",
+   "summary": "Validator rules R01 to R18, composition, levels, unconstrained loop, traveller journeys.",
+   "status": "prototyped",
+   "hash": "#embed/flow/away/aw-genui-eval",
+   "caseHash": "#embed/flow/away/aw-genui-eval?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-988",
+     "title": "Validator R01",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-989",
+     "title": "Validator R02",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-990",
+     "title": "Validator R03",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-991",
+     "title": "Validator R04",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-992",
+     "title": "Validator R05",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-993",
+     "title": "Validator R06",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-994",
+     "title": "Validator R07",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-995",
+     "title": "Validator R08",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-996",
+     "title": "Validator R09",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-997",
+     "title": "Validator R10",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-998",
+     "title": "Validator R11",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-999",
+     "title": "Validator R12",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1000",
+     "title": "Validator R13",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1001",
+     "title": "Validator R14",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1002",
+     "title": "Validator R15",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1003",
+     "title": "Validator R16",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1004",
+     "title": "Validator R17",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1005",
+     "title": "Validator R18",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1006",
+     "title": "Composition rules",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1007",
+     "title": "Levels L1 / L2 / L3 before generation",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1008",
+     "title": "Streaming and partial render",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1009",
+     "title": "Gallery of nine moments",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1010",
+     "title": "HIG conformance pass",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1011",
+     "title": "Evaluation rubric",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1012",
+     "title": "The five-step loop",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-235.png"
+    },
+    {
+     "id": "AW-1013",
+     "title": "The 9:40pm disruption: Meera and Amma",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1014",
+     "title": "Same truths, different traveller",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1015",
+     "title": "Cache hit on repeat",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1016",
+     "title": "Case studio: 37 situations, 12 stages",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1017",
+     "title": "The kit builds itself",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1018",
+     "title": "Constrained versus unconstrained boundary",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-1019",
+     "title": "Devika: The Price Hunter",
+     "designStatus": "prototyped",
+     "thumb": "flow/map/thumbs/away/AG-303.png"
+    },
+    {
+     "id": "AW-1020",
+     "title": "Mr. Subramanian: The Comfort seeker",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1021",
+     "title": "Arjun: The Time-Boxed Pro",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1022",
+     "title": "Sneha: The Family Coordinator",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1023",
+     "title": "Karthik: The Loyalty Optimizer",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1024",
+     "title": "Riya: The Flexible Explorer",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1025",
+     "title": "Meera Iyer: The Anxious First-Timer",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1026",
+     "title": "Nikhil: The Offer Maximizer",
+     "designStatus": "prototyped",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-ask-catalog",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-ask-catalog",
+   "title": "What travellers ask the agent",
+   "summary": "The 61 asks across every stage.",
+   "status": "specced",
+   "hash": "#embed/flow/away/aw-ask-catalog",
+   "caseHash": "#embed/flow/away/aw-ask-catalog?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-1027",
+     "title": "Where can I go for 30k in December?",
+     "designStatus": "specced",
+     "thumb": "flow/map/thumbs/away/AG-242.png"
+    },
+    {
+     "id": "AW-1028",
+     "title": "Somewhere warm, direct, under 5 hours",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1029",
+     "title": "Is now a good time to book Bangkok?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1030",
+     "title": "Surprise me with a weekend trip",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1031",
+     "title": "BLR to Dubai next Friday, 2 adults",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1032",
+     "title": "Cheapest to London in March, flexible dates",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1033",
+     "title": "Direct flights only",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1034",
+     "title": "I found a cheaper fare, can you beat it?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1035",
+     "title": "Business class to New York, lie-flat",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1036",
+     "title": "Fly into Rome, out of Paris",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1037",
+     "title": "3 of us, BLR to Detroit, plus or minus a day, avoid Gulf carriers",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1038",
+     "title": "I have 60kg to move, one way to Toronto",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1039",
+     "title": "Get me on the next flight to Delhi, it is urgent",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1040",
+     "title": "Book for 12 of us to Bangkok",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1041",
+     "title": "Is this a good deal?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1042",
+     "title": "Is the cheap one a trap?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1043",
+     "title": "Is this a self-transfer?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1044",
+     "title": "Which should I pick?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1045",
+     "title": "Does this fare include a bag?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1046",
+     "title": "Can we sit together?",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-1047",
+     "title": "Is Premium Economy worth it here?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1048",
+     "title": "Is this refundable?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1049",
+     "title": "Do I need a transit visa for this layover?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1050",
+     "title": "Can I use my miles for this?",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-1051",
+     "title": "Cash or points, which is better?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1052",
+     "title": "Book it",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1053",
+     "title": "Hold this fare",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1054",
+     "title": "Pay with UPI",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1055",
+     "title": "Can I pay later?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1056",
+     "title": "Book for my parents",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1057",
+     "title": "Add a bassinet for the baby",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-1058",
+     "title": "I need wheelchair assistance",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1059",
+     "title": "Seats together for all 12",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1060",
+     "title": "Hold 30 seats for a wedding party",
+     "designStatus": "idea",
+     "thumb": null
+    },
+    {
+     "id": "AW-1061",
+     "title": "I am travelling with a service animal",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1062",
+     "title": "Can my 10-year-old fly alone?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1063",
+     "title": "Travelling with a pet, which airlines allow it?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1064",
+     "title": "Where is my ticket?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1065",
+     "title": "Do I need a visa?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1066",
+     "title": "Is my passport valid for this trip?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1067",
+     "title": "What gate and terminal?",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1068",
+     "title": "I am at the airport and something is wrong",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1069",
+     "title": "Rebook me",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1070",
+     "title": "My bag did not arrive",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1071",
+     "title": "Claim my refund",
+     "designStatus": "specced",
+     "thumb": null
+    }
+   ]
+  },
+  {
+   "id": "flow-away-aw-nudges-memory-voice",
+   "kind": "flow",
+   "cluster": "away",
+   "flowId": "aw-nudges-memory-voice",
+   "title": "Nudges, memory and the voice dial",
+   "summary": "Proactive nudges and prominence, traveller memory, voice registers.",
+   "status": "specced",
+   "hash": "#embed/flow/away/aw-nudges-memory-voice",
+   "caseHash": "#embed/flow/away/aw-nudges-memory-voice?case=<caseId>",
+   "size": {
+    "w": 392,
+    "h": 861
+   },
+   "cases": [
+    {
+     "id": "AW-1072",
+     "title": "Gate change",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1073",
+     "title": "Cancellation close to departure",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1074",
+     "title": "Payment stall",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1075",
+     "title": "Anticipation card",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1076",
+     "title": "Away Advance reminder",
+     "designStatus": "prototyped",
+     "thumb": null
+    },
+    {
+     "id": "AW-1077",
+     "title": "Anti-relitigation for the slate",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1078",
+     "title": "The segment dial",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1079",
+     "title": "Rescue continuity",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1080",
+     "title": "Mechanism and boundaries",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1081",
+     "title": "Register: First open / onboarding",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1082",
+     "title": "Register: Search and results",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1083",
+     "title": "Register: The why-Away pitch",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1084",
+     "title": "Register: Confirmation / receipt",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1085",
+     "title": "Register: Price monitoring",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1086",
+     "title": "Register: Disruption / a wound",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1087",
+     "title": "Register: The compensation win",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1088",
+     "title": "Copy bank by moment",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1089",
+     "title": "Charm and clarity never share a sentence (house rule)",
+     "designStatus": "specced",
+     "thumb": null
+    },
+    {
+     "id": "AW-1090",
+     "title": "Positioning: decision confidence, not price",
+     "designStatus": "specced",
+     "thumb": null
     }
    ]
   }

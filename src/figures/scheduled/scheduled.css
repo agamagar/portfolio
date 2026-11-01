@@ -1379,6 +1379,9 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .dio { margin: 0; width: 100%; }
 .dio__stage { position: relative; border-radius: 16px; overflow: visible; }
 .dio__stage > img { display: block; width: 100%; height: auto; border-radius: 16px; }
+/* mvqpcbak (Agam): the diorama sits on a plain ground, white in light and the dark ground in dark, with a drop shadow */
+.dio__stage { background: #fff; box-shadow: 0 18px 40px rgba(20, 8, 40, .18), 0 2px 8px rgba(20, 8, 40, .10); }
+.dark .dio__stage { background: #141218; box-shadow: 0 18px 40px rgba(0, 0, 0, .6), 0 2px 10px rgba(0, 0, 0, .45); }
 .dio__pin {
   position: absolute; translate: -50% -50%; display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.2rem 0.6rem 0.2rem 0.2rem; border: 0; border-radius: 999px; corner-shape: round;
@@ -1487,6 +1490,10 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-below]) { margin-top: calc(var(--lane, 0) * var(--rail-lane) * -1); }
 .rwf-glass .tlx__rail-tagcard[data-below="true"]:not(.tlx__rail-measure-card) { margin-top: calc(var(--lane, 0) * var(--rail-lane)); }
 .rwf-glass .tlx__rail { margin-top: 5rem; margin-bottom: 5rem; }
+/* mvqpbfrn (Agam): the glass pills 2px thicker (1px to 3px border) and 12px taller (66px to 78px; the 4px of border adds 4, the padding adds 8) */
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { border-width: 3px; }
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { height: calc(var(--rail-card-h) + 12px); }
+.page--article[data-case="scheduled-delivery"] .article__body .rwf-glass .tlx__rail-tagcard[data-twoline="true"]:not([data-open="true"]) { height: calc(var(--rail-card-h) + 34px); }
 .rwf__main .rwf__title--second { margin-top: 1.5rem; } /* mukp2jed: a second heading inside a slide */
 /* 28 Sep: no "now" marker on this rail (the project ended); the card was
    already hidden, now its line and dot go too */
@@ -1876,22 +1883,19 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 /* mukxrqfz (28 Sep): slot-page states as a horizontal scroll of big screens */
 .sdh { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 0.75rem; scrollbar-width: thin; }
 .sdh__tile { flex: 0 0 min(300px, 72vw); margin: 0; scroll-snap-align: start; }
-.sdh__tile img { display: block; width: 100%; height: auto; border-radius: 20px; border: 1px solid var(--line); }
 .article__body .sdh figcaption.sdh__cap, .article__body--nocaps .sdh figcaption.sdh__cap { display: block; margin-top: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 .sdh:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
-/* mukxvvub (28 Sep): one height for every screen (the exports differ in
-   length), width follows each image's own ratio */
-.sdh__tile { flex: 0 0 auto; }
-.sdh__tile img { width: auto; height: min(640px, 70vh); }
-/* ScreenStrip: a scrolled page keeps the phone height and scrolls inside its tile;
-   the board row is lower, for the wide cart-header boards */
-.sdh__scroll { height: min(640px, 70vh); overflow-y: auto; border-radius: 20px; border: 1px solid var(--line); scrollbar-width: thin; }
-.sdh__tile[data-tall] img { height: auto; width: calc(min(640px, 70vh) * 360 / 780); border: 0; border-radius: 0; }
-.sdh[data-size="board"] .sdh__tile img { height: min(280px, 40vh); border-radius: 12px; }
+/* (the old bare-image rules `.sdh__tile img` are gone: they resized the PhoneFrame's bezel and screen picture, so the bezel outgrew the screen) */
+/* ScreenStrip tall: a scrolled page scrolls inside the phone's screen */
+.sdh__scroll { height: 100%; overflow-y: auto; scrollbar-width: none; }
+.sdh__scroll img { display: block; width: 100%; height: auto; }
+/* ScreenStrip size="board" / "bar": bare images, not phones (the wide cart-header boards, then each header alone) */
+.sdh[data-size][data-many] > .sdh__tile { flex: 0 0 auto; }
+.sdh[data-size] p.sdh__cap { margin: 0.6rem 0 0; font-size: 0.8125rem; color: var(--muted); }
+.sdh[data-size="board"] .sdh__tile > img { display: block; width: auto; height: min(280px, 40vh); border-radius: 12px; }
+.sdh[data-size="bar"] .sdh__tile > img { display: block; width: auto; height: 56px; border-radius: 8px; }
 .sdfinals { display: grid; gap: 1.5rem; }
-/* ScreenStrip size="bar": the single cart headers (336 by 56), a short row */
-.sdh[data-size="bar"] .sdh__tile img { height: 56px; border-radius: 8px; }
-/* SchedWiredFlows: the nine wired flows, one strip each, then the build as a click-through */
+/* SchedWiredFlows: the wired flows, one strip each, then the build as a click-through */
 .sdwired { display: grid; gap: 3rem; }
 .sdwired__flow { display: grid; gap: 1rem; }
 .sdwired__head { display: grid; gap: 0.25rem; }
@@ -2229,26 +2233,21 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 
 /* mvg9bvbv (Agam, "this text should be title case"): the Scheduled rail's card labels are not upper-cased */
 .page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { text-transform: none; letter-spacing: 0.01em; } /* outranks the type-pass rule that upper-cases it */
+/* mvorf9wi (Agam, 26 Oct, "make this font bigger"): every tag on this rail one step up the SD scale, label (12px) to
+   caption (14px; 13px on phones, from the scale's own phone step). The homepage rail is untouched. */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { font-size: var(--sd-cap-size); line-height: var(--sd-cap-lh); }
 
 /* list <-> circles toggle on the role-slide point lists */
 .rwf__rl { display: grid; gap: 1.25rem; min-width: 0; }
 .rwf__rl-toggle { justify-self: start; }
-.rwf__rl-row { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; }
-.rwf__rl-row > li { border: 0; padding: 0; margin: 0 0 0 -4%; display: block; flex: 0 1 11.5rem; min-width: 0; }
-.rwf__rl-row > li:first-child { margin-left: 0; }
-.page--article .article__body .rwf-run .rwf .rwf__rl-c {
-  width: 100%; aspect-ratio: 1; border-radius: 50%; corner-shape: round; cursor: pointer; padding: 0.6rem;
-  display: grid; place-content: center; justify-items: center; gap: 0.3rem; text-align: center;
-  background: transparent; color: var(--ink); border: 0; position: relative;
-}
-/* mvgnqb4l: the ring is a pseudo-element, so the selected grow scales the ring only and the label never changes size */
-.rwf__rl-c::before { content: ""; position: absolute; inset: 0; border-radius: 50%; corner-shape: round; border: 1.5px solid var(--lbl); transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; }
-.page--article .article__body .rwf-run .rwf .rwf__rl-c[data-on]::before { transform: scale(1.1); } /* mvgl5pqp: selected = a slight grow, never a fill */
-.rwf__rl-c:focus-visible { outline: 2px solid #f0a868; outline-offset: 2px; }
+/* mvntahzh (Agam, 25 Oct): the points as four left-aligned columns, no circles or rings (was .rwf__rl-row of
+   .rwf__rl-c circles); two columns on a phone */
+.rwf__rl-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem 1.5rem; justify-items: start; text-align: left; }
+.rwf__rl-cols > li { border: 0; padding: 0; margin: 0; display: block; min-width: 0; }
+@media (max-width: 720px) { .rwf__rl-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .rwf__rl-n { font-size: 0.75rem; opacity: 0.7; font-variant-numeric: tabular-nums; }
-.rwf__rl-t { font: 500 clamp(0.72rem, 1.45vw, 0.95rem)/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: balance; }
-.rwf__rl-detail { margin: 1.25rem auto 0; max-width: 52ch; text-align: center; color: var(--muted); min-height: 3.2em; }
-@media (prefers-reduced-motion: reduce) { .rwf__rl-c::before { transition: none; } }
+.rwf__rl-t { display: block; margin: 0; color: var(--ink); font: 500 clamp(0.72rem, 1.45vw, 0.95rem)/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family); text-wrap: pretty; }
+.rwf__rl-detail { margin: 0.4rem 0 0; color: var(--muted); }
 
 
 /* mvgar01a: the whole cart page scrolls inside a standard iPhone frame; the steps sit beside it (stacked under it on a phone) */
@@ -2275,3 +2274,102 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 @media (max-width: 760px) { .cpf { grid-template-columns: 1fr; gap: 1.5rem; } .cpf__steps { max-width: none; } }
 
 /* 22 Oct: the caption under the prototype still (the Figma file is private, so the embed is a still on the public site) */
+
+/* mvp5e90i-u6ak3y (Agam, 26 Oct): the phase rail's labels sit on the page with no fill and no hover state; the heading under
+   the emoji is bigger, and the dates are its subtext. */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { background: none; border-color: transparent; box-shadow: none; pointer-events: none; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard:not([data-open="true"]) .tlx__rail-tag { font-size: 20px; line-height: 26px; font-weight: 600; }
+.rwf-glass .tlx__rail-sub { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--muted); white-space: nowrap; }
+/* mvp5e90g-fafsko: each point is its icon on the left and its text on the right, in four equal columns */
+.rwf__rl-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.rwf__rl-cols > li { display: flex; flex-direction: row; align-items: flex-start; gap: 0.75rem; }
+.rwf__rl-cols > li .rwf__stat-icon { flex: 0 0 auto; margin: 0; }
+.rwf__rl-cols > li .rwf__rl-t { flex: 1 1 0; min-width: 0; }
+/* mvp5e90i-iefs0g: the growth chart fills its column, its height following its width */
+.rwf__charts--one .ch__svg { width: 100%; height: auto; }
+.rwf--stack .rwf__main:has(.rwf__charts--one) { align-items: stretch; width: 100%; }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):not([data-open="true"]) { height: var(--rail-card-h); min-height: 0; overflow: visible; box-sizing: border-box; }
+@media (max-width: 720px) { .rwf__rl-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* mvpxf1qf-knn4wa (Agam, 27 Oct): the phase rail shows no date at rest; pointing at a label reveals only its date. The
+   hover no longer opens the card's panel here, so the card keeps its resting look. */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { pointer-events: auto; background: none; border-color: transparent; box-shadow: none; height: var(--rail-card-h); min-height: 0; overflow: visible; box-sizing: border-box; }
+.rwf-glass .tlx__rail-tagcard .tlx__rail-detail, .rwf-glass .tlx__rail-tagcard .tlx__rail-detail-bullets { display: none; }
+.rwf-glass .tlx__rail-sub { opacity: 0; transition: opacity 160ms ease; }
+.rwf-glass .tlx__rail-tagcard:hover .tlx__rail-sub, .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-sub { opacity: 1; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 20px; line-height: 26px; font-weight: 600; }
+/* mvq1lgid-uwtf0v (Agam, 27 Oct): the phase rail has no hover states at all, no emojis, and its type is 8px smaller (20px to 12px). */
+.rwf-glass .tlx__rail-hit { pointer-events: none !important; }
+/* mvq34dit-aaxl4s (Agam, 27 Oct): hover is back, only on the glass pills (the labels): pointing at one fills it with the glass */
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { pointer-events: auto !important; transition: background-color 160ms ease, border-color 160ms ease; }
+.rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card):hover, .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card)[data-open="true"] { background: color-mix(in srgb, var(--fg) 8%, transparent) !important; border-color: var(--rwf-card-stroke, var(--line)) !important; }
+.rwf-glass .tlx__rail-emoji { display: none !important; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard .tlx__rail-tag { font-size: 12px; line-height: 16px; }
+.rwf-glass .tlx__rail-sub { opacity: 1; font-size: 11px; line-height: 14px; }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard:not([data-open="true"]) .tlx__rail-tag,
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard[data-open="true"] .tlx__rail-tag { font-size: 12px; line-height: 16px; }
+/* mvq2mtm6-gg75ao (Agam, 27 Oct, "hide this and 2026"): the phase rail's year labels are hidden */
+.rwf-glass .tlx__rail-year { display: none !important; }
+
+/* The shared phone row (ScreenStrip): one heading, one row of phones, one verdict, the same on every section that shows phones
+   side by side. The old per-section row (.sxp) is gone. */
+.sdrow { margin: 0; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.page--article .article__body .sdrow p.sdrow__title { margin: 0; font: 600 15px/1.25 "Google Sans Flex", Inter, sans-serif; color: var(--ink); }
+.sdrow .sdh { width: 0; min-width: 100%; justify-content: safe center; padding: 4px 0 0.75rem; }
+.sdrow .sdh__tile { flex: 0 0 auto; scroll-snap-align: start; margin: 0; }
+.sdrow .pf__cap { font-size: 12px; opacity: 0.85; }
+.sdrow .pf__tag { background: none; }
+.sdrow__verdict { margin: 0; font-size: 15px; line-height: 1.5; text-wrap: pretty; padding-right: 52px; }
+/* the SD case hides figure captions; a phone's line and the verdict are the comparison itself, so they stay on */
+.article__body--nocaps .sdrow figcaption { display: revert; }
+
+/* Impact, At a glance (SchedStatCards): heading left, two text columns right, three stat cards below; the cards stack on a phone */
+.stv { display: flex; flex-direction: column; gap: 32px; width: 100%; margin: 0.5rem 0 0; }
+.stv__top { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 24px 32px; align-items: start; }
+.page--article .article__body .stv h3.stv__head { margin: 0; font: 400 clamp(1.5rem, 2.6vw, 2.1rem)/1.15 "Google Sans Flex", Inter, sans-serif; text-wrap: balance; }
+.page--article .article__body .stv p.stv__col { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+.stv__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 720px) { .stv__top, .stv__cards { grid-template-columns: 1fr; } }
+/* the Impact view toggle: the shared fig-toggle, left aligned under the TL;DR */
+.stv-toggle { justify-content: flex-start; margin: 1rem 0 1.25rem; }
+
+/* THE phone row, final (Agam, 27 Oct, "phone frames still breaking"). A frame scales to its slot: width 100% of the slot, the
+   device's fixed aspect, the screen inset in percent, so the screen fills the bezel at any width. A row of N phones is an
+   N-column grid that fits the article (each phone at most 300px, centred), so nothing is clipped or overlaps; labels sit
+   centred under each phone. Under 700px the row scrolls sideways and snaps, one phone at a time. */
+.sdh .pf, .sdrow .pf { width: 100%; max-width: 100%; }
+@media (min-width: 701px) {
+  .sdh:not([data-many]), .sdrow .sdh:not([data-many]), .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 300px)); justify-content: center; gap: 1.25rem; overflow: visible; scroll-snap-type: none; width: 100%; min-width: 0; padding: 4px 0 0.5rem; }
+  .sdh:not([data-many]) > .sdh__tile, .sdflows.sdh:not([data-many]) > .sdh__tile { flex: none; min-width: 0; width: 100%; }
+  /* five or more phones: one scrolling, snapping row at a fixed phone width, so each stays big enough to read */
+  .sdh[data-many] { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .sdh[data-many] > .sdh__tile { flex: 0 0 240px; scroll-snap-align: start; }
+}
+@media (max-width: 700px) {
+  .sdh { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(72vw, 260px); scroll-snap-align: center; }
+  .sdh[data-many] > .sdh__tile { flex: 0 0 min(72vw, 260px); }
+}
+/* the live screen always fills the bezel opening, and its replay stays inside it, bottom right */
+.pf .ifr__screen > .fembed { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pf .fembed .fembed__restart { right: 10px; bottom: 10px; }
+
+/* mvqcgh0b-hpje5e (Agam, 27 Oct): every vertical line meets its box. The leaders are measured from --rail-card-h, so the resting card is
+   exactly that tall (55px here: label, date and their padding) and the line's end is the card's edge, with no gap, on all nine. */
+.rwf-glass.tlx, .rwf-glass { --rail-card-h: 55px; }
+
+/* mvqnxwre-eh9pxw, mvqnyyep-6d1ni2 (Agam, 27 Oct, "phone frames too big"): a phone in a row is at most 230px wide, 190px on a phone */
+@media (min-width: 701px) { .sdh, .sdrow .sdh, .sdflows.sdh { grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); } }
+@media (max-width: 700px) { .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(58vw, 190px); } }
+/* mvqnxlmk-wxnbie (Agam, 27 Oct): every section is vertical: the heading or label on top, the content under it, never label left and
+   content right. */
+/* mvqp0s9s-4u16kk (Agam, 27 Oct): the intro question stays horizontal, label left and question right */
+.article__body .rwf:not(.rwf--stack) { grid-template-columns: minmax(0, 1fr); }
+.article__body .rwf > * { grid-column: 1 / -1; grid-row: auto; }
+.article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr); }
+.article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
+/* the running-flows row (.sdflows) is the same grid; this outranks schedFigmaFlows.css's older flex rule */
+@media (min-width: 701px) { html .article__body .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); justify-content: center; gap: 1.25rem; overflow: visible; } html .article__body .sdflows.sdh > .pf.sdh__tile { width: 100%; flex: none; } }
+/* belt and braces: whatever the row's tile width, a phone in a row never exceeds 230px (190px on a phone) */
+.sdh .pf, .sdrow .pf { max-width: 230px; margin-inline: auto; }
+@media (max-width: 700px) { .sdh .pf, .sdrow .pf { max-width: 190px; } }

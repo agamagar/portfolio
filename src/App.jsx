@@ -105,6 +105,7 @@ import "./figures/design/design.css"; // kept eager: global rules the case pages
 const DesignFigure = lazyFig(() => import("./figures/design/DesignFigure"));
 import "./figures/whiteboard.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
 const Whiteboard = lazyFig(() => import("./figures/Whiteboard"));
+const SchedExplored = lazyFig(() => import("./figures/scheduled/SchedExplored")); // Q15 (26 Oct): one "what was explored" row per decision, `explored: <key>` on its section
 import { SD_BOARDS } from "./figures/board/boards.scheduledDelivery"; // 11 Oct: whiteboards written by the board engine (src/figures/board)
 import ReelFigure, { ReelPresets, reels } from "./figures/reel/Reel";
 import "./figures/crosssell/crosssell.css"; // kept eager: global rules the case pages rely on (cascade order unchanged)
@@ -169,12 +170,19 @@ const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitc
 const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
 const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows")); // the wired Figma prototype paths, live
 const SchedWiredFlows = lazyFig(() => import("./figures/scheduled/SchedWiredFlows")); // the nine flows wired in code, step by step and clickable
+const SchedAfterFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedAfterFlows }))); // after booking, built flows
+const SchedInAppFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedInAppFlow }))); // the in-app return, built flow
+const SchedLimitsFlow = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows").then((m) => ({ default: m.SchedLimitsFlow }))); // the cart's limits and errors, built flow
+const SchedPromiseSlot = lazyFig(() => import("./figures/scheduled/SchedPromise").then((m) => ({ default: m.SchedPromiseSlot }))); // slot recovery, prototype screens
+const SchedPromisePrice = lazyFig(() => import("./figures/scheduled/SchedPromise").then((m) => ({ default: m.SchedPromisePrice }))); // the price lock, prototype screens
 const SchedToggleDemo = lazyFig(() => import("./figures/scheduled/SchedToggleDemo")); // mv59m6yi
 const SchedGtm = lazyFig(() => import("./figures/scheduled/SchedGtm"));
 const SchedExplorations = lazyFig(() => import("./figures/scheduled/SchedExplorations"));
 const SchedExplorationsDetour = lazyFig(() => import("./figures/scheduled/SchedExplorationsDetour"));
 const SchedPostBooking = lazyFig(() => import("./figures/scheduled/SchedPostBooking"));
 import SchedGtmReal, { SchedGtmRealOne, SchedGtmRealOneDim, SchedGtmCartOne, SchedGtmBanner, SchedGtmTooltipOne } from "./figures/scheduled/SchedGtmReal";
+import { SchedStatesRow, SchedReturnsFlow } from "./figures/scheduled/SchedLiveRows"; // live states and flow, each in the shared phone frame and row
+import SchedStatCards from "./figures/scheduled/SchedStatCards"; // Impact, At a glance: the stat-card view
 import SchedImpactGlance from "./figures/scheduled/SchedImpactGlance"; // mvf9un9o (19 Oct): Impact at a glance
 import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9leyc (19 Oct): the whole cart page laid out flat, annotated
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
@@ -187,7 +195,7 @@ import { zepirisDeck } from "./decks/zepiris.deck";
 import { dasshDeck } from "./decks/dassh.deck";
 import { topprDeck } from "./decks/toppr.deck";
 import Tooltips from "./ui/Tooltips";
-import { useRise, rise } from "./ui/useSectionPlay"; // section play: one controller for scroll entrances
+import { useRise, rise, useBlockReveal } from "./ui/useSectionPlay"; // section play: one controller for scroll entrances
 import { PRIVATE_SITE } from "./lib/site";
 import LockScreen from "./ui/LockScreen";
 import "./ui/lockScreen.css";
@@ -411,6 +419,7 @@ const PROTO_STILL = "/figures/scheduled/figma/flow-main.png"; // main path start
 import PhoneLightbox, { collectExpandables } from "./ui/PhoneLightbox";
 import ExpandableFigure from "./ui/ExpandableFigure"; // mv56ku8l (12 Oct): every image / diagram figure opens full page // mv54coar (12 Oct): click a phone card to open it full page
 import PhoneFrame, { IPHONE_FRAME_SRC } from "./figures/ds/IphoneFrame"; // THE phone frame (all mobile screens go through it)
+import Img, { imgSrc } from "./ui/Img"; // THE figure <img>: reserved size, lazy, WebP where converted (stack-audit pick 2)
 import usePageTitle from "./lib/usePageTitle"; // 28.1: "<page> · Agam Agarwal" in the tab
 import PlaygroundCopy from "./figures/sdStory/PlaygroundCopy"; // Q21 interim: copy that knows whether the playground bundle is deployed
 import { LinksBelow } from "./figures/ds/PhoneLinks"; // 18.2: a cropped plate phone's Open in Figma, under the plate
@@ -505,7 +514,7 @@ function Collage({ images, variant }) {
     return (
       <div className="fig-collage fig-collage--slide" role="img">
         {items.map((it, i) => (
-          <img key={i} src={it.src} alt="" loading="lazy" />
+          <Img key={i} src={it.src} alt="" />
         ))}
       </div>
     );
@@ -513,11 +522,10 @@ function Collage({ images, variant }) {
   return (
     <div className="fig-collage" role="img">
       {items.map((it, i) => (
-        <img
+        <Img
           key={i}
           src={it.src}
           alt=""
-          loading="lazy"
           className={
             it.w === "half"
               ? "fig-collage__img--half"
@@ -689,6 +697,8 @@ const figures = {
   schedSinglePage: SchedSinglePage,
   schedStuckCart: SchedStuckCart,
   schedImpact: SchedImpact,
+  schedStatesRow: SchedStatesRow,
+  schedReturnsFlow: SchedReturnsFlow,
   schedSplit: SchedSplit,
   schedMoments: SchedMoments,
   schedCartStates: SchedCartStates,
@@ -698,6 +708,11 @@ const figures = {
   schedCartHubs: SchedCartHubs,
   schedFigmaFlows: SchedFigmaFlows,
   schedWiredFlows: SchedWiredFlows,
+  schedAfterFlows: SchedAfterFlows,
+  schedInAppFlow: SchedInAppFlow,
+  schedLimitsFlow: SchedLimitsFlow,
+  schedPromiseSlot: SchedPromiseSlot,
+  schedPromisePrice: SchedPromisePrice,
   schedToggleDemo: SchedToggleDemo, // mv59m6yi
   schedGtm: SchedGtm,
   schedExplorations: SchedExplorations,
@@ -993,7 +1008,7 @@ function fireLayer(node, i) {
 // copies under it to compare (Agam: "make copy of this and do 1 and 3 and 2 as
 // new copies"). Same facts as the frame: statement, the three leadership lines,
 // ROLE_STATS. Each copy carries an "Option" tag so they can be told apart.
-const ROLE_PARTNERS = ["Design leadership and the CPO", "Expectations with the C-suite", "Senior Director, New Category"];
+const ROLE_PARTNERS = ["Design leadership and the CPO", "The C-suite", "Senior Director, New Category"]; // 94.2: a partner, not the activity ("Expectations with the C-suite")
 const ROLE_FUNCTIONS = ["Design", "Product", "Content", "Engineering and QA", "Operations"];
 function RoleOptionTag({ n, name }) {
   return <p className="rv__tag">Option {n} · {name}</p>;
@@ -1030,7 +1045,10 @@ function RoleEditorial({ s }) {
 const STAT_VIEWS = [["icons", "Icons"], ["box", "Box"], ["card", "Card"], ["editorial", "List"], ["left", "Icon left"], ["nums", "Numbers"]];
 const SHOW_STAT_TOGGLE = false; // mvdvotz9 (Agam, "hide these tabs"): the metrics layout tabs are hidden; set true to bring them back
 const SHOW_MAP_TREE = false; // mvgjw15e: Circles is the only My role map view and the Tree/Circles toggle is hidden; true brings the Tree and the toggle back
-const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "Expectations with the C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
+// each orbit: [name, start angle, radius (cqw), circle size (cqw), kind, seconds per turn]
+const PACK_ORBITS = [...ROLE_PARTNERS.map((n, k) => [n, -90 + k * 120, 24 + [0, -1.5, 1][k], 24, "who", 48]),
+  ...ROLE_FUNCTIONS.map((n, k) => [n, [-45, 5, 90, 190, 235][k], 41 + [0, -1, -2, -1, 0][k], 17, "fn", 58])];
+const PACK_SHORT = { "Design leadership and the CPO": "Design leadership", "The C-suite": "C-suite", "Senior Director, New Category": "Senior Director" }; // mvgixzsr: role names only in the Circles view
 function RoleScopeMap({ s, i }) {
   const packRef = useRef(null);
   useEffect(() => { // pause the orbit and the pulse while the figure is off-screen
@@ -1061,12 +1079,11 @@ function RoleScopeMap({ s, i }) {
         <div className="rv-pack" ref={packRef} role="img" aria-label="Who the role answered to and worked with: lead designer, end to end, answering to design leadership and the CPO, the C-suite and the Senior Director of New Category, across design, product, content, engineering and QA, and operations">
           {/* mvgkpgjn: the circles revolve around the lead designer (one orbit ~48 / 58 s, a phase and radius stagger each), the lines
               ride the same rotating wrapper, labels counter-rotate to stay upright; the orb gradient pulses on ::before. CSS transforms only. */}
-          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
-          {[...ROLE_PARTNERS.map((n, k) => [n, -90 + k * 120, 24 + [0, -1.5, 1][k], 24, "who", 48]),
-            ...ROLE_FUNCTIONS.map((n, k) => [n, [-45, 5, 90, 190, 235][k], 41 + [0, -1, -2, -1, 0][k], 17, "fn", 58])].map(([n, a0, r, d, k, dur]) => (
-            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s` }}>
+          {/* the lens prisms what is painted before it: the lines orbit under it, the labels (a second set of the same orbits,
+              same angle and duration, so they move as one) over it, so the labels stay crisp (CoS, 26 Oct: the lens fringed them) */}
+          {PACK_ORBITS.map(([n, a0, r, d, , dur], oi) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s`, "--dl": `${-((oi * 11) % dur)}s` }}>
               <i className="rv-pack__ln" />
-              <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
             </span>
           ))}
           {/* mvigzb44: a slowly drifting prism lens over the whole figure: backdrop-filter with an RGB split + slight magnify (SVG filter),
@@ -1085,6 +1102,12 @@ function RoleScopeMap({ s, i }) {
             </filter>
           </svg>
           <span className="rv-pack__lens" aria-hidden="true" />
+          <span className="rv-pack__c rv-pack__c--me" style={{ left: "50%", top: "50%", "--d": 20 }}><b>Lead designer</b></span>
+          {PACK_ORBITS.map(([n, a0, r, d, k, dur], oi) => (
+            <span key={n} className="rv-pack__o" style={{ "--a0": `${a0}deg`, "--r": r, "--d": d, "--dur": `${dur}s`, "--dl": `${-((oi * 11) % dur)}s` }}>
+              <span className={"rv-pack__c rv-pack__c--" + k}>{PACK_SHORT[n] || n}</span>
+            </span>
+          ))}
         </div>
       ) : (
       <div className="rv-map__tree" aria-label="Who the role answered to and worked with">
@@ -1164,7 +1187,7 @@ function RoleFrame({ s, i }) {
   useRise(ref, { lead: 100 }); // section play: fades up, staggered, at the viewport centre
   return (
     <div className="role-frame" ref={ref}>
-      <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{s.h}</h2>
+      <h2 id={`sec-${i}`} className="role-frame__label" data-rise>{noWidow(s.h)}</h2>
       <div className="role-frame__main">
         <p className="role-frame__statement role-frame__statement--solo" data-rise>{s.roleFrame.statement}</p>
         {/* mujvays4 (27 Sep): the three-column body removed ("remove these");
@@ -1266,7 +1289,7 @@ function SplitSection({ s, i }) {
   return (
     <div className={"article__split" + (s.splitStack ? " article__split--stack" : "")} ref={ref}>
       <div className="article__split-side">
-        <h2 id={`sec-${i}`} data-rise>{s.h}</h2>
+        <h2 id={`sec-${i}`} data-rise>{noWidow(s.h)}</h2>
         {s.tldr && !s.hideTldr && (
           // muie8ipv: the WRAP carries the drag, the tilt and the shadow (a
           // drop-shadow, so it traces the paper's real outline); the paper
@@ -1439,7 +1462,7 @@ function ScrollScene({ scene: sceneIn }) {
       {/* 28.2: a scene is one picture made of layers, so it carries one description; every layer stays alt="" (some
           are painted as CSS masks, which a screen reader never sees) */}
       {scene.alt && <span className="sr-only" role="img" aria-label={scene.alt} />}
-      {scene.base && <img className="sscene__base" src={scene.base} alt="" draggable="false" />}
+      {scene.base && <Img eager className="sscene__base" src={scene.base} alt="" draggable="false" />}
       {scene.title && <p className="sscene__title">{scene.title}</p>}
       {hasOneShot && (
         <button type="button" className="sscene__replay" aria-label="Replay the animation" onClick={replay}>
@@ -1459,7 +1482,7 @@ function ScrollScene({ scene: sceneIn }) {
             // mu3jl3kt: a `tint` layer is a FLAT-COLOUR export (the Figma slide's
             // own type), so it is painted as a mask in the theme's ink rather
             // than shown as a picture - see .sscene__layer--tint
-            style={{ left: l.x + "%", top: l.y + "%", width: l.w + "%", ...(l.tint ? { "--tint-src": `url(${l.src})` } : null), ...(l.split ? { "--split-src": `url(${l.src})`, "--split": l.split + "%" } : null) }}
+            style={{ left: l.x + "%", top: l.y + "%", width: l.w + "%", ...(l.tint ? { "--tint-src": `url(${imgSrc(l.src)})` } : null), ...(l.split ? { "--split-src": `url(${imgSrc(l.src)})`, "--split": l.split + "%" } : null) }}
             {...(l.fx === "magic" ? {
               role: "button", tabIndex: 0, "aria-label": l.alt ? `Reveal: ${l.alt}` : "Reveal the text",
               onClick: (e) => magicLayer(e.currentTarget),
@@ -1467,10 +1490,10 @@ function ScrollScene({ scene: sceneIn }) {
             } : {})}
           >
             {/* mtmkl036: a layer may pivot from a named point (a bubble's tail) */}
-            <img src={l.src} alt="" draggable="false" style={l.origin ? { transformOrigin: l.origin } : undefined} />
+            <Img eager src={l.src} alt="" draggable="false" style={l.origin ? { transformOrigin: l.origin } : undefined} />
             {/* mto5bsxs had a light sweep through the glyphs here; mtp78lno: removed, the sharpening alone is the reveal */}
             {/* mtp67ai5: only the text blurs; the box under it stays crisp (a second export, behind) */}
-            {l.under && <img className="sscene__under" src={l.under} alt="" draggable="false" />}
+            {l.under && <Img eager className="sscene__under" src={l.under} alt="" draggable="false" />}
           </div>
         );
         // mtmk2odv: a layer can be clipped to a box on the plate (a phone's
@@ -1514,6 +1537,8 @@ function DuoFigure({ figure, plates }) {
 // mtmrira8: a stack of plates that read as windows onto ONE gradient. The
 // wrapper measures where each plate sits in the stack and hands every plate
 // ground the same gradient sized to the whole stack, offset to its position.
+// layout only: a heading never ends on a lone word (the last two words are tied)
+const noWidow = (t) => (typeof t === "string" ? t.replace(/\s+(\S+)$/, "\u00a0$1") : t);
 function PlatesStack({ stack, gradient, children }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -1638,11 +1663,10 @@ function ReelOrStill({ reel, still, parallax, variant }) {
       ) : parallax ? (
         <ScrollPhone src={still} />
       ) : (
-        <img
+        <Img
           className={slide ? "slide__media-img slide__media-img--real" : "article__figure-img article__figure-img--real"}
           src={still}
           alt=""
-          loading="lazy"
         />
       )}
     </div>
@@ -1762,7 +1786,7 @@ function SectionFigure({
   }
   if (image) {
     return (
-      <img
+      <Img
         className={
           slide
             ? "slide__media-img slide__media-img--real"
@@ -1770,7 +1794,6 @@ function SectionFigure({
         }
         src={image}
         alt=""
-        loading="lazy"
       />
     );
   }
@@ -2317,14 +2340,17 @@ const caseStudies = {
           },
           {
             auto: false,
-            embed: { node: "9:154" }, // Claude: Schedule main path, from the cart (FigmaEmbed)
-            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
-            cueBox: [69.4, 34.5, 20, 4.3], // the cart's Schedule button, the path's first hotspot
+            // Agam, 27 Oct (mvq32new, "use the week prior version"): the Figma frame of 19 to 22 Oct, the main-path prototype in the
+            // Zepto file (71cZSn6pTNf4zFzO07O2uv, node 40000084:123917), not the Claude: Schedule copy. The file is private, so a visitor
+            // without access meets Figma's sign-in (mv2mmvt6).
+            embed: { file: "71cZSn6pTNf4zFzO07O2uv", node: "40000084:123917", start: "40000084:123917" },
+            cueBox: [48.5, 30.6, 45, 7.8],
             cueLabel: "Click here",
             cueNoPointer: true,
             cueNoBox: true,
             cueClick: true,
             alt: "The scheduled order prototype, live from Figma",
+            bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
           },
         ],
         scene: {
@@ -2362,19 +2388,6 @@ const caseStudies = {
       // before the three cards. The plates section is gone from here; the hero
       // banner mp4 and the prototype embed still exist as assets and helpers.
       // muic2lhk (26 Sep): moved to sit just below Context & problem (was after the question); the phone moves up with it (muic1wk2)
-      {
-        // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
-        // 16 Sep 2026, read back from Figma 120 (3:3321): the slide is SIX
-        // photographs now, with six different labels, and it carries a Dev Mode
-        // annotation reading "Pictionary game" - so the labels are word cards
-        // you guess. The old `scene` of duplicated card PNGs is gone; the
-        // component owns the grid, the pills and the reveal.
-        h: "Six moments",
-        noHeading: true,
-        fig: "schedMoments",
-        figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
-        // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
-      },
       // mvgewwfq (Agam, "move this 2 sections down"): "Context & problem" (the "When instant delivery fails" scene) now sits after "Six moments"
       {
         h: "Context & problem",
@@ -2477,6 +2490,20 @@ const caseStudies = {
         figure:
           "The promise, written down. A scheduled shipment is a card that says a time and keeps it, with one word left for changing your mind.",
       },
+      // mvqp1fmz-yzvypg (Agam, 27 Oct, "move this down"): Six moments sits one section lower, after The central question
+      {
+        // mtmjhj5d / mtmke32q / mtmvfzrl: began as three cards with three labels.
+        // 16 Sep 2026, read back from Figma 120 (3:3321): the slide is SIX
+        // photographs now, with six different labels, and it carries a Dev Mode
+        // annotation reading "Pictionary game" - so the labels are word cards
+        // you guess. The old `scene` of duplicated card PNGs is gone; the
+        // component owns the grid, the pills and the reveal.
+        h: "Six moments",
+        noHeading: true,
+        fig: "schedMoments",
+        figure: "Six of them, and not one is an emergency: between meetings, heading to bed, at the dinner table, in peak-hour traffic, on the way home, and wrapping a gift.",
+        // muicr2rh: the heading now sits ABOVE the collage (Figma 315:29470), inside SchedMoments
+      },
       {
         h: "My role",
         group: "Problem",
@@ -2501,11 +2528,11 @@ const caseStudies = {
             "Managing expectations with the C-suite",
             "Partnering with the Senior Director of New Category", // mukpnlvb: ", in product" removed
           ],
-          statement: "I led the interaction design end-to-end across product, content, and operations, over two 2025 releases.",
+          statement: "I led the interaction design end to end with my manager, across product, content, engineering and QA, and operations, over two 2025 releases.", // 94.1: the TL;DR's sentence, as written
           // the body is the ORIGINAL role paragraph, as the Figma frame sets it
           body: "I led the interaction design end-to-end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right, it didn't account for the real spread of cases. So the bulk of my work was mapping every flow and edge case, running the exploration (including a full parallel direction), and partnering with product and operations to keep the design honest against supply-chain reality. The core ran August to November 2025 across two releases, a deliberately narrow M1 in late October and the full multi-shipment M2 in mid-November, with product, content, engineering, operations and QA, and an engineering group that pushed hard on the edge cases. The post-launch validation study I ran with the PMs.",
         },
-        tldr: "I led the interaction design end to end with my manager, across product, content and operations, over two 2025 releases.",
+        tldr: "I led the interaction design end to end with my manager, across product, content, engineering and QA, and operations, over two 2025 releases.",
         p: [
           "I led the interaction design end to end, working closely with my design manager. There was an existing pitch when I picked up the problem, but it didn't feel right. It didn't account for the real spread of cases, so I set it aside and started again from the map.",
         ],
@@ -2666,6 +2693,7 @@ const caseStudies = {
         // boxes; the title, TL;DR and the three assets are still to come
         // mukxmirl (28 Sep): this and Two directions below are ONE section now
         h: "Different ways we explored how schedule could exist on the app",
+        explored: "collapsedSlot", // Q15: the "collapsedSlot" comparison row (SchedExplored), at the end of this section
         nav: "Ways to exist",
         group: "Process",
         stack: true, // mvgmceoe (Agam, "make this a vertical layout"): heading above the text, not in a label column beside it
@@ -2730,6 +2758,7 @@ const caseStudies = {
         // goes in public/figures/scheduled/instant-to-scheduled-toggle.mp4 (placeholder until then).
         // [CONFIRM] the caption's last line once the recording is in: what the motion does, in his words.
         h: "Instant to Scheduled: the toggle",
+        explored: "toggle", // Q15: the "toggle" comparison row (SchedExplored), at the end of this section
         nav: "The toggle",
         group: "Process",
         tldr: "One control moves the order from now to later.", // wording, inferred from the screens (Instant, 9 min / Schedule Delivery, Select a slot)
@@ -2762,11 +2791,12 @@ const caseStudies = {
       },
       {
         h: "The go-to-market",
+        explored: "gtm", // Q15: the "gtm" comparison row (SchedExplored), at the end of this section
         nav: "Go-to-market",
         group: "Process",
         stack: true, // mvksqb7g (Agam, "combine this with the section above"): one stacked section, the whiteboard beside its text
         whiteboardNext: SD_BOARDS.goToMarket, // 11 Oct: the three options the section weighs, as a whiteboard after the figure
-        whiteboardFloat: true, whiteboardFloatSm: true, // mvksqb7g: floated beside the text, about a quarter the size ("4x smaller")
+        whiteboardFloat: true, whiteboardFloatHalf: true, // mvksqb7g: floated beside the text; mvnbgret ("make 50% smaller"): half the column, about 408px
         tldr:
           "We introduced it quietly: one small animated banner on the schedule page, and a prompt only when instant cannot serve the cart.",
         p: [
@@ -2846,6 +2876,7 @@ const caseStudies = {
       },
       {
         h: "Slot-page states",
+        explored: "instantOff", // Q15: the "instantOff" comparison row (SchedExplored), at the end of this section
         nav: "Slot states",
         group: "Process",
         tldr:
@@ -2893,7 +2924,8 @@ const caseStudies = {
       },
       // 27 Sep, Figma 273:5431: the order packed, what booking sets in motion
       {
-        hidden: true, // muky6p44 + muky6uaw (28 Sep): hidden for now, with its post-booking figure
+        // 26 Oct (Agam, via CoS: "add all things in the schedule case study"): on the page again, short, with the built
+        // flows for tracking, My Orders and the home strip. Hidden 28 Sep (muky6p44, muky6uaw) with its coded figure.
         h: "After you book",
         // mukukpft (28 Sep): moved here from the central question; the tracking
         // card IS the after-booking promise. mukub9lc: the mango scene, duplicated with a different
@@ -2901,30 +2933,74 @@ const caseStudies = {
         // 284:6334: the purple crates, and the "Scheduled / Arriving today,
         // 7-8 AM" tracking card flipping up in the centre (586 x 642 on the
         // 1392 x 862 frame: x 28.95%, y 12.77%, w 42.1%).
-        sceneAfter: {
+        _sceneAfter: {
           aspect: [1392, 862],
           base: "/figures/scheduled/tracking-crates.webp",
           layers: [{ src: "/figures/scheduled/tracking-card.webp", x: 28.95, y: 12.77, w: 42.1, fx: "flip" }],
         },
-        group: "Outcome",
+        group: "Process",
         tldr:
-          "Later is only trustworthy if it arrives, so most of the trust work sits after checkout: tracking built for a slot, reminders, and a hand-off back to instant.",
+          "Most of a scheduled order's life comes after you pay, so every screen it shows up on leads with the slot.",
         p: [
-          "A scheduled order spends almost all of its life after you have paid, and that is exactly where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\"; for a scheduled order that line is wrong. So I designed a new card that leads with the commitment, \"Scheduled for Today, 6 to 7 PM\", and carries the same status onto the home page and into My Orders. The promise stays in front of you the whole time, not buried in a confirmation email.",
+          "A scheduled order spends almost all of its life after you have paid, and that is where trust is kept or lost. Zepto's tracking page is built to say \"arriving in 10 minutes\", and for a scheduled order that line is wrong. So the tracking card leads with the commitment, \"Scheduled for Today, 7-8 PM\", and the same status sits at the top of My Orders and in a strip at the foot of the home page. The promise stays in front of you the whole time.",
+        ],
+        // parked with the section's 28 Sep hide: reminders, the hand-off back to instant, cancel rules, the rider screen
+        _p: [
           "Because the order is hours away, it has to come find you. Reminders fan out across the channels people actually watch: a push notification, an in-app banner pinned to the foot of the home page, and a WhatsApp message. [WhatsApp was designed for; we did not have a WhatsApp engine live, so treat it as the intended reach, not a shipped channel.]",
           "The moment that matters most is the hand-off. Roughly half an hour before your slot the order \"wakes up\" and rejoins the normal flow: a rider is assigned, heads to the store, and the experience becomes the familiar 10-minute one, just landing inside your window instead of right now. The 10-minute promise is not abandoned for scheduling. It is deferred, then honoured. And you keep control of it: the slot is editable before you confirm, and the order is cancellable up to 30 minutes before the window, through the support chat. Fuller post-order editing came later. Riders get their own scheduled-order screen, so the operational side keeps up. And on the rare miss the feature stays honest rather than hopeful: if the slot slips you can cancel once it passes, and a longer breach auto-cancels with an apology and a ₹50 credit, so a broken promise ends cleanly instead of leaving you watching a countdown that never resolves.",
         ],
-        ul: [
+        _ul: [
           "A \"Scheduled for\" tracking card that replaces the default 10-minute line, mirrored on home and in My Orders",
           "Reminders across push, in-app (pinned at the home foot) and WhatsApp (designed-for)",
           "The roughly 30-minute wake-up: rider assigned, reaching the store, then the 10-minute experience inside your slot",
           "Slot edits before you confirm, and cancel up to 30 minutes before via the support chat (fuller post-order reschedule came later), plus a dedicated rider screen for scheduled orders",
           "A delight layer explored: an iOS Dynamic-Island live activity carrying the slot and rider status on the lock screen",
         ],
-        fig: "schedPostBooking",
-        figBare: true, // mtmrnolv: no figure card around coded figures
-        figure:
+        fig: "schedAfterFlows",
+        figBare: true,
+        figure: "Tracking, My Orders and the home strip, running. Click inside a phone to tap through its states.",
+        _fig: "schedPostBooking",
+        _figure:
           "The order's second life: a \"Scheduled for 6 to 7 PM\" tracking card, reminders across push, in-app and WhatsApp, and the roughly 30-minute wake-up where a rider is assigned and the 10-minute experience resumes inside your slot, carried on a Dynamic-Island live activity. [Plate the real tracking card and rider screen.]",
+        divider: true,
+      },
+      // 26 Oct (#40, #42, #43, accepted by Agam; "add all things in the schedule case study", item 4): when a scheduled
+      // promise breaks after Confirm. The design, built in the RN prototype; facts and sources in
+      // docs/sd-promise-sections-draft.md (Coachmark's promise-case-study-facts.md). Sauer gate 0/0, no open [CONFIRM].
+      {
+        h: "When the slot can't happen",
+        nav: "Slot recovery",
+        group: "Process",
+        tldr: "When a booked slot can't happen, the design tells you first and fixes it in one tap.",
+        p: [
+          "A slot booked hours ahead can fail for reasons you can't see from home: the store closes early, heavy rain pauses deliveries, there are no riders nearby. You may not open the app before the slot, so the design starts with a push: \"Your 7 - 8 PM slot isn't possible tonight\", with the reason, \"Heavy rain has paused deliveries near you.\"",
+          "The sheet on your next open does the fixing. A chip names the reason, the title repeats, and the next three slots sit right there, grouped by day: Tonight 9 - 10 PM, 10 - 11 PM, Tomorrow 7 - 8 AM. One tap books the new slot, with no second Confirm. If the order had free delivery, it stays, and the sheet says so. The only button is \"Refund instead\".",
+          "You didn't cause the break, so the fix shouldn't cost you a flow. The next slots are the likely answer, so they sit where the problem is stated.",
+          "Running late gets the same shape, earlier. The cart said \"Arriving 7 - 8 PM\", and until now nothing happened at 8:05 except waiting. In the design, the push comes before the window ends: \"Running about 15 min late. Heavy traffic on the way to you. Your 7 - 8 PM order should arrive by 8:15 PM.\" The sheet offers \"I'll wait\" or \"Cancel for free\". Free, because the cancel rule only ran one way (\"cancel up to 30 min prior\") and needed its mirror: when Zepto is the one late, leaving costs you nothing.",
+          // C-106 to C-114, the cart's limits and errors, as their built flow (figNext)
+          "Some breaks show before you pay, and the cart's states already name them: an order limit, high demand, heavy rain, a closed store. In rain, the cart says deliveries are paused and still offers Schedule.",
+          "A broken slot is the design's problem, not yours. One structure carries the slot and the delay: a push, then a sheet with the reason, what next, and the choices.",
+        ],
+        fig: "schedPromiseSlot",
+        figBare: true,
+        figure: "The design, in the prototype: the push, the recovery sheet, the same sheet with free delivery kept, and the late notice. Below, the cart in rain, running.",
+        figNext: "schedLimitsFlow",
+        divider: true,
+      },
+      {
+        h: "The price lock",
+        nav: "Price lock",
+        group: "Process",
+        tldr: "The price you confirmed is the price you pay.",
+        p: [
+          "Vegetable prices move every day, and a scheduled order is packed hours after you confirm it. So which price applies? In the design, the one you confirmed. Confirm says it once, in the line above the button: \"Prices are locked when you confirm.\"",
+          "At packing there are three outcomes. If a price went up, you pay what you confirmed. If it went down, you pay the lower price: the lock is a ceiling, not a floor. If an item is out of stock, Confirm has already asked what you want, Refund or Replace, with Refund as the default. A refund gives back the confirmed price, and a replacement costs no more than it.",
+          "Telling you was a decision of its own. Three directions were weighed: a push at packing with a sheet on next open, the receipt alone, or a live order card. The push won, because it speaks at the one moment the promise is tested, and only when something moved: \"Prices changed on 3 items. You pay no more than you confirmed, and ₹407 comes back to you.\" The sheet lists only what moved, each item tagged \"Price locked\", \"Cheaper now\", \"Out of stock\" or \"Replaced\", and ends on what you pay.",
+          "One voice for a broken promise. The price uses the same push and sheet as the slot recovery, so a shopper learns the shape once.",
+        ],
+        fig: "schedPromisePrice",
+        figBare: true,
+        figure: "The design, in the prototype: the push at packing, and the sheet with Replace chosen, where the swapped item costs no more than the one you confirmed.",
         divider: true,
       },
       // 27 Sep, Figma 273:5432: the order landed at the door, before the results
@@ -2956,7 +3032,7 @@ const caseStudies = {
           // Q21 interim (25 Oct): the click invitation only where the playground bundle is deployed (PlaygroundCopy)
           <PlaygroundCopy live="These frames are the playground's own components, embedded. Click one to use it." offline="These frames come from the playground's own components." />,
         ],
-        fig: "sd:states",
+        fig: "schedStatesRow",
         figBare: true,
         figure: "All eight states, side by side. Click a frame to interact; Escape hands the keyboard back.",
         divider: true,
@@ -2968,21 +3044,25 @@ const caseStudies = {
         tldr: "Exchange and return reuse the slot picker for pickup, so one pattern now does two jobs.",
         p: [
           "One request can exchange some items and return others. Pick the items, say what you want for each, and the review shows two pickup partners, the refund method and a pickup time. That pickup time is the slot picker again.",
+          // 26 Oct ("add all things"): the in-app return, IA-001 to IA-017, as its built flow
+          "The same request starts inside the app too, from Order Details. Each item says whether it can be exchanged or returned and until when, and when Instant pickup isn't available the review offers a scheduled one.",
         ],
-        fig: "sd:flow-returns-scheduled-exchange-return?case=SE-007",
+        fig: "schedReturnsFlow",
         figBare: true,
         figure: "Exchange and return in one request, running. Tap through the cases to follow the flow.",
+        figNext: "schedInAppFlow",
         divider: true,
       },
       // The four prototype paths wired in Figma (Claude: Schedule, R04cmbzFPQk2Q4IockGwqZ), embedded live: an edit in
       // Figma shows here with no re-export. Starting points: design-playground docs/figma-prototype/*.md
       {
-        h: "The prototype, live from Figma",
+        h: "The prototype, live",
         nav: "Prototype, live",
         group: "Process",
-        tldr: "Four paths through the Figma file, running on this page. When the file changes, so do they.",
+        // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): all four phones run the built flows
+        tldr: "Four flows as they were built, running on this page.",
         p: [
-          "The main path goes from the cart to a picked slot to a placed order. Beside it: what happens when slots fill up, and the exchange and return paths in support chat. Each one plays from the Figma file itself.",
+          "The schedule page, where each shipment gets Instant or Schedule and then a slot. Beside it: what happens when slots fill up, and the exchange and return paths in support chat.",
         ],
         fig: "schedFigmaFlows",
         figBare: true,
@@ -3008,14 +3088,13 @@ const caseStudies = {
       {
         h: "All 326 cases",
         nav: "The full map",
+        hidden: true, // mvorf9wn (Agam, 26 Oct, "hide this also"): the section that held the map, heading, text and divider; delete to bring it back
         group: "Process",
         tldr: "Thirty-two flows and 326 cases are mapped from the design file, and every one has a screen you can open.",
         p: [
           "Schedule Delivery has 111 cases, returns and exchange 101, and cart and offers 114. Dev-ready flows sit next to ones still in progress, on hold or exploring, and the file's own status travels with each one. A few research and asset cases are small viewers rather than full screens.",
         ],
-        fig: "sd:map",
-        figBare: true,
-        figure: "The master map. Filter by cluster, flow or status.",
+        // mvorf9wm (Agam, 26 Oct, "don't need this"): the master map (sd:map) is off the page; the playground embed stays shared
         divider: true,
       },
       // 1 Nov (Agam, "add the finals to the case study"): the 18 P1 finals, as built in code (ui strip: figures/scheduled/ScreenStrip)
@@ -3057,6 +3136,21 @@ const caseStudies = {
         // an "Impact at a glance" after it in the layout of Agam's reference (headline with one word highlighted, three
         // bars, a source). Numbers only from the bullets above: 1.72% peak share, ₹1,452 v ₹543, 82.5% in the booked hour
         // (Aug 2026), 27.4% cancelled v about 11% for instant (Aug 2026), appliances' share of GMV rising (no figure, a partial month).
+        // Agam, 27 Oct ("add a toggle on the impact section and build this in our purple theme"): the stat-card view. The three metrics
+        // are the section's own bullets above: 2 to 1,144 stores in 63 days, 2.7x the order value (1,452 v 543, Aug 2026), 82.5% inside
+        // the booked hour (Aug 2026, 92.6% in February). Heading is the glance heading; the columns are the 1.72% peak and the 1.3% reading.
+        statCards: {
+          head: "A small slice of Zepto’s orders, and each one worth 2.7 times an instant one.",
+          cols: [
+            "1.81M scheduled orders in May 2026, the peak: 1.72% of all Zepto shipments, easing to about 1.4% since.",
+            "Only about 1.3% chose a slot when instant was fully available. Roughly eight in ten scheduled orders were a fallback, not a plan.",
+          ],
+          cards: [
+            { tone: "brand", icon: "stores", title: "Stores live in 63 days", value: "1,144", unit: "stores", caption: "Up from 2 stores. The first scheduled order landed on 10 October 2025, and the rollout was complete on 12 December." },
+            { tone: "tint", icon: "value", title: "Order value against an instant order", value: "2.7", unit: "x", caption: "₹1,452 a scheduled order against ₹543 for an instant one in August 2026, with 5.85 items against 4.65." },
+            { tone: "deep", icon: "time", title: "Arrived inside the booked hour", value: "82.5", unit: "%", caption: "In August 2026, down from 92.6% in February. The bigger miss is cancellation: 27.4% against about 11% for instant." },
+          ],
+        },
         glance: {
           label: "Impact at a glance",
           head: ["A small slice of Zepto’s orders, and each one worth ", "2.7", " times an instant one."], // 37.2b follow-up: ₹1,452 against ₹543 is 2.7x, the figure the page uses elsewhere (was "almost three")
@@ -4073,6 +4167,26 @@ const caseStudies = {
             ],
           },
         ],
+        divider: true,
+      },
+      // DRAFT, hidden until Agam answers the [CONFIRM]s (27 Oct, "add a section for designing for landscape and the iPhone Duo").
+      // Nothing in the Away case data, the Drive notes (Active - Away/Claude, away-design-system, away-app) or the playground
+      // mentions landscape or the Duo, so every mechanism, number and claim below is a [CONFIRM]. Never render with these open.
+      {
+        h: "Landscape and the Duo",
+        hidden: true,
+        tldr: "[CONFIRM 1: what the design decided for landscape and the iPhone Duo, in one sentence.]",
+        p: [
+          "A trip is not planned in one posture. [CONFIRM 2: where and when travellers hold the phone sideways, or open a Duo, while using Away: at a desk, in an airport queue, on a plane tray, with a boarding pass in the other hand.] If the layout only works held upright, the moments when the agent matters most, a delay at the gate, a seat change at the counter, are the ones where it breaks.",
+          "The constraint has two parts. Landscape gives the same screen a different shape: [CONFIRM 3: the landscape width and height you designed to, and what the keyboard takes from it]. The iPhone Duo is a different problem: [CONFIRM 4: what the iPhone Duo is here, a real or planned two-screen device, its screen sizes, and its hinge or fold]. The cards, the thread and the verdict were drawn for one tall column, and a second screen asks what each of them is for.",
+          "[CONFIRM 5: the decisions. Default draft: in landscape the thread keeps its width and the card it is drawing moves beside it, so the question and the control are on screen together. On the Duo, one screen holds the conversation and the other holds the card or the result, so the agent never covers what it is asking you to decide. Which of these did the design take, and in what order?]",
+          "[CONFIRM 6: what was rejected. Default draft: stretching the portrait column to fill the width, because lines of text run too long; and splitting one card across the fold, because the content then breaks at the hinge.]",
+        ],
+        ul: [
+          "[CONFIRM 7: one line per layout rule, for example which components change in landscape and which do not.]",
+          "[CONFIRM 8: one line on what the Duo's posture changes, for example laptop posture versus book posture.]",
+        ],
+        // _fig: [CONFIRM 9: which existing Away landscape or Duo screens to show; none are in the repo or the Drive notes. Phones sit on the plain page, never on the purple gradient.]
         divider: true,
       },
       /* Onboarding section hidden per annotation (mqnrmrjj) — uncomment to restore
@@ -10131,6 +10245,47 @@ const CASE_NARRATIONS = {
 // render ONE body from one place; CaseStudy calls it right where the block
 // used to be. Exported for src/hello/PhoneDetail3.jsx.
 // mujvribt: the role-slide layout for a section's prose, or nothing at all
+// The plate's live phone (mtmoja90): a prototype in a phone frame on the card ground, with an optional tap cue at
+// [x%, y%] of the screen. One per plate, or two side by side (`embeds`, 26 Oct: the cart entry beside the slot picker).
+// `pe`: { node } for a Figma prototype or { playground, caseId } for a built flow, plus still, cueBox, cueLabel, cue flags, alt, bg,
+// and crop: "top" to show the screen's top instead of its lower half (a screen whose content sits at the top).
+function PlatePhone({ pe, gradient }) {
+  return (
+    <LinksBelow>
+    <div className="article__plate-embed article__plate-ground" style={undefined /* a phone sits on the plain page, never on a colour ground */}>
+      {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
+          notification scene) over a screen cutout that holds the prototype */}
+      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className={"article__plate-phone" + (pe.crop === "top" ? " article__plate-phone--top" : "")} overlay={pe.cueBox && !pe.cueNoPointer ? (
+          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pe.cueBox[1] + pe.cueBox[3] / 2)) + "%" }} aria-hidden="true">
+            <span className="article__plate-cursor">
+              <IconCursor width={20} height={20} strokeWidth={1.6} />
+            </span>
+            <b>{pe.cueLabel || "Click here"}</b>
+          </span>
+        ) : null}>
+          <FigmaEmbed mode="proto" file={pe.file} node={pe.node} start={pe.start} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} />
+          {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
+          {pe.cueBox && !pe.cueNoBox && (
+            <span
+              className="article__plate-cuebox"
+              style={{ left: pe.cueBox[0] + "%", top: pe.cueBox[1] + "%", width: pe.cueBox[2] + "%", height: pe.cueBox[3] + "%" }}
+              aria-hidden="true"
+            />
+          )}
+          {/* mto4v1ka: a cursor that goes and clicks the cue box's centre, looping in view */}
+          {pe.cueBox && pe.cueClick && (
+            <Suspense fallback={null}>
+              <PlateCursor
+                target={{ x: pe.cueBox[0] + pe.cueBox[2] / 2, y: pe.cueBox[1] + pe.cueBox[3] / 2 }}
+              />
+            </Suspense>
+          )}
+      </PhoneFrame>
+    </div>
+    </LinksBelow>
+  );
+}
+
 function SecWrap({ on, stack, center, side, row, children }) {
   // `stack` (28 Sep): label on top, then heading, explanation and figure, one column
   // `center` (mukwatlg): the stacked content centred, text centre-aligned
@@ -10138,6 +10293,9 @@ function SecWrap({ on, stack, center, side, row, children }) {
 }
 
 function CaseStudyBodyFull({ cs }) {
+  const bodyRef = useBlockReveal(); // one scroll reveal for every block of the article
+  const [impactView, setImpactView] = useState("story"); // the Impact toggle: "story" (default) or "glance" (stat cards)
+  const glanceOn = (sec) => !!sec.statCards && impactView === "glance";
   const explorationsVariant = useExplorationsVariant(); // the Detour version replaces the old board unless "original" is picked
   // mv56ku8l: a case study that opts in (cs.expandFigures) gets the full-page expand on its figures
   const EF = cs.expandFigures ? ExpandableFigure : "figure";
@@ -10165,44 +10323,18 @@ function CaseStudyBodyFull({ cs }) {
                         <AutoTabs />
                       </Suspense>
                     </div>
+                  ) : pl.embeds ? (
+                    // 26 Oct (Agam, "use all the developed flows"): two built flows side by side, each its own plate phone
+                    <div className="article__plate-pair">
+                      {pl.embeds.map((pe, j) => <div className="article__plate-pair-item" key={j}><PlatePhone pe={{ bg: pl.bg, ...pe }} gradient={s.platesGradient} /></div>)}
+                    </div>
                   ) : pl.embed ? (
                     // mtmoja90: a live Figma prototype in the plate, inside a
                     // phone frame on the card ground, centred, with an optional
                     // tap cue at [x%, y%] of the screen
                     // 18.2 (critique, 25 Oct): on a phone the embed is a still, and its Open in Figma link goes under the plate,
                     // since the plate crops the phone (LinksBelow; the phone passes the link on with linkSlot={false})
-                    <LinksBelow>
-                    <div className="article__plate-embed article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }}>
-                      {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
-                          notification scene) over a screen cutout that holds the prototype */}
-                      <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className="article__plate-phone" overlay={pl.cueBox && !pl.cueNoPointer ? (
-                          <span className="article__plate-pointer" style={{ top: (2.59 + 0.949 * (pl.cueBox[1] + pl.cueBox[3] / 2)) + "%" }} aria-hidden="true">
-                            <span className="article__plate-cursor">
-                              <IconCursor width={20} height={20} strokeWidth={1.6} />
-                            </span>
-                            <b>{pl.cueLabel || "Click here"}</b>
-                          </span>
-                        ) : null}>
-                          <FigmaEmbed mode="proto" node={pl.embed.node} title={pl.alt || "Figma prototype"} fallback={PROTO_STILL} alt={pl.alt || "The scheduled order prototype"} />
-                          {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
-                          {pl.cueBox && !pl.cueNoBox && (
-                            <span
-                              className="article__plate-cuebox"
-                              style={{ left: pl.cueBox[0] + "%", top: pl.cueBox[1] + "%", width: pl.cueBox[2] + "%", height: pl.cueBox[3] + "%" }}
-                              aria-hidden="true"
-                            />
-                          )}
-                          {/* mto4v1ka: a cursor that goes and clicks the cue box's centre, looping in view */}
-                          {pl.cueBox && pl.cueClick && (
-                            <Suspense fallback={null}>
-                              <PlateCursor
-                                target={{ x: pl.cueBox[0] + pl.cueBox[2] / 2, y: pl.cueBox[1] + pl.cueBox[3] / 2 }}
-                              />
-                            </Suspense>
-                          )}
-                      </PhoneFrame>
-                    </div>
-                    </LinksBelow>
+                    <PlatePhone pe={{ ...pl, file: pl.embed.file, node: pl.embed.node, start: pl.embed.start }} gradient={s.platesGradient} />
                   ) : pl.fig ? (
                     // mtmlrqyb: a coded figure (the phone with the banner) on the card ground
                     <div className={"article__plate-video article__plate-video--fig article__plate-ground" + (pl.fill ? " article__plate-video--fill" : "")} style={s.platesGradient ? undefined : { background: pl.bg }}>
@@ -10217,7 +10349,7 @@ function CaseStudyBodyFull({ cs }) {
                     // mukxxiz5: a box on the same card ground, waiting for its content
                     <div className="article__plate-video article__plate-ground" style={s.platesGradient ? undefined : { background: pl.bg }} aria-hidden="true" />
                   ) : pl.src ? (
-                    <img className="article__figure-img article__figure-img--real" src={pl.src} alt={pl.alt || ""} loading="lazy" />
+                    <Img className="article__figure-img article__figure-img--real" src={pl.src} alt={pl.alt || ""} />
                   ) : (
                     <div className="article__plate-empty" aria-hidden="true"><span>Plate {k + 1}</span></div>
                   )}
@@ -10234,7 +10366,7 @@ function CaseStudyBodyFull({ cs }) {
     );
   };
   return (
-    <div className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
+    <div ref={bodyRef} className={"article__body" + (cs.hideCaptions ? " article__body--nocaps" : "")}>
       {!cs.headFacts && <p className="article__lead">{cs.lead}</p>}
 
       {/* muky55mj (28 Sep): `hidden: true` parks a whole section (page, index) */}
@@ -10245,7 +10377,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.fig ? (
             <SectionFigure fig={s.fig} variant="article" bare />
           ) : (
-            <img className="article__figure-img article__figure-img--real" src={s.image} alt="" loading="lazy" />
+            <Img className="article__figure-img article__figure-img--real" src={s.image} alt="" />
           )}
           {s.figure && <figcaption>{s.figure}</figcaption>}
           {/* Figma 120 (14:57): a display-size line under the figure, kept visible past hideCaptions */}
@@ -10272,14 +10404,14 @@ function CaseStudyBodyFull({ cs }) {
           <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
           {/* a11y (25 Oct, the last jump after #28): a section that hides its heading keeps it for assistive tech, as a
               screen-reader-only h2 (same sr-only utility as the page h1, so no layout) */}
-          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{s.h}</h2>}
+          {s.split || s.roleFrame ? null : s.noHeading ? (s.h ? <h2 id={`sec-${i}`} className="sr-only">{s.h}</h2> : <span id={`sec-${i}`} />) : <h2 id={`sec-${i}`}>{noWidow(s.h)}</h2>}
           {/* mtmjlgwj: a big serif line, the system's Newsreader thesis voice,
               first under the heading */}
           {s.serif && <p className="article__serif">{s.serif}</p>}
           {/* a big open question, set large (Before we start) */}
           {s.ask && <p className="article__ask">{s.ask}</p>}
           {/* muky37n5: a photo beside the heading and TL;DR, 50/50 */}
-          {s.sideImage && <img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} loading="lazy" />}
+          {s.sideImage && <Img className="cs-sec__side" src={s.sideImage} alt={s.sideAlt || ""} />}
           {s.tldr && !s.hideTldr && !s.split && !s.roleFrame && (
             <p className="article__tldr">
               <span className="article__tldr-label">TL;DR</span>
@@ -10287,10 +10419,18 @@ function CaseStudyBodyFull({ cs }) {
             </p>
           )}
           {/* mvgj0x67 (Agam, "move this to the impact section"): the glance sits right under the Impact heading and TL;DR, not after the divider */}
-          {s.glance && <SchedImpactGlance g={s.glance} />}
+          {s.statCards && (
+            <div className="fig-toggle stv-toggle" role="group" aria-label="Impact view">
+              {[["story", "The story"], ["glance", "At a glance"]].map(([k, label]) => (
+                <button key={k} type="button" className={"fig-toggle__btn" + (impactView === k ? " is-active" : "")} aria-pressed={impactView === k} onClick={() => setImpactView(k)}>{label}</button>
+              ))}
+            </div>
+          )}
+          {glanceOn(s) && <SchedStatCards c={s.statCards} />}
+          {s.glance && !glanceOn(s) && <SchedImpactGlance g={s.glance} />}
           {/* mvgndaq6: the whiteboard floats beside the section's text instead of sitting after the figure */}
           {s.whiteboardNext && s.whiteboardFloat && (
-            <EF className={"article__figure article__figure--float" + (s.whiteboardFloatSm ? " article__figure--float-sm" : "")}>
+            <EF className={"article__figure article__figure--float" + (s.whiteboardFloatHalf ? " article__figure--float-half" : "")}>
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
             </EF>
           )}
@@ -10366,7 +10506,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.table && <SmartTable table={s.table} />}
           {s.chart && <DataViz chart={s.chart} />}
           {/* extra figures after the main one: [{ fig, caption, bare }] */}
-          {(s.figsAfter || []).map((f, k) => (
+          {(glanceOn(s) ? [] : (s.figsAfter || [])).map((f, k) => (
             <EF className="article__figure" key={`fa-${k}`}>
               {/* mtp8qt8d: an extra figure may be a scene or a still, not only a coded fig */}
               <SectionFigure fig={f.fig} scene={f.scene} still={f.still} variant="article" bare={f.bare} />
@@ -10378,7 +10518,7 @@ function CaseStudyBodyFull({ cs }) {
           {s.insightBefore && <SchedUseCases />}
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
-          {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && (
+          {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && !glanceOn(s) && (
             <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}
               {s.figureTop && <p className="article__figtop">{s.figureTop}</p>}
@@ -10441,6 +10581,12 @@ function CaseStudyBodyFull({ cs }) {
           {s.whiteboardNext && !s.whiteboardFloat && (
             <EF className="article__figure">
               <SectionFigure whiteboard={s.whiteboardNext} variant="article" bare />
+            </EF>
+          )}
+          {/* Q15 (Agam accepted, 26 Oct): what was explored for this section's decision, the stills and the verdict, at its end */}
+          {s.explored && (
+            <EF className="article__figure">
+              <SchedExplored k={s.explored} />
             </EF>
           )}
           {/* mukub9lc (28 Sep): a second scroll scene right after the main one */}
@@ -10548,7 +10694,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
 
   return (
     <>
-    <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug}>
+    <CaseLoadReveal gated={gated} slug={slug} heroFig={cs.heroFig} className="page page--article" data-case={cs.styleKey || slug} style={{ "--case-accent": cs.accent }}>
       <div className="article__layout">
         <SectionIndex
           entries={indexEntries}
@@ -10648,7 +10794,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
           <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
-            <img className="article__hero-img" src={cs.heroImage} alt="" />
+            <Img priority className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
           // the departure-board frame is Away-specific; other projects get a
@@ -10781,7 +10927,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
         ) : cs.heroImage ? (
           // a project-specific hero image sits in the header frame
           <div className="article__hero-board article__hero-board--image" style={cs.heroBg ? { backgroundColor: cs.heroBg } : undefined}>
-            <img className="article__hero-img" src={cs.heroImage} alt="" />
+            <Img priority className="article__hero-img" src={cs.heroImage} alt="" />
           </div>
         ) : (
           // the departure-board frame is Away-specific; other projects get a

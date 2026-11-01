@@ -38,3 +38,9 @@ export function loadSynced(base = PLAYGROUND_BASE) {
   }
   return synced.get(base);
 }
+
+// One theme for every coded screen on the case study: light, whatever the site theme is.
+// A figure can still ask for another theme explicitly.
+export function useSiteTheme(explicit) {
+  return explicit || "light";
+}

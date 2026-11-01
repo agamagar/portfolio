@@ -2235,6 +2235,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
                   where on the timeline - which is all ten of them can say at
                   once without becoming a paragraph. */}
               <span className="tlx__rail-tag"><RailTagText text={c.org} /></span>
+              {c.sub && <span className="tlx__rail-sub">{c.sub}</span>}
               {/* what the floating panel used to carry, now inside the card it
                   was always describing. Only the open one renders it, so the
                   other nine stay two-tag labels. */}

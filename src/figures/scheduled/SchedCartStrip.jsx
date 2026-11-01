@@ -1,4 +1,5 @@
 import "./scheduled.css";
+import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
 
 // mukxwvur (28 Sep): "instead of this, a horizontal auto scroll", from Figma
 // HBBgHT1u7e5jsz7BEEZ3fT 289:8839 (2x): the cart's shipment header in every
@@ -20,7 +21,7 @@ const CARDS = [
 
 const Card = ({ k, label, alt, hidden }) => (
   <figure className="cstrip__card" aria-hidden={hidden || undefined}>
-    <img src={`/figures/scheduled/cart-states-strip/${k}.webp`} alt={hidden ? "" : alt} draggable={false} />
+    <Img src={`/figures/scheduled/cart-states-strip/${k}.webp`} alt={hidden ? "" : alt} draggable={false} />
     <figcaption className="cstrip__cap">{label}</figcaption>
   </figure>
 );

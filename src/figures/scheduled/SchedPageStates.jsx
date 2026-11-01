@@ -13,13 +13,11 @@ const TILES = [
   { src: "sched-pg-partial.png", cap: "Partial day, some slots full" },
   { src: "sched-pg-crossday.png", cap: "Cross-day late night" },
   { src: "sched-pg-full.png", cap: "Tomorrow full, no slots" },
-  { src: "sched-pg-otp.png", cap: "Scheduled, pickup OTP" },
+  { src: "sched-pg-otp.png", cap: "Pickup OTP, for an exchange" }, // 26 Oct: the still is an exchange pickup OTP (OT-001), not a scheduled delivery's
 ];
 
-// mukxrqfz (28 Sep): "make this into a horizontal scroll, the bigger images".
-// The fitted contact sheet (every screen shrunk to fit one frame) became a
-// horizontal strip of full-size screens that scroll and snap one at a time.
-// Nothing animates on its own any more: the reader drives it.
+// mukxrqfz (28 Sep): "make this into a horizontal scroll, the bigger images". The fitted contact sheet (every screen
+// shrunk to fit one frame) became a horizontal strip of full-size screens (ScreenStrip).
 export default function SchedPageStates() {
-  return <ScreenStrip tiles={TILES.map((t) => ({ ...t, src: `/figures/scheduled/${t.src}` }))} label="Slot-page states, scroll sideways" />;
+  return <ScreenStrip label="Slot-page states, scroll sideways" tiles={TILES.map((t) => ({ ...t, src: `/figures/scheduled/${t.src}` }))} />;
 }

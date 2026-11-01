@@ -149,6 +149,20 @@ export function markSections(selector) {
   scan();
 }
 
+// Safety net (fast scroll, deep link, anchor jump): an observer can miss a section that went past between frames. When
+// scrolling settles, anything wholly above the centre line that never played shows finished, with no motion.
+let sweepT = 0;
+function sweep() {
+  sweepT = 0;
+  const vh = window.innerHeight;
+  entries.forEach((s) => { if (!s.on && s.el.isConnected && s.el.getBoundingClientRect().bottom <= vh / 2) start(s, true); });
+}
+if (canRun) {
+  const later = () => { clearTimeout(sweepT); sweepT = setTimeout(sweep, 180); };
+  window.addEventListener("scroll", later, { passive: true });
+  window.addEventListener("hashchange", later);
+}
+
 // The global Replay: everything currently in view resets and plays again from its start.
 export function replayAll() {
   if (!canRun) return;
