@@ -1883,6 +1883,12 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
    length), width follows each image's own ratio */
 .sdh__tile { flex: 0 0 auto; }
 .sdh__tile img { width: auto; height: min(640px, 70vh); }
+/* ScreenStrip: a scrolled page keeps the phone height and scrolls inside its tile;
+   the board row is lower, for the wide cart-header boards */
+.sdh__scroll { height: min(640px, 70vh); overflow-y: auto; border-radius: 20px; border: 1px solid var(--line); scrollbar-width: thin; }
+.sdh__tile[data-tall] img { height: auto; width: calc(min(640px, 70vh) * 360 / 780); border: 0; border-radius: 0; }
+.sdh[data-size="board"] .sdh__tile img { height: min(280px, 40vh); border-radius: 12px; }
+.sdfinals { display: grid; gap: 1.5rem; }
 /* mukxwvur (28 Sep): the cart-state marquee (SchedCartStrip) */
 .cstrip { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
 .cstrip__track { display: flex; gap: 1.25rem; width: max-content; animation: cstrip-slide 48s linear infinite; }

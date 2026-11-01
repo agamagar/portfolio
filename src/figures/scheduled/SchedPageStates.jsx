@@ -1,4 +1,4 @@
-import "./scheduled.css";
+import ScreenStrip from "./ScreenStrip";
 
 // Design Mode: the scheduled SLOT-PICKER state set as a contact sheet of real
 // Zepto schedule-page screens (Schedule Order Handoff). From schedule-selected
@@ -21,14 +21,5 @@ const TILES = [
 // horizontal strip of full-size screens that scroll and snap one at a time.
 // Nothing animates on its own any more: the reader drives it.
 export default function SchedPageStates() {
-  return (
-    <div className="sdh" role="region" aria-label="Slot-page states, scroll sideways" tabIndex={0}>
-      {TILES.map((t) => (
-        <figure className="sdh__tile" key={t.src}>
-          <img src={`/figures/scheduled/${t.src}`} alt={t.cap} draggable={false} loading="lazy" />
-          <figcaption className="sdh__cap">{t.cap}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
+  return <ScreenStrip tiles={TILES.map((t) => ({ ...t, src: `/figures/scheduled/${t.src}` }))} label="Slot-page states, scroll sideways" />;
 }

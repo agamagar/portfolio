@@ -164,6 +164,7 @@ import "./figures/scheduled/scheduled.css"; // kept eager: global rules the case
 const SchedMoments = lazyFig(() => import("./figures/scheduled/SchedMoments"));
 const SchedCartStates = lazyFig(() => import("./figures/scheduled/SchedCartStates"));
 const SchedPageStates = lazyFig(() => import("./figures/scheduled/SchedPageStates"));
+const SchedFinals = lazyFig(() => import("./figures/scheduled/SchedFinals"));
 const SchedDateSwitch = lazyFig(() => import("./figures/scheduled/SchedDateSwitch"));
 const SchedCartHubs = lazyFig(() => import("./figures/scheduled/SchedCartHubs"));
 const SchedFigmaFlows = lazyFig(() => import("./figures/scheduled/SchedFigmaFlows")); // the wired Figma prototype paths, live
@@ -690,6 +691,7 @@ const figures = {
   schedMoments: SchedMoments,
   schedCartStates: SchedCartStates,
   schedPageStates: SchedPageStates,
+  schedFinals: SchedFinals,
   schedDateSwitch: SchedDateSwitch,
   schedCartHubs: SchedCartHubs,
   schedFigmaFlows: SchedFigmaFlows,
@@ -2995,6 +2997,20 @@ const caseStudies = {
         fig: "sd:map",
         figBare: true,
         figure: "The master map. Filter by cluster, flow or status.",
+        divider: true,
+      },
+      // 1 Nov (Agam, "add the finals to the case study"): the 18 P1 finals, as built in code (ui strip: figures/scheduled/ScreenStrip)
+      {
+        h: "The finals",
+        nav: "Finals",
+        group: "Outcome",
+        tldr: "Eighteen screens made the final cut. Each one is built in code and matches its Figma final to within 3% of pixels.",
+        p: [
+          "This is the final set: home with the store offline, the cart in every header state, the intro banner that teaches Schedule, and the schedule page from open slots to collapsed shipments. They're the coded versions, captured straight from the build, not mockups.",
+        ],
+        fig: "schedFinals",
+        figBare: true,
+        figure: "The 16 final screens, then the two cart-header boards. Scroll sideways; the long cart scrolls down inside its frame.",
         divider: true,
       },
       {
