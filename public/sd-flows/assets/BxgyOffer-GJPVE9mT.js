@@ -1,1 +1,0 @@
-import{j as o}from"./PhoneFrame-QrLyt4aq.js";import{C as t}from"./CartFlow-CSprCpnr.js";import{c as i}from"./index-BB-8EP2k.js";import"./index-BoQDMaNb.js";import"./schedule-BB3Fh63T.js";import"./returns-D0mSD2iS.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function u(r){return o.jsx(t,{...r,flow:"bxgy",first:"C-065",ids:i.bxgy})}export{u as default};

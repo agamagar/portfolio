@@ -81,8 +81,8 @@ const tiles = (rows) => rows.map(([id, cap, tall], i) => ({ id, tall: !!tall, ca
 const plain = (rows) => rows.map(([id, cap]) => ({ id, cap, src: `${DIR}/${id}.webp` }));
 
 const BASE = bundleBase("sd-flows");
-const SHELL = { id: "screen-flows", title: "Schedule screen flows, clickable", hash: "#embed/screen-flows/cart-m1", size: { w: 760, h: 900 } };
-const GUIDED = { id: "schedule-guided", title: "Schedule your order, guided", hash: "#embed/prototype/tonight", size: { w: 760, h: 900 } };
+// the build's All prototypes page: every built flow in one picker, each a working prototype with its cases
+const PROTOS = { id: "prototypes", title: "Every Schedule flow, clickable", hash: "#embed/prototypes", size: { w: 1040, h: 1000 } };
 
 export default function SchedWiredFlows() {
   return (
@@ -101,8 +101,7 @@ export default function SchedWiredFlows() {
         </section>
       ))}
       <div className="sdwired__live">
-        <PlaygroundEmbed entry={SHELL} base={BASE} caption="Eight flows, tap through from each start screen. Pick a flow on top; Back walks the steps." />
-        <PlaygroundEmbed entry={GUIDED} base={BASE} caption="Schedule your order as a guided journey: pick a slot for tonight and confirm." />
+        <PlaygroundEmbed entry={PROTOS} base={BASE} caption="Pick any flow on the left and tap through the phone. Pick a case to start the prototype there." />
       </div>
     </div>
   );

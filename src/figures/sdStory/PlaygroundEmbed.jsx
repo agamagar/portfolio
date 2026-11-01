@@ -71,7 +71,10 @@ export default function PlaygroundEmbed({
     if (!el || !("IntersectionObserver" in window)) return setNear(true);
     const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "100% 0px 100% 0px" });
     io.observe(el);
-    return () => io.disconnect();
+    // a backgrounded or throttled page may never deliver the observer's callback; a scroll check covers it
+    const check = () => { const r = el.getBoundingClientRect(), vh = window.innerHeight; if (r.bottom > -vh && r.top < 2 * vh) setNear(true); };
+    window.addEventListener("scroll", check, { passive: true });
+    return () => { io.disconnect(); window.removeEventListener("scroll", check); };
   }, []);
   useEffect(() => { if (!near) { setLoaded(false); setActive(false); } }, [near]);
 
