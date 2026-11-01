@@ -1,0 +1,44 @@
+/* FrameStage: a Figma frame at its own aspect, one Figma px = --fp */
+.fs {
+  --fs-glass-fill: rgba(255, 255, 255, 0.4);
+  --fs-glass-line: rgba(0, 0, 0, 0.1);
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--fw) / var(--fh);
+  overflow: hidden;
+}
+:root.dark .fs {
+  --fs-glass-fill: rgba(22, 22, 26, 0.45);
+  --fs-glass-line: rgba(255, 255, 255, 0.1);
+}
+.fs__plate {
+  --fp: calc(100cqw / var(--fw));
+  position: absolute;
+  inset: 0;
+}
+.fs__box {
+  position: absolute;
+  left: calc(var(--x) * var(--fp));
+  top: calc(var(--y) * var(--fp));
+  width: calc(var(--w) * var(--fp));
+  height: calc(var(--h) * var(--fp));
+  border-radius: calc(var(--r, 0) * var(--fp));
+  margin: 0;
+}
+.fs__box > img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+/* Figma GLASS: white 10% with a 1px 10% black line inside; the frost over the
+   photos behind it is the backdrop blur */
+.fs__glass {
+  background: var(--fs-glass-fill);
+  box-shadow: inset 0 0 0 1px var(--fs-glass-line);
+  backdrop-filter: blur(calc(48 * var(--fp))) saturate(1.1);
+  -webkit-backdrop-filter: blur(calc(48 * var(--fp))) saturate(1.1);
+}
+
+/* phones: a `stack` frame leaves the absolute layout and reads top to bottom */
+@media (max-width: 700px) {
+  .fs--stack { aspect-ratio: auto; }
+  .fs--stack .fs__plate { --fp: calc(100cqw / 760); position: relative; display: flex; flex-direction: column; gap: 1.25rem; }
+  .fs--stack .fs__box { position: relative; left: auto; top: auto; width: auto; height: auto; }
+}
