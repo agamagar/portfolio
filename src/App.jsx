@@ -2233,6 +2233,7 @@ const caseStudies = {
     // 2 Nov (Agam, "add the hook block first"): the facts header shows on this case again as the hook: problem, role,
     // constraint and outcome in the first screen. Every fact is the page's own (My role, the cart construct, Impact).
     headShow: true,
+    headTitleHide: true, // 2 Nov (Agam): the facts card drops the "Bringing Schedule Delivery..." title line; the sr-only h1 keeps it for assistive tech
     headFacts: [
       { label: "Role", value: "Lead designer" },
       { label: "Organisation", value: "Zepto" },
@@ -10842,7 +10843,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           <header className={"article__head article__head--facts" + (cs.headShow ? " article__head--show" : "")}>
             <div className="article__head-main">
               {/* headShow: the title stays visible but is hidden from assistive tech, since the sr-only h1 above already carries it */}
-              <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>
+              {!cs.headTitleHide && <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>}
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10870,7 +10871,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           <header className={"article__head article__head--facts" + (cs.headShow ? " article__head--show" : "")}>
             <div className="article__head-main">
               {/* headShow: the title stays visible but is hidden from assistive tech, since the sr-only h1 above already carries it */}
-              <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>
+              {!cs.headTitleHide && <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>}
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
