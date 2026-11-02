@@ -110,12 +110,15 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   useEffect(() => {
     const el = root.current;
     if (!el || typeof IntersectionObserver === "undefined") { setNear(true); return undefined; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setNear(true); io.disconnect(); } }, { rootMargin: "600px 0px" });
-    io.observe(el);
-    return () => io.disconnect();
+    // mount within 600px, unmount past one and a half screens (2 Nov: kept-alive iframes piled up to 48 live
+    // playground apps on the page's own thread after one scroll-through, and the page froze at the bottom)
+    const on = new IntersectionObserver(([e]) => { if (e.isIntersecting) setNear(true); }, { rootMargin: "600px 0px" });
+    const off = new IntersectionObserver(([e]) => { if (!e.isIntersecting) setNear(false); }, { rootMargin: "150% 0px" });
+    on.observe(el); off.observe(el);
+    return () => { on.disconnect(); off.disconnect(); };
   }, []);
   useEffect(() => {
-    if (!near) return undefined;
+    if (!near) { setSt("idle"); return undefined; } // the still shows again while the iframe is away
     setSt("loading");
     const t = setTimeout(() => setSt((s) => (s === "loading" ? "failed" : s)), 15000);
     return () => clearTimeout(t);
