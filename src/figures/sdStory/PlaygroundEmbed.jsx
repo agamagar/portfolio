@@ -15,7 +15,8 @@ import "./playgroundEmbed.css";
 //
 // Keyboard safety: until the reader clicks in, a transparent button covers the frame, so
 // arrow keys / Esc keep driving the deck. Esc (same-origin bundle), the Done button or a
-// click anywhere outside gives control back.
+// click anywhere outside gives control back. guard={false} drops all of that for a long page,
+// where no slide keys need protecting: the frame is live from the start.
 
 const prefersReduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -32,6 +33,7 @@ export default function PlaygroundEmbed({
   caption,
   maxHeight,
   className = "",
+  guard = true,
 }) {
   const entry = entryProp || getEmbed(id);
   const wrapRef = useRef(null);
@@ -45,6 +47,7 @@ export default function PlaygroundEmbed({
   const [autoH, setAutoH] = useState(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
   const siteTheme = useSiteTheme(theme);
+  const live = active || !guard;
 
   useEffect(() => {
     let live = true;
@@ -105,14 +108,15 @@ export default function PlaygroundEmbed({
     if (f && document.activeElement === f) { f.blur(); window.focus(); }
   }, []);
   useEffect(() => {
-    if (active) return;
+    if (live) return;
     const onBlur = () => setTimeout(returnFocus, 0);
     window.addEventListener("blur", onBlur);
     return () => window.removeEventListener("blur", onBlur);
-  }, [active, returnFocus]);
+  }, [live, returnFocus]);
 
   const onFrameLoad = () => {
     setLoaded(true);
+    if (!guard) return;
     returnFocus();
     setTimeout(returnFocus, 300);
     try {
@@ -175,14 +179,14 @@ export default function PlaygroundEmbed({
                 title={label}
                 src={src}
                 loading="lazy"
-                tabIndex={active ? 0 : -1}
+                tabIndex={live ? 0 : -1}
                 allow="clipboard-write"
                 onLoad={onFrameLoad}
                 className="pgE__frame"
                 style={{ ...frameStyle, opacity: loaded ? 1 : 0 }}
               />
             )}
-            {wantFrame && loaded && !active && (
+            {wantFrame && loaded && !live && (
               <button
                 ref={activateRef}
                 type="button"
@@ -199,7 +203,7 @@ export default function PlaygroundEmbed({
       <figcaption className="pgE__cap">
         {caption && <span className="pgE__capText">{caption}</span>}
         <span className="pgE__tools">
-          {active && (
+          {active && guard && (
             <button type="button" className="pgE__done" onClick={() => deactivate(true)}>
               Done (Esc)
             </button>

@@ -112,7 +112,7 @@ export default function SchedWiredFlows() {
         </section>
       ))}
       <div className="sdwired__live">
-        <PlaygroundEmbed entry={PROTOS} base={BASE} caption="Pick any flow on the left and tap through the phone. Pick a case to start the prototype there." />
+        <PlaygroundEmbed entry={PROTOS} base={BASE} guard={false} caption="Pick any flow on the left and tap through the phone. Pick a case to start the prototype there." />
       </div>
     </div>
   );
