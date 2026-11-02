@@ -82,7 +82,9 @@ export default function PhoneFrame({
       {tag && <span className="pf__tag" data-tone={tagTone || String(tag).toLowerCase()}>{tag}</span>}
       <div className="pf__dev ifr">
         <div className="ifr__screen">
-          {screen ? <PhoneScreen className="ifr__img" src={screen} alt={alt} /> : linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{children}</PhoneLinkSlot.Provider> : children}
+          {/* mvyojl3t (2 Nov): a picture that goes live (PhoneScreen) reports through the slot too, so its Restart joins the
+              link row under the phone instead of sitting on the screen's own CTA */}
+          {linkSlot ? <PhoneLinkSlot.Provider value={setSlotted}>{screen ? <PhoneScreen className="ifr__img" src={screen} alt={alt} /> : children}</PhoneLinkSlot.Provider> : screen ? <PhoneScreen className="ifr__img" src={screen} alt={alt} /> : children}
           {statusBar && <StatusBar tone={statusBar === "light" ? "light" : "dark"} />}
           {island && <span className="pf__island" aria-hidden="true" />}
         </div>
