@@ -1,7 +1,7 @@
 {
  "from": "design-playground",
  "branch": "claude/schedule-code-build-fec319",
- "commit": "8633986",
- "note": "built copy plus two embed routes not yet upstream: #embed/screen-flows (ScreenFlows initial prop) and #embed/prototypes (the All prototypes page)",
- "syncedAt": "2026-11-01T12:06:53Z"
+ "commit": "891ede5",
+ "note": "built copy (npm run build:embed); the #embed/screen-flows and #embed/prototypes routes are now upstream",
+ "syncedAt": "2026-11-02T06:46:35Z"
 }

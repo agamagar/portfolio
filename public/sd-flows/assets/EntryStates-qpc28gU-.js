@@ -1,0 +1,1 @@
+import{j as o}from"./PhoneFrame-QrLyt4aq.js";import{C as p}from"./CartApp-Chp6gDcv.js";import"./index-D9l5QCdJ.js";import"./schedule-BB3Fh63T.js";import"./returns-D0mSD2iS.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function u({startCase:t,onCaseChange:r}){return o.jsx(p,{startCase:t??"C-001",onCaseChange:r})}export{u as default};
