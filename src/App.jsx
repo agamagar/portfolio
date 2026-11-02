@@ -2572,7 +2572,7 @@ const caseStudies = {
         figure: "Now, later, now, later. The two words the whole job turned on, and the eggs that don't care which one you picked.",
       },
       {
-        h: "The constraints",
+        h: "A live system set hard limits",
         nav: "Constraints",
         // mukvlu72 / mukvy9ql / mukw85nf: tried inside the section. mukwgm7k (28 Sep): the
         // text sits right of the heading again (the standard layout) and the animated
@@ -2587,7 +2587,7 @@ const caseStudies = {
       {
         // mvg8tk7s (Agam, "bring them to a new section"): the three constraints (with the lock-screen figure that shows the
         // promise) moved out of "The constraints" into their own section right after it; the board that follows keeps its place
-        h: "What we had to design around",
+        h: "One-hour slots beside live demand",
         nav: "Design limits",
         stack: true,
         group: "Problem",
@@ -2660,7 +2660,7 @@ const caseStudies = {
         // mukxenvq (28 Sep): the sixth cart-grid tile became a section of its own:
         // the whole cart page (Figma Cart Master File 5C34trG8bBJZi3P48736Lb 1:25562,
         // 2x) inside the phone from the top of the page, scrolling as you pass
-        h: "The whole cart, top to bottom",
+        h: "Already crowded",
         nav: "Cart, top to bottom",
         group: "Problem",
         tldr: "Every one of those constructs lives on one page. Scroll it end to end and you see how much the cart already carries before scheduling asks for room.",
@@ -2700,7 +2700,7 @@ const caseStudies = {
         // mukxfh9s (28 Sep): a new section below The explorations with three image
         // boxes; the title, TL;DR and the three assets are still to come
         // mukxmirl (28 Sep): this and Two directions below are ONE section now
-        h: "Different ways we explored how schedule could exist on the app",
+        h: "One sentence in testing decided it",
         explored: "collapsedSlot", // Q15: the "collapsedSlot" comparison row (SchedExplored), at the end of this section
         nav: "Ways to exist",
         group: "Process",
@@ -2765,7 +2765,7 @@ const caseStudies = {
         // mv59m6yi (12 Oct): a showcase for the delivery-mode toggle micro-animation. Agam's own recording
         // goes in public/figures/scheduled/instant-to-scheduled-toggle.mp4 (placeholder until then).
         // [CONFIRM] the caption's last line once the recording is in: what the motion does, in his words.
-        h: "Instant to Scheduled: the toggle",
+        h: "Later is one tap away",
         explored: "toggle", // Q15: the "toggle" comparison row (SchedExplored), at the end of this section
         nav: "The toggle",
         group: "Process",
@@ -2798,7 +2798,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "The go-to-market",
+        h: "Launched quietly, only where it helps",
         explored: "gtm", // Q15: the "gtm" comparison row (SchedExplored), at the end of this section
         nav: "Go-to-market",
         group: "Process",
@@ -2840,7 +2840,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "The stuck cart",
+        h: "Failure, shown plainly",
         nav: "Stuck cart",
         group: "Process",
         tldr: "The hardest state was a cart that stays unserviceable even with a slot. I put it in plain sight.",
@@ -2856,7 +2856,7 @@ const caseStudies = {
       // mukycihg (28 Sep): the packed-crate photo moved up to open Cart-page states
       { breaker: true, image: "/figures/scheduled/photos/crate-packed.webp" },
       {
-        h: "Cart-page states",
+        h: "Every cell, drawn",
         nav: "Cart states",
         group: "Process",
         tldr:
@@ -2882,7 +2882,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "Slot-page states",
+        h: "Dense, never confusing",
         explored: "instantOff", // Q15: the "instantOff" comparison row (SchedExplored), at the end of this section
         nav: "Slot states",
         group: "Process",
@@ -2933,7 +2933,8 @@ const caseStudies = {
       {
         // 26 Oct (Agam, via CoS: "add all things in the schedule case study"): on the page again, short, with the built
         // flows for tracking, My Orders and the home strip. Hidden 28 Sep (muky6p44, muky6uaw) with its coded figure.
-        h: "After you book",
+        h: "Trust lives after payment",
+        nav: "After you book",
         // mukukpft (28 Sep): moved here from the central question; the tracking
         // card IS the after-booking promise. mukub9lc: the mango scene, duplicated with a different
         // element on a different background. Figma HBBgHT1u7e5jsz7BEEZ3fT
@@ -2975,7 +2976,7 @@ const caseStudies = {
       // promise breaks after Confirm. The design, built in the RN prototype; facts and sources in
       // docs/sd-promise-sections-draft.md (Coachmark's promise-case-study-facts.md). Sauer gate 0/0, no open [CONFIRM].
       {
-        h: "When the slot can't happen",
+        h: "Bad news first",
         nav: "Slot recovery",
         group: "Process",
         tldr: "When a booked slot can't happen, the design tells you first and fixes it in one tap.",
@@ -2994,7 +2995,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "The price lock",
+        h: "No price surprises",
         nav: "Price lock",
         group: "Process",
         tldr: "The price you confirmed is the price you pay.",
@@ -3015,7 +3016,7 @@ const caseStudies = {
       {
         // mv59i870 (12 Oct, "build a section showing the copywriting process: all the things we rejected and all the copy we finalised, and how it shows strong first-principles thinking").
         // Written in the Sauer register (writing-craft gate 0/0). Every pair is real: the struck line and its replacement, with its source (see SchedCopyProcess.jsx).
-        h: "The copy, from first principles",
+        h: "Words for the moment",
         nav: "The copy",
         group: "Process",
         tldr: "The copy was rewritten line by line, and the rewrites show one habit: say what the person needs at that moment.",
@@ -3029,7 +3030,7 @@ const caseStudies = {
       },
       // Synced playground embeds (src/figures/sdStory, docs/sd-story-sync.md): the live prototypes behind the full-flow story
       {
-        h: "Every state, running",
+        h: "Live, not a recording",
         nav: "Live states",
         group: "Process",
         tldr: "The slot picker is a live component, not a recording. All eight designed states sit side by side below.",
@@ -3044,7 +3045,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "The returns family",
+        h: "Reused for pickup",
         nav: "Returns, live",
         group: "Process",
         tldr: "Exchange and return reuse the slot picker for pickup, so one pattern now does two jobs.",
@@ -3062,7 +3063,7 @@ const caseStudies = {
       // The four prototype paths wired in Figma (Claude: Schedule, R04cmbzFPQk2Q4IockGwqZ), embedded live: an edit in
       // Figma shows here with no re-export. Starting points: design-playground docs/figma-prototype/*.md
       {
-        h: "The prototype, live",
+        h: "Running as built",
         nav: "Prototype, live",
         group: "Process",
         // Agam, 26 Oct ("use all the developed flows instead of figma prototype"): all four phones run the built flows
@@ -3078,7 +3079,7 @@ const caseStudies = {
       // 1 Nov (Agam, "add the wired flows to the case study"): the nine flows wired in code (design-playground
       // claude/schedule-code-build-fec319), captured step by step, then the build itself from public/sd-flows/
       {
-        h: "Every flow, wired in code",
+        h: "Wired end to end",
         nav: "Flows, wired",
         group: "Process",
         tldr: "Nine flows run in code, from Home to the cart to a placed order, then offers, returns and tracking. Every step below is a capture of the build.",
@@ -3106,7 +3107,7 @@ const caseStudies = {
       },
       // 1 Nov (Agam, "add the finals to the case study"): the 18 P1 finals, as built in code (ui strip: figures/scheduled/ScreenStrip)
       {
-        h: "The finals",
+        h: "Within 3% of Figma",
         nav: "Finals",
         group: "Outcome",
         tldr: "Eighteen screens made the final cut. Each one is built in code and matches its Figma final to within 3% of pixels.",
@@ -3228,7 +3229,7 @@ const caseStudies = {
         divider: true,
       },
       {
-        h: "What users told us",
+        h: "Scheduled as a fallback",
         nav: "User voice",
         group: "Outcome",
         // mukx7ffq (28 Sep): this section and Returns & refunds became ONE story
@@ -3293,7 +3294,8 @@ const caseStudies = {
       //   divider: true,
       // },
       {
-        h: "Reflection",
+        h: "The hard part: perception",
+        nav: "Reflection",
         group: "Outcome",
         whiteboardNext: SD_BOARDS.reflection, // 11 Oct: what held, what I would revisit, drop 10-minute delivery?
         tldr: "The real challenge was perception: keeping a scheduled option from diluting the instant promise.",
@@ -8268,13 +8270,13 @@ caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudie
     divider: true,
   };
   // LEARNING, framed as belief then evidence
-  const learned = take("What users told us");
+  const learned = take("Scheduled as a fallback");
   if (learned) {
     learned.h = "What we believed, what we learned";
     learned.p = ["Before launch we believed people wanted to plan ahead. After it, 45 interviews told us something harder.", ...(learned.p || [])];
   }
   // THE CLOSE, as a design reflection rather than a business one
-  const reflection = take("Reflection");
+  const reflection = take("The hard part: perception");
   if (reflection) {
     reflection.p = [
       (reflection.p || [])[0],
@@ -8294,7 +8296,7 @@ caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudie
     ...opening,
     take("Context & problem"),
     (() => { const i = pool.findIndex((s) => s.fig === "schedMoments"); return i === -1 ? null : pool.splice(i, 1)[0]; })(), // the six moments
-    withSo(take("The constraints"), "This wasn't a feature request. It was lost revenue from carts we couldn't serve."),
+    withSo(take("A live system set hard limits"), "This wasn't a feature request. It was lost revenue from carts we couldn't serve."),
     take("The central question"),
     bet,
     principles,
@@ -8303,13 +8305,13 @@ caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudie
     take("The cart is a complex construct"),
     take("The explorations"),
     withSo(take("Two directions"), "I killed the simpler build because it would have cost trust at exactly the moment of commitment."),
-    withSo(take("The stuck cart"), "Hiding failure is cheaper to build and more expensive to own. Support tickets are a design cost."),
-    take("Cart-page states"),
-    take("Slot-page states"),
+    withSo(take("Failure, shown plainly"), "Hiding failure is cheaper to build and more expensive to own. Support tickets are a design cost."),
+    take("Every cell, drawn"),
+    take("Dense, never confusing"),
     take("The real work"),
     breaker("crate-packed"),
-    take("After you book"),
-    withSo(take("The go-to-market"), "The restraint was strategic. If scheduling showed up everywhere, it would teach people that Zepto is sometimes slow."),
+    take("Trust lives after payment"),
+    withSo(take("Launched quietly, only where it helps"), "The restraint was strategic. If scheduling showed up everywhere, it would teach people that Zepto is sometimes slow."),
     breaker("bag-doorstep"),
     withSo(impact, "The number I'd defend isn't the biggest one. It's the one that tells us what to build next."),
     withSo(learned, "We designed for planners and got mostly rescuers. That isn't failure. It's the market telling us where the value is."),
