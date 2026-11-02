@@ -2631,7 +2631,7 @@ const caseStudies = {
         // points: ["Multiple shipments", "Pharmacy orders", "Out-of-stock and unserviceable items", "And more"], // mukuzieb (28 Sep): hidden for now, uncomment to restore
         pointsLabel: "What makes the cart complex",
         p: [
-          "Behind every Zepto order is a tiered supply chain. A Mother Hub is the largest warehouse and stocks effectively everything; it feeds two kinds of fulfilment sites. Superstores are larger warehouses carrying a broad catalogue. Dark stores are the small local sites that make 10-minute delivery possible. Categories are stored deliberately: fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
+          "Behind every Zepto order is a tiered supply chain. Superstores are larger warehouses carrying a broad catalogue. Dark stores are the small local sites that make 10-minute delivery possible. Categories are stored deliberately: fast-moving daily items sit in the dark store close to you, while bulkier or long-tail items live only in the superstore.",
           "That topology stays invisible until you build a mixed cart. Add ten things and some may be served from the dark store nearby while others can only come from the superstore, so the order does not arrive as one delivery. Zepto splits it into separate shipments, one per fulfilling site, and a single order can fan out to as many as four.",
           "Scheduling is what made the split bite. A slot is not a property of the order. It is a property of each shipment, because each shipment is fulfilled by a different site with its own capacity. So the moment someone schedules, every shipment has to answer the slot question independently, and the answers rarely agree. That produces a small matrix of cases the design had to hold all at once:",
         ],
@@ -2838,8 +2838,8 @@ const caseStudies = {
         group: "Process",
         tldr: "The hardest state was a cart that stays unserviceable even with a slot. I put it in plain sight.",
         p: [
-          "The test scenario was deliberately the worst case, and it was also the hardest state to ship: a cart where an item stays unserviceable even with scheduling, because of a live supply gap. The instinct is to hide the broken thing. I did the opposite. The unserviceable shipment is flagged in place, with the honest consequence stated up front (the items are unavailable and will be removed on save) and, where a store is simply closed, an option to schedule for when it reopens.",
-          "Showing the failure honestly is the same trust argument as the rest of the feature: people forgive a clear \"we cannot do this part\" far more than a cart that silently drops items. This state took months of UX-and-ops work to tame, and getting it right mattered more to trust than any happy-path screen.",
+          "The hardest state to ship was a cart where an item stays unserviceable even with a slot, because of a live supply gap. The instinct is to hide the broken part. I did the opposite. The shipment is flagged in place, with the consequence stated up front (these items are unavailable and will be removed on save) and, where a store is only closed, an option to schedule for when it reopens.",
+          "People forgive a clear \"we cannot do this part\" far more than a cart that quietly drops items. This state took months of UX and ops work to tame, and it mattered more to trust than any happy-path screen.",
         ],
         fig: "schedStuckCart",
         figBare: true, // mtmrnolv: no figure card around coded figures
@@ -2855,7 +2855,7 @@ const caseStudies = {
         tldr:
           "The cart decides each shipment's fate before you ever pick a slot, so the real surface was a matrix. I drew every combination and handed it over to dev.",
         p: [
-          "On a platform built on instant, the cart is the moment of truth: it has to read honestly whatever the supply situation is. Because one cart can split up to four ways and the Instant-versus-Schedule control resolves shipment by shipment, the cart page is not a screen, it is a matrix. The hard part is the Schedule button itself, which can be open, disabled, hidden, the only thing you can do, or gone entirely depending on what that shipment's store can actually honour.",
+          "The Instant or Schedule control resolves shipment by shipment, so the cart page is not one screen but a matrix. The hard part is the Schedule button itself, which can be open, disabled, hidden, the only thing you can do, or gone entirely depending on what that shipment's store can actually honour.",
           "So I mapped and designed each cell rather than the happy path plus a catch-all. Every one of these is a real state a shipment can land in:",
         ],
         ul: [
@@ -2863,9 +2863,8 @@ const caseStudies = {
           "Instant works but no slot is open: Schedule is disabled, deliberately greyed rather than hidden, so the option still reads as real",
           "The PIN code cannot schedule at all: the Schedule button never appears, so it does not tease an option that is not there",
           "Instant cannot serve the shipment: Schedule becomes the only action, enabled and highlighted so the path forward is obvious",
-          "Neither instant nor schedule works: the shipment is honestly blocked as store unserviceable",
+          "Neither instant nor schedule works: the shipment is blocked as store unserviceable",
           "A guardrail hit: scheduling caps at two ongoing orders at a time and five a day, so at the ceiling the Schedule option goes unavailable",
-          "A first-run coach-mark teaching the new Schedule button the first time it shows up (designed, not shipped)",
           "Items that go unavailable while you linger get moved to another shipment, and on save you can keep them in a wishlist",
           "Your chosen slot lapses while you step away: we ask you to review the schedule again before paying, rather than failing silently at checkout",
         ],
@@ -2883,7 +2882,7 @@ const caseStudies = {
         tldr:
           "The slot picker is the dense page, so I mapped every state and designed each one so density never tipped into confusion.",
         p: [
-          "If the cart page is the matrix, the scheduled page is the one screen where all that complexity has to feel effortless. A flexible, stateful page is easy to make overwhelming, so the work was the opposite: give every situation a deliberate state rather than letting the page degrade. That meant designing the empty and failure states with the same care as the happy path, because on a trust feature those are exactly the moments that decide whether someone schedules again.",
+          "If the cart is the matrix, the schedule page is where all that complexity has to feel effortless. So every situation gets a deliberate state, and the empty and failure states get the same care as the happy path: on a trust feature, those are the moments that decide whether someone schedules again.",
           "The full set I designed for the page:",
         ],
         ul: [
@@ -2975,8 +2974,7 @@ const caseStudies = {
         tldr: "When a booked slot can't happen, the design tells you first and fixes it in one tap.",
         p: [
           "A slot booked hours ahead can fail for reasons you can't see from home: the store closes early, heavy rain pauses deliveries, there are no riders nearby. You may not open the app before the slot, so the design starts with a push: \"Your 7 - 8 PM slot isn't possible tonight\", with the reason, \"Heavy rain has paused deliveries near you.\"",
-          "The sheet on your next open does the fixing. A chip names the reason, the title repeats, and the next three slots sit right there, grouped by day: Tonight 9 - 10 PM, 10 - 11 PM, Tomorrow 7 - 8 AM. One tap books the new slot, with no second Confirm. If the order had free delivery, it stays, and the sheet says so. The only button is \"Refund instead\".",
-          "You didn't cause the break, so the fix shouldn't cost you a flow. The next slots are the likely answer, so they sit where the problem is stated.",
+          "The sheet on your next open does the fixing. A chip names the reason, the title repeats, and the next three slots sit right there, grouped by day: Tonight 9 - 10 PM, 10 - 11 PM, Tomorrow 7 - 8 AM. One tap books the new slot, with no second Confirm. If the order had free delivery, it stays, and the sheet says so. The only button is \"Refund instead\". The next slots are the likely answer, so they sit where the problem is stated.",
           "Running late gets the same shape, earlier. The cart said \"Arriving 7 - 8 PM\", and until now nothing happened at 8:05 except waiting. In the design, the push comes before the window ends: \"Running about 15 min late. Heavy traffic on the way to you. Your 7 - 8 PM order should arrive by 8:15 PM.\" The sheet offers \"I'll wait\" or \"Cancel for free\". Free, because the cancel rule only ran one way (\"cancel up to 30 min prior\") and needed its mirror: when Zepto is the one late, leaving costs you nothing.",
           // C-106 to C-114, the cart's limits and errors, as their built flow (figNext)
           "Some breaks show before you pay, and the cart's states already name them: an order limit, high demand, heavy rain, a closed store. In rain, the cart says deliveries are paused and still offers Schedule.",
@@ -3108,7 +3106,7 @@ const caseStudies = {
         p: [
           "This is the final set: home with the store offline, the cart in every header state, the intro banner that teaches Schedule, and the schedule page from open slots to collapsed shipments. They're the coded versions, captured straight from the build, not mockups.",
           // 2 Nov (SD story session): the gate mechanism, from the benji draft; 38/38 per design-playground docs/schedule/STATE.md
-          "To keep code honest against design, each one goes through a pixel gate. A script renders the Figma frame at 2x, renders the coded screen headless at 2x, and diffs the two. A screen passes only if at most 3% of its pixels differ. All 38 gated web screens pass.",
+          "To keep code honest against design, each one goes through a pixel gate. A script renders the Figma frame at 2x, renders the coded screen headless at 2x, and diffs the two. A screen passes only if at most 3% of its pixels differ. The gate covers 38 web screens in all, and every one passes.",
         ],
         fig: "schedFinals",
         figBare: true,
