@@ -2,7 +2,7 @@
 """Live watcher for Agentation annotations (portfolio, :5173).
 
 Polls http://localhost:4747/pending every 5s and prints one line per NEW
-pending annotation whose page url is on localhost:5173. Errors are printed
+pending annotation whose page url is on localhost, 127.0.0.1 or [::1]:5173. Errors are printed
 to stdout, never swallowed (a silent watcher is worse than none).
 
 Usage:
@@ -19,7 +19,8 @@ import urllib.error
 PENDING_URL = "http://localhost:4747/pending"
 # All portfolio dev-server ports (dev / verify / verify-2 / lan). Other projects
 # (:5180 shape, :5182 shader-viewer) share the agentation server; keep them out.
-FILTER_HOSTS = tuple(f"localhost:{p}" for p in (os.environ.get("AGENTATION_PORTS") or "5173,5174,5175,5177").split(","))
+# Agam annotates at 127.0.0.1 as often as localhost, so every loopback name counts.
+FILTER_HOSTS = tuple(f"{h}:{p}" for p in (os.environ.get("AGENTATION_PORTS") or "5173,5174,5175,5177").split(",") for h in ("localhost", "127.0.0.1", "[::1]"))
 POLL_SECS = 5
 once = "--once" in sys.argv
 
