@@ -2386,3 +2386,6 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .rwf-glass .tlx__rail-leader { background: repeating-linear-gradient(to top, var(--rwf-lead-ink) 0 2px, transparent 2px 5px); padding-bottom: var(--rwf-tick-gap); }
 .rwf-glass .tlx__rail-leader[data-below="true"] { background: repeating-linear-gradient(to bottom, var(--rwf-lead-ink) 0 2px, transparent 2px 5px); margin-top: calc(var(--rwf-tick-gap) * -1); padding-top: var(--rwf-tick-gap); padding-bottom: calc(var(--lane, 0) * var(--rail-lane)); }
 .page--article .article__body .rwf-run .rwf span.rwf-months__m { background: var(--bg); padding: 3px 4px; }
+
+/* mvyoj6gz: the Timeline management chart view toggle sits above the chart, left aligned */
+.rwf__growth-toggle { margin-bottom: 0.75rem; }

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate as motionAnimate } from "motion";
 import { DrawIcon } from "./SchedInsight"; // mv5iv45e: the insight header's own draw-on stroke icon
-import { LineChart, fmtK } from "../../ui/charts";
+import { LineChart, Bars, fmtK } from "../../ui/charts";
 import { watchSection } from "../../ui/sectionPlay";
 import "./scheduled.css";
 import { feedback, feedbackCoalesced } from "../../ui/feedback"; // muku5gig: the site sound engine (silent unless the sound toggle is on)
@@ -362,6 +362,7 @@ function SpeedStrip() {
 // Critique 3.6 (25 Oct, docs critiques-2026-10-25.md): orders and stores no longer share one plot on two scales.
 // One line, scheduled orders a month; the store milestones (pilot, every store) and the peak are annotations on it.
 const SHOW_CHART_CAP = false; // mvm8urab ("remove this"): the "Pilot to every store in N days..." line over the growth chart; true brings it back
+const GROWTH_VIEWS = [["area", "Area"], ["line", "Line"], ["bars", "Bars and stores"], ["milestones", "Milestones"]];
 function GrowthChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
   const pilot = ROLLOUT[0];
@@ -369,16 +370,32 @@ function GrowthChart() {
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
   const at = (d) => rows.findIndex((r) => r.m === d.slice(0, 7));
   const n = (v) => v.toLocaleString("en-IN");
+  const [view, setView] = useState("area");
+  const notes = [
+    { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
+    { i: at(full.d), label: `Rollout complete (${n(full.stores)})`, anchor: "start", below: true }, // Q20 (accepted 26 Oct): "Rollout complete"; it read "All stores live" after 3.6 (25 Oct)
+    { i: rows.indexOf(peak), label: `Peak, ${(peak.sd / 1e6).toFixed(2)}M`, anchor: "middle" },
+  ];
   return (
     <div className="rwf__charts rwf__charts--one">
+      {/* mvyoj6gz ("add a toggle, more graph types, design variants"): one toggle over the same MONTHLY
+          and ROLLOUT data. Area stays the default; Line, Bars with the store count on its own scale, and
+          the milestone list (SpeedStrip) are the other reads. No new numbers */}
+      <div className="rwf-tabs rwf__growth-toggle" role="group" aria-label="Chart view">
+        {GROWTH_VIEWS.map(([k, l]) => (
+          <button key={k} type="button" className="rwf-tabs__tab" aria-pressed={view === k} aria-selected={view === k} onClick={() => { if (view !== k) feedback("select"); setView(k); }}>{l}</button>
+        ))}
+      </div>
+      {view === "milestones" && <SpeedStrip />}
+      {view === "bars" && <Bars data={rows} valueKey="sd" label="Scheduled orders a month" yFormat={fmtK} height={230} legend
+        overlay={{ key: "stores", label: "Stores live", format: n }}
+        ariaLabel={`Scheduled orders a month as bars, from ${n(rows[0].sd)} in October 2025 to a peak of ${n(peak.sd)}, with stores live on a second scale up to ${n(Math.max(...rows.map((r) => r.stores)))}`} />}
+      {(view === "area" || view === "line") && <>
       {SHOW_CHART_CAP && <p className="rwf-chart__cap">Pilot to every store in {daysFrom(full.d)} days, then {(peak.sd / 1e6).toFixed(2)}M scheduled orders a month at the peak</p>}
-      <LineChart area data={rows} series={[{ key: "sd", label: "Scheduled orders a month" }]} yFormat={fmtK} height={230} legend={false}
-        annotations={[
-          { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
-          { i: at(full.d), label: `Rollout complete (${n(full.stores)})`, anchor: "start", below: true }, // Q20 (accepted 26 Oct): "Rollout complete"; it read "All stores live" after 3.6 (25 Oct)
-          { i: rows.indexOf(peak), label: `Peak, ${(peak.sd / 1e6).toFixed(2)}M`, anchor: "middle" },
-        ]}
+      <LineChart area={view === "area"} data={rows} series={[{ key: "sd", label: "Scheduled orders a month" }]} yFormat={fmtK} height={230} legend={false}
+        annotations={notes}
         ariaLabel={`Scheduled orders a month: ${n(rows[0].sd)} in the October 2025 pilot, which began in ${pilot.stores} stores; all stores live (${n(full.stores)}) by ${full.label}; and a peak of ${(peak.sd / 1e6).toFixed(2)} million in ${peak.label}`} />
+      </>}
     </div>
   );
 }
