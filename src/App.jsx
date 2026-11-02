@@ -2229,9 +2229,14 @@ const caseStudies = {
       mark: "Zepto",
       theme: { from: "#f6f0ff", to: "#c9adff", ink: "#1a1033", darkFrom: "#17112b", darkTo: "#3a2872", darkInk: "#f1eaff" },
     },
+    // 2 Nov (Agam, "add the hook block first"): the facts header shows on this case again as the hook: problem, role,
+    // constraint and outcome in the first screen. Every fact is the page's own (My role, the cart construct, Impact).
+    headShow: true,
     headFacts: [
+      { label: "Role", value: "Lead designer" },
       { label: "Organisation", value: "Zepto" },
       { label: "Timeline", value: "6 months · Aug–Jan" },
+      { label: "Outcome", value: "2 to 1,144 stores in 63 days" },
     ],
     meta: "Product Designer · Zepto · 2025",
     // Compact PDF cut (?cut=compact): the spine only, for hard page caps.
@@ -2246,8 +2251,10 @@ const caseStudies = {
     ],
     cover: "Zepto",
     pageTitle: "Scheduled Delivery", // 28.1: the tab title, "Scheduled Delivery · Agam Agarwal"
+    // 2 Nov: the lead is the hook (problem, role, constraint, outcome). Was: "Scheduled Delivery let people order anything
+    // on Zepto for a one-hour window of their choosing ..." (in git history)
     lead:
-      "Scheduled Delivery let people order anything on Zepto for a one-hour window of their choosing, on a platform whose entire promise is 10-minute delivery. I owned the interaction design end-to-end: untangling the flows and edge cases, running two parallel directions to ground, and shipping a solution we usability-tested internally through design and then validated, after launch, with a 45-user mixed-method study. The payoff lands in the order itself: a scheduled order was worth about ₹1,450 against ₹543 for an instant one in August 2026, and a year of data later the feature is quietly becoming the channel large appliances are delivered through.",
+      "Zepto promises groceries in ten minutes, but some orders are for tonight or tomorrow morning, and the app had nowhere to put them. I led the interaction design for Scheduled Delivery with my design manager: one-hour slots on a cart that can split into four shipments, each needing its own slot. It went from 2 stores to 1,144 in 63 days, and a scheduled order was worth ₹1,452 against ₹543 for an instant one.",
     deck: scheduledDeck,
     sections: [
       {
@@ -10814,9 +10821,10 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
           // title and the lead on the left, label/value facts on the right; no
           // eyebrow, no meta line. The lead moves up here from the body.
-          <header className="article__head article__head--facts">
+          <header className={"article__head article__head--facts" + (cs.headShow ? " article__head--show" : "")}>
             <div className="article__head-main">
-              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
+              {/* headShow: the title stays visible but is hidden from assistive tech, since the sr-only h1 above already carries it */}
+              <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">
@@ -10841,9 +10849,10 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
           // mtparlyq: the header as in Figma Portfolio 2026 node 559-7888: the
           // title and the lead on the left, label/value facts on the right; no
           // eyebrow, no meta line. The lead moves up here from the body.
-          <header className="article__head article__head--facts">
+          <header className={"article__head article__head--facts" + (cs.headShow ? " article__head--show" : "")}>
             <div className="article__head-main">
-              <p className="article__title article__title--display">{withBreaks(cs.title)}</p>
+              {/* headShow: the title stays visible but is hidden from assistive tech, since the sr-only h1 above already carries it */}
+              <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
             <dl className="article__facts">

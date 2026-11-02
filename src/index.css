@@ -7512,6 +7512,8 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
    on, and the header's title is a <p> (76.2), so there is one h1; if the header comes back, make its title the h1 again
    and remove the screen-reader one.) */
 .article__head { display: none; }
+/* 2 Nov (Agam, "add the hook block first"): a case can opt back in with headShow, and its facts card is the hook */
+.article__head.article__head--show { display: grid; }
 .article__head--facts .article__title--display {
   font-family: var(--type-display-family);
   font-size: 3.4483cqw;
