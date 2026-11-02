@@ -606,7 +606,7 @@ function PhaseGlassRail({ phases }) {
     <div className="tlx rwf-glass" data-style="rail" ref={host}>
       <MonthRow host={host} months={model.months} />
       {/* mukp1kbl: every other phase sits under the line, so the two rows share the crowding */}
-      <Rail model={model} details={details} below={phases.filter((_, k) => k % 2 === 1).map((p) => phaseLabel(p[1]))} reduce={typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches} />
+      <Rail labels model={model} details={details} below={phases.filter((_, k) => k % 2 === 1).map((p) => phaseLabel(p[1]))} reduce={typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches} />
     </div>
   );
 }

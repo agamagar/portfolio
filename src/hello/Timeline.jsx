@@ -1115,9 +1115,14 @@ function RailDetailBody({ detail, fallbackSpan }) {
 
 // exported (27 Sep, muk1fomw) so the Scheduled Delivery case can reuse the
 // whole glass rail with its own record; nothing else about it changed
-export function Rail({ model, details, reduce, below: belowExtra }) {
+export function Rail({ model, details, reduce, below: belowExtra, labels = false }) {
   // `below` (28 Sep, mukp1kbl): extra card names that sit under the line, for
   // another page's record; the hello rail passes nothing, so it is unchanged
+  // `labels` (mvynb499, 2 Nov): the cards are labels with no panel (the Schedule
+  // phase rail). Nothing opens, so no card widens, jumps to the edge or pushes
+  // its neighbours; every line lands on its label's left edge, a label near the
+  // end hangs past the rail instead of sliding over its line, and the 8px gap
+  // is kept only between labels that share a row.
   const belowList = belowExtra ? [...RAIL_BELOW, ...belowExtra] : RAIL_BELOW;
   const touch = useTouch();
   const last = model.n - 1;
@@ -1368,7 +1373,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
     () => model.cards.findIndex((c) => c.org === "Away"),
     [model.cards],
   );
-  const shownCard = engaged ? activeCard : defaultCard;
+  const shownCard = labels ? -1 : engaged ? activeCard : defaultCard;
 
   // WHICH YEAR THE READING LINE IS INSIDE. The last January at or before the
   // current month, not the nearest one: nearest would show 2023 from July 2022
@@ -1784,8 +1789,14 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
       });
       // Clamp first, so a card that would hang off the right edge is already at
       // its final position before anything is packed against it.
+      // labels: a label may hang past the rail's end into the page margin (16px
+      // short of the screen edge); with no room it flips to the line's left, so
+      // the line meets its right edge instead of landing inside the text
+      const room = labels ? total + Math.max(0, window.innerWidth - 16 - wrap.getBoundingClientRect().right) : total;
       boxes.forEach((b) => {
-        b.left = Math.max(0, Math.min(b.want, total - b.w));
+        b.left = labels
+          ? b.want + b.w > room ? b.want - b.w : b.want
+          : Math.max(0, Math.min(b.want, total - b.w));
       });
       // MINIMUM 8px BREATHING ROOM between same-side resting pills (Agam,
       // 2026-08-13: "not just no collisions - at least an 8px gap between two
@@ -1796,7 +1807,7 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
       // keeps the line landing ON the box's edge, just inside the corner. The
       // sweep cascades so a nudge cannot create a new near-collision upstream.
       const MIN_GAP = 8;
-      for (const side of [false, true]) {
+      for (const side of labels ? [] : [false, true]) {
         const arr = boxes
           .filter((b) => belowList.includes(model.cards[b.i].org) === side)
           .sort((p, q) => p.left - q.left);
@@ -1848,6 +1859,22 @@ export function Rail({ model, details, reduce, below: belowExtra }) {
           // free.
           out[b.i] = { lane, left: b.left, w: b.w, below: below(b) };
         });
+      // labels: the same 8px sweep, but per row, so a label is never nudged
+      // off its line for a neighbour that sits a whole lane away
+      if (labels) {
+        const rows = new Map();
+        boxes.forEach((b) => {
+          const k = `${out[b.i].below}:${out[b.i].lane}`;
+          rows.set(k, [...(rows.get(k) || []), out[b.i]]);
+        });
+        rows.forEach((arr) => {
+          arr.sort((p, q) => p.left - q.left);
+          for (let k = arr.length - 2; k >= 0; k--) {
+            const over = arr[k].left + arr[k].w + MIN_GAP - arr[k + 1].left;
+            if (over > 0) arr[k].left = Math.max(0, arr[k].left - over);
+          }
+        });
+      }
       setLanes(out);
       setBelowLanes(endsBelow.length);
     };

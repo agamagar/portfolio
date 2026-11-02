@@ -2373,3 +2373,16 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 /* belt and braces: whatever the row's tile width, a phone in a row never exceeds 230px (190px on a phone) */
 .sdh .pf, .sdrow .pf { max-width: 230px; margin-inline: auto; }
 @media (max-width: 700px) { .sdh .pf, .sdrow .pf { max-width: 190px; } }
+
+/* mvynb499 (2 Nov, timeline QA, "consistent attachment points for the dotted vertical line"). One attachment rule:
+   each line runs from its tick to its label's pill, landing on the pill's left edge (Timeline.jsx, `labels`).
+   - One pill height: the pill hugs its two lines and the leader reads the same number. The pill was 78px while
+     the leader math used 66px, so every line ran 6px into its pill.
+   - Dotted, and all the way to the tick: lines stopped 13px short of the tick on both sides. The dots start at
+     the tick end, so every line begins the same way. 12px is the phase rail's flat tick height.
+   - A month label cuts the line where one crosses it (DEC was struck through by Returns and refunds). */
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail { --rail-card-h: 58px; --rwf-tick-gap: calc((var(--tlx-peak, 38px) - 12px) / 2); --rwf-lead-ink: color-mix(in srgb, var(--fg) 40%, transparent); }
+.page--article[data-case="scheduled-delivery"][data-case][data-case] .article__body .rwf-glass .tlx__rail-tagcard:not(.tlx__rail-measure-card) { height: var(--rail-card-h); }
+.rwf-glass .tlx__rail-leader { background: repeating-linear-gradient(to top, var(--rwf-lead-ink) 0 2px, transparent 2px 5px); padding-bottom: var(--rwf-tick-gap); }
+.rwf-glass .tlx__rail-leader[data-below="true"] { background: repeating-linear-gradient(to bottom, var(--rwf-lead-ink) 0 2px, transparent 2px 5px); margin-top: calc(var(--rwf-tick-gap) * -1); padding-top: var(--rwf-tick-gap); padding-bottom: calc(var(--lane, 0) * var(--rail-lane)); }
+.page--article .article__body .rwf-run .rwf span.rwf-months__m { background: var(--bg); padding: 3px 4px; }
