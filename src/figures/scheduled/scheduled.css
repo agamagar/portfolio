@@ -2359,7 +2359,7 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .rwf-glass.tlx, .rwf-glass { --rail-card-h: 55px; }
 
 /* mvqnxwre-eh9pxw, mvqnyyep-6d1ni2 (Agam, 27 Oct, "phone frames too big"): a phone in a row is at most 230px wide, 190px on a phone */
-@media (min-width: 701px) { .sdh, .sdrow .sdh, .sdflows.sdh { grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); } }
+@media (min-width: 701px) { .sdh, .sdrow .sdh, .sdflows.sdh { grid-template-columns: repeat(var(--n, 3), minmax(0, var(--pf-w-row))); } }
 @media (max-width: 700px) { .sdh > .sdh__tile, .sdflows.sdh > .sdh__tile { flex: 0 0 min(58vw, 190px); } }
 /* mvqnxlmk-wxnbie (Agam, 27 Oct): every section is vertical: the heading or label on top, the content under it, never label left and
    content right. */
@@ -2369,7 +2369,7 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .article__body .cs-sec.cs-sec--row { grid-template-columns: minmax(0, 1fr); }
 .article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
 /* the running-flows row (.sdflows) is the same grid; this outranks schedFigmaFlows.css's older flex rule */
-@media (min-width: 701px) { html .article__body .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); justify-content: center; gap: 1.25rem; overflow: visible; } html .article__body .sdflows.sdh > .pf.sdh__tile { width: 100%; flex: none; } }
+@media (min-width: 701px) { html .article__body .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, var(--pf-w-row))); justify-content: center; gap: 1.25rem; overflow: visible; } html .article__body .sdflows.sdh > .pf.sdh__tile { width: 100%; flex: none; } }
 /* 2 Nov: and under 700px, where its flex: 0 0 auto left a phone with no width of its own at 40 to 60px wide
    (After you book, The prototype, live); the running flows take the carousel's phone width like every other row */
 @media (max-width: 700px) { html .article__body .sdflows.sdh > .pf.sdh__tile { flex: 0 0 min(58vw, 190px); } }
@@ -2392,3 +2392,18 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 
 /* mvyoj6gz: the Timeline management chart view toggle sits above the chart, left aligned */
 .rwf__growth-toggle { margin-bottom: 0.75rem; }
+
+/* 2 Nov, three phone sizes (tokens in phoneFrame.css). Before: nine widths at 1440 (189, 208, 230, 241, 260, 276, 299,
+   320, 336). The plate phones (the opening plate, the Context plates) scale with their plate art and stay as they are.
+   Phones inside a ds-fit stage (the slot rail, the compare stage) get the token as css width; the stage scales the whole
+   board to its column, so on screen they read a few px off the step. */
+/* solo: one phone with its notes or cards beside it */
+html .article__body :is(.cpf__phone > .pf, .cart-hubs__phone, .sd-stage--slotreal .slotreal-device, .slotreal-device--tall) { width: var(--pf-w-solo); max-width: 100%; --pf-w: var(--pf-w-solo); }
+/* row: two or three phones side by side */
+html .article__body .sdcmp { width: var(--pf-w-row); }
+html .article__body :is(.dtr-cell .dtr-fshot, .sdflows--n1 > .pf) { width: min(var(--pf-w-row), 100%); --pf-w: var(--pf-w-row); }
+/* dense: a row of four or more takes the dense step at every desktop width, not whatever the column leaves */
+@media (min-width: 701px) {
+  html .article__body :is(.sdh, .sdflows.sdh):not([data-many]):has(> .sdh__tile:nth-child(4)) { grid-template-columns: repeat(var(--n, 4), minmax(0, var(--pf-w-dense))); }
+  html .article__body .sdh:has(> .sdh__tile:nth-child(4)) .pf { max-width: var(--pf-w-dense); }
+}

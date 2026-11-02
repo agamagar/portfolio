@@ -2,6 +2,9 @@
    itself (.ifr, .ifr__screen, .ifr__bezel) stays in index.css next to the plates. */
 :root {
   --pf-w-xs: 120px; --pf-w-sm: 168px; --pf-w-md: 208px; --pf-w-lg: 300px; --pf-w-hero: 340px;
+  /* 2 Nov (Agam, "go ahead with the three phone sizes"): a long case page shows its phones at three steps only.
+     solo = one phone with its notes beside it; row = two or three side by side; dense = four or more in a row */
+  --pf-w-solo: 336px; --pf-w-row: 230px; --pf-w-dense: 189px;
   --pf-gap: 10px;                 /* phone -> links -> caption */
   --pf-shadow-sm: drop-shadow(0 8px 18px rgba(20, 8, 40, .30));
   --pf-shadow-md: drop-shadow(0 18px 40px rgba(20, 8, 40, .45));

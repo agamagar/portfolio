@@ -5,7 +5,7 @@ import FigmaShot from "./FigmaShot";
 export default function SchedCartHubs() {
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
-      <FigmaShot k="cart-hubs" width={260} alt="The cart split by fulfilling hub: Delivery in 5 mins from the dark store and Delivery in 21 mins from the super store, each with its own Schedule button." />
+      <FigmaShot k="cart-hubs" className="cart-hubs__phone" alt="The cart split by fulfilling hub: Delivery in 5 mins from the dark store and Delivery in 21 mins from the super store, each with its own Schedule button." />
     </div>
   );
 }
