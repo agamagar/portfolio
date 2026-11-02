@@ -67,6 +67,9 @@ html.dark .article__index-glow { opacity: 0.8; }
 .cis { display: none; }
 @media (max-width: 1099.98px) {
   .cis { display: block; }
+  /* the rail list collapses here, so its glass pill had no entry under it and stretched into a
+     6px frosted strip across the page at the active section (Agam, 2 Nov: "random horizontal glass") */
+  .article__index-slider { display: none; }
 }
 .cis__pill {
   position: fixed;
