@@ -1,1 +1,0 @@
-import{j as i}from"./PhoneFrame-DmYYvOtg.js";import{R as o}from"./ResultsApp-BEQ9vESE.js";import"./index-Do-xHFn0.js";import"./schedule-Fi8lDcxy.js";import"./returns-CGNYAVwI.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function f(t){return i.jsx(o,{flowId:"aw-flight-details",defaultCase:"AW-363",...t})}export{f as default};
