@@ -9,6 +9,7 @@ import {
   useContext,
   Fragment,
   Suspense,
+  isValidElement,
 } from "react";
 import EditorialSpread from "./ui/EditorialSpread"; // reusable magazine-style intro spread (SD case)
 import { Guard, StaticFallback, lazyRetry as lazy } from "./ui/Guard"; // chunk-retry lazy + blank-page guards
@@ -8192,11 +8193,25 @@ const caseStudies = {
   },
 };
 
+// A case cut is a deep copy of its case. JSON.parse(JSON.stringify()) turned JSX in the copy
+// (e.g. the PlaygroundCopy line in "Every state, running") into a dead object and crashed
+// the cut. This copies like JSON (functions and undefined dropped) but keeps React elements.
+const cloneCase = (v) => {
+  if (isValidElement(v)) return v;
+  if (Array.isArray(v)) return v.map((x) => (typeof x === "function" || x === undefined ? null : cloneCase(x)));
+  if (v && typeof v === "object") {
+    const o = {};
+    for (const k of Object.keys(v)) if (typeof v[k] !== "function" && v[k] !== undefined) o[k] = cloneCase(v[k]);
+    return o;
+  }
+  return v;
+};
+
 // Duplicate of the scheduled-delivery case study for a concise / clarity-gate cut
 // (Agam verifies first, then I trim this copy to a 5-8 minute read while the
 // full version above stays intact). Deep-cloned, so trimming one never touches
 // the other. Routes at /work/scheduled-delivery-trim.
-caseStudies["scheduled-delivery-trim"] = JSON.parse(JSON.stringify(caseStudies["scheduled-delivery"]));
+caseStudies["scheduled-delivery-trim"] = cloneCase(caseStudies["scheduled-delivery"]);
 caseStudies["scheduled-delivery-trim"].eyebrow = "Zepto · Case study · concise cut";
 
 // 28 Sep 2026: THE PRESENTING CUT of Scheduled Delivery, for presenting end to
@@ -8211,7 +8226,7 @@ caseStudies["scheduled-delivery-trim"].eyebrow = "Zepto · Case study · concise
 //   - Impact tells Acts 1 to 4 of the metrics story
 //   - every "[Confirm ...]" note is stripped and the fill-in box dropped
 //   - styleKey keeps every data-case="scheduled-delivery" rule applying
-caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudies["scheduled-delivery"]));
+caseStudies["scheduled-delivery-present"] = cloneCase(caseStudies["scheduled-delivery"]);
 {
   const t = caseStudies["scheduled-delivery-present"];
   t.styleKey = "scheduled-delivery";
@@ -8222,6 +8237,7 @@ caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudie
       .replace(/\s*\[Confirm[^\]]*\]/g, "")
       .replace(/\[WhatsApp was designed for;[^\]]*\]/g, "(WhatsApp was designed for, but it never went live.)");
     if (Array.isArray(v)) return v.map(strip);
+    if (isValidElement(v)) return v; // JSX copy is frozen; its text has no [Confirm] notes
     if (v && typeof v === "object") { for (const k of Object.keys(v)) v[k] = strip(v[k]); return v; }
     return v;
   };
@@ -8328,7 +8344,7 @@ caseStudies["scheduled-delivery-present"] = JSON.parse(JSON.stringify(caseStudie
 // ladder sections into their parent beats; the live away-agent entry is never
 // touched. Merged donors keep their prose and bullets; their figures are dropped
 // (page economy is the point). Routes at /work/away-agent-trim.
-caseStudies["away-agent-trim"] = JSON.parse(JSON.stringify(caseStudies["away-agent"]));
+caseStudies["away-agent-trim"] = cloneCase(caseStudies["away-agent"]);
 {
   const t = caseStudies["away-agent-trim"];
   t.eyebrow = "Away · Case study · concise cut (WIP)";
@@ -8416,7 +8432,7 @@ caseStudies["away-agent-trim"] = JSON.parse(JSON.stringify(caseStudies["away-age
 // study, R1-R6 in dassh-user-requirements.md, and the interview answers Agam gives).
 // The clone is only a starting surface: `sections` gets replaced wholesale, it is
 // not an edit of the old prose. Routes at /work/dassh-v2.
-caseStudies["dassh-v2"] = JSON.parse(JSON.stringify(caseStudies["dassh"]));
+caseStudies["dassh-v2"] = cloneCase(caseStudies["dassh"]);
 {
   const v2 = caseStudies["dassh-v2"];
   v2.eyebrow = "Dassh · Case study · rewrite";
