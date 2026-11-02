@@ -4,8 +4,9 @@
 //     controls and the chip back (html[data-chrome="hidden"]);
 //   - the left rail starts collapsed, even at rest at the top, where it covered a page's first lines; it comes in on a
 //     scroll up or a tap on the page that isn't on a control, and leaves on a scroll down (html[data-rail="shown"]).
-// The layout never changes; the CSS (index.css, "62.1") scopes it to pages with an article or a doc, and wider
-// screens keep the chrome as it was.
+// The layout never changes; the CSS (index.css, "62.1") scopes it to pages with an article or a doc.
+// Wider screens (2 Nov: the back button and the chapter chip sat over the section's lead headline at 974 wide) get the
+// first rule only, for the top controls and the chip; the rail stays, and a pointer at the top edge brings them back.
 const PHONE = "(max-width: 720px)";
 export const READING_CHROME = ".top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^='Inspect'], .qa-circle, [data-agentation-toolbar]";
 const RAIL = ".view-menu, .cs-tabs--circles, .pal__btn, button[aria-label^='Inspect'], .qa-circle, [data-agentation-toolbar]";
@@ -22,9 +23,9 @@ export function startReadingChrome() {
     raf = 0;
     const y = window.scrollY;
     const dy = y - last; last = y;
-    if (!mq.matches) { rail(false); return show(true); }
     run = Math.sign(dy) === Math.sign(run) ? run + dy : dy; // distance travelled in the current direction
-    if (run > 24) rail(false);
+    if (!mq.matches) rail(false);
+    else if (run > 24) rail(false);
     else if (run < -24) rail(true);
     const end = root.scrollHeight - window.innerHeight;
     if (y < 120 || y > end - 80) { run = 0; return show(true); }
@@ -38,6 +39,8 @@ export function startReadingChrome() {
     if (e.target.closest(RAIL)) rail(true);
     if (e.target.closest(READING_CHROME)) show(true);
   });
+  // wider screens: a pointer at the top edge brings the top controls back
+  document.addEventListener("pointermove", (e) => { if (e.clientY < 72 && root.hasAttribute("data-chrome")) show(true); }, { passive: true });
   // a tap on the page that isn't on a control brings the rail in (or sends it away again)
   let down = null;
   document.addEventListener("pointerdown", (e) => { down = e.pointerType === "touch" ? { x: e.clientX, y: e.clientY, t: e.timeStamp } : null; }, { passive: true });

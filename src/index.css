@@ -8212,6 +8212,9 @@ html.dark.glass-lens .article__hero-replay,
   color: #33095e; letter-spacing: 0; position: sticky; top: 5rem;
 }
 :root.dark .article__body .cs-sec > h2 { color: #b69cea; }
+/* 2 Nov: the label column is narrow, so its heading balances its lines and a long word breaks before it can spill
+   into the body column (App.jsx drops the no-widow space here) */
+.article__body .cs-sec > h2 { text-wrap: balance; overflow-wrap: break-word; }
 .article__body .cs-sec > p.article__tldr {
   margin: 0 0 1.75rem; padding: 0; border: 0; background: none; box-shadow: none;
   font: 400 1.5rem/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
@@ -8950,6 +8953,16 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
     opacity: 0 !important; visibility: hidden; pointer-events: none;
     transition: opacity 180ms ease, visibility 0s linear 180ms;
   }
+}
+/* 2 Nov: wider screens too, the top controls and the chapter chip only (the rail keeps its place); the same JS */
+@media (min-width: 721px) {
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .cis__pill) {
+    opacity: 0 !important; visibility: hidden; pointer-events: none;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
+  }
+}
+@media (min-width: 721px) and (prefers-reduced-motion: reduce) {
+  :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .cis__pill) { transition: none; }
 }
 @media (max-width: 720px) and (prefers-reduced-motion: reduce) {
   :root[data-chrome="hidden"]:has(.page--article, .page--locked-doc) :is(.top-controls, .view-menu, .cs-tabs--circles, .cis__pill, .pal__btn, button[aria-label^="Inspect"], .qa-circle, [data-agentation-toolbar]),
