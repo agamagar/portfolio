@@ -8217,9 +8217,10 @@ html.dark.glass-lens .article__hero-replay,
   color: #33095e; letter-spacing: 0; position: sticky; top: 5rem;
 }
 :root.dark .article__body .cs-sec > h2 { color: #b69cea; }
-/* 2 Nov: the label column is narrow, so its heading balances its lines and a long word breaks before it can spill
-   into the body column (App.jsx drops the no-widow space here) */
-.article__body .cs-sec > h2 { text-wrap: balance; overflow-wrap: break-word; }
+/* 2 Nov: the label column is narrow, so its heading balances its lines (App.jsx drops the no-widow space here).
+   Words stay whole: a word wider than the column ("Scheduled:") hangs into the 2rem gutter instead of
+   splitting as "Schedule / d:" */
+.article__body .cs-sec > h2 { text-wrap: balance; overflow-wrap: normal; hyphens: manual; }
 .article__body .cs-sec > p.article__tldr {
   margin: 0 0 1.75rem; padding: 0; border: 0; background: none; box-shadow: none;
   font: 400 1.5rem/1.25 "Stack Sans Headline Variable", "Stack Sans Headline", var(--type-display-family);
