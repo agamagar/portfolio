@@ -1,1 +1,0 @@
-import{j as o}from"./PhoneFrame-QrLyt4aq.js";import{C as t}from"./CartFlow-5G2uoEuh.js";import{c as p}from"./index-Cyq1U-bo.js";import"./index-BL1huRoX.js";import"./schedule-Fi8lDcxy.js";import"./returns-CGNYAVwI.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function u(r){return o.jsx(t,{...r,flow:"swap",first:"C-079",ids:p.swap})}export{u as default};
