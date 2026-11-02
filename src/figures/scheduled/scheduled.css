@@ -1379,9 +1379,9 @@ html.dark .suc__frame--persona img.suc__sphere { opacity: 1; }
 .dio { margin: 0; width: 100%; }
 .dio__stage { position: relative; border-radius: 16px; overflow: visible; }
 .dio__stage > img { display: block; width: 100%; height: auto; border-radius: 16px; }
-/* mvqpcbak (Agam): the diorama sits on a plain ground, white in light and the dark ground in dark, with a drop shadow */
-.dio__stage { background: #fff; box-shadow: 0 18px 40px rgba(20, 8, 40, .18), 0 2px 8px rgba(20, 8, 40, .10); }
-.dark .dio__stage { background: #141218; box-shadow: 0 18px 40px rgba(0, 0, 0, .6), 0 2px 10px rgba(0, 0, 0, .45); }
+/* mvyna659 (2 Nov, "Remove the background from here."): the white / dark plate and its drop shadow
+   (mvqpcbak) are gone; the cut-out diorama sits straight on the page. */
+.dio__stage { background: none; box-shadow: none; }
 .dio__pin {
   position: absolute; translate: -50% -50%; display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.2rem 0.6rem 0.2rem 0.2rem; border: 0; border-radius: 999px; corner-shape: round;
