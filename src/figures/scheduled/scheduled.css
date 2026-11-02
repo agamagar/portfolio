@@ -2370,6 +2370,9 @@ button.cpf__dot:focus-visible { outline: 2px solid var(--fg); outline-offset: 2p
 .article__body .cs-sec.cs-sec--row > h2, .article__body .cs-sec.cs-sec--row > p.article__tldr { grid-column: 1; grid-row: auto; }
 /* the running-flows row (.sdflows) is the same grid; this outranks schedFigmaFlows.css's older flex rule */
 @media (min-width: 701px) { html .article__body .sdflows.sdh { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 230px)); justify-content: center; gap: 1.25rem; overflow: visible; } html .article__body .sdflows.sdh > .pf.sdh__tile { width: 100%; flex: none; } }
+/* 2 Nov: and under 700px, where its flex: 0 0 auto left a phone with no width of its own at 40 to 60px wide
+   (After you book, The prototype, live); the running flows take the carousel's phone width like every other row */
+@media (max-width: 700px) { html .article__body .sdflows.sdh > .pf.sdh__tile { flex: 0 0 min(58vw, 190px); } }
 /* belt and braces: whatever the row's tile width, a phone in a row never exceeds 230px (190px on a phone) */
 .sdh .pf, .sdrow .pf { max-width: 230px; margin-inline: auto; }
 @media (max-width: 700px) { .sdh .pf, .sdrow .pf { max-width: 190px; } }
