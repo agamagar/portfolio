@@ -1,1 +1,0 @@
-import{j as o}from"./PhoneFrame-QrLyt4aq.js";import{C as r}from"./CartFlow-DX5Y98Dz.js";import{c as i}from"./index-74qURRW7.js";import"./index-B5V53C4-.js";import"./schedule-BB3Fh63T.js";import"./returns-D0mSD2iS.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function u(t){return o.jsx(r,{...t,flow:"slots",first:"C-091",ids:i.slots})}export{u as default};
