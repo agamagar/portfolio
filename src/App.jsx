@@ -2349,6 +2349,7 @@ const caseStudies = {
             cueNoPointer: true,
             cueNoBox: true,
             cueClick: true,
+            hold: true, // mvyn9q4s: the loader, then the phone once Figma paints; preloaded at page idle
             alt: "The scheduled order prototype, live from Figma",
             bg: "linear-gradient(112deg, #f2e8ff 8%, #9674db 100%)",
           },
@@ -10252,10 +10253,15 @@ const CASE_NARRATIONS = {
 // [x%, y%] of the screen. One per plate, or two side by side (`embeds`, 26 Oct: the cart entry beside the slot picker).
 // `pe`: { node } for a Figma prototype or { playground, caseId } for a built flow, plus still, cueBox, cueLabel, cue flags, alt, bg,
 // and crop: "top" to show the screen's top instead of its lower half (a screen whose content sits at the top).
+// hold (mvyn9q4s, 2 Nov): only the loader shows until Figma has painted, then the phone comes in; the prototype
+// loads once the page is idle, before the reader gets here (FigmaEmbed hold + eager).
 function PlatePhone({ pe, gradient }) {
+  const [phone, setPhone] = useState(pe.hold ? "wait" : "in");
+  const onState = useCallback((s) => { if (s === "ready" || s === "still" || s === "failed") setPhone("in"); }, []);
   return (
     <LinksBelow>
-    <div className="article__plate-embed article__plate-ground" style={undefined /* a phone sits on the plain page, never on a colour ground */}>
+    <div className="article__plate-embed article__plate-ground" data-phone={pe.hold ? phone : undefined} style={undefined /* a phone sits on the plain page, never on a colour ground */}>
+      {phone === "wait" && <span className="fembed__badge" role="status" aria-label="Loading the prototype"><i /><i /><i /></span>}
       {/* mtmoueoi: the real bezel (the iPhone 17 Pro export used by the
           notification scene) over a screen cutout that holds the prototype */}
       <PhoneFrame interactive={false} enter={false} size="hero" linkSlot={false} className={"article__plate-phone" + (pe.crop === "top" ? " article__plate-phone--top" : "")} overlay={pe.cueBox && !pe.cueNoPointer ? (
@@ -10266,7 +10272,7 @@ function PlatePhone({ pe, gradient }) {
             <b>{pe.cueLabel || "Click here"}</b>
           </span>
         ) : null}>
-          <FigmaEmbed mode="proto" file={pe.file} node={pe.node} start={pe.start} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} />
+          <FigmaEmbed mode="proto" file={pe.file} node={pe.node} start={pe.start} playground={pe.playground} caseId={pe.caseId} title={pe.alt || "Figma prototype"} fallback={pe.still || PROTO_STILL} alt={pe.alt || "The scheduled order prototype"} hold={!!pe.hold} eager={!!pe.hold} onState={pe.hold ? onState : undefined} />
           {/* mtmpd3cb: a dotted rectangle on the target; the pointer sits outside */}
           {pe.cueBox && !pe.cueNoBox && (
             <span

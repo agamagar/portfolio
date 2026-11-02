@@ -31,6 +31,11 @@ import "./figmaEmbed.css";
 //           page). Desktop keeps it live. On by default; false keeps the embed live everywhere. Inside a PhoneFrame the
 //           link goes in the frame's link row under the phone (PhoneLinkSlot), so it covers none of the screen; a bare
 //           embed draws a compact pill in its own top-right corner instead.
+// hold      a blank floor and the loading dots until the live frame has painted, never the fallback still (Agam,
+//           mvyn9q4s, 2 Nov: the still was an older prototype and read as a random one). A phone still keeps the fallback.
+// eager     mounts once the page is idle instead of near the viewport, and stays mounted, so the prototype is loaded
+//           before the reader reaches it (the same pin). One Figma frame; the 2 Nov unmount rule is for the many below.
+// onState   called with "loading" | "ready" | "failed" | "still" | "idle" as that changes (PlatePhone brings its phone in on ready)
 // openLink  the phone's "Open in Figma" link; false where the embed already sits inside a link (the homepage card)
 // playground  a built flow from the design playground (its embedCatalog id, e.g. "flow-returns-cs-chat-return"), in place
 //           of the Figma file (Agam, 26 Oct: "use all the developed flows instead of figma prototype"); caseId opens it on
@@ -77,7 +82,7 @@ function usePhoneStill() {
   return on;
 }
 
-export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children , playground, caseId}) {
+export default function FigmaEmbed({ node, start, mode = "design", file, title, fallback, alt = "", floor = "cover", aspect, badge = true, restart = mode === "proto", phoneStill = true, openLink = true, className = "", children , playground, caseId, hold = false, eager = false, onState}) {
   const root = useRef(null);
   const pg = playground ? getEmbed(playground) : null;
   const still = usePhoneStill() && phoneStill && !pg; // a coded screen runs live at every width
@@ -109,6 +114,12 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   const [run, setRun] = useState(0); // bumped by Restart: a fresh iframe starts the prototype at its first frame
   useEffect(() => {
     const el = root.current;
+    if (eager) { // after the page's own load, at the first idle moment
+      let idle;
+      const go = () => { idle = (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(() => setNear(true), { timeout: 3000 }); };
+      if (document.readyState === "complete") go(); else window.addEventListener("load", go, { once: true });
+      return () => { window.removeEventListener("load", go); if (idle) (window.cancelIdleCallback || clearTimeout)(idle); };
+    }
     if (!el || typeof IntersectionObserver === "undefined") { setNear(true); return undefined; }
     // mount within 600px, unmount past one and a half screens (2 Nov: kept-alive iframes piled up to 48 live
     // playground apps on the page's own thread after one scroll-through, and the page froze at the bottom)
@@ -116,7 +127,7 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
     const off = new IntersectionObserver(([e]) => { if (!e.isIntersecting) setNear(false); }, { rootMargin: "150% 0px" });
     on.observe(el); off.observe(el);
     return () => { on.disconnect(); off.disconnect(); };
-  }, []);
+  }, [eager]);
   useEffect(() => {
     if (!near) { setSt("idle"); return undefined; } // the still shows again while the iframe is away
     setSt("loading");
@@ -125,6 +136,7 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
   }, [near]);
   // Figma fetches the file after its load event (a white page with a blue bar); hold the still over that.
   // Without a client-id the embed sends no paint event, so this is a timed hold.
+  useEffect(() => { onState?.(still ? "still" : st); }, [still, st, onState]);
   const onLoad = () => setTimeout(() => setSt((s) => (s === "failed" ? s : "ready")), pg ? 300 : 2500); // the playground paints at load
   return (
     <div ref={root} className={"fembed " + className} data-st={still ? "still" : st} data-floor={floor} style={aspect ? { aspectRatio: aspect } : undefined}>
@@ -134,10 +146,10 @@ export default function FigmaEmbed({ node, start, mode = "design", file, title, 
             src={embedUrl(pg, { case: caseId, theme: dark ? "dark" : "light", bg: "transparent", motion: typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "reduce" : undefined })}
             style={{ width: pg.size.w, height: vh ? vh + 16 : pg.size.h, transform: `scale(${k}) translate(-16px, -16px)`, visibility: k ? "visible" : "hidden" }} />
         ) : (
-          <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading="lazy" allowFullScreen onLoad={onLoad} />
+          <iframe key={run} className="fembed__frame" src={figmaEmbedSrc({ file, node, start, mode })} title={title} loading={eager ? "eager" : "lazy"} allowFullScreen onLoad={onLoad} />
         )
       )}
-      {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback
+      {children ? <div className="fembed__floor" aria-hidden="true">{children}</div> : fallback && (!hold || still)
         ? <img className="fembed__floor" src={imgSrc(fallback)} alt={alt} loading="lazy" draggable="false" />
         : <span className="fembed__floor fembed__floor--blank" aria-hidden="true" />}
       {canRestart && !slot && (
