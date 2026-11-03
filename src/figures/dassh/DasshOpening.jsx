@@ -3,6 +3,7 @@
 // 1512 frame; photos are Figma exports (the shader sparkle and the progressive
 // edge blur are baked in), text is live.
 import { FrameStage, Box, useFrameFonts } from "../../ui/FrameStage";
+import { DasshRadiate } from "./DasshRadiate";
 import "./dasshOpening.css";
 
 const FONTS = ["Atkinson+Hyperlegible+Next:wght@400;500", "Open+Sans:wght@400"];
@@ -90,6 +91,7 @@ export function DasshProblem() {
     <FrameStage className="dsh dsh--problem" stack>
       <Box className="dsh__photo" x={0} y={0} w={756} h={982}>
         <img src={IMG + "problem-photo.webp"} alt="A recruiter working through notes on a park bench" loading="lazy" />
+        <DasshRadiate mask={IMG + "problem-mask.png"} />
       </Box>
       <Box className="dsh__copy" x={816} y={394} w={600}>
         <p className="dsh__label">Problem Statement</p>

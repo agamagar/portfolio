@@ -35,6 +35,7 @@
   font-size: max(calc(28 * var(--fp)), 1rem); line-height: 1.43; color: var(--dsh-ink);
 }
 .dsh__photo > img { object-fit: contain; }
+.dsh__radiate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
 /* 127: the card centres its two lines */
 .dsh__card {
@@ -70,7 +71,8 @@
   .article__body .dsh__head, .article__body .dsh__sub, .article__body .dsh__line { text-wrap: balance; }
   .dsh--noise .dsh__photo { order: 0; }
   .dsh--problem .dsh__photo { width: 100%; aspect-ratio: 756 / 982; max-height: 70vh; }
-  .dsh--problem .dsh__photo > img { object-fit: cover; object-position: center 40%; }
+  .dsh--problem .dsh__photo > img,
+  .dsh--problem .dsh__photo > .dsh__radiate { object-fit: cover; object-position: center 40%; }
   .dsh--journey .dsh__copy--q { order: 1; }
   .dsh--journey .dsh__moments { order: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 }
