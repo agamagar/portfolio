@@ -186,3 +186,32 @@ html.dark .article__index-glow { opacity: 0.8; }
 /* the rail scrolls, so it clips whatever sticks out: the nav gets room for the capsule's ends, and sits that much further left so the labels don't move */
 .article__index.article__index--spy { left: calc(1.5rem - 14px); width: calc(164px + 28px); padding: 6px 14px; margin: 0; box-sizing: border-box; }
 .article__index.article__index--spy .article__index-slider { left: 4px; width: calc(100% - 8px); }
+
+/* Hide / show the rail (SectionIndex collapsible). Desktop rail only; the phone pill has its own sheet.
+   Only opacity and transform animate; the fixed rail is out of flow, so the reading column never moves. */
+.article__index-toggle { display: none; }
+@media (min-width: 1100px) {
+  .article__index-toggle {
+    display: inline-flex;
+    margin: 0 0 0.25rem -11px; /* the 15px icon's left edge lines up with the labels */
+    border-radius: 100px;
+    pointer-events: auto;
+  }
+  .article__index-toggle:focus-visible { outline: 2px solid #9674db; outline-offset: -2px; }
+  .article__index--spy > ul { transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s; }
+  .article__index--spy.is-folded { pointer-events: none; overflow: visible; }
+  .article__index--spy.is-folded > ul {
+    opacity: 0;
+    transform: translateX(-8px);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+  /* the pill keeps its own position transform, so it only fades */
+  .article__index--spy.is-folded[data-pill="on"] .article__index-slider { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article__index--spy > ul,
+  .article__index--spy.is-folded > ul,
+  .article__index--spy.is-folded .article__index-slider { transition: none; }
+}

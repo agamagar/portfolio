@@ -10735,6 +10735,7 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
         <SectionIndex
           entries={indexEntries}
           active={activeSection}
+          collapsible
           onPick={(i) => scrollToId(`sec-${i}`)}
           top={
             <div className="article__index-top">

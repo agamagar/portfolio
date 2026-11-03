@@ -9,7 +9,26 @@
 // Pages with a custom rail body (the PRD's collapsible groups) use the pieces:
 //   useIndexPill(ref, deps), <IndexSlider />, <IndexSheet />.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { SidebarCollapse, SidebarExpand } from "iconoir-react";
 import "./sectionIndex.css";
+
+// Hide / show the desktop rail (opt-in: <SectionIndex collapsible />). Hidden by default; a stored choice wins
+// after the first toggle. Storage can throw (private window, blocked data), so every access is guarded.
+const HIDE_KEY = "section-index-hidden";
+function readHidden() {
+  try {
+    const v = window.localStorage.getItem(HIDE_KEY);
+    return v === null ? true : v === "1";
+  } catch { return true; }
+}
+export function useIndexHidden() {
+  const [hidden, setHidden] = useState(readHidden);
+  const set = (next) => {
+    setHidden(next);
+    try { window.localStorage.setItem(HIDE_KEY, next ? "1" : "0"); } catch { /* ignore */ }
+  };
+  return [hidden, set];
+}
 
 const reduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -117,16 +136,34 @@ export default function SectionIndex({
   top = null, // a block above the list (Back link, tabs)
   className = "",
   sheet = true,
+  collapsible = false,
 }) {
   const ref = useRef(null);
+  const [hidden, setHidden] = useIndexHidden();
+  const folded = collapsible && hidden;
   const pick = onPick || ((k) => scrollToId(String(k)));
   useIndexPill(ref, [active, entries]);
   return (
     <>
-      <nav className={`article__index article__index--spy ${className}`.trim()} aria-label={label} ref={ref}>
+      <nav className={`article__index article__index--spy${folded ? " is-folded" : ""} ${className}`.trim()} aria-label={label} ref={ref}>
         <IndexSlider />
         {top}
-        <ul>
+        {collapsible && (
+          <button
+            type="button"
+            className="theme-toggle article__index-toggle"
+            aria-expanded={!hidden}
+            aria-controls="article-index-list"
+            aria-label={hidden ? "Show index" : "Hide index"}
+            data-tip
+            onClick={() => setHidden(!hidden)}
+          >
+            {hidden
+              ? <SidebarExpand width={15} height={15} strokeWidth={2} aria-hidden />
+              : <SidebarCollapse width={15} height={15} strokeWidth={2} aria-hidden />}
+          </button>
+        )}
+        <ul id="article-index-list" aria-hidden={folded || undefined}>
           {groupEntries(entries).map((g, gi) => {
             const link = (e) => (
               <li key={e.key}>

@@ -43,6 +43,7 @@
      DS already does for its tone-* values. */
   --green: #027a45;
   --max: 816px; /* global content width, +20% (was 680px) */
+  --page-pad-x: 1.5rem; /* side padding of every .page (home, case studies); 1.25rem on phones */
 
   /* ---- Google Material 3 motion tokens, the site's ONLY motion system ----
      Spatial easings (movement/size) overshoot; effects easings (opacity/color)
@@ -270,7 +271,7 @@ a {
 .page {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 6rem 1.5rem 3rem;
+  padding: 6rem var(--page-pad-x) 3rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1750,7 +1751,8 @@ a.work__item:focus-visible .work__arrow {
    get the nicer layout below (reading column centered in the page). */
 .article__layout {
   display: grid;
-  grid-template-columns: minmax(0, var(--max));
+  /* the reading column is the home page's content width: --max less the same side padding */
+  grid-template-columns: minmax(0, calc(var(--max) - 2 * var(--page-pad-x)));
   justify-content: center;
   align-items: start;
 }
@@ -5022,7 +5024,8 @@ main .work:nth-of-type(3) .work__item { animation-delay: 0.54s; }
 /* ---------- responsive ---------- */
 @media (max-width: 600px) {
   .page {
-    padding: 3.5rem 1.25rem 2.5rem;
+    --page-pad-x: 1.25rem;
+    padding: 3.5rem var(--page-pad-x) 2.5rem;
   }
   /* align the toggle's right edge with the content (mobile page padding) */
   .page-control {
