@@ -1,1 +1,0 @@
-import{j as r}from"./PhoneFrame-DmYYvOtg.js";import{R as o}from"./ResultsApp-DUoyolL1.js";import"./index-BMvFFC4x.js";import"./schedule-Fi8lDcxy.js";import"./returns-CGNYAVwI.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function u(t){return r.jsx(o,{flowId:"aw-verdict",defaultCase:"AW-505",...t})}export{u as default};
