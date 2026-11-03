@@ -7,7 +7,6 @@ import { RADIATE_IMAGES } from "./radiateImages";
 import "./dasshOpening.css";
 import "./dotsPlayground.css";
 
-const W = 756, H = 982;
 const clone = (v) => JSON.parse(JSON.stringify(v));
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 
@@ -58,6 +57,7 @@ function nearestOnEdge(p, a, b) {   // in px space, returns { t, d }
 export default function DotsPlayground() {
   const [imageId, setImageId] = useState(RADIATE_IMAGES[0].id);
   const image = RADIATE_IMAGES.find((i) => i.id === imageId);
+  const { W, H } = image.view;
   const [polygons, setPolygons] = useState([]);
   const [feather, setFeather] = useState(0);
   const [showImage, setShowImage] = useState(true);
@@ -147,9 +147,9 @@ export default function DotsPlayground() {
         <span className="dots__status" role="status">{status} · {polygons.length} shape{polygons.length === 1 ? "" : "s"}, {total} points</span>
       </header>
       <p className="dots__help">Drag a point to move it. Click an edge to add a point. Alt-click or right-click a point to delete it. Drag inside a shape to move it all.</p>
-      <div className="dots__stage" style={{ aspectRatio: `${W} / ${H}` }}>
+      <div className="dots__stage" style={{ aspectRatio: `${W} / ${H}`, width: `min(100%, ${W}px, calc((100vh - 120px) * ${W} / ${H}))` }}>
         {showImage && <img src={image.photo} alt="" draggable={false} />}
-        <DasshRadiate mask={image.mask} boundary={{ polygons, feather }} />
+        <DasshRadiate mask={image.mask} boundary={{ polygons, feather }} view={image.view} />
         <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onContextMenu={(e) => e.preventDefault()}>
           {polygons.map((poly, si) => (
             <g key={si}>

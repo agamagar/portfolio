@@ -10,6 +10,7 @@ import BOUNDARIES from "./radiate-boundaries.json";
 // a 756 x 982 box with the photo inset 60 and 60 px corners. The mask grid is about 3 canvas px per field px.
 const FS = 3;
 export const PROBLEM_VIEW = { W: 756, H: 982, frame: { x: 60, y: 60, w: 636, h: 862, r: 60 } };
+export const NOISE_VIEW = { W: 840, H: 400, frame: { x: 0, y: 0, w: 840, h: 400, r: 90 } };
 const RINGS = 9, FIRST = 1.5, GAP = 5, PITCH = 6;
 const BISCUIT = "252,230,192", VIOLET = "231,218,255";   // --dassh-biscuit-500, --dassh-violet-100
 const TAU = Math.PI * 2;

@@ -7,7 +7,7 @@
 .dots button:disabled { opacity: 0.4; cursor: default; }
 .dots__save { background: var(--fg) !important; color: var(--bg) !important; }
 .dots__status, .dots__help { color: var(--muted); font-size: 12px; margin: 0; }
-.dots__stage { position: relative; width: min(100%, 756px, calc((100vh - 120px) * 756 / 982)); margin: 0.5rem auto 0; background: var(--hover); user-select: none; touch-action: none; }
+.dots__stage { position: relative; margin: 0.5rem auto 0; background: var(--hover); user-select: none; touch-action: none; }
 .dots__stage > img, .dots__stage > .dsh__radiate, .dots__stage > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .dots__stage > img { object-fit: contain; }
 .dots__stage > svg { overflow: visible; }
