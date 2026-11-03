@@ -6,9 +6,10 @@
 import { useEffect, useRef } from "react";
 import BOUNDARIES from "./radiate-boundaries.json";
 
-const W = 756, H = 982;          // canvas px, the photo's box in Figma px
-const FRAME = { x: 60, y: 60, w: 636, h: 862, r: 60 };   // the visible photo inside the 756 x 982 box
-const FS = 3;                    // canvas px per field px (mask is 252 x 328)
+// A view is the canvas (the photo's box in Figma px) and the visible photo inside it. Default: the Problem photo,
+// a 756 x 982 box with the photo inset 60 and 60 px corners. The mask grid is about 3 canvas px per field px.
+const FS = 3;
+export const PROBLEM_VIEW = { W: 756, H: 982, frame: { x: 60, y: 60, w: 636, h: 862, r: 60 } };
 const RINGS = 9, FIRST = 1.5, GAP = 5, PITCH = 6;
 const BISCUIT = "252,230,192", VIOLET = "231,218,255";   // --dassh-biscuit-500, --dassh-violet-100
 const TAU = Math.PI * 2;
@@ -83,8 +84,8 @@ export function contours(D, w, h, level) {
 }
 
 // A boundary entry ({ polygons: [[[x, y], ...]], feather }, normalised 0 to 1) drawn into the mask grid; feather is a blur in mask px.
-function rasterise({ polygons = [], feather = 0 }) {
-  const w = W / FS, h = H / FS, m = document.createElement("canvas");
+function rasterise({ polygons = [], feather = 0 }, { W, H }) {
+  const w = Math.round(W / FS), h = Math.round(H / FS), m = document.createElement("canvas");
   m.width = w; m.height = h;
   const mg = m.getContext("2d", { willReadFrequently: true });
   mg.fillStyle = "#000"; mg.fillRect(0, 0, w, h);
@@ -106,7 +107,7 @@ function sample(D, w, h, x, y) {
 }
 
 // Dots spaced evenly along each ring, each with its outward normal, ring index and a seed.
-function buildDots(D, w, h) {
+function buildDots(D, w, h, { W, H }) {
   const dots = [];
   for (let r = 0; r < RINGS; r++) {
     const level = FIRST + r * GAP;
@@ -124,7 +125,7 @@ function buildDots(D, w, h) {
           const u = (target - acc) / seg, x = x0 + (x1 - x0) * u, y = y0 + (y1 - y0) * u;
           let nx = sample(D, w, h, x + 1, y) - sample(D, w, h, x - 1, y), ny = sample(D, w, h, x, y + 1) - sample(D, w, h, x, y - 1);
           const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
-          const X = x * FS, Y = y * FS;
+          const X = x * W / w, Y = y * H / h;
           if (X > -20 && X < W + 20 && Y > -20 && Y < H + 20) {
             const s = dots.length * 5;
             dots.push({ x: X, y: Y, nx, ny, ring: r, theta: Math.atan2(Y - H * 0.55, X - W * 0.7), s: [hash(s), hash(s + 1), hash(s + 2), hash(s + 3)] });
@@ -139,7 +140,7 @@ function buildDots(D, w, h) {
 }
 
 // One frame at time t (seconds): a slow wave travels outward through the rings, each dot wanders a little.
-function paint(g, dots, t) {
+function paint(g, dots, t, { W, H }) {
   g.clearRect(0, 0, W, H);
   for (const d of dots) {
     const z = 1 - d.ring / RINGS, fall = Math.pow(1 - d.ring / (RINGS + 1), 0.8);
@@ -158,7 +159,8 @@ function paint(g, dots, t) {
 }
 
 // boundaryId picks a saved boundary from radiate-boundaries.json and wins over the PNG mask; boundary is a live override (the /dev/dots playground).
-export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__radiate" }) {
+export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__radiate", view = PROBLEM_VIEW }) {
+  const { W, H, frame: FRAME } = view;
   const ref = useRef(null);
   const shape = boundary ?? BOUNDARIES[boundaryId];
   const shapeKey = shape ? JSON.stringify(shape) : "";
@@ -166,7 +168,7 @@ export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__rad
     const canvas = ref.current;
     if (!canvas) return undefined;
     const g = canvas.getContext("2d");
-    // Dots are clipped to the photo's own frame: the webp is inset 60 Figma px with 60 px corners.
+    // Dots are clipped to the photo's own frame, with its rounded corners.
     g.beginPath(); g.roundRect(FRAME.x, FRAME.y, FRAME.w, FRAME.h, FRAME.r); g.clip();
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     let dots = null, raf = 0, onScreen = false, t0 = 0, dead = false;
@@ -175,12 +177,12 @@ export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__rad
       raf = 0;
       if (!dots || !onScreen || document.hidden) return;
       if (!t0) t0 = now;
-      paint(g, dots, (now - t0) / 1000);
+      paint(g, dots, (now - t0) / 1000, view);
       raf = requestAnimationFrame(frame);
     };
     const sync = () => {
       if (!dots) return;
-      if (still.matches) { cancelAnimationFrame(raf); raf = 0; paint(g, dots, 1.5); return; }
+      if (still.matches) { cancelAnimationFrame(raf); raf = 0; paint(g, dots, 1.5, view); return; }
       if (onScreen && !document.hidden && !raf) raf = requestAnimationFrame(frame);
     };
 
@@ -191,8 +193,8 @@ export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__rad
 
     const img = new Image();
     if (shapeKey) {
-      const w = W / FS, h = H / FS;
-      dots = buildDots(distanceField(rasterise(JSON.parse(shapeKey)), w, h), w, h);
+      const w = Math.round(W / FS), h = Math.round(H / FS);
+      dots = buildDots(distanceField(rasterise(JSON.parse(shapeKey), view), w, h), w, h, view);
       sync();
     } else img.onload = () => {
       if (dead) return;
@@ -203,7 +205,7 @@ export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__rad
       const px = mg.getImageData(0, 0, m.width, m.height).data;
       const inside = new Uint8Array(m.width * m.height);
       for (let i = 0; i < inside.length; i++) inside[i] = px[i * 4] > 128 ? 1 : 0;
-      dots = buildDots(distanceField(inside, m.width, m.height), m.width, m.height);
+      dots = buildDots(distanceField(inside, m.width, m.height), m.width, m.height, view);
       sync();
     };
     if (!shapeKey) img.src = mask;
@@ -212,7 +214,7 @@ export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__rad
       dead = true; cancelAnimationFrame(raf);
       io.disconnect(); document.removeEventListener("visibilitychange", sync); still.removeEventListener("change", sync);
     };
-  }, [mask, shapeKey]);
+  }, [mask, shapeKey, W, H, FRAME.x, FRAME.y, FRAME.w, FRAME.h, FRAME.r]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <canvas ref={ref} className={className} width={W} height={H} aria-hidden="true" />;
 }

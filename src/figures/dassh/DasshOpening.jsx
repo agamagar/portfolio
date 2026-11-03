@@ -21,6 +21,9 @@ export function DasshLogoHero() {
   );
 }
 
+// the whole 840 x 400 photo is the frame; its squircle corners are about 90 px
+const NOISE_VIEW = { W: 840, H: 400, frame: { x: 0, y: 0, w: 840, h: 400, r: 90 } };
+
 // 122: the noise headline over the meeting room
 export function DasshNoise() {
   useFrameFonts(FONTS);
@@ -29,6 +32,7 @@ export function DasshNoise() {
       <Box as="p" className="dsh__head" x={406} y={129} w={700} h={124}>Hiring is mostly noise,<br />Dassh digs right info for you</Box>
       <Box className="dsh__photo" x={336} y={313} w={840} h={400}>
         <img src={IMG + "noise-photo.webp"} alt="A recruiting team around a meeting table, reviewing papers" loading="lazy" />
+        <DasshRadiate mask={IMG + "noise-mask.png"} view={NOISE_VIEW} />
       </Box>
       <Box as="p" className="dsh__sub" x={450} y={773} w={612} h={80}>A recruiter’s day fills with CVs, calls, messages, scheduling and status chasing</Box>
     </FrameStage>
