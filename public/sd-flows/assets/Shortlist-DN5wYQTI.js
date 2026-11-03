@@ -1,1 +1,0 @@
-import{j as o}from"./PhoneFrame-DmYYvOtg.js";import{R as r}from"./ResultsApp-C3qbvkO7.js";import"./index-CJRyBIQ-.js";import"./schedule-Fi8lDcxy.js";import"./returns-CGNYAVwI.js";import"./away-gGb7CSC4.js";import"./preload-helper-CmsKOCeN.js";function l(t){return o.jsx(r,{flowId:"aw-shortlist",defaultCase:"AW-397",...t})}export{l as default};
