@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import inspectOverrides from "./tools/inspect-overrides-plugin.mjs";
 import scrollHover from "./tools/postcss-scroll-hover.mjs";
 import { fileURLToPath, URL } from "node:url";
-import { realpathSync, readFileSync } from "node:fs";
+import { realpathSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 // Public build (VITE_SITE unset or "public"): mark the lazy() component declarations pure, so a
@@ -43,10 +43,36 @@ const sanitizeRaw = () => ({
   },
 });
 
+// Dev only (apply: "serve", so it never reaches a build): the /dev/dots playground POSTs { id, entry } here and the
+// entry replaces that image's boundary in src/figures/dassh/radiate-boundaries.json (entry null removes it).
+const radiateBoundaries = () => ({
+  name: "radiate-boundaries",
+  apply: "serve",
+  configureServer(server) {
+    const file = fileURLToPath(new URL("./src/figures/dassh/radiate-boundaries.json", import.meta.url));
+    server.middlewares.use("/__dev/radiate-boundaries", (req, res) => {
+      if (req.method !== "POST") { res.statusCode = 405; res.end(); return; }
+      let body = "";
+      req.on("data", (c) => { body += c; });
+      req.on("end", () => {
+        try {
+          const { id, entry } = JSON.parse(body);
+          if (typeof id !== "string" || !/^[\w-]+$/.test(id)) throw new Error("bad id");
+          const all = JSON.parse(readFileSync(file, "utf8"));
+          if (entry) all[id] = entry; else delete all[id];
+          writeFileSync(file, JSON.stringify(all, null, 2) + "\n");
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) { res.statusCode = 400; res.end(String(e.message || e)); }
+      });
+    });
+  },
+});
+
 export default defineConfig(({ command }) => ({
   // one literal per build, so the bundler can fold PRIVATE_SITE (src/lib/site.js): unset = private on dev, public on build
   define: { "import.meta.env.VITE_SITE": JSON.stringify(process.env.VITE_SITE || (command === "serve" ? "private" : "public")) },
-  plugins: [pureLazy(), sanitizeRaw(), react(), tailwindcss(), inspectOverrides()],
+  plugins: [pureLazy(), sanitizeRaw(), react(), tailwindcss(), inspectOverrides(), radiateBoundaries()],
   css: { postcss: { plugins: [scrollHover()] } },
   // the synced design-playground bundle (public/sd-playground) is prebuilt: keep the dependency scan out of it
   optimizeDeps: { entries: ["**/*.html", "!public/sd-playground/**"] },

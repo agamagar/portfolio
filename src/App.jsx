@@ -28,6 +28,7 @@ function lazyFig(load) {
 import MorphFace from "./MorphFace";
 import TexturedBackground from "./TexturedBackground";
 import "./figures/ds/ds.css"; // kept eager and first: its .ds-root rules must sit before the figure css that overrides them (as when Primitives was static)
+const DotsPlayground = import.meta.env.DEV ? lazyFig(() => import("./figures/dassh/DotsPlayground")) : null; // /dev/dots, dev server only
 const AgentWizardFigure = lazyFig(() => import("./figures/AgentWizard"));
 const AgentWizardCompare = lazyFig(() => import("./figures/agentWizard/Compare"));
 const AgentWizardFFF = lazyFig(() => import("./figures/agentWizard/AgentWizardFFF"));
@@ -11848,6 +11849,7 @@ export default function App() {
   const isPublicRoute = rawPath === "/" || rawPath === "/portfolio" || rawPath === "/face-maker" || (rawPath.startsWith("/work/") && rawPath !== "/work/resume");
   const path = PUBLIC_ONLY && !isPublicRoute ? "/" : rawPath;
   const isLab = PRIVATE_SITE && path === "/lab";
+  const isDotsDev = !!DotsPlayground && path === "/dev/dots"; // unlisted, dev server only
   const isFaceLab = !!FaceLabPage && path === "/face-lab"; // unlisted dev/private route
   const isSystem = PRIVATE_SITE && path === "/system"; // unlisted, like /lab: not in any nav
   // The cross-sell decision tree, standalone and edge to edge (unlisted, like
@@ -12067,7 +12069,7 @@ export default function App() {
   // PRD / native-doc pages (cs.doc set) have their own Read/Listen controls, so the
   // top-level Present ("play") button does not apply — hide it there.
   const isNativeDoc = !!(slug && caseStudies[slug]?.doc);
-  const variant = isCrossSellTree || isLab || isSystem || isFaceLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isFaceMaker || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
+  const variant = isCrossSellTree || isLab || isSystem || isDotsDev || isFaceLab || isMockups || isZeptoIcons || isBrickLab || isShaders || isSky || isThreeLines || isMotionCheck || isMascot || isFaces || isFaceMaker || isStella || isDj || isWindow || isSdAvail || isHello || isHello0 || isHello3 || isSocials || isCarnegie || isPepoHouse || isClaudeFiles || isWriting || isNativeDoc || slug === "resume" ? "none" : slug ? "play" : "toggle";
   const accent = slug && PRIVATE_SITE ? (caseStudies[slug] || caseStudies.sample).accent : undefined;
 
   // THE NAV LIFTS OUT ON SCROLL, one item after another (20 Sep 2026: "we built
@@ -12203,6 +12205,8 @@ export default function App() {
         <Hello onNavigate={navigate} detail="card" />
       ) : isHello3 ? (
         <Guard name="hello3-page" fallback={<StaticFallback />}><Hello3 onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} sound={sound} onToggleSound={toggleSound} /></Guard>
+      ) : isDotsDev ? (
+        <Guard name="dots-dev"><DotsPlayground /></Guard>
       ) : isFaceLab ? (
         <Guard name="face-lab"><FaceLabPage onBack={() => navigate("/")} /></Guard>
       ) : isSystem && SystemPage ? (

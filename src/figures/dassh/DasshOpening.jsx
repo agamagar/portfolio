@@ -94,7 +94,7 @@ export function DasshProblem() {
     <FrameStage className="dsh dsh--problem" stack>
       <Box className="dsh__photo" x={0} y={0} w={756} h={982}>
         <img src={IMG + "problem-photo.webp"} alt="A recruiter working through notes on a park bench" loading="lazy" />
-        <DasshRadiate mask={IMG + "problem-mask.png"} />
+        <DasshRadiate mask={IMG + "problem-mask.png"} boundaryId="problem" />
       </Box>
       <Box className="dsh__copy" x={816} y={394} w={600}>
         <p className="dsh__label">Problem Statement</p>

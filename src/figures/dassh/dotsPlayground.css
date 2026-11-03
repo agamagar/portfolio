@@ -1,0 +1,17 @@
+/* /dev/dots: dev-only boundary playground. Colours come from the site tokens. */
+.dots { min-height: 100vh; padding: 1rem var(--page-pad-x); background: var(--bg); color: var(--fg); font: 14px/1.4 var(--font-sans, system-ui, sans-serif); }
+.dots__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; position: sticky; top: 0; z-index: 2; padding: 0.5rem 0; background: var(--bg); }
+.dots__field { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); }
+.dots__field--row { flex-direction: row; align-items: center; gap: 6px; color: var(--fg); }
+.dots button, .dots select { font: inherit; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--hover); color: var(--fg); cursor: pointer; }
+.dots button:disabled { opacity: 0.4; cursor: default; }
+.dots__save { background: var(--fg) !important; color: var(--bg) !important; }
+.dots__status, .dots__help { color: var(--muted); font-size: 12px; margin: 0; }
+.dots__stage { position: relative; width: min(100%, 756px, calc((100vh - 120px) * 756 / 982)); margin: 0.5rem auto 0; background: var(--hover); user-select: none; touch-action: none; }
+.dots__stage > img, .dots__stage > .dsh__radiate, .dots__stage > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dots__stage > img { object-fit: contain; }
+.dots__stage > svg { overflow: visible; }
+.dots__shape { fill: rgba(255, 255, 255, 0.08); stroke: var(--link); stroke-width: 2; cursor: move; }
+.dots__edge { stroke: transparent; stroke-width: 14; cursor: copy; }
+.dots__pt { fill: var(--bg); stroke: var(--link); stroke-width: 2.5; cursor: grab; }
+.dots__tag { fill: var(--link); font-size: 14px; cursor: pointer; }

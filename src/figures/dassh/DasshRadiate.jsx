@@ -4,6 +4,7 @@
 // if the mask fails to load, nothing is drawn. It pauses offscreen and in a hidden tab, and under
 // prefers-reduced-motion it draws one still frame.
 import { useEffect, useRef } from "react";
+import BOUNDARIES from "./radiate-boundaries.json";
 
 const W = 756, H = 982;          // canvas px, the photo's box in Figma px
 const FRAME = { x: 60, y: 60, w: 636, h: 862, r: 60 };   // the visible photo inside the 756 x 982 box
@@ -40,7 +41,7 @@ function distanceField(inside, w, h) {
 }
 
 // Marching squares at one level, joined into polylines. Edge ids: 2i is the top edge of cell i, 2i+1 its left edge.
-function contours(D, w, h, level) {
+export function contours(D, w, h, level) {
   const adj = new Map();
   const link = (a, b) => { (adj.get(a) ?? adj.set(a, []).get(a)).push(b); (adj.get(b) ?? adj.set(b, []).get(b)).push(a); };
   for (let y = 0; y < h - 1; y++) for (let x = 0; x < w - 1; x++) {
@@ -79,6 +80,23 @@ function contours(D, w, h, level) {
   for (const [id, nb] of adj) if (nb.length === 1 && !seen.has(id)) walk(id, false);
   for (const id of adj.keys()) if (!seen.has(id)) walk(id, true);
   return lines;
+}
+
+// A boundary entry ({ polygons: [[[x, y], ...]], feather }, normalised 0 to 1) drawn into the mask grid; feather is a blur in mask px.
+function rasterise({ polygons = [], feather = 0 }) {
+  const w = W / FS, h = H / FS, m = document.createElement("canvas");
+  m.width = w; m.height = h;
+  const mg = m.getContext("2d", { willReadFrequently: true });
+  mg.fillStyle = "#000"; mg.fillRect(0, 0, w, h);
+  if (feather > 0) mg.filter = `blur(${feather}px)`;
+  mg.fillStyle = "#fff";
+  for (const poly of polygons) {
+    if (poly.length < 3) continue;
+    mg.beginPath(); poly.forEach(([x, y], i) => (i ? mg.lineTo(x * w, y * h) : mg.moveTo(x * w, y * h))); mg.closePath(); mg.fill();
+  }
+  const px = mg.getImageData(0, 0, w, h).data, inside = new Uint8Array(w * h);
+  for (let i = 0; i < inside.length; i++) inside[i] = px[i * 4] > 128 ? 1 : 0;
+  return inside;
 }
 
 function sample(D, w, h, x, y) {
@@ -139,8 +157,11 @@ function paint(g, dots, t) {
   }
 }
 
-export function DasshRadiate({ mask, className = "dsh__radiate" }) {
+// boundaryId picks a saved boundary from radiate-boundaries.json and wins over the PNG mask; boundary is a live override (the /dev/dots playground).
+export function DasshRadiate({ mask, boundaryId, boundary, className = "dsh__radiate" }) {
   const ref = useRef(null);
+  const shape = boundary ?? BOUNDARIES[boundaryId];
+  const shapeKey = shape ? JSON.stringify(shape) : "";
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return undefined;
@@ -169,7 +190,11 @@ export function DasshRadiate({ mask, className = "dsh__radiate" }) {
     still.addEventListener("change", sync);
 
     const img = new Image();
-    img.onload = () => {
+    if (shapeKey) {
+      const w = W / FS, h = H / FS;
+      dots = buildDots(distanceField(rasterise(JSON.parse(shapeKey)), w, h), w, h);
+      sync();
+    } else img.onload = () => {
       if (dead) return;
       const m = document.createElement("canvas");
       m.width = img.width; m.height = img.height;
@@ -181,13 +206,13 @@ export function DasshRadiate({ mask, className = "dsh__radiate" }) {
       dots = buildDots(distanceField(inside, m.width, m.height), m.width, m.height);
       sync();
     };
-    img.src = mask;
+    if (!shapeKey) img.src = mask;
 
     return () => {
       dead = true; cancelAnimationFrame(raf);
       io.disconnect(); document.removeEventListener("visibilitychange", sync); still.removeEventListener("change", sync);
     };
-  }, [mask]);
+  }, [mask, shapeKey]);
 
   return <canvas ref={ref} className={className} width={W} height={H} aria-hidden="true" />;
 }
