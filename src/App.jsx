@@ -2234,6 +2234,7 @@ const caseStudies = {
     // constraint and outcome in the first screen. Every fact is the page's own (My role, the cart construct, Impact).
     headShow: true,
     headTitleHide: true, // 2 Nov (Agam): the facts card drops the "Bringing Schedule Delivery..." title line; the sr-only h1 keeps it for assistive tech
+    headFactsHide: true, // 3 Nov (Agam): the Role / Organisation / Timeline / Outcome row is hidden; headFacts stays below so it can come back
     headFacts: [
       { label: "Role", value: "Lead designer" },
       { label: "Organisation", value: "Zepto" },
@@ -10846,14 +10847,14 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
               {!cs.headTitleHide && <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>}
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
-            <dl className="article__facts">
+            {!cs.headFactsHide && <dl className="article__facts">
               {cs.headFacts.map((f) => (
                 <div className="article__fact" key={f.label}>
                   <dt className="article__fact-label">{f.label}</dt>
                   <dd className="article__fact-value">{f.value}</dd>
                 </div>
               ))}
-            </dl>
+            </dl>}
           </header>
           ) : (
           <header className="article__head">
@@ -10874,14 +10875,14 @@ function CaseStudy({ slug, presenting, onExitPresent, theme, toggleTheme }) {
               {!cs.headTitleHide && <p className="article__title article__title--display" aria-hidden={cs.headShow || undefined}>{withBreaks(cs.title)}</p>}
               <p className="article__lead article__lead--head">{cs.lead}</p>
             </div>
-            <dl className="article__facts">
+            {!cs.headFactsHide && <dl className="article__facts">
               {cs.headFacts.map((f) => (
                 <div className="article__fact" key={f.label}>
                   <dt className="article__fact-label">{f.label}</dt>
                   <dd className="article__fact-value">{f.value}</dd>
                 </div>
               ))}
-            </dl>
+            </dl>}
           </header>
           ) : (
           <header className="article__head">

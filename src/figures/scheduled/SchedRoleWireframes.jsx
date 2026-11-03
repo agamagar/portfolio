@@ -362,6 +362,7 @@ function SpeedStrip() {
 // Critique 3.6 (25 Oct, docs critiques-2026-10-25.md): orders and stores no longer share one plot on two scales.
 // One line, scheduled orders a month; the store milestones (pilot, every store) and the peak are annotations on it.
 const SHOW_CHART_CAP = false; // mvm8urab ("remove this"): the "Pilot to every store in N days..." line over the growth chart; true brings it back
+const SHOW_GROWTH_TOGGLE = false; // 3 Nov (Agam): "keep the bars and stores graph, make that the default, remove the toggle, make the graph much bigger"; true brings the toggle back
 const GROWTH_VIEWS = [["area", "Area"], ["line", "Line"], ["bars", "Bars and stores"], ["milestones", "Milestones"]];
 function GrowthChart() {
   const rows = MONTHLY.filter((r) => !r.partial || r.m === "2025-10");
@@ -370,7 +371,7 @@ function GrowthChart() {
   const peak = rows.reduce((a, b) => (b.sd > a.sd ? b : a));
   const at = (d) => rows.findIndex((r) => r.m === d.slice(0, 7));
   const n = (v) => v.toLocaleString("en-IN");
-  const [view, setView] = useState("area");
+  const [view, setView] = useState("bars"); // 3 Nov (Agam): Bars and stores is the default (was Area)
   const notes = [
     { i: at(pilot.d), label: `Pilot, ${n(pilot.stores)} stores`, anchor: "start" },
     { i: at(full.d), label: `Rollout complete (${n(full.stores)})`, anchor: "start", below: true }, // Q20 (accepted 26 Oct): "Rollout complete"; it read "All stores live" after 3.6 (25 Oct)
@@ -381,13 +382,13 @@ function GrowthChart() {
       {/* mvyoj6gz ("add a toggle, more graph types, design variants"): one toggle over the same MONTHLY
           and ROLLOUT data. Area stays the default; Line, Bars with the store count on its own scale, and
           the milestone list (SpeedStrip) are the other reads. No new numbers */}
-      <div className="rwf-tabs rwf__growth-toggle" role="group" aria-label="Chart view">
+      {SHOW_GROWTH_TOGGLE && <div className="rwf-tabs rwf__growth-toggle" role="group" aria-label="Chart view">
         {GROWTH_VIEWS.map(([k, l]) => (
           <button key={k} type="button" className="rwf-tabs__tab" aria-pressed={view === k} aria-selected={view === k} onClick={() => { if (view !== k) feedback("select"); setView(k); }}>{l}</button>
         ))}
-      </div>
+      </div>}
       {view === "milestones" && <SpeedStrip />}
-      {view === "bars" && <Bars data={rows} valueKey="sd" label="Scheduled orders a month" yFormat={fmtK} height={230} legend
+      {view === "bars" && <Bars data={rows} valueKey="sd" label="Scheduled orders a month" yFormat={fmtK} height={420} legend
         overlay={{ key: "stores", label: "Stores live", format: n }}
         ariaLabel={`Scheduled orders a month as bars, from ${n(rows[0].sd)} in October 2025 to a peak of ${n(peak.sd)}, with stores live on a second scale up to ${n(Math.max(...rows.map((r) => r.stores)))}`} />}
       {(view === "area" || view === "line") && <>
