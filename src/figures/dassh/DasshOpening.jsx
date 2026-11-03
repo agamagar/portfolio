@@ -129,7 +129,7 @@ export function DasshLaptop() {
     <FrameStage className="dsh dsh--laptop" h={1000} stack>
       <Box className="dsh__device" x={156} y={90} w={1200}>
         <LaptopFrame>
-          <DasshLiveScreen persona="riya" still={IMG + "recruiter-laptop.webp"} alt="The Dassh Recruiter page on a laptop" />
+          <DasshLiveScreen persona="riya" w={1440} h={900} still={IMG + "recruiter-laptop.webp"} alt="The Dassh Recruiter chat on a laptop" />
         </LaptopFrame>
       </Box>
     </FrameStage>
@@ -141,9 +141,9 @@ export function DasshPhones() {
   return (
     <FrameStage className="dsh dsh--phones" h={1100} stack>
       <Box className="dsh__devices" x={0} y={90} w={1512}>
-        {[["nikhil", "hm-phone", "The Dassh Hiring manager page on a phone"], ["kavya", "candidate-phone", "The Dassh Candidate page on a phone"]].map(([persona, still, alt]) => (
-          <PhoneFrame key={persona} className="dsh__phone" size="hero" interactive={false} linkSlot={false}>
-            <DasshLiveScreen persona={persona} mobile still={IMG + still + ".webp"} alt={alt} />
+        {[["nikhil", "hm-phone", "The Dassh Hiring manager chat on a phone"], ["kavya", "candidate-phone", "The Dassh Candidate chat on a phone"]].map(([persona, still, alt]) => (
+          <PhoneFrame key={persona} className="dsh__phone" size="hero" interactive={false} linkSlot={false} shadow="none">
+            <DasshLiveScreen persona={persona} w={390} h={844} still={IMG + still + ".webp"} alt={alt} />
           </PhoneFrame>
         ))}
       </Box>

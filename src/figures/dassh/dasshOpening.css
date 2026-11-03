@@ -79,9 +79,14 @@
 
 /* the Recruiter laptop and the two phone pages */
 .dsh__devices { display: flex; justify-content: center; gap: calc(120 * var(--fp)); align-items: flex-start; }
-.dsh__devices .dsh__phone { --pf-w: calc(380 * var(--fp)); }
+.dsh__devices .dsh__phone { --pf-w: calc(430 * var(--fp)); }
 @media (max-width: 700px) {
   .dsh--laptop .dsh__device { width: 100%; }
   .dsh__devices { flex-direction: column; align-items: center; gap: 1.5rem; }
-  .dsh__devices .dsh__phone { --pf-w: min(300px, 80vw); }
+  .dsh__devices .dsh__phone { --pf-w: min(340px, 86vw); }
 }
+
+/* a live screen fills its device; the iframe keeps its native viewport and is scaled from the top left */
+.dsh__screen { position: absolute; inset: 0; overflow: hidden; }
+.dsh__screen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.dsh__screen > iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; transition: opacity .4s; }
