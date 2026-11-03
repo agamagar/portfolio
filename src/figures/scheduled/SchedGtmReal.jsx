@@ -62,7 +62,7 @@ export function SchedGtmRealOne({ dim = false }) {
   const video = <video ref={motion ? vid : undefined} className="gtmr-video" src="/figures/scheduled/gtm-animation.mp4" autoPlay={!motion} muted loop playsInline preload="auto" />; // motion: started by useBannerScroll when scrolled into view
   return (
     <div className="gtmr-one">
-      <PhoneFrame className="gtmr-one__phone" interactive={false} enter={false}>
+      <PhoneFrame className="gtmr-one__phone" interactive={false} enter={dim}>{/* hero plays in its scene; the dim repeat takes the shared phone entrance */}
           <div className="gtmr-device gtmr-device--bare" ref={root}>
             <PhoneScreen className="gtmr-plate" src={IMG} alt={ALT} />
             {/* mvf9oumy (Agam): a black overlay, like the plate on the right, so only the video is fully visible */}

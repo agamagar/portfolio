@@ -193,7 +193,7 @@ export default function SchedExplorationsDetour() {
                   <span className="dtr-cell__t">{c.t}</span>
                   <span className="dtr-cell__tag">{TAG[c.v]}</span>
                   {c.figma
-                    ? <FigmaShot k={c.figma} size="md" tag={false} alt={c.t} className="dtr-fshot" />
+                    ? <FigmaShot k={c.figma} size="md" tag={false} enter={false} alt={c.t} className="dtr-fshot" />
                     : c.screen
                     ? <PhoneFrame screen={c.screen} alt={c.t} size="md" interactive={false} enter={false} className="dtr-fshot" />
                     : <p className="dtr-cell__note">{c.note}</p>}

@@ -42,10 +42,28 @@ export const PHONE_SIZES = { xs: 120, sm: 168, md: 208, lg: 300, hero: 340 };
 // The live screen fills the screen box; the picture stays under it as the poster.
 export function PhoneScreen({ src, alt = "", className, ...rest }) {
   const lv = liveFor(src);
-  if (lv) return <FigmaEmbed mode="proto" playground={lv.pg} caseId={lv.case} title={alt} fallback={src} alt={alt} badge={false} />;
+  if (lv) return <LiveScreen pg={lv.pg} caseId={lv.case} still={src} alt={alt} />;
   return <Img className={className} src={src} alt={alt} loading="lazy" draggable="false" {...rest} />;
 }
 
+// THE live screen inside a phone (Agam, 3 Nov, "the phone frames should load consistently"): one placeholder for every
+// running screen, a blank floor with the loading dots until the screen has painted, then the screen fades in (FigmaEmbed
+// `hold`); on a phone the still stays. `pg` + `caseId` is a built flow from the design playground, `node` a Figma frame.
+export function LiveScreen({ pg, caseId, node, start, still, alt = "", floor }) {
+  return <FigmaEmbed mode="proto" playground={pg} caseId={caseId} node={node} start={start} title={alt} fallback={still} alt={alt} floor={floor} hold />;
+}
+// THE phone entrance for a figure of several phones: every phone's device rises once, together, when the figure crosses
+// the centre line: the same fade-up PhoneFrame's own `enter` plays for one phone, so a row and a single phone come in alike,
+// and a phone scrolled out of view sideways in a row is never left waiting. Phones inside pass enter={false}.
+export function usePhoneRise(ref, deps = []) {
+  useEffect(() => {
+    const el = ref.current;
+    const devs = el ? [...el.querySelectorAll(".pf__dev")] : [];
+    if (!devs.length) return undefined; // no phones (bare boards): the page's block reveal takes it
+    return rise(el, devs, { lead: 0, step: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 function StatusBar({ tone }) {
   return (
     <div className="pf__status" data-tone={tone} aria-hidden="true">

@@ -1,6 +1,5 @@
-import PhoneFrame from "../ds/IphoneFrame";
+import PhoneFrame, { LiveScreen } from "../ds/IphoneFrame";
 import PhoneLinks from "../ds/PhoneLinks";
-import FigmaEmbed from "../../ui/FigmaEmbed";
 import { FIGMA_SCREENS } from "./figmaScreens";
 import "./figmaShot.css";
 import Img from "../../ui/Img"; // the figure <img>: reserved size, lazy, WebP where converted
@@ -17,7 +16,7 @@ export function FigmaLinks({ k }) {
   return m ? <PhoneLinks proto={m.proto} /> : null;
 }
 
-export default function FigmaShot({ k, alt, width, size = "md", bare = false, tag = true, className = "" }) {
+export default function FigmaShot({ k, alt, width, size = "md", bare = false, tag = true, enter = true, className = "" }) {
   const m = FIGMA_SCREENS[k];
   if (!m) return null;
   if (bare) {
@@ -29,10 +28,11 @@ export default function FigmaShot({ k, alt, width, size = "md", bare = false, ta
       </figure>
     );
   }
-  // live: the Figma frame fills the screen (a full 360x829 frame, so no sheet anchoring); the export is its still
-  const live = m.node && <FigmaEmbed mode="proto" node={m.node} title={alt} fallback={m.src} alt={alt} floor={m.sheet ? "bottom" : "cover"} />;
+  // live: the Figma frame fills the screen (a full 360x829 frame, so no sheet anchoring); the export is its still.
+  // LiveScreen is the shared placeholder (blank floor and dots until painted); enter={false} when a parent rises a row of phones together
+  const live = m.node && <LiveScreen node={m.node} still={m.src} alt={alt} floor={m.sheet ? "bottom" : "cover"} />;
   return (
     <PhoneFrame screen={live ? undefined : m.src} alt={alt} size={size} width={width} sheet={!live && m.sheet} interactive={false}
-      tag={tag ? TAG[m.status] : undefined} tagTone={m.status} proto={m.proto} className={className}>{live}</PhoneFrame>
+      tag={tag ? TAG[m.status] : undefined} tagTone={m.status} proto={m.proto} enter={enter} className={className}>{live}</PhoneFrame>
   );
 }

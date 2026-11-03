@@ -1,6 +1,6 @@
 import { useReducedMotion, useFitScale } from "../ds/hooks";
 import { FigmaLinks } from "./FigmaShot";
-import PhoneFrame from "../ds/IphoneFrame";
+import PhoneFrame, { usePhoneRise } from "../ds/IphoneFrame";
 import "./scheduled.css";
 
 // Design Mode: two directions, and the sentence that decided them. A 2-up of the
@@ -19,6 +19,7 @@ const ICheck = () => (<svg viewBox="0 0 24 24" width="13" height="13" fill="none
 export default function SchedDirections() {
   useReducedMotion();
   const { fitRef, frameRef } = useFitScale(820, 1.06);
+  usePhoneRise(fitRef); // the three directions rise together, the shared phone entrance
 
   return (
     <div className="ds-fit" ref={fitRef}>

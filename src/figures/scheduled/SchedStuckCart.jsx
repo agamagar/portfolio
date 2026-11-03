@@ -35,7 +35,7 @@ export default function SchedStuckCart() {
     <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
-          <PhoneFrame className="slotreal-device slotreal-device--tall" width={282} enter={false} alt="Stuck cart">
+          <PhoneFrame className="slotreal-device slotreal-device--tall" width={282} alt="Stuck cart">
               <PhoneScreen className="slotreal-img" src={SCREEN} alt="The cart with a Schedule needs review sheet: some items may not be available for the chosen slot, with a Review Schedule action." draggable={false} data-on="true" />
             
             </PhoneFrame>

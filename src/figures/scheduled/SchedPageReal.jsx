@@ -73,7 +73,7 @@ export default function SchedPageReal() {
     <div className="ds-fit" ref={(n) => { fitRef.current = n; loopRef.current = n; }}>
       <div className="ds-root ds-root--phone" ref={frameRef}>
         <div className="sd-stage sd-stage--rail sd-stage--slotreal">
-          <PhoneFrame className="slotreal-device" width={260} enter={false} alt="Slot page">
+          <PhoneFrame className="slotreal-device" width={260} alt="Slot page">
               {SCREENS.map((s, i) => (
                 <Img eager key={s.key} className="slotreal-img" src={s.src} alt={s.alt} draggable={false} data-on={beat === i} />
               ))}

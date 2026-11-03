@@ -1,7 +1,4 @@
-import PhoneFrame from "../ds/IphoneFrame";
-import FigmaEmbed from "../../ui/FigmaEmbed";
-import usePhone from "../../hello3/usePhone";
-import "./schedFigmaFlows.css";
+import ScreenStrip from "./ScreenStrip";
 
 // Journeys, each running live in a phone: the design playground's built flows (Agam, 26 Oct: "use all the developed
 // flows instead of figma prototype"). `pg` is the embedCatalog id, `case` the first screen, `still` the floor under the
@@ -23,18 +20,14 @@ export const FIGMA_FLOWS = [
   { k: "limits", extra: true, pg: "flow-cart-oos-limit-and-edge-cases", case: "C-111", still: "/figures/scheduled/flows/limits-C-111.png", label: "Rain, with Schedule still open", alt: "The cart in heavy rain, running: deliveries paused, Schedule still offered." },
 ];
 
+// The shared phone row (ScreenStrip), like every other row of phones on the page (Agam, 3 Nov, "follow consistency across the
+// board"): one size, one entrance, one loading state. Before, these were their own grid, a different size and shadow, rising
+// phone by phone, and a single flow (the in-app return, rain) collapsed to zero width.
 export default function SchedFigmaFlows({ only }) {
-  const phone = usePhone();
   const flows = only ? FIGMA_FLOWS.filter((f) => only.includes(f.k)) : FIGMA_FLOWS.filter((f) => !f.extra);
   return (
-    <div data-many={flows.length > 4 ? "" : undefined} style={{ "--n": flows.length }} className={"sdflows sdflows--n" + flows.length + (flows.length > 1 ? " sdh" : "")} role={flows.length > 1 ? "region" : undefined} aria-label={flows.length > 1 ? "The running flows, scroll sideways" : undefined} tabIndex={flows.length > 1 ? 0 : undefined}>
-      {flows.map((f) => (
-        <PhoneFrame key={f.k} width={phone ? 156 : 208} interactive={false} caption={f.label} className={flows.length > 1 ? "sdh__tile" : undefined}>
-          <FigmaEmbed mode="proto" node={f.start} start={f.start} playground={f.pg} caseId={f.case} title={f.alt}
-            fallback={f.still || `/figures/scheduled/figma/flow-${f.k}.png`} alt={f.alt} />
-        </PhoneFrame>
-      ))}
-    </div>
+    <ScreenStrip label="The running flows, scroll sideways" className="sdflows"
+      tiles={flows.map((f) => ({ key: f.k, cap: f.label, alt: f.alt, live: { pg: f.pg, case: f.case, still: f.still || `/figures/scheduled/figma/flow-${f.k}.png` } }))} />
   );
 }
 
