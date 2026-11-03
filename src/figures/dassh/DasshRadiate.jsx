@@ -6,6 +6,7 @@
 import { useEffect, useRef } from "react";
 
 const W = 756, H = 982;          // canvas px, the photo's box in Figma px
+const FRAME = { x: 60, y: 60, w: 636, h: 862, r: 60 };   // the visible photo inside the 756 x 982 box
 const FS = 3;                    // canvas px per field px (mask is 252 x 328)
 const RINGS = 9, FIRST = 1.5, GAP = 5, PITCH = 6;
 const BISCUIT = "252,230,192", VIOLET = "231,218,255";   // --dassh-biscuit-500, --dassh-violet-100
@@ -144,6 +145,8 @@ export function DasshRadiate({ mask, className = "dsh__radiate" }) {
     const canvas = ref.current;
     if (!canvas) return undefined;
     const g = canvas.getContext("2d");
+    // Dots are clipped to the photo's own frame: the webp is inset 60 Figma px with 60 px corners.
+    g.beginPath(); g.roundRect(FRAME.x, FRAME.y, FRAME.w, FRAME.h, FRAME.r); g.clip();
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     let dots = null, raf = 0, onScreen = false, t0 = 0, dead = false;
 

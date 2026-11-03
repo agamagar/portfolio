@@ -76,3 +76,12 @@
   .dsh--journey .dsh__copy--q { order: 1; }
   .dsh--journey .dsh__moments { order: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 }
+
+/* the Recruiter laptop and the two phone pages */
+.dsh__devices { display: flex; justify-content: center; gap: calc(120 * var(--fp)); align-items: flex-start; }
+.dsh__devices .dsh__phone { --pf-w: calc(380 * var(--fp)); }
+@media (max-width: 700px) {
+  .dsh--laptop .dsh__device { width: 100%; }
+  .dsh__devices { flex-direction: column; align-items: center; gap: 1.5rem; }
+  .dsh__devices .dsh__phone { --pf-w: min(300px, 80vw); }
+}

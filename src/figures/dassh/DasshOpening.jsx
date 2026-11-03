@@ -4,6 +4,9 @@
 // edge blur are baked in), text is live.
 import { FrameStage, Box, useFrameFonts } from "../../ui/FrameStage";
 import { DasshRadiate } from "./DasshRadiate";
+import { DasshLiveScreen } from "./DasshLiveScreen";
+import LaptopFrame from "../../ui/LaptopFrame";
+import PhoneFrame from "../ds/IphoneFrame";
 import "./dasshOpening.css";
 
 const FONTS = ["Atkinson+Hyperlegible+Next:wght@400;500", "Open+Sans:wght@400"];
@@ -114,6 +117,34 @@ export function DasshJourney() {
       <Box className="dsh__moments" x={443} y={360} w={480} h={1460}>
         {[0, 1, 2, 3].map((k) => (
           <img key={k} src={IMG + "journey-photo.webp"} alt="" loading="lazy" />
+        ))}
+      </Box>
+    </FrameStage>
+  );
+}
+
+// The Recruiter page on a laptop, below the problem statement
+export function DasshLaptop() {
+  return (
+    <FrameStage className="dsh dsh--laptop" h={1000} stack>
+      <Box className="dsh__device" x={156} y={90} w={1200}>
+        <LaptopFrame>
+          <DasshLiveScreen persona="riya" still={IMG + "recruiter-laptop.webp"} alt="The Dassh Recruiter page on a laptop" />
+        </LaptopFrame>
+      </Box>
+    </FrameStage>
+  );
+}
+
+// The Hiring manager and Candidate pages on two phones
+export function DasshPhones() {
+  return (
+    <FrameStage className="dsh dsh--phones" h={1100} stack>
+      <Box className="dsh__devices" x={0} y={90} w={1512}>
+        {[["nikhil", "hm-phone", "The Dassh Hiring manager page on a phone"], ["kavya", "candidate-phone", "The Dassh Candidate page on a phone"]].map(([persona, still, alt]) => (
+          <PhoneFrame key={persona} className="dsh__phone" size="hero" interactive={false} linkSlot={false}>
+            <DasshLiveScreen persona={persona} mobile still={IMG + still + ".webp"} alt={alt} />
+          </PhoneFrame>
         ))}
       </Box>
     </FrameStage>

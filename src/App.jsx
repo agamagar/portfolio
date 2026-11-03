@@ -38,6 +38,8 @@ const DasshNoise = lazyFig(() => import("./figures/dassh/DasshOpening").then((m)
 const DasshClarity = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshClarity })));
 const DasshMark = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshMark })));
 const DasshWire = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshWire })));
+const DasshLaptop = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshLaptop })));
+const DasshPhones = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshPhones })));
 const DasshProblem = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshProblem })));
 const DasshJourney = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshJourney })));
 const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
@@ -661,6 +663,8 @@ const figures = {
   dasshMark: DasshMark,
   dasshWire: DasshWire,
   dasshProblem: DasshProblem,
+  dasshLaptop: DasshLaptop,
+  dasshPhones: DasshPhones,
   dasshJourney: DasshJourney,
   executionFlood: ExecutionFlood,
   callJourney: CallJourney,
@@ -3728,6 +3732,8 @@ const caseStudies = {
         divider: true,
       },
       { breaker: true, fig: "dasshProblem" }, // Figma 107
+      { breaker: true, fig: "dasshLaptop" },
+      { breaker: true, fig: "dasshPhones" },
       {
         h: "Problem statement",
         tldr: "A digital surface that streamlines noise.",
