@@ -3748,9 +3748,8 @@ const caseStudies = {
           "So Stella sits in the hiring team's chat with the interviewers and the manager. It reads the feedback, spots the gap, and offers the next move in the same thread.",
           "An agency recruiter works for several companies. The obvious answer was a company switcher. I picked one chat, with every card tagged by company.",
         ],
-        split: "media",
-        image: "/figures/dassh/stella/group.jpg",
-        figure: "The hiring team's thread on Rohan's technical round. Each person's bubble carries their own colour. Prototype, screens not final.",
+        phones: [{ src: "/figures/dassh/stella/group.jpg", alt: "The group chat about Rohan, with Stella in it" }],
+        phonesCaption: "The hiring team's thread on Rohan's technical round. Each person's bubble carries their own colour. Prototype, screens not final.",
         divider: true,
       },
       {
@@ -3760,9 +3759,8 @@ const caseStudies = {
           "The same interview shows up three ways. Kavya sees her round and her checklist. Riya sees the schedule and the pending swap. Nikhil sees the debrief he owes.",
           "Personas stay inside the build. Nobody sees a switcher, the word persona, or someone else's data.",
         ],
-        split: "media",
-        image: "/figures/dassh/stella/home-riya.jpg",
-        figure: "Riya's morning: the Today card holds only what needs her. Kavya's and Nikhil's hold different rows. Prototype, screens not final.",
+        phones: [{ src: "/figures/dassh/stella/home-riya.jpg", alt: "Riya's Today card" }],
+        phonesCaption: "Riya's morning: the Today card holds only what needs her. Kavya's and Nikhil's hold different rows. Prototype, screens not final.",
         divider: true,
       },
       {
@@ -3772,9 +3770,8 @@ const caseStudies = {
         p: [
           "Reschedule. I rejected all three standard pickers. I wanted \"a generative component which lets me select any one slot of the day ... like a horizontal drag.\" The scrubber shows the free time instead of listing it, and it snaps to open slots.",
         ],
-        split: "media",
-        image: "/figures/dassh/stella/res2.jpg",
-        figure: "The time scrubber: drag across the day, busy hours greyed, Confirm. It works with arrow keys too.",
+        phones: [{ src: "/figures/dassh/stella/res2.jpg", alt: "The time scrubber on the reschedule card" }],
+        phonesCaption: "The time scrubber: drag across the day, busy hours greyed, Confirm. It works with arrow keys too.",
       },
       {
         h: "Swap, and decline",
@@ -3783,9 +3780,11 @@ const caseStudies = {
           "Swap is an inline pick list of who's free. Anyone who wants every option opens the full configurator.",
           "Decline drafts the email and sends it on a countdown. If the recruiter adds a reason, the timer stops. If not, Stella writes it from what it already knows.",
         ],
-        split: "media",
-        image: "/figures/dassh/stella/dec1.jpg",
-        figure: "Decline: the drafted rejection, the countdown, Add reason and Send. Prototype, screens not final.",
+        phones: [
+          { src: "/figures/dassh/stella/swap2.jpg", alt: "Swap interviewer pick list with Open configurator" },
+          { src: "/figures/dassh/stella/dec1.jpg", alt: "Drafted rejection with a countdown, Add reason and Send" },
+        ],
+        phonesCaption: "Swap, then decline: the pick list with the configurator one tap away, and the drafted rejection on its countdown. Prototype, screens not final.",
         divider: true,
       },
       {
@@ -10459,6 +10458,15 @@ function CaseStudyBodyFull({ cs }) {
           {s.insightBefore && <SchedUseCases />}
           {s.insightBefore && !s.insightAfterFigure && <SchedInsight />}
           {s.introQuestion && <IntroQuestion {...s.introQuestion} />}
+          {/* 4 Nov 2026: phone screenshots at device size, 320 max each, side by side for a sequence */}
+          {s.phones && (
+            <figure className="article__phones" data-rise>
+              <div className="article__phones-row">
+                {s.phones.map((ph, k) => <img key={k} src={ph.src} alt={ph.alt} loading="lazy" decoding="async" width="780" height="1688" />)}
+              </div>
+              {s.phonesCaption && <figcaption>{s.phonesCaption}</figcaption>}
+            </figure>
+          )}
           {((s.figure && !s.hideFigure) || s.rive || s.collage || s.design || s.reel || s.whiteboard || s.still || (s.scene && !s.sceneHidden)) && !s.introQuestion && !glanceOn(s) && (
             <EF className="article__figure">
               {/* muidtvae: a heading above the figure, outside its box */}

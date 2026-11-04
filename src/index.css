@@ -9002,3 +9002,13 @@ html [data-agentation-toolbar] [class*="toolbarContainer"][class*="expanded"] [c
 /* mvq37xpb-9nd89e (Agam, 27 Oct): in a figure that can expand, the scene's replay and the expand button were both at the bottom
    right, one over the other. The replay steps left of the expand button (32px + a 8px gap). */
 figure[data-exp] .sscene__replay, .article__figure .sscene__replay { right: 52px; }
+
+/* Phone screenshots in case studies (4 Nov 2026): device size, never full column */
+.article__phones { margin: 32px 0 0; }
+.article__phones-row { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.article__phones-row img { width: 100%; max-width: 320px; height: auto; flex: 0 1 320px; border-radius: 32px; }
+.article__phones figcaption { text-align: center; margin-top: 12px; }
+@media (max-width: 720px) {
+  .article__phones-row { flex-direction: column; align-items: center; gap: 16px; }
+  .article__phones-row img { width: 70%; flex: none; }
+}
