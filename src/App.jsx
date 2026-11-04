@@ -44,6 +44,7 @@ const DasshPhones = lazyFig(() => import("./figures/dassh/DasshOpening").then((m
 const DasshProblem = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshProblem })));
 const DasshJourney = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshJourney })));
 const DasshPlaces = lazyFig(() => import("./figures/dassh/DasshPlaces"));
+const StellaLive = lazyFig(() => import("./figures/dassh/StellaLive")); // 4 Nov 2026: the live Stella prototype in a phone (Dassh v2)
 const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
 const AnnotationDemo = lazyFig(() => import("./figures/scaffold/AnnotationDemo"));
 const SeqDemo = lazyFig(() => import("./figures/systemExplainer/SeqDemo"));
@@ -3684,21 +3685,25 @@ const caseStudies = {
     // noise headline, cognitive load to clarity, the problem statement, then the journey from a dashboard to a
     // Dassh-Board. Built on the CaratLane / Schedule system (slideLayout: label left, statement right).
     // Name (Agam, 4 Nov 2026): Dassh is the company, Stella the assistant. The 2026 Stella mobile work is a prototype, not shipped.
+    // v2 (4 Nov 2026, Agam's brief: side-session-notes/local_f62643af-2005-4b72-9fec-d0b907cf15d4/case-study-v2-brief.md).
+    // Reader: design leads at product companies. Takeaway: systems thinking. The spine is four rules (one box per reply,
+    // glass per speaker, three faces, radii and spacing on a 4px grid). Each gets the problem, the rule, a live tappable
+    // prototype (StellaLive: public/stella-chat/, dassh-work v3 at e3d34db, tools/sync-stella-chat.mjs) and how the agents
+    // helped, then a closed deep dive. The agent process is woven into each rule, never its own section. Persona names
+    // never appear on the page (roles only). Proof is qualitative and still [CONFIRM]. v1 is in git at 435a711.
     slideLayout: true,
     expandFigures: true,
     title: "Hiring is mostly noise,\nDassh digs out what needs you",
-    meta: "Design consultant & Director · Dassh · 2025, home redesign 2026",
+    meta: "Design consultant & Director · Dassh · Stella mobile chat, 2026 prototype",
     // Compact PDF cut (?cut=compact).
     pdfSections: [
-      "Context & problem",
-      "Problem statement",
-      "Stella joins the group chat",
-      "One card, three faces",
-      "UI that shows up when it's needed",
-      "Glass, with rules",
-      "Built with agents",
-      "From pilots to a company",
-      "What I'd tell myself",
+      "Too many boxes",
+      "One box per reply",
+      "Glass per speaker",
+      "Three faces",
+      "Radii and spacing",
+      "The proof",
+      "What I'd keep",
     ],
     // real product: the v3 home draft (Radical layout), captured headless from Build home 2026-09-29/site, sample data
     // 1 Nov 2026: Figma 121, the Dassh lockup, leads; the product capture stays as the fallback
@@ -3707,146 +3712,186 @@ const caseStudies = {
     heroAlt: "The Dassh home: a written summary of the day, the Composer, four anchors and the jobs list",
     cover: "Dassh",
     lead:
-      "A recruiter's day fills with CVs, calls, messages, scheduling and status chasing. Dassh, formerly Stella, takes that execution work on: it screens CVs, calls and messages candidates, runs first-round interviews and keeps the ATS up to date, so the people stay free for judgement. I joined as a design consultant and a director to build it from zero: the four experiences it ships as, the agent system underneath, the conversation design of the calls it makes to real candidates, and the design system that turned Figma files into production code. Over 2025 the work took it from zero to live hiring at enterprises like Zydus Lifesciences and Increff and, as the year closed, a ₹1.2 crore raise. In 2026 I redesigned the home around a team of agents that Dassh leads. That redesign is a prototype, not shipped.",
+      "Dassh takes the execution work out of recruiting, and enterprises like Zydus Lifesciences and Increff run live hiring on it. Stella is its assistant. In 2026 I designed Stella's mobile chat: one app for the candidate, the recruiter and the business owner who holds the role's budget. Stella answers with a card drawn for each ask, and by November the chat covered 265 scenarios. I couldn't design that one screen at a time, so I wrote four rules and had AI agents build them into the prototype. It's a prototype, not shipped.",
     sections: [
-      // Figma 122, 127, 126, 128: the noise headline, cognitive load to clarity, the mark, the board's outline
+      // Figma 122: the noise headline over the kitchen photo, with the live radiating dots. The hero v2 keeps.
       { breaker: true, fig: "dasshNoise" },
-      { breaker: true, fig: "dasshClarity" },
-      { breaker: true, fig: "dasshMark" },
-      { breaker: true, fig: "dasshWire" },
+      // v2 parks the rest of the 30 Oct opening (Figma 127, 126, 128, 107 and the two device frames); delete `hidden` to restore
+      { breaker: true, fig: "dasshClarity", hidden: true },
+      { breaker: true, fig: "dasshMark", hidden: true },
+      { breaker: true, fig: "dasshWire", hidden: true },
+      { breaker: true, fig: "dasshProblem", hidden: true }, // Figma 107
+      { breaker: true, fig: "dasshLaptop", hidden: true },
+      { breaker: true, fig: "dasshPhones", hidden: true },
       {
-        h: "Context & problem",
-        tldr: "Hiring is mostly noise. At first it looked like a cognitive load problem. As we looked deeper, it became a clarity problem.",
+        h: "Too many boxes",
+        nav: "The problem",
+        tldr: "A chat that draws its own UI can bring the noise straight back.",
         p: [
-          "Sit with any recruiter and the same pattern shows up. A role gets posted and within a day or two the inbox is buried. At Zydus Lifesciences, one posting pulled a flood of CVs across multiple roles within one to two days. At Increff, a tech hiring push brought in more than 3,000 resumes in a single week. The people meant to evaluate that talent were instead drowning in the mechanics of moving it: screening, ranking, chasing candidates for availability, scheduling, taking notes, updating the ATS.",
-          "We framed the problem as a split. About 70 percent of recruiting is execution, the repeatable work of screening, calling, scheduling and record-keeping. The other 30 percent, the final interview, the contextual read, the actual hiring decision, is where human judgement earns its keep. The trouble is that the execution load is so heavy it crowds the judgement out. Recruiters become bottlenecks, panels go unavailable, good candidates go cold, and interview-to-offer conversion suffers.",
-          "That was the cognitive load reading, and it was true as far as it went. The pilots showed a deeper problem. Recruiters were not short of information, they were short of a clear view of it. Our first dashboard showed everything and answered nothing, and the recruiter who asked how many CVs an agent had read was really asking whether her role would close. The rest of this story is that shift, from less work to a clearer view of the work.",
+          "Stella exists to cut the noise out of a recruiter's day. Then I went through the mobile chat on 4 November. Dates sat in chips, statuses sat in pills, and a top-five list drew five cards. My note was three words: \"too many boxes.\"",
+          "Fixing screens one by one wasn't going to hold across 265 scenarios and three audiences. So I wrote rules instead: short enough to say in a line, strict enough for an agent to apply.",
+          "I tested every scenario in a 390 wide chat and logged each call in my own words. Agents built from that log in parallel and checked each change in a browser before committing it.",
         ],
-        ul: [
-          "Zydus: a large CV inflow within one to two days of posting, decentralised hiring, and an ATS talent pool sitting underused",
-          "Increff: 3,000+ resumes in a week, HRs stretched across non-recruiting work, panel unavailability dragging timelines, weak interview-to-offer conversion",
-          "What we set out to move: the time from posting to a shortlisted, engaged, interviewed candidate, without adding recruiter headcount",
-        ],
-        fig: "executionFlood",
-        figure:
-          "The execution flood: a role goes live and CVs pour in faster than anyone can read, the work that buries hiring.",
+        deep: {
+          summary: "How the agents worked",
+          items: [
+            "The log: 265 numbered scenarios, each with the options on the table, my call in my own words and the commit that shipped it.",
+            "Lanes: agents built groups of scenarios side by side, each in its own git worktree and on its own port, from a one-page brief.",
+            "Rules: a rule went into one system file first, dated, then into code. A small CSS change happened on the spot. A change across files went to a subagent with a short brief.",
+            "The gate: every change was checked at 390 in the agent's own browser tab, with zero console errors, before it was committed.",
+            "The sweeps: one QA pass sent 118 messages across the three faces, tapped up to ten buttons in every reply and audited the DOM after each one.",
+            "The count: 535 commits on the prototype branch between 13 October and 4 November. Agents wrote 520 of them.",
+          ],
+        },
         divider: true,
-      },
-      { breaker: true, fig: "dasshProblem" }, // Figma 107
-      { breaker: true, fig: "dasshLaptop" },
-      { breaker: true, fig: "dasshPhones" },
-      {
-        h: "Problem statement",
-        tldr: "A digital surface that streamlines noise.",
-        p: [
-          "Everything that fills a recruiter's day arrives as noise: a CV, a missed call, a message, a reschedule, a status someone has to chase. The surface has one job. It takes all of that in and hands back only what needs a person: what is broken, what is waiting on you, and what moved. The rest is work the agents do, and it stays one tap deep for the day something goes wrong.",
-        ],
       },
       { breaker: true, fig: "dasshPlaces", figure: "Where people use it." },
       {
-        h: "Stella joins the group chat",
-        nav: "The bet",
-        tldr: "Recruiters don't need another tab. They need a teammate in the thread where hiring already happens.",
-        p: [
-          "So Stella sits in the hiring team's chat with the interviewers and the manager. It reads the feedback, spots the gap, and offers the next move in the same thread.",
-          "An agency recruiter works for several companies. The obvious answer was a company switcher. I picked one chat, with every card tagged by company.",
+        h: "One box per reply",
+        nav: "One box",
+        tldr: "A reply gets one card at most. Everything else is text.",
+        steps: [
+          { k: "The problem", t: "Stella kept answering in containers. A date came in a chip, a status in a pill, a short list as a stack of cards. On a phone, the answer got lost among its own boxes." },
+          { k: "The rule", t: "A reply holds one boxed surface: the card. Dates and times are plain text with weight. A status is a coloured dot and a word. Only things you can tap get a control shape." },
         ],
-        phones: [{ src: "/figures/dassh/stella/group.jpg", alt: "The group chat about Rohan, with Stella in it" }],
-        phonesCaption: "The hiring team's thread on Rohan's technical round. Each person's bubble carries their own colour. Prototype, screens not final.",
+        live: {
+          views: [{ label: "Candidate", persona: "kavya", key: "v2-box", send: "Any update?", alt: "Live Stella prototype: a candidate asks for an update" }],
+          caption: "A candidate asks for an update. One card, the interview time in plain bold, the status as a dot and a word. Live prototype: tap anything.",
+        },
+        after: [
+          { k: "How agents helped", t: "Before anything changed, an agent audited every card. It found about 200 card instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared card shell the cards inherit, so the rule holds for cards nobody has designed yet." },
+        ],
+        deep: {
+          summary: "The audit, and what's still open",
+          items: [
+            "One card per reply. Everything else sits on the page with no outline or fill.",
+            "Dates and times inside a sentence are plain text, emphasised with weight.",
+            "Status lines, like \"Updated the calendar\" or \"Stella remembers\", are a small icon and muted text, never a pill.",
+            "A card's status is a coloured dot and a word, flags like Split and Late included.",
+            "Only things you can tap get a control shape: suggestion chips and buttons.",
+            "What the shared shell changed: corners from 28 to 16, padding from 14 to 16, the 1px ring around the glass gone, and status chips turned into dots.",
+            "Still open: the QA pass still found answers with more than one box. A top-five list draws five cards, and an offer waiting for approval adds a second box under its card. The fix on the table is one card with a row per candidate. [CONFIRM: your call on the top-five list: one card with a row per candidate, or keep the stack]",
+          ],
+        },
         divider: true,
       },
       {
-        h: "One card, three faces",
-        tldr: "The candidate, the recruiter and the hiring manager each get their own version of every component.",
-        p: [
-          "The same interview shows up three ways. Kavya sees her round and her checklist. Riya sees the schedule and the pending swap. Nikhil sees the debrief he owes.",
-          "Personas stay inside the build. Nobody sees a switcher, the word persona, or someone else's data.",
+        h: "Glass per speaker",
+        nav: "Tinted glass",
+        tldr: "Every person keeps one colour. You and Stella stay neutral.",
+        steps: [
+          { k: "The problem", t: "It started with a candidate asking Stella, \"are you a bot?\" Stella answers honestly when asked, but I ruled out an AI tag on every message. I wanted the material to say who's talking, so a handoff from Stella to a person shows in the bubbles themselves." },
+          { k: "The rule", t: "Every message from someone other than you is glass tinted in that person's colour, the same colour as their avatar. Your bubbles and Stella's stay neutral. Glass is a translucent fill and a blur with no stroke, and the text on it holds 4.5:1." },
         ],
-        phones: [{ src: "/figures/dassh/stella/home-riya.jpg", alt: "Riya's Today card" }],
-        phonesCaption: "Riya's morning: the Today card holds only what needs her. Kavya's and Nikhil's hold different rows. Prototype, screens not final.",
+        live: {
+          views: [{ label: "Recruiter", persona: "riya", key: "v2-glass", sample: "group", alt: "Live Stella prototype: the hiring team's group chat about one candidate" }],
+          caption: "The hiring team's thread about one candidate. Each person keeps one colour, and each verdict is a dot and a word. Scroll to Stella's card and pick a time to book the follow-up.",
+        },
+        after: [
+          { k: "How agents helped", t: "The tint lives in one place: the message component. An agent built it there with a colour map, and anyone new gets a stable colour from their name. No screen sets a colour itself, so every thread inherits the rule." },
+        ],
+        deep: {
+          summary: "How the materials evolved",
+          items: [
+            "The first call, from \"are you a bot?\": black glass for you, white glass for Stella, accent-tinted glass for a person from the company, and no AI tag.",
+            "The handoff: when a person steps in, a quiet divider with their face marks the moment.",
+            "4 November: every person other than you gets their own tint, shared with their avatar, in group threads and direct messages alike. You and Stella stay neutral.",
+            "Contrast: text holds at least 4.5:1 on the dark ground (#161616).",
+            "No strokes on glass, anywhere. The tint gradient sits only behind the input box.",
+          ],
+        },
         divider: true,
       },
       {
-        h: "UI that shows up when it's needed",
-        nav: "Generative UI",
-        tldr: "Stella answers with a control built for the job, then gets out of the way.",
-        p: [
-          "Reschedule. I rejected all three standard pickers. I wanted \"a generative component which lets me select any one slot of the day ... like a horizontal drag.\" The scrubber shows the free time instead of listing it, and it snaps to open slots.",
+        h: "Three faces",
+        nav: "Three faces",
+        tldr: "Every shared component has a face for the candidate, the recruiter and the business owner.",
+        steps: [
+          { k: "The problem", t: "One interview means three different things. The candidate needs to prepare, the recruiter needs it booked, and the business owner needs a decision. Three apps would triple every fix, and one app can't leak one person's view into another's." },
+          { k: "The rule", t: "Each component has one face per role. The candidate sees their own status, prep and next step, never scores or other candidates. The recruiter sees the pipeline, the actions and the agents. The business owner sees the summary, cost and time to hire, and what needs approval. The face is set once, from who's signed in." },
         ],
-        phones: [{ src: "/figures/dassh/stella/res2.jpg", alt: "The time scrubber on the reschedule card" }],
-        phonesCaption: "The time scrubber: drag across the day, busy hours greyed, Confirm. It works with arrow keys too.",
-      },
-      {
-        h: "Swap, and decline",
-        tldr: "Fast by default, and full control one tap away.",
-        p: [
-          "Swap is an inline pick list of who's free. Anyone who wants every option opens the full configurator.",
-          "Decline drafts the email and sends it on a countdown. If the recruiter adds a reason, the timer stops. If not, Stella writes it from what it already knows.",
+        live: {
+          views: [
+            { label: "Candidate", persona: "kavya", key: "v2-face-c", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the candidate sees it" },
+            { label: "Recruiter", persona: "riya", key: "v2-face-r", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the recruiter sees it" },
+            { label: "Business owner", persona: "nikhil", key: "v2-face-o", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the business owner sees it" },
+          ],
+          caption: "The Today card in all three faces. Switch roles above the phone, then tap a row to start a chat.",
+        },
+        after: [
+          { k: "How agents helped", t: "The face is one switch at the root of the app, and no screen sets it. With that in place, agents swept the components that needed a face: the agent list, the bottom nav, the offer card, the job post, the empty states and the composer's shortcuts. Six commits, one evening." },
         ],
-        phones: [
-          { src: "/figures/dassh/stella/swap2.jpg", alt: "Swap interviewer pick list with Open configurator" },
-          { src: "/figures/dassh/stella/dec1.jpg", alt: "Drafted rejection with a countdown, Add reason and Send" },
-        ],
-        phonesCaption: "Swap, then decline: the pick list with the configurator one tap away, and the drafted rejection on its countdown. Prototype, screens not final.",
+        deep: {
+          summary: "What each face shows",
+          items: [
+            "Candidate: their own status, prep and next step. Never internal scores, other candidates or agents.",
+            "Recruiter: the pipeline, the actions and the agents.",
+            "Business owner: the summary, cost and time to hire, and approvals, with fewer operational details.",
+            "The offer card, three ways: the candidate gets Accept, Ask a question and Decline, with the expiry counting down. The recruiter gets the reminder and the edit. The business owner sees the cost against budget and approves.",
+            "The reschedule scrubber is one component for everyone. A candidate sees only the times the panel has free, and their pick goes out as a request.",
+            "Personas are a build and test tool only. The app never shows the word, a switcher, or anyone else's data. When a bottom-nav reference came with an account switcher, I ruled it out: \"persona is an internal construct not visible to the users.\"",
+          ],
+        },
         divider: true,
       },
       {
-        h: "Glass, with rules",
-        nav: "The system",
-        tldr: "My note on the first pass was \"too many boxes.\" So every reply gets one box at most.",
-        ul: [
-          "One card per reply. Dates, times and statuses are text and a dot, never a chip",
-          "Bubbles are glass with no stroke. Every other person's is tinted in their own colour, shared with their avatar. Mine and Stella's stay neutral",
-          "Nested radii: 32 for sheets, 16 for cards, 8 inside a card. Never a 16 inside a 16",
-          "Atkinson Hyperlegible Next for text, the Mono cut for times and numbers, nothing under 12",
-          "Cards adapt by container query, from compact to three columns, and split at the hinge on a foldable",
+        h: "Radii and spacing",
+        nav: "Radii and spacing",
+        tldr: "Corners nest, and every gap sits on a 4px grid.",
+        steps: [
+          { k: "The problem", t: "Cards came out of different lanes with different corners: 28 on one, 10 on another, a 1px ring around the glass. Each looked fine alone. Side by side, they didn't read as one product." },
+          { k: "The rule", t: "Inner radius is the outer radius minus the padding. A 32 sheet holds 16 cards, a 16 card holds pills and 8s, and a 16 never sits inside a 16. Spacing runs on a 4px grid: 16 for gutters and card padding, 8 between related items, 24 between widgets, and 44 for anything you can tap." },
         ],
+        live: {
+          views: [{ label: "Recruiter", persona: "riya", key: "v2-grid", send: "What needs me today?", alt: "Live Stella prototype: the recruiter's next three steps, with live measurements" }],
+          spec: true,
+          caption: "Turn on the measurements. Every number is read from the live prototype. The composer shows the rule at work: a 24 frame with 8 of padding holds a 16 field.",
+        },
+        after: [
+          { k: "How agents helped", t: "Agents turned the tables into tokens, then checked them in a browser. One test draws the real components and reads their corners back, so the table can't drift from the code. A type audit found 124 mismatches across 88 components and left five." },
+        ],
+        deep: {
+          summary: "The tables and the audits",
+          items: [
+            "Radii: 32 for sheets and full-height panels. 16 for cards, tiles and suggestion rows. 8 for thumbnails, inputs and blocks inside a card. Pill for buttons, chips and the input box. Circle for avatars and icon buttons.",
+            "Spacing: 16 for the screen gutter and card padding. 24 between widgets, and from the header to the first one. 8 between related items, and from a label to its content. 4 for tight pairs like an icon and its label. 96 clear above the input. Agent cards stop 16 short of the right edge.",
+            "Sizes: 44 is the smallest hit area. Chips are 32 to the eye inside a 44 target. The input box is 52 tall.",
+            "Type: Atkinson Hyperlegible Next, with its Mono cut for numbers, times and links. Weights 400 to 700 only. Body text is 15 or more, nothing is under 12, and muted text holds 4.5:1.",
+            "The QA sweep took tap targets of 14 and 28 up to 44, muted text from 3.69:1 to 4.5:1, and fixed a selected chip that was white on white at 1.09:1.",
+            "Still open: the bubble's 22, the composer frame's 24 and the agent tile's 12 are set on purpose but aren't in the table yet. [CONFIRM: add them to the table, or change them]",
+          ],
+        },
+        divider: true,
+      },
+      {
+        h: "The proof",
+        nav: "Proof",
+        tldr: "So far the proof is qualitative: what testers did with the prototype, and what the team kept.",
         p: [
-          "Then the audit. Tap targets that measured 14 and 28 went to 44. Muted text went from 3.69:1 to 4.5:1.",
+          "The rules went through user tests on the 390 prototype. [CONFIRM: who took part (candidates, recruiters, business owners), how many sessions, and when]",
+          "[CONFIRM: the strongest finding in one or two sentences: what testers did or said, and which rule it backs]",
+          "[CONFIRM: one moment where a test changed a rule, with the before and the after]",
+          "[CONFIRM: how the team adopted the rules: who uses them (design, engineering), where they live now, and one moment that showed it]",
         ],
         divider: true,
       },
       {
-        h: "Built with agents",
-        tldr: "I made the calls. Agents built, tested and logged them.",
-        p: [
-          "I worked scenario by scenario in a 390 wide chat: 273 of them, each with my call in my own words. Agents turned each call into code and ran the QA. That's 525 commits since 13 October.",
-          "The speed came from the log, not the agents. Every decision was written down once, so no agent had to guess.",
-        ],
-        divider: true,
-      },
-      {
-        h: "From pilots to a company",
-        tldr: "The product was also the pitch. Real enterprise pilots built a team and raised a round.",
-        ul: [
-          "Live pilots: Zydus Lifesciences, Increff, Cholamandalam, HCPL, Atomberg, Tophire",
-          "Zydus: posting to shortlisted, engaged and first-round-interviewed in about two days, down from multiple weeks",
-          "Increff: 3,000+ resumes in a week, screened and ranked",
-          "Zero to a ₹1.2 crore raise (about $140K) in a year. The founding four grew to around twenty",
-        ],
-        split: "media",
-        image: "/figures/dassh/clients.jpg",
-        figure: "The enterprises running live hiring on Dassh.",
-        divider: true,
-      },
-      {
-        h: "What I'd tell myself",
+        h: "What I'd keep",
         nav: "Lesson",
-        tldr: "An assistant earns trust by what it leaves out.",
+        tldr: "Put each rule in one shared place, and every new screen inherits it.",
         p: [
-          "Every rule here removes something: a box, a chip, a switcher, a screen. The 2026 Stella is a prototype, not shipped. The lesson already holds. Cut until only the decision is left.",
+          "Each rule here lives in one place: the card shell, the message, the face switch, the tokens. That's why agents could apply all four in two days, and why a card nobody has drawn yet will follow them. The 2026 chat is a prototype, not shipped. The rules are what I'd carry into any product with more screens than designers.",
         ],
       },
     ],
     todo: [
-      "2026-10-30: opening restructured to Figma Portfolio 2026 page Dassh (1772:44587 / 1772:55682): slideLayout, real v3 home capture as hero (was the Dropbox Dash slide, dasshSlide, now unused here), Context & problem carries the board's noise / cognitive load to clarity lines, new Problem statement and journey sections, new The Dassh-Board section (sources: memory dassh-product-direction, dashboard-visual-reference.md, the v3 prototype). Stella renamed to Dassh on this page (\"formerly Stella\" once, in the lead); the deck, PRD tab and narration still say Stella. Sauer gate 0 FAIL",
-      "Pilot-outcome metrics with baselines: time-to-hire reduction, cost saving, interview-to-offer lift (still open)",
+      "2026-11-04 v2 (Agam's brief: side-session-notes/local_f62643af-2005-4b72-9fec-d0b907cf15d4/case-study-v2-brief.md): the spine is four rules, each with the problem, the rule, a live tappable prototype and how the agents helped, plus a closed deep dive. Sources: dassh-work Design log (stella-mobile-system.md, stella-mobile-scenarios.md #101, #102 and #12, stella-card-audit, stella-type-audit, stella-qa, stella-briefs), ChatAudience.tsx and the v3 git log. Sauer gate: 0 FAIL, 1 WARN (the [CONFIRM] markers).",
+      "Live embeds: public/stella-chat/ is dassh-work v3 at e3d34db, built by tools/sync-stella-chat.mjs from git (no uncommitted work). After a re-sync, check each embed still opens right: 'Any update?' (candidate), the group sample (recruiter), the Today card in three faces, and 'What needs me today?' (recruiter) with the measurements.",
+      "[CONFIRM] before shipping: who took part in the user tests, how many sessions and when; the strongest finding; one test-driven rule change; how the team adopted the rules; your call on the top-five list (one card with rows, or the stack); and the 22, 24 and 12 radii outside the table.",
+      "Inside the live prototype, sample people keep their names (the greeting, the group chat). The page itself names roles only: no persona name in copy, captions, alt text or the role switch.",
+      "Parked with hidden: true: the 30 Oct opening frames after the noise hero (Clarity, Mark, Wire, Problem, Laptop, Phones). v1's prose (Context & problem, Problem statement, the group chat, generative UI, swap and decline, Built with agents, From pilots to a company) is in git at 435a711.",
       "Marketing claims ('100+ CVs in about 3 minutes', 'about 95% accuracy') DROPPED entirely per Agam 2026-07-05; do not reintroduce",
-      "Client names CONFIRMED for public use per Agam 2026-07-05, but mention SPARINGLY: full six-name roster appears once (From pilots to a company + outcomes list); lead trimmed to Zydus + Increff; story mentions keep only where load-bearing",
-      "Two pilot-driven changes now documented (agent-vs-job misread; show-everything dashboard -> summarized-agents/jobs-list/generative-read composition, from Mom Test interviews per Agam)",
-      "Check the evolutionTimeline figure still matches the reworked 'Asking about the day' section (its beats: screening list -> dashboard -> workspace -> agent grid)",
-      "Two figures still need art (best as Figma exports or a diagram): the daily-report homepage and the Figma-to-code pipeline. The other four are wired from the deck.",
-      "2026-07-22: 'Designing the call' replaced the agent-creation-wizard section (agentWizardFff fig now unused by this case; Essential/Valuable/Not-preferred moved into the call section). Sources = Claude/dassh-voice-agent-spec.md + R5/R6 in dassh-user-requirements.md + the 43-call collision study (Claude/dassh-call-research-collision-study.docx). Evidence layer added same day: Zydus persona/timing/Gujarati arc + the 34.9% collapse finding, candidate details ANONYMIZED (source log has real names/numbers, keep it that way). Figure BUILT (callJourney, incl. the 71% payoff beat). RESOLVED by Agam 2026-07-22: complete owner of the UX (not the coding); everything the study recommended shipped and call success climbed to 71%; about 300 people = base research pool (the 43-call log is the coded instrument inside it; 300/500/1000 in the report stay projection tiers). 71% DEFINED (2026-07-22): completion of screening calls, dialled candidates who finish the whole screen. STILL OPEN: client naming in prose kept to Zydus only, the collision study says 'a tech-recruiting deployment' (Tophire name public elsewhere in the case, Agam to call if it should be named here too).",
+      "Client names CONFIRMED for public use per Agam 2026-07-05, but mention SPARINGLY: v2 names Zydus Lifesciences and Increff once, in the lead",
     ],
   },
   away: {
@@ -10410,6 +10455,21 @@ function CaseStudyBodyFull({ cs }) {
                 <li key={k}>{li?.t ? <>{li.icon && (() => { const I = { clock: Clock, live: Lightning, promise: ShieldCheck }[li.icon]; return I && <span className="role-frame__icon" aria-hidden="true"><I weight="fill" /></span>; })()}<p className="article__term-t">{li.t}</p><p className="article__term-d">{li.d}</p></> : li}</li>
               ))}
             </ul>
+          )}
+          {/* 4 Nov 2026 (Dassh v2, one section per rule): labelled beats before the live phone (steps: [{ k, t }]), the live
+              Stella prototype (live: StellaLive's props), the beats after it, and a closed deep dive (deep: { summary, items }) */}
+          {s.steps && s.steps.map((st, k) => <p className="article__step" key={`st-${k}`}><span className="article__step-k">{st.k}</span>{confirmNotes(st.t)}</p>)}
+          {s.live && (
+            <Suspense fallback={<div className="slive slive--wait" aria-hidden="true"><div className="slive__ph" /></div>}>
+              <StellaLive {...s.live} />
+            </Suspense>
+          )}
+          {s.after && s.after.map((st, k) => <p className="article__step" key={`sa-${k}`}><span className="article__step-k">{st.k}</span>{confirmNotes(st.t)}</p>)}
+          {s.deep && (
+            <details className="article__deep">
+              <summary><span className="article__deep-k">Deep dive</span><span className="article__deep-t">{s.deep.summary}</span></summary>
+              <ul>{s.deep.items.map((it, k) => <li key={k}>{confirmNotes(it)}</li>)}</ul>
+            </details>
           )}
           {/* 28 Sep, the presenting cut: the product "so what" that closes a beat */}
           {s.sources && <SourceList items={s.sources} />}

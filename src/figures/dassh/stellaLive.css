@@ -1,0 +1,46 @@
+/* The live Stella prototype in a phone (StellaLive.jsx, Dassh case study v2, 4 Nov 2026).
+   320 wide on a desktop, 70% of the column on a phone. The controls practise what the case preaches:
+   32 to the eye, 44 to the finger, sentence case. */
+.slive { margin: 2rem 0 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.slive__controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.slive__btn {
+  position: relative; height: 32px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: none; color: var(--muted);
+  font: inherit; font-size: 0.875rem; font-weight: 500; line-height: 1; cursor: pointer;
+  transition: color var(--m3-dur-effects-fast, 150ms) ease, border-color var(--m3-dur-effects-fast, 150ms) ease;
+}
+.slive__btn::after { content: ""; position: absolute; inset: -6px -2px; } /* a 44 tall target that takes no room */
+.slive__btn:hover { color: var(--fg); }
+.slive__btn[aria-pressed="true"] { color: var(--fg); border-color: var(--fg); }
+.slive__btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+.slive .slive__phone { width: 320px; max-width: 100%; }
+.slive__cap { text-align: center; max-width: 34rem; margin: 0; }
+
+/* the screen inside the bezel: a floor in the prototype's own ground until it has painted, then the scaled frame */
+.slive__screen { position: absolute; inset: 0; overflow: hidden; }
+.slive__floor { position: absolute; inset: 0; background: #fff; }
+:root.dark .slive__floor { background: #161616; }
+.slive__frame { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; background: transparent; transition: opacity 0.4s ease; }
+
+/* measurements: drawn over the live layout, never in the way of a tap */
+.slive__spec { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.slive__spec svg { position: absolute; inset: 0; overflow: visible; }
+.slive__line { fill: none; stroke: #ea580c; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.slive__line--pill { stroke-dasharray: none; }
+.slive__pad { fill: rgba(234, 88, 12, 0.2); }
+.slive__dim { stroke: #ea580c; stroke-width: 1.5; }
+.slive__tag {
+  position: absolute; max-width: calc(100% - 8px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 2px 5px; border-radius: 4px; background: #ea580c; color: #111;
+  font: 600 10.5px/1.25 system-ui, -apple-system, sans-serif; letter-spacing: 0;
+}
+
+@media (max-width: 720px) {
+  .slive .slive__phone { width: 70%; }
+  .slive__controls { gap: 4px; }
+  .slive__btn { padding: 0 9px; font-size: 0.8125rem; } /* the three roles fit one row in a 294 column */
+}
+@media (prefers-reduced-motion: reduce) {
+  .slive__frame, .slive__btn { transition: none; }
+}

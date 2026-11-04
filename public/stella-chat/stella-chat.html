@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="icon" href="data:,">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stella chat</title>
+  <script type="module" crossorigin src="./assets/stella-chat-IWsbvkMU.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/stella-chat-CpT1s_Hi.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    /* ?device=mobile locks the chat in a 390 x 844 phone viewport, so a tab stays on mobile without the browser's
+       own size emulation. The inner frame drops the flag and renders the chat at that width. */
+    (function () {
+      var q = new URLSearchParams(location.search);
+      if (q.get("device") !== "mobile" || window.top !== window) return;
+      q.delete("device");
+      window.__phoneShell = true;
+      document.body.style.cssText = "margin:0;min-height:100vh;display:grid;place-items:center;background:#ece9f2";
+      var f = document.createElement("iframe");
+      f.src = location.pathname + "?" + q.toString();
+      f.title = "Stella chat, mobile";
+      f.style.cssText = "width:390px;height:min(844px,100vh);border:0;border-radius:24px;background:#fff;box-shadow:0 8px 32px rgb(0 0 0 / 0.12)";
+      document.body.replaceChildren(f);
+    })();
+  </script>
+</body>
+</html>
