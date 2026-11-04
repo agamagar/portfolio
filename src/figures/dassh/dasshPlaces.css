@@ -1,0 +1,22 @@
+/* Where people use it: four across, two by two on a phone. Caption type matches .article__figure figcaption. */
+.article__body ul.dsh-places {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.article__body .dsh-places li { margin: 0; min-width: 0; }
+.dsh-places__hold { aspect-ratio: 1636 / 1190; }
+.dsh-places span {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
+@media (max-width: 720px) {
+  .article__body ul.dsh-places { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

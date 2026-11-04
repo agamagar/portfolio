@@ -43,6 +43,7 @@ const DasshLaptop = lazyFig(() => import("./figures/dassh/DasshOpening").then((m
 const DasshPhones = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshPhones })));
 const DasshProblem = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshProblem })));
 const DasshJourney = lazyFig(() => import("./figures/dassh/DasshOpening").then((m) => ({ default: m.DasshJourney })));
+const DasshPlaces = lazyFig(() => import("./figures/dassh/DasshPlaces"));
 const StellaOnboarding = lazyFig(() => import("./figures/onboarding/StellaOnboarding"));
 const AnnotationDemo = lazyFig(() => import("./figures/scaffold/AnnotationDemo"));
 const SeqDemo = lazyFig(() => import("./figures/systemExplainer/SeqDemo"));
@@ -667,6 +668,7 @@ const figures = {
   dasshLaptop: DasshLaptop,
   dasshPhones: DasshPhones,
   dasshJourney: DasshJourney,
+  dasshPlaces: DasshPlaces,
   executionFlood: ExecutionFlood,
   callJourney: CallJourney,
   stellaSim: StellaSim,
@@ -3740,6 +3742,7 @@ const caseStudies = {
           "Everything that fills a recruiter's day arrives as noise: a CV, a missed call, a message, a reschedule, a status someone has to chase. The surface has one job. It takes all of that in and hands back only what needs a person: what is broken, what is waiting on you, and what moved. The rest is work the agents do, and it stays one tap deep for the day something goes wrong.",
         ],
       },
+      { breaker: true, fig: "dasshPlaces", figure: "Where people use it." },
       {
         h: "Stella joins the group chat",
         nav: "The bet",
