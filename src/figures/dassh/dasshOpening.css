@@ -12,6 +12,10 @@
 :root.dark .dsh { --dsh-violet: #b69cea; --dsh-wire: rgba(255, 255, 255, 0.12); }
 .article__body .dsh p { margin: 0; }
 
+/* 121 on its sky: the sky is the whole board, so the board's own fill and hairline step aside */
+.article__hero-board--fig:has(> .dsh--logo),
+:root.dark .article__hero-board--fig:has(> .dsh--logo) { border: 0; background: none; }
+
 /* 121 + 126 + 128: the lockup and the mark, painted in the theme ink */
 .dsh__logo, .dsh__mark {
   background: var(--dsh-ink);
@@ -27,12 +31,12 @@
 
 /* 122 */
 .article__body .dsh__head {
-  font-family: var(--dsh-sans); font-weight: 500; text-align: center;
-  font-size: max(calc(48 * var(--fp)), 1.375rem); line-height: 1.29; color: var(--dsh-ink);
+  font-family: var(--dsh-sans); font-weight: 500; text-align: center; text-wrap: balance; letter-spacing: -0.01em;
+  font-size: max(calc(68 * var(--fp)), 1.75rem); line-height: 1.25; color: var(--dsh-ink);
 }
 .article__body .dsh__sub {
-  font-family: "Open Sans", var(--dsh-sans); font-weight: 400; text-align: center;
-  font-size: max(calc(28 * var(--fp)), 1rem); line-height: 1.43; color: var(--dsh-ink);
+  font-family: var(--dsh-sans); font-weight: 400; text-align: center; text-wrap: balance;
+  font-size: max(calc(34 * var(--fp)), 1.0625rem); line-height: 1.5; color: var(--dsh-ink);
 }
 .dsh__photo > img { object-fit: contain; }
 .dsh__radiate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }

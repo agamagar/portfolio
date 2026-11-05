@@ -5,35 +5,39 @@
 import { FrameStage, Box, useFrameFonts } from "../../ui/FrameStage";
 import { DasshRadiate, NOISE_VIEW } from "./DasshRadiate";
 import { DasshLiveScreen } from "./DasshLiveScreen";
+import { DasshSky } from "./DasshSky";
 import LaptopFrame from "../../ui/LaptopFrame";
 import PhoneFrame from "../ds/IphoneFrame";
 import "./dasshOpening.css";
 
-const FONTS = ["Atkinson+Hyperlegible+Next:wght@400;500", "Open+Sans:wght@400"];
+const FONTS = ["Atkinson+Hyperlegible+Next:wght@400;500"];
 const IMG = "/figures/dassh/";
 
-// 121: the Dassh lockup, centred
+// 121: the Dassh lockup, centred, on Hero / Light / Violet (its dark twin at night). The logo stays in the page's ink on
+// every sky: the sky changes, the mark doesn't.
 export function DasshLogoHero() {
   return (
-    <FrameStage className="dsh dsh--logo" role="img" aria-label="Dassh">
+    <DasshSky as={FrameStage} sky="violet" className="dsh dsh--logo" role="img" aria-label="Dassh">
       <Box className="dsh__logo" x={484} y={431} w={543} h={120} />
-    </FrameStage>
+    </DasshSky>
   );
 }
 
 // the whole 840 x 400 photo is the frame; its squircle corners are about 90 px
 
-// 122: the noise headline over the meeting room
+// 122: the noise headline over the meeting room. 5 Nov 2026 (craft pass): the page's one headline, so it takes the page's
+// largest type, and the photo opens to the full column, edge to edge with the hero and the photos below (1680 x 800, sharp at
+// 2x). In Figma's frame it sits at 840 of 1512, in 982 tall.
 export function DasshNoise() {
   useFrameFonts(FONTS);
   return (
-    <FrameStage className="dsh dsh--noise" stack>
-      <Box as="p" className="dsh__head" x={406} y={129} w={700} h={124}>Hiring is mostly noise,<br />Dassh digs right info for you</Box>
-      <Box className="dsh__photo" x={336} y={313} w={840} h={400}>
+    <FrameStage className="dsh dsh--noise" h={1096} stack>
+      <Box as="p" className="dsh__head" x={0} y={0} w={1512} h={176}>Hiring is mostly noise,<br />Dassh digs right info for you</Box>
+      <Box className="dsh__photo" x={0} y={216} w={1512} h={720}>
         <img src={IMG + "noise-photo.webp"} alt="A recruiting team around a meeting table, reviewing papers" loading="lazy" />
         <DasshRadiate mask={IMG + "noise-mask.png"} boundaryId="noise" view={NOISE_VIEW} />
       </Box>
-      <Box as="p" className="dsh__sub" x={450} y={773} w={612} h={80}>A recruiter’s day fills with CVs, calls, messages, scheduling and status chasing</Box>
+      <Box as="p" className="dsh__sub" x={106} y={980} w={1300} h={112}>A recruiter’s day fills with CVs, calls, messages, scheduling and status chasing</Box>
     </FrameStage>
   );
 }

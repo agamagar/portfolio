@@ -1,0 +1,65 @@
+/* DasshSky: the one thing that paints the gradient set (DasshSky.jsx, dasshGradients.css).
+   A straight two-stop linear, top to bottom. The stops are registered as colours, so a surface that changes sky
+   crossfades: the Light pairs share Biscuit 500 at the foot and only the top moves, so a swap never jars. */
+@property --dsky-start { syntax: "<color>"; inherits: false; initial-value: transparent; }
+@property --dsky-end { syntax: "<color>"; inherits: false; initial-value: transparent; }
+
+.dsky {
+  --dsky-grain: var(--gradient-grain-sky);
+  --dsky-ink: var(--gradient-speaker-ink);
+  --dsky-ink-muted: color-mix(in srgb, var(--dsky-ink) 76%, transparent); /* holds 4.5:1 at every stop of the set */
+  --dsky-line: color-mix(in srgb, var(--dsky-ink) 22%, transparent);      /* UI on a sky is a hairline with no fill */
+  position: relative;
+  isolation: isolate;
+  background-image: linear-gradient(180deg, var(--dsky-start), var(--dsky-end));
+  transition: --dsky-start 480ms ease, --dsky-end 480ms ease;
+}
+/* grain sits on the sky, under the content */
+.dsky::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: var(--gradient-grain-ink);
+  opacity: var(--dsky-grain);
+  -webkit-mask: var(--gradient-grain-tile) 0 0 / 256px 256px;
+  mask: var(--gradient-grain-tile) 0 0 / 256px 256px;
+}
+
+/* ---------- the three skies ---------- */
+.dsky--violet { --dsky-start: var(--gradient-violet-start); --dsky-end: var(--gradient-violet-end); }
+.dsky--tangerine { --dsky-start: var(--gradient-tangerine-start); --dsky-end: var(--gradient-tangerine-end); }
+.dsky--mint { --dsky-start: var(--gradient-mint-start); --dsky-end: var(--gradient-mint-end); }
+/* a card is paper: Card / Light / Tangerine. In the dark mode the same dose is the dither */
+.dsky--paper { --dsky-grain: var(--gradient-grain-card); }
+
+/* ---------- speaker tiles: one person's hue into the ground, never into a second hue, because a second hue would read as a
+   second person. The hue's strength is the glass mix. They hold text, so no grain ---------- */
+.dsky--speaker {
+  --dsky-grain: 0;
+  --dsky-start: color-mix(in srgb, var(--dsky-hue) var(--gradient-speaker-glass-mix), var(--gradient-speaker-ground));
+  --dsky-end: var(--gradient-speaker-ground);
+  color: var(--dsky-ink);
+}
+.dsky--sky { --dsky-hue: var(--gradient-speaker-sky); }
+.dsky--coral { --dsky-hue: var(--gradient-speaker-coral); }
+.dsky--speaker-mint { --dsky-hue: var(--gradient-speaker-mint); }
+.dsky--butter { --dsky-hue: var(--gradient-speaker-butter); }
+.dsky--lilac { --dsky-hue: var(--gradient-speaker-lilac); }
+.dsky--apricot { --dsky-hue: var(--gradient-speaker-apricot); }
+
+/* ---------- a whole case-study section on a sky (the section's sky prop). The label and the text stay on the page's columns,
+   because the inline padding stays the 24 every section frame has ---------- */
+.article__body .cs-sec.cs-sec--sky {
+  aspect-ratio: auto; padding: 48px 24px; border-radius: 16px;
+}
+.article__body .cs-sec.cs-sec--sky > :last-child { margin-bottom: 0; }
+@media (max-width: 700px) {
+  .article__body .cs-sec.cs-sec--sky { padding: 32px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsky { transition: none; }
+}

@@ -1,0 +1,80 @@
+/* The Dassh gradient set (Figma Portfolio-2026, board 1878:80325; dassh-gradients.md, 5 Nov 2026).
+   Names mirror the Figma variables one to one, so a frame translates by name: Gradient/Violet/Start is
+   --gradient-violet-start. The values are dassh-core-gradient-variables.json's.
+
+   What the set follows, from the Pentagram study in the notes:
+   - two colours, one vertical axis, no blobs and no easing
+   - the hue travels and the lightness holds, so one ink works across the whole frame
+   - the sky stays pale, and the object in front carries the saturation
+   - one sky per surface
+   Grain is a material: paper on a light card, dither on a dark sky so it doesn't band, none on anything that holds text
+   on a light sky. Everything is drawn by DasshSky (dasshSky.css); nothing else paints these. */
+
+:root {
+  /* ---------- primitives, from dassh-tokens.css ---------- */
+  --gradient-violet-900: #1a1132;
+  --gradient-violet-800: #45005e;
+  --gradient-violet-100: #e7daff;
+  --gradient-tangerine-100: #fbc8a8;
+  --gradient-mint-100: #bbfbe7;
+  --gradient-biscuit-500: #fce6c0;
+  --gradient-biscuit-200: #fef8ef;
+  --gradient-neutral-900: #161616;
+  --gradient-bright-red-800: #5b040f;
+  --gradient-forest-teal-800: #003b17;
+
+  /* ---------- the six speaker hues, the same in both modes ---------- */
+  --gradient-speaker-sky: #aadbfe;
+  --gradient-speaker-coral: #fe93a4;
+  --gradient-speaker-mint: #61e8ca;
+  --gradient-speaker-butter: #f1e98a;
+  --gradient-speaker-lilac: #c9a2fb;
+  --gradient-speaker-apricot: #efb886;
+
+  /* ---------- agents read the speaker hues. Screening, note-taker, assessments and interviews are dassh-tokens.css's own
+     mapping; call and scheduler are the notes' nearest free hue, decided but not yet applied in Dassh Core System.
+     Stella isn't a hue: it takes the Violet pair. ---------- */
+  --gradient-agent-screening: var(--gradient-speaker-sky);
+  --gradient-agent-notetaker: var(--gradient-speaker-coral);
+  --gradient-agent-assessments: var(--gradient-speaker-butter);
+  --gradient-agent-interviews: var(--gradient-speaker-apricot);
+  --gradient-agent-call: var(--gradient-speaker-mint);
+  --gradient-agent-scheduler: var(--gradient-speaker-lilac);
+
+  /* ---------- grain tile: one noise, tinted and dosed per material. Figma's noise at size 2 and density 0.5, redrawn:
+     correlated over 2 to 3 px, alpha only, tiling, with its contrast set so the Figma doses land on the Figma numbers
+     (measured headless at 1x: paper 1.5/255 luma noise, dither 1.2/255). ---------- */
+  --gradient-grain-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- modes. A surface follows the page, or sets its own with data-gradient-mode, as a frame's mode does in Figma ---------- */
+:root,
+[data-gradient-mode="light"] {
+  --gradient-violet-start: var(--gradient-violet-100);
+  --gradient-violet-end: var(--gradient-biscuit-500);
+  --gradient-tangerine-start: var(--gradient-tangerine-100);
+  --gradient-tangerine-end: var(--gradient-biscuit-500);
+  --gradient-mint-start: var(--gradient-mint-100);
+  --gradient-mint-end: var(--gradient-biscuit-500);
+  --gradient-speaker-ground: var(--gradient-biscuit-200);
+  --gradient-speaker-ink: var(--gradient-violet-900);
+  --gradient-speaker-glass-mix: 40%;
+  --gradient-grain-ink: var(--gradient-violet-900);
+  --gradient-grain-sky: 0;      /* a light sky takes none */
+  --gradient-grain-card: 0.045; /* Dassh/Grain/Paper: Violet 900 at 4.5% */
+}
+:root.dark,
+[data-gradient-mode="dark"] {
+  --gradient-violet-start: var(--gradient-violet-900);
+  --gradient-violet-end: var(--gradient-violet-800);
+  --gradient-tangerine-start: var(--gradient-violet-900);
+  --gradient-tangerine-end: var(--gradient-bright-red-800);
+  --gradient-mint-start: var(--gradient-violet-900);
+  --gradient-mint-end: var(--gradient-forest-teal-800);
+  --gradient-speaker-ground: var(--gradient-neutral-900);
+  --gradient-speaker-ink: var(--gradient-biscuit-200);
+  --gradient-speaker-glass-mix: 24%;
+  --gradient-grain-ink: var(--gradient-biscuit-200);
+  --gradient-grain-sky: 0.028;  /* Dassh/Grain/Dither: Biscuit 200 at 2.8%, because dark gradients band on 8-bit screens */
+  --gradient-grain-card: 0.028;
+}
