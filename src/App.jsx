@@ -3720,6 +3720,9 @@ const caseStudies = {
     // prototype (StellaLive: public/stella-chat/, dassh-work v3 at e3d34db, tools/sync-stella-chat.mjs) and how the agents
     // helped, then a closed deep dive. The agent process is woven into each rule, never its own section. Persona names
     // never appear on the page (roles only). Proof is qualitative and still [CONFIRM]. v1 is in git at 435a711.
+    // Depth pass (5 Nov 2026, Agam: "need more details and craft across the case study, too brief"): every rule runs the
+    // problem with a real example, what I ruled out, the rule with its values, an annotated figure (DasshSpecs.jsx), the
+    // live phone, edge cases, and what agents built against what I had to call. The deep dives carry the full tables.
     slideLayout: true,
     expandFigures: true,
     title: "Hiring is mostly noise,\nDassh digs out what needs you",
@@ -3733,6 +3736,7 @@ const caseStudies = {
       "Three faces",
       "Radii and spacing",
       "The proof",
+      "Still open",
       "What I'd keep",
     ],
     // real product: the v3 home draft (Radical layout), captured headless from Build home 2026-09-29/site, sample data
@@ -3742,7 +3746,7 @@ const caseStudies = {
     heroAlt: "The Dassh home: a written summary of the day, the Composer, four anchors and the jobs list",
     cover: "Dassh",
     lead:
-      "Dassh takes the execution work out of recruiting, and enterprises like Zydus Lifesciences and Increff run live hiring on it. Stella is its assistant. In 2026 I designed Stella's mobile chat: one app for the candidate, the recruiter and the business owner who holds the role's budget. Stella answers with a card drawn for each ask, and by November the chat covered 265 scenarios. I couldn't design that one screen at a time, so I wrote four rules and had AI agents build them into the prototype. It's a prototype, not shipped.",
+      "Dassh takes the execution work out of recruiting, and enterprises like Zydus Lifesciences and Increff run live hiring on it. Stella is its assistant. In 2026 I designed Stella's mobile chat: one app for the candidate, the recruiter and the business owner who holds the role's budget. Stella answers each ask with a card drawn for it, and by November the chat covered 265 scenarios. I couldn't design that one screen at a time. So I wrote four rules and had AI agents build the prototype on them: 540 commits in 23 days. It's a prototype, not shipped.",
     sections: [
       // Figma 122: the noise headline over the kitchen photo, with the live radiating dots. The hero v2 keeps.
       { breaker: true, fig: "dasshNoise" },
@@ -3758,24 +3762,54 @@ const caseStudies = {
         nav: "The problem",
         tldr: "A chat that draws its own UI can bring the noise straight back.",
         p: [
-          "Stella exists to cut the noise out of a recruiter's day. Then I went through the mobile chat on 4 November. Dates sat in chips, statuses sat in pills, and a top-five list drew five cards. My note was three words: \"too many boxes.\"",
-          "Fixing screens one by one wasn't going to hold across 265 scenarios and three audiences. So I wrote rules instead: short enough to say in a line, strict enough for an agent to apply.",
-          "I tested every scenario in a 390 wide chat and logged each call in my own words. Agents built from that log in parallel and checked each change in a browser before committing it.",
+          "The photo above is the promise: hiring is mostly noise, and Stella digs out what needs you. On 4 November I went through the mobile chat and found it making noise of its own. Dates sat in chips. Statuses sat in pills. A top-five list drew five cards. My note was three words: \"too many boxes.\"",
+          "Agents had built every one of those boxes, one scenario at a time, and each looked reasonable in its own reply. Together they were the noise Stella exists to remove. And fixing screens one by one wasn't going to hold at this size.",
+          "So I wrote rules instead. Each had to fit in a line, live in one shared place, and be checkable in a browser, so an agent could apply it and a script could catch it drifting.",
+          "I went through the scenarios in a 390 wide chat, one question at a time. Each entry in the log holds the situation, the options on the table, the call and, once built, the commit that shipped it. Most calls are mine, in my words. 33 were an agent's recommendation that I let stand, and the log marks each one.",
         ],
+        // 5 Nov 2026 (depth pass): the scale after the second paragraph, how a rule travels after the third
+        // (DasshSpecs.jsx). Sources: the scenario log (265 numbered items), the card audit (about 200 card instances), the v3
+        // git log (540 commits from 13 Oct to 4 Nov, 525 with the agent co-author line; the other 15 are merges).
+        pFigs: {
+          1: {
+            type: "stats",
+            items: [
+              { v: "265", k: "scenarios in the log, each with its options and a call" },
+              { v: "3", k: "roles in one app: candidate, recruiter, business owner" },
+              { pre: "about", v: "200", k: "cards in the reply engine" },
+              { v: "540", k: "commits in 23 days, 525 of them written with an agent" },
+            ],
+            caption: "Where the chat stood on 4 November, from the scenario log, the card audit and the prototype's git history.",
+          },
+          2: {
+            type: "flow",
+            steps: [
+              { k: "Said in a line", t: "The call, in plain words.", ex: "\"too many boxes\"" },
+              { k: "Written down", t: "Into one system file, dated, before any code.", ex: "stella-mobile-system.md" },
+              { k: "Built once", t: "In the shared part every screen uses.", ex: "the card shell" },
+              { k: "Checked", t: "In a browser at 390, then committed.", ex: "0 console errors" },
+            ],
+            caption: "How a rule travels. A small CSS change happened on the spot. A change across files went to a subagent with a one-page brief.",
+          },
+        },
         deep: {
           summary: "How the agents worked",
           items: [
-            "The log: 265 numbered scenarios, each with the options on the table, my call in my own words and the commit that shipped it.",
-            "Lanes: agents built groups of scenarios side by side, each in its own git worktree and on its own port, from a one-page brief.",
+            "The log: 265 numbered scenarios. Each holds the situation, the options, the call and the commit that shipped it. 33 calls are marked as an agent's recommendation that went ahead without asking me.",
+            "Lanes: agents built groups of scenarios side by side, each in its own git worktree and on its own port, from a one-page brief. The spec for each item was the log's call line and nothing more.",
+            "The brief's standing rules: shared components only (extend one with a prop, never copy it), tokens only, 44 hit areas, no layout shift, no strokes on glass, reduced motion respected, and the dot pattern for loaders only.",
             "Rules: a rule went into one system file first, dated, then into code. A small CSS change happened on the spot. A change across files went to a subagent with a short brief.",
-            "The gate: every change was checked at 390 in the agent's own browser tab, with zero console errors, before it was committed.",
-            "The sweeps: one QA pass sent 118 messages across the three faces, tapped up to ten buttons in every reply and audited the DOM after each one.",
-            "The count: 535 commits on the prototype branch between 13 October and 4 November. Agents wrote 520 of them.",
+            "The gate: every change was checked at 390 in the agent's own browser tab, with zero console errors and zero React warnings, before it was committed.",
+            "The sweeps: the first QA pass sent 118 messages across the three faces, tapped up to ten buttons in every reply and audited the DOM after each one. The second sent 69 messages and tapped 157 buttons: no dead taps, no console errors, and layout shift on home of 0.003 at most.",
+            "What went wrong: an agent deleted a saved backup from the browser's storage, and it couldn't be recovered. Every brief after that said never to clear or delete a storage key.",
+            "Shared files: one commit swept up another run's ten uncommitted token lines, and on the last night the QA fixes waited 36 minutes on files other runs had left half edited. A file needs an owner before a sweep starts.",
+            "The count: 540 commits on the prototype branch between 13 October and 4 November. 525 carry an agent as co-author, and the other 15 are merges.",
           ],
         },
         divider: true,
       },
-      { breaker: true, fig: "dasshPlaces", figure: "Where people use it." },
+      // the caption ties the four scenes to the numbers the rules set for a phone (390, 44, 15, 4.5:1)
+      { breaker: true, fig: "dasshPlaces", figure: "Where people use it: on a phone, between other things, often with one hand busy or a window behind the screen. Every number in the rules is set for that screen: a 390 wide thread, 44 to the finger, body text at 15, muted text at 4.5:1." },
       // 5 Nov 2026: the system on one screen, before the first rule (DasshSystem.jsx). Every home is stated in its own
       // section (the face switch at the root, the tint in the message component, the shared card shell, the tokens and
       // the corner test); the map only puts the four in one picture. Its corners follow the fourth rule: 32, 16, 8.
@@ -3783,6 +3817,9 @@ const caseStudies = {
         h: "Where rules live",
         nav: "The system",
         tldr: "Each rule has one home: the app, the message, the card or the tokens.",
+        p: [
+          "Each rule lives at one depth of the app, and everything inside that depth inherits it. A new card starts inside the card rule. A new thread starts inside the speaker rule. Nobody has to remember them screen by screen.",
+        ],
         ruleMap: {
           layers: [
             { k: "The app", to: "Three faces", t: "The face is set once, at the root, from who's signed in. No screen sets it." },
@@ -3794,69 +3831,179 @@ const caseStudies = {
         },
         divider: true,
       },
+      // 5 Nov 2026 (depth pass): each rule runs the same beats. The problem with a real example, what I ruled out and why,
+      // the rule with its values (and an annotated figure), the live phone, edge cases, what the agents built and what I
+      // had to call, then a deep dive with the full table. Sources per rule are in the comments.
+      // One box: the card audit and the shell (4b464da), the boxes commits (199ba16, cc3d738, 60193ba, 13:57 to 14:14),
+      // ChatStatusNote, the QA sweeps, scenario #40 (the text twin).
       {
         h: "One box per reply",
         nav: "One box",
         tldr: "A reply gets one card at most. Everything else is text.",
         steps: [
-          { k: "The problem", t: "Stella kept answering in containers. A date came in a chip, a status in a pill, a short list as a stack of cards. On a phone, the answer got lost among its own boxes." },
-          { k: "The rule", t: "A reply holds one boxed surface: the card. Dates and times are plain text with weight. A status is a coloured dot and a word. Only things you can tap get a control shape." },
+          { k: "The problem", t: "Stella kept answering in containers. A date came in a chip, a status in an outlined pill, a short list as a stack of cards, and every card wore a 1px ring. On a phone the answer got lost among its own boxes." },
+          { k: "What I ruled out", t: "Chips for anything you can't tap. A chip is a control shape, so it reads as a button, and a date or a status isn't one. For screen readers I didn't swap the card for plain text either: the card stays, and carries a one-sentence text version that's read first." },
+          {
+            k: "The rule",
+            t: "A reply holds one boxed surface: the card. Dates and times are plain text at weight 600. A card's status is an 8px dot in its tone and a muted word. A status line, like \"Updated the calendar\", is a 16px icon and muted text. Only things you can tap get a control shape: chips are 32 to the eye and 44 to the finger, and buttons are 44 tall.",
+            fig: {
+              type: "boxes",
+              line: "Your interview is",
+              date: "Thu 12 Nov, 15:00",
+              kind: "Your interview",
+              status: "Confirmed",
+              note: "Stella remembers",
+              before: { k: "Before", count: "4 boxes", keys: ["Date in a chip", "Card: radius 28, padding 14, a 1px ring", "Status in an outlined chip", "Note in a pill"] },
+              after: { k: "After", count: "1 box", keys: ["Card: radius 16, padding 16, no stroke", "Date: plain text at weight 600", "Status: an 8px dot and a muted word", "Note: a 16px icon and muted text"] },
+              caption: "Count the boxes: four before, one after. Drawn at true size from the values in the 4 November card audit; grey bars stand in for copy.",
+            },
+          },
         ],
         live: {
           views: [{ label: "Candidate", persona: "kavya", key: "v2-box", send: "Any update?", alt: "Live Stella prototype: a candidate asks for an update" }],
-          caption: "A candidate asks for an update. One card, the interview time in plain bold, the status as a dot and a word. Live prototype: tap anything.",
+          caption: "A candidate asks for an update. One card: the interview time is bold text, and the status is a dot and a word. Live prototype, tap anything.",
         },
         after: [
-          { k: "How agents helped", t: "Before anything changed, an agent audited every card. It found about 200 card instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared card shell the cards inherit, so the rule holds for cards nobody has designed yet." },
+          {
+            k: "Edge cases",
+            ul: [
+              "A status handed to a card as a chip still renders as a dot. The shell strips the chip's fill and stroke, so a new card can't bring the box back.",
+              "A dot is quieter than a chip. In dark mode the danger dot came out pale pink, and \"5 days late\" read as almost neutral. That one is still open.",
+              "Lists. A top-five answer still draws five cards. The fix on the table is one card with a row per candidate. [CONFIRM: your call on the top-five list: one card with a row per candidate, or keep the stack]",
+            ],
+          },
+          { k: "What agents built", t: "Agents moved dates, status lines and card statuses onto the rule first: three commits in 17 minutes. Then one audited every card before the shell changed. It found about 200 instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared shell, written to outrank the phone overrides so no card can drift off it." },
+          { k: "What I corrected", t: "The total. Each box was a reasonable call inside one reply, and the noise only showed when you read across replies. The list case came back to me as a question with a recommendation: one card, a row per candidate. It changes what you see at a glance, so the call is mine, and it's still open." },
         ],
         deep: {
-          summary: "The audit, and what's still open",
+          summary: "The audit, the shell, and what's still open",
           items: [
-            "One card per reply. Everything else sits on the page with no outline or fill.",
-            "Dates and times inside a sentence are plain text, emphasised with weight.",
-            "Status lines, like \"Updated the calendar\" or \"Stella remembers\", are a small icon and muted text, never a pill.",
-            "A card's status is a coloured dot and a word, flags like Split and Late included.",
-            "Only things you can tap get a control shape: suggestion chips and buttons.",
-            "What the shared shell changed: corners from 28 to 16, padding from 14 to 16, the 1px ring around the glass gone, and status chips turned into dots.",
-            "Still open: the QA pass still found answers with more than one box. A top-five list draws five cards, and an offer waiting for approval adds a second box under its card. The fix on the table is one card with a row per candidate. [CONFIRM: your call on the top-five list: one card with a row per candidate, or keep the stack]",
+            "Before, on the phone: radius 28, padding 14, a 1px ring around the glass, and a title at 18 and weight 500. On desktop the same shell was radius 10.",
+            "After, the shared shell: radius 16, padding 16, glass with no stroke. Kind and meta on the Label style (13/18, 500), the title on Headline (17/22, 600), the status as a dot and a muted word, and one actions row of 44 tall pills.",
+            "The five that drew their own box: the interview card, the question card, the plan, the notice and the agent list. The interview card had copied the card's class onto its own element, so it picked up the glass and the ring as well.",
+            "Statuses: 42 call sites passed a tinted or outlined chip, among them offer expiry, Preview, Split, Draft, Paused and Sent. 21 already used the dot.",
+            "The Today flag follows the same rule: a dot and a word in the urgent ink, never a pill. Home rows like \"5 days late\" and \"Confirmed\" moved to the shared dot too.",
+            "The team reply used to add a second card with a single \"Pick one\" option. It's now one chip.",
+            "Screen readers: every card carries a one-sentence text version, announced first, which doubles as the record of what the card said.",
+            "Still open: a top-five list draws five cards, a role's candidates draw three, and an offer waiting for approval adds a second box under its card.",
+            "Still open: the orange Today flag shows on almost every card and reads as an alert. The recommendation on the table is to show it only on things due today. [CONFIRM: your call on the Today flag]",
+          ],
+          figs: [
+            {
+              type: "table",
+              k: "What gets a box",
+              cols: ["In a reply", "Drawn as", "Spec"],
+              rows: [
+                ["The card", "The one box", "Radius 16, padding 16, glass, no stroke"],
+                ["A date or time", "Weight", "Body 15/22 at 600"],
+                ["A card's status", "A dot and a word", "8px dot, Label 13/18, muted"],
+                ["A status line", "An icon and muted text", "16px icon, Caption 12/16"],
+                ["A chip", "A control shape", "Pill, 32 to the eye, 44 to the finger"],
+                ["A button", "A control shape", "Pill, 44 tall"],
+              ],
+            },
           ],
         },
         divider: true,
       },
+      // Glass: scenarios #101, #102 and #194, ChatMessage and speakerHue.ts (c3628b1, 4 Nov 17:19), the --speaker-* tokens
+      // (glass mix 40% light, 24% dark), dassh-glass.css (blur 18, saturate 160). The contrast figures are computed: white on
+      // each hue at 24% over #161616 (butter 9.1:1 lowest, coral 11.2:1 highest).
       {
         h: "Glass per speaker",
         nav: "Tinted glass",
         tldr: "Every person keeps one colour. You and Stella stay neutral.",
         steps: [
-          { k: "The problem", t: "It started with a candidate asking Stella, \"are you a bot?\" Stella answers honestly when asked, but I ruled out an AI tag on every message. I wanted the material to say who's talking, so a handoff from Stella to a person shows in the bubbles themselves." },
-          { k: "The rule", t: "Every message from someone other than you is glass tinted in that person's colour, the same colour as their avatar. Your bubbles and Stella's stay neutral. Glass is a translucent fill and a blur with no stroke, and the text on it holds 4.5:1." },
+          { k: "The problem", t: "It started with a candidate asking Stella, \"are you a bot?\" A recruiter can step into any thread, so who's talking is a fair question. I wanted the switch from Stella to a person felt in the thread itself." },
+          { k: "What I ruled out", t: "An AI tag on every message, and any answer that dodged the question. Stella says what it is when asked. The rest of the signal lives in the material, so a person reads as a person from their first line." },
+          {
+            k: "The rule",
+            t: "Every message from someone other than you is glass tinted in that person's colour, the same colour as their avatar. Your bubbles stay neutral glass, and Stella's replies sit on the page as plain text. Glass is a translucent fill and an 18px blur, with no stroke. The tint holds 40% of the colour on a light page and 24% on the dark one.",
+            fig: {
+              type: "speakers",
+              alt: "A sample thread: your neutral bubble on the right, Stella's reply as plain text, a divider as the recruiter joins, then the recruiter in coral glass and an interviewer in sky glass, each with an avatar in the same colour",
+              thread: [
+                { who: "you", t: "Can I move my interview?" },
+                { who: "stella", t: "I'll ask the recruiter for a new time." },
+                { who: "joined", hue: "coral", t: "Recruiter joined" },
+                { who: "person", hue: "coral", role: "Recruiter", t: "Friday at 11 works. I've moved it." },
+                { who: "person", hue: "sky", role: "Interviewer", t: "See you on Friday." },
+              ],
+              keys: [
+                { k: "You", t: "Neutral glass, on the right" },
+                { k: "Stella", t: "Plain text, no bubble" },
+                { k: "A person", t: "Glass in their own colour" },
+              ],
+              hues: [
+                { name: "Sky", hex: "#AADBFE", cr: "9.8:1" },
+                { name: "Coral", hex: "#FE93A4", cr: "11.2:1" },
+                { name: "Mint", hex: "#61E8CA", cr: "10.0:1" },
+                { name: "Butter", hex: "#F1E98A", cr: "9.1:1" },
+                { name: "Lilac", hex: "#C9A2FB", cr: "11.1:1" },
+                { name: "Apricot", hex: "#EFB886", cr: "10.5:1" },
+              ],
+              caption: "Who's talking, read from the material alone: your bubble is neutral, Stella has none, and each person wears one colour on the avatar and the bubble. The swatches are each tint at 24% on the dark ground (#161616), with white text's contrast, computed.",
+            },
+          },
         ],
         live: {
           views: [{ label: "Recruiter", persona: "riya", key: "v2-glass", sample: "group", alt: "Live Stella prototype: the hiring team's group chat about one candidate" }],
           caption: "The hiring team's thread about one candidate. Each person keeps one colour, and each verdict is a dot and a word. Scroll to Stella's card and pick a time to book the follow-up.",
         },
         after: [
-          { k: "How agents helped", t: "The tint lives in one place: the message component. An agent built it there with a colour map, and anyone new gets a stable colour from their name. No screen sets a colour itself, so every thread inherits the rule." },
+          {
+            k: "Edge cases",
+            ul: [
+              "Anyone new gets a stable colour from their name. Only the first name counts, so a full name and a first name land on the same colour.",
+              "There are six colours. A seventh person repeats one, and two people who share a first name share a colour. Neither is handled yet.",
+              "With reduced transparency on, the blur goes and the tint mixes into the page colour, so the bubble stays readable.",
+              "Asked \"am I talking to a bot?\", Stella answers in one line: it's the company's assistant, the recruiter reads the thread and can step in, and a chip offers to bring them in.",
+            ],
+          },
+          { k: "What agents built", t: "The tint lives in one place: the message component. An agent built it there with a six-colour map, and a message counts as a person's when it comes from someone other than you or Stella. Screens never set a colour, so every thread inherits the rule." },
+          { k: "What I corrected", t: "The model itself. The first version gave everyone from the company the same accent, so a hiring team in one thread read as one voice. On 4 November each person got their own colour, and the two screens that had painted their own accent glass handed it to the message component. [CONFIRM: that the group thread was the reason for the 4 Nov change]" },
         ],
         deep: {
           summary: "How the materials evolved",
           items: [
-            "The first call, from \"are you a bot?\": black glass for you, white glass for Stella, accent-tinted glass for a person from the company, and no AI tag.",
-            "The handoff: when a person steps in, a quiet divider with their face marks the moment.",
-            "4 November: every person other than you gets their own tint, shared with their avatar, in group threads and direct messages alike. You and Stella stay neutral.",
-            "Contrast: text holds at least 4.5:1 on the dark ground (#161616).",
-            "No strokes on glass, anywhere. The tint gradient sits only behind the input box.",
+            "The first call, from \"are you a bot?\": black glass for you, white glass for Stella, accent-tinted glass with a face for a person from the company, and no AI tag.",
+            "The handoff: when a person steps in, a quiet centred divider with their face marks the moment, and Stella's orb dims to idle while they're active.",
+            "More agents later: one agent colour, the same glass and orb, with the orb's inner hue shifting a little per agent. Stella stays the one voice people know.",
+            "4 November: every person other than you gets their own tint, shared with their avatar, in group threads and direct messages alike.",
+            "The six colours are the agents' own hues: sky #AADBFE, coral #FE93A4, mint #61E8CA, butter #F1E98A, lilac #C9A2FB and apricot #EFB886.",
+            "Contrast: on #161616, white text on the 24% tint measures 9.1:1 at the lowest (butter) and 11.2:1 at the highest (coral). The rule asks for 4.5:1.",
+            "A person's bubble has no stroke and no highlight: the fill and the blur are the whole surface. The tint gradient sits only behind the input box.",
+            "Who counts as a person: an assistant turn drawn as a bubble, with an author who isn't Stella. The avatar and the bubble read the same colour variable, so they can't disagree.",
           ],
         },
         divider: true,
       },
+      // Faces: ChatAudience.tsx and audience.ts (9281c5c), the five Faces sweeps 22:07 to 22:29 (0fd0f0e, 74ad3bd, 534a3f3,
+      // 6efc0a4, e3d34db), the role-scoped card (99ad462), scenarios #12, #38 and #42, Brief 3's correction, the QA sweeps.
       {
         h: "Three faces",
         nav: "Three faces",
         tldr: "Every shared component has a face for the candidate, the recruiter and the business owner.",
         steps: [
-          { k: "The problem", t: "One interview means three different things. The candidate needs to prepare, the recruiter needs it booked, and the business owner needs a decision. Three apps would triple every fix, and one app can't leak one person's view into another's." },
-          { k: "The rule", t: "Each component has one face per role. The candidate sees their own status, prep and next step, never scores or other candidates. The recruiter sees the pipeline, the actions and the agents. The business owner sees the summary, cost and time to hire, and what needs approval. The face is set once, from who's signed in." },
+          { k: "The problem", t: "One interview means three different things. The candidate needs to prepare, the recruiter needs it booked, and the business owner needs a decision. Before faces, some copy went to everyone: the outage notice spoke to a candidate even when a recruiter was reading it." },
+          { k: "What I ruled out", t: "Three apps, which would triple every fix. A role check inside every screen, which would be only as safe as the screen that forgot it. And when someone asks for data their face can't see, hiding it silently: the field stays in the card, redacted, with a line that says why and a button to request access." },
+          {
+            k: "The rule",
+            t: "Each component has one face per role, set once at the root from who's signed in. The candidate sees their own status, prep and next step, never scores, other candidates or agents. The recruiter sees the pipeline, the actions and the agents. The business owner sees the summary, cost and time to hire, and what needs approval.",
+            fig: {
+              type: "faces",
+              cols: ["Candidate", "Recruiter", "Business owner"],
+              rows: [
+                { k: "Sees", cells: ["Their own status, prep and next step", "The pipeline, the actions and the agents", "The summary, cost and time to hire, approvals"] },
+                { k: "Offer card", cells: ["Accept, Ask a question, Decline, with the expiry counting down", "The reminder and the edit", "Cost against budget, and Approve"] },
+                { k: "Agent list", cells: [{ t: "Hidden", off: true }, "Agents with tasks, progress and Pause", "No task lines, buttons, progress or Pause"] },
+                { k: "Job post", cells: ["A job to apply to", "A draft to edit", "Read-only, with Approve"] },
+                { k: "Composer shortcuts", cells: ["Next step and prep", "The pipeline", "Approvals, cost and time to hire"] },
+                { k: "Tone", cells: ["Warmer, reassuring", "Short and direct", "Short and direct"] },
+              ],
+              caption: "Read across a row: the same offer card is a decision for the candidate, a follow-up for the recruiter and a budget line for the business owner. Read down a column to see one person's whole app.",
+            },
+          },
         ],
         live: {
           views: [
@@ -3864,10 +4011,20 @@ const caseStudies = {
             { label: "Recruiter", persona: "riya", key: "v2-face-r", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the recruiter sees it" },
             { label: "Business owner", persona: "nikhil", key: "v2-face-o", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the business owner sees it" },
           ],
-          caption: "The Today card in all three faces. Switch roles above the phone, then tap a row to start a chat.",
+          caption: "The Today card in all three faces. Switch roles above the phone: one component, three answers to what needs you today. Tap a row to start a chat.",
         },
         after: [
-          { k: "How agents helped", t: "The face is one switch at the root of the app, and no screen sets it. With that in place, agents swept the components that needed a face: the agent list, the bottom nav, the offer card, the job post, the empty states and the composer's shortcuts. Six commits, one evening." },
+          {
+            k: "Edge cases",
+            ul: [
+              "The hiring side can flip a card to the candidate's version, and fields only the team can see say so. The candidate never gets the reverse.",
+              "One component can serve every face. Moving an interview uses the same scrubber for everyone, but a candidate sees only times the panel has free, and their pick goes out as a request.",
+              "Tone belongs to the face as well. The facts stay the same: warmer for a candidate, shorter and more direct for the hiring side.",
+              "Copy needs a face too. One summary still tells the business owner that a swap is waiting on them, by name, in the third person. Still open.",
+            ],
+          },
+          { k: "What agents built", t: "The face is one switch at the root of the app, and no screen sets it. With that in place, agents swept the components that needed a face: the agent list, the bottom nav, the offer card, the job post, the empty states, the pinned strip, the outage notice and the composer's shortcuts. Six commits in 22 minutes." },
+          { k: "What I corrected", t: "A leak of another kind. A bottom-nav reference came with an account switcher, which in a prototype full of test personas reads as switching people. I ruled it out: \"persona is an internal construct not visible to the users.\" Each person sees only their own app." },
         ],
         deep: {
           summary: "What each face shows",
@@ -3876,37 +4033,96 @@ const caseStudies = {
             "Recruiter: the pipeline, the actions and the agents.",
             "Business owner: the summary, cost and time to hire, and approvals, with fewer operational details.",
             "The offer card, three ways: the candidate gets Accept, Ask a question and Decline, with the expiry counting down. The recruiter gets the reminder and the edit. The business owner sees the cost against budget and approves.",
-            "The reschedule scrubber is one component for everyone. A candidate sees only the times the panel has free, and their pick goes out as a request.",
-            "Personas are a build and test tool only. The app never shows the word, a switcher, or anyone else's data. When a bottom-nav reference came with an account switcher, I ruled it out: \"persona is an internal construct not visible to the users.\"",
+            "The agent list is hidden from a candidate. For a business owner it drops the task lines, buttons, progress and Pause.",
+            "The job post is a job to apply to for a candidate, a draft for the recruiter, and read-only with Approve for the business owner.",
+            "Under the hood: three values, candidate, recruiter and owner. One provider at the root sets the face from the signed-in role, components read it with one hook, and a class per face lets CSS tune density without new tokens. A component's own face setting exists only for the design-system demos.",
+            "A page with no provider falls back to the recruiter face, so older demos keep what they drew before faces.",
+            "Personas are a build and test tool only. The app never shows the word, a switcher, or anyone else's data.",
           ],
         },
         divider: true,
       },
+      // Radii and spacing: stella-mobile-system.md (the tables), dassh-glass.css (--radius-outer, --nest-inset, --radius-inner,
+      // the 2px floor, 398b956), NestedRadii.tsx (5bd1d1b), the composer (30462a2), chatCard.css (the -14 subtle button),
+      // 8bc5310 (the 16 input inset), 0b43522 (agent cards 16 short), scenario #11 (chip size), the type audit, the QA sweeps.
+      // The corner gap is computed: a 16 inside a 16 with 8 of padding leaves 8 on the sides and 8 x sqrt 2 = 11.3 at 45 degrees.
       {
         h: "Radii and spacing",
         nav: "Radii and spacing",
         tldr: "Corners nest, and every gap sits on a 4px grid.",
         steps: [
-          { k: "The problem", t: "Cards came out of different lanes with different corners: 28 on one, 10 on another, a 1px ring around the glass. Each looked fine alone. Side by side, they didn't read as one product." },
-          { k: "The rule", t: "Inner radius is the outer radius minus the padding. A 32 sheet holds 16 cards, a 16 card holds pills and 8s, and a 16 never sits inside a 16. Spacing runs on a 4px grid: 16 for gutters and card padding, 8 between related items, 24 between widgets, and 44 for anything you can tap." },
+          { k: "The problem", t: "Cards came out of different lanes with different corners. The phone card was 28 with 14 of padding, and 14 isn't on a 4px grid. The question card was 28 with 20, the plan 10, the sheets 12 or 16. Each looked fine alone. Side by side, they didn't read as one product." },
+          { k: "What I ruled out", t: "For chips, the system's 20px chip and a full 44px chip. Chips are 32 to the eye inside a 44 target, so the finger still gets 44. For nested corners, a 4px floor. Wherever a gap was wider than the corner around it, the floor overrode the maths, and those corners read looser than the curve outside them. The floor is now a 2px hairline." },
+          {
+            k: "The rule",
+            t: "Inner radius is outer radius minus padding. A 32 sheet with 16 of padding holds 16 cards, a 16 card with 8 holds 8s, and pills stay pills. A 16 never sits inside a 16. Spacing runs on a 4px grid: 16 for gutters and card padding, 8 between related items, 24 between widgets, 44 for anything you can tap and 96 clear above the input.",
+            fig: {
+              type: "corners",
+              nest: { k: "True size", t: "A sheet (radius 32, padding 16) holds a card (16, padding 8), which holds blocks of 8. The three corners share one centre." },
+              wrong: { k: "16 inside 16, at 3×", t: "8 on the sides, 11.3 at the corner. The gap swells." },
+              right: { k: "8 inside 16, at 3×", t: "8 all the way round." },
+              caption: "Inner radius = outer radius − padding. Break it by one step and the padding band swells at the corner. Keep it, and every corner in a stack shares one centre.",
+            },
+          },
         ],
         live: {
           views: [{ label: "Recruiter", persona: "riya", key: "v2-grid", send: "What needs me today?", alt: "Live Stella prototype: the recruiter's next three steps, with live measurements" }],
           spec: true,
-          caption: "Turn on the measurements. Every number is read from the live prototype. The composer shows the rule at work: a 24 frame with 8 of padding holds a 16 field.",
+          caption: "Turn on the measurements. Every number is read from the live prototype's layout. The composer shows the rule at work: a 24 frame with 8 of padding holds a 16 field.",
         },
         after: [
-          { k: "How agents helped", t: "Agents turned the tables into tokens, then checked them in a browser. One test draws the real components and reads their corners back, so the table can't drift from the code. A type audit found 124 mismatches across 88 components and left five." },
+          {
+            k: "Edge cases",
+            ul: [
+              "A subtle button has no shape at rest, so its label is what has to line up. It's pulled back 14, so the word sits on the card's 16 edge.",
+              "A target can be bigger than what you see. A 14 tall memory line and a 28 tall Undo each get an invisible 44 area that takes no room.",
+              "Some stay small on purpose. A name you hold to peek sits in running text at about 34 by 41, and a 44 area would cover the lines around it.",
+              "Typed text stays at 16, one step over Body, because iOS zooms into any field set smaller.",
+            ],
+          },
+          { k: "What agents built", t: "Agents turned the tables into tokens. Three of them do the subtraction in CSS, so nobody types a nested corner by hand. One test draws the real components and reads their corners back from the browser, so the table can't drift from the code. A type audit found 124 mismatches across 88 components and left five." },
+          { k: "What I corrected", t: "Two values. The input box sits 16 from the left, right and bottom edges, where the footer had given it 4 more on the sides and only 12 below. And agent cards stop 16 short of the right edge, so they read as Stella's." },
         ],
         deep: {
           summary: "The tables and the audits",
           items: [
-            "Radii: 32 for sheets and full-height panels. 16 for cards, tiles and suggestion rows. 8 for thumbnails, inputs and blocks inside a card. Pill for buttons, chips and the input box. Circle for avatars and icon buttons.",
+            "Radii: 32 for sheets and full-height panels, 16 for cards, tiles and suggestion rows, 8 for thumbnails, inputs and blocks inside a card. Pill for buttons, chips and the input box. Circle for avatars and icon buttons.",
+            "The maths in CSS: the inner radius is the larger of 2px and the outer radius minus the inset. A CSS property can't refer to itself, so a third level of nesting alternates between two names.",
             "Spacing: 16 for the screen gutter and card padding. 24 between widgets, and from the header to the first one. 8 between related items, and from a label to its content. 4 for tight pairs like an icon and its label. 96 clear above the input. Agent cards stop 16 short of the right edge.",
-            "Sizes: 44 is the smallest hit area. Chips are 32 to the eye inside a 44 target. The input box is 52 tall.",
-            "Type: Atkinson Hyperlegible Next, with its Mono cut for numbers, times and links. Weights 400 to 700 only. Body text is 15 or more, nothing is under 12, and muted text holds 4.5:1.",
-            "The QA sweep took tap targets of 14 and 28 up to 44, muted text from 3.69:1 to 4.5:1, and fixed a selected chip that was white on white at 1.09:1.",
-            "Still open: the bubble's 22, the composer frame's 24 and the agent tile's 12 are set on purpose but aren't in the table yet. [CONFIRM: add them to the table, or change them]",
+            "Sizes: 44 is the smallest hit area. Chips are 32 to the eye inside a 44 target. Buttons are 44 tall, the input box 52 and icon tiles 56.",
+            "Type: Atkinson Hyperlegible Next, with its Mono cut for numbers, times and links. Display 34/40, Title 24/30, Headline 17/22, Body 15/22, Label 13/18, Chip 14/18, Caption 12/16. Weights 400 to 700 only, nothing under 12, and muted text holds 4.5:1.",
+            "The type audit: 237 states across the three roles. 124 mismatches in 88 components before, five after.",
+            "The QA sweeps: tap targets of 9, 14 and 28 up to 44, muted text from 3.69:1 to 4.5:1, a selected chip at 1.09:1 fixed, the segmented control from radius 10 and 24 tall to a pill with a 44 target, and sheets from 12 or 16 to 32 with the 16 gutter.",
+            "The composer: its frame went from 28 to 24, so the field inside is 16, which is 24 minus the frame's 8 of padding. The first pass used an inset of 4, which drew the field 4 too round.",
+            "Still open: the bubble's 22, the composer frame's 24, the agent tile's 12 and the checkbox's 4 are set on purpose but aren't in the table yet. [CONFIRM: add them to the table, or change them]",
+          ],
+          figs: [
+            {
+              type: "table",
+              k: "Radii",
+              cols: ["Level", "Radius", "Token", "Used for"],
+              mono: [2],
+              rows: [
+                ["Sheet", "32", "--radius-sheet", "Bottom sheets, full-height glass panels"],
+                ["Card", "16", "--radius-2xl", "Cards, action tiles, suggestion rows"],
+                ["Inner", "8", "--radius-md", "Thumbnails, fact cells, inputs inside a card"],
+                ["Control", "Pill", "--radius-pill", "Buttons, chips, the input box"],
+                ["Avatar", "Circle", "--radius-pill", "Avatars, icon tiles, the send button"],
+              ],
+            },
+            {
+              type: "scale",
+              k: "Spacing and sizes, at true size",
+              rows: [
+                { v: 4, token: "--sds-size-space-100", use: "Tight pairs: an icon and its label" },
+                { v: 8, token: "--sds-size-space-200", use: "Related items, a label to its content" },
+                { v: 16, token: "--sds-size-space-400", use: "Screen gutter and card padding" },
+                { v: 24, token: "--sds-size-space-600", use: "Between widgets" },
+                { v: 44, token: "--dassh-hit-min", use: "The smallest tap target" },
+                { v: 52, token: "", use: "The input box" },
+                { v: 96, token: "--stella-input-clearance", use: "Clear space above the input" },
+              ],
+            },
           ],
         },
         divider: true,
@@ -3922,19 +4138,42 @@ const caseStudies = {
           "[CONFIRM: how the team adopted the rules: who uses them (design, engineering), where they live now, and one moment that showed it]",
         ],
         // 5 Nov 2026: the before and after numbers the deep dives already carry, in one place. Sources: the card audit
-        // (28, 1px ring), the shared shell (16, no ring), the type audit (124 across 88 components, then 5) and the QA
-        // sweep (3.69:1 to 4.5:1; the 14 and 28 tall targets to 44), all 4 Nov in dassh-work's Design log.
+        // (28, 14, the 1px ring), the shared shell (16, 16, no ring), the type audit (124 across 88 components, then 5) and the
+        // QA sweeps (3.69:1 to 4.5:1; the 9 tall Why button and the 14 and 28 tall targets to 44; sheets 12 or 16 to 32),
+        // all 4 Nov in dassh-work's Design log.
         ledger: {
           k: "The build, before and after",
           rows: [
             { k: "Type styles off the scale", before: "124", after: "5" },
             { k: "Muted text contrast", before: "3.69:1", after: "4.5:1" },
-            { k: "Undersized tap targets", before: "14 and 28", after: "44" },
+            { k: "Undersized tap targets", before: "9, 14 and 28", after: "44" },
             { k: "Card corner radius", before: "28", after: "16" },
+            { k: "Card padding", before: "14", after: "16" },
             { k: "Stroke around the glass", before: "1px", after: "None" },
+            { k: "Sheet corner radius", before: "12 or 16", after: "32" },
           ],
-          note: "From the card, type and QA audits agents ran on 4\u00a0November. They show the build catching up with the rules. Whether the rules help people is a question for the user tests.",
+          note: "From the card, type and QA audits agents ran on 4 November. They show the build catching up with the rules. Whether the rules help people is a question for the user tests.",
         },
+        divider: true,
+      },
+      // 5 Nov 2026 (depth pass): the open list, each issue beside the one place it gets fixed, the same homes as the rule
+      // map. All five are in the deep dives above (the QA sweeps and the type audit, 4 Nov).
+      {
+        h: "Still open",
+        nav: "Open list",
+        tldr: "Five things the system still gets wrong, each with the one place it gets fixed.",
+        specs: [
+          {
+            type: "open",
+            items: [
+              { home: "The reply engine", t: "Lists still draw a box per item. A top-five answer is five cards, and an offer waiting for approval adds a second box." },
+              { home: "The tokens", t: "The danger dot reads as almost neutral in dark mode, so \"5 days late\" doesn't look late." },
+              { home: "The tokens", t: "Four radii sit outside the table: the bubble's 22, the composer frame's 24, the agent tile's 12 and the checkbox's 4." },
+              { home: "The type scale", t: "Five type mismatches remain, among them the thinking line and times that aren't in Mono." },
+              { home: "The face", t: "A summary tells the business owner about themselves in the third person. Copy needs a face, the same as components do." },
+            ],
+          },
+        ],
         divider: true,
       },
       {
@@ -3942,14 +4181,17 @@ const caseStudies = {
         nav: "Lesson",
         tldr: "Put each rule in one shared place, and every new screen inherits it.",
         p: [
-          "Each rule here lives in one place: the card shell, the message, the face switch, the tokens. That's why agents could apply all four in two days, and why a card nobody has drawn yet will follow them. The 2026 chat is a prototype, not shipped. The rules are what I'd carry into any product with more screens than designers.",
+          "Each rule here lives in one place: the card shell, the message, the face switch, the tokens. That's why agents could apply all four in two days, and why a card nobody has drawn yet will follow them.",
+          "Two habits came with the rules, and I'd keep both. Make every rule checkable by a machine: the type audit and the DOM sweeps found 124 type mismatches, a 9 tall button and a chip at 1.09:1, and the corner test keeps the radius table honest. And let agents bring back the calls they shouldn't make. The top-five list came back to me as a question, not a commit.",
+          "The 2026 chat is a prototype, not shipped. The rules are what I'd carry into any product with more screens than designers.",
         ],
       },
     ],
     todo: [
       "2026-11-04 v2 (Agam's brief: side-session-notes/local_f62643af-2005-4b72-9fec-d0b907cf15d4/case-study-v2-brief.md): the spine is four rules, each with the problem, the rule, a live tappable prototype and how the agents helped, plus a closed deep dive. Sources: dassh-work Design log (stella-mobile-system.md, stella-mobile-scenarios.md #101, #102 and #12, stella-card-audit, stella-type-audit, stella-qa, stella-briefs), ChatAudience.tsx and the v3 git log. Sauer gate: 0 FAIL, 1 WARN (the [CONFIRM] markers).",
       "Live embeds: public/stella-chat/ is dassh-work v3 at e3d34db, built by tools/sync-stella-chat.mjs from git (no uncommitted work). After a re-sync, check each embed still opens right: 'Any update?' (candidate), the group sample (recruiter), the Today card in three faces, and 'What needs me today?' (recruiter) with the measurements.",
-      "[CONFIRM] before shipping: who took part in the user tests, how many sessions and when; the strongest finding; one test-driven rule change; how the team adopted the rules; your call on the top-five list (one card with rows, or the stack); and the 22, 24 and 12 radii outside the table.",
+      "2026-11-05 depth pass: every rule now runs problem, what I ruled out, the rule with values, an annotated figure (DasshSpecs.jsx: boxes, speakers, faces, corners; stats and flow in the problem; tables in the deep dives), the live phone, edge cases, then agents. New section 'Still open'. Sources beyond v2: chatCard.css (the shared shell), speakerHue.ts and the --speaker-* tokens, ChatAudience.tsx and the five Faces commits, dassh-glass.css (nested radii, the 2px floor), NestedRadii.tsx, scenarios #11, #38, #40, #42 and #194, the 3 Nov handover (the deleted storage backup). Contrast on the swatches is computed (white on each hue at 24% over #161616).",
+      "[CONFIRM] before shipping: who took part in the user tests, how many sessions and when; the strongest finding; one test-driven rule change; how the team adopted the rules; your call on the top-five list (one card with rows, or the stack); your call on the orange Today flag; the bubble 22, composer 24, agent tile 12 and checkbox 4 radii outside the table; and whether the group thread was the reason each person got their own colour on 4 Nov.",
       "Inside the live prototype, sample people keep their names (the greeting, the group chat). The page itself names roles only: no persona name in copy, captions, alt text or the role switch.",
       "Parked with hidden: true: the 30 Oct opening frames after the noise hero (Clarity, Mark, Wire, Problem, Laptop, Phones). v1's prose (Context & problem, Problem statement, the group chat, generative UI, swap and decline, Built with agents, From pilots to a company) is in git at 435a711.",
       "Marketing claims ('100+ CVs in about 3 minutes', 'about 95% accuracy') DROPPED entirely per Agam 2026-07-05; do not reintroduce",
