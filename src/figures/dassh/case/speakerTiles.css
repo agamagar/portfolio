@@ -1,0 +1,18 @@
+/* SpeakerTiles. The tile is the one DasshSky speaker tile; the plate is its ground. No stroke: the fill is the surface. */
+.page--article .article__body .dspec .dspec-tiles { min-width: 0; }
+.page--article .article__body .dspec .dspec-tiles__k {
+  margin-bottom: var(--dspec-space-2);
+  font: var(--dspec-type-label); letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--dspec-muted);
+}
+.page--article .article__body .dspec .dspec-tiles__plate {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--dspec-space-2);
+  padding: var(--dspec-space-2); border-radius: var(--dspec-radius-card); background: var(--gradient-speaker-ground);
+}
+.page--article .article__body .dspec .dspec-tile {
+  display: flex; flex-direction: column; justify-content: space-between; gap: var(--dspec-space-3); min-width: 0;
+  padding: var(--dspec-space-2); border-radius: var(--dspec-radius-inner); list-style: none;
+}
+.page--article .article__body .dspec .dspec-tile__name { font: 600 0.75rem/1rem var(--dspec-family); color: var(--dsky-ink); }
+/* a dark plate's ink is white, the one the contrast figures are computed for */
+.page--article .article__body .dspec [data-gradient-mode="dark"] .dspec-tile { --dsky-ink: #fff; }
+.page--article .article__body .dspec .dspec-tile__val { font: 0.6875rem/1rem var(--dspec-mono); color: var(--dsky-ink-muted); font-variant-numeric: tabular-nums; }

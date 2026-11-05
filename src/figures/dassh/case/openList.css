@@ -1,0 +1,11 @@
+/* OpenList */
+.page--article .article__body .dspec .dspec-open li {
+  display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: var(--dspec-space-4); padding: var(--dspec-space-3) 0; border-top: 1px solid var(--line);
+}
+.page--article .article__body .dspec .dspec-open__home {
+  font: var(--dspec-type-label); line-height: 1.3125rem; letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--dspec-label);
+}
+.page--article .article__body .dspec .dspec-open__t { font: var(--dspec-type-body); color: var(--dspec-ink); text-wrap: pretty; }
+@media (max-width: 560px) {
+  .page--article .article__body .dspec .dspec-open li { grid-template-columns: 1fr; gap: 2px; }
+}

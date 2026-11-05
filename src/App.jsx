@@ -196,6 +196,10 @@ const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"))
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
 import { RuleMap, AuditLedger } from "./figures/dassh/DasshSystem"; // 5 Nov 2026 (Dassh v2): where each rule lives, and the audits' before and after
 import { DasshSpec } from "./figures/dassh/DasshSpecs"; // 5 Nov 2026 (Dassh depth pass): annotated figures (before and after, token tables, the corner maths)
+import { RuleBeats, DeepDive } from "./figures/dassh/case/RuleBeats"; // 5 Nov 2026: a rule section's beats and its closed deep dive
+import { PhoneStageShell } from "./figures/dassh/PhoneStage";
+import { skyClass } from "./figures/dassh/DasshSky";
+import { confirmNotes, confirmOnly } from "./lib/confirmNotes";
 import { scheduledDeck } from "./decks/scheduledDelivery.deck";
 import { PlaygroundEmbed, sdFigure } from "./figures/sdStory";
 import { awayAgentDeck } from "./decks/awayAgent.deck";
@@ -1225,39 +1229,6 @@ function RoleFrame({ s, i }) {
 // "[Reconcile ...]") were showing to readers. They stay in the source as the
 // accuracy markers the writing harness wants, but render as a hidden span that
 // only the dev QA layer (html.qa-on) reveals.
-const CONFIRM_RE = /(\s*\[(?:Confirm|CONFIRM|Reconcile|TODO|TBD)[^\]]*\])/g;
-function confirmNotes(text) {
-  if (typeof text !== "string" || !CONFIRM_RE.test(text)) return text;
-  CONFIRM_RE.lastIndex = 0;
-  return text.split(CONFIRM_RE).map((part, k) => (k % 2 ? <span className="qa-confirm" key={k}>{part}</span> : part));
-}
-// 5 Nov 2026: a paragraph that is nothing but check-notes would render as an empty <p>, and in a section grid (no margin
-// collapse) each one left a blank band (Dassh, The proof). It gets .qa-only: hidden, shown with the QA layer like its notes.
-const confirmOnly = (text) => typeof text === "string" && CONFIRM_RE.test(text) && !text.replace(CONFIRM_RE, "").trim();
-// 5 Nov 2026 (Dassh depth pass): a deep-dive item that opens with a short lead ("Radii: 32 for sheets...") sets the lead
-// in bold, so a long list scans by its leads. Six words at most, and never across a full stop.
-function deepItem(it) {
-  const m = typeof it === "string" && it.match(/^([^:.[\]]{2,48}): ([\s\S]+)$/);
-  if (!m || m[1].trim().split(/\s+/).length > 6) return confirmNotes(it);
-  return <><strong className="article__deep-lead">{m[1]}:</strong> {confirmNotes(m[2])}</>;
-}
-// 5 Nov 2026 (Dassh depth pass): one labelled beat of a rule section (steps / after: [{ k, t?, ul?, fig? }]). `ul` puts
-// bullets under the beat, `fig` an annotated figure after it (DasshSpec). `t` can be left out when the bullets carry it.
-function StepBeat({ st }) {
-  const beat = <p className="article__step"><span className="article__step-k">{st.k}</span>{st.t ? confirmNotes(st.t) : null}</p>;
-  return (
-    <>
-      {/* a beat with bullets is one block, so its label sits as close to the list as other labels sit to their text */}
-      {st.ul ? (
-        <div className="article__beat">
-          {beat}
-          <ul className="article__step-ul">{st.ul.map((it, k) => <li key={k}>{confirmNotes(it)}</li>)}</ul>
-        </div>
-      ) : beat}
-      {st.fig && <DasshSpec spec={st.fig} />}
-    </>
-  );
-}
 
 // mv2lud20 (10 Oct): "highlight the text making it faster to read, use squiggly
 // underline": ==phrase== in section copy renders as a highlight with a wavy
@@ -3723,6 +3694,9 @@ const caseStudies = {
     // Depth pass (5 Nov 2026, Agam: "need more details and craft across the case study, too brief"): every rule runs the
     // problem with a real example, what I ruled out, the rule with its values, an annotated figure (DasshSpecs.jsx), the
     // live phone, edge cases, and what agents built against what I had to call. The deep dives carry the full tables.
+    // Craft pass (5 Nov 2026): the Dassh gradient set as tokens (figures/dassh/dasshGradients.css, DasshSky). The sky props below
+    // set each surface's: the hero, the rule map and the close on Violet, a stage per rule (StellaLive's sky), and the Faces stage
+    // swapping sky with the role. Each figure is its own component in figures/dassh/case/.
     slideLayout: true,
     expandFigures: true,
     title: "Hiring is mostly noise,\nDassh digs out what needs you",
@@ -3821,6 +3795,7 @@ const caseStudies = {
           "Each rule lives at one depth of the app, and everything inside that depth inherits it. A new card starts inside the card rule. A new thread starts inside the speaker rule. Nobody has to remember them screen by screen.",
         ],
         ruleMap: {
+          sky: "violet",
           layers: [
             { k: "The app", to: "Three faces", t: "The face is set once, at the root, from who's signed in. No screen sets it." },
             { k: "A message", to: "Glass per speaker", t: "The speaker's tint lives in the message component. No screen sets a colour." },
@@ -3845,6 +3820,7 @@ const caseStudies = {
           { k: "What I ruled out", t: "Chips for anything you can't tap. A chip is a control shape, so it reads as a button, and a date or a status isn't one. For screen readers I didn't swap the card for plain text either: the card stays, and carries a one-sentence text version that's read first." },
           {
             k: "The rule",
+            lead: true,
             t: "A reply holds one boxed surface: the card. Dates and times are plain text at weight 600. A card's status is an 8px dot in its tone and a muted word. A status line, like \"Updated the calendar\", is a 16px icon and muted text. Only things you can tap get a control shape: chips are 32 to the eye and 44 to the finger, and buttons are 44 tall.",
             fig: {
               type: "boxes",
@@ -3860,6 +3836,8 @@ const caseStudies = {
           },
         ],
         live: {
+          sky: "tangerine",
+          paper: true,
           views: [{ label: "Candidate", persona: "kavya", key: "v2-box", send: "Any update?", alt: "Live Stella prototype: a candidate asks for an update" }],
           caption: "A candidate asks for an update. One card: the interview time is bold text, and the status is a dot and a word. Live prototype, tap anything.",
         },
@@ -3872,8 +3850,8 @@ const caseStudies = {
               "Lists. A top-five answer used to draw five stacked cards. It is now one card with a row per candidate.",
             ],
           },
-          { k: "What agents built", t: "Agents moved dates, status lines and card statuses onto the rule first: three commits in 17 minutes. Then one audited every card before the shell changed. It found about 200 instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared shell, written to outrank the phone overrides so no card can drift off it." },
-          { k: "What I corrected", t: "The total. Each box was a reasonable call inside one reply, and the noise only showed when you read across replies. The list case came back to me as a question with a recommendation: one card, a row per candidate. It changes what you see at a glance, so the call was mine, and I took it." },
+          { k: "What agents built", pair: true, t: "Agents moved dates, status lines and card statuses onto the rule first: three commits in 17 minutes. Then one audited every card before the shell changed. It found about 200 instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared shell, written to outrank the phone overrides so no card can drift off it." },
+          { k: "What I corrected", pair: true, t: "The total. Each box was a reasonable call inside one reply, and the noise only showed when you read across replies. The list case came back to me as a question with a recommendation: one card, a row per candidate. It changes what you see at a glance, so the call was mine, and I took it." },
         ],
         deep: {
           summary: "The audit, the shell, and what's still open",
@@ -3918,6 +3896,7 @@ const caseStudies = {
           { k: "What I ruled out", t: "An AI tag on every message, and any answer that dodged the question. Stella says what it is when asked. The rest of the signal lives in the material, so a person reads as a person from their first line." },
           {
             k: "The rule",
+            lead: true,
             t: "Every message from someone other than you is glass tinted in that person's colour, the same colour as their avatar. Your bubbles stay neutral glass, and Stella's replies sit on the page as plain text. Glass is a translucent fill and an 18px blur, with no stroke. The tint holds 40% of the colour on a light page and 24% on the dark one.",
             fig: {
               type: "speakers",
@@ -3935,18 +3914,25 @@ const caseStudies = {
                 { k: "A person", t: "Glass in their own colour" },
               ],
               hues: [
-                { name: "Sky", hex: "#AADBFE", cr: "9.8:1" },
-                { name: "Coral", hex: "#FE93A4", cr: "11.2:1" },
-                { name: "Mint", hex: "#61E8CA", cr: "10.0:1" },
-                { name: "Butter", hex: "#F1E98A", cr: "9.1:1" },
-                { name: "Lilac", hex: "#C9A2FB", cr: "11.1:1" },
-                { name: "Apricot", hex: "#EFB886", cr: "10.5:1" },
+                { name: "Sky", hue: "sky", hex: "#AADBFE", cr: { dark: "9.8:1", light: "14.8:1" } },
+                { name: "Coral", hue: "coral", hex: "#FE93A4", cr: { dark: "11.2:1", light: "13.0:1" } },
+                { name: "Mint", hue: "mint", hex: "#61E8CA", cr: { dark: "10.0:1", light: "14.5:1" } },
+                { name: "Butter", hue: "butter", hex: "#F1E98A", cr: { dark: "9.1:1", light: "15.9:1" } },
+                { name: "Lilac", hue: "lilac", hex: "#C9A2FB", cr: { dark: "11.1:1", light: "13.2:1" } },
+                { name: "Apricot", hue: "apricot", hex: "#EFB886", cr: { dark: "10.5:1", light: "13.9:1" } },
               ],
-              caption: "Who's talking, read from the material alone: your bubble is neutral, Stella has none, and each person wears one colour on the avatar and the bubble. The swatches are each tint at 24% on the dark ground (#161616), with white text's contrast, computed.",
+              // 5 Nov 2026: both modes of the gradient set. Dark: white on each hue at 24% over #161616. Light: Violet 900 (#1A1132)
+              // on each hue at 40% over Biscuit 200 (#FEF8EF). Both computed where the tint is strongest.
+              plates: [
+                { mode: "dark", label: "On the dark page, 24%" },
+                { mode: "light", label: "On a light page, 40%" },
+              ],
+              caption: "Who's talking, read from the material alone: your bubble is neutral, Stella has none, and each person wears one colour on the avatar and the bubble. The swatches run each tint into its ground, at 24% on the dark one (#161616) and 40% on the light one, with the text's contrast where the tint is strongest, computed.",
             },
           },
         ],
         live: {
+          sky: "violet",
           views: [{ label: "Recruiter", persona: "riya", key: "v2-glass", sample: "group", alt: "Live Stella prototype: the hiring team's group chat about one candidate" }],
           caption: "The hiring team's thread about one candidate. Each person keeps one colour, and each verdict is a dot and a word. Scroll to Stella's card and pick a time to book the follow-up.",
         },
@@ -3960,8 +3946,8 @@ const caseStudies = {
               "Asked \"am I talking to a bot?\", Stella answers in one line: it's the company's assistant, the recruiter reads the thread and can step in, and a chip offers to bring them in.",
             ],
           },
-          { k: "What agents built", t: "The tint lives in one place: the message component. An agent built it there with a six-colour map, and a message counts as a person's when it comes from someone other than you or Stella. Screens never set a colour, so every thread inherits the rule." },
-          { k: "What I corrected", t: "The model itself. The first version gave everyone from the company the same accent, so a hiring team in one thread read as one voice. On 4 November each person got their own colour, because of the group thread, and the two screens that had painted their own accent glass handed it to the message component." },
+          { k: "What agents built", pair: true, t: "The tint lives in one place: the message component. An agent built it there with a six-colour map, and a message counts as a person's when it comes from someone other than you or Stella. Screens never set a colour, so every thread inherits the rule." },
+          { k: "What I corrected", pair: true, t: "The model itself. The first version gave everyone from the company the same accent, so a hiring team in one thread read as one voice. On 4 November each person got their own colour, because of the group thread, and the two screens that had painted their own accent glass handed it to the message component." },
         ],
         deep: {
           summary: "How the materials evolved",
@@ -3989,6 +3975,7 @@ const caseStudies = {
           { k: "What I ruled out", t: "Three apps, which would triple every fix. A role check inside every screen, which would be only as safe as the screen that forgot it. And when someone asks for data their face can't see, hiding it silently: the field stays in the card, redacted, with a line that says why and a button to request access." },
           {
             k: "The rule",
+            lead: true,
             t: "Each component has one face per role, set once at the root from who's signed in. The candidate sees their own status, prep and next step, never scores, other candidates or agents. The recruiter sees the pipeline, the actions and the agents. The business owner sees the summary, cost and time to hire, and what needs approval.",
             fig: {
               type: "faces",
@@ -4007,9 +3994,9 @@ const caseStudies = {
         ],
         live: {
           views: [
-            { label: "Candidate", persona: "kavya", key: "v2-face-c", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the candidate sees it" },
-            { label: "Recruiter", persona: "riya", key: "v2-face-r", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the recruiter sees it" },
-            { label: "Business owner", persona: "nikhil", key: "v2-face-o", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the business owner sees it" },
+            { label: "Candidate", persona: "kavya", key: "v2-face-c", sky: "tangerine", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the candidate sees it" },
+            { label: "Recruiter", persona: "riya", key: "v2-face-r", sky: "mint", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the recruiter sees it" },
+            { label: "Business owner", persona: "nikhil", key: "v2-face-o", sky: "violet", scrollTo: ".chat-today", alt: "Live Stella prototype: the Today card as the business owner sees it" },
           ],
           caption: "The Today card in all three faces. Switch roles above the phone: one component, three answers to what needs you today. Tap a row to start a chat.",
         },
@@ -4023,8 +4010,8 @@ const caseStudies = {
               "Copy needs a face too. One summary still tells the business owner that a swap is waiting on them, by name, in the third person. Still open.",
             ],
           },
-          { k: "What agents built", t: "The face is one switch at the root of the app, and no screen sets it. With that in place, agents swept the components that needed a face: the agent list, the bottom nav, the offer card, the job post, the empty states, the pinned strip, the outage notice and the composer's shortcuts. Six commits in 22 minutes." },
-          { k: "What I corrected", t: "A leak of another kind. A bottom-nav reference came with an account switcher, which in a prototype full of test personas reads as switching people. I ruled it out: \"persona is an internal construct not visible to the users.\" Each person sees only their own app." },
+          { k: "What agents built", pair: true, t: "The face is one switch at the root of the app, and no screen sets it. With that in place, agents swept the components that needed a face: the agent list, the bottom nav, the offer card, the job post, the empty states, the pinned strip, the outage notice and the composer's shortcuts. Six commits in 22 minutes." },
+          { k: "What I corrected", pair: true, t: "A leak of another kind. A bottom-nav reference came with an account switcher, which in a prototype full of test personas reads as switching people. I ruled it out: \"persona is an internal construct not visible to the users.\" Each person sees only their own app." },
         ],
         deep: {
           summary: "What each face shows",
@@ -4055,9 +4042,11 @@ const caseStudies = {
           { k: "What I ruled out", t: "For chips, the system's 20px chip and a full 44px chip. Chips are 32 to the eye inside a 44 target, so the finger still gets 44. For nested corners, a 4px floor. Wherever a gap was wider than the corner around it, the floor overrode the maths, and those corners read looser than the curve outside them. The floor is now a 2px hairline." },
           {
             k: "The rule",
+            lead: true,
             t: "Inner radius is outer radius minus padding. A 32 sheet with 16 of padding holds 16 cards, a 16 card with 8 holds 8s, and pills stay pills. A 16 never sits inside a 16. Spacing runs on a 4px grid: 16 for gutters and card padding, 8 between related items, 24 between widgets, 44 for anything you can tap and 96 clear above the input.",
             fig: {
               type: "corners",
+              sky: "mint",
               nest: { k: "True size", t: "A sheet (radius 32, padding 16) holds a card (16, padding 8), which holds blocks of 8. The three corners share one centre." },
               wrong: { k: "16 inside 16, at 3×", t: "8 on the sides, 11.3 at the corner. The gap swells." },
               right: { k: "8 inside 16, at 3×", t: "8 all the way round." },
@@ -4066,6 +4055,7 @@ const caseStudies = {
           },
         ],
         live: {
+          sky: "mint",
           views: [{ label: "Recruiter", persona: "riya", key: "v2-grid", send: "What needs me today?", alt: "Live Stella prototype: the recruiter's next three steps, with live measurements" }],
           spec: true,
           caption: "Turn on the measurements. Every number is read from the live prototype's layout. The composer shows the rule at work: a 24 frame with 8 of padding holds a 16 field.",
@@ -4080,8 +4070,8 @@ const caseStudies = {
               "Typed text stays at 16, one step over Body, because iOS zooms into any field set smaller.",
             ],
           },
-          { k: "What agents built", t: "Agents turned the tables into tokens. Three of them do the subtraction in CSS, so nobody types a nested corner by hand. One test draws the real components and reads their corners back from the browser, so the table can't drift from the code. A type audit found 124 mismatches across 88 components and left five." },
-          { k: "What I corrected", t: "Two values. The input box sits 16 from the left, right and bottom edges, where the footer had given it 4 more on the sides and only 12 below. And agent cards stop 16 short of the right edge, so they read as Stella's." },
+          { k: "What agents built", pair: true, t: "Agents turned the tables into tokens. Three of them do the subtraction in CSS, so nobody types a nested corner by hand. One test draws the real components and reads their corners back from the browser, so the table can't drift from the code. A type audit found 124 mismatches across 88 components and left five." },
+          { k: "What I corrected", pair: true, t: "Two values. The input box sits 16 from the left, right and bottom edges, where the footer had given it 4 more on the sides and only 12 below. And agent cards stop 16 short of the right edge, so they read as Stella's." },
         ],
         deep: {
           summary: "The tables and the audits",
@@ -4176,6 +4166,7 @@ const caseStudies = {
       {
         h: "What I'd keep",
         nav: "Lesson",
+        sky: "violet",
         tldr: "Put each rule in one shared place, and every new screen inherits it.",
         p: [
           "Each rule here lives in one place: the card shell, the message, the face switch, the tokens. That's why agents could apply all four in two days, and why a card nobody has drawn yet will follow them.",
@@ -10572,10 +10563,11 @@ function PlatePhone({ pe, gradient }) {
   );
 }
 
-function SecWrap({ on, stack, center, side, row, children }) {
+function SecWrap({ on, stack, center, side, row, sky, children }) {
   // `stack` (28 Sep): label on top, then heading, explanation and figure, one column
   // `center` (mukwatlg): the stacked content centred, text centre-aligned
-  return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "") + (row ? " cs-sec--row" : "")}>{children}</div> : <>{children}</>;
+  // `sky` (5 Nov 2026, Dassh): the whole section sits on one of the Dassh gradients (DasshSky)
+  return on ? <div className={"cs-sec" + (stack ? " cs-sec--stack" : "") + (center ? " cs-sec--center" : "") + (side ? " cs-sec--side" : "") + (row ? " cs-sec--row" : "") + (sky ? " cs-sec--sky " + skyClass({ sky }) : "")}>{children}</div> : <>{children}</>;
 }
 
 function CaseStudyBodyFull({ cs }) {
@@ -10687,7 +10679,7 @@ function CaseStudyBodyFull({ cs }) {
               section takes the role-slide layout (label column + statement +
               body); figures after it stay full width. SecWrap is a Fragment
               everywhere else, so other case studies' DOM is unchanged. */}
-          <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead}>
+          <SecWrap on={cs.slideLayout && !s.split && !s.roleFrame && !s.noHeading} stack={s.stack} center={s.center} side={!!s.sideImage} row={s.rowHead} sky={s.sky}>
           {/* 2 Nov: in the narrow label column the no-widow space glued two words wider than the column ("complex
               construct" ran into the body, "a" alone above it); there the CSS balances the lines instead */}
           {/* a11y (25 Oct, the last jump after #28): a section that hides its heading keeps it for assistive tech, as a
@@ -10760,13 +10752,13 @@ function CaseStudyBodyFull({ cs }) {
           )}
           {/* 4 Nov 2026 (Dassh v2, one section per rule): labelled beats before the live phone (steps: [{ k, t }]), the live
               Stella prototype (live: StellaLive's props), the beats after it, and a closed deep dive (deep: { summary, items }) */}
-          {s.steps && s.steps.map((st, k) => <StepBeat st={st} key={`st-${k}`} />)}
+          {s.steps && <RuleBeats beats={s.steps} />}
           {s.live && (
-            <Suspense fallback={<div className="slive slive--wait" aria-hidden="true"><div className="slive__ph" /></div>}>
+            <Suspense fallback={<PhoneStageShell {...s.live} />}>
               <StellaLive {...s.live} />
             </Suspense>
           )}
-          {s.after && s.after.map((st, k) => <StepBeat st={st} key={`sa-${k}`} />)}
+          {s.after && <RuleBeats beats={s.after} />}
           {/* 5 Nov 2026 (Dassh depth pass): annotated figures that stand on their own in a section (specs: [spec]) */}
           {s.specs && s.specs.map((sp, k) => <DasshSpec spec={sp} key={`sp-${k}`} />)}
           {/* 5 Nov 2026 (Dassh v2): where each rule lives (ruleMap; each rule's link scrolls to the section with that
@@ -10778,13 +10770,7 @@ function CaseStudyBodyFull({ cs }) {
             />
           )}
           {s.ledger && <AuditLedger ledger={s.ledger} />}
-          {s.deep && (
-            <details className="article__deep">
-              <summary><span className="article__deep-k">Deep dive</span><span className="article__deep-t">{s.deep.summary}</span></summary>
-              <ul>{s.deep.items.map((it, k) => <li key={k}>{deepItem(it)}</li>)}</ul>
-              {s.deep.figs && s.deep.figs.map((sp, k) => <DasshSpec spec={sp} key={`df-${k}`} />)}
-            </details>
-          )}
+          {s.deep && <DeepDive deep={s.deep} />}
           {/* 28 Sep, the presenting cut: the product "so what" that closes a beat */}
           {s.sources && <SourceList items={s.sources} />}
           {s.soWhat && <p className={"cs-sowhat" + (s.soWhatClose ? " cs-sowhat--close" : "")}>{s.soWhat}</p>}

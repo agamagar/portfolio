@@ -1,0 +1,13 @@
+/* SpacingScale: orange because each bar is a measurement */
+.page--article .article__body .dspec .dspec-scale__k {
+  padding-bottom: 6px;
+  font: var(--dspec-type-beat); letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--dspec-label);
+}
+.page--article .article__body .dspec .dspec-scale li {
+  display: grid; grid-template-columns: 96px 28px minmax(0, 1fr); align-items: center; gap: var(--dspec-space-3);
+  padding: var(--dspec-space-2) 0; border-top: 1px solid var(--line);
+}
+.page--article .article__body .dspec .dspec-scale__bar { justify-self: start; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--dspec-pin) 60%, transparent); }
+.page--article .article__body .dspec .dspec-scale__v { text-align: right; font: 600 0.8125rem/1 var(--dspec-mono); font-variant-numeric: tabular-nums; color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-scale__use { font: var(--dspec-type-text); color: var(--dspec-ink); }
+.page--article .article__body .dspec .dspec-scale__use code { display: block; font-size: 0.6875rem; line-height: 1.35; color: var(--dspec-muted); overflow-wrap: anywhere; }

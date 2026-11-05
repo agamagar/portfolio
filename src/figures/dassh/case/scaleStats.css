@@ -1,0 +1,20 @@
+/* ScaleStats: four numbers on one hairline. Every number starts on its column's edge; a qualifier ("about") hangs above
+   it in the band under the hairline, so it never pushes the digits out of line. */
+.page--article .article__body .dspec .dspec-stats {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--dspec-space-4);
+  padding-top: var(--dspec-space-6); border-top: 1px solid var(--line);
+}
+.page--article .article__body .dspec .dspec-stats__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--dspec-space-2); min-width: 0; }
+.page--article .article__body .dspec .dspec-stats__v {
+  position: relative;
+  font: 400 2.5rem/1 var(--dspec-display);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--dspec-strong);
+}
+.page--article .article__body .dspec .dspec-stats__pre {
+  position: absolute; left: 0; bottom: 100%; margin-bottom: 2px;
+  font: var(--dspec-type-small); letter-spacing: 0; color: var(--dspec-muted);
+}
+.page--article .article__body .dspec .dspec-stats__k { font: var(--dspec-type-text); color: var(--dspec-muted); text-wrap: pretty; }
+@media (max-width: 700px) {
+  .page--article .article__body .dspec .dspec-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--dspec-space-6); }
+}

@@ -2,7 +2,9 @@
 // The chat is the built prototype in public/stella-chat/ (tools/sync-stella-chat.mjs). It is served from this origin,
 // so the page can open it in a chosen state, keep its theme in step with the page's, and measure its live layout.
 //
-//   views    one or more starts: { label, persona, key, send?, scrollTo?, sample?, alt }. Several views draw a role
+//   sky      the PhoneStage's sky; a view's own sky wins, so switching roles can swap it
+//   paper    the card grain on the stage
+//   views    one or more starts: { label, persona, key, send?, scrollTo?, sample?, sky?, alt }. Several views draw a role
 //            switch above the phone; a view's frame mounts on first pick and stays mounted, so switching back is instant.
 //              persona   which signed-in role the prototype runs as (a URL value only, never shown on the page)
 //              key       ?reset=<key>: a clean seeded world under its own storage key on every load
@@ -12,13 +14,14 @@
 //   spec     draws a "Show measurements" toggle: radii, padding and gutters read live from the prototype's DOM
 //   caption  the line under the phone
 //
-// The phone is 320 wide on a desktop and 70% of the column on a phone (stellaLive.css). The prototype keeps its 390 wide
+// The phone is 320 wide on a desktop and most of the stage on a phone (stellaLive.css). The prototype keeps its 390 wide
 // viewport and is scaled to the screen. Nothing inside the embed can scroll the page around it: focus and scrollIntoView
 // are kept inside the frame. Restart (under the phone) reloads the shown view to its start.
 import { useContext, useEffect, useRef, useState } from "react";
 import PhoneFrame from "../ds/IphoneFrame";
 import { PhoneLinkSlot } from "../ds/phoneLinkSlot";
-import "./stellaLive.css";
+import { PhoneStage } from "./PhoneStage";
+import { rr } from "./roundedRect";
 
 const SRC = "/stella-chat/stella-chat.html";
 const DESIGN_W = 390; // the prototype's design width
@@ -95,12 +98,6 @@ function scrollToTop(doc, sel) {
 }
 
 const px = (v) => Math.round(parseFloat(v) || 0);
-// a rounded rectangle as one SVG subpath, so two of them make a band with evenodd
-function rr(x, y, w, h, r) {
-  const q = Math.max(0, Math.min(r, w / 2, h / 2));
-  return `M${x + q},${y}h${w - 2 * q}a${q},${q} 0 0 1 ${q},${q}v${h - 2 * q}a${q},${q} 0 0 1 ${-q},${q}h${-(w - 2 * q)}a${q},${q} 0 0 1 ${-q},${-q}v${-(h - 2 * q)}a${q},${q} 0 0 1 ${q},${-q}z`;
-}
-
 // Measurements read from the live DOM, in the prototype's own px. Shown only while the toggle is on.
 function measure(win) {
   const doc = win.document;
@@ -270,27 +267,26 @@ function Screens({ views, active, measuring }) {
   );
 }
 
-export default function StellaLive({ views, caption, spec = false }) {
+export default function StellaLive({ views, caption, spec = false, sky, paper }) {
   const [active, setActive] = useState(0);
   const [measuring, setMeasuring] = useState(false);
-  return (
-    <figure className="slive">
-      {(views.length > 1 || spec) && (
-        <div className="slive__controls" role="group" aria-label={views.length > 1 ? "Show the prototype as" : "Measurements"}>
-          {views.length > 1 && views.map((v, i) => (
-            <button key={v.label} type="button" className="slive__btn" aria-pressed={i === active} onClick={() => setActive(i)}>{v.label}</button>
-          ))}
-          {spec && (
-            <button type="button" className="slive__btn" aria-pressed={measuring} onClick={() => setMeasuring((on) => !on)}>
-              {measuring ? "Hide measurements" : "Show measurements"}
-            </button>
-          )}
-        </div>
+  const controls = (views.length > 1 || spec) && (
+    <div className="slive__controls" role="group" aria-label={views.length > 1 ? "Show the prototype as" : "Measurements"}>
+      {views.length > 1 && views.map((v, i) => (
+        <button key={v.label} type="button" className="slive__btn" aria-pressed={i === active} onClick={() => setActive(i)}>{v.label}</button>
+      ))}
+      {spec && (
+        <button type="button" className="slive__btn" aria-pressed={measuring} onClick={() => setMeasuring((on) => !on)}>
+          {measuring ? "Hide measurements" : "Show measurements"}
+        </button>
       )}
+    </div>
+  );
+  return (
+    <PhoneStage sky={views[active].sky || sky} paper={paper} controls={controls} caption={caption}>
       <PhoneFrame width={320} interactive={false} shadow="none" className="slive__phone">
         <Screens views={views} active={active} measuring={spec && measuring} />
       </PhoneFrame>
-      {caption && <figcaption className="slive__cap">{caption}</figcaption>}
-    </figure>
+    </PhoneStage>
   );
 }

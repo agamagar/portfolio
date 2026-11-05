@@ -1,0 +1,19 @@
+/* RuleFlow: one hairline track runs through all four steps, each step's number sitting on it. No boxes. */
+.page--article .article__body .dspec .dspec-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 10px; }
+.page--article .article__body .dspec .dspec-flow__step {
+  position: relative; display: flex; flex-direction: column; gap: var(--dspec-space-1); min-width: 0;
+  padding: 22px var(--dspec-space-4) 0 0; border-top: 1px solid var(--dspec-ring);
+}
+.page--article .article__body .dspec .dspec-flow__step:last-child { padding-right: 0; }
+.page--article .article__body .dspec .dspec-flow__n {
+  position: absolute; top: -10.5px; left: 0; width: 20px; height: 20px; border-radius: 999px; corner-shape: round;
+  background: var(--dspec-label); color: var(--bg);
+  font: 600 0.6875rem/20px var(--dspec-family); text-align: center; font-variant-numeric: tabular-nums;
+}
+.page--article .article__body .dspec .dspec-flow__k { font: 600 0.875rem/1.25rem var(--dspec-family); color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-flow__t { font: var(--dspec-type-text); color: var(--dspec-ink); text-wrap: pretty; }
+.page--article .article__body .dspec .dspec-flow__ex { margin-top: 2px; font-size: 0.75rem; line-height: 1.125rem; color: var(--dspec-muted); overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .page--article .article__body .dspec .dspec-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--dspec-space-8); }
+  .page--article .article__body .dspec .dspec-flow__step:nth-child(2n) { padding-right: 0; }
+}

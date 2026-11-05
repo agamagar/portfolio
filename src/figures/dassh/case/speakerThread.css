@@ -1,0 +1,47 @@
+/* SpeakerThread. The thread is drawn on the dark ground in both themes, so the tints are the real ones. */
+.page--article .article__body .dspec .dspec-spk { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--dspec-space-4) 20px; align-items: stretch; }
+.page--article .article__body .dspec .dspec-spk__thread {
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: var(--dspec-space-4); border-radius: var(--dspec-radius-card);
+  background: var(--gradient-speaker-ground); font-size: 0.8125rem; line-height: 1.125rem; color: #fff;
+}
+.page--article .article__body .dspec .dspec-spk__you {
+  align-self: flex-end; max-width: 80%; padding: var(--dspec-space-2) var(--dspec-space-3); border-radius: 22px 22px 6px 22px;
+  background: rgba(40, 40, 46, 0.62); color: #fff; font-size: 0.8125rem; line-height: 1.125rem;
+}
+.page--article .article__body .dspec .dspec-spk__stella { display: flex; gap: var(--dspec-space-2); align-items: flex-start; font-size: 0.8125rem; line-height: 1.125rem; color: rgba(255, 255, 255, 0.92); }
+/* Stella takes the Violet pair, with its core in the speaker ink: the orb is the object, so it carries the saturation */
+.page--article .article__body .dspec .dspec-spk__orb {
+  position: relative; flex: none; width: 16px; height: 16px; margin-top: 1px; border-radius: 999px; corner-shape: round;
+  background: linear-gradient(180deg, var(--gradient-violet-100), var(--gradient-violet-800));
+}
+.page--article .article__body .dspec .dspec-spk__orb::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 999px; corner-shape: round; background: var(--gradient-speaker-ink);
+}
+.page--article .article__body .dspec .dspec-spk__joined {
+  display: flex; align-items: center; gap: 6px; margin: 2px 0;
+  font-size: 0.6875rem; line-height: 1; color: rgba(255, 255, 255, 0.66);
+}
+.page--article .article__body .dspec .dspec-spk__joined::before,
+.page--article .article__body .dspec .dspec-spk__joined::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.14); }
+.page--article .article__body .dspec .dspec-spk__joined .dspec-spk__av { width: 14px; height: 14px; }
+/* a person's message stops 16 short of the right edge, like every agent card */
+.page--article .article__body .dspec .dspec-spk__person { display: flex; gap: var(--dspec-space-2); align-items: flex-end; margin-right: var(--dspec-space-4); }
+.page--article .article__body .dspec .dspec-spk__av { flex: none; width: 20px; height: 20px; border-radius: 999px; corner-shape: round; background: var(--h); }
+.page--article .article__body .dspec .dspec-spk__bubble {
+  padding: var(--dspec-space-2) var(--dspec-space-3); border-radius: 22px 22px 22px 6px;
+  background: color-mix(in srgb, var(--h) var(--gradient-speaker-glass-mix), transparent); color: #fff;
+}
+.page--article .article__body .dspec .dspec-spk__role { display: block; margin-bottom: 2px; font-size: 0.6875rem; line-height: 1rem; color: rgba(255, 255, 255, 0.72); }
+/* the three keys share the thread's height, so the two columns end on one line */
+.page--article .article__body .dspec .dspec-spk__keys { display: grid; grid-auto-rows: 1fr; }
+.page--article .article__body .dspec .dspec-spk__keys li {
+  display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: var(--dspec-space-2); align-content: start; padding: 10px 0; border-top: 1px solid var(--line);
+  font: var(--dspec-type-text); color: var(--dspec-ink);
+}
+.page--article .article__body .dspec .dspec-spk__keys li:last-child { border-bottom: 1px solid var(--line); }
+.page--article .article__body .dspec .dspec-spk__keyk { font-weight: 600; color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-spk__plates { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--dspec-space-4); margin-top: var(--dspec-space-2); }
+@media (max-width: 700px) {
+  .page--article .article__body .dspec .dspec-spk { grid-template-columns: 1fr; }
+  .page--article .article__body .dspec .dspec-spk__plates { grid-template-columns: 1fr; }
+}

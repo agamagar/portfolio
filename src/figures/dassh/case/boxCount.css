@@ -1,0 +1,60 @@
+/* BoxCount: the two panels share their rows (subgrid), so the head, the reply and the key line up across them even though
+   the two cards are drawn at their own true sizes: before, the phone shell as the audit found it, radius 28, padding 14, a
+   1px ring; after, the shared shell, 16 and 16, fill only. */
+.page--article .article__body .dspec .dspec-box {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto; gap: 0 var(--dspec-space-4);
+}
+.page--article .article__body .dspec .dspec-box__panel {
+  display: grid; grid-row: span 3; grid-template-rows: subgrid; align-content: start; min-width: 0;
+  padding: var(--dspec-space-4); border-radius: var(--dspec-radius-card); background: var(--dspec-fill);
+}
+.page--article .article__body .dspec .dspec-box__head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--dspec-space-2); margin-bottom: var(--dspec-space-3);
+  font: var(--dspec-type-label); letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--dspec-muted);
+}
+.page--article .article__body .dspec .dspec-box__count { color: var(--dspec-acc-text); }
+.page--article .article__body .dspec .dspec-box__reply { display: flex; flex-direction: column; gap: var(--dspec-space-3); font: var(--dspec-type-text); color: var(--dspec-ink); }
+.page--article .article__body .dspec .dspec-box__line { font: var(--dspec-type-text); line-height: 1.5rem; color: var(--dspec-ink); }
+.page--article .article__body .dspec .dspec-box__line b { font-weight: 600; color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-box__chip {
+  position: relative; display: inline-flex; align-items: center; height: 22px; padding: 0 var(--dspec-space-2); border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--dspec-ring); font-size: 0.75rem; line-height: 1; font-weight: 600; color: var(--dspec-strong); white-space: nowrap;
+}
+.page--article .article__body .dspec .dspec-box__chip--status { font-weight: 500; color: var(--dspec-ink); }
+.page--article .article__body .dspec .dspec-box__card {
+  position: relative; display: flex; flex-direction: column; gap: var(--dspec-space-2);
+  padding: 14px; border-radius: 28px; background: var(--dspec-fill-2); box-shadow: inset 0 0 0 1px var(--dspec-ring);
+}
+.page--article .article__body .dspec .dspec-box__card.is-after { padding: var(--dspec-space-4); border-radius: var(--dspec-radius-card); box-shadow: none; }
+.page--article .article__body .dspec .dspec-box__cardhead { display: flex; justify-content: space-between; align-items: center; gap: var(--dspec-space-2); min-height: 22px; font-size: 0.75rem; line-height: 1; }
+.page--article .article__body .dspec .dspec-box__kind { color: var(--dspec-muted); font-weight: 500; }
+.page--article .article__body .dspec .dspec-box__dot { display: inline-flex; align-items: center; gap: 6px; color: var(--dspec-muted); font-weight: 500; }
+.page--article .article__body .dspec .dspec-box__dot::before { content: ""; width: 8px; height: 8px; border-radius: 999px; corner-shape: round; background: var(--dspec-ok); }
+.page--article .article__body .dspec .dspec-box__bar { display: block; height: 8px; border-radius: 4px; background: var(--dspec-bar); }
+.page--article .article__body .dspec .dspec-box__bar:first-of-type { height: 10px; }
+.page--article .article__body .dspec .dspec-box__note { display: flex; align-items: center; gap: var(--dspec-space-1); min-height: 24px; font: var(--dspec-type-small); color: var(--dspec-muted); }
+.page--article .article__body .dspec .dspec-box__pill { position: relative; display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--dspec-fill-2); color: var(--dspec-ink); }
+/* Stella's sparkle: a four-point star in a 16 box, the status note's icon */
+.page--article .article__body .dspec .dspec-box__spark {
+  flex: none; width: 16px; height: 16px; background: currentColor;
+  clip-path: polygon(50% 6%, 60% 40%, 94% 50%, 60% 60%, 50% 94%, 40% 60%, 6% 50%, 40% 40%);
+}
+/* the pin rides the top-right corner of its box, so it never covers the words before an inline chip */
+.page--article .article__body .dspec .dspec-pin {
+  position: absolute; top: -7px; right: -7px; z-index: 1; width: 16px; height: 16px; border-radius: 999px; corner-shape: round;
+  background: var(--dspec-pin); color: #111; font: 700 10px/16px var(--dspec-family); text-align: center; letter-spacing: 0;
+}
+.page--article .article__body .dspec .dspec-box__keys {
+  display: grid; align-content: start; gap: 6px; margin-top: var(--dspec-space-4); padding-top: var(--dspec-space-3); border-top: 1px solid var(--line);
+  font: var(--dspec-type-small); color: var(--dspec-ink);
+}
+.page--article .article__body .dspec .dspec-box__keys li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--dspec-space-2); align-items: start; }
+.page--article .article__body .dspec .dspec-box__keyn {
+  width: 16px; height: 16px; margin-top: 1px; border-radius: 999px; corner-shape: round; background: var(--dspec-pin);
+  color: #111; font: 700 10px/16px var(--dspec-family); text-align: center;
+}
+.page--article .article__body .dspec .dspec-box__keyn--off { background: none; box-shadow: inset 0 0 0 1.5px var(--dspec-muted); transform: scale(0.75); }
+@media (max-width: 600px) {
+  .page--article .article__body .dspec .dspec-box { grid-template-columns: 1fr; grid-template-rows: none; row-gap: var(--dspec-space-3); }
+  .page--article .article__body .dspec .dspec-box__panel { grid-row: auto; grid-template-rows: none; }
+}

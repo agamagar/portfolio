@@ -2,7 +2,8 @@
 //
 // RuleMap: the four rules drawn where they live. Three nested scopes (the app, a message, a card) each hold the rule that
 // lives at that level, and the tokens sit underneath all three. The corners follow the fourth rule, inner radius = outer
-// radius minus padding: a 32 with 16 of padding holds a 16, and a 16 with 8 holds an 8 (dasshSystem.css).
+// radius minus padding: a 32 with 16 of padding holds a 16, and a 16 with 8 holds an 8 (dasshSystem.css). The outer scope is a
+// sky, and the two inside it are glass on that sky.
 //   map  { layers: [{ k, to, t }], base: { k, to, t }, caption }
 //          k   the scope's name ("The app")
 //          to  the heading of the rule's section: the link's text, and the section it scrolls to
@@ -13,6 +14,8 @@
 //   ledger  { k, rows: [{ k, before, after }], note }
 import { ArrowDown } from "iconoir-react";
 import { scrollToId } from "../../ui/SectionIndex";
+import { DasshSky } from "./DasshSky";
+import "./dasshSpecs.css";
 import "./dasshSystem.css";
 
 const TAGS = ["r32 p16", "r16 p8", "r8"]; // each scope's corner and padding, as drawn
@@ -40,27 +43,29 @@ function Head({ item, ids, tag }) {
   );
 }
 
-function Scope({ layers, depth, ids }) {
+function Scope({ layers, depth, ids, sky }) {
   const [item, ...inner] = layers;
-  return (
-    <div className={`rmap__scope rmap__scope--${depth}`}>
+  const body = (
+    <>
       <Head item={item} ids={ids} tag={TAGS[depth]} />
       {inner.length > 0 && <Scope layers={inner} depth={depth + 1} ids={ids} />}
-    </div>
+    </>
   );
+  const cls = `rmap__scope rmap__scope--${depth}`;
+  return depth === 0 ? <DasshSky sky={sky} className={cls}>{body}</DasshSky> : <div className={cls}>{body}</div>;
 }
 
 export function RuleMap({ map, ids = {} }) {
   if (!map?.layers?.length) return null;
   return (
     <figure className="rmap">
-      <Scope layers={map.layers.slice(0, TAGS.length)} depth={0} ids={ids} />
+      <Scope layers={map.layers.slice(0, TAGS.length)} depth={0} ids={ids} sky={map.sky} />
       {map.base && (
         <div className="rmap__base">
           <Head item={map.base} ids={ids} />
         </div>
       )}
-      {map.caption && <figcaption className="rmap__cap">{map.caption}</figcaption>}
+      {map.caption && <figcaption className="dspec__cap">{map.caption}</figcaption>}
     </figure>
   );
 }

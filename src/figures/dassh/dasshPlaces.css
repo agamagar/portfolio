@@ -12,11 +12,17 @@
 }
 .article__body .dsh-places li { margin: 0; min-width: 0; }
 .dsh-places__hold { aspect-ratio: 1636 / 1190; }
+/* the shared figure image is framed for screenshots (a dark fill and a page hairline); a photo takes a pure 1px outline
+   inside its edge instead, and the corner the hero and the stages have */
+.article__body .dsh-places .article__figure-img--real {
+  border: 0; border-radius: var(--dspec-radius-card); background: none;
+  outline: 1px solid rgba(0, 0, 0, 0.1); outline-offset: -1px;
+}
+:root.dark .article__body .dsh-places .article__figure-img--real { outline-color: rgba(255, 255, 255, 0.1); }
 .dsh-places span {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.8125rem;
-  letter-spacing: 0.01em;
+  margin-top: var(--dspec-space-2);
+  font: var(--dspec-type-caption);
   color: var(--muted);
 }
 @media (max-width: 720px) {

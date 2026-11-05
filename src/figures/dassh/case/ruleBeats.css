@@ -1,0 +1,59 @@
+/* RuleBeats and DeepDive (RuleBeats.jsx). The rhythm runs on the rules' own grid: 24 between beats, 8 from a beat to its
+   bullets, 16 from a beat to its figure, 32 after a figure. Label ink = the slide label pair (#33095e 15.6:1 on white; dark
+   #b69cea 8.4:1). No box anywhere: the page practises its first rule, so the rule's line stands out by type alone. */
+.article__body .cs-sec > p.article__step { margin: 0 0 var(--dspec-space-6); }
+.article__body .cs-sec > p.article__step:has(+ .dspec) { margin-bottom: var(--dspec-space-4); }
+.article__body .cs-sec > .article__beat { margin: 0 0 var(--dspec-space-6); }
+.article__body .cs-sec > .article__beat > p.article__step { margin: 0; }
+.article__body .cs-sec > .article__beat > ul.article__step-ul { margin: var(--dspec-space-1) 0 0; padding-left: 1.1rem; }
+.article__body .cs-sec > .article__beat > ul.article__step-ul > li { margin-bottom: 0.375rem; text-wrap: pretty; }
+.article__body .cs-sec > .article__beat > ul.article__step-ul > li:last-child { margin-bottom: 0; }
+.article__body p.article__step .article__step-k,
+.article__deep-k {
+  font: var(--dspec-type-beat); letter-spacing: var(--dspec-track); text-transform: uppercase; color: #33095e;
+}
+.article__body p.article__step .article__step-k { display: block; margin-bottom: var(--dspec-space-1); }
+.article__deep-k { flex: none; white-space: nowrap; }
+:root.dark .article__body p.article__step .article__step-k,
+:root.dark .article__deep-k { color: #b69cea; }
+
+/* the rule's first sentence: the second level of the section, under the statement and over the body */
+.article__body p.article__step .article__step-lead {
+  display: block; margin: var(--dspec-space-2) 0 var(--dspec-space-3);
+  font: var(--dspec-type-lead); letter-spacing: -0.005em; color: var(--dspec-strong); text-wrap: pretty;
+}
+.article__body .cs-sec > p.article__step--rule { margin-top: var(--dspec-space-2); }
+
+/* two beats side by side: what agents built, what I corrected */
+.article__body .cs-sec > .article__pair {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--dspec-space-6); margin: 0 0 var(--dspec-space-6);
+}
+.article__body .cs-sec > .article__pair > p.article__step { margin: 0; text-wrap: pretty; }
+@media (max-width: 700px) {
+  .article__body .cs-sec > .article__pair { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* inspect-overrides.css carries a positional rule from 27 Oct, div.cs-sec:nth-child(20) { row-gap: 48px !important },
+   written for another case. On this page the 20th child is a section whose label spans 40 grid rows, so 48 between them
+   made it 2,261 tall. The guard puts back the section's own gap (none, 0.75rem on a phone) on this case only. */
+.page--article[data-case="dassh"] .article__body div.cs-sec:nth-child(n) { row-gap: normal !important; }
+@media (max-width: 700px) { .page--article[data-case="dassh"] .article__body div.cs-sec:nth-child(n) { row-gap: 0.75rem !important; } }
+
+/* the deep dive: closed by default, one 44 tall row opens it */
+.article__body details.article__deep { margin: 0; border-top: 1px solid var(--line); }
+/* after a plain paragraph, whose own margin is smaller than a beat's, it still sits 24 down */
+.article__body .cs-sec > p:not(.article__step) + details.article__deep { margin-top: 10px; }
+.article__body details.article__deep > summary {
+  display: flex; align-items: center; gap: 0.75rem; min-height: 44px; padding: 0.5rem 0;
+  cursor: pointer; list-style: none; font-weight: 500;
+}
+.article__body details.article__deep > summary::-webkit-details-marker { display: none; }
+.article__body details.article__deep > summary::after {
+  content: "+"; margin-left: auto; font-size: 1.25rem; line-height: 1; color: var(--muted); transition: transform 0.2s ease;
+}
+.article__body details.article__deep[open] > summary::after { transform: rotate(45deg); }
+.article__body details.article__deep > summary:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.article__body details.article__deep > ul { margin: 0.25rem 0 0.75rem; }
+/* an item's short lead in the page's strong ink, so the list scans by its leads */
+.article__body details.article__deep strong.article__deep-lead { font-weight: 600; color: var(--fg); }
+@media (prefers-reduced-motion: reduce) { .article__body details.article__deep > summary::after { transition: none; } }

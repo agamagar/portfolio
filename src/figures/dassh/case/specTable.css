@@ -1,0 +1,29 @@
+/* SpecTable and FaceMatrix share this table: hairline rows, no boxes, stacked on a phone */
+.page--article .article__body .dspec .dspec-table table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.page--article .article__body .dspec .dspec-table caption {
+  caption-side: top; padding: 0 0 6px; text-align: left;
+  font: var(--dspec-type-beat); letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--dspec-label);
+}
+.page--article .article__body .dspec .dspec-table thead th {
+  padding: 0 var(--dspec-space-3) 6px 0; text-align: left; vertical-align: bottom;
+  font: var(--dspec-type-label); letter-spacing: var(--dspec-track); text-transform: uppercase; color: var(--muted);
+}
+.page--article .article__body .dspec .dspec-table :is(tbody th, td) {
+  padding: 10px var(--dspec-space-3) 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top;
+  font: var(--dspec-type-text); color: var(--dspec-ink);
+}
+.page--article .article__body .dspec .dspec-table tbody th { font-weight: 600; color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-table :is(th, td):last-child { padding-right: 0; }
+.page--article .article__body .dspec .dspec-table td.is-mono { font-family: var(--dspec-mono); font-size: 0.75rem; }
+.page--article .article__body .dspec .dspec-table td.is-off { color: var(--muted); }
+.page--article .article__body .dspec .dspec-table--faces tbody th { width: 22%; }
+/* the face matrix is words, not figures: Inter's tabular forms widen the hyphen in "Read-only" */
+.page--article .article__body .dspec .dspec-table--faces table { font-variant-numeric: normal; }
+@media (max-width: 560px) {
+  .page--article .article__body .dspec .dspec-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .page--article .article__body .dspec .dspec-table tr { display: block; padding: 10px 0; border-top: 1px solid var(--line); }
+  .page--article .article__body .dspec .dspec-table :is(tbody th, td) { display: block; width: auto; padding: 0; border: 0; }
+  .page--article .article__body .dspec .dspec-table tbody th { margin-bottom: var(--dspec-space-1); }
+  .page--article .article__body .dspec .dspec-table td + td { margin-top: 2px; }
+  .page--article .article__body .dspec .dspec-table td::before { content: attr(data-k) ": "; font-family: var(--dspec-family); font-size: 0.75rem; color: var(--dspec-muted); }
+}

@@ -1,0 +1,24 @@
+/* CornerNest. Orange is the measurement; the sheet is the section's sky, with glass inside it. */
+.page--article .article__body .dspec .dspec-corner { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px var(--dspec-space-6); align-items: start; }
+.page--article .article__body .dspec .dspec-corner__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 150px)); gap: var(--dspec-space-4); }
+.page--article .article__body .dspec .dspec-corner__cell { min-width: 0; }
+.page--article .article__body .dspec .dspec-corner svg { display: block; max-width: 100%; height: auto; }
+/* the true-size nest lets its corner strokes sit on the edge; each 3x panel clips to its own frame */
+.page--article .article__body .dspec .dspec-corner svg.dspec-corner__nest { overflow: visible; }
+.page--article .article__body .dspec .dspec-corner svg.dspec-corner__zoom { border-radius: 12px; background: var(--dspec-fill); overflow: hidden; }
+.dspec-corner__f2 { fill: color-mix(in srgb, #fff 36%, transparent); }
+.dspec-corner__f3 { fill: color-mix(in srgb, #fff 62%, transparent); }
+:root.dark .dspec-corner__f2 { fill: color-mix(in srgb, #fff 6%, transparent); }
+:root.dark .dspec-corner__f3 { fill: color-mix(in srgb, #fff 9%, transparent); }
+.dspec-corner__arc { fill: none; stroke: var(--dspec-acc); stroke-width: 1.5; }
+.dspec-corner__ctr { fill: var(--dspec-acc); }
+.dspec-corner__band { fill: color-mix(in srgb, var(--dspec-pin) 24%, transparent); }
+.dspec-corner__edge { fill: none; stroke: color-mix(in srgb, var(--fg) 45%, transparent); stroke-width: 1; }
+.dspec-corner__dim { stroke: var(--dspec-acc); stroke-width: 1.5; }
+.dspec-corner__t { font: 600 11px var(--dspec-mono); fill: var(--dspec-muted); }
+.dspec-corner__t--acc { fill: var(--dspec-acc-text); }
+.page--article .article__body .dspec .dspec-corner__k { margin-top: 10px; font: var(--dspec-type-strong); color: var(--dspec-strong); }
+.page--article .article__body .dspec .dspec-corner__d { margin-top: 2px; font: var(--dspec-type-small); color: var(--dspec-muted); text-wrap: pretty; }
+@media (max-width: 700px) {
+  .page--article .article__body .dspec .dspec-corner { grid-template-columns: 1fr; }
+}

@@ -1,31 +1,70 @@
-/* The live Stella prototype in a phone (StellaLive.jsx, Dassh case study v2, 4 Nov 2026).
-   320 wide on a desktop, 70% of the column on a phone. The controls practise what the case preaches:
-   32 to the eye, 44 to the finger, sentence case. */
-.slive { margin: 2rem 0 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.slive__controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+/* PhoneStage and StellaLive (PhoneStage.jsx, StellaLive.jsx). The stage spans the full column, like the hero and the photos,
+   so every rule gets one big beat and the phone sits on the column's centre. The phone is 320 wide on a desktop, and most of
+   the stage on a phone. The controls practise what the case preaches: 32 to the eye, 44 to the finger, sentence case. */
+.article__body .cs-sec > .slive { margin: var(--dspec-space-2) 0 var(--dspec-space-8); min-width: 0; }
+.slive__stage {
+  display: flex; flex-direction: column; align-items: center; gap: var(--dspec-space-4);
+  padding: 40px var(--dspec-space-4) var(--dspec-space-6);
+  border-radius: var(--dspec-radius-card);
+  color: var(--dsky-ink);
+}
+/* a section with a stage keeps the 24 padding every section frame has: the bezel is an <img>, which the photo rule
+   (.cs-sec:has(img, .article__plate)) would otherwise pick up. Worked back from the second column the figure sits in: the
+   section's grid is 16.5% + 2rem + 1fr inside that 24, so its width W is (100% + 2rem) / 0.835, and the stage is W + 48.
+   The sticky label rides over the stage's empty left side, clear of the phone. */
+@media (min-width: 701px) {
+  .page--article .article__body .cs-sec:has(> .slive) { padding: 24px; }
+  .page--article .article__body .cs-sec:has(> .slive) > h2 { z-index: 1; }
+  .slive__stage {
+    --sec-w: calc((100% + 2rem) / 0.835);
+    width: calc(var(--sec-w) + 48px);
+    margin-left: calc(100% - var(--sec-w) - 24px);
+    padding-top: 48px;
+    padding-bottom: 32px;
+  }
+}
+/* under 768 the phone reaches into the label's column, so there the label scrolls away instead of riding over the stage */
+@media (max-width: 767px) { .page--article .article__body .cs-sec:has(> .slive) > h2 { position: static; } }
+/* and on a phone it keeps no side padding, like every other section, so the text column doesn't narrow */
+@media (max-width: 700px) { .page--article .article__body .cs-sec:has(> .slive) { padding-inline: 0; } }
+
+/* ---------- controls: UI on a sky is a hairline with no fill, so the sky shows through ---------- */
+.slive__controls { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--dspec-space-2); }
+.slive__controls--wait { min-height: 32px; }
 .slive__btn {
   position: relative; height: 32px; padding: 0 14px; border-radius: 999px;
-  border: 1px solid var(--line); background: none; color: var(--muted);
+  border: 1px solid var(--dsky-line); background: none; color: var(--dsky-ink-muted);
   font: inherit; font-size: 0.875rem; font-weight: 500; line-height: 1; cursor: pointer;
   transition: color var(--m3-dur-effects-fast, 150ms) ease, border-color var(--m3-dur-effects-fast, 150ms) ease;
 }
 .slive__btn::after { content: ""; position: absolute; inset: -6px -2px; } /* a 44 tall target that takes no room */
-.slive__btn:hover { color: var(--fg); }
-.slive__btn[aria-pressed="true"] { color: var(--fg); border-color: var(--fg); }
-.slive__btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.slive__btn:hover { color: var(--dsky-ink); }
+.slive__btn[aria-pressed="true"] { color: var(--dsky-ink); border-color: var(--dsky-ink); }
+.slive__btn:focus-visible { outline: 2px solid var(--dsky-ink); outline-offset: 2px; }
 
+/* ---------- the phone: it casts one soft shadow on the sky, drawn as a box-shadow beside the frame so the live embed never
+   sits under a filter ---------- */
 .slive .slive__phone { width: 320px; max-width: 100%; }
-.slive__cap { text-align: center; max-width: 34rem; margin: 0; }
-/* 5 Nov 2026 (depth pass): one caption voice for the page, the figures' own (13/20, muted), so every caption reads alike */
-.page--article .article__body .slive .slive__cap { font-size: 0.8125rem; line-height: 1.25rem; font-weight: 400; color: var(--muted); text-wrap: pretty; }
+.slive__stage .pf__dev { position: relative; }
+.slive__stage .pf__dev::before {
+  content: ""; position: absolute; inset: 6% 7% 2%; z-index: -1; border-radius: 12% / 6%; pointer-events: none; /* wholly behind the bezel */
+  box-shadow: 0 32px 64px 12px color-mix(in srgb, var(--gradient-violet-900) 24%, transparent), 0 8px 20px 12px color-mix(in srgb, var(--gradient-violet-900) 10%, transparent);
+}
+:root.dark .slive__stage .pf__dev::before { box-shadow: 0 32px 64px 12px rgba(0, 0, 0, 0.5), 0 8px 20px 12px rgba(0, 0, 0, 0.3); }
+/* the same phone's Restart, as a hairline circle on the sky */
+.slive__stage .pf__restart { background: none; color: var(--dsky-ink-muted); box-shadow: inset 0 0 0 1px var(--dsky-line); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.slive__stage .pf__restart:hover { background: none; color: var(--dsky-ink); }
 
-/* the screen inside the bezel: a floor in the prototype's own ground until it has painted, then the scaled frame */
+/* the shape the phone takes while its chunk loads: the phone, then the Restart row */
+.slive__ph { width: 320px; max-width: 100%; aspect-ratio: 1209 / 2472; margin-bottom: 42px; }
+
+/* ---------- the screen inside the bezel: a floor in the prototype's own ground until it has painted, then the scaled frame ---------- */
 .slive__screen { position: absolute; inset: 0; overflow: hidden; }
 .slive__floor { position: absolute; inset: 0; background: #fff; }
 :root.dark .slive__floor { background: #161616; }
 .slive__frame { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; background: transparent; transition: opacity 0.4s ease; }
 
-/* measurements: drawn over the live layout, never in the way of a tap */
+/* ---------- measurements: drawn over the live layout, never in the way of a tap ---------- */
 .slive__spec { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .slive__spec svg { position: absolute; inset: 0; overflow: visible; }
 .slive__line { fill: none; stroke: #ea580c; stroke-width: 1.5; stroke-dasharray: 4 3; }
@@ -39,9 +78,9 @@
 }
 
 @media (max-width: 720px) {
-  .slive .slive__phone { width: 70%; }
-  .slive__controls { gap: 4px; }
-  .slive__btn { padding: 0 9px; font-size: 0.8125rem; } /* the three roles fit one row in a 294 column */
+  .slive .slive__phone, .slive__ph { width: 78%; }
+  .slive__controls { gap: var(--dspec-space-1); }
+  .slive__btn { padding: 0 9px; font-size: 0.8125rem; } /* the three roles fit one row in a 326 stage */
 }
 @media (prefers-reduced-motion: reduce) {
   .slive__frame, .slive__btn { transition: none; }
