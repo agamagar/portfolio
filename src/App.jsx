@@ -195,6 +195,7 @@ const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
 import { RuleMap, AuditLedger } from "./figures/dassh/DasshSystem"; // 5 Nov 2026 (Dassh v2): where each rule lives, and the audits' before and after
+import { DasshSpec } from "./figures/dassh/DasshSpecs"; // 5 Nov 2026 (Dassh depth pass): annotated figures (before and after, token tables, the corner maths)
 import { scheduledDeck } from "./decks/scheduledDelivery.deck";
 import { PlaygroundEmbed, sdFigure } from "./figures/sdStory";
 import { awayAgentDeck } from "./decks/awayAgent.deck";
@@ -1233,6 +1234,30 @@ function confirmNotes(text) {
 // 5 Nov 2026: a paragraph that is nothing but check-notes would render as an empty <p>, and in a section grid (no margin
 // collapse) each one left a blank band (Dassh, The proof). It gets .qa-only: hidden, shown with the QA layer like its notes.
 const confirmOnly = (text) => typeof text === "string" && CONFIRM_RE.test(text) && !text.replace(CONFIRM_RE, "").trim();
+// 5 Nov 2026 (Dassh depth pass): a deep-dive item that opens with a short lead ("Radii: 32 for sheets...") sets the lead
+// in bold, so a long list scans by its leads. Six words at most, and never across a full stop.
+function deepItem(it) {
+  const m = typeof it === "string" && it.match(/^([^:.[\]]{2,48}): ([\s\S]+)$/);
+  if (!m || m[1].trim().split(/\s+/).length > 6) return confirmNotes(it);
+  return <><strong className="article__deep-lead">{m[1]}:</strong> {confirmNotes(m[2])}</>;
+}
+// 5 Nov 2026 (Dassh depth pass): one labelled beat of a rule section (steps / after: [{ k, t?, ul?, fig? }]). `ul` puts
+// bullets under the beat, `fig` an annotated figure after it (DasshSpec). `t` can be left out when the bullets carry it.
+function StepBeat({ st }) {
+  const beat = <p className="article__step"><span className="article__step-k">{st.k}</span>{st.t ? confirmNotes(st.t) : null}</p>;
+  return (
+    <>
+      {/* a beat with bullets is one block, so its label sits as close to the list as other labels sit to their text */}
+      {st.ul ? (
+        <div className="article__beat">
+          {beat}
+          <ul className="article__step-ul">{st.ul.map((it, k) => <li key={k}>{confirmNotes(it)}</li>)}</ul>
+        </div>
+      ) : beat}
+      {st.fig && <DasshSpec spec={st.fig} />}
+    </>
+  );
+}
 
 // mv2lud20 (10 Oct): "highlight the text making it faster to read, use squiggly
 // underline": ==phrase== in section copy renders as a highlight with a wavy
@@ -10481,6 +10506,8 @@ function CaseStudyBodyFull({ cs }) {
                   {s.inlineFigCaption && <figcaption>{s.inlineFigCaption}</figcaption>}
                 </EF>
               )}
+              {/* 5 Nov 2026 (Dassh depth pass): an annotated figure after paragraph j (pFigs: { [j]: DasshSpec's spec }) */}
+              {s.pFigs?.[j] && <DasshSpec spec={s.pFigs[j]} />}
             </Fragment>
           ))}
           {/* a living shader in a framed box, like the cloud hero (golden |
@@ -10495,13 +10522,15 @@ function CaseStudyBodyFull({ cs }) {
           )}
           {/* 4 Nov 2026 (Dassh v2, one section per rule): labelled beats before the live phone (steps: [{ k, t }]), the live
               Stella prototype (live: StellaLive's props), the beats after it, and a closed deep dive (deep: { summary, items }) */}
-          {s.steps && s.steps.map((st, k) => <p className="article__step" key={`st-${k}`}><span className="article__step-k">{st.k}</span>{confirmNotes(st.t)}</p>)}
+          {s.steps && s.steps.map((st, k) => <StepBeat st={st} key={`st-${k}`} />)}
           {s.live && (
             <Suspense fallback={<div className="slive slive--wait" aria-hidden="true"><div className="slive__ph" /></div>}>
               <StellaLive {...s.live} />
             </Suspense>
           )}
-          {s.after && s.after.map((st, k) => <p className="article__step" key={`sa-${k}`}><span className="article__step-k">{st.k}</span>{confirmNotes(st.t)}</p>)}
+          {s.after && s.after.map((st, k) => <StepBeat st={st} key={`sa-${k}`} />)}
+          {/* 5 Nov 2026 (Dassh depth pass): annotated figures that stand on their own in a section (specs: [spec]) */}
+          {s.specs && s.specs.map((sp, k) => <DasshSpec spec={sp} key={`sp-${k}`} />)}
           {/* 5 Nov 2026 (Dassh v2): where each rule lives (ruleMap; each rule's link scrolls to the section with that
               heading) and the audits' before and after numbers (ledger). DasshSystem.jsx draws both. */}
           {s.ruleMap && (
@@ -10514,7 +10543,8 @@ function CaseStudyBodyFull({ cs }) {
           {s.deep && (
             <details className="article__deep">
               <summary><span className="article__deep-k">Deep dive</span><span className="article__deep-t">{s.deep.summary}</span></summary>
-              <ul>{s.deep.items.map((it, k) => <li key={k}>{confirmNotes(it)}</li>)}</ul>
+              <ul>{s.deep.items.map((it, k) => <li key={k}>{deepItem(it)}</li>)}</ul>
+              {s.deep.figs && s.deep.figs.map((sp, k) => <DasshSpec spec={sp} key={`df-${k}`} />)}
             </details>
           )}
           {/* 28 Sep, the presenting cut: the product "so what" that closes a beat */}
