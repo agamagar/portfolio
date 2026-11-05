@@ -2,8 +2,8 @@
   "from": "dassh-work",
   "path": "Claude/Design System (SDS)/dassh-ui-src",
   "ref": "v3",
-  "commit": "513bcf2",
+  "commit": "9628b99",
   "entry": "stella-chat.html",
   "note": "built from git archive of the commit (no uncommitted changes); tools/sync-stella-chat.mjs",
-  "syncedAt": "2026-11-05T04:26:58.408Z"
+  "syncedAt": "2026-11-05T04:30:39.132Z"
 }
