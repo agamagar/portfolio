@@ -25,7 +25,7 @@ const DESIGN_W = 390; // the prototype's design width
 
 const pageTheme = () => (document.documentElement.classList.contains("dark") ? "dark" : "light");
 const srcFor = (v) => {
-  const q = new URLSearchParams({ persona: v.persona, reset: v.key });
+  const q = new URLSearchParams({ persona: v.persona, reset: v.key, embed: "1" }); // embed: persona names read as roles
   if (v.sample) q.set("sample", v.sample);
   return `${SRC}?${q}`;
 };

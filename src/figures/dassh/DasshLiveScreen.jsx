@@ -20,7 +20,7 @@ export function DasshLiveScreen({ persona, still, alt, w, h }) {
     if (LIVE) {
       io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
-        setSrc(`${LIVE}/stella-chat.html?persona=${persona}`);
+        setSrc(`${LIVE}/stella-chat.html?persona=${persona}&embed=1`);
         io.disconnect();
       }, { rootMargin: "400px" });
       io.observe(el);
