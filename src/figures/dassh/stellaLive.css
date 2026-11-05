@@ -16,6 +16,8 @@
 
 .slive .slive__phone { width: 320px; max-width: 100%; }
 .slive__cap { text-align: center; max-width: 34rem; margin: 0; }
+/* 5 Nov 2026 (depth pass): one caption voice for the page, the figures' own (13/20, muted), so every caption reads alike */
+.page--article .article__body .slive .slive__cap { font-size: 0.8125rem; line-height: 1.25rem; font-weight: 400; color: var(--muted); text-wrap: pretty; }
 
 /* the screen inside the bezel: a floor in the prototype's own ground until it has painted, then the scaled frame */
 .slive__screen { position: absolute; inset: 0; overflow: hidden; }

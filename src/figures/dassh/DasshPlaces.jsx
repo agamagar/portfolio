@@ -1,4 +1,5 @@
 // Where people use Stella: four scenes from Figma 1864:4038 (the kitchen one is the hero). 2x JPEGs, lazy via Img.
+// Two by two at every width (dasshPlaces.css); the case data's caption ties the scenes to the numbers the rules set.
 import { useEffect, useRef, useState } from "react";
 import Img from "../../ui/Img";
 import "./dasshPlaces.css";

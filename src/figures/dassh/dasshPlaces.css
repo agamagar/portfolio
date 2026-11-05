@@ -1,9 +1,11 @@
-/* Where people use it: four across, two by two on a phone. Caption type matches .article__figure figcaption. */
+/* Where people use it: two by two at every width (5 Nov 2026, depth pass), so each scene reads at about 378 wide on a desktop
+   instead of 183. 16 between the photos, 8 from a photo to its label, as the rules' own spacing. Caption type matches
+   .article__figure figcaption. */
 .article__body ul.dsh-places {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -18,5 +20,5 @@
   color: var(--muted);
 }
 @media (max-width: 720px) {
-  .article__body ul.dsh-places { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .article__body ul.dsh-places { gap: 12px; }
 }
