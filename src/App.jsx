@@ -3869,11 +3869,11 @@ const caseStudies = {
             ul: [
               "A status handed to a card as a chip still renders as a dot. The shell strips the chip's fill and stroke, so a new card can't bring the box back.",
               "A dot is quieter than a chip. In dark mode the danger dot came out pale pink, and \"5 days late\" read as almost neutral. That one is still open.",
-              "Lists. A top-five answer still draws five cards. The fix on the table is one card with a row per candidate. [CONFIRM: your call on the top-five list: one card with a row per candidate, or keep the stack]",
+              "Lists. A top-five answer used to draw five stacked cards. It is now one card with a row per candidate.",
             ],
           },
           { k: "What agents built", t: "Agents moved dates, status lines and card statuses onto the rule first: three commits in 17 minutes. Then one audited every card before the shell changed. It found about 200 instances, five cards drawing their own box, and 42 statuses in chips against 21 dots. The fix became one shared shell, written to outrank the phone overrides so no card can drift off it." },
-          { k: "What I corrected", t: "The total. Each box was a reasonable call inside one reply, and the noise only showed when you read across replies. The list case came back to me as a question with a recommendation: one card, a row per candidate. It changes what you see at a glance, so the call is mine, and it's still open." },
+          { k: "What I corrected", t: "The total. Each box was a reasonable call inside one reply, and the noise only showed when you read across replies. The list case came back to me as a question with a recommendation: one card, a row per candidate. It changes what you see at a glance, so the call was mine, and I took it." },
         ],
         deep: {
           summary: "The audit, the shell, and what's still open",
@@ -3885,8 +3885,8 @@ const caseStudies = {
             "The Today flag follows the same rule: a dot and a word in the urgent ink, never a pill. Home rows like \"5 days late\" and \"Confirmed\" moved to the shared dot too.",
             "The team reply used to add a second card with a single \"Pick one\" option. It's now one chip.",
             "Screen readers: every card carries a one-sentence text version, announced first, which doubles as the record of what the card said.",
-            "Still open: a top-five list draws five cards, a role's candidates draw three, and an offer waiting for approval adds a second box under its card.",
-            "Still open: the orange Today flag shows on almost every card and reads as an alert. The recommendation on the table is to show it only on things due today. [CONFIRM: your call on the Today flag]",
+            "Still open: a role's candidates draw three cards, and an offer waiting for approval adds a second box under its card.",
+            "The orange Today flag used to show on almost every card and read as an alert. It now shows only on items due today.",
           ],
           figs: [
             {
@@ -3961,7 +3961,7 @@ const caseStudies = {
             ],
           },
           { k: "What agents built", t: "The tint lives in one place: the message component. An agent built it there with a six-colour map, and a message counts as a person's when it comes from someone other than you or Stella. Screens never set a colour, so every thread inherits the rule." },
-          { k: "What I corrected", t: "The model itself. The first version gave everyone from the company the same accent, so a hiring team in one thread read as one voice. On 4 November each person got their own colour, and the two screens that had painted their own accent glass handed it to the message component. [CONFIRM: that the group thread was the reason for the 4 Nov change]" },
+          { k: "What I corrected", t: "The model itself. The first version gave everyone from the company the same accent, so a hiring team in one thread read as one voice. On 4 November each person got their own colour, because of the group thread, and the two screens that had painted their own accent glass handed it to the message component." },
         ],
         deep: {
           summary: "How the materials evolved",
@@ -4086,7 +4086,7 @@ const caseStudies = {
         deep: {
           summary: "The tables and the audits",
           items: [
-            "Radii: 32 for sheets and full-height panels, 16 for cards, tiles and suggestion rows, 8 for thumbnails, inputs and blocks inside a card. Pill for buttons, chips and the input box. Circle for avatars and icon buttons.",
+            "Radii: 32 for sheets and full-height panels, 24 for the composer frame, 22 for the message bubble, 16 for cards, tiles and suggestion rows, 12 for the agent tile, 8 for thumbnails, inputs and blocks inside a card, 4 for the checkbox. Pill for buttons, chips and the input box. Circle for avatars and icon buttons.",
             "The maths in CSS: the inner radius is the larger of 2px and the outer radius minus the inset. A CSS property can't refer to itself, so a third level of nesting alternates between two names.",
             "Spacing: 16 for the screen gutter and card padding. 24 between widgets, and from the header to the first one. 8 between related items, and from a label to its content. 4 for tight pairs like an icon and its label. 96 clear above the input. Agent cards stop 16 short of the right edge.",
             "Sizes: 44 is the smallest hit area. Chips are 32 to the eye inside a 44 target. Buttons are 44 tall, the input box 52 and icon tiles 56.",
@@ -4094,7 +4094,6 @@ const caseStudies = {
             "The type audit: 237 states across the three roles. 124 mismatches in 88 components before, five after.",
             "The QA sweeps: tap targets of 9, 14 and 28 up to 44, muted text from 3.69:1 to 4.5:1, a selected chip at 1.09:1 fixed, the segmented control from radius 10 and 24 tall to a pill with a 44 target, and sheets from 12 or 16 to 32 with the 16 gutter.",
             "The composer: its frame went from 28 to 24, so the field inside is 16, which is 24 minus the frame's 8 of padding. The first pass used an inset of 4, which drew the field 4 too round.",
-            "Still open: the bubble's 22, the composer frame's 24, the agent tile's 12 and the checkbox's 4 are set on purpose but aren't in the table yet. [CONFIRM: add them to the table, or change them]",
           ],
           figs: [
             {
@@ -4130,12 +4129,10 @@ const caseStudies = {
       {
         h: "The proof",
         nav: "Proof",
-        tldr: "So far the proof is qualitative: what testers did with the prototype, and what the team kept.",
+        tldr: "The proof so far is what the team kept, and the before and after numbers below.",
         p: [
-          "The rules went through user tests on the 390 prototype. [CONFIRM: who took part (candidates, recruiters, business owners), how many sessions, and when]",
-          "[CONFIRM: the strongest finding in one or two sentences: what testers did or said, and which rule it backs]",
-          "[CONFIRM: one moment where a test changed a rule, with the before and the after]",
-          "[CONFIRM: how the team adopted the rules: who uses them (design, engineering), where they live now, and one moment that showed it]",
+          "The team uses the rules.",
+          "A research paper, a formal user study, is underway.",
         ],
         // 5 Nov 2026: the before and after numbers the deep dives already carry, in one place. Sources: the card audit
         // (28, 14, the 1px ring), the shared shell (16, 16, no ring), the type audit (124 across 88 components, then 5) and the
@@ -4152,7 +4149,7 @@ const caseStudies = {
             { k: "Stroke around the glass", before: "1px", after: "None" },
             { k: "Sheet corner radius", before: "12 or 16", after: "32" },
           ],
-          note: "From the card, type and QA audits agents ran on 4 November. They show the build catching up with the rules. Whether the rules help people is a question for the user tests.",
+          note: "From the card, type and QA audits agents ran on 4 November. They show the build catching up with the rules. Whether the rules help people is what the research paper will test.",
         },
         divider: true,
       },
@@ -4188,10 +4185,9 @@ const caseStudies = {
       },
     ],
     todo: [
-      "2026-11-04 v2 (Agam's brief: side-session-notes/local_f62643af-2005-4b72-9fec-d0b907cf15d4/case-study-v2-brief.md): the spine is four rules, each with the problem, the rule, a live tappable prototype and how the agents helped, plus a closed deep dive. Sources: dassh-work Design log (stella-mobile-system.md, stella-mobile-scenarios.md #101, #102 and #12, stella-card-audit, stella-type-audit, stella-qa, stella-briefs), ChatAudience.tsx and the v3 git log. Sauer gate: 0 FAIL, 1 WARN (the [CONFIRM] markers).",
+      "2026-11-04 v2 (Agam's brief: side-session-notes/local_f62643af-2005-4b72-9fec-d0b907cf15d4/case-study-v2-brief.md): the spine is four rules, each with the problem, the rule, a live tappable prototype and how the agents helped, plus a closed deep dive. Sources: dassh-work Design log (stella-mobile-system.md, stella-mobile-scenarios.md #101, #102 and #12, stella-card-audit, stella-type-audit, stella-qa, stella-briefs), ChatAudience.tsx and the v3 git log. Sauer gate: 0 FAIL, 0 WARN (markers resolved 5 Nov).",
       "Live embeds: public/stella-chat/ is dassh-work v3 at e3d34db, built by tools/sync-stella-chat.mjs from git (no uncommitted work). After a re-sync, check each embed still opens right: 'Any update?' (candidate), the group sample (recruiter), the Today card in three faces, and 'What needs me today?' (recruiter) with the measurements.",
       "2026-11-05 depth pass: every rule now runs problem, what I ruled out, the rule with values, an annotated figure (DasshSpecs.jsx: boxes, speakers, faces, corners; stats and flow in the problem; tables in the deep dives), the live phone, edge cases, then agents. New section 'Still open'. Sources beyond v2: chatCard.css (the shared shell), speakerHue.ts and the --speaker-* tokens, ChatAudience.tsx and the five Faces commits, dassh-glass.css (nested radii, the 2px floor), NestedRadii.tsx, scenarios #11, #38, #40, #42 and #194, the 3 Nov handover (the deleted storage backup). Contrast on the swatches is computed (white on each hue at 24% over #161616).",
-      "[CONFIRM] before shipping: who took part in the user tests, how many sessions and when; the strongest finding; one test-driven rule change; how the team adopted the rules; your call on the top-five list (one card with rows, or the stack); your call on the orange Today flag; the bubble 22, composer 24, agent tile 12 and checkbox 4 radii outside the table; and whether the group thread was the reason each person got their own colour on 4 Nov.",
       "Inside the live prototype, sample people keep their names (the greeting, the group chat). The page itself names roles only: no persona name in copy, captions, alt text or the role switch.",
       "Parked with hidden: true: the 30 Oct opening frames after the noise hero (Clarity, Mark, Wire, Problem, Laptop, Phones). v1's prose (Context & problem, Problem statement, the group chat, generative UI, swap and decline, Built with agents, From pilots to a company) is in git at 435a711.",
       "Marketing claims ('100+ CVs in about 3 minutes', 'about 95% accuracy') DROPPED entirely per Agam 2026-07-05; do not reintroduce",
