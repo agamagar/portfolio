@@ -8604,6 +8604,9 @@ html .page--article[data-case="scheduled-delivery"] .article__body :is(
 .qa-confirm { display: none; }
 html.qa-on .qa-confirm { display: inline; background: rgba(255, 176, 32, 0.22); color: #b26a00; border-radius: 3px; padding: 0 0.15em; }
 html.dark.qa-on .qa-confirm { color: #ffc970; }
+/* 5 Nov 2026: a paragraph made only of check-notes (App.jsx confirmOnly) leaves the page with them */
+.article__body p.qa-only { display: none; }
+html.qa-on .article__body p.qa-only { display: block; }
 /* QA: "3 PEOPLE" on the purple pin measured 4.20:1 at white 70%; 85% is 5.6:1 */
 .page--article .article__body .rwf-run .rwf .dio span.dio__count { color: rgba(255, 255, 255, 0.85); }
 /* QA: Option 1's partner lines were losing to the case's body-font rule */

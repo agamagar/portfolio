@@ -194,6 +194,7 @@ import SchedCartPageFlat from "./figures/scheduled/SchedCartPageFlat"; // mvf9le
 const SchedRnR = lazyFig(() => import("./figures/scheduled/SchedRnR"));
 const SchedPageReal = lazyFig(() => import("./figures/scheduled/SchedPageReal"));
 import { AiimsHero, AiimsGap, AiimsScale, AiimsInteraction, AiimsMatrix } from "./figures/aiims/AiimsFigures";
+import { RuleMap, AuditLedger } from "./figures/dassh/DasshSystem"; // 5 Nov 2026 (Dassh v2): where each rule lives, and the audits' before and after
 import { scheduledDeck } from "./decks/scheduledDelivery.deck";
 import { PlaygroundEmbed, sdFigure } from "./figures/sdStory";
 import { awayAgentDeck } from "./decks/awayAgent.deck";
@@ -1229,6 +1230,9 @@ function confirmNotes(text) {
   CONFIRM_RE.lastIndex = 0;
   return text.split(CONFIRM_RE).map((part, k) => (k % 2 ? <span className="qa-confirm" key={k}>{part}</span> : part));
 }
+// 5 Nov 2026: a paragraph that is nothing but check-notes would render as an empty <p>, and in a section grid (no margin
+// collapse) each one left a blank band (Dassh, The proof). It gets .qa-only: hidden, shown with the QA layer like its notes.
+const confirmOnly = (text) => typeof text === "string" && CONFIRM_RE.test(text) && !text.replace(CONFIRM_RE, "").trim();
 
 // mv2lud20 (10 Oct): "highlight the text making it faster to read, use squiggly
 // underline": ==phrase== in section copy renders as a highlight with a wavy
@@ -3698,6 +3702,7 @@ const caseStudies = {
     // Compact PDF cut (?cut=compact).
     pdfSections: [
       "Too many boxes",
+      "Where rules live",
       "One box per reply",
       "Glass per speaker",
       "Three faces",
@@ -3746,6 +3751,24 @@ const caseStudies = {
         divider: true,
       },
       { breaker: true, fig: "dasshPlaces", figure: "Where people use it." },
+      // 5 Nov 2026: the system on one screen, before the first rule (DasshSystem.jsx). Every home is stated in its own
+      // section (the face switch at the root, the tint in the message component, the shared card shell, the tokens and
+      // the corner test); the map only puts the four in one picture. Its corners follow the fourth rule: 32, 16, 8.
+      {
+        h: "Where rules live",
+        nav: "The system",
+        tldr: "Each rule has one home: the app, the message, the card or the tokens.",
+        ruleMap: {
+          layers: [
+            { k: "The app", to: "Three faces", t: "The face is set once, at the root, from who's signed in. No screen sets it." },
+            { k: "A message", to: "Glass per speaker", t: "The speaker's tint lives in the message component. No screen sets a colour." },
+            { k: "A card", to: "One box per reply", t: "Cards inherit one shared shell, so a new card starts inside the rule." },
+          ],
+          base: { k: "Underneath all three", to: "Radii and spacing", t: "Corners and gaps are tokens, and a test reads the corners back from the real components." },
+          caption: "The corners in this picture follow the fourth rule: a 32 holds a 16, and a 16 holds an 8.",
+        },
+        divider: true,
+      },
       {
         h: "One box per reply",
         nav: "One box",
@@ -3873,6 +3896,20 @@ const caseStudies = {
           "[CONFIRM: one moment where a test changed a rule, with the before and the after]",
           "[CONFIRM: how the team adopted the rules: who uses them (design, engineering), where they live now, and one moment that showed it]",
         ],
+        // 5 Nov 2026: the before and after numbers the deep dives already carry, in one place. Sources: the card audit
+        // (28, 1px ring), the shared shell (16, no ring), the type audit (124 across 88 components, then 5) and the QA
+        // sweep (3.69:1 to 4.5:1; the 14 and 28 tall targets to 44), all 4 Nov in dassh-work's Design log.
+        ledger: {
+          k: "The build, before and after",
+          rows: [
+            { k: "Type styles off the scale", before: "124", after: "5" },
+            { k: "Muted text contrast", before: "3.69:1", after: "4.5:1" },
+            { k: "Undersized tap targets", before: "14 and 28", after: "44" },
+            { k: "Card corner radius", before: "28", after: "16" },
+            { k: "Stroke around the glass", before: "1px", after: "None" },
+          ],
+          note: "From the card, type and QA audits agents ran on 4\u00a0November. They show the build catching up with the rules. Whether the rules help people is a question for the user tests.",
+        },
         divider: true,
       },
       {
@@ -10436,7 +10473,7 @@ function CaseStudyBodyFull({ cs }) {
           )}
           {(s.split || s.roleFrame ? [] : s.p || []).map((para, j) => (
             <Fragment key={j}>
-              <p>{confirmNotes(para)}</p>
+              <p className={confirmOnly(para) ? "qa-only" : undefined}>{confirmNotes(para)}</p>
               {/* an optional figure copy that sits inline under the first paragraph */}
               {j === 0 && s.inlineFig && (
                 <EF className="article__figure">
@@ -10465,6 +10502,15 @@ function CaseStudyBodyFull({ cs }) {
             </Suspense>
           )}
           {s.after && s.after.map((st, k) => <p className="article__step" key={`sa-${k}`}><span className="article__step-k">{st.k}</span>{confirmNotes(st.t)}</p>)}
+          {/* 5 Nov 2026 (Dassh v2): where each rule lives (ruleMap; each rule's link scrolls to the section with that
+              heading) and the audits' before and after numbers (ledger). DasshSystem.jsx draws both. */}
+          {s.ruleMap && (
+            <RuleMap
+              map={s.ruleMap}
+              ids={Object.fromEntries(cs.sections.flatMap((x, n) => (x.h && !x.hidden ? [[x.h, `sec-${n}`]] : [])))}
+            />
+          )}
+          {s.ledger && <AuditLedger ledger={s.ledger} />}
           {s.deep && (
             <details className="article__deep">
               <summary><span className="article__deep-k">Deep dive</span><span className="article__deep-t">{s.deep.summary}</span></summary>
